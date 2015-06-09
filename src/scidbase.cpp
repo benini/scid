@@ -19,7 +19,6 @@
 #include "common.h"
 #include "scidbase.h"
 #include "stored.h"
-#include "spellchk.h"
 #include <algorithm>
 #include <math.h>
 
@@ -106,7 +105,6 @@ errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 errorT scidBaseT::Open (fileModeT mode,
                         const char* filename,
                         bool create,
-                        SpellChecker* spell,
                         const Progress& progress) {
 	if (inUse) return ERROR_FileInUse;
 	if (filename == 0) filename = "";
@@ -128,19 +126,6 @@ errorT scidBaseT::Open (fileModeT mode,
 		} else {
 			err = idx->Open(filename, fileMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
-			if (err == OK && spell != 0 && spell->HasEloData()) {
-				for (idNumberT id=0, n = nb->GetNumNames(NAME_PLAYER); id < n; id++) {
-					if ((id % 1000) == 0) progress.report(id +1, n);
-					if (nb->GetElo(id) != 0) continue;
-					const char* name = nb->GetName (NAME_PLAYER, id);
-					if (! strIsSurnameOnly (name)) {
-						const char* text = spell->GetCommentExact (name);
-						if (text != NULL) {
-							nb->AddElo (id, SpellChecker::GetPeakRating (text));
-						}
-					}
-				}
-			}
 			if (err == OK) err = gfile->Open (filename, fileMode);
 			if (err == OK) err = idx->ReadEntireFile (nb, progress);
 		}
@@ -523,7 +508,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 	return OK;
 }
 
-errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
+errorT scidBaseT::compact(const Progress& progress) {
 	if (fileMode != FMODE_Both) {
 		//Older scid version to be upgraded are opened read only
 		if (idx->GetVersion() == SCID_VERSION) return ERROR_FileMode;
@@ -603,7 +588,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), NAMEBASE_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), GFILE_SUFFIX);
-	errorT res = Open(FMODE_Both, filename.c_str(), false, spellChk);
+	errorT res = Open(FMODE_Both, filename.c_str(), false);
 	for (size_t i = 0; i <filters.size(); i++) {
 		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}

@@ -249,6 +249,10 @@ public:
         id |= (idNumberT) BlackID_Low;
         return id;
     }
+    idNumberT GetPlayer(colorT col) const {
+        if (col == BLACK) return GetBlack();
+        return GetWhite();
+    }
     idNumberT GetEvent () const {
         uint id = (idNumberT) EventSiteRnd_High;
         id >>= 5;  // High 3 bits = bits 5-7 of EventSiteRnd_High.
@@ -280,6 +284,10 @@ public:
         BlackID_Low = id & 0xFFFF;
         WhiteBlack_High = WhiteBlack_High & 0xF0;   // Clear bits 0-3.
         WhiteBlack_High |= (id >> 16);              // Set bits 0-3.
+    }
+    void SetPlayer (colorT col, idNumberT id) {
+        if (col == BLACK) return SetBlack(id);
+        return SetWhite(id);
     }
     void SetEvent (idNumberT id) {
         EventID_Low = id & 0xFFFF;
@@ -375,6 +383,10 @@ public:
         eloT r = GetBlackElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
         return r;
+    }
+    eloT GetElo(colorT col) const {
+        if (col == BLACK) return GetBlackElo();
+        return GetWhiteElo();
     }
     byte   GetWhiteRatingType () const { return u16_high_4 (WhiteElo); }
     byte   GetBlackRatingType () const { return u16_high_4 (BlackElo); }

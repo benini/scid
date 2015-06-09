@@ -79,10 +79,7 @@ int sc_name_edit      (TCL_ARGS);
 int sc_name_info      (TCL_ARGS);
 int sc_name_match     (TCL_ARGS);
 int sc_name_plist     (TCL_ARGS);
-int sc_name_ratings   (TCL_ARGS);
 int sc_name_read      (TCL_ARGS);
-int sc_name_spellcheck (TCL_ARGS);
-int sc_name_retrievename   (TCL_ARGS);
 
 int sc_report_create  (TCL_ARGS);
 int sc_report_select  (TCL_ARGS);

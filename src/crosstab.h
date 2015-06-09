@@ -84,7 +84,6 @@ class Crosstable
     uint         MaxClashes;  // Maximum games between any two players
     uint         MaxRound;
     uint         ResultCount [NUM_RESULT_TYPES];
-    SpellChecker * SpellCheck;
     dateT        FirstDate;
 
     bool         ShowTitles;
@@ -173,10 +172,8 @@ class Crosstable
     void   SetDecimalPointChar (char ch) { DecimalPointChar = ch; }
     void   SetNumberedColumns (bool b) { APAColumnNums = b; }
 
-    void   UseSpellChecker (SpellChecker * nc) { SpellCheck = nc; }
-
     uint   NumPlayers() { return PlayerCount; }
-    errorT AddPlayer (idNumberT id, const char * name, eloT elo);
+    errorT AddPlayer (idNumberT id, const char * name, eloT elo, const SpellChecker*);
     errorT AddResult (uint gameNumber, idNumberT white, idNumberT black,
                       resultT result, uint round, dateT date);
 

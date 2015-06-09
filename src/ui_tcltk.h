@@ -250,15 +250,18 @@ inline Progress UI_CreateProgressPosMask(UI_type2 data) {
 }
 
 
-inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
+inline UI_typeRes UI_ResultHelper(UI_type2 ti, errorT res) {
 	if (res == OK) return TCL_OK;
 	Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(res));
 	return TCL_ERROR;
 }
-
+inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
+	Tcl_ResetResult(ti);
+	return UI_ResultHelper(ti, res);
+}
 inline UI_typeRes UI_Result(UI_type2 ti, errorT res, const UI_impl::ObjMaker& value) {
 	Tcl_SetObjResult(ti, value.get());
-	return UI_Result(ti, res);
+	return UI_ResultHelper(ti, res);
 }
 
 

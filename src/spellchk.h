@@ -1,141 +1,417 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  FILE:       spellchk.h
-//              SpellChecker class
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.5
-//
-//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
-//
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-//
-//////////////////////////////////////////////////////////////////////
+/*
+# Copyright (C) 2015 Fulvio Benini
 
-#ifndef SCID_SPELLCHK_H
-#define SCID_SPELLCHK_H
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid. If not, see <http://www.gnu.org/licenses/>.
+*/
 
-#include "misc.h"
+#ifndef SPELLCHK_H
+#define SPELLCHK_H
+
+#include "namebase.h"
 #include <string>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#ifdef SPELLCHKVALIDATE
+#include <fstream>
+#endif
 
-const uint SPELL_HASH_SIZE = 4096;
+/*
+* A "spelling" file contains the correct names for players, events, sites and rounds.
+* Optionally it can provide further informations for players like elo, birthdate, etc..
+* See the header of spelling.ssp for a more detailed description of the format.
+*/
 
-struct bioNoteT {
-    char * text;
-    bioNoteT * next;
-};
 
-struct spellingT {
-    const char *id;
-    const char *data;
-};
+/**
+ * class NameNormalizer - apply general corrections to a name
+ *
+ * Spelling files can provide general corrections in the form:
+ * %Prefix "wrong prefix" "correct prefix"
+ * %Infix "wrong suffix" "correct suffix"
+ * %Suffix "wrong suffix" "correct suffix"
+ *
+ * Example:
+ * %Prefix "II " "2. "
+ * %Infix "3rd " "3. "
+ * %Suffix "(Italy)" "ITA"
+ * "II champ 3rd II 3rd (Italy) (Italy)" --> "2. champ 3. II 3. (Italy) ITA"
+ */
+class NameNormalizer {
+	typedef std::vector< std::pair<std::string,std::string> > Cont;
+	Cont prefix_;
+	Cont infix_ ;
+	Cont suffix_;
 
-struct spellCheckNodeT
-{
-    explicit spellCheckNodeT(const char* Name, 
-                             const char* CorrectName = 0,
-                             const char* Comment = 0) {
-        if (Name != 0) {
-            buf[0] = Name;
-            name = buf[0].c_str();
-        }
-        if (CorrectName != 0) {
-            buf[1] = CorrectName;
-            correctName = buf[1].c_str();
-        }
-        if (Comment != 0) {
-            buf[2] = Comment;
-            comment = buf[2].c_str();
-        }
-    }
-    const char * name;        // The possibly incorrect spelling of this name.
-    const char * correctName; // The correct spelling of this name.
-    const char * renderName;  // The real (with umlauts, etc) spelling.
-    const char * comment;     // Extra info, e.g. title/country/elo/date of birth
-    spellCheckNodeT * next;
-    spellCheckNodeT * alias;
-    eloT * eloData;     // History of FIDE Elo ratings for player.
-    bioNoteT * bioData; // Biography data.
-    bool correction;    // Indicates whether this node is a correction.
-    spellCheckNodeT * nextHash;
+public:
+	/**
+	 * normalize() - correct a name
+	 * @name: the name to be corrected
+	 *
+	 * Return: count of corrections applied
+	 */
+	size_t normalize(std::string* name) const {
+		size_t corrections = 0;
+		Cont::const_iterator it;
+
+		for (it = prefix_.begin(); it != prefix_.end(); it++) {
+			const std::string& s = it->first;
+			if (name->compare(0, s.length(), s) == 0) {
+				corrections++;
+				name->replace(0, s.length(), it->second);
+				break;
+			}
+		}
+
+		for (it = infix_.begin(); it != infix_.end(); it++) {
+			const std::string& s = it->first;
+			size_t pos = name->find(s);
+			while (pos != std::string::npos) {
+				corrections++;
+				name->replace(pos, s.length(), it->second);
+				pos = name->find(s, pos + it->second.length());
+			}
+		}
+
+		for (it = suffix_.begin(); it != suffix_.end(); it++) {
+			const std::string& s = it->first;
+			if (name->length() < s.length()) continue;
+			size_t pos = name->length() - s.length();
+			if (name->compare(pos, s.length(), s) == 0) {
+				corrections++;
+				name->replace(pos, s.length(), it->second);
+				break;
+			}
+		}
+
+		return corrections;
+	}
+
+	bool addPrefix(const char* s) { return add(prefix_, s); }
+	bool addInfix (const char* s) { return add(infix_, s); }
+	bool addSuffix(const char* s) { return add(suffix_,s); }
 
 private:
-	std::string buf[3];
-
-	spellCheckNodeT(const spellCheckNodeT&);
-	spellCheckNodeT& operator=(const spellCheckNodeT&);
+	bool add(Cont& v, const char* s) {
+		std::pair<std::string, std::string> val = parse(s);
+		if (val.first.empty()) return false;
+		v.push_back(val);
+		return true;
+	}
+	std::pair<std::string, std::string> parse(const char* s);
 };
 
-struct presuffixNodeT
-{
-    char * name;
-    char * correctName;
-    int    length;
-    presuffixNodeT * next;
+
+/**
+ * class PlayerElo - elo ratings of a player
+ *
+ * Spelling files can provide elo ratings of a player in the form:
+ * %Elo YEAR:ELO_1PERIOD,ELO_2PERIOD,ELO_3PERIOD,... YEAR:ELO_1PERIOD,...
+ */
+class PlayerElo {
+	std::vector< std::pair<uint16_t, eloT> > elo_;
+
+public:
+	void AddEloData(const char* str);
+
+	eloT getElo (dateT date) const {
+		uint year = date_GetYear (date);
+		std::vector< std::pair<uint16_t, eloT> >::const_iterator itBegin = elo_.begin();
+		while (itBegin != elo_.end() && itBegin->first != year) itBegin++;
+		std::vector< std::pair<uint16_t, eloT> >::const_iterator itEnd = itBegin;
+		while (itEnd != elo_.end() && itEnd->first == year) itEnd++;
+
+
+		size_t n = std::distance(itBegin, itEnd);
+		if (n == 0) return 0; // No data for that year
+
+		uint month = date_GetMonth (date);
+		if (month == 0 || month > 12) month = 0;
+		else month -= 1;
+
+		size_t idx;
+		if (year == 2009 && n == 5) {
+			//2 trimonthly + 3 bimonthly
+			idx = (month < 6) ? month / 3 : (month - 2)/2;
+
+		} else if (year == 2012 && n == 9) {
+			//3 bimonthly + 6 monthly
+			idx = (month < 6) ? month / 2 : month - 3;
+
+		} else if (year > 2012) {
+			// monthly
+			if (month >= n) return 0;
+			idx = month;
+
+		} else {
+			idx = month * n / 12;
+		}
+
+		return (itBegin + idx)->second;
+	}
+
+#ifdef SPELLCHKVALIDATE
+	std::string isValid() const {
+		for (size_t i=1, n=elo_.size(); i < n; i++) {
+			if (elo_[i].first < elo_[i -1].first) return "unsorted";
+		}
+
+		#if CPP11_SUPPORT
+		auto count = [this](uint year) {
+			return std::count_if(this->elo_.begin(), this->elo_.end(),
+				[&](const std::pair<uint16_t, eloT>& e) { return e.first == year; });
+		};
+
+		auto expected = [](uint year) {
+			if (year < 1990) return 1;
+			if (year < 2001) return 2;
+			if (year < 2009) return 4;
+			if (year < 2010) return 5;
+			if (year < 2012) return 6;
+			if (year < 2013) return 9;
+			return 12;
+		};
+
+		for (uint y=1970; y<2015; y++) {
+			size_t n = count(y);
+			if (n == 0) continue;
+			if (n != expected(y))
+				return to_string(y) + ": " + to_string(n) + "(" + to_string(expected(y)) + ")";
+		}
+		#endif
+
+		return std::string();
+	}
+#endif
 };
 
-class SpellChecker
-{
-  private:
-    uint CorrectNameCount;
-    uint IncorrectNameCount;
-    nameT NameType;
-    char * ExcludeChars;
-    bool EloDataSeen;
 
-    spellCheckNodeT * Names [256];
-    spellCheckNodeT * HashNames [SPELL_HASH_SIZE];
-           // HashNames[] gives fast access to correct names only.
-    presuffixNodeT * Prefixes;  // Prefix substitutions
-    presuffixNodeT * Suffixes;  // Suffix substitutions
-    presuffixNodeT * Infixes;   // Infix substitutions
+/**
+ * class PlayerInfo - player informations
+ *
+ * Spelling files can provide player informations like titles/gender,
+ * countries, highest elo, date of birth, date of death. For example:
+ * Polgar, Judit           #gm+w HUN [2735] 1976
+ *
+ * Generic information can be provided in the form:
+ * %Bio This is a generic information
+ */
+class PlayerInfo {
+	std::vector<std::string> bioData_;
+	std::string comment_;
 
-    void Init (void);
-    void Destroy (void);
+public:
+	explicit PlayerInfo(const std::string& s) : comment_(s) {}
+	void addBioData(const char* str) { bioData_.push_back(str); }
 
-  public:
-    SpellChecker ()  { Init(); }
-    ~SpellChecker () { Destroy(); }
-    void Clear (void);
-
-    void SetExcludeChars (const char * str);
-    const char * GetExcludeChars (void) { return ExcludeChars; }
-
-    uint NumCorrectNames (void) { return CorrectNameCount; }
-    uint NumIncorrectNames (void) { return IncorrectNameCount; }
-    void SetNameType (nameT nt) { NameType = nt; }
-    nameT GetNameType (void) { return NameType; }
-    bool HasEloData (void) { return EloDataSeen; }
-
-    const char * CorrectPrefix (const char * name, int * offset);
-    const char * CorrectSuffix (const char * name, int * offset);
-    const char * CorrectInfix (const char * name, int * offset, int * replacedLength);
-    const char * Correct (const char * name);
-    uint Corrections (const char * name, const char ** corrections,
-                      uint maxCorrections);
-    void SetRenderName (spellCheckNodeT * node, const char * name);
-    const char * RenderName (const char * name);
-    const char * GetComment (const char * name);
-    const char * GetCommentExact (const char * name);
-    errorT ReadSpellCheckFile (const char * filename, bool checkPlayerOrder);
-    errorT AddPrefixSuffix (char * str);
-    void AddBioData (spellCheckNodeT * node, const char * str);
-    const bioNoteT * GetBioData (const char * name);
-    void AddEloData (spellCheckNodeT * node, const char * str);
-    void SetElo (spellCheckNodeT * node, uint year, uint quarter, eloT elo);
-    eloT GetElo (const char * name, dateT date, bool exact);
-
-    static const char * GetTitle (const char * comment);
-    static const char * GetLastCountry (const char * comment);
-    static eloT GetPeakRating (const char * comment);
-    static dateT GetBirthdate (const char * comment);
-    static dateT GetDeathdate (const char * comment);
-
-    void Dump (FILE * fp);
+	const char* getBioData(size_t idx) const {
+		if (idx >= bioData_.size()) return 0;
+		return bioData_[idx].c_str();
+	}
+	const char* getTitle() const;
+	const char* getLastCountry() const;
+	dateT getBirthdate() const;
+	dateT getDeathdate() const;
+	eloT getPeakRating() const;
+	const char* GetComment() const { return comment_.c_str(); }
 };
 
-#endif  // SCID_SPELLCHK_H
 
-//////////////////////////////////////////////////////////////////////
-//  EOF: spellchk.h
-//////////////////////////////////////////////////////////////////////
+/**
+ * class SpellChecker - name spelling
+ *
+ * Read a spell file and allow to retrieve corrected names and players data.
+ * if SPELLCHKVALIDATE is defined also check the spell file for errors.
+ */
+class SpellChecker {
+	std::string excludeChars_[NUM_NAME_TYPES];
+
+	struct Idx {
+		std::string alias;
+		uint32_t idx;
+
+		bool operator<(const Idx& b) const { return alias < b.alias; }
+		bool operator<(const std::string& b)  const { return alias < b; }
+	};
+	std::vector<Idx> idx_[NUM_NAME_TYPES];
+	typedef std::vector<Idx>::const_iterator IdxIt;
+
+	std::vector<std::string> names_[NUM_NAME_TYPES];
+	std::vector<PlayerInfo> pInfo_;
+	std::vector<PlayerElo>  pElo_;
+
+	NameNormalizer general_[NUM_NAME_TYPES];
+
+public:
+	errorT read(const char* filename, const Progress& progress);
+
+	/**
+	 * find() - search for correct names
+	 * @nt:      the type of the name to be corrected
+	 * @name:    the name to be corrected
+	 * @nMaxRes: max size of the returned vector
+	 *
+	 * Return: a vector of correct names.
+	 * @name will be normalized removing excludeChars_[@nt].
+	 * If an exact match for normalized @name is found the result vector will
+	 * contain only the corresponding correct name, otherwise will contain all
+	 * the correct names that have @name as a prefix.
+	 */
+	std::vector<const char*> find(const nameT& nt, const char* name, uint nMaxRes = 10) const {
+		ASSERT(nt < NUM_NAME_TYPES);
+		ASSERT(name != 0);
+		std::vector<const char*> res;
+		std::pair<IdxIt, IdxIt> it;
+		if (nt != NAME_PLAYER) it = idxFind(nt, name);
+		else it = idxFindPlayer(name);
+		for (; it.first != it.second && res.size() < nMaxRes; it.first++) {
+			const char* name = names_[nt][it.first->idx].c_str();
+			if (std::find(res.begin(), res.end(), name) == res.end()) {
+				res.push_back(name);
+			}
+		}
+		return res;
+	}
+
+	const NameNormalizer& getGeneralCorrections(const nameT& nt) const {
+		ASSERT(nt < NUM_NAME_TYPES);
+		return general_[nt];
+	}
+
+	const PlayerInfo* getPlayerInfo(const char* name) const {
+		ASSERT(name != 0);
+		IdxIt it = idxFindPlayerUnambiguous(name);
+		if (it == idx_[NAME_PLAYER].end()) return 0; // not found
+		return &(pInfo_[it->idx]);
+	}
+
+	const PlayerElo* getPlayerElo(const char* name) const {
+		ASSERT(name != 0);
+		if (!hasEloData()) return 0;
+		IdxIt it = idxFindPlayerUnambiguous(name);
+		if (it == idx_[NAME_PLAYER].end()) return 0; // not found
+		return &(pElo_[it->idx]);
+	}
+
+	bool hasEloData () const {
+		return pElo_.size() != 0;
+	}
+
+	size_t numCorrectNames(const nameT& nt) const {
+		ASSERT(nt < NUM_NAME_TYPES);
+		return names_[nt].size();
+	}
+
+private:
+	std::string normalizeAndTransform(const nameT& nt, const char* s) const { 
+		std::string res;
+		for (const char* i = s; *i != 0; i++) {
+			if (excludeChars_[nt].find(*i) != std::string::npos) continue;
+
+			res += *i;
+		}
+		return res;
+	}
+
+	std::pair<IdxIt, IdxIt> idxFind(const nameT& nt, const char* prefix) const {
+		std::pair<IdxIt, IdxIt> res;
+		std::string s = normalizeAndTransform(nt, prefix);
+		res.first = std::lower_bound(idx_[nt].begin(), idx_[nt].end(), s);
+		for (res.second = res.first; res.second != idx_[nt].end(); res.second++) {
+			if (res.second->alias.compare(0, s.length(), s) != 0) break;
+			if (res.second->alias == s) return std::make_pair(res.second, res.second +1);
+		}
+		return res;
+	}
+
+	std::pair<IdxIt, IdxIt> idxFindPlayer(const char* prefix) const {
+		std::pair<IdxIt, IdxIt> res = idxFind(NAME_PLAYER, prefix);
+		if (res.first == res.second) {
+			// For spelling of player names (not other types), Scid will also try
+			// to move the text after the last space in the name to the start of
+			// the name for correction purposes, when it cannot find a correction.
+			// This is done to correct names where the surname is last.
+			std::string s = prefix;
+			size_t pos = s.rfind(' ');
+			if (pos != std::string::npos) {
+				std::string inv = s.substr(pos);
+				inv.append(s, 0, pos);
+				return idxFind(NAME_PLAYER, inv.c_str());
+			}
+		}
+		return res;
+	}
+
+	IdxIt idxFindPlayerUnambiguous(const char* name) const {
+		std::pair<IdxIt, IdxIt> it = idxFindPlayer(name);
+		if (it.first == it.second) return idx_[NAME_PLAYER].end();
+
+		for (IdxIt i = it.first; i != it.second; i++) {
+			if (i->idx != it.first->idx) //ambiguous
+				return idx_[NAME_PLAYER].end();
+		}
+		return it.first;
+	}
+
+
+#ifndef SPELLCHKVALIDATE
+	class SpellChkValidate {
+	public:
+		SpellChkValidate(const char*, const SpellChecker&) {}
+		void ignoredLine(const char*) {}
+		void idxDuplicates(const nameT&) {}
+		void checkEloData() {}
+	};
+#else
+	class SpellChkValidate {
+		const SpellChecker& spell_;
+		std::ofstream f_;
+
+	public:
+		SpellChkValidate(const char* spellfile, const SpellChecker& sp) : spell_(sp) {
+			f_.open(spellfile + std::string(".validate"));
+		}
+		void ignoredLine(const char* line) {
+			f_ << "Ignored line:" << std::endl;
+			f_ << line << std::endl;
+			f_ << std::endl;
+		}
+		void idxDuplicates(const nameT& nt) {
+			IdxIt it = spell_.idx_[nt].begin() + 1;
+			for (; it != spell_.idx_[nt].end(); it++) {
+				if (it->alias == (it -1)->alias && it->idx != (it -1)->idx) {
+					f_ << "Duplicate hash: " << it->alias << std::endl;
+					f_ << spell_.names_[nt][(it -1)->idx] << std::endl;
+					f_ << spell_.names_[nt][it->idx] << std::endl;
+					f_ << std::endl;
+				}
+			}
+		}
+		void checkEloData() {
+			for (size_t i=0, n = spell_.pElo_.size(); i < n; i++) {
+				std::string s = spell_.pElo_[i].isValid();
+				if (! s.empty()) {
+					f_ << "Elo error: " << s << " --- ";
+					f_ << spell_.names_[NAME_PLAYER][i] << std::endl;
+				}
+			}
+		}
+	};
+#endif
+
+};
+
+
+#endif

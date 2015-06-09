@@ -55,8 +55,8 @@
 static scidBaseT * dbList = NULL;      // array of database slots.
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
+static SpellChecker* spellChk;         // Name correction.
 static OpTable * reports[2] = {NULL, NULL};
-static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
 
 static const char * reportTypeName[2] = { "opening", "player" };
 static const uint REPORT_OPENING = 0;
@@ -289,11 +289,9 @@ void scid_Exit (void*) {
     if (dbList != NULL) delete [] dbList;
     if (scratchGame != NULL) delete scratchGame;
     if (ecoBook != NULL) delete ecoBook;
+    if (spellChk != NULL) delete spellChk;
     for (size_t i=0, n = sizeof(reports)/sizeof(reports[0]); i<n; i++) {
         if (reports[i] != NULL) delete reports[i];
-    }
-    for (size_t i=0, n = sizeof(spellChecker)/sizeof(spellChecker[0]); i<n; i++) {
-        if (spellChecker[i] != NULL) delete spellChecker[i];
     }
 };
 
@@ -411,10 +409,6 @@ int switchCurrentBase(scidBaseT* dbase) {
         }
     }
     return currentBase +1;
-}
-
-SpellChecker* SpellChecker_get(nameT n) {
-    return spellChecker[n];
 }
 
 
@@ -3306,9 +3300,6 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     dateT lastSeenDate = g->GetDate();
 
     Crosstable * ctable = new Crosstable;
-    if (spellChecker[NAME_PLAYER] != NULL) {
-        ctable->UseSpellChecker (spellChecker[NAME_PLAYER]);
-    }
     if (sort == EOPT_SORT_NAME) { ctable->SortByName(); }
     if (sort == EOPT_SORT_RATING) { ctable->SortByElo(); }
     if (sort == EOPT_SORT_COUNTRY) { ctable->SortByCountry(); }
@@ -3333,6 +3324,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
 
     // Find all games that should be listed in the crosstable:
+    const SpellChecker* spell = spellChk;
     bool tableFullMessage = false;
     for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
@@ -3362,8 +3354,8 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
 
         // Add the two players to the crosstable:
-        if (ctable->AddPlayer (whiteId, whiteName, ie->GetWhiteElo()) != OK  ||
-            ctable->AddPlayer (blackId, blackName, ie->GetBlackElo()) != OK)
+        if (ctable->AddPlayer (whiteId, whiteName, ie->GetWhiteElo(), spell) != OK  ||
+            ctable->AddPlayer (blackId, blackName, ie->GetBlackElo(), spell) != OK)
         {
             if (! tableFullMessage) {
                 tableFullMessage = true;
@@ -7260,6 +7252,12 @@ sc_pos_setComment (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 //////////////////////////////////////////////////////////////////////
 //   NAME commands
+
+UI_typeRes sc_name_ratings (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
+UI_typeRes sc_name_retrievename (UI_type2 ti, const SpellChecker& sp, int argc, const char ** argv);
+UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
+
+
 int
 sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -7292,12 +7290,9 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case OPT_READ:
         return sc_name_read (cd, ti, argc, argv);
-
-    case OPT_RETRIEVENAME:
-        return sc_name_retrievename (cd, ti, argc, argv);
     }
 
-    if (db->isReadOnly()) {
+    if (db->isReadOnly() && index != OPT_RETRIEVENAME) {
         return errorResult (ti, ERROR_FileReadOnly);
     }
 
@@ -7307,12 +7302,23 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case OPT_EDIT:
         return sc_name_edit (cd, ti, argc, argv);
+    };
 
+    if (spellChk == NULL) {
+        return UI_Result(ti, ERROR,
+            "A spellcheck file has not been loaded.\n\n"
+            "You can load one from the Options menu.");
+    }
+
+    switch (index) {
     case OPT_RATINGS:
-        return sc_name_ratings (cd, ti, argc, argv);
+        return sc_name_ratings(ti, *db, *spellChk, argc, argv);
+
+    case OPT_RETRIEVENAME:
+        return sc_name_retrievename(ti, *spellChk, argc, argv);
 
     case OPT_SPELLCHECK:
-        return sc_name_spellcheck (cd, ti, argc, argv);
+        return sc_name_spellcheck(ti, *db, *spellChk, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_name", options);
@@ -7343,6 +7349,8 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     char line [512];
     uint errorCount = 0;
     uint correctionCount = 0;
+    uint instanceCount = 0;
+    uint badDateCount = 0;
     uint nameCount = nb->GetNumNames(nt);
     idNumberT * newIDs = new idNumberT [nameCount];
     dateT * startDate = new dateT [nameCount];
@@ -7374,6 +7382,8 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             continue;
         }
 
+        correctionCount++;
+
         // Find oldName in the NameBase:
         idNumberT oldID = 0;
         if (nb->FindExactName (nt, oldName, &oldID) != OK) {
@@ -7387,16 +7397,12 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             newIDs [oldID] = newIdNumber;
             startDate[oldID] = date_EncodeFromString (birth);
             endDate[oldID] = date_EncodeFromString (death);
-            correctionCount++;
+        } else {
+            errorCount++;
         }
     }
 
-    if (correctionCount == 0) {
-        delete[] newIDs;
-        delete[] startDate;
-        delete[] endDate;
-        return setResult (ti, "No valid corrections were found.");
-    }
+    if (correctionCount != 0) {
 
     Progress progress = UI_CreateProgress(ti);
     // Scroll bar threshold (about 200 steps)
@@ -7404,7 +7410,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now go through the index making each necessary change:
     const IndexEntry* ie;
     IndexEntry newIE;
-    uint instanceCount = 0;
     for (uint i=0, n = db->numGames(); i < n; i++) {
         ie = db->getIndexEntry(i);
         newIE = *ie;
@@ -7413,28 +7418,19 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         switch (nt) {
         case NAME_PLAYER:
-            // Check White name first:
-            oldID = ie->GetWhite();
-            newID = newIDs [oldID];
-            if (oldID != newID) {
-                dateT date = ie->GetDate();
-                if ((startDate[oldID] == ZERO_DATE  ||   date >= startDate[oldID])
-                    &&  (endDate[oldID] == ZERO_DATE  ||   date <= endDate[oldID])) {
-                    newIE.SetWhite (newID);
-                    corrected = true;
-                    instanceCount++;
-                }
-            }
-            // Now check Black name:
-            oldID = ie->GetBlack();
-            newID = newIDs [oldID];
-            if (oldID != newID) {
-                dateT date = ie->GetDate();
-                if ((startDate[oldID] == ZERO_DATE  ||   date >= startDate[oldID])
-                    &&  (endDate[oldID] == ZERO_DATE  ||   date <= endDate[oldID])) {
-                    newIE.SetBlack (newID);
-                    corrected = true;
-                    instanceCount++;
+            for (colorT i = WHITE; i < NUM_COLOR_TYPES; i++) {
+                oldID = ie->GetPlayer(i);
+                newID = newIDs [oldID];
+                if (oldID != newID) {
+                    dateT date = ie->GetDate();
+                    if (date == ZERO_DATE  || (
+                        (startDate[oldID] == ZERO_DATE  ||   date >= startDate[oldID])
+                        &&  (endDate[oldID] == ZERO_DATE  ||   date <= endDate[oldID]))) {
+                            newIE.SetPlayer(i, newID);
+                            corrected = true;
+                    } else {
+                        badDateCount++;
+                    }
                 }
             }
             break;
@@ -7445,7 +7441,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (oldID != newID) {
                 newIE.SetEvent (newID);
                 corrected = true;
-                instanceCount++;
             }
             break;
 
@@ -7455,7 +7450,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (oldID != newID) {
                 newIE.SetSite (newID);
                 corrected = true;
-                instanceCount++;
             }
             break;
 
@@ -7465,7 +7459,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (oldID != newID) {
                 newIE.SetRound (newID);
                 corrected = true;
-                instanceCount++;
             }
             break;
 
@@ -7475,11 +7468,12 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Write the new index entry if it has changed:
         if (corrected) {
+            instanceCount++;
             if (db->idx->WriteEntry (&newIE, i) != OK) {
               delete[] newIDs;
               delete[] startDate;
               delete[] endDate;
-              return errorResult (ti, "Error writing index file.");
+              return UI_Result(ti, ERROR_FileWrite);
             }
         }
         
@@ -7487,24 +7481,24 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         //
         if ((i % threshold) == 0 ) progress.report(i,n);
     }
-    
+
     // Ensure the scroll bar is complete at this point
     progress.report(1,1);
+    }
 
     delete[] newIDs;
     delete[] startDate;
     delete[] endDate;
 
     errorT err = db->clearCaches();
-    if (err != OK) return errorResult (ti, "Error writing database files.");
+    if (err != OK) return UI_Result(ti, ERROR_FileWrite);
 
-    char temp[100];
-    sprintf (temp, "%u %s name%s occurring %u time%s in total were corrected.",
-             correctionCount,
-             NAME_TYPE_STRING[nt],
-             strPlural (correctionCount),
-             instanceCount, strPlural (instanceCount));
-    return UI_Result(ti, OK, temp);
+    UI_List res(4);
+    res.push_back(correctionCount);
+    res.push_back(errorCount);
+    res.push_back(instanceCount);
+    res.push_back(badDateCount);
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7722,19 +7716,12 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_retrievename:
 //    Check for the right name in spellcheck and return it.
-int
-sc_name_retrievename (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+UI_typeRes sc_name_retrievename (UI_type2 ti, const SpellChecker& sp, int argc, const char ** argv)
 {
     const char * usageStr = "Usage: sc_name retrievename <player>";
-    SpellChecker * spChecker = spellChecker[NAME_PLAYER];
-
     if (argc != 3 ) { return errorResult (ti, usageStr); }
-    const char * playerName = argv[argc-1];
-    if (spChecker != NULL) {
-        const char * note = spChecker->Correct (playerName);
-        Tcl_AppendResult (ti, (note == NULL)? playerName : note, NULL);
-    }
-    return TCL_OK;
+    std::vector<const char*> res = sp.find(NAME_PLAYER, argv[argc-1]);
+    return UI_Result(ti, OK, (res.size() == 1) ? res[0] : "");
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7828,11 +7815,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (strEqual (playerName, "")) {
         if (lastPlayerName != NULL) { playerName = lastPlayerName; }
     } else {
-#ifdef WINCE
-        if (lastPlayerName != NULL) { my_Tcl_Free((char*) lastPlayerName); }
-#else
         if (lastPlayerName != NULL) { delete[] lastPlayerName; }
-#endif
         lastPlayerName = strDuplicate (playerName);
     }
 
@@ -7890,11 +7873,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     bool seenRating = false;
     const uint monthMax = YEAR_MAX * 12;
     const uint monthMin = startYear * 12;
-#ifdef WINCE
-    eloT * eloByMonth = (eloT *) my_Tcl_Alloc( sizeof(eloT [monthMax]));
-#else
     eloT * eloByMonth = new eloT [monthMax];
-#endif
     for (uint month=0; month < monthMax; month++) { eloByMonth[month] = 0; }
 
     if (setFilter || setOpponent) db->dbFilter->Fill(0);
@@ -8011,9 +7990,6 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * endHeading = (htextOutput ? "</darkblue>" : "");
     const char * startBold = (htextOutput ? "<b>" : "");
     const char * endBold = (htextOutput ? "</b>" : "");
-#ifndef WINCE
-    SpellChecker * spChecker = spellChecker[NAME_PLAYER];
-#endif
     uint wWidth = strLength (translate (ti, "White:"));
     uint bWidth = strLength (translate (ti, "Black:"));
     uint tWidth = strLength (translate (ti, "Total:"));
@@ -8027,12 +8003,11 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, startBold, playerName, endBold, newline, NULL);
 
     // Show title, country, etc if listed in player spellcheck file:
-#ifndef WINCE
+    SpellChecker* spChecker = spellChk;
     if (spChecker != NULL) {
-        const char * text = spChecker->GetComment (playerName);
-        if (text) { Tcl_AppendResult (ti, "  ", text, newline, NULL); }
+        const PlayerInfo* pInfo = spChecker->getPlayerInfo(playerName);
+        if (pInfo) { Tcl_AppendResult (ti, "  ", pInfo->GetComment(), newline, NULL); }
     }
-#endif
     sprintf (temp, "  %s%u%s %s (%s: %u)",
              htextOutput ? "<red><run sc_name info -faA {}; ::windows::stats::Refresh>" : "",
              totalcount[STATS_ALL],
@@ -8055,20 +8030,20 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, newline, NULL);
 
     // Print biography if applicable:
-#ifndef WINCE
     if (spChecker != NULL) {
-        const bioNoteT * note = spChecker->GetBioData (playerName);
-        if (note != NULL) {
-            Tcl_AppendResult (ti, newline, startHeading,
+        const PlayerInfo* pInfo = spChecker->getPlayerInfo(playerName);
+        if (pInfo != 0) {
+            const char* note;
+            for (size_t i=0; (note = pInfo->getBioData(i)) != 0; i++) {
+                if (i == 0) {
+                    Tcl_AppendResult (ti, newline, startHeading,
                               translate (ti, "Biography"), ":",
                               endHeading, newline, NULL);
-            while (note != NULL) {
-                Tcl_AppendResult (ti, "  ", note->text, newline, NULL);
-                note = note->next;
+                }
+                Tcl_AppendResult (ti, "  ", note, newline, NULL);
             }
         }
     }
-#endif
     // Print stats for all games:
 
     strCopy (temp, translate (ti, "PInfoAll"));
@@ -8391,11 +8366,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
     }
-#ifdef WINCE
-    my_Tcl_Free((char*) eloByMonth);
-#else
     delete[] eloByMonth;
-#endif
     return TCL_OK;
 }
 
@@ -8633,8 +8604,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //
 //   Returns a two-integer list: the number of changed ratings, and
 //   the number of changed games.
-int
-sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+UI_typeRes sc_name_ratings (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
 {
     const char * options[] = {
         "-nomonth", "-update", "-debug", "-test", "-change", "-filter" };
@@ -8665,93 +8635,75 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         arg += 2;
     }
 
+    if (! sp.hasEloData()) {
+        return UI_Result(ti, ERROR, "The current spellcheck file does not have "
+                          "Elo rating information.\n\n"
+                          "To use this function, you should load "
+                          "\"ratings.ssp\" (available from the Scid website) "
+                          "as your spellcheck file first.");
+    }
+
+    if (testOnly) { return UI_Result(ti, OK); }
+
     uint numChangedRatings = 0;
     uint numChangedGames = 0;
-    SpellChecker * sp = spellChecker[NAME_PLAYER];
-
-    if (sp == NULL) {
-        Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
-                          "You can load one from the Options menu.", NULL);
-        return TCL_ERROR;
-    }
-    if (! sp->HasEloData()) {
-        Tcl_AppendResult (ti, "The current spellcheck file does not have ",
-                          "Elo rating information.\n\n",
-                          "To use this function, you should load ",
-                          "\"ratings.ssp\" (available from the Scid website) ",
-                          "as your spellcheck file first.", NULL);
-
-        return TCL_ERROR;
-    }
-
-    if (testOnly) { return TCL_OK; }
+    const NameBase* nb = dbase.getNameBase();
+    std::vector<bool> cached(nb->GetNumNames(NAME_PLAYER), false);
+    std::vector<const PlayerElo*> vElo(nb->GetNumNames(NAME_PLAYER), NULL);
+    const HFilter filter = dbase.getFilter("dbfilter");
 
     Progress progress = UI_CreateProgress(ti);
-
-    for (uint gnum=0, n = db->numGames(); gnum < n; gnum++) {
+    for (uint gnum=0, n = dbase.numGames(); gnum < n; gnum++) {
         if ((gnum % 1000) == 0) {  // Update the percentage done bar:
             if (!progress.report(gnum, n)) break;
         }
-        if (filterOnly  &&  db->dbFilter->Get(gnum) == 0) { continue; }
+        if (filterOnly && filter.get(gnum) == 0) continue;
 
-        bool changed = false;
-        bool exact = false;
-        eloT newWhite = 0;
-        eloT newBlack = 0;
-        const IndexEntry* ie = db->getIndexEntry(gnum);
+        const IndexEntry* ie = dbase.getIndexEntry(gnum);
         dateT date = ie->GetDate();
         if (date_GetMonth(date) == 0  &&  !doGamesWithNoMonth) { continue; }
-        eloT oldWhite = ie->GetWhiteElo();
-        if (overwrite  &&  oldWhite != 0) { exact = true; }
-        if (overwrite  ||  oldWhite == 0) {
-            const char * name = ie->GetWhiteName (db->getNameBase());
-            eloT rating = sp->GetElo (name, date, exact);
-            if (rating != 0) {
-                if (printEachChange) {
-                    printf ("%4u  %4u.%02u  %s\n", rating,
-                            date_GetYear(date), date_GetMonth(date), name);
-                }
-                newWhite = rating;
-                changed = true;
+
+        eloT newElo[NOCOLOR] = {0};
+        for (colorT col = WHITE; col < NOCOLOR; col++) {
+            if (!overwrite && ie->GetElo(col) != 0) continue;
+
+            idNumberT id = ie->GetPlayer(col);
+            if (! cached[id]) {
+                cached[id] = true;
+                vElo[id] = sp.getPlayerElo(nb->GetName(NAME_PLAYER, id));
+            }
+            newElo[col] = (vElo[id]) ? vElo[id]->getElo(date) : 0;
+            if (newElo[col] != 0) {
                 numChangedRatings++;
+                if (printEachChange) {
+                    printf ("%4u  %4u.%02u  %s\n", newElo[col],
+                            date_GetYear(date), date_GetMonth(date),
+                            nb->GetName(NAME_PLAYER, id));
+                }
             }
         }
-        eloT oldBlack = ie->GetBlackElo();
-        exact = false;
-        if (overwrite  &&  oldBlack != 0) { exact = true; }
-        if (overwrite  ||  oldBlack == 0) {
-            const char * name = ie->GetBlackName (db->getNameBase());
-            eloT rating = sp->GetElo (name, date, exact);
-            if (rating != 0) {
-                if (printEachChange) {
-                    printf ("%4u  %4u.%02u  %s\n", rating,
-                            date_GetYear(date), date_GetMonth(date), name);
-                }
-                newBlack = rating;
-                changed = true;
-                numChangedRatings++;
-            }
-        }
-        if (changed) {
+
+        if (newElo[WHITE] != 0 || newElo[BLACK] != 0) {
             numChangedGames++;
             if (updateIndexFile) {
                 IndexEntry newIE = *ie;
-                if (newWhite != 0) {
-                    newIE.SetWhiteElo (newWhite);
+                if (newElo[WHITE] != 0) {
+                    newIE.SetWhiteElo (newElo[WHITE]);
                     newIE.SetWhiteRatingType (RATING_Elo);
                 }
-                if (newBlack != 0) {
-                    newIE.SetBlackElo (newBlack);
+                if (newElo[BLACK] != 0) {
+                    newIE.SetBlackElo (newElo[BLACK]);
                     newIE.SetBlackRatingType (RATING_Elo);
                 }
-                if (db->idx->WriteEntry (&newIE, gnum) != OK) {
-                    db->clearCaches();
-                    return errorResult (ti, "Error writing index file.");
+                if (dbase.idx->WriteEntry (&newIE, gnum) != OK) {
+                    dbase.clearCaches();
+                    return UI_Result(ti, ERROR_FileWrite, "Error writing index file.");
                 }
             }
         }
     }
-    if (numChangedGames > 0) db->clearCaches();
+    if (numChangedGames > 0) dbase.clearCaches();
+
     UI_List res(2);
     res.push_back(numChangedRatings);
     res.push_back(numChangedGames);
@@ -8769,80 +8721,36 @@ int
 sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc > 5) {
-        return UI_Result(ti, ERROR_BadArg, "Usage: sc_name read <spellcheck-file> [-checkPlayerOrder <bool>]");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_name read <spellcheck-file>");
     }
 
-    const nameT n = 1 + NAME_LAST - NAME_FIRST;
-    uint corrected[n] = {0};
-    if (argc == 2) {
-        for (nameT i = 0; i < n; i++) {
-            if (spellChecker[i] != NULL) {
-                corrected[i] = spellChecker[i]->NumCorrectNames();
-            }
-        }
-    } else {
+    if (argc > 2) {
         const char * filename = argv[2];
-        bool checkPlayerOrder = false;
-        if (argc == 5) {
-            checkPlayerOrder = strGetBoolean (argv[4]);
-        }
-	    
         Progress progress = UI_CreateProgress(ti);
-        for (nameT i = 0; i < n; i++) {
-            SpellChecker * temp_spellChecker = new SpellChecker;
-            temp_spellChecker->SetNameType(NAME_FIRST +i);
-            errorT err = temp_spellChecker->ReadSpellCheckFile(filename, checkPlayerOrder);
-            if (err != OK) {
-                delete temp_spellChecker;
-                return UI_Result(ti, err, "Error reading name spellcheck file.");
-            }
-            if (spellChecker[i] != NULL) { delete spellChecker[i]; }
-            spellChecker[i] = temp_spellChecker;
-            corrected[i] = spellChecker[i]->NumCorrectNames();
-            progress.report(i +1, n);
+        SpellChecker* temp_spellChecker = new SpellChecker;
+        errorT err = temp_spellChecker->read(filename, progress);
+        if (err != OK) {
+            delete temp_spellChecker;
+            return UI_Result(ti, err, "Error reading name spellcheck file.");
         }
-	}
+        if (spellChk != NULL) { delete spellChk; }
+        spellChk = temp_spellChecker;
+        progress.report(1, 1);
+    }
 
-    UI_List res(n);
-    for (nameT i = 0; i < n; i++) res.push_back(corrected[i]);
-
+    UI_List res(NUM_NAME_TYPES);
+    for (nameT i = 0; i < NUM_NAME_TYPES; i++) {
+        size_t n = (spellChk == NULL) ? 0 : spellChk->numCorrectNames(i);
+        res.push_back(n);
+    }
     return UI_Result(ti, OK, res);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strPromoteSurname:
-//    Copies source to target, rearranging it so the text after the
-//    final space is moved to the start of the string and has that
-//    space after it. Example: "aaa bbb ccc" -> "ccc aaa bbb". Useful
-//    for promoting a surname from the end of a name to the start, as
-//    long as the surname has no spaces in it.
-void
-strPromoteSurname (char * target, const char * source)
-{
-    const char * lastSpace = strLastChar (source, ' ');
-    if (lastSpace == NULL) {
-        strCopy (target, source);
-        return;
-    }
-    const char * from = lastSpace + 1;
-    while (*from != 0) {
-        *target++ = *from++;
-    }
-    *target++ = ' ';
-    from = source;
-    while (from != lastSpace) {
-        *target++ = *from++;
-    }
-    *target = 0;
-    return;
 }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_spellcheck:
 //   Scan the current database for spelling corrections.
-int
-sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
 {
     nameT nt = NAME_INVALID;
     uint maxCorrections = 20000;
@@ -8889,225 +8797,113 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return errorResult (ti, usage);
     }
 
-    if (spellChecker[nt] == NULL) {
-        Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
-                          "You can load one from the Options menu.", NULL);
-        return TCL_ERROR;
-    }
-
-    const NameBase* nb = db->getNameBase();
-    DString * dstr = new DString;
+    const NameBase* nb = dbase.getNameBase();
+    std::string strRes;
     char tempStr[1024];
-    char tempName [1024];
-    const char * prevCorrection = "";
     uint correctionCount = 0;
     
-    // Counters to monitor the crawl through the name base
-    idNumberT maxName = nb->GetNumNames( nt );
-    
-    // Thresholds for progress-bar updating
-    // We try to make about 200 steps, which should allow
-    // an update at least every second, even for a big name base.
     Progress progress = UI_CreateProgress(ti);
-    uint nameThres = (maxName / 200)        + 1;
-    uint corrThres = (maxCorrections / 200) + 1;
-
     // Check every name of the specified type:
-    for (idNumberT id = 0; id < maxName; id++) {
-        const char * name = nb->GetName (nt, id);
-        const char * origName = name;
+    for (idNumberT id=0, n=nb->GetNumNames(nt); id < n; id++) {
+        if (correctionCount >= maxCorrections) break;
 
-        int offset = 0;
-        const char * replace;
+        if ((id % 1000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(id, n)) break;
+        }
 
         uint frequency = db->getNameFreq(nt, id);
         // Do not bother trying to correct unused names:
-        if (frequency == 0) { goto bar; }
+        if (frequency == 0) continue;
 
-        if (nt == NAME_PLAYER  &&  !doSurnames  && strIsSurnameOnly (name)) {
-            goto bar;
-        }
+        const char* origName = nb->GetName(nt, id);
+        // If requested ignore surnames
+        if (nt == NAME_PLAYER  &&  !doSurnames  && strIsSurnameOnly (origName)) continue;
 
         // First, check for a general prefix or suffix correction:
-        //
-        replace = spellChecker[nt]->CorrectPrefix (name, &offset);
-        if (replace != NULL) {
-            if (correctionCount < maxCorrections) {
-                strCopy (tempName, replace);
-                strAppend (tempName, &(name[offset]));
-                sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)\n",
-                         *origName == *prevCorrection ? "" : "\n",
-                         origName, tempName, frequency);
-                dstr->Append (tempStr);
-                prevCorrection = origName;
-            }
-            correctionCount++;
-            goto bar;
-        }
-
-        replace = spellChecker[nt]->CorrectSuffix (name, &offset);
-        if (replace != NULL) {
-            if (correctionCount < maxCorrections) {
-                strCopy (tempName, name);
-                strCopy (tempName + offset, replace);
-                sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)\n",
-                         *origName == *prevCorrection ? "" : "\n",
-                         origName, tempName, frequency);
-                dstr->Append (tempStr);
-                prevCorrection = origName;
-            }
-            correctionCount++;
-            goto bar;
-        }
-
-        {
-            int replacedLength = 0;
-            replace = spellChecker[nt]->CorrectInfix (name, &offset, &replacedLength);
-            if (replace != NULL) {
-                if (correctionCount < maxCorrections) {
-                    strCopy (tempName, name);
-                    strCopy (tempName + offset, replace);
-                    strAppend (tempName, &(name[offset + replacedLength]));
-                    sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)\n",
-                                      *origName == *prevCorrection ? "" : "\n",
-                                      origName, tempName, frequency);
-                    dstr->Append (tempStr);
-                    prevCorrection = origName;
-                }
-                correctionCount++;
-                goto bar;
-            }
-        }
+        std::string name = origName;
+        size_t nGenCorrections = sp.getGeneralCorrections(nt).normalize(&name);
 
         // If spellchecking names, remove any country code like " (USA)"
         // in parentheses at the end of the name:
         if (nt == NAME_PLAYER) {
-            uint len = strLength (name);
-            if (len > 6  &&  name[len-6] == ' '  &&  name[len-5] == '('  &&
-                isupper(name[len-4])  &&  isupper(name[len-3])  &&
-                isupper(name[len-2])  &&  name[len-1] == ')') {
-                strCopy (tempName, name);
-                tempName[len-6] = 0;
-                name = tempName;
+            size_t country = name.rfind(" (");
+            if (country != std::string::npos && (country + 6) == name.length()) {
+                if (name.back() == ')') name.erase(country);
             }
         }
 
-        {
-            const uint maxAmbiguous = 10;
-            uint count = 0;
-            const char * corrections [maxAmbiguous];
-            count = spellChecker[nt]->Corrections (name, corrections, maxAmbiguous);
+        std::vector<const char*> corrections = sp.find(nt, name.c_str());
+        // If requested ignore ambiguous corrections
+        if (!ambiguous && corrections.size() > 1) continue;
 
-            if (nt == NAME_PLAYER  &&  count < maxAmbiguous) {
-                // If correcting player names, also try the name with the text
-                // after the last space moved to the start, e.g. "R. J. Fischer"
-                // converted to "Fischer R. J.":
-                strPromoteSurname (tempStr, name);
-                count += spellChecker[nt]->Corrections( tempStr, &(corrections[count]), maxAmbiguous - count);
-                // The above step can cause duplicated corrections, so
-                // remove them:
-                count = std::distance(corrections,
-                    std::unique(corrections, corrections + count, strEqual)
-                );
-            }
-
-            // Handle ambiguous corrections, if wanted
-            //
-            if ( ambiguous || count == 1) {
-                for (uint i=0; i < count; i++) {
-
-                    // No need to include onself. Skip.
-                    //
-                    if (strEqual (origName, corrections[i])) { 
-                        continue; // to next ambiguous candidate
-                    }
-
-                    // We have a new one
-                    //
-                    correctionCount++;
-                    
-                    // Add correction to output, with a blank line first if the
-                    // correction starts with a different character to the
-                    // previous correction:
-                    sprintf (tempStr, "%s%s\"%s\"\t>> \"%s\" (%u)",
-                                      *origName == *prevCorrection ? "" : "\n",
-                                      count > 1 ? "Ambiguous: " : "",
-                                      origName, corrections[i], frequency);
-                    dstr->Append (tempStr);
-                    if (nt == NAME_PLAYER) {
-                        // Look for a player birthdate:
-                        const char * text =
-                            spellChecker[nt]->GetCommentExact (corrections[i]);
-                        dateT birthdate = SpellChecker::GetBirthdate(text);
-                        dateT deathdate = SpellChecker::GetDeathdate(text);
-                        if (birthdate != ZERO_DATE  ||  deathdate != ZERO_DATE) {
-                            dstr->Append ("  ");
-                            if (birthdate != ZERO_DATE) {
-                                date_DecodeToString (birthdate, tempStr);
-                                dstr->Append(tempStr);
-                            }
-                            dstr->Append ("--");
-                            if (deathdate != ZERO_DATE) {
-                                date_DecodeToString (deathdate, tempStr);
-                                dstr->Append(tempStr);
-                            }
-                        }
-                    }
-                    dstr->Append ("\n");
-                    prevCorrection = origName;
-                }
-            }
+        if (nGenCorrections != 0 && corrections.size() == 0) {
+            corrections.push_back(name.c_str());
         }
-        
-        // Update the progress bar
-        //
-        bar:
-            // Try to be clever here: If we go for maxCorrections only, we do not know if and when
-            // they will be found. So we base our progress indicator on either the name base crawl
-            // or the actual correction counter, whichever is closer to its finish.
-            if ((id % nameThres) == 1 || (correctionCount % corrThres) == 1 ) {
-                if ( (double)correctionCount / (double)maxCorrections > (double)id / (double)maxName ) {
-                    if (!progress.report(correctionCount, maxCorrections)) break;
+
+        const char* strAmbiguous = corrections.size() > 1 ? "Ambiguous: " : "";
+        for (size_t i=0; i < corrections.size(); i++) {
+            if (strcmp(origName, corrections[i]) == 0) {
+                if (corrections.size() != 1) {
+                    strRes.append("ERROR: " + name);
                 }
-                else {
-                    if (!progress.report(id, maxName)) break;
+                continue;
+            }
+            if (i==0) correctionCount++;
+
+            sprintf (tempStr, "%s%s\"%s\"\t>> \"%s\" (%u)",
+                              (i==0) ? "\n" : "",
+                              strAmbiguous,
+                              origName,
+                              corrections[i],
+                              frequency);
+            strRes += tempStr;
+
+            if (nt == NAME_PLAYER) { // Look for a player birthdate:
+                const PlayerInfo* pInfo = sp.getPlayerInfo(corrections[i]);
+                dateT birthdate = pInfo->getBirthdate();
+                dateT deathdate = pInfo->getDeathdate();
+                if (birthdate != ZERO_DATE  ||  deathdate != ZERO_DATE) {
+                    strRes += "  ";
+                    if (birthdate != ZERO_DATE) {
+                        date_DecodeToString (birthdate, tempStr);
+                        strRes += tempStr;
+                    }
+                    strRes += "--";
+                    if (deathdate != ZERO_DATE) {
+                        date_DecodeToString (deathdate, tempStr);
+                        strRes += tempStr;
+                    }
                 }
             }
-
-        // Bail out once we have found maxCorrections
-        //
-        if ( correctionCount >= maxCorrections ) {
-            break;
+            strRes += "\n";
         }
     }
 
-    // Now generate the return message:
+    progress.report(1,1);
 
+    // Now generate the return message:
     sprintf (tempStr, "Scid found %u %s name correction%s.\n",
              correctionCount, NAME_TYPE_STRING[nt],
              strPlural (correctionCount));
-    Tcl_SetResult (ti, tempStr, NULL);
-
-    Tcl_AppendResult (ti,
-        "Edit the list to remove any corrections you do not want.\n",
-        "Only lines of the form:\n",
-        "   \"Old Name\" >> \"New Name\"\n",
-        "(with no spaces before the \"Old Name\") are processed.\n",
-        "You can discard a correction you do not want by deleting\n",
-        "its line, or simply by adding a space or any other character\n",
-        "at the start of the line.\n",
-        NULL);
+    std::string res = tempStr;
+    res +=
+        "Edit the list to remove any corrections you do not want.\n"
+        "Only lines of the form:\n"
+        "   \"Old Name\" >> \"New Name\"\n"
+        "(with no spaces before the \"Old Name\") are processed.\n"
+        "You can discard a correction you do not want by deleting\n"
+        "its line, or simply by adding a space or any other character\n"
+        "at the start of the line.\n";
     if (nt == NAME_PLAYER  &&  ! doSurnames) {
-        Tcl_AppendResult (ti,
-            "Note: player names with a surname only, such as \"Kramnik\",\n",
-            "have not been corrected, since such corrections are often\n",
-            "wrong. You can choose to also show surname-only corrections\n",
-            "using the button below.\n",
-            NULL);
+        res +=
+            "Note: player names with a surname only, such as \"Kramnik\",\n"
+            "have not been corrected, since such corrections are often\n"
+            "wrong. You can choose to also show surname-only corrections\n"
+            "using the button below.\n";
     }
-    Tcl_AppendResult (ti, "\n", dstr->Data(), NULL);
-    delete dstr;
-    return TCL_OK;
+    res += "\n";
+    res += strRes;
+    return UI_Result(ti, OK, res);
 }
 
 
@@ -11293,7 +11089,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     }
 
     // Set up White name matches array:
-    if (wTitles != NULL  &&  spellChecker[NAME_PLAYER] != NULL) {
+    if (wTitles != NULL  &&  spellChk != NULL) {
         bool allTitlesOn = true;
         for (uint t=0; t < NUM_TITLES; t++) {
             if (! wTitles[t]) { allTitlesOn = false; break; }
@@ -11308,9 +11104,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
             for (i=0; i < numNames; i++) {
                 if (! mWhite[i]) { continue; }
                 const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
-                const char * text =
-                    spellChecker[NAME_PLAYER]->GetCommentExact (name);
-                const char * title = SpellChecker::GetTitle (text);
+                const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
+                const char * title = (pInfo) ? pInfo->getTitle() : "";
                 if ((!wTitles[TITLE_GM]  &&  strEqual(title, "gm"))
                     || (!wTitles[TITLE_GM]  &&  strEqual(title, "hgm"))
                     || (!wTitles[TITLE_IM]  &&  strEqual(title, "im"))
@@ -11329,7 +11124,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     }
 
     // Set up Black name matches array:
-    if (bTitles != NULL  &&  spellChecker[NAME_PLAYER] != NULL) {
+    if (bTitles != NULL  &&  spellChk != NULL) {
         bool allTitlesOn = true;
         for (uint t=0; t < NUM_TITLES; t++) {
             if (!bTitles[t]) { allTitlesOn = false; break; }
@@ -11344,9 +11139,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
             for (i=0; i < numNames; i++) {
                 if (! mBlack[i]) { continue; }
                 const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
-                const char * text =
-                    spellChecker[NAME_PLAYER]->GetCommentExact (name);
-                const char * title = SpellChecker::GetTitle (text);
+                const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
+                const char * title = (pInfo) ? pInfo->getTitle() : "";
                 if ((!bTitles[TITLE_GM]  &&  strEqual(title, "gm"))
                     || (!bTitles[TITLE_GM]  &&  strEqual(title, "hgm"))
                     || (!bTitles[TITLE_IM]  &&  strEqual(title, "im"))

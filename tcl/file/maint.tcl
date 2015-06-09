@@ -1315,12 +1315,17 @@ proc doCleaner {} {
     if {$cleaner($tag)} {
       mtoolAdd $t "$count: $::tr(Spellchecking): $::tr($names)..."
       incr count
-      set result "0 $nameType names were corrected."
-      if {! [catch {sc_name spellcheck -max $cleaner_maxSpellCorrections $nameType} corrections]} {
+      set err [catch {sc_name spellcheck -max $cleaner_maxSpellCorrections $nameType} corrections]
+      if {! $err} {
         update
-        catch {sc_name correct $nameType $corrections} result
+        set err [catch {sc_name correct $nameType $corrections} result]
       }
-      $t insert end "   $result\n"
+      if {$err} {
+        set msg [ERROR::getErrorMsg]
+      } else {
+        set msg "Number of games corrected: [lindex $result 2]\n"
+      }
+      $t insert end "   $msg\n"
       $t see end
     }
   }

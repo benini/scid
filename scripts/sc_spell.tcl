@@ -42,7 +42,7 @@ foreach nameType {player event site round} {
             puts stderr "Error correcting $nameType names"
             exit 1
         }
-        puts "  $result"
+        puts "  Number of games corrected: [lindex $result 2]\n"
     } else {
         puts "  0 $nameType names were corrected."
     }

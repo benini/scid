@@ -140,7 +140,6 @@ Crosstable::Init ()
     MaxRound = 0;
     FirstDate = ZERO_DATE;
     for (resultT r = 0; r < NUM_RESULT_TYPES; r++) { ResultCount[r] = 0; }
-    SpellCheck = NULL;
     ShowTitles = ShowElos = ShowCountries = ShowTallies = SwissColors = ShowAges = true;
     ShowTiebreaks = false;
     SortOption = CROSSTABLE_SortScore;
@@ -186,7 +185,7 @@ Crosstable::Destroy ()
 //      Adds a player to the crosstable, if that player is not
 //      already listed.
 errorT
-Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
+Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo, const SpellChecker* SpellCheck)
 {
     for (uint i = 0; i < PlayerCount; i++) {
         if (PlayerData[i]->id == id) {
@@ -221,16 +220,12 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
         pdata->roundClash[round] = NULL;
     }
 
-    // Find this players title and country if the SpellChecker is defined:
-    // if (SpellCheck != NULL  &&  !strIsSurnameOnly (name)) // makes it need an initial
-
     if (SpellCheck != NULL ) {
-        const char * comment = SpellCheck->GetComment (name);
-        // SpellCheck->GetCommentExact // makes it need a full christian name
-        if (comment != NULL) {
-            strCopy (pdata->title, SpellChecker::GetTitle (comment));
-            strCopy (pdata->country, SpellChecker::GetLastCountry (comment));
-            pdata->birthdate = SpellChecker::GetBirthdate (comment);
+        const PlayerInfo* pInfo = SpellCheck->getPlayerInfo(name);
+        if (pInfo != NULL) {
+            strCopy (pdata->title, pInfo->getTitle());
+            strCopy (pdata->country, pInfo->getLastCountry());
+            pdata->birthdate = pInfo->getBirthdate();
             if (strEqual (pdata->title, "w")) { strCopy (pdata->title, "w  "); }
         }
     }

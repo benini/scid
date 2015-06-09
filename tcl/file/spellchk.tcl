@@ -32,7 +32,10 @@ proc readSpellCheckFile {{message 1}} {
   set fullname [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Open Spellcheck file"]
   if {![string compare $fullname ""]} { return 0 }
 
-  if {[catch {sc_name read $fullname} result]} {
+  progressWindow "Scid - [tr Spellcheking]" "Loading $fullname ..."
+  set err [catch {sc_name read $fullname} result]
+  closeProgressWindow
+  if {$err} {
       if {$message} {
         tk_messageBox -title "ERROR: Unable to read file" -type ok \
           -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result"
@@ -227,11 +230,21 @@ proc openSpellCheckWin {type {parent .}} {
         set spell_result ""
         startCorrecting
         progressBarSet .spellcheckWin.progress 451 21
-        set result [catch {sc_name correct $spellcheckType $spelltext} spell_result]
-        set messageIcon info
-        if {$result} { set messageIcon error }
-        tk_messageBox -type ok -parent .spellcheckWin -icon $messageIcon \
-            -title "Scid: Spellcheck results" -message $spell_result
+        set err [catch {sc_name correct $spellcheckType $spelltext} spell_result]
+        if ($err) {
+            ERROR::MessageBox
+        } else {
+            set msg "Number of names to be corrected: "
+            append msg "[lindex $spell_result 0] \n"
+            append msg "Number of names errors: "
+            append msg "[lindex $spell_result 1] \n\n"
+            append msg "Number of games corrected: "
+            append msg "[lindex $spell_result 2] \n"
+            append msg "NUmber of games _not_ corrected (wrong date): "
+            append msg "[lindex $spell_result 3] \n"
+            tk_messageBox -type ok -parent .spellcheckWin \
+                -title "Scid: Spellcheck results" -message $msg
+        }
         unbusyCursor .
         focus .
         destroy .spellcheckWin

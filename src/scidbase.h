@@ -28,7 +28,6 @@
 #include "stored.h"
 #include <vector>
 
-class SpellChecker;
 
 struct scidBaseT {
 	struct Stats {
@@ -89,7 +88,6 @@ struct scidBaseT {
 	errorT Open (fileModeT mode = FMODE_Memory,
 	             const char* filename = "",
 	             bool create = true,
-	             SpellChecker* spell = 0,
 	             const Progress& progress = Progress());
 	errorT Close ();
 
@@ -159,7 +157,6 @@ struct scidBaseT {
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0) calcNameFreq();
-		if (id >= nameFreq_[nt].size()) return 0;
 		return nameFreq_[nt][id];
 	}
 
@@ -167,7 +164,7 @@ struct scidBaseT {
 	                      uint* n_unused,
 	                      uint* n_sparse,
 	                      uint* n_badNameId);
-	errorT compact(SpellChecker* spellChk, const Progress& progress);
+	errorT compact(const Progress& progress);
 
 	SortCache* CreateSortCache(const char* criteria) const {
 		return idx->CreateSortCache(nb, criteria);

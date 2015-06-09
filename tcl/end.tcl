@@ -1424,7 +1424,7 @@ update idletasks
 
 # Try to load the spellcheck file:
 if {$loadAtStart(spell)} {
-  progressWindow "Scid" [concat $::tr(Spellchecking) "..."]
+  progressWindow "Scid - [tr Spellcheking]" "Loading $spellCheckFile ..."
   set err [catch {sc_name read $spellCheckFile} result]
   closeProgressWindow
 }
