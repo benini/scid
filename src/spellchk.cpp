@@ -44,7 +44,6 @@ getNameAndComment (char * line, char ** name, char ** comment)
 errorT SpellChecker::read(const char* filename, const Progress& progress)
 {
     char line [1024];
-    char strippedName [1024];
     nameT nt = NAME_INVALID;
 
     Filebuf fp;

@@ -7998,12 +7998,12 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (tWidth > wbtWidth) { wbtWidth = tWidth; }
     const char * fmt = \
      "%s  %-*s %3u%c%02u%%   +%s%3u%s  =%s%3u%s  -%s%3u%s  %4u%c%c /%s%4u%s";
+    SpellChecker* spChecker = spellChk;
 
     if (ratingsOnly) { goto doRatings; }
     Tcl_AppendResult (ti, startBold, playerName, endBold, newline, NULL);
 
     // Show title, country, etc if listed in player spellcheck file:
-    SpellChecker* spChecker = spellChk;
     if (spChecker != NULL) {
         const PlayerInfo* pInfo = spChecker->getPlayerInfo(playerName);
         if (pInfo) { Tcl_AppendResult (ti, "  ", pInfo->GetComment(), newline, NULL); }

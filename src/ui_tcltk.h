@@ -143,6 +143,13 @@ inline int initTclTk (Tcl_Interp * ti)
 }
 
 
+inline UI_typeRes UI_ResultHelper(UI_type2 ti, errorT res) {
+	if (res == OK) return TCL_OK;
+	Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(res));
+	return TCL_ERROR;
+}
+
+
 class tcl_Progress : public ProgressImp {
 	Tcl_Interp* ti_;
 	Timer timer_;
@@ -185,6 +192,10 @@ public:
 	ObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
 	ObjMaker(uint v)   {
 		ASSERT(v < static_cast<uint>(std::numeric_limits<int>::max()));
+		obj_ = Tcl_NewIntObj(static_cast<int>(v));
+	}
+	ObjMaker(size_t v)   {
+		ASSERT(v < static_cast<size_t>(std::numeric_limits<int>::max()));
 		obj_ = Tcl_NewIntObj(static_cast<int>(v));
 	}
 	ObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
@@ -250,18 +261,13 @@ inline Progress UI_CreateProgressPosMask(UI_type2 data) {
 }
 
 
-inline UI_typeRes UI_ResultHelper(UI_type2 ti, errorT res) {
-	if (res == OK) return TCL_OK;
-	Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(res));
-	return TCL_ERROR;
-}
 inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
 	Tcl_ResetResult(ti);
-	return UI_ResultHelper(ti, res);
+	return UI_impl::UI_ResultHelper(ti, res);
 }
 inline UI_typeRes UI_Result(UI_type2 ti, errorT res, const UI_impl::ObjMaker& value) {
 	Tcl_SetObjResult(ti, value.get());
-	return UI_ResultHelper(ti, res);
+	return UI_impl::UI_ResultHelper(ti, res);
 }
 
 
