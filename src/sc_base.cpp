@@ -268,11 +268,32 @@ UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char
 		ginfo.push_back(RESULT_STR[ie->GetResult()]);
 		ginfo.push_back((ie->GetNumHalfMoves() + 1) / 2);
 		ginfo.push_back(ie->GetWhiteName(nb));
-		eloT welo = ie->GetWhiteElo(nb);
-		ginfo.push_back(welo);
+		std::string eloStr;
+		eloT welo = ie->GetWhiteElo();
+		if (welo != 0) {
+			eloStr = to_string(welo);
+		} else {
+			welo = ie->GetWhiteElo(nb);
+			eloStr = to_string(welo);
+			if (welo != 0) {
+				eloStr.insert(eloStr.begin(), '(');
+				eloStr.insert(eloStr.end(), ')');
+			}
+		}
+		ginfo.push_back(eloStr);
 		ginfo.push_back(ie->GetBlackName(nb));
-		eloT belo = ie->GetBlackElo(nb);
-		ginfo.push_back(belo);
+		eloT belo = ie->GetBlackElo();
+		if (belo != 0) {
+			eloStr = to_string(belo);
+		} else {
+			belo = ie->GetBlackElo(nb);
+			eloStr = to_string(belo);
+			if (belo != 0) {
+				eloStr.insert(eloStr.begin(), '(');
+				eloStr.insert(eloStr.end(), ')');
+			}
+		}
+		ginfo.push_back(eloStr);
 		char buf_date[16];
 		date_DecodeToString (ie->GetDate(), buf_date);
 		ginfo.push_back(buf_date);
