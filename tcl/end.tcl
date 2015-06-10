@@ -1446,12 +1446,6 @@ after 1 {
   foreach cmdbase $::argv {
     ::file::Open "[fullname $cmdbase]"
   }
-
-  # Opening files by drag & drop on Scid icon on Mac
-  namespace eval ::tk::mac {}
-  proc ::tk::mac::OpenDocument {args} {
-    foreach f $args {::file::Open $f}
-  }
 }
 
 

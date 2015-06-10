@@ -29,11 +29,6 @@ if { $macOS } {
   ## To get Help
   bind all <Command-?> {helpWindow Contents}
   bind all <Help> {helpWindow Contents}
-
-  # Fix Quitting on MacOS X, now it will save options on quit:
-  proc exit {}  {
-    ::file::Exit
-  }
 }
 
 
