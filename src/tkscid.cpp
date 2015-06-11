@@ -8740,7 +8740,7 @@ sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     UI_List res(NUM_NAME_TYPES);
     for (nameT i = 0; i < NUM_NAME_TYPES; i++) {
-        size_t n = (spellChk == NULL) ? 0 : spellChk->numCorrectNames(i);
+        uint n = (spellChk == NULL) ? 0 : spellChk->numCorrectNames(i);
         res.push_back(n);
     }
     return UI_Result(ti, OK, res);

@@ -190,12 +190,8 @@ public:
 
 	ObjMaker(bool v)   { obj_ = Tcl_NewBooleanObj(v); }
 	ObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
-	ObjMaker(uint32_t v)   {
-		ASSERT(v < static_cast<uint32_t>(std::numeric_limits<int>::max()));
-		obj_ = Tcl_NewIntObj(static_cast<int>(v));
-	}
-	ObjMaker(uint64_t v)   {
-		ASSERT(v < static_cast<uint64_t>(std::numeric_limits<int>::max()));
+	ObjMaker(uint v)   {
+		ASSERT(v < static_cast<uint>(std::numeric_limits<int>::max()));
 		obj_ = Tcl_NewIntObj(static_cast<int>(v));
 	}
 	ObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
