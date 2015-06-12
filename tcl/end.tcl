@@ -1419,6 +1419,8 @@ setLanguageMenus
 update
 update idletasks
 
+#keyboardShortcuts hack
+bind . <FocusIn> { if {[string equal %W "."]} { focus .main } }
 
 # Try to load the spellcheck file:
 if {$loadAtStart(spell)} {

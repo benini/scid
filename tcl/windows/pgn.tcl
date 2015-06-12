@@ -195,6 +195,7 @@ namespace eval pgn {
       }
     }
     keyboardShortcuts $w
+    set ::keyboardShortcutsExcept($w.text) 1
     
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors

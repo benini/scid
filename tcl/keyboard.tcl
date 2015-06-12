@@ -196,6 +196,8 @@ proc keyboardShortcuts {w} {
 
 proc excludeTextWidget {w} {
 	if { [regexp ".*(Entry|Text|Combobox)" [winfo class $w] ] } {
-		return "continue"
+		if {! [info exists ::keyboardShortcutsExcept($w)]} {
+			return "continue"
+		}
 	}
 }
