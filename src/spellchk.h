@@ -99,18 +99,37 @@ public:
 		return corrections;
 	}
 
+	/**
+	 * add*fix() - add a general correction
+	 *
+	 * Return: true if successful
+	 * Adds a general prefix, infix or suffix correction given a spellcheck file
+	 * line in the form:
+	 * %Suffix "wrong suffix" "correct suffix"
+	 */
 	bool addPrefix(const char* s) { return add(prefix_, s); }
 	bool addInfix (const char* s) { return add(infix_, s); }
 	bool addSuffix(const char* s) { return add(suffix_,s); }
 
 private:
 	bool add(Cont& v, const char* s) {
-		std::pair<std::string, std::string> val = parse(s);
-		if (val.first.empty()) return false;
-		v.push_back(val);
+		ASSERT(s != 0);
+		std::vector<size_t> parse;
+		for (size_t i=0; *(s+i) != 0; i++) {
+			if (*(s+i) == '"') parse.push_back(i);
+		}
+		if (parse.size() != 4) return false;
+		parse[0] += 1; //skip "
+		parse[1] -= parse[0]; //n_chars
+		if (parse[1] == 0) return false;
+		parse[2] += 1; //skip "
+		parse[3] -= parse[2]; //n_chars
+		v.push_back(std::make_pair(
+			std::string(s + parse[0], parse[1]),
+			std::string(s + parse[2], parse[3])
+		));
 		return true;
 	}
-	std::pair<std::string, std::string> parse(const char* s);
 };
 
 
@@ -185,7 +204,7 @@ public:
 		};
 
 		for (uint y=1970; y<2015; y++) {
-			size_t n = count(y);
+			auto n = count(y);
 			if (n == 0) continue;
 			if (n != expected(y))
 				return to_string(y) + ": " + to_string(n) + "(" + to_string(expected(y)) + ")";

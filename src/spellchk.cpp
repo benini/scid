@@ -144,38 +144,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
     return OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// SpellChecker::AddPrefixSuffix:
-//    Adds a general prefix or suffix correction given a spellcheck file
-//    line in the form:
-//    %Suffix "wrong suffix" "correct suffix"
-std::pair<std::string, std::string> NameNormalizer::parse(const char * str)
-{
-    std::pair<std::string, std::string> res;
-
-    char *q1, *q2, *q3, *q4;
-    q1 = q2 = q3 = q4 = NULL;
-
-    // Find first 4 quote characters:
-    q1 = (char *) strFirstChar (str, '"');
-    if (q1 == NULL) { return res; }
-    q1++;
-    q2 = (char *) strFirstChar (q1 + 1, '"');
-    if (q2 == NULL) { return res; }
-    q3 = (char *) strFirstChar (q2 + 1, '"');
-    if (q3 == NULL) { return res; }
-    q3++;
-    q4 = (char *) strFirstChar (q3 + 1, '"');
-    if (q4 == NULL) { return res; }
-    *q2 = 0;
-    *q4 = 0;
-    res.first = q1;
-    res.second = q3;
-    return res;
-}
-
-
-
 // Retrieve the list of Rating figures for given player (aka node) from the given (ssp) string
 // The string is formatted as:
 // [%Elo ]<year>:<<rating>|?>,...,<<rating>|?> [<year>:<<rating>|?>,...,<<rating>|?>...]

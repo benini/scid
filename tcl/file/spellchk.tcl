@@ -10,8 +10,8 @@ set spellcheckType Player
 #
 set spell_maxCorrections 0
 
-set spellcheckSurnames 0
-set spellcheckAmbiguous 1
+set spellcheckSurnames 1
+set spellcheckAmbiguous 0
 
 # Remember what we are doing, being
 # - "idle"       - nothing special
@@ -240,7 +240,7 @@ proc openSpellCheckWin {type {parent .}} {
             append msg "[lindex $spell_result 1] \n\n"
             append msg "Number of games corrected: "
             append msg "[lindex $spell_result 2] \n"
-            append msg "NUmber of games _not_ corrected (wrong date): "
+            append msg "NUmber of games _not_ corrected (date < birth or > death): "
             append msg "[lindex $spell_result 3] \n"
             tk_messageBox -type ok -parent .spellcheckWin \
                 -title "Scid: Spellcheck results" -message $msg
