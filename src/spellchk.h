@@ -296,9 +296,9 @@ public:
 		if (nt != NAME_PLAYER) it = idxFind(nt, name);
 		else it = idxFindPlayer(name);
 		for (; it.first != it.second && res.size() < nMaxRes; it.first++) {
-			const char* name = names_[nt][it.first->idx].c_str();
-			if (std::find(res.begin(), res.end(), name) == res.end()) {
-				res.push_back(name);
+			const char* corrected = names_[nt][it.first->idx].c_str();
+			if (std::find(res.begin(), res.end(), corrected) == res.end()) {
+				res.push_back(corrected);
 			}
 		}
 		return res;
