@@ -486,7 +486,7 @@ namespace eval gameclock {
     # -clock 2 is the black clock on the main board
     set sec $data(counter$n)
     set h [format "%d" [expr abs($sec) / 60 / 60] ]
-    set m [format "%02d" [expr abs($sec) / 60] ]
+    set m [format "%02d" [expr (abs($sec) / 60) % 60] ]
     set s [format "%02d" [expr abs($sec) % 60] ]
     if {$n == 1} { set ::gamePlayers(clockW) "$h:$m:$s" }
     if {$n == 2} { set ::gamePlayers(clockB) "$h:$m:$s" }
