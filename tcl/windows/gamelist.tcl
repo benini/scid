@@ -836,7 +836,8 @@ proc glist.create {{w} {layout}} {
     set hWin [winfo height %W]
     set hHeading 18
     set space [expr double($hWin - $hHeading)]
-    set hRow [ttk::style lookup Treeview -rowheight]
+    set hRow [expr {int(1.8*[font metrics font_Small -ascent])} ]
+    ttk::style configure Treeview -rowheight $hRow
     set ::glistVisibleLn(%W) [expr int(ceil($space / $hRow)) ]
     after 100 "glist.loadvalues_ %W"
   }
