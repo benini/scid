@@ -17,7 +17,7 @@ set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
 set var(DEBUG) #-DASSERTIONS
 set var(OBJS) {$(SCIDOBJS)}
-set var(THREADS) {-std=c++0x -pthread}
+set var(THREADS) {-std=c++11 -pthread}
 set var(OPTIMIZE) {-O3 -march=native -fno-rtti -fno-exceptions}
 set var(PROFILE) {}
 set var(SCIDFLAGS) {}
@@ -231,6 +231,7 @@ else
 fi
 }
 
+
 # systemHasZlib:
 #    Determines if the system has zlib installed. If not, the Zlib
 #    version that comes with Scid will be used.
@@ -314,9 +315,6 @@ proc writeMakefile {{type ""}} {
     close $to
 
     # Summary info
-    if {$var(THREADS) != ""} {
-        puts {Multi-threading enabled (if you have problems try ./configure THREADS="").}
-    }
     if {$success} {
         puts {The Makefile configured for your system was written.}
         puts {Now just type "make" to compile Scid.}
@@ -345,7 +343,8 @@ proc usage {} {
     puts {  TCL_INCLUDE  Compiler directives for including Tcl.}
     puts {  TCL_LIBRARY  Compiler directives for linking Tcl.}
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}
-    puts {  THREADS      Flags for c++11 threads. Default: "-std=c++0x -pthread".}
+    puts {  THREADS      Flags for c++11 threads. Default: "-std=c++11 -pthread".}
+    puts {               Use THREADS="" to disable multi-threading.}
     puts {  WARNINGS     C++ compiler warnings. Default: "-Wall".}
     puts {  MAKEFILE     Makefile configuration file. Default: "Makefile.conf".}
     puts {}

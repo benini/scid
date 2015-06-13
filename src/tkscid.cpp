@@ -8827,7 +8827,7 @@ UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker
         if (nt == NAME_PLAYER) {
             size_t country = name.rfind(" (");
             if (country != std::string::npos && (country + 6) == name.length()) {
-                if (name.back() == ')') name.erase(country);
+                if (*(name.rbegin()) == ')') name.erase(country);
             }
         }
 
