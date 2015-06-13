@@ -8427,6 +8427,60 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_plist:
 //   Returns a list of play data matching selected criteria.
+struct PlayerActivity {
+    dateT firstDate;
+    dateT lastDate;
+
+    PlayerActivity() : firstDate(ZERO_DATE), lastDate(ZERO_DATE) {}
+    void addDate(dateT date) {
+        if (firstDate == ZERO_DATE || date < firstDate) firstDate = date;
+        if (date > lastDate) lastDate = date;
+    }
+};
+
+class PListSort{
+    scidBaseT* dbase_;
+    int sort_;
+    const std::vector<PlayerActivity>& activity_;
+    enum { SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME };
+
+public:
+    PListSort(scidBaseT* dbase, const std::vector<PlayerActivity>& activity, int sortOrder)
+    : dbase_(dbase), sort_(sortOrder), activity_(activity) {
+	}
+    bool operator() (idNumberT p1, idNumberT p2)
+    {
+        const NameBase* nb = dbase_->getNameBase();
+        int compare = 0;
+        switch (sort_) {
+        case SORT_ELO:
+            compare = nb->GetElo(p2) - nb->GetElo(p1);
+            break;
+        case SORT_GAMES:
+            compare = dbase_->getNameFreq(NAME_PLAYER, p2) - dbase_->getNameFreq(NAME_PLAYER, p1);
+            break;
+        case SORT_OLDEST:
+             // Sort by oldest game year in ascending order:
+            compare = date_GetYear(activity_[p1].firstDate) - date_GetYear(activity_[p2].firstDate);
+            break;
+        case SORT_NEWEST:
+             // Sort by newest game date in descending order:
+            compare = date_GetYear(activity_[p2].lastDate) - date_GetYear(activity_[p1].lastDate);
+            break;
+        }
+
+        // If equal, resolve by comparing names, first case-insensitive and
+        // then case-sensitively if still tied:
+        if (compare == 0) {
+            const char* name1 = nb->GetName (NAME_PLAYER, p1);
+            const char* name2 = nb->GetName (NAME_PLAYER, p2);
+            compare = strCaseCompare (name1, name2);
+            if (compare == 0) { compare = strCompare (name1, name2); }
+        }
+        return compare < 0;
+    }
+};
+
 int
 sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -8499,18 +8553,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         plist.push_back(id);
     }
 
-    struct DateRange {
-        dateT firstDate;
-        dateT lastDate;
-
-        DateRange() : firstDate(ZERO_DATE), lastDate(ZERO_DATE) {}
-        void addDate(dateT date) {
-            if (firstDate == ZERO_DATE || date < firstDate) firstDate = date;
-            if (date > lastDate) lastDate = date;
-        }
-    };
-
-    std::vector<DateRange> activity(nPlayers);
+    std::vector<PlayerActivity> activity(nPlayers);
     for (gamenumT gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
         const IndexEntry* ie = dbase->getIndexEntry(gnum);
         dateT date = ie->GetDate();
@@ -8520,52 +8563,8 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-
-    class Compare{
-        scidBaseT* dbase_;
-        int sort_;
-        const std::vector<DateRange>& activity_;
-        enum { SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME };
-
-    public:
-        Compare(scidBaseT* dbase, const std::vector<DateRange>& activity, int sortOrder)
-            : dbase_(dbase), sort_(sortOrder), activity_(activity) {}
-        bool operator() (idNumberT p1, idNumberT p2)
-        {
-            const NameBase* nb = dbase_->getNameBase();
-            int compare = 0;
-            switch (sort_) {
-            case SORT_ELO:
-                compare = nb->GetElo(p2) - nb->GetElo(p1);
-                break;
-            case SORT_GAMES:
-                compare = dbase_->getNameFreq(NAME_PLAYER, p2) - dbase_->getNameFreq(NAME_PLAYER, p1);
-                break;
-            case SORT_OLDEST:
-                 // Sort by oldest game year in ascending order:
-                compare = date_GetYear(activity_[p1].firstDate) - date_GetYear(activity_[p2].firstDate);
-                break;
-            case SORT_NEWEST:
-                 // Sort by newest game date in descending order:
-                compare = date_GetYear(activity_[p2].lastDate) - date_GetYear(activity_[p1].lastDate);
-                break;
-            }
-
-            // If equal, resolve by comparing names, first case-insensitive and
-            // then case-sensitively if still tied:
-            if (compare == 0) {
-                const char* name1 = nb->GetName (NAME_PLAYER, p1);
-                const char* name2 = nb->GetName (NAME_PLAYER, p2);
-                compare = strCaseCompare (name1, name2);
-                if (compare == 0) { compare = strCompare (name1, name2); }
-            }
-            return compare < 0;
-        }
-
-    };
-
     count = std::min(count, plist.size());
-    std::partial_sort(plist.begin(), plist.begin() + count, plist.end(), Compare(dbase, activity, sortMode));
+    std::partial_sort(plist.begin(), plist.begin() + count, plist.end(), PListSort(dbase, activity, sortMode));
 
     UI_List res(count);
     UI_List info(5);
@@ -8798,7 +8797,7 @@ UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker
     }
 
     const NameBase* nb = dbase.getNameBase();
-    std::string strRes;
+    std::vector<std::string> tmpRes;
     char tempStr[1024];
     uint correctionCount = 0;
     
@@ -8840,44 +8839,48 @@ UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker
             corrections.push_back(name.c_str());
         }
 
+        std::string correctCmd;
         const char* strAmbiguous = corrections.size() > 1 ? "Ambiguous: " : "";
         for (size_t i=0; i < corrections.size(); i++) {
             if (strcmp(origName, corrections[i]) == 0) {
                 if (corrections.size() != 1) {
-                    strRes.append("ERROR: " + name);
+                    correctCmd.append("ERROR: " + name);
                 }
                 continue;
             }
             if (i==0) correctionCount++;
 
-            sprintf (tempStr, "%s%s\"%s\"\t>> \"%s\" (%u)",
-                              (i==0) ? "\n" : "",
+            sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)",
                               strAmbiguous,
                               origName,
                               corrections[i],
                               frequency);
-            strRes += tempStr;
+            correctCmd += tempStr;
 
             if (nt == NAME_PLAYER) { // Look for a player birthdate:
                 const PlayerInfo* pInfo = sp.getPlayerInfo(corrections[i]);
                 dateT birthdate = pInfo->getBirthdate();
                 dateT deathdate = pInfo->getDeathdate();
                 if (birthdate != ZERO_DATE  ||  deathdate != ZERO_DATE) {
-                    strRes += "  ";
+                    correctCmd += "  ";
                     if (birthdate != ZERO_DATE) {
                         date_DecodeToString (birthdate, tempStr);
-                        strRes += tempStr;
+                        correctCmd += tempStr;
                     }
-                    strRes += "--";
+                    correctCmd += "--";
                     if (deathdate != ZERO_DATE) {
                         date_DecodeToString (deathdate, tempStr);
-                        strRes += tempStr;
+                        correctCmd += tempStr;
                     }
                 }
             }
-            strRes += "\n";
+            correctCmd += "\n";
         }
+
+        if (!correctCmd.empty()) tmpRes.push_back(correctCmd);
     }
+
+    std::sort(tmpRes.begin(), tmpRes.end());
 
     progress.report(1,1);
 
@@ -8902,7 +8905,16 @@ UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker
             "using the button below.\n";
     }
     res += "\n";
-    res += strRes;
+    std::vector<std::string>::const_iterator it = tmpRes.begin();
+    std::vector<std::string>::const_iterator it_Ambiguous =
+        std::lower_bound(tmpRes.begin(), tmpRes.end(), "Ambig");
+    for (;it != it_Ambiguous; it++) {
+        res += *it;
+    }
+    for (;it != tmpRes.end(); it++) {
+        res += "\n";
+        res += *it;
+    }
     return UI_Result(ti, OK, res);
 }
 
