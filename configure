@@ -223,7 +223,7 @@ int main()
 }
 EOF
 
-$var(COMPILE) -o testzlib testzlib.c -lz
+$::var(COMPILE) -o testzlib testzlib.c -lz
 if [ -f testzlib ]; then
     exit 0
 else
@@ -233,14 +233,13 @@ fi
 
 
 # systemHasZlib:
-#    Determines if the system has zlib installed. If not, the Zlib
-#    version that comes with Scid will be used.
+#    Determines if the system has zlib installed.
 #
 proc systemHasZlib {} {
     set systemHasZlib 0
     flush stdout
     if {[catch {open testzlib.sh w} f]} { return 0 }
-    puts $f $::testzlib
+    puts $f [subst -nocommands -nobackslash $::testzlib]
     close $f
     set result 0
     if {! [catch {exec sh testzlib.sh} err]} { set result 1 }
