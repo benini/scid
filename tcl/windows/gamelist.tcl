@@ -163,10 +163,12 @@ proc ::windows::gamelist::FilterExport {{w}} {
 	if {$fName == ""} { return }
 	progressWindow "Scid" "Exporting games..." $::tr(Cancel)
 	if {$::gamelistExport == "LaTeX"} {
+        if {[file extension $fName] == ""} { append fName ".tex" }
 		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
 		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport \
 		                 $::exportStartFile(LaTeX) $::exportEndFile(LaTeX)
 	} else {
+        if {[file extension $fName] == ""} { append fName ".pgn" }
 		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
 		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport
 	}
