@@ -896,10 +896,11 @@ proc pressSquare { square } {
         ::board::setDragSquare .main.board -1
         ::board::colorSquare .main.board $selectedSq
         ::board::colorSquare .main.board $square
-        if {$square != $selectedSq} {
-            addMove $square $selectedSq
-        }
+        set tmp $selectedSq
         set selectedSq -1
+        if {$square != $tmp} {
+            addMove $square $tmp
+        }
         enterSquare $square
     }
 }
@@ -935,12 +936,13 @@ proc releaseSquare { w x y } {
             # Current square is the square user pressed the button on,
             # so we do nothing.
         }
-    } else {
+    } elseif {$selectedSq != -1} {
         # User has dragged to another square, so try to add this as a move:
-        addMove $square $selectedSq ""
-        ::board::colorSquare $w $selectedSq
+        set tmp $selectedSq
         set selectedSq -1
+        addMove $square $tmp ""
         ::board::colorSquare $w $square
+        ::board::colorSquare $w $tmp
     }
 }
 
