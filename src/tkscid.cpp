@@ -25,28 +25,30 @@
 
 
 
-#include "ui_tcltk.h"
-#include "tkscid.h"
-#include "searchpos.h"
-#include "scidbase.h"
-#include "position.h"
+#include "crosstab.h"
 #include "engine.h"
 #include "game.h"
-#include "tree.h"
+#include "optable.h"
 #include "pbook.h"
 #include "pgnparse.h"
-#include "timer.h"
-#include "crosstab.h"
-#include "spellchk.h"
-#include "probe.h"
-#include "optable.h"
-#include "stored.h"
 #include "polyglot.h"
+#include "position.h"
+#include "probe.h"
+#include "scidbase.h"
+#include "searchpos.h"
+#include "spellchk.h"
+#include "stored.h"
+#include "timer.h"
+#include "tree.h"
+#include "ui.h"
 #include <time.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <set>
 #include <algorithm>
+
+//TODO: delete
+#include "tkscid.h"
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -263,6 +265,7 @@ InvalidCommand (Tcl_Interp * ti, const char * majorCmd,
     }
     return TCL_ERROR;
 }
+
 
 /************ End of Tcl result routines ***********/
 
@@ -1196,7 +1199,7 @@ checkDuplicate (scidBaseT * base,
 }
 
 uint
-sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
 {
     dupCriteriaT criteria;
     criteria.exactNames  = false;
@@ -7253,9 +7256,9 @@ sc_pos_setComment (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //////////////////////////////////////////////////////////////////////
 //   NAME commands
 
-UI_typeRes sc_name_ratings (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
-UI_typeRes sc_name_retrievename (UI_type2 ti, const SpellChecker& sp, int argc, const char ** argv);
-UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
+UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
+UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc, const char ** argv);
+UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
 
 
 int
@@ -7716,7 +7719,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_retrievename:
 //    Check for the right name in spellcheck and return it.
-UI_typeRes sc_name_retrievename (UI_type2 ti, const SpellChecker& sp, int argc, const char ** argv)
+UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc, const char ** argv)
 {
     const char * usageStr = "Usage: sc_name retrievename <player>";
     if (argc != 3 ) { return errorResult (ti, usageStr); }
@@ -8603,7 +8606,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //
 //   Returns a two-integer list: the number of changed ratings, and
 //   the number of changed games.
-UI_typeRes sc_name_ratings (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
+UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
 {
     const char * options[] = {
         "-nomonth", "-update", "-debug", "-test", "-change", "-filter" };
@@ -8749,7 +8752,7 @@ sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_spellcheck:
 //   Scan the current database for spelling corrections.
-UI_typeRes sc_name_spellcheck (UI_type2 ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
+UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
 {
     nameT nt = NAME_INVALID;
     uint maxCorrections = 20000;

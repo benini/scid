@@ -14,8 +14,10 @@
 //////////////////////////////////////////////////////////////////////
 
 
-#include "common.h"
-#include "scidbase.h"
+#include "tcl.h"
+
+class Progress;
+struct scidBaseT;
 
 
 // Macro TCL_ARGS expands to the argument-type list that any

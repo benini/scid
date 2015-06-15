@@ -16,7 +16,7 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_tcltk.h"
+#include "ui.h"
 #include "common.h"
 #include "misc.h"
 #include "scidbase.h"
@@ -28,14 +28,15 @@ scidBaseT*       DBasePool_findEmpty();
 scidBaseT*       DBasePool_getBase(int baseId);
 std::vector<int> DBasePool_getBasesId();
 int switchCurrentBase(scidBaseT* dbase);
-int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
+
 
 //TODO: delete this
 extern int currentBase;
 
 /*
-* This "sc_base" functions are used by the UI to access the databases
-* To hide database internal complexity this functions should only parse arguments and call other functions/objects
+* This "sc_base" functions are used by the UI to access the databases.
+* To encapsulate database internal complexity this functions should only
+* parse arguments and call other functions/objects.
 *
 * Command names are case sensitive
 * Optional parameter are indicated using [value_opt]
@@ -53,9 +54,11 @@ extern int currentBase;
 /**
  * sc_base_close() - close a database
  */
-UI_typeRes sc_base_close(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
-	if (dbase->getFileName() == "<clipbase>") return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
+	if (dbase->getFileName() == "<clipbase>") {
+		return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
+	}
 	return UI_Result(ti, dbase->Close());
 }
 
@@ -70,7 +73,7 @@ UI_typeRes sc_base_close(scidBaseT* dbase, UI_type2 ti, int argc, const char** a
  * - makes search operations faster
  * - replace bad names with "???"
  */
-UI_typeRes sc_base_compact(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base compact baseId [stats]";
 
@@ -95,7 +98,7 @@ UI_typeRes sc_base_compact(scidBaseT* dbase, UI_type2 ti, int argc, const char**
 /**
  * sc_base_copygames() - copy games from a database to another
  */
-UI_typeRes sc_base_copygames(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId";
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
@@ -119,7 +122,7 @@ UI_typeRes sc_base_copygames(scidBaseT* dbase, UI_type2 ti, int argc, const char
 /**
  * sc_base_extra() - get/set a database extra tag (i.e. "description" or "type")
  */
-UI_typeRes sc_base_extra(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_extra(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base extra baseId tagname [new_value]";
   
@@ -140,10 +143,10 @@ UI_typeRes sc_base_extra(scidBaseT* dbase, UI_type2 ti, int argc, const char** a
  *
  * Return:
  *   the full path filename for non native databases (like pgn)
- *   the full path filename without the .si4 extension for native SCID databases
+ *   the full path filename without the .si4 extension for native Scid databases
  *   <clipbase> for the clipbase
  */
-UI_typeRes sc_base_filename(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_filename(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base filename baseId";
 	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
@@ -157,7 +160,7 @@ UI_typeRes sc_base_filename(scidBaseT* dbase, UI_type2 ti, int argc, const char*
  *
  * Return: a boolean value if the requested operation is "get"
  */
-UI_typeRes sc_base_gameflag(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base gameflag baseId <gameNum|filterName|all> <get|set|unset|invert> flagType";
 	if (argc != 6) return UI_Result(ti, ERROR_BadArg, usage);
@@ -208,7 +211,7 @@ UI_typeRes sc_base_gameflag(scidBaseT* dbase, UI_type2 ti, int argc, const char*
  *
  * Return: the position (0 == first) of the first match or "none" if not found
  */
-UI_typeRes sc_base_gamelocation(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base gamelocation baseId filterName sortCrit <gnumber | 0 text start_pos forward_dir>";
 	if (argc < 6) return UI_Result(ti, ERROR_BadArg, usage);
@@ -235,7 +238,7 @@ UI_typeRes sc_base_gamelocation(scidBaseT* dbase, UI_type2 ti, int argc, const c
  * sc_base_gameslist() - returns the sorted list of games of a database
  * @start:    0 for the first game
  */
-UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base gameslist baseId start count filterName sortCrit";
 	if (argc != 7) return UI_Result(ti, ERROR_BadArg, usage);
@@ -339,7 +342,7 @@ UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char
 /**
  * sc_base_list() - return the list of opened databases
  */
-UI_typeRes sc_base_list(UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base list";
 	if (argc != 2) return UI_Result(ti, ERROR_BadArg, usage);
@@ -354,7 +357,7 @@ UI_typeRes sc_base_list(UI_type2 ti, int argc, const char** argv)
 /**
  * sc_base_numGames() - return the number of games in the database
  */
-UI_typeRes sc_base_numGames(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base numGames baseId";
 	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
@@ -364,18 +367,18 @@ UI_typeRes sc_base_numGames(scidBaseT* dbase, UI_type2 ti, int argc, const char*
 
 
 /**
- * sc_base_open() - open/create a SCID database
+ * sc_base_open() - open/create a Scid database
  * @filename:    the filename of the database to open/create
  * @create:      if true create a new database
  * @fMode:       open the database read-only|read-write|in_memory
  *
- * Only database in native SCID format che be opened directly with this function.
+ * Only database in native Scid format che be opened directly with this function.
  * Other formats (like pgn for example) call sc_base_open with @fMode == FMODE_MEMORY
  * and @create == true and then import the games into the memory database.
  * If @create == false and the file cannot be opened for writing, the database will
  * be opened read-only.
  */
-UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false, fileModeT fMode = FMODE_Both)
+UI_res_t sc_base_open (UI_handle_t ti, const char* filename, bool create = false, fileModeT fMode = FMODE_Both)
 {
 	if (DBasePool_find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
 
@@ -402,7 +405,7 @@ UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false,
  *
  * A sortchace is used to speed up the other sc_base functions with the same "sortCrit"
  */
-UI_typeRes sc_base_sortcache(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
 	const char* usage = "Usage: sc_base sortcache baseId <create|release> sortCrit";
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
@@ -420,13 +423,13 @@ UI_typeRes sc_base_sortcache(scidBaseT* dbase, UI_type2 ti, int argc, const char
  * sc_base_switch() - change the current database and the current game
  *
  * DEPRECATED
- * Unfortunately SCID used to have only one database, one game, one filter, etc...
+ * Unfortunately Scid used to have only one database, one game, one filter, etc...
  * This function changes the current database and consequently the current game 
  * (sc_game functions works on the current game)
  *
  * Return: the current database ID after the switch
  */
-UI_typeRes sc_base_switch (scidBaseT* dbase, UI_type2 ti)
+UI_res_t sc_base_switch (scidBaseT* dbase, UI_handle_t ti)
 {
 	int res = switchCurrentBase(dbase);
 	return UI_Result(ti, OK, res);
@@ -434,20 +437,20 @@ UI_typeRes sc_base_switch (scidBaseT* dbase, UI_type2 ti)
 
 
 //TODO: move this function here from tkscid.cpp
-int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_export      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_import      (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
-int sc_base_slot        (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_stats       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_ecoStats    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_piecetrack  (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_tag         (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_count       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_slot        (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_stats       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_ecoStats    (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_tournaments (UI_extra_t, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_import      (UI_handle_t ti, scidBaseT* cdb, const char * filename);
+uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
 
 
-UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
+UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "close",           "compact",         "copygames",       "count",
@@ -468,11 +471,10 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
         BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE
     };
-	int index = -1;
 
-	if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-	if (index == -1) return InvalidCommand (ti, "sc_base", options);
+	if (argc <= 1) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd>");
 
+	int index = strUniqueMatch (argv[1], options);
 	switch (index) {
 	case BASE_COUNT:
 		return sc_base_count (cd, ti, argc, argv);
@@ -538,7 +540,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
 	case BASE_DUPLICATES:
 		if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
-		return UI_Result(ti, OK, sc_base_duplicates (dbase, cd, ti, argc, argv));
+		return UI_Result(ti, OK, sc_base_duplicates (dbase, ti, argc, argv));
 
 	case BASE_EXTRA:
 		return sc_base_extra(dbase, ti, argc, argv);
@@ -574,5 +576,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
 	}
 
-	return InvalidCommand (ti, "sc_base", options);
+	std::string res = "sc_base\nInvalid minor command: ";
+	res.append(argv[1]);
+	return UI_Result(ti, ERROR_BadArg, res);
 }
