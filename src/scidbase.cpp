@@ -60,48 +60,6 @@ scidBaseT::~scidBaseT() {
 	}
 }
 
-errorT scidBaseT::Close () {
-	errorT errIdx = idx->Close();
-	errorT errGFile = gfile->Close();
-	//TODO:
-	//if (errIdx != OK || errGFile != OK) do not close the database:
-	//maybe the user can try something to avoid the data loss
-	nb->Clear();
-	clear();
-	game->Clear();
-	inUse = false;
-	fileName_ = "<empty>";
-	gameNumber = -1;
-	gameAltered = false;
-	dbFilter->Init(0);
-	treeFilter->Init(0);
-	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
-	filters_.clear();
-	return (errIdx != OK) ? errIdx : errGFile;
-}
-
-void scidBaseT::clear() {
-	validStats_ = false;
-	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
-	if (treeCache != NULL) treeCache->Clear();
-	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
-}
-
-errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
-	clear();
-	if (fileMode != FMODE_Memory && writeFiles) {
-		gfile->FlushAll();
-		calcNameFreq();
-		errorT errNb = nb->WriteNameFile(nameFreq_);
-		if (errNb != OK) return errNb;
-		errorT errIdx = idx->WriteHeader();
-		if (errIdx != OK) return errIdx;
-	}
-	idx->IndexUpdated(gNum);
-
-	return OK;
-}
-
 errorT scidBaseT::Open (fileModeT mode,
                         const char* filename,
                         bool create,
@@ -157,47 +115,83 @@ errorT scidBaseT::Open (fileModeT mode,
 	return err;
 }
 
-errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
-	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
-	errorT err = addGame_(sourceBase, gNum);
-	if (err != OK) return err;
-	ASSERT(numGames() > 0);
-	return clearCaches(numGames() -1);
+errorT scidBaseT::Close () {
+	errorT errIdx = idx->Close();
+	errorT errGFile = gfile->Close();
+	//TODO:
+	//if (errIdx != OK || errGFile != OK) do not close the database:
+	//maybe the user can try something to avoid the data loss
+	nb->Clear();
+	clear();
+	game->Clear();
+	inUse = false;
+	fileName_ = "<empty>";
+	gameNumber = -1;
+	gameAltered = false;
+	dbFilter->Init(0);
+	treeFilter->Init(0);
+	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
+	filters_.clear();
+	return (errIdx != OK) ? errIdx : errGFile;
 }
 
-errorT scidBaseT::addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
-	ASSERT(*filter);
-	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
-	errorT err = OK;
-	uint iProgress = 0;
-	uint totGames = filter.count();
-	Filter* f; int i_filters=0;
-	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
-	for (gamenumT gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
-		if (filter.get(gNum) == 0) continue;
-		err = addGame_(sourceBase, gNum);
-		if (err != OK) break;
-		if (iProgress++ % 10000 == 0) {
-			if (!progress.report(iProgress, totGames)) break;
-		}
+void scidBaseT::clear() {
+	validStats_ = false;
+	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
+	if (treeCache != NULL) treeCache->Clear();
+	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
+}
+
+errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
+	clear();
+	if (fileMode != FMODE_Memory && writeFiles) {
+		gfile->FlushAll();
+		calcNameFreq();
+		errorT errNb = nb->WriteNameFile(nameFreq_);
+		if (errNb != OK) return errNb;
+		errorT errIdx = idx->WriteHeader();
+		if (errIdx != OK) return errIdx;
 	}
-	errorT errClear = clearCaches();
-	return (err == OK) ? errClear : err;
+	idx->IndexUpdated(gNum);
+
+	return OK;
 }
 
-errorT scidBaseT::addGame_(scidBaseT* sourceBase, uint gNum) {
-	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
-	errorT err = sourceBase->gfile->ReadGame(sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength());
-	if (err != OK) return err;
+errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {
+	if (tagname == "description") {
+		*res = idx->GetDescription();
+	} else if (tagname == "autoload") {
+		*res = to_string(idx->GetAutoLoad());
+	} else if (tagname == "type") {
+		*res = to_string(idx->GetType());
+	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
+		uint flagType = IndexEntry::CharToFlag(tagname[4]);
+		if (flagType == 0) return ERROR_BadArg;
+		const char* desc = idx->GetCustomFlagDesc(flagType);;
+		if (desc == 0) return ERROR_BadArg;
+		*res = desc;
+	} else {
+		return ERROR_BadArg;
+	}
+	return OK;
+}
 
-	IndexEntry iE = *srcIe;
-	if ((err = iE.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetEventName(nb, srcIe->GetEventName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetSiteName (nb, srcIe->GetSiteName(sourceBase->nb) )) != OK) return err;
-	if ((err = iE.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb))) != OK) return err;
-
-	return saveGame_(&iE, sourceBase->bbuf);
+errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value) {
+	if (tagname == "description") {
+		idx->SetDescription(new_value);
+	} else if (tagname == "autoload") {
+		idx->SetAutoLoad(strGetUnsigned(new_value));
+	} else if (tagname == "type") {
+		idx->SetType(strGetUnsigned(new_value));
+	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
+		uint flagType = IndexEntry::CharToFlag(tagname[4]);
+		if (flagType == 0) return ERROR_BadArg;
+		if (idx->GetCustomFlagDesc(flagType) == 0) return ERROR_BadArg;
+		idx->SetCustomFlagDesc(flagType, new_value);
+	} else {
+		return ERROR_BadArg;
+	}
+	return idx->WriteHeader();
 }
 
 errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
@@ -214,7 +208,7 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
 	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
 
-	errorT errSave = saveGame_(&iE, bbuf, gnum);
+	errorT errSave = saveGameHelper(&iE, bbuf, gnum);
 	if (errSave == OK && clearCache) {
 		if (gnum >= numGames()) {
 			ASSERT(numGames() > 0);
@@ -225,7 +219,50 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	return errSave;
 }
 
-errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx) {
+errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
+	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+	errorT err = addGameHelper(sourceBase, gNum);
+	if (err != OK) return err;
+	ASSERT(numGames() > 0);
+	return clearCaches(numGames() -1);
+}
+
+errorT scidBaseT::addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
+	ASSERT(*filter);
+	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+	errorT err = OK;
+	uint iProgress = 0;
+	uint totGames = filter.count();
+	Filter* f; int i_filters=0;
+	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
+	for (gamenumT gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
+		if (filter.get(gNum) == 0) continue;
+		err = addGameHelper(sourceBase, gNum);
+		if (err != OK) break;
+		if (iProgress++ % 10000 == 0) {
+			if (!progress.report(iProgress, totGames)) break;
+		}
+	}
+	errorT errClear = clearCaches();
+	return (err == OK) ? errClear : err;
+}
+
+errorT scidBaseT::addGameHelper(scidBaseT* sourceBase, uint gNum) {
+	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
+	errorT err = sourceBase->gfile->ReadGame(sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength());
+	if (err != OK) return err;
+
+	IndexEntry iE = *srcIe;
+	if ((err = iE.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetEventName(nb, srcIe->GetEventName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetSiteName (nb, srcIe->GetSiteName(sourceBase->nb) )) != OK) return err;
+	if ((err = iE.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb))) != OK) return err;
+
+	return saveGameHelper(&iE, sourceBase->bbuf);
+}
+
+errorT scidBaseT::saveGameHelper(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx) {
 	// Now try writing the game to the gfile:
 	uint offset = 0;
 	errorT errGFile = gfile->AddGame (bytebuf, &offset);
@@ -547,7 +584,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	bool err_UserCancel = false;
 	errorT err_AddGame = OK;
 	for (sort_t::iterator it = sort.begin(); it != sort.end(); it++) {
-		err_AddGame = tmp.addGame_(this, (*it).second);
+		err_AddGame = tmp.addGameHelper(this, (*it).second);
 		if (err_AddGame != OK) break;
 		//TODO:
 		//- update bookmarks game number
@@ -593,41 +630,4 @@ errorT scidBaseT::compact(const Progress& progress) {
 		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}
 	return res;
-}
-
-errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {
-	if (tagname == "description") {
-		*res = idx->GetDescription();
-	} else if (tagname == "autoload") {
-		*res = to_string(idx->GetAutoLoad());
-	} else if (tagname == "type") {
-		*res = to_string(idx->GetType());
-	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
-		uint flagType = IndexEntry::CharToFlag(tagname[4]);
-		if (flagType == 0) return ERROR_BadArg;
-		const char* desc = idx->GetCustomFlagDesc(flagType);;
-		if (desc == 0) return ERROR_BadArg;
-		*res = desc;
-	} else {
-		return ERROR_BadArg;
-	}
-	return OK;
-}
-
-errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value) {
-	if (tagname == "description") {
-		idx->SetDescription(new_value);
-	} else if (tagname == "autoload") {
-		idx->SetAutoLoad(strGetUnsigned(new_value));
-	} else if (tagname == "type") {
-		idx->SetType(strGetUnsigned(new_value));
-	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
-		uint flagType = IndexEntry::CharToFlag(tagname[4]);
-		if (flagType == 0) return ERROR_BadArg;
-		if (idx->GetCustomFlagDesc(flagType) == 0) return ERROR_BadArg;
-		idx->SetCustomFlagDesc(flagType, new_value);
-	} else {
-		return ERROR_BadArg;
-	}
-	return idx->WriteHeader();
 }

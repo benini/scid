@@ -229,8 +229,8 @@ private:
 	scidBaseT& operator=(const scidBaseT&);
 	void Init();
 	void clear();
-	errorT addGame_ (scidBaseT* sourceBase, uint gNum);
-	errorT saveGame_(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
+	errorT addGameHelper(scidBaseT* sourceBase, uint gNum);
+	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 	void calcNameFreq ();
 
 	Filter* fetchFilter(uint idx) {
