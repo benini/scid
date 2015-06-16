@@ -56,8 +56,6 @@ proc setupBoard {} {
   for {set i 0} { $i < 64 } { incr i } {
     ::board::bind $w.l.bd $i <B1-Motion>       "dragBoardPiece  $w.l.bd %X %Y $i"
     ::board::bind $w.l.bd $i <ButtonRelease-1> "setupBoardPiece $w.l.bd %X %Y"
-    ::board::bind $w.l.bd $i <2>               "removeBoardPiece $w.l.bd $i"
-    ::board::bind $w.l.bd $i <3>               "removeBoardPiece $w.l.bd $i"
   }
   grid $w.l.bd -sticky news
   grid rowconfigure $w.l.bd 0 -weight 1
@@ -338,31 +336,15 @@ proc setupBoardPiece {w x y} {
     #Dragged
     if {$delSq == $square} { return }
     set setupBd [string replace $setupBd $delSq $delSq "."]
-    catch { unset ::erasePiece }
   } else {
     #Left click
     if {$oldPiece == $newPiece} {
-      set newPiece [string tolower $newPiece]
-      if {$newPiece == $pastePiece} { set newPiece [string toupper $newPiece] }
-      set ::erasePiece "$oldPiece$square"
-    } else {
-      if {[info exists ::erasePiece] && $::erasePiece == "$newPiece$square"} {
         set newPiece "."
-      }
-      catch { unset ::erasePiece }
     }
   }
 
   set setupBd [string replace $setupBd $square $square $newPiece]
   ::board::update .setup.l.bd $setupBd
-  set setupFen [makeSetupFen]
-}
-
-proc removeBoardPiece {w square} {
-  global setupBd setupFen
-
-  set setupBd [string replace $setupBd $square $square "."]
-  ::board::update $w $setupBd
   set setupFen [makeSetupFen]
 }
 
