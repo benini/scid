@@ -407,15 +407,23 @@ private:
 			f_ << line << std::endl;
 			f_ << std::endl;
 		}
+		static bool cmpIdxAlias(const Idx& a, const Idx& b) {
+			return a.alias == b.alias;
+		}
 		void idxDuplicates(const nameT& nt) {
-			IdxIt it = spell_.idx_[nt].begin() + 1;
-			for (; it != spell_.idx_[nt].end(); it++) {
-				if (it->alias == (it -1)->alias && it->idx != (it -1)->idx) {
-					f_ << "Duplicate hash: " << it->alias << std::endl;
-					f_ << spell_.names_[nt][(it -1)->idx] << std::endl;
-					f_ << spell_.names_[nt][it->idx] << std::endl;
-					f_ << std::endl;
+			IdxIt it = spell_.idx_[nt].begin();
+			IdxIt it_end = spell_.idx_[nt].end();
+			for (;;) {
+				it = std::adjacent_find(it, it_end, cmpIdxAlias);
+				if (it == it_end) return;
+
+				IdxIt it_endDuplicates = std::upper_bound(it, it_end, *it);
+				f_ << "Duplicate hash: " << it->alias << std::endl;
+				for(; it != it_endDuplicates; it++) {
+					f_ << spell_.names_[nt][it->idx];
+					f_ << " - Idx:" << it->idx << std::endl;
 				}
+				f_ << std::endl;
 			}
 		}
 		void checkEloData() {
