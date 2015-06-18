@@ -142,13 +142,11 @@ private:
     //  Position:  Public Functions
 public:
     Position()   { Init(); }
-    explicit Position(bool std_start) { StdStart(); }
-    Position(const Position& p);
-    ~Position()  {}
+    static const Position& getStdStart();
 
     void        Init();
     void        Clear();        // No pieces on board
-    void        StdStart();     // Standard chess starting position
+    void        StdStart() { *this = getStdStart(); }
     bool        IsStdStart();
     errorT      AddPiece (pieceT p, squareT sq);
 
@@ -224,7 +222,7 @@ public:
                                SquareSet * sqset, bool capturesOnly);
 
     // Generate all legal moves:
-    void  GenerateMoves (MoveList * mlist, pieceT mask, genMovesT genType, bool maybeInCheck);
+    void  GenerateMoves (MoveList* mlistRes, pieceT mask, genMovesT genType, bool maybeInCheck);
     void  GenerateMoves () { GenerateMoves (NULL, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist, pieceT mask) { GenerateMoves (mlist, mask, GEN_ALL_MOVES, true); }
@@ -297,7 +295,7 @@ public:
 
     // Copy, compare positions
     int         Compare (Position * p);
-    void        CopyFrom (Position * src);
+    void        CopyFrom (Position * src) { *this = *src; }
 
     // Set up a random position:
     errorT      Random (const char * material);

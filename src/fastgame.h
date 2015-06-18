@@ -40,7 +40,7 @@ public:
 	FastBoard(Position& pos) { Init(pos); }
 
 	void Init() {
-		static Position StdStartPos(true);
+		static Position StdStartPos(Position::getStdStart());
 		static FastBoard StdStart(StdStartPos);
 		*this = StdStart;
 	}
