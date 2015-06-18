@@ -69,7 +69,7 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
       src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
       src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj \
-      src\movelist.obj src\sortcache.obj src\filter.obj src\scidbase.obj \
+      src\sortcache.obj src\filter.obj src\scidbase.obj \
       src\tree.obj src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
       src\optable.obj src\engine.obj src\recog.obj \
       src\polyglot\attack.o src\polyglot\board.o src\polyglot\book.o \

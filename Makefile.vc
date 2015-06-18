@@ -178,7 +178,6 @@ SCID_OBJS = \
 	$(TMP_DIR)\matsig.obj \
 	$(TMP_DIR)\mfile.obj \
 	$(TMP_DIR)\misc.obj \
-	$(TMP_DIR)\movelist.obj \
 	$(TMP_DIR)\namebase.obj \
 	$(TMP_DIR)\pgnparse.obj \
 	$(TMP_DIR)\position.obj \
