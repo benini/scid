@@ -202,7 +202,7 @@ struct scidBaseT {
 	NameBase* nb;      // the NameBase file in memory.
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
-	TreeCache* treeCache;
+	TreeCache treeCache;
 	ByteBuffer* bbuf;
 	TextBuffer* tbuf;
 	Filter* dbFilter;

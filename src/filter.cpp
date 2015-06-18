@@ -169,7 +169,7 @@ CompressedFilter::CompressFrom (Filter * filter)
 //      stored in this compressed filter.
 //
 errorT
-CompressedFilter::UncompressTo (Filter * filter)
+CompressedFilter::UncompressTo (Filter * filter) const
 {
     // The filter and compressed filter MUST be of the same size:
     if (CFilterSize != filter->Size()) { return ERROR_Corrupt; }

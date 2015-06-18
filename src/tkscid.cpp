@@ -9320,13 +9320,13 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case TREE_POSITIONS:
         // Return the number of positions cached:
-        return setUintResult (ti, db->treeCache->UsedSize());
+        return setUintResult (ti, db->treeCache.UsedSize());
 
     case TREE_SEARCH:
         return sc_tree_search (cd, ti, argc, argv);
 
     case TREE_SIZE:
-        return setUintResult (ti, db->treeCache->Size());
+        return setUintResult (ti, db->treeCache.Size());
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);
@@ -9538,15 +9538,13 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // #TODO: cache even filtered searches (requires a filter hash)
     if (! inFilterOnly) {
         // Lookup the cache before searching:
-        cachedTreeT * pct = base->treeCache->Lookup (db->game->GetCurrentPos());
+        const cachedTreeT* pct = base->treeCache.Lookup (db->game->GetCurrentPos());
         if (pct != NULL) {
             // It was in the cache! Use it to save time:
-            if (pct->cfilter->Size() == base->numGames()) {
-                if (pct->cfilter->UncompressTo (base->treeFilter) == OK) {
-                    base->tree = pct->tree;
+                if (pct->restoreFilter(base->treeFilter) == OK) {
+                    base->tree = pct->getTree();
                     foundInCache = true;
                 }
-            }
         }
     }
 
@@ -9731,7 +9729,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // If it wasn't in the cache, maybe it belongs there:
         if (!foundInCache  && !inFilterOnly) {
-            base->treeCache->Add (db->game->GetCurrentPos(), tree, base->treeFilter);
+            base->treeCache.Add (db->game->GetCurrentPos(), tree, base->treeFilter);
         }
     }
 
@@ -9946,7 +9944,7 @@ sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
   }
   scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
-  if (base) base->treeCache->CacheResize(strGetUnsigned(argv[3]));
+  if (base) base->treeCache.CacheResize(strGetUnsigned(argv[3]));
   return TCL_OK;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9960,8 +9958,8 @@ sc_tree_cacheinfo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   }
   scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
   if (base) {
-    appendUintElement (ti, base->treeCache->UsedSize());
-    appendUintElement (ti, base->treeCache->Size());
+    appendUintElement (ti, base->treeCache.UsedSize());
+    appendUintElement (ti, base->treeCache.Size());
   } else {
     appendUintElement (ti, 0);
     appendUintElement (ti, 0);

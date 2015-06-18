@@ -132,18 +132,24 @@ class CompressedFilter
 
   public:
     CompressedFilter (void)     { Init(); }
-    ~CompressedFilter (void)    { Clear(); }
+    ~CompressedFilter (void) {
+        if (CompressedData != NULL) delete[] CompressedData;
+    }
 
     inline void Init();
     inline void Clear();
 
-    uint Size() { return CFilterSize; }
+    uint Size() const { return CFilterSize; }
     uint Count() { return CFilterCount; }
 
     errorT Verify (Filter * filter);
 
     void CompressFrom (Filter * filter);
-    errorT UncompressTo (Filter * filter);
+    errorT UncompressTo(Filter * filter) const;
+
+  private:
+    CompressedFilter(const CompressedFilter&);
+    void operator=(const CompressedFilter&);
 };
 
 inline void
