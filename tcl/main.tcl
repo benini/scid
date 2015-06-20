@@ -247,16 +247,6 @@ proc updateMainToolbar {} {
     catch { unset ::gameInfoBar(tb_BD_Redo) }
   }
 
-  if {[::game::Hprev_btnstate] == "normal"} {
-    set ::gameInfoBar(tb_BD_HPrev) "::game::LoadHistory -1"
-  } else {
-    catch { unset ::gameInfoBar(tb_BD_HPrev) }
-  }
-  if {[::game::Hnext_btnstate] == "normal"} {
-    set ::gameInfoBar(tb_BD_HNext) "::game::LoadHistory +1"
-  } else {
-    catch { unset ::gameInfoBar(tb_BD_HNext) }
-  }
   set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
 }
 

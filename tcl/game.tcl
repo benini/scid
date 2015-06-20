@@ -1,43 +1,4 @@
 
-# ::game::ConfirmDiscard2
-# Clearer buttons than ConfirmDiscard
-#   Prompts the user if they want to discard the changes to the
-#   current game. Returns :
-# 0 -> saves then continue
-# 1 -> discard changes and continue
-# 2 -> cancel action
-#
-proc ::game::ConfirmDiscard2 {} {
-  if {! [sc_game altered]} { return 1 }
-  
-  set w .confirmDiscard
-  toplevel $w
-  set ::curr_db [sc_base current]
-  set fn [file tail [sc_base filename $::curr_db]]
-  wm title $w "Scid: $fn ($::tr(game) [sc_game number])"
-  set ::game::answer 2
-  frame $w.top
-  frame $w.bottom
-  label $w.top.txt -text $::tr(ClearGameDialog)
-  pack $w.top.txt -expand 1 -fill both
-  
-  button $w.bottom.b1 -text $::tr(SaveAndContinue) -command {destroy .confirmDiscard ; set ::game::answer 0}
-  button $w.bottom.b2 -text $::tr(DiscardChangesAndContinue) -command {destroy .confirmDiscard ; set ::game::answer 1}
-  button $w.bottom.b3 -text $::tr(GoBack) -command {destroy .confirmDiscard ; set ::game::answer 2}
-  pack $w.bottom.b1 $w.bottom.b2 $w.bottom.b3 -side left -expand 1 -fill both
-  
-  pack $w.top $w.bottom -expand 1 -fill both
-  
-  bind $w <Destroy> {set ::game::answer 2}
-  
-  # ceinture et bretelle pour le grab !
-  update
-  catch { grab $w }
-  
-  focus $w.bottom.b3
-  vwait ::game::answer
-  return $::game::answer
-}
 
 # ::game::Clear
 #
@@ -45,12 +6,10 @@ proc ::game::ConfirmDiscard2 {} {
 #   Updates any affected windows.
 #
 proc ::game::Clear {} {
-  set confirm [::game::ConfirmDiscard2]
-  if {$confirm == 2} { return }
-  if {$confirm == 0} {
-    sc_game save [sc_game number]
-    # ::gameReplace
-  }
+  set confirm [::game::ConfirmDiscard]
+  if {$confirm == 0} { return }
+  if {$confirm == 1} { ::notify::DatabaseModified $::curr_db }
+  if {$confirm == 2} { ::notify::DatabaseModified $::clipbase_db }
   
   sc_game new
   ::notify::GameChanged
@@ -131,121 +90,6 @@ proc ::game::LoadRandom {} {
   set r [expr {(int (rand() * $ngames))} ]
   set gnumber [sc_base gameslist $db $r 1 $filter N+]
   ::game::Load [split [lindex $gnumber 0] "_"]
-}
-
-# History of viewed games
-set hgame_i 0
-
-proc ::game::HistoryRemoveDB {db} {
-  set i 0
-  while {[info exists ::hgame_game($i)]} {
-    if {$::hgame_db($i) == $db} {
-      set a $i; set b [expr $i +1]
-      while {[info exists ::hgame_game($b)]} {
-        set ::hgame_db($a) $::hgame_db($b)
-        set ::hgame_game($a) $::hgame_game($b)
-        set ::hgame_ply($a) $::hgame_ply($b)
-        incr a; incr b
-      }
-      unset ::hgame_game($a)
-      if {$i < $::hgame_i} { incr ::hgame_i -1 }
-    } else {
-      incr i
-    }
-  }
-}
-
-proc ::game::HistoryDatabaseSwitch {} {
-  ::game::HistorySavePos_
-  ::game::HistoryAdd_
-}
-
-proc ::game::Hprev_btnstate {} {
-  if {$::hgame_i > 0} { return "normal" }
-  return "disabled"
-}
-
-proc ::game::Hnext_btnstate {} {
-  set i [expr "$::hgame_i + 1"]
-  if {[info exists ::hgame_game($i)]} {return "normal"}
-  return "disabled"
-}
-
-proc ::game::HistorySavePos_ {} {
-  if {[info exists ::hgame_game($::hgame_i)]} {
-    set cur_db [sc_base current]
-    if {$cur_db != $::hgame_db($::hgame_i)} {
-      sc_base switch $::hgame_db($::hgame_i)
-      set ::hgame_ply($::hgame_i) [sc_pos location]
-      sc_base switch $cur_db
-    } else {
-      set ::hgame_ply($::hgame_i) [sc_pos location]
-    }
-  }
-}
-
-proc ::game::HistoryAdd_ {} {
-  if {[info exists ::hgame_game($::hgame_i)]} {
-    if {$::hgame_db($::hgame_i) == [sc_base current] && \
-        $::hgame_game($::hgame_i) == [sc_game number]} {
-      return
-    } else {
-      incr ::hgame_i
-    }
-  }
-  set i $::hgame_i
-  while {[info exists ::hgame_game($i)]} {
-    unset ::hgame_game($i)
-    incr i
-  }
-  set ::hgame_db($::hgame_i) [sc_base current]
-  set ::hgame_game($::hgame_i) [sc_game number]
-  set ::hgame_ply($::hgame_i) [sc_pos location]
-}
-
-# ::game::Load
-#
-#   Loads a specified game from the active database.
-#
-proc ::game::Load { selection {ply ""} } {
-  ::game::HistorySavePos_
-  if {[::game::Load_ $selection $ply]} {
-    set extraTags [sc_game tag get Extra]
-    regexp {FlipB "([01])"\n} $extraTags -> flipB
-    if {![info exists flipB]} { set flipB -1 }
-    ::board::flipAuto .main.board $flipB
-    ::game::HistoryAdd_
-    ::notify::GameChanged
-  }
-}
-
-proc ::game::LoadHistory {dir} {
-  set check [expr $::hgame_i + $dir]
-  if {$check < 0 || ![info exists ::hgame_game($check)]} {return}
-
-  ::game::HistorySavePos_
-  incr ::hgame_i $dir
-  ::file::SwitchToBase $::hgame_db($::hgame_i) 0
-  #If the game is still in memory avoid the ::game::ConfirmDiscard2 call
-  if {$::hgame_game($::hgame_i) != [sc_game number]} {
-    ::game::Load_ $::hgame_game($::hgame_i) $::hgame_ply($::hgame_i)
-  }
-  ::notify::GameChanged
-}
-
-proc ::game::Load_ { selection {ply ""} } {
-  set confirm [::game::ConfirmDiscard2]
-  if {$confirm == 2} { return 0}
-  if {$confirm == 0} {
-    sc_game save [sc_game number]
-    # ::gameReplace
-  }
-  if {[catch {sc_game load $selection}]} {
-    ERROR::MessageBox
-    return 0
-  }
-  if {$ply != ""} { eval "sc_move ply $ply" }
-  return 1
 }
 
 # ::game::LoadMenu
@@ -331,7 +175,173 @@ proc ::game::mergeInBase { srcBase destBase gnum } {
 }
 
 
-# FBF: 2012/03/08
+
+# Scid (Shane's Chess Information Database)
+#
+# Copyright (C) 2012-2015 Fulvio Benini
+#
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
+
+# ::game::Load
+#
+#   Loads a specified game from the active database.
+#
+proc ::game::Load { selection {ply ""} } {
+  ::gameHistory::updatePos $::curr_db [sc_game number] [sc_pos location]
+
+  set confirm [::game::ConfirmDiscard]
+  if {$confirm == 0} { return 0}
+  if {$confirm == 1} { ::notify::DatabaseModified $::curr_db }
+  if {$confirm == 2} { ::notify::DatabaseModified $::clipbase_db }
+
+  if {[catch {sc_game load $selection}]} {
+    ERROR::MessageBox
+    return 0
+  }
+
+  if {$ply != ""} { eval "sc_move ply $ply" }
+
+  ::gameHistory::pushBack $::curr_db [sc_game number] [sc_pos location]
+
+  set extraTags [sc_game tag get Extra]
+  regexp {FlipB "([01])"\n} $extraTags -> flipB
+  if {![info exists flipB]} { set flipB -1 }
+  ::board::flipAuto .main.board $flipB
+
+  ::notify::GameChanged
+}
+
+
+# ::game::ConfirmDiscard
+#   Prompts the user if they want to discard the changes to the
+#   current game. Returns :
+# 0 -> cancel action
+# 1 -> continue (saved)
+# 2 -> continue (added to clipbase)
+# 3 -> continue (discarded or no changes)
+#
+# If the game has been saved (res == 1 || res == 2) the caller should
+# ::notify::DatabaseModified
+#
+proc ::game::ConfirmDiscard {} {
+  if {! [sc_game altered]} { return 3 }
+
+  #Default value: cancel action
+  set ::game::answer 0
+
+  set fname [file tail [sc_base filename $::curr_db]]
+  set gnum [sc_game number]
+  set players "[sc_game info white] - [sc_game info black]\n"
+  if {[string equal " - \n" $players]} { set players "" }
+
+  set w .confirmDiscard
+  set bgcolor [ttk::style lookup Button.label -background]
+  toplevel $w -background $bgcolor
+  wm resizable $w 0 0
+  wm title $w "Scid: [tr Save]"
+
+  ttk::frame $w.msg
+  ttk::label $w.msg.image -image tb_iconSave
+  ttk::frame $w.msg.txt
+  label $w.msg.txt.l1 -text "$players$fname: [tr game] $gnum" -background $bgcolor -relief groove
+  ttk::label $w.msg.txt.l2 -text $::tr(ClearGameDialog) -wraplength 360 -font font_Bold -justify left
+  grid $w.msg.txt.l1 -row 0 -sticky news -pady 4 -padx 2
+  grid $w.msg.txt.l2 -row 1 -sticky news
+  grid $w.msg.txt   -row 0 -column 0 -pady 6 -padx 10 -sticky w
+  grid $w.msg.image -row 0 -column 1 -pady 6 -padx 6 -sticky ne
+
+  #The first button that gets keyboard focus when pressing <tab>
+  #Coincide with default value
+  ttk::button $w.backBtn -text $::tr(GoBack) -command {
+    destroy .confirmDiscard
+  }
+
+  ttk::label $w.saveTxt -text [tr SaveAndContinue]
+  ttk::button $w.saveBtn -image tb_BD_Save -command {
+    set gnum [sc_game number]
+    if {[catch {sc_game save $gnum $::curr_db}]} {
+      ERROR::MessageBox
+      set ::game::answer 0
+    } else {
+      ::gameHistory::updatePos $::curr_db $gnum [sc_pos location]
+      set ::game::answer 1
+	}
+    destroy .confirmDiscard
+  }
+
+  ttk::label $w.clipbaseTxt -text [tr EditCopy]
+  ttk::button $w.clipbaseBtn -image tb_BD_SaveAs -command {
+    if {[catch {sc_game save 0 $::clipbase_db}]} {
+      ERROR::MessageBox
+      set ::game::answer 0
+    } else {
+	  set gnum [sc_base numGames $::clipbase_db]
+      ::gameHistory::pushBack $::clipbase_db $gnum [sc_pos location]
+      set ::game::answer 2
+    }
+    destroy .confirmDiscard
+  }
+
+  ttk::label $w.discardTxt -text [tr DiscardChangesAndContinue]
+  ttk::button $w.discardBtn -image tb_BD_VarDelete -command {
+    set ::game::answer 3
+    destroy .confirmDiscard
+  }
+
+  grid $w.msg         -row 0 -columnspan 3
+  grid $w.saveBtn     -row 1 -sticky w -padx 10 -pady 4
+  grid $w.saveTxt     -row 1 -column 1 -sticky w
+  grid $w.clipbaseBtn -row 2 -sticky w -padx 10 -pady 4
+  grid $w.clipbaseTxt -row 2 -column 1 -sticky w
+  grid $w.discardBtn  -row 3 -sticky w -padx 10 -pady 4
+  grid $w.discardTxt  -row 3 -column 1 -sticky w
+  grid $w.backBtn     -row 3 -column 2 -sticky e -padx 10 -pady 4
+  grid [ttk::frame $w.pad] -row 4 -columnspan 3 -pady 3
+  grid columnconfigure $w 2 -weight 1
+
+  tk::PlaceWindow $w
+  grab $w
+  tkwait window $w
+  return $::game::answer
+}
+
+
+namespace eval ::gameHistory {
+  set list_ {}
+
+  proc updatePos {db game pos} {
+    global gameHistory::list_
+
+    set idx [lsearch -index 0 $list_ "$db $game"]
+    if {$idx < 0} { return }
+
+    set elem [list "$db $game" "$pos"]
+    set list_ [lreplace $list_ $idx $idx $elem]
+  }
+
+  proc pushBack {db game pos} {
+    global gameHistory::list_
+    if {$game == 0} { return }
+
+    set list_ [lsearch -index 0 -all -inline -not $list_ "$db $game"]
+    if {[llength $list_] > 20} {
+      set list_ [lrange $list_ end-19 end]
+    }
+
+    set elem [list "$db $game" "$pos"]
+    lappend list_ $elem
+  }
+
+  proc removeDB {db} {
+    global gameHistory::list_
+    set list_ [lsearch -index 0 -all -inline -not $list_ "$db *"]
+  }
+
+}
+
+
 # Grouping intercommunication between windows
 # When complete this should be moved to a new notify.tcl file
 namespace eval ::notify {

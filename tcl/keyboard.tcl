@@ -54,12 +54,6 @@ proc keyboardShortcuts {w} {
 		break
 	}
 
-	# Go to previous game
-	bind $w <Alt-Left>	{ ::game::LoadHistory -1; break }
-
-	# Go to next game
-	bind $w <Alt-Right> { ::game::LoadHistory +1; break }
-
 	# Close Scid
 	bind $w <Alt-F4> { ::file::Exit }
 

@@ -527,15 +527,11 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
   $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
   $m add command -label "  Go to start" -image tb_BD_Start -compound left -accelerator "<home>"
-  $m add separator
-  $m add command -label "  Previous game" -image tb_BD_HPrev -compound left -accelerator "<alt-left>"
   ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set m [menu $w.buttons.menu_forw -bg white -font font_Regular]
   $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
   $m add command -label "  Go to end" -image tb_BD_End -compound left -accelerator "<end>"
-  $m add separator
-  $m add command -label "  Next game" -image tb_BD_HNext -compound left -accelerator "<alt-right>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set menus { tb_BD_Changes tb_BD_Comment tb_BD_Variations tb_BD_Layout }
