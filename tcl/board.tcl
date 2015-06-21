@@ -383,26 +383,30 @@ proc ::board::new {w {psize 40} } {
 proc ::board::addNamesBar {w {varname}} {
   set bgcolor #fbfbfb
   frame $w.playerW -background $bgcolor
-  canvas $w.playerW.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 10 -height 10
+  frame $w.playerW.color -background #EAE0C8 -width 6 -height 6
+  canvas $w.playerW.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 9 -height 9
   label $w.playerW.name -textvariable ${varname}(nameW) -background $bgcolor -font font_SmallBold
   label $w.playerW.elo -textvariable ${varname}(eloW) -background $bgcolor -font font_Small
   label $w.playerW.clock -textvariable ${varname}(clockW) -background $bgcolor -font font_Small
-  grid $w.playerW.tomove -row 0 -column 0 -sticky w -padx 4
+  grid $w.playerW.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerW.name -row 0 -column 1 -sticky w
   grid $w.playerW.elo -row 0 -column 2 -sticky w
   grid $w.playerW.clock -row 0 -column 3 -sticky e
+  grid $w.playerW.tomove -row 0 -column 4 -sticky w -padx 4
   grid columnconfigure $w.playerW 3 -weight 1
   grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
 
   frame $w.playerB -background $bgcolor
-  canvas $w.playerB.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 10 -height 10
+  frame $w.playerB.color -background black -width 6 -height 6
+  canvas $w.playerB.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 9 -height 9
   label $w.playerB.name -textvariable ${varname}(nameB) -background $bgcolor -font font_SmallBold
   label $w.playerB.elo -textvariable ${varname}(eloB) -background $bgcolor -font font_Small
   label $w.playerB.clock -textvariable ${varname}(clockB) -background $bgcolor -font font_Small
-  grid $w.playerB.tomove -row 0 -column 0 -sticky w -padx 4
+  grid $w.playerB.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerB.name -row 0 -column 1 -sticky w
   grid $w.playerB.elo -row 0 -column 2 -sticky w
   grid $w.playerB.clock -row 0 -column 3 -sticky e
+  grid $w.playerB.tomove -row 0 -column 4 -sticky w -padx 4
   grid columnconfigure $w.playerB 3 -weight 1
   grid $w.playerB -row 3 -column 3 -columnspan 8 -sticky news -pady 4
 }
