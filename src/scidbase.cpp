@@ -129,6 +129,7 @@ errorT scidBaseT::Close () {
 	return (errIdx != OK) ? errIdx : errGFile;
 }
 
+
 void scidBaseT::clear() {
 	validStats_ = false;
 	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
@@ -213,7 +214,7 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	return errSave;
 }
 
-errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
+errorT scidBaseT::importGame(scidBaseT* sourceBase, uint gNum) {
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT err = addGameHelper(sourceBase, gNum);
 	if (err != OK) return err;
@@ -221,7 +222,7 @@ errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
 	return clearCaches(numGames() -1);
 }
 
-errorT scidBaseT::addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
+errorT scidBaseT::importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
 	ASSERT(*filter);
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT err = OK;

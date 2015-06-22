@@ -59,26 +59,12 @@ struct scidBaseT {
 		double exp;
 		int ngames, nexp;
 
+	public:
 		TreeStat();
-		void add(int result, int eloW, int eloB) {
-			ngames++;
-			double r = 0;
-			switch (result) {
-				case RESULT_White: resultW++; r = 1; break;
-				case RESULT_Draw: resultD++; r = 0.5; break;
-				case RESULT_Black: resultB++; break;
-				default: return;
-			}
-			if (eloW == 0 || eloB == 0) return;
-			int eloDiff = eloB - eloW;
-			if (eloDiff < 800 && eloDiff >= -800) {
-				exp += r - expVect_[eloDiff+800];
-				nexp++;
-			}
-		}
+		void add(int result, int eloW, int eloB);
 		bool operator<(const TreeStat& cmp) const { return ngames > cmp.ngames; }
 
-		private:
+	private:
 		static double expVect_[1600];
 	};
 
@@ -89,6 +75,7 @@ struct scidBaseT {
 	             const char* filename = "",
 	             bool create = true,
 	             const Progress& progress = Progress());
+
 	errorT Close ();
 
 	std::string newFilter();
@@ -114,44 +101,20 @@ struct scidBaseT {
 		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
 	}
 
-	errorT addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
-	errorT addGame(scidBaseT* sourceBase, uint gNum);
+	errorT importGame(scidBaseT* sourceBase, uint gNum);
+	errorT importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
+	template <class T, class P>
+	errorT importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg);
+
 	errorT saveGame(Game* game, bool clearCache, gamenumT idx = IDX_NOT_FOUND);
 
 	bool getFlag(uint flag, uint gNum) const {
 		return idx->GetEntry(gNum)->GetFlag (flag);
 	}
-	errorT setFlag(bool value, uint flag, uint gNum){
-		ASSERT(gNum < idx->GetNumGames());
-		IndexEntry* ie = idx->FetchEntry (gNum);
-		ie->SetFlag (flag, value);
-		errorT res = idx->WriteEntry (ie, gNum, false);
-		validStats_ = false;
-		// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
-		// idx->IndexUpdated(gNum);
-		return res;
-	}
-	errorT setFlag(bool value, uint flag, const HFilter& filter) {
-		errorT res = OK;
-		for (gamenumT gNum = 0, n = numGames(); gNum < n; gNum++) {
-			if (*filter && filter.get(gNum) == 0) continue;
-			res = setFlag(value, flag, gNum);
-			if (res != OK) return res;
-		}
-		return res;
-	}
-	errorT invertFlag(uint flag, uint gNum) {
-		return setFlag(! getFlag(flag, gNum), flag, gNum);
-	}
-	errorT invertFlag(uint flag, const HFilter& filter) {
-		errorT res = OK;
-		for (gamenumT i = 0, n = numGames(); i < n; i++) {
-			if (*filter && filter.get(i) == 0) continue;
-			res = invertFlag(flag, i);
-			if (res != OK) return res;
-		}
-		return res;
-	}
+	errorT setFlag(bool value, uint flag, uint gNum);
+	errorT setFlag(bool value, uint flag, const HFilter& filter);
+	errorT invertFlag(uint flag, uint gNum);
+	errorT invertFlag(uint flag, const HFilter& filter);
 
 	const Stats* getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
@@ -255,6 +218,87 @@ private:
 		return res;
 	}
 };
+
+inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
+	ngames++;
+	double r = 0;
+	switch (result) {
+		case RESULT_White: resultW++; r = 1; break;
+		case RESULT_Draw: resultD++; r = 0.5; break;
+		case RESULT_Black: resultB++; break;
+		default: return;
+	}
+	if (eloW == 0 || eloB == 0) return;
+	int eloDiff = eloB - eloW;
+	if (eloDiff < 800 && eloDiff >= -800) {
+		exp += r - expVect_[eloDiff+800];
+		nexp++;
+	}
+}
+
+template <class T, class P>
+inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg) {
+	errorT res;
+	Game g;
+	nImported = 0;
+	while ((res = codec.parseNext(&g)) != ERROR_NotFound) {
+		if (res != OK) continue;
+
+		res = saveGame(&g, false);
+		if (res != OK) break;
+
+		if ((++nImported % 200) == 0) {
+			if (!progress.report(codec.countParsed(), codec.countTotal())) {
+				res = ERROR_UserCancel;
+				break;
+			}
+		}
+	}
+
+	errorMsg = codec.getErrors();
+	clearCaches();
+	progress.report(1,1);
+
+	if (res == ERROR_NotFound) res = OK;
+	return res;
+}
+
+inline errorT scidBaseT::invertFlag(uint flag, uint gNum) {
+	return setFlag(! getFlag(flag, gNum), flag, gNum);
+}
+
+inline errorT scidBaseT::invertFlag(uint flag, const HFilter& filter) {
+	errorT res = OK;
+	for (gamenumT i = 0, n = numGames(); i < n; i++) {
+		if (*filter && filter.get(i) == 0) continue;
+		res = invertFlag(flag, i);
+		if (res != OK) return res;
+	}
+	return res;
+}
+
+inline errorT scidBaseT::setFlag(bool value, uint flag, uint gNum){
+	ASSERT(gNum < idx->GetNumGames());
+	IndexEntry* ie = idx->FetchEntry (gNum);
+	ie->SetFlag (flag, value);
+	errorT res = idx->WriteEntry (ie, gNum, false);
+	validStats_ = false;
+	// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
+	// idx->IndexUpdated(gNum);
+	return res;
+}
+
+inline errorT scidBaseT::setFlag(bool value, uint flag, const HFilter& filter) {
+	errorT res = OK;
+	for (gamenumT gNum = 0, n = numGames(); gNum < n; gNum++) {
+		if (*filter && filter.get(gNum) == 0) continue;
+		res = setFlag(value, flag, gNum);
+		if (res != OK) return res;
+	}
+	return res;
+}
+
+
 
 #endif
 

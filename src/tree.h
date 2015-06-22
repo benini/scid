@@ -135,8 +135,8 @@ class TreeCache {
 public:
     TreeCache()
     : NumInUse(0),
-      CacheSize(0),
       Cache(NULL),
+      CacheSize(0),
       counter_(0) {
     }
     ~TreeCache() {

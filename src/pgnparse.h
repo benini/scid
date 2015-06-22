@@ -27,6 +27,7 @@
 #include "game.h"
 #include "dstring.h"
 #include "mfile.h"
+#include <string>
 
 #define MAX_UNGETCHARS 16
 static const uint MAX_IGNORED_TAGS = 16;
@@ -115,7 +116,6 @@ class PgnParser
 };
 
 
-
 inline int
 PgnParser::GetChar ()
 {
@@ -144,13 +144,37 @@ PgnParser::UnGetChar (int ch)
     if (ch == '\n') { LineCounter--; }
 }
 
-
 inline void
 PgnParser::ClearErrors (void)
 {
     ErrorBuffer->Clear();
     NumErrors = 0;
 }
+
+
+
+class CodecPgn {
+    MFile file_;
+    PgnParser parser_;
+    uint fileSize_;
+
+public:
+    errorT read(const char* filename) {
+        errorT res = file_.Open(filename, FMODE_ReadOnly);
+        if (res == OK) {
+            parser_.Reset(&file_);
+            fileSize_ = fileSize (filename, "");
+            if (fileSize_ < 1) { fileSize_ = 1; }
+            parser_.IgnorePreGameText();
+        }
+        return res;
+    }
+
+    errorT parseNext(Game* g) { return parser_.ParseGame(g); }
+    uint countParsed()        { return parser_.BytesUsed(); }
+    uint countTotal()         { return fileSize_; }
+    std::string getErrors()   { return parser_.ErrorMessages(); }
+};
 
 
 #endif // idndef SCID_PGNPARSE_H

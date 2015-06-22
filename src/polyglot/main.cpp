@@ -31,17 +31,6 @@
 // #include "uci.h"
 #include "util.h"
 
-// constants
-
-static const char * const Version = "1.4";
-
-static const bool BlockSignal = false; // true on Windows
-
-static const int SearchDepth = 63;
-static const double SearchTime = 3600.0;
-
-static const int StringSize = 4096;
-
 // variables
 
 static bool Init;

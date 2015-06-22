@@ -699,53 +699,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_import:
-//    Imports games from a PGN file to the current base.
-//    Returns an error message if there was any file error.
-//    On success, returns a list of two elements: the number of
-//    games imported, and a string containing an PGN import errors
-//    or warnings.
-int
-sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
-{
-    errorT res = OK;
-
-    MFile pgnFile;
-    if (pgnFile.Open (filename, FMODE_ReadOnly) != OK) {
-        return errorResult (ti,"Error opening PGN file.");
-    }
-    PgnParser parser;
-    parser.Reset (&pgnFile);
-    uint inputLength = fileSize (filename, "");
-    if (inputLength < 1) { inputLength = 1; }
-    parser.IgnorePreGameText();
-    uint gamesSeen = 0;
-    Progress progress = UI_CreateProgress(ti);
-
-    while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
-        errorT err = cdb->saveGame(scratchGame, false);
-        if (err != OK) return UI_Result(ti, err);
-        // Update the progress bar:
-        if ((gamesSeen++ % 100) == 0) {
-            if (!progress.report(parser.BytesUsed(), inputLength)) {
-                res = ERROR_UserCancel;
-                break;
-            }
-        }
-    }
-    cdb->clearCaches();
-    progress.report(1,1);
-
-    appendUintElement (ti, gamesSeen);
-    if (parser.ErrorCount() > 0) {
-        Tcl_AppendElement (ti, parser.ErrorMessages());
-    } else {
-        Tcl_AppendElement (ti, "");
-    }
-    return UI_Result(ti, res);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_piecetrack:
 //    Examines games in the filter of the current database and
 //    returns a list of 64 integers indicating how frequently

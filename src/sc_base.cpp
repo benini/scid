@@ -20,6 +20,7 @@
 #include "common.h"
 #include "misc.h"
 #include "scidbase.h"
+#include "pgnparse.h"
 #include <string>
 #include <cstring>
 
@@ -109,11 +110,11 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	errorT err = OK;
 	const HFilter filter = dbase->getFilter(argv[3]);
 	if (*filter) {
-		err = targetBase->addGames(dbase, filter, UI_CreateProgress(ti));
+		err = targetBase->importGames(dbase, filter, UI_CreateProgress(ti));
 	} else {
 		uint gNum = strGetUnsigned (argv[3]);
 		if (gNum == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
-		err = targetBase->addGame(dbase, gNum -1);
+		err = targetBase->importGame(dbase, gNum -1);
 	}
 	return UI_Result(ti, err);
 }
@@ -340,6 +341,44 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 
 
 /**
+ * sc_base_import() - import games from non-native database
+ *
+ * Return:
+ *   On success, returns a list of two elements: the number of
+ *   games imported, and a string containing import errors
+ *   or warnings.
+ */
+UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
+{
+	const char* usage = "Usage: sc_base import baseId filename";
+	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
+
+	if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
+
+	const char* filename = argv[3];
+	uint gamesSeen = 0;
+	errorT err = ERROR_BadArg;
+	std::string errorMsg;
+	Progress progress = UI_CreateProgress(ti);
+
+	// if (pgn) {
+		CodecPgn codec;
+		err = codec.read(filename);
+		if (err == OK) {
+			err = dbase->importGames(codec, progress, gamesSeen, errorMsg);
+		}
+	// }
+
+	if (err != OK) return UI_Result(ti, err);
+
+	UI_List res(2);
+	res.push_back(gamesSeen);
+	res.push_back(errorMsg);
+	return UI_Result(ti, OK, res);
+}
+
+
+/**
  * sc_base_list() - return the list of opened databases
  */
 UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
@@ -446,7 +485,6 @@ UI_res_t sc_base_ecoStats    (UI_extra_t, UI_handle_t, int argc, const char ** a
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tournaments (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_import      (UI_handle_t ti, scidBaseT* cdb, const char * filename);
 uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
 
 
@@ -558,9 +596,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 		return sc_base_gameslist(dbase, ti, argc, argv);
 
 	case BASE_IMPORT:
-		if (argc != 4) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base import baseId filename");
-		if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
-		return sc_base_import (ti, dbase, argv[3]);
+		return sc_base_import (dbase, ti, argc, argv);
 
 	case BASE_NUMGAMES:
 		return sc_base_numGames (dbase, ti, argc, argv);
