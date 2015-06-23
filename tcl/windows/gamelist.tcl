@@ -310,7 +310,7 @@ proc ::windows::gamelist::AweInit {} {
 
 	#default
 	lappend awe_guess [list "-player" \
-	  {^(?:(.*?)\s+)??([!]?[_,[:alnum:]]+)(?:\s+(.*))?$} \
+	  {^(?:(.*?)\s+)??([!]?[_,%"[:alnum:]]+)(?:\s+(.*))?$} \
 	]
 }
 
@@ -322,7 +322,10 @@ proc ::windows::gamelist::AweGuess {{txt}} {
 	regsub -all {(^|\s)>\s} $txt { >} txt
 	regsub -all {(^|\s)<\s} $txt { <} txt
 	regsub -all {(^|\s)!\s} $txt { !} txt
-	
+
+	# Replace all spaces inside "" with %%
+	regsub -all {(".*?) (.*?")} $txt {\1%%\2} txt
+
 	# Search for explicit params
 	set param(0) ""
 	set val(0) ""
@@ -364,6 +367,8 @@ proc ::windows::gamelist::AweParse {{txt}} {
 	foreach op [AweGuess $txt] {
 		set param [lindex $op 0]
 		set value [lindex $op 1]
+		#Restore spaces inside ""
+		regsub -all {%%} $value { } value
 		catch {
 			regsub {^<} $value "$awe_min($param) " value
 			regsub {^>} $value "$awe_max($param) " value
