@@ -1515,20 +1515,21 @@ struct tourneyPlayerT {
 
 class Tourney
 {
-  public:
     idNumberT SiteID;
     idNumberT EventID;
     const NameBase * NB;
+    dateT     EventDate;
     dateT     StartDate;
     dateT     EndDate;
     dateT     MinDate;
     dateT     MaxDate;
-    uint      NumGames;
-    uint      NumPlayers;
     tourneyPlayerT * PlayerList;
     uint64_t  EloSum;
     uint64_t  EloCount;
     gamenumT FirstGame;
+  public:
+    uint      NumGames;
+    uint      NumPlayers;
     Tourney  * Next;
 
     Tourney(const IndexEntry* ie, const NameBase * nb);
@@ -1540,6 +1541,17 @@ class Tourney
         return (EloCount == 0 ? 0 : (EloSum + EloCount/2) / EloCount);
     };
     bool HasPlayer (const char * playerStr);
+
+    bool isTourneyGame(idNumberT siteID, idNumberT eventID, dateT eventDate)
+    {
+        if (SiteID != siteID  ||  EventID != eventID) {
+            return false;
+        }
+        if (eventDate != 0 && EventDate != 0 && EventDate != eventDate) {
+            return false;
+        }
+        return true;
+    }
 };
 typedef Tourney * tourneyPtrT;
 
@@ -1547,6 +1559,7 @@ Tourney::Tourney (const IndexEntry* ie, const NameBase * nb)
 {
     SiteID = ie->GetSite();
     EventID = ie->GetEvent();
+    EventDate = ie->GetEventDate();
     NB = nb;
     StartDate = EndDate = ie->GetDate();
     MinDate = date_AddMonths (StartDate, -3);
@@ -1563,11 +1576,7 @@ Tourney::~Tourney()
     p = PlayerList;
     while (p != NULL) {
         next = p->next;
-#ifdef WINCE
-        my_Tcl_Free((char*)p);
-#else
-        free(p);
-#endif
+        delete p;
         p = next;
     }
 }
@@ -1597,11 +1606,7 @@ Tourney::AddGame (const IndexEntry* ie, gamenumT g)
         p = p->next;
     }
     if (! playerFound) {
-#ifdef WINCE
-        p = (tourneyPlayerT*)my_Tcl_Alloc(sizeof( tourneyPlayerT));
-#else
         p = new tourneyPlayerT;
-#endif
         p->id = whiteID;
         p->elo = wElo;
         p->score = wScore;
@@ -1621,11 +1626,7 @@ Tourney::AddGame (const IndexEntry* ie, gamenumT g)
         p = p->next;
     }
     if (! playerFound) {
-#ifdef WINCE
-        p = (tourneyPlayerT*)my_Tcl_Alloc(sizeof( tourneyPlayerT));
-#else
         p = new tourneyPlayerT;
-#endif
         p->id = blackID;
         p->elo = bElo;
         p->score = bScore;
@@ -1840,13 +1841,13 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
         if (! useSite[siteID]) { continue; }
         idNumberT eventID = ie->GetEvent();
         if (useEvent != NULL  &&  !useEvent[eventID]) { continue; }
+        dateT eventDate = ie->GetEventDate();
         uint hash = (siteID + eventID) % TOURNEY_HASH_SIZE;
         Tourney * tp = hashTable[hash];
-        bool found = 0;
+        bool found = false;
         // Search this hash bucket for the right tourney:
         while (tp != NULL) {
-            if (tp->SiteID == siteID  &&  tp->EventID == eventID
-                &&  date >= tp->MinDate  &&  date <= tp->MaxDate) {
+            if (tp->isTourneyGame(siteID, eventID, eventDate)) {
                 tp->AddGame (ie, i);
                 found = true;
                 break;
@@ -3071,13 +3072,13 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    have the specified non-zero EventDate.
 static inline bool
 isCrosstableGame (const IndexEntry* ie, idNumberT siteID, idNumberT eventID,
-                  dateT startDate, dateT endDate, dateT eventDate)
+                  dateT eventDate)
 {
     if (ie->GetSite() != siteID  ||  ie->GetEvent() != eventID) {
         return false;
     }
-    if (eventDate != 0  &&  ie->GetEventDate() == eventDate) { return true; }
-    if (ie->GetDate() < startDate  ||  ie->GetDate() > endDate) {
+    dateT EventDate = ie->GetEventDate();
+    if (eventDate != 0  && EventDate != 0 && EventDate != eventDate) {
         return false;
     }
     return true;
@@ -3236,22 +3237,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return TCL_OK;
     }
 
-    dateT firstDate;
-    dateT lastDate;
     dateT eventDate = g->GetEventDate();
-
-    // If game date is a year only, then allow any game in this year to match
-    dateT monthDay = date_GetMonthDay (g->GetDate());
-
-    if (monthDay == 0) {
-      firstDate = g->GetDate();
-      lastDate = date_AddMonths (g->GetDate(), 12) - 1;
-    } else {
-      // Restrict games in tournament to be current game date +/- 3 months:
-      firstDate = date_AddMonths (g->GetDate(), -3);
-      lastDate = date_AddMonths (g->GetDate(), 3);
-    }
-
     dateT firstSeenDate = g->GetDate();
     dateT lastSeenDate = g->GetDate();
 
@@ -3285,8 +3271,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (ie->GetDeleteFlag()  &&  !useDeletedGames) { continue; }
-        if (! isCrosstableGame (ie, siteId, eventId, firstDate, lastDate,
-                                eventDate)) {
+        if (! isCrosstableGame (ie, siteId, eventId, eventDate)) {
             continue;
         }
         idNumberT whiteId = ie->GetWhite();
@@ -7539,7 +7524,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Set up crosstable game criteria if necessary:
     idNumberT eventId = 0, siteId = 0;
-    dateT firstDate = 0, lastDate = 0, eventDate = 0;
+    dateT eventDate = 0;
     if (editSelection == EDIT_CTABLE) {
         Game * g = db->game;
         if (db->getNameBase()->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
@@ -7549,8 +7534,6 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return errorResult (ti, "There are no crosstable games.");
         }
 
-        firstDate = date_AddMonths (g->GetDate(), -3);
-        lastDate = date_AddMonths (g->GetDate(), 3);
         eventDate = g->GetEventDate();
     }
 
@@ -7573,8 +7556,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         ie = db->getIndexEntry(i);
         if (editSelection == EDIT_CTABLE
-            && !isCrosstableGame (ie, siteId, eventId, firstDate, lastDate,
-                                  eventDate)) {
+            && !isCrosstableGame (ie, siteId, eventId, eventDate)) {
             continue;
         }
 
