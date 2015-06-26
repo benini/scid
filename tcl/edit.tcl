@@ -76,7 +76,8 @@ proc setupBoard {} {
       grid $w.pieces.$color.$i -column 0 -pady 2 -padx 2
     }
   }
-  set ::setupBoardFlipped 0
+  set ::setupBoardFlipped [::board::isFlipped .main.board]
+  ::board::flip .setup.l.bd $::setupBoardFlipped
   checkbutton $w.pieces.rotate -text "  Rotate" -image tb_BD_Flip -compound left \
       -indicatoron 0 -variable ::setupBoardFlipped -command {
     set ::setupBd  [string reverse $::setupBd]
@@ -358,6 +359,7 @@ proc exitSetupBoard {} {
   } else {
     ::utils::history::AddEntry setupFen $setupFen
     destroy .setup
+    ::board::flipAuto .main.board $::setupBoardFlipped
     ::notify::PosChanged -pgn
   }
 }
