@@ -16,7 +16,6 @@ extern const char * StartFen;
 // functions
 
 extern bool board_from_fen (board_t * board, const char string[]);
-extern bool board_to_fen   (const board_t * board, char string[], int size);
 
 #endif // !defined FEN_H
 

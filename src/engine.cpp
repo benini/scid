@@ -1388,7 +1388,9 @@ Engine::Think (MoveList * mlist)
     ClearHistoryValues();
 
     // If no legal move list was specified, generate and search all moves:
+    MoveList tmpMoveList;
     if (mlist == NULL) {
+        mlist = &tmpMoveList;
         Pos.GenerateMoves(mlist);
     }
 
@@ -1496,7 +1498,9 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
     ASSERT (depth >= 1);
 
     // If no legal move list was specified, generate and search all moves:
+    MoveList tmpMoveList;
     if (mlist == NULL) {
+        mlist = &tmpMoveList;
         Pos.GenerateMoves(mlist);
     }
 

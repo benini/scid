@@ -63,8 +63,6 @@ extern bool board_is_stalemate (const board_t * board);
 
 extern int  king_pos           (const board_t * board, int colour);
 
-extern void board_disp         (const board_t * board);
-
 #endif // !defined BOARD_H
 
 // end of board.h

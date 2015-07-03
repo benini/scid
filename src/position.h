@@ -225,7 +225,6 @@ public:
     void  GenerateMoves (MoveList* mlistRes, pieceT mask, genMovesT genType, bool maybeInCheck);
     void  GenerateMoves () { GenerateMoves (NULL, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
-    void  GenerateMoves (MoveList * mlist, pieceT mask) { GenerateMoves (mlist, mask, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);

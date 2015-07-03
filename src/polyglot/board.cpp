@@ -452,41 +452,5 @@ int king_pos(const board_t * board, int colour) {
    return board->list[colour][0];
 }
 
-// board_disp()
-
-void board_disp(const board_t * board) {
-
-   int file, rank, sq;
-   int piece, c;
-   char fen[256];
-
-   ASSERT(board!=NULL);
-
-   if (!board_to_fen(board,fen,256)) ASSERT(false);
-   my_log("POLYGLOT %s\n",fen);
-   my_log("POLYGLOT\n");
-
-   for (rank = 7; rank >= 0; rank--) {
-
-      my_log("POLYGLOT ");
-
-      for (file = 0; file < 8; file++) {
-
-         sq = square_make(file,rank);
-         piece = board->square[sq];
-
-         c = (piece != Empty) ? piece_to_char(piece) : '-';
-         my_log("%c ",c);
-      }
-
-      my_log("\n");
-   }
-
-   my_log("POLYGLOT\n");
-
-   my_log("POLYGLOT %s to play\n",(colour_is_black(board->turn))?"black":"white");
-   my_log("POLYGLOT\n");
-}
-
 // end of board.cpp
 

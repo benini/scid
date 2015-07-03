@@ -44,8 +44,6 @@ extern void list_sort     (list_t * list);
 extern bool list_contain  (const list_t * list, int move);
 extern bool list_equal    (list_t * list_1, list_t * list_2);
 
-extern void list_disp     (const list_t * list, const board_t * board);
-
 #endif // !defined LIST_H
 
 // end of list.h

@@ -4410,11 +4410,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Set up an array of all the game positions in the merge game:
     uint nMergePos = merge->GetNumHalfMoves() + 1;
     typedef char compactBoardStr [36];
-#ifdef WINCE
-    compactBoardStr * mergeBoards = (compactBoardStr *) my_Tcl_Alloc(sizeof( compactBoardStr [nMergePos]));
-#else
     compactBoardStr * mergeBoards = new compactBoardStr [nMergePos];
-#endif
     merge->MoveToPly (0);
     for (uint i=0; i < nMergePos; i++) {
         merge->GetCurrentPos()->PrintCompactStr (mergeBoards[i]);
@@ -4440,6 +4436,8 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
     }
+
+    delete [] mergeBoards;
 
     // Now the games match at the locations matchPly in the current
     // game and mergePly in the merge game.

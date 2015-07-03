@@ -243,27 +243,6 @@ bool list_equal(list_t * list_1, list_t * list_2) {
    return true;
 }
 
-// list_disp()
-
-void list_disp(const list_t * list, const board_t * board) {
-
-   int i, move, value;
-   char string[256];
-
-   ASSERT(list_is_ok(list));
-   ASSERT(board_is_ok(board));
-
-   for (i = 0; i < list->size; i++) {
-
-      move = list->move[i];
-      value = list->value[i];
-
-      if (!move_to_can(move,board,string,256)) ASSERT(false);
-      my_log("POLYGLOT %-5s %04X %+4d\n",string,move,value);
-   }
-
-   my_log("POLYGLOT\n");
-}
 
 // end of list.cpp
 

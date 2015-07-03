@@ -48,11 +48,6 @@ extern bool move_is_mate        (int move, const board_t * board);
 
 extern int  move_order          (int move);
 
-extern bool move_to_can         (int move, const board_t * board, char string[], int size);
-extern int  move_from_can       (const char string[], const board_t * board);
-
-extern void move_disp           (int move, const board_t * board);
-
 #endif // !defined MOVE_H
 
 // end of move.h
