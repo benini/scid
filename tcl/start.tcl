@@ -370,7 +370,11 @@ proc InitImg {} {
 		image create photo $iname -file $fname
 	}
 }
-InitImg
+if {[catch {InitImg}]} {
+	tk_messageBox -type ok -icon error -title "Scid: Error" \
+		-message "Cannot load images.\n$::errorCode\n\n$::errorInfo"
+	exit
+}
 
 # Set numeric format
 sc_info decimal $::locale(numeric)
