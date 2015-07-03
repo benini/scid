@@ -111,17 +111,6 @@ setResult (Tcl_Interp * ti, const char * str)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setBoolResult():
-//    Inline function to set the Tcl interpreter result to a
-//    boolean value.
-inline int
-setBoolResult (Tcl_Interp * ti, bool b)
-{
-    Tcl_SetResult (ti, b ? (char *) "1" : (char *) "0", TCL_STATIC);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // setIntResult():
 //    Inline function to set the Tcl interpreter result to a
 //    signed integer value.
@@ -144,19 +133,6 @@ setUintResult (Tcl_Interp * ti, uint i)
     char temp [20];
     sprintf (temp, "%u", i);
     Tcl_SetResult (ti, temp, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendIntResult:
-//    Inline function to append the specified signed value to the
-//    Tcl interpreter result.
-inline int
-appendIntResult (Tcl_Interp * ti, int i)
-{
-    char temp [20];
-    sprintf (temp, "%d", i);
-    Tcl_AppendResult (ti, temp, NULL);
     return TCL_OK;
 }
 
@@ -336,7 +312,7 @@ str_is_prefix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: strIsPrefix <shortStr> <longStr>");
     }
 
-    return setBoolResult (ti, strIsPrefix (argv[1], argv[2]));
+    return UI_Result(ti, OK, strIsPrefix (argv[1], argv[2]));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -430,7 +406,7 @@ sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         basePtr = &(dbList[baseNum - 1]);
     }
 
-    return setBoolResult (ti, basePtr->inUse);
+    return UI_Result(ti, OK, basePtr->inUse);
 }
 
 
@@ -2539,7 +2515,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
 
     case FILTER_ISWHOLE:
-        return setBoolResult (ti, filter.isWhole());
+        return UI_Result(ti, OK, filter.isWhole());
 
     case FILTER_TREESTATS: {
             std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
@@ -2924,7 +2900,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case GAME_ALTERED:
-        return setBoolResult (ti, db->gameAltered);
+        return UI_Result(ti, OK, db->gameAltered);
 
     case GAME_SET_ALTERED:
         if (argc != 3 ) {
@@ -5031,7 +5007,7 @@ int
 sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc == 2) {
-        return setBoolResult (ti, db->game->HasNonStandardStart());
+        return UI_Result(ti, OK, db->game->HasNonStandardStart());
     } else if (argc != 3) {
         return errorResult (ti, "Usage: sc_game startBoard <fenString>");
     }
@@ -5817,7 +5793,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_GZIP:
         // Return true if gzip files can be decoded by Scid.
-        return setBoolResult (ti, gzable());
+        return UI_Result(ti, OK, gzable());
 
     case INFO_HTML:
         if (argc >= 3) {
@@ -5850,8 +5826,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc != 3) {
             return errorResult (ti, "Usage: sc_info validDate <datestring>");
         }
-        setBoolResult (ti, date_ValidString (argv[2]));
-        break;
+        return UI_Result(ti, OK, date_ValidString (argv[2]));
 
     case INFO_VERSION:
         if (argc >= 3  &&  strIsPrefix (argv[2], "date")) {
@@ -6074,7 +6049,7 @@ sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc == 2) {
         // Command: sc_info tb
         // Returns whether tablebase support is complied.
-        return setBoolResult(ti, scid_TB_compiled());
+        return UI_Result(ti, OK, scid_TB_compiled());
 
     } else if (argc == 3) {
         // Command: sc_info_tb <directories>
@@ -6089,7 +6064,7 @@ sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Set up the required material:
         matSigT ms = MATSIG_Empty;
         const char * material = argv[3];
-        if (toupper(*material) != 'K') { return setBoolResult (ti, false); }
+        if (toupper(*material) != 'K') { return UI_Result(ti, OK, false); }
         material++;
         colorT side = WHITE;
         while (1) {
@@ -6103,7 +6078,7 @@ sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             ms = matsig_setCount (ms, p, matsig_getCount (ms, p) + 1);
         }
         // Check if a tablebase for this material is available:
-        return setBoolResult (ti, scid_TB_Available (ms));
+        return UI_Result(ti, OK, scid_TB_Available (ms));
     } else if (argc == 4  &&  argv[2][0] == 'c') {
         // Set the preferred tablebase cache size, to take effect
         // at the next tablebase initialisation.
@@ -6448,7 +6423,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_pos_isAt (cd, ti, argc, argv);
 
     case POS_ISCHECK:
-        return setBoolResult (ti, db->game->GetCurrentPos()->IsKingInCheck());
+        return UI_Result(ti, OK, db->game->GetCurrentPos()->IsKingInCheck());
 
     case POS_ISLEGAL:
         return sc_pos_isLegal (cd, ti, argc, argv);
@@ -6651,14 +6626,16 @@ sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     engine->SetPruning (pruning);
     int score = engine->Think (&mlist);
     delete engine;
-    appendIntResult (ti, score);
+
     char moveStr[20];
     moveStr[0] = 0;
     if (mlist.Size() > 0) {
         pos->MakeSANString (mlist.Get(0), moveStr, SAN_MATETEST);
     }
-    Tcl_AppendElement (ti, moveStr);
-    return TCL_OK;
+    UI_List res(2);
+    res.push_back(score);
+    res.push_back(moveStr);
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6856,16 +6833,16 @@ sc_pos_isAt (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case OPT_START:
-        return setBoolResult (ti, db->game->AtStart());
+        return UI_Result(ti, OK, db->game->AtStart());
 
     case OPT_END:
-        return setBoolResult (ti, db->game->AtEnd());
+        return UI_Result(ti, OK, db->game->AtEnd());
 
     case OPT_VSTART:
-        return setBoolResult (ti, db->game->AtVarStart());
+        return UI_Result(ti, OK, db->game->AtVarStart());
 
     case OPT_VEND:
-        return setBoolResult (ti, db->game->AtVarEnd());
+        return UI_Result(ti, OK, db->game->AtVarEnd());
 
     default:
         return errorResult (ti, "Usage: sc_pos isAt start|end|vstart|vend");
@@ -6892,8 +6869,7 @@ sc_pos_isPromo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_move isPromo <square> <square>");
     }
 
-    setBoolResult (ti, pos->IsPromoMove ((squareT) fromSq, (squareT) toSq));
-    return TCL_OK;
+    return UI_Result(ti, OK, pos->IsPromoMove ((squareT) fromSq, (squareT) toSq));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6910,7 +6886,7 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int sq1 = strGetInteger (argv[2]);
     int sq2 = strGetInteger (argv[3]);
     if (sq1 < 0  ||  sq1 > 63  ||  sq2 < 0  ||  sq2 > 63) {
-        return setBoolResult (ti, false);
+        return UI_Result(ti, OK, false);
     }
 
     // Compute all legal moves, then restrict the list to only
@@ -6920,7 +6896,7 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     mlist.SelectBySquare (sq1);
     mlist.SelectBySquare (sq2);
     bool found = (mlist.Size() > 0);
-    return setBoolResult (ti, found);
+    return UI_Result(ti, OK, found);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
