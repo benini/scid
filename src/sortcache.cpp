@@ -477,13 +477,7 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_eventdate:
-			{
-				dateT d = ie1->GetEventDate();
-				dateT d2 = ie2->GetEventDate();
-				if (d == ZERO_DATE) { d = ie1->GetDate(); }
-				if (d2 == ZERO_DATE) { d2 = ie2->GetDate(); }
-				res = (int)d - (int)d2;
-			}
+			res = (int)ie1->GetEventDate() - (int)ie2->GetEventDate();
 			break;
 
 		case SORTING_rating:
@@ -560,8 +554,6 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 				break;
 			case SORTING_eventdate:
 				cacheValue = ie->GetEventDate();
-				if (cacheValue == ZERO_DATE) 
-					cacheValue = ie->GetDate();
 				break;
 			case SORTING_year:
 				cacheValue = ie->GetYear();
