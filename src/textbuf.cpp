@@ -156,16 +156,6 @@ TextBuffer::PrintWord (const char * str)
     if (ByteCount + length >= BufferSize) { return ERROR_BufferFull; }
     while (*str != 0) {
         char ch = *str;
-        // Hack to work around Tcl/Tk Unicode system:
-        // It seems to store umlauts, accents etc as the ASCII
-        // decimal code 195, followed by the character code minus 64.
-        if ((byte)ch == 195) {
-            char ch2 = *(str+1);
-            if ((byte)ch > 127) {
-                str++;
-                ch = ch2 + 64;
-            }
-        }
         AddChar (ch);
         str++;
         Column++;
