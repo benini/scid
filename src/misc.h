@@ -138,14 +138,6 @@ ecoT eco_BasicCode (ecoT ecoCode);
 //      Currently, strLength() and strPrefix() are inline.
 //      strCompare_INLINE() is an inline equivalent of strCompare().
 
-// charIsSpace:
-//   Return true if the char is whitespace, including ASCII-160 (a
-//   non-breaking space, = 240 octal or A0 hex).
-inline bool
-charIsSpace (byte ch) {
-    return (isspace(ch)  ||  ch == 160);
-}
-
 char * strDuplicate (const char * str);
 int    strCompare (const char * s1, const char * s2);
 int    strCaseCompare (const char * s1, const char * s2);
@@ -198,8 +190,6 @@ inline const char *
 strPlural (uint x) {
     return (x == 1 ? "" : "s");
 }
-
-uint   strSingleSpace (char * str);
 
 bool   strIsAllWhitespace (const char * str);
 bool   strIsUnknownName (const char * str);

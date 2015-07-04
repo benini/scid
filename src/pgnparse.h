@@ -52,7 +52,6 @@ class PgnParser
     bool   StorePreGameText;
     bool   EndOfInputWarnings;
     bool   ResultWarnings;
-    bool   NewlinesToSpaces;   // Whether to convert newlines in comments
 
     uint   NumIgnoredTags;
     char * IgnoredTags [MAX_IGNORED_TAGS];
@@ -68,7 +67,7 @@ class PgnParser
     void   Reset();
     void   LogError (const char * errMessage, const char * text);
     void   GetLine (char * buffer, uint bufSize);
-    void   GetComment (char * buffer, uint bufSize);
+    std::string GetComment();
     void   GetRestOfSuffix (char * buffer, char firstChar);
     void   GetRestOfWord_NoDots (char * buffer);
     void   GetRestOfWord_WithDots (char * buffer);
@@ -101,7 +100,6 @@ class PgnParser
     void   SetPreGameText (bool b) { StorePreGameText = b; }
     void   SetEndOfInputWarnings (bool b) { EndOfInputWarnings = b; }
     void   SetResultWarnings (bool b) { ResultWarnings = b; }
-    void   SetNewlinesToSpaces (bool b) { NewlinesToSpaces = b; }
 
     void   AddIgnoredTag (const char * tag);
     void   ClearIgnoredTags ();

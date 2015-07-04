@@ -7,14 +7,14 @@
 //  Version:    3.5
 //
 //  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
-//
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
+//              Copyright (C) 2015 Fulvio Benini
 //
 //////////////////////////////////////////////////////////////////////
 
 
 #include "pgnparse.h"
 #include <stdio.h>
+
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     #define snprintf _snprintf
 #endif
@@ -26,6 +26,50 @@ const uint MAX_COMMENT_SIZE = 16000;
 //     buffer pointer.
 //
 #define ADDCHAR(buf,ch)  *(buf) = (ch); (buf)++; *(buf) = 0
+
+/**
+ * charIsSpace() - Checks whether @c is a white-space character.
+ *
+ * Return false for non-breaking spaces (ASCII-160 or A0 hex) because
+ * they can be part of a multi-byte utf-8 character.
+ */
+bool charIsSpace (unsigned char c) {
+    return (c == ' '    ||
+            c == '\t'   ||
+            c == '\n'   ||
+            c == '\v'   ||
+            c == '\f'   ||
+            c == '\r');
+}
+
+/**
+ * pgnLatin1_to_utf8() - convert a char to utf-8 enconding
+ * @c: pointer to a null terminated string
+ *
+ * The PGN standard use a subset of ISO 8859/1 (Latin 1):
+ * Code value from 0 to 126 are the standard ASCII character set
+ * Code value from 127 to 191 are not used for PGN data representation.
+ * Code value from 192 to 255 are mostly alphabetic printing characters with
+ * various diacritical marks; their use is encouraged for those languages
+ * that require such characters.
+ */
+std::string pgnLatin1_to_utf8 (const char* c) {
+    std::string res;
+    res = *c;
+    uint8_t v = *c;
+    if (v >= 192) {
+        // Because @c is required to be a null terminated string, it is safe
+        // to access the next char (if @c is the last char, next will be 0)
+        uint8_t next = *(c+1);
+        if ((next >> 6) != 0x02) {
+            //Not a valid utf-8 sequence
+            //Assume it's Latin1 and convert it to utf-8
+            res = static_cast<uint8_t>(0xC3);
+            res += static_cast<uint8_t>(v & 0xBF);
+        }
+    }
+    return res;
+}
 
 
 void
@@ -47,7 +91,6 @@ PgnParser::Reset()
     StorePreGameText = true;
     EndOfInputWarnings = true;
     ResultWarnings = true;
-    NewlinesToSpaces = true;
     NumIgnoredTags = 0;
 }
 
@@ -282,6 +325,12 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
     if (! seenEndQuote) { return ERROR_PGNTag; }
     value[lastQuoteIndex] = 0;
 
+    std::string tmpUft8;
+    for (const char* i = value; i != value + lastQuoteIndex; i++) {
+        tmpUft8 += pgnLatin1_to_utf8(i);
+    }
+    std::copy(tmpUft8.c_str(), tmpUft8.c_str() + tmpUft8.length() + 1, value);
+
     // Now decide what to add to the game based on this tag:
     if (strEqual (tag, "White")) {
 #ifdef STANDARD_PLAYER_NAMES
@@ -426,24 +475,36 @@ PgnParser::EndOfInput()
     return false;
 }
 
-void
-PgnParser::GetComment (char * buffer, uint bufSize)
+// Modifies the parameter string in-place, trimming all
+// whitespace at the start and end of the string, and reducing
+// all other sequences of whitespace to a single space.
+//
+// Example: "\t\n   A  \t\n   B   C  "  (where \t and \n are tabs
+// and newlines) becomes "A B C".
+std::string PgnParser::GetComment()
 {
-    char * outPtr = buffer;
-    int ch;
-    int startLine = LineCounter;
-    ch = GetChar();
-    while (ch != EndChar  &&  ch != '}') {
-        if (NewlinesToSpaces  &&  ch == '\n') { ch = ' '; }
-        if (bufSize > 0) { *outPtr++ = (char) ch; bufSize--; }
-        ch = GetChar();
+    std::string res;
+
+    int ch = GetChar();
+    for (; ch != EndChar  &&  ch != '}'; ch = GetChar()) {
+        if (charIsSpace(ch)) {
+            if (res.length() == 0) continue;
+            if (*(res.rbegin()) == ' ') continue;
+            ch = ' ';
+        }
+        res += ch;
     }
-    if (buffer) { *outPtr = 0; }
+    if (res.length() != 0 && *(res.rbegin()) == ' ') {
+        res.resize(res.length() -1);
+    }
+
     if (ch == EndChar) {
         char tempStr[80];
-        sprintf (tempStr, "started on line %u\n", startLine);
+        sprintf (tempStr, "started on line %u\n", LineCounter);
         LogError ("Error: Open Comment at end of input", tempStr);
     }
+
+    return res;
 }
 
 void
@@ -1061,11 +1122,18 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
             game->MoveForward();
             break;
 
-        case TOKEN_Comment:
-            GetComment (buffer, MAX_COMMENT_SIZE);
-            strSingleSpace (buffer);
-            game->SetMoveComment (buffer);
-            break;
+        case TOKEN_Comment: {
+            std::string comment = GetComment();
+
+            std::string tmpUft8;
+            const char* end = comment.c_str() + comment.length();
+            for (const char* i = comment.c_str(); i != end; i++) {
+                tmpUft8 += pgnLatin1_to_utf8(i);
+            }
+
+            game->SetMoveComment(tmpUft8.c_str());
+
+            } break;
 
         case TOKEN_LineComment:
             break;  // Line comments inside a game are just ignored.
@@ -1195,7 +1263,7 @@ PgnParser::ParseGame (Game * game)
 
         } else if (token == TOKEN_Comment) {
             // Get, but ignore, this comment:
-            GetComment (NULL, 0);
+            GetComment();
 
         } else if (token == TOKEN_TagEnd) {
             // A blank line after the PGN header tags:

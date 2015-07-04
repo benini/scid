@@ -693,60 +693,6 @@ strNextWord (const char * str)
     return str;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strSingleSpace():
-//      Modifies the parameter string in-place, trimming all
-//      whitespace at the start and end of the string, and reducing
-//      all other sequences of whitespace to a single space.
-//
-//      Example: "\t\n   A  \t\n   B   C  "  (where \t and \n are tabs
-//      and newlines) becomes "A B C".
-//
-//      Returns the new string length, to save time if the caller
-//      wants to find the length of the modified string.
-//
-uint
-strSingleSpace (char * str)
-{
-    ASSERT (str);
-    bool spaceSeen = true;  // Initially true so whitespace at the start
-                            // of the string is removed.
-    char * forward = str;
-    char * back = str;
-    uint length = 0;
-
-    // Loop through the string compacting out unwanted whitespace:
-
-    while (*forward) {
-        if (isspace (*forward)) {
-            if (spaceSeen) {
-                // Already seen whitespace, so skip over this char.
-            } else {
-                spaceSeen = true;
-                *back++ = ' ';
-                length++;
-            }
-        } else {
-            spaceSeen = false;
-            *back++ = *forward;
-            length++;
-        }
-        forward++;
-    }
-
-    // Now, if the last char kept was a space, remove it:
-
-    if (length > 0  &&  spaceSeen) {
-        ASSERT (back != str);
-        back--;
-        length--;
-        ASSERT (*back == ' ');
-    }
-
-    *back = 0;
-    return length;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strIsAllWhitespace():
 //    Returns true if the string contains only whitespace characters.
