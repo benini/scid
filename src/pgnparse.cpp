@@ -13,6 +13,7 @@
 
 
 #include "pgnparse.h"
+#include "game.h"
 #include <stdio.h>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
@@ -72,12 +73,17 @@ std::string pgnLatin1_to_utf8 (const char* c) {
 }
 
 
-void
-PgnParser::Init ()
-{
-    ErrorBuffer = new DString;
-    Reset();
+errorT CodecPgn::open(const char* filename) {
+    errorT res = file_.Open(filename, FMODE_ReadOnly);
+    if (res == OK) {
+        parser_.Reset(&file_);
+        fileSize_ = fileSize (filename, "");
+        if (fileSize_ < 1) { fileSize_ = 1; }
+        parser_.IgnorePreGameText();
+    }
+    return res;
 }
+
 
 void
 PgnParser::Reset()
@@ -85,7 +91,6 @@ PgnParser::Reset()
     UnGetCount = 0;
     NumErrors = 0;
     BytesSeen = 0;
-    ErrorFile = NULL;
     LineCounter = 0;
     GameCounter = 0;
     StorePreGameText = true;
@@ -106,7 +111,7 @@ PgnParser::Reset (MFile * infile)
 void
 PgnParser::Init (const char * inbuffer)
 {
-    Init();
+    Reset();
     InFile = NULL;
     InBuffer = InCurrent = inbuffer;
     EndChar = 0;
@@ -119,6 +124,34 @@ PgnParser::Reset (const char * inbuffer)
     InFile = NULL;
     InBuffer = InCurrent = inbuffer;
     EndChar = 0;
+}
+
+int
+PgnParser::GetChar ()
+{
+    int ch = 0;
+    BytesSeen++;
+    if (UnGetCount > 0) {
+        UnGetCount--;
+        ch = UnGetCh[UnGetCount];
+    } else if (InFile != NULL) {
+        ch =  InFile->ReadOneByte();
+    } else {
+        ch = *InCurrent;
+        if (ch != 0) { InCurrent++; }
+    }
+    if (ch == '\n') { LineCounter++; }
+    return ch;
+}
+
+void
+PgnParser::UnGetChar (int ch)
+{
+    if (UnGetCount == MAX_UNGETCHARS) { return; }
+    UnGetCh[UnGetCount] = ch;
+    UnGetCount++;
+    BytesSeen--;
+    if (ch == '\n') { LineCounter--; }
 }
 
 void
@@ -152,17 +185,11 @@ void
 PgnParser::LogError (const char * errMessage, const char * text)
 {
     NumErrors++;
-    if (ErrorFile != NULL) {
-        //fprintf (ErrorFile, "%s%s [line %u]\n", errMessage, text, LineCounter);
-        if (InFile != NULL) {
-            fprintf (ErrorFile, "%s:", InFile->GetFileName());
-        }
-        fprintf (ErrorFile, "(game %u, line %u) %s%s\n", GameCounter, LineCounter, errMessage, text);
-        return;
-    }
-    ErrorBuffer->Append ("(game ", GameCounter);
-    ErrorBuffer->Append (", line ", LineCounter, ") ");
-    ErrorBuffer->Append (errMessage, text, "\n");
+    ErrorBuffer += "(game " + to_string(GameCounter);
+    ErrorBuffer += ", line " + to_string(LineCounter) + ") ";
+    ErrorBuffer += errMessage;
+    ErrorBuffer += text;;
+    ErrorBuffer += "\n";
 }
 
 void

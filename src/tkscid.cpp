@@ -28,6 +28,7 @@
 #include "crosstab.h"
 #include "engine.h"
 #include "game.h"
+#include "mfile.h"
 #include "optable.h"
 #include "pbook.h"
 #include "pgnparse.h"

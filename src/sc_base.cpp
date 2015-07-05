@@ -363,7 +363,7 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 
 	// if (pgn) {
 		CodecPgn codec;
-		err = codec.read(filename);
+		err = codec.open(filename);
 		if (err == OK) {
 			err = dbase->importGames(codec, progress, gamesSeen, errorMsg);
 		}

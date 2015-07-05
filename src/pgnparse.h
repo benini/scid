@@ -24,10 +24,10 @@
 
 #include "common.h"
 #include "tokens.h"
-#include "game.h"
-#include "dstring.h"
 #include "mfile.h"
 #include <string>
+
+class Game;
 
 #define MAX_UNGETCHARS 16
 static const uint MAX_IGNORED_TAGS = 16;
@@ -43,8 +43,7 @@ class PgnParser
     uint   GameCounter;
     int    EndChar;
     uint   BytesSeen;
-    FILE * ErrorFile;
-    DString * ErrorBuffer;
+    std::string ErrorBuffer;
     uint   NumErrors;
 
     enum { PARSE_Searching, PARSE_Header, PARSE_Game } ParseMode;
@@ -62,7 +61,6 @@ class PgnParser
     inline int    GetChar();
     inline void   UnGetChar (int ch);
 
-    void   Init();
     void   Init (const char * inbuffer);
     void   Reset();
     void   LogError (const char * errMessage, const char * text);
@@ -85,16 +83,14 @@ class PgnParser
     //    a pointer to a buffer, or it defaults to an empty buffer.
     PgnParser (void) { Init ((const char *) ""); }
     PgnParser (const char * inbuffer) { Init (inbuffer); }
-    ~PgnParser() { delete ErrorBuffer; ClearIgnoredTags(); }
+    ~PgnParser() { ClearIgnoredTags(); }
 
     void   Reset (MFile * infile);
     void   Reset (const char * inbuffer);
 
     uint   BytesUsed (void) { return BytesSeen; }
     uint   ErrorCount() { return NumErrors; }
-    const char * ErrorMessages() { return ErrorBuffer->Data(); }
-    void   ClearErrors();
-    void   SetErrorFile (FILE * fp) { ErrorFile = fp; }
+    const char* ErrorMessages() { return ErrorBuffer.c_str(); }
     void   KeepPreGameText() { StorePreGameText = true; }
     void   IgnorePreGameText() { StorePreGameText = false; }
     void   SetPreGameText (bool b) { StorePreGameText = b; }
@@ -114,64 +110,17 @@ class PgnParser
 };
 
 
-inline int
-PgnParser::GetChar ()
-{
-    int ch = 0;
-    BytesSeen++;
-    if (UnGetCount > 0) {
-        UnGetCount--;
-        ch = UnGetCh[UnGetCount];
-    } else if (InFile != NULL) {
-        ch =  InFile->ReadOneByte();
-    } else {
-        ch = *InCurrent;
-        if (ch != 0) { InCurrent++; }
-    }
-    if (ch == '\n') { LineCounter++; }
-    return ch;
-}
-
-inline void
-PgnParser::UnGetChar (int ch)
-{
-    if (UnGetCount == MAX_UNGETCHARS) { return; }
-    UnGetCh[UnGetCount] = ch;
-    UnGetCount++;
-    BytesSeen--;
-    if (ch == '\n') { LineCounter--; }
-}
-
-inline void
-PgnParser::ClearErrors (void)
-{
-    ErrorBuffer->Clear();
-    NumErrors = 0;
-}
-
-
-
 class CodecPgn {
     MFile file_;
     PgnParser parser_;
     uint fileSize_;
 
 public:
-    errorT read(const char* filename) {
-        errorT res = file_.Open(filename, FMODE_ReadOnly);
-        if (res == OK) {
-            parser_.Reset(&file_);
-            fileSize_ = fileSize (filename, "");
-            if (fileSize_ < 1) { fileSize_ = 1; }
-            parser_.IgnorePreGameText();
-        }
-        return res;
-    }
-
+    errorT open(const char* filename);
     errorT parseNext(Game* g) { return parser_.ParseGame(g); }
     uint countParsed()        { return parser_.BytesUsed(); }
     uint countTotal()         { return fileSize_; }
-    std::string getErrors()   { return parser_.ErrorMessages(); }
+    const char* getErrors()   { return parser_.ErrorMessages(); }
 };
 
 

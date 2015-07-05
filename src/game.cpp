@@ -23,6 +23,7 @@
 #include "bytebuf.h"
 #include "textbuf.h"
 #include "stored.h"
+#include "dstring.h"
 #include <string.h>
 
 // Piece letters translation
