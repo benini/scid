@@ -39,7 +39,7 @@ if {$tcl_version == 8.5} { catch {package require img::png} }
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
-set scidVersionExpected "4.6.1"
+set scidVersionExpected "4.6.2"
 
 # Check that the version of c++ code matches the version of tcl code
 #
