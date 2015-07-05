@@ -236,39 +236,6 @@ TextBuffer::PrintInt (uint i, const char * str)
     return PrintWord(temp);
 }
 
-#ifdef WINCE
-errorT
-TextBuffer::DumpToFile (/*FILE * */Tcl_Channel fp)
-{
-    ASSERT (fp != NULL);
-    //uint count = 0;
-    char * b = Buffer;
-/*
-    while (count < ByteCount) {
-        putc (*b, (FILE *)fp);
-        count++; b++;
-    }*/
-    my_Tcl_Write(fp, b, ByteCount);
-    return OK;
-}
-
-#else
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//### TextBuffer::DumpToFile(): Output a textbuffer to an open file.
-errorT
-TextBuffer::DumpToFile (FILE * fp)
-{
-    ASSERT (fp != NULL);
-    uint count = 0;
-    char * b = Buffer;
-    while (count < ByteCount) {
-        putc (*b, fp);
-        count++; b++;
-    }
-    return OK;
-}
-#endif
 ///////////////////////////////////////////////////////////////////////////
 //  EOF: textbuf.cpp
 ///////////////////////////////////////////////////////////////////////////

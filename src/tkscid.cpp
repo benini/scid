@@ -493,7 +493,9 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
     g->SetHtmlStyle (htmlDiagStyle);
     g->WriteToPGN (db->tbuf);
     db->tbuf->NewLine();
-    db->tbuf->DumpToFile (exportFile);
+    size_t nWrited = fwrite(db->tbuf->GetBuffer(), 1, db->tbuf->GetByteCount(), exportFile);
+    //TODO:
+    //if (nWrited != db->tbuf->GetByteCount()) error
     language = old_language;
 }
 
@@ -2569,7 +2571,9 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     dbase->tbuf->Empty();
                     g.WriteToPGN (dbase->tbuf);
                     dbase->tbuf->NewLine();
-                    dbase->tbuf->DumpToFile (exportFile);
+                    size_t nWrited = fwrite(db->tbuf->GetBuffer(), 1, db->tbuf->GetByteCount(), exportFile);
+                    //TODO:
+                    //if (nWrited != db->tbuf->GetByteCount()) error
                 }
                 if (!end) {
                     end = ! progress.report(start, filter.count());

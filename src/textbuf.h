@@ -79,7 +79,6 @@ public:
     errorT   PrintString (const char * str);
     errorT   PrintSpace ();
     errorT   PrintChar (char b);
-    errorT   DumpToFile (FILE * fp);
 
     errorT   PrintInt (uint i, const char * str);
     inline errorT PrintInt (uint i) { return PrintInt (i, ""); }
