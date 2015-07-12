@@ -1647,36 +1647,22 @@ proc addAllVariations {{n 1}} {
 #
 ################################################################################
 proc makeAnalysisMove {{n 1} {comment ""}} {
-    set s $::analysis(moves$n)
-    set res 1
-    while {1} {
-        if {[string length $s] == 0} { return 0 }
-        set c [string index $s 0]
-        switch -- $c {
-            a - b - c - d - e - f - g - h -
-            K - Q - R - B - N - O {
-                break
-            }
-        }
-        set s [string range $s 1 end]
+    regexp {[^[:alpha:]]*(.*?) .*} $::analysis(moves$n) -> move
+    if {![info exists move]} { return 0 }
+
+    if { $::analysis(uci$n) } {
+        ::addMoveUCI $move
+    } else  {
+        ::addSanMove $move
     }
-    if {[scan $s "%s" move] != 1} { set res 0 }
-    set action "replace"
-    if {! [sc_pos isAt vend]} {
-        set action [confirmReplaceMove]
+
+    if {$comment != ""} {
+        set tmp [sc_pos getComment]
+        if {$tmp != ""} { lappend tmp " - " }
+        sc_pos setComment "$tmp$comment"
     }
-    if {$action == "cancel"} { return }
-    set ::analysis(automoveThinking$n) 0
-    if {$action == "var"} { sc_var create }
-    if { [sc_move_add $move $n] } { 
-    	set res 0 
-    } else {
-    	sc_pos setComment $comment
-    }
-    
-    updateBoard -pgn -animate
-    ::utils::sound::AnnounceNewMove $move
-    return $res
+
+    return 1
 }
 ################################################################################
 #
