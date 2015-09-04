@@ -308,12 +308,12 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 
 		if (p.index == OPT_FILTER) {
 			filterOp = strGetFilterOp (value);
-			if (filterOp == FILTEROP_RESET) {
-				filter.fill(1);
-				filterOp = FILTEROP_AND;
-			}
 			break;
 		}
+	}
+	if (filterOp == FILTEROP_RESET) {
+		filter.fill(1);
+		filterOp = FILTEROP_AND;
 	}
 
 	// 2) Create the list of games
