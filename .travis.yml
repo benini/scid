@@ -5,6 +5,8 @@ os:
   - osx
 
 matrix:
+  exclude:
+  - os: linux
   include:
   - os: linux
     env: COMP=clang++-3.7
@@ -16,7 +18,7 @@ matrix:
           - tk
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-precise
+          - llvm-toolchain-precise-3.7
 
   - os: linux
     env: COMP=clang++-3.5
