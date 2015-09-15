@@ -73,6 +73,9 @@ proc keyboardShortcuts {w} {
 	# Redo
 	bind $w <Control-y> { undoFeature redo }
 
+	# New game
+	bind $w <Control-x> { ::game::Clear }
+
 	# Save current game
 	bind $w <Control-s> { ::gameReplace }
 

@@ -124,7 +124,7 @@ set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Game -menu $m
 $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
-$m add command -label GameReload -command ::game::Reload -accelerator "Ctrl+Shift+L"
+$m add command -label GameReload -command ::game::Reload
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
 $m add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
