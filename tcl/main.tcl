@@ -800,7 +800,7 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
     if {[winfo exists .fics]} {
         if { [::fics::playerCanMove] } {
             if { [string length $moveUCI] == 5 } {
-                set promoletter [ string tolower [ string index $moveuci end ] ]
+                set promoletter [ string tolower [ string index $moveUCI end ] ]
                 ::fics::writechan "promote $promoletter"
             }
             ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
