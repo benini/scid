@@ -57,9 +57,6 @@ proc keyboardShortcuts {w} {
 	# Close Scid
 	bind $w <Alt-F4> { ::file::Exit }
 
-	# Create a new database
-	bind $w <Control-n> { ::file::New }
-
 	# Open a database
 	bind $w <Control-o> { ::file::Open }
 
@@ -74,7 +71,7 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-y> { undoFeature redo }
 
 	# New game
-	bind $w <Control-x> { ::game::Clear }
+	bind $w <Control-n> { ::game::Clear }
 
 	# Save current game
 	bind $w <Control-s> { ::gameReplace }

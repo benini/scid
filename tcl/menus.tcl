@@ -36,7 +36,7 @@ if { $macOS } {
 set m .menu.file
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label File -menu $m
-$m add command -label FileNew -acc "Ctrl+N" -command ::file::New
+$m add command -label FileNew -command ::file::New
 $m add command -label FileOpen -acc "Ctrl+O" -command ::file::Open
 $m add command -label FileFinder -acc "Ctrl+/" -command ::file::finder::Open
 menu $m.bookmarks
@@ -123,7 +123,7 @@ $m add command -label EditPaste -command {
 set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Game -menu $m
-$m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
+$m add command -label GameNew -accelerator "Ctrl+N" -command ::game::Clear
 $m add command -label GameReload -command ::game::Reload
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
