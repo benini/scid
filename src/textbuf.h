@@ -41,11 +41,16 @@ private:
     const char * Translation [256];
 
     inline void   AddChar (char ch);
+    TextBuffer(const TextBuffer&);
+    TextBuffer& operator=(const TextBuffer&);
 
     //----------------------------------
     //  TextBuffer:  Public Functions
 public:
-    TextBuffer()    { Init(); }
+    TextBuffer() {
+        Init();
+        SetBufferSize(1280000);
+    }
     ~TextBuffer()   { Free(); }
     
     void     Init ();

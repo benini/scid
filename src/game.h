@@ -21,11 +21,11 @@
 #include "indexentry.h"
 #include "position.h"
 #include "namebase.h"
-#include "textbuf.h"
 #include "matsig.h"
 #include <vector>
 #include <string>
 class ByteBuffer;
+class TextBuffer;
 
 void transPieces(char *s);
 char transPiecesChar(char c);
@@ -468,8 +468,10 @@ public:
                              moveT * oldCurrentMove,
                              bool printMoveNum, bool inComment);
     errorT    WritePGN (TextBuffer * tb, uint stopLocation);
-    errorT    WriteToPGN (TextBuffer * tb);
-    errorT    MoveToLocationInPGN (TextBuffer * tb, uint stopLocation);
+    std::pair<const char*, unsigned> WriteToPGN (uint lineWidth = 0,
+                                                 bool NewLineAtEnd = false,
+                                                 bool newLineToSpaces = true);
+    errorT    MoveToLocationInPGN (uint stopLocation);
     errorT    WriteExtraTags (FILE * fp);
 
     uint      GetPgnOffset () {

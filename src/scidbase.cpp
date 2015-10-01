@@ -33,8 +33,6 @@ void scidBaseT::Init() {
 	fileMode = FMODE_Both;
 	gfile = new GFile;
 	bbuf = new ByteBuffer(BBUF_SIZE);
-	tbuf = new TextBuffer;
-	tbuf->SetBufferSize (TBUF_SIZE);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
 	duplicates_ = NULL;
@@ -49,7 +47,6 @@ scidBaseT::~scidBaseT() {
 	if (game != NULL) delete game;
 	if (gfile != NULL) delete gfile;
 	if (bbuf != NULL) delete bbuf;
-	if (tbuf != NULL) delete tbuf;
 	if (stats_ != NULL) delete stats_;
 	if (dbFilter != NULL) delete dbFilter;
 	if (treeFilter != NULL) delete treeFilter;

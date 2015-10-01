@@ -1226,19 +1226,15 @@ Game::TruncateStart (void)
     CurrentMove->prev->marker = END_MARKER;
     FirstMove->next = CurrentMove;
     CurrentMove->prev = FirstMove;
-    TextBuffer tb;
-    // 20000 does not seem to be enough with the capacity to handle long games (Scid 4.0)
-    tb.SetBufferSize (TBUF_SIZE); // 20000
-    tb.SetWrapColumn (TBUF_SIZE); // 20000
     gameFormatT gfmt = PgnFormat;
     SetPgnFormat (PGN_FORMAT_Plain);
     // we need to switch off short header style or PGN parsing will not work
     uint  old_style = GetPgnStyle ();
     if (PgnStyle & PGN_STYLE_SHORT_HEADER) 
       SetPgnStyle (PGN_STYLE_SHORT_HEADER, false);
-    WriteToPGN (&tb);
+    std::pair<const char*, unsigned> pgnBuf = WriteToPGN();
     Clear();
-    PgnParser parser (tb.GetBuffer());
+    PgnParser parser (pgnBuf.first);
     parser.ParseGame (this);
     SetPgnFormat (gfmt);
     MoveToPly(0);
@@ -2879,16 +2875,27 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
 //      Just calls Game::WritePGN() with a zero stopLocation (to print
 //      the entire game).
 //
-errorT
-Game::WriteToPGN (TextBuffer * tb)
+std::pair<const char*, unsigned>
+Game::WriteToPGN(uint lineWidth, bool NewLineAtEnd, bool newLineToSpaces)
 {
-    return WritePGN (tb, 0);
+    static TextBuffer tbuf;
+
+    tbuf.Empty();
+    tbuf.SetWrapColumn(lineWidth ? lineWidth : tbuf.GetBufferSize());
+    tbuf.NewlinesToSpaces(newLineToSpaces);
+    WritePGN (&tbuf, 0);
+    if (NewLineAtEnd) tbuf.NewLine();
+    return std::make_pair(tbuf.GetBuffer(), tbuf.GetByteCount());
 }
 
 errorT
-Game::MoveToLocationInPGN (TextBuffer * tb, uint stopLocation)
+Game::MoveToLocationInPGN (uint stopLocation)
 {
-    return WritePGN (tb, stopLocation);
+    static TextBuffer tbuf;
+
+    tbuf.Empty();
+    tbuf.SetWrapColumn(tbuf.GetBufferSize());
+    return WritePGN (&tbuf, stopLocation);
 }
 
 

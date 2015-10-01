@@ -167,7 +167,6 @@ struct scidBaseT {
 	treeT tree;
 	TreeCache treeCache;
 	ByteBuffer* bbuf;
-	TextBuffer* tbuf;
 	Filter* dbFilter;
 	Filter* treeFilter;
 

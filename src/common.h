@@ -56,7 +56,6 @@ typedef unsigned __int64  uint64_t;
 
 // Buffer sizes
 #define BBUF_SIZE 256000 //120000
-#define TBUF_SIZE 1280000 //160000
 
 typedef unsigned short versionT;
 

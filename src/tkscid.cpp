@@ -473,8 +473,6 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
 {
     char old_language = language;
  
-    db->tbuf->Empty();
-
     g->ResetPgnStyle (pgnStyle);
     g->SetPgnFormat (format);
 
@@ -482,7 +480,6 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
     switch (format) {
     case PGN_FORMAT_HTML:
     case PGN_FORMAT_LaTeX:
-        db->tbuf->NewlinesToSpaces (false);
         g->AddPgnStyle (PGN_STYLE_SHORT_HEADER);
         break;
     default:
@@ -491,9 +488,9 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
     }
 
     g->SetHtmlStyle (htmlDiagStyle);
-    g->WriteToPGN (db->tbuf);
-    db->tbuf->NewLine();
-    size_t nWrited = fwrite(db->tbuf->GetBuffer(), 1, db->tbuf->GetByteCount(), exportFile);
+    std::pair<const char*, unsigned> pgn = g->WriteToPGN(75, true, format != PGN_FORMAT_LaTeX);
+    //size_t nWrited =
+    fwrite(pgn.first, 1, pgn.second, exportFile);
     //TODO:
     //if (nWrited != db->tbuf->GetByteCount()) error
     language = old_language;
@@ -649,7 +646,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         uint numSeen = 0;
         uint numToExport = db->dbFilter->Count();
         Game * g = scratchGame;
-        db->tbuf->SetWrapColumn (75);
         for (gamenumT i=0, n=db->numGames(); i < n; i++) {
             if (db->dbFilter->Get(i)) { // Export this game:
                 if (numSeen++ % 100) {  // Update the percentage done bar:
@@ -1939,8 +1935,7 @@ sc_clipbase_paste (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     db->game->CopyStandardTags (clipbase->game);
 
     // Move to the current position in the clipbase game:
-    db->tbuf->Empty();
-    db->game->MoveToLocationInPGN (db->tbuf, location);
+    db->game->MoveToLocationInPGN (location);
 
     return TCL_OK;
 }
@@ -2568,10 +2563,9 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     if (dbase->getGame(ie, dbase->bbuf) != OK) continue;
                     if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
                     g.LoadStandardTags (ie, nb);
-                    dbase->tbuf->Empty();
-                    g.WriteToPGN (dbase->tbuf);
-                    dbase->tbuf->NewLine();
-                    size_t nWrited = fwrite(db->tbuf->GetBuffer(), 1, db->tbuf->GetByteCount(), exportFile);
+                    std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
+                    //size_t nWrited =
+                    fwrite(pgn.first, 1, pgn.second, exportFile);
                     //TODO:
                     //if (nWrited != db->tbuf->GetByteCount()) error
                 }
@@ -4815,10 +4809,8 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         thisArg += 2;
     }
 
-    base->tbuf->Empty();
-    base->tbuf->SetWrapColumn (lineWidth);
-    g->WriteToPGN (base->tbuf);
-    Tcl_AppendResult (ti, base->tbuf->GetBuffer(), NULL);
+    std::pair<const char*, unsigned> pgnBuf = g->WriteToPGN(lineWidth);
+    Tcl_AppendResult (ti, pgnBuf.first, NULL);
     return TCL_OK;
 }
 
@@ -5081,16 +5073,14 @@ sc_game_strip (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     int old_lang = language;
     language = 0;
-    db->tbuf->Empty();
-    db->tbuf->SetWrapColumn (99999);
-    db->game->WriteToPGN (db->tbuf);
+    std::pair<const char*, unsigned> pgnBuf = db->game->WriteToPGN();
     PgnParser parser;
-    parser.Reset ((const char *) db->tbuf->GetBuffer());
+    parser.Reset (pgnBuf.first);
     scratchGame->Clear();
     if (parser.ParseGame (scratchGame)) {
         return errorResult (ti, "Error: unable to strip this game.");
     }
-    parser.Reset ((const char *) db->tbuf->GetBuffer());
+    parser.Reset (pgnBuf.first);
     db->game->Clear();
     parser.ParseGame (db->game);
 
@@ -6342,11 +6332,9 @@ sc_move_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_move pgn <offset>");
     }
-    db->tbuf->Empty();
-    db->tbuf->SetWrapColumn (99999);
 
     uint offset = strGetUnsigned (argv[2]);
-    db->game->MoveToLocationInPGN (db->tbuf, offset);
+    db->game->MoveToLocationInPGN (offset);
     return TCL_OK;
 }
 
@@ -11154,8 +11142,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 					match = false;
 				}
 				if (match) {
-					base->tbuf->Empty();
-					base->tbuf->SetWrapColumn (99999);
 					scratchGame->LoadStandardTags (ie, base->getNameBase());
 					scratchGame->ResetPgnStyle ();
 					scratchGame->AddPgnStyle (PGN_STYLE_TAGS);
@@ -11163,8 +11149,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 					scratchGame->AddPgnStyle (PGN_STYLE_VARS);
 					scratchGame->AddPgnStyle (PGN_STYLE_SYMBOLS);
 					scratchGame->SetPgnFormat (PGN_FORMAT_Plain);
-					scratchGame->WriteToPGN(base->tbuf);
-					const char * buf = base->tbuf->GetBuffer();
+					const char* buf = scratchGame->WriteToPGN().first;
 					for (int m=0; m < pgnTextCount; m++) {
 					   if (match) { match = strContains (buf, sPgnText[m]); }
 					}
