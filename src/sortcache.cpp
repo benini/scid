@@ -97,7 +97,7 @@ enum {
     SORTING_white, SORTING_black, SORTING_eco, SORTING_result, SORTING_moveCount,
     SORTING_avgElo, SORTING_country, SORTING_month,
     SORTING_deleted, SORTING_eventdate, 
-	SORTING_gamenumber, SORTING_whiteelo, SORTING_blackelo, 
+	SORTING_whiteelo, SORTING_blackelo,
 	SORTING_commentcount, SORTING_varcount, SORTING_nagcount,
 	SORTING_resultwin, SORTING_resultdraw, SORTING_resultloss,
 	SORTING_rating, SORTING_number,
@@ -480,9 +480,30 @@ SortCache::FullCompare (uint left, uint right)
 			res = (int)ie1->GetEventDate() - (int)ie2->GetEventDate();
 			break;
 
+		case SORTING_whiteelo:
+			res = (int) ie1->GetWhiteElo(nbase) - (int) ie2->GetWhiteElo(nbase);
+			break;
+
+		case SORTING_blackelo:
+			res = (int) ie1->GetBlackElo(nbase) - (int) ie2->GetBlackElo(nbase);
+			break;
+
+		case SORTING_commentcount:
+			res = (int) ie1->GetCommentCount() - (int) ie2->GetCommentCount();
+			break;
+
+		case SORTING_varcount:
+			res = (int) ie1->GetVariationCount() - (int) ie2->GetVariationCount();
+			break;
+
+		case SORTING_nagcount:
+			res = (int) ie1->GetNagCount() - (int) ie2->GetNagCount();
+			break;
+
 		case SORTING_rating:
 			res = (int)ie1->GetRating(nbase) - (int)ie2->GetRating(nbase);
 			break;
+
 		case SORTING_number:
 			res = (int) left - (int) right;
 			break;
