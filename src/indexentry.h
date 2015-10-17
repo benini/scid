@@ -432,11 +432,13 @@ public:
     void SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
 
 
-    bool GetFlag (uint mask) const {
-      if (mask & 0xFFFF)
-        return (Flags & mask) != 0;
-      else
-        return (Length_High & ( mask >> 16 )) !=0;
+    bool GetFlag (uint32_t mask) const {
+        uint32_t tmp = Flags;
+        if ((mask & 0xFFFF0000) != 0) {
+            // The if is not necessary but should be faster
+            tmp |= (Length_High & 0x3F) << 16;
+        }
+        return (tmp & mask) == mask;
     }
     bool GetStartFlag () const      { return (Flags & IDX_MASK_START) != 0; }
     bool GetPromotionsFlag () const { return (Flags & IDX_MASK_PROMO) != 0; }
@@ -463,6 +465,8 @@ public:
     }
 
     static uint CharToFlag (char ch);
+    static uint32_t CharToFlagMask (char flag);
+    static uint32_t StrToFlagMask (const char* flags);
     uint GetFlagStr (char * str, const char * flags) const;
     void SetFlagStr (const char * flags);
 
@@ -489,18 +493,22 @@ public:
     byte* GetHomePawnData () { return HomePawnData; }
 
 
-    void SetFlag (uint flagMask, bool b) {
-        if (flagMask & 0xFFFF) {
+    void SetFlag (uint32_t flagMask, bool b) {
+        uint16_t flagLow = flagMask & 0xFFFF;
+        if (flagLow != 0) {
             if (b) { 
-                Flags |= flagMask;
+                Flags |= flagLow;
             } else {
-                Flags &= ~flagMask;
+                Flags &= ~flagLow;
             }
-        } else {
+        }
+
+        byte flagHigh = (flagMask >> 16) & 0x3F;
+        if (flagHigh != 0) {
             if (b) {
-                Length_High |= (flagMask >> 16);
+                Length_High |= flagHigh;
             } else {
-                Length_High &= ~ (flagMask >> 16);
+                Length_High &= ~flagHigh;
             }
         }
     }
@@ -757,6 +765,54 @@ IndexEntry::CharToFlag (char ch)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::CharToFlagMask():
+//    Transform a char in a mask that can be used with GetFlag() and SetFlag()
+inline uint32_t IndexEntry::CharToFlagMask(char flag)
+{
+    switch (toupper(flag)) {
+        case 'S': return 1 << IDX_FLAG_START;
+        case 'X': return 1 << IDX_FLAG_PROMO;
+        case 'Y': return 1 << IDX_FLAG_UPROMO;
+        case 'D': return 1 << IDX_FLAG_DELETE;
+        case 'W': return 1 << IDX_FLAG_WHITE_OP;
+        case 'B': return 1 << IDX_FLAG_BLACK_OP;
+        case 'M': return 1 << IDX_FLAG_MIDDLEGAME;
+        case 'E': return 1 << IDX_FLAG_ENDGAME;
+        case 'N': return 1 << IDX_FLAG_NOVELTY;
+        case 'P': return 1 << IDX_FLAG_PAWN;
+        case 'T': return 1 << IDX_FLAG_TACTICS;
+        case 'K': return 1 << IDX_FLAG_KSIDE;
+        case 'Q': return 1 << IDX_FLAG_QSIDE;
+        case '!': return 1 << IDX_FLAG_BRILLIANCY;
+        case '?': return 1 << IDX_FLAG_BLUNDER;
+        case 'U': return 1 << IDX_FLAG_USER;
+        case '1': return 1 << IDX_FLAG_CUSTOM1;
+        case '2': return 1 << IDX_FLAG_CUSTOM2;
+        case '3': return 1 << IDX_FLAG_CUSTOM3;
+        case '4': return 1 << IDX_FLAG_CUSTOM4;
+        case '5': return 1 << IDX_FLAG_CUSTOM5;
+        case '6': return 1 << IDX_FLAG_CUSTOM6;
+    }
+
+    ASSERT(0);
+    return 0;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::StrToFlagMask():
+//    Transform a string in a mask that can be used with GetFlag() and SetFlag()
+inline uint32_t IndexEntry::StrToFlagMask(const char* flags)
+{
+    if (flags == 0) return 0;
+
+    uint32_t res = 0;
+    while (*flags != 0) {
+        res |= IndexEntry::CharToFlagMask(*(flags++));
+    }
+    return res;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // IndexEntry::SetFlagStr():
 //    Sets user-settable flags by passing a string containing the
 //    letters of each flag that should be set.
@@ -764,16 +820,13 @@ inline void
 IndexEntry::SetFlagStr (const char * flags)
 {
     // First, unset all user-settable flags:
-    const char * uflags = "DWBMENPTKQ!?U123456";
-    while (*uflags != 0) {
-        SetFlag (1 << CharToFlag (*uflags), false);
-        uflags++;
-    }
+    SetFlag(~0, false);
 
     // Now set flags according to flags string:
-    while (*flags != 0) {
-        SetFlag (1 << CharToFlag(*flags), true);
-        flags++;
+    if (flags != 0 && *flags != 0) {
+        uint32_t mask = StrToFlagMask(flags);
+        ASSERT(mask != 0);
+        SetFlag(mask, true);
     }
 }
 
@@ -788,9 +841,12 @@ IndexEntry::GetFlagStr (char * str, const char * flags) const
     if (flags == NULL) { flags = "DWBMENPTKQ!?U123456"; }
     uint count = 0;
     while (*flags != 0) {
-        bool flag = false;
-        flag = GetFlag (1 << CharToFlag (*flags));
-        if (flag) { *str++ = *flags; count++; }
+        uint32_t mask = CharToFlagMask(*flags);
+        ASSERT(mask != 0);
+        if (GetFlag(mask)) {
+            *str++ = *flags;
+            count++;
+        }
         flags++;
     }
     *str = 0;

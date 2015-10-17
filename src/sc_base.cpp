@@ -171,9 +171,8 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 	else if (std::strcmp("set",    argv[4]) == 0) cmd = 2;
 	else if (std::strcmp("unset",  argv[4]) == 0) cmd = 3;
 	else if (std::strcmp("invert", argv[4]) == 0) cmd = 4;
-	uint flagType = IndexEntry::CharToFlag (argv[5][0]);
+	uint flagType = IndexEntry::CharToFlagMask(argv[5][0]);
 	if (flagType != 0 && cmd != 0) {
-		flagType = 1 << flagType;
 		bool value = (cmd == 2);
 
 		const HFilter filter = dbase->getFilter(argv[3]);

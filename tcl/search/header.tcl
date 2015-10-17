@@ -27,6 +27,8 @@ set sHeaderFlagList {StdStart Promotions Comments Variations Annotations \
 
 set sHeaderCustomFlagList {  CustomFlag1 CustomFlag2 CustomFlag3 CustomFlag4 CustomFlag5 CustomFlag6 }
 
+set sHeaderFlagChars {S X _ _ _ D W B M E N P T K Q ! ? U 1 2 3 4 5 6}
+
 foreach i [ concat $sHeaderFlagList $sHeaderCustomFlagList ] {
   set sHeaderFlags($i) both
 }
@@ -456,6 +458,22 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
         sc_filter copy $dbase $fOrig $filter
     }
 
+    set flagsYes ""
+    set flagsNo ""
+    set idx -1
+    foreach i [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] {
+        incr idx
+        if {$i == "Comments"} { continue }
+        if {$i == "Variations"} { continue }
+        if {$i == "Annotations"} { continue }
+
+        if  { $sHeaderFlags($i) == "yes" } {
+            append flagsYes [lindex $::sHeaderFlagChars $idx]
+        } elseif  { $sHeaderFlags($i) == "no" } {
+            append flagsNo [lindex $::sHeaderFlagChars $idx]
+        }
+    }
+
     progressBarSet .sh.fprogress.progress 301 21
     set err [catch { sc_filter search $dbase $filter header \
           -filter RESET \
@@ -472,30 +490,10 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -gnum [list $sGnumMin $sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
-          -fStdStart $sHeaderFlags(StdStart) \
-          -fPromotions $sHeaderFlags(Promotions) \
+          -flag $flagsYes -flag! $flagsNo \
           -fComments $sHeaderFlags(Comments) \
           -fVariations $sHeaderFlags(Variations) \
           -fAnnotations $sHeaderFlags(Annotations) \
-          -fDelete $sHeaderFlags(DeleteFlag) \
-          -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-          -fBlackOp $sHeaderFlags(BlackOpFlag) \
-          -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-          -fEndgame $sHeaderFlags(EndgameFlag) \
-          -fNovelty $sHeaderFlags(NoveltyFlag) \
-          -fPawnStruct $sHeaderFlags(PawnFlag) \
-          -fTactics $sHeaderFlags(TacticsFlag) \
-          -fKingside $sHeaderFlags(KsideFlag) \
-          -fQueenside $sHeaderFlags(QsideFlag) \
-          -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-          -fBlunder $sHeaderFlags(BlunderFlag) \
-          -fUser $sHeaderFlags(UserFlag) \
-          -fCustom1 $sHeaderFlags(CustomFlag1) \
-          -fCustom2 $sHeaderFlags(CustomFlag2) \
-          -fCustom3 $sHeaderFlags(CustomFlag3) \
-          -fCustom4 $sHeaderFlags(CustomFlag4) \
-          -fCustom5 $sHeaderFlags(CustomFlag5) \
-          -fCustom6 $sHeaderFlags(CustomFlag6) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
     }]
 
@@ -519,30 +517,10 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -gnum [list $sGnumMin $sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
-          -fStdStart $sHeaderFlags(StdStart) \
-          -fPromotions $sHeaderFlags(Promotions) \
+          -flag $flagsYes -flag! $flagsNo \
           -fComments $sHeaderFlags(Comments) \
           -fVariations $sHeaderFlags(Variations) \
           -fAnnotations $sHeaderFlags(Annotations) \
-          -fDelete $sHeaderFlags(DeleteFlag) \
-          -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-          -fBlackOp $sHeaderFlags(BlackOpFlag) \
-          -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-          -fEndgame $sHeaderFlags(EndgameFlag) \
-          -fNovelty $sHeaderFlags(NoveltyFlag) \
-          -fPawnStruct $sHeaderFlags(PawnFlag) \
-          -fTactics $sHeaderFlags(TacticsFlag) \
-          -fKingside $sHeaderFlags(KsideFlag) \
-          -fQueenside $sHeaderFlags(QsideFlag) \
-          -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-          -fBlunder $sHeaderFlags(BlunderFlag) \
-          -fUser $sHeaderFlags(UserFlag) \
-          -fCustom1 $sHeaderFlags(CustomFlag1) \
-          -fCustom2 $sHeaderFlags(CustomFlag2) \
-          -fCustom3 $sHeaderFlags(CustomFlag3) \
-          -fCustom4 $sHeaderFlags(CustomFlag4) \
-          -fCustom5 $sHeaderFlags(CustomFlag5) \
-          -fCustom6 $sHeaderFlags(CustomFlag6) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
         }
 

@@ -83,14 +83,13 @@ public:
 
 class SearchFlag {
 	const scidBaseT* base_;
-	uint flagMask_;
+	uint32_t flagMask_;
 
 public:
-	SearchFlag(const scidBaseT* base, char flag)
+	SearchFlag(const scidBaseT* base, const char* flags)
 	: base_(base) {
-		uint flagType = IndexEntry::CharToFlag(flag);
-		ASSERT(flagType != 0 || flag == 'S');
-		flagMask_ = (1 << flagType);
+		flagMask_ = IndexEntry::StrToFlagMask(flags);
+		ASSERT(flagMask_ != 0);
 	}
 
 	bool operator() (gamenumT gnum) {
@@ -395,7 +394,7 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 		SearchRange<ushort>(base, param.getValue(), &IndexEntry::GetNumHalfMoves)
 	);
 	if (param == "flag") return std::partition(itB, itE,
-		SearchFlag(base, param.getValue()[0])
+		SearchFlag(base, param.getValue())
 	);
 
 	param.invalidate();

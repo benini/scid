@@ -10628,26 +10628,9 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 //    specified index flag restrictions, for example, excluding
 //    deleted games or games without comments.
 bool
-matchGameFlags (const IndexEntry* ie, flagT fStdStart, flagT fPromos,
-                flagT fComments, flagT fVars, flagT fNags, flagT fDelete,
-                flagT fWhiteOp, flagT fBlackOp, flagT fMiddle,
-                flagT fEndgame, flagT fNovelty, flagT fPawn,
-                flagT fTactics, flagT fKside, flagT fQside,
-                flagT fBrill, flagT fBlunder, flagT fUser,
-                flagT fCustom1, flagT fCustom2, flagT fCustom3,
-                flagT fCustom4, flagT fCustom5, flagT fCustom6 )
+matchGameFlags (const IndexEntry* ie, flagT fComments, flagT fVars, flagT fNags, flagT fDelete)
 {
     bool flag;
-
-    flag = ie->GetStartFlag();
-    if ((flag && !flag_Yes(fStdStart))  ||  (!flag && !flag_No(fStdStart))) {
-        return false;
-    }
-
-    flag = ie->GetPromotionsFlag();
-    if ((flag && !flag_Yes(fPromos))  ||  (!flag && !flag_No(fPromos))) {
-        return false;
-    }
 
     flag = ie->GetCommentsFlag();
     if ((flag && !flag_Yes(fComments))  ||  (!flag && !flag_No(fComments))) {
@@ -10669,96 +10652,6 @@ matchGameFlags (const IndexEntry* ie, flagT fStdStart, flagT fPromos,
         return false;
     }
 
-    flag = ie->GetWhiteOpFlag();
-    if ((flag && !flag_Yes(fWhiteOp))  ||  (!flag && !flag_No(fWhiteOp))) {
-        return false;
-    }
-
-    flag = ie->GetBlackOpFlag();
-    if ((flag && !flag_Yes(fBlackOp))  ||  (!flag && !flag_No(fBlackOp))) {
-        return false;
-    }
-
-    flag = ie->GetMiddlegameFlag();
-    if ((flag && !flag_Yes(fMiddle))  ||  (!flag && !flag_No(fMiddle))) {
-        return false;
-    }
-
-    flag = ie->GetEndgameFlag();
-    if ((flag && !flag_Yes(fEndgame))  ||  (!flag && !flag_No(fEndgame))) {
-        return false;
-    }
-
-    flag = ie->GetNoveltyFlag();
-    if ((flag && !flag_Yes(fNovelty))  ||  (!flag && !flag_No(fNovelty))) {
-        return false;
-    }
-
-    flag = ie->GetPawnStructFlag();
-    if ((flag && !flag_Yes(fPawn))  ||  (!flag && !flag_No(fPawn))) {
-        return false;
-    }
-
-    flag = ie->GetTacticsFlag();
-    if ((flag && !flag_Yes(fTactics))  ||  (!flag && !flag_No(fTactics))) {
-        return false;
-    }
-
-    flag = ie->GetKingsideFlag();
-    if ((flag && !flag_Yes(fKside))  ||  (!flag && !flag_No(fKside))) {
-        return false;
-    }
-
-    flag = ie->GetQueensideFlag();
-    if ((flag && !flag_Yes(fQside))  ||  (!flag && !flag_No(fQside))) {
-        return false;
-    }
-
-    flag = ie->GetBrilliancyFlag();
-    if ((flag && !flag_Yes(fBrill))  ||  (!flag && !flag_No(fBrill))) {
-        return false;
-    }
-
-    flag = ie->GetBlunderFlag();
-    if ((flag && !flag_Yes(fBlunder))  ||  (!flag && !flag_No(fBlunder))) {
-        return false;
-    }
-
-    flag = ie->GetUserFlag();
-    if ((flag && !flag_Yes(fUser))  ||  (!flag && !flag_No(fUser))) {
-        return false;
-    }
-
-    flag = ie->GetCustomFlag(1);
-    if ((flag && !flag_Yes(fCustom1))  ||  (!flag && !flag_No(fCustom1))) {
-      return false;
-    }
-
-    flag = ie->GetCustomFlag(2);
-    if ((flag && !flag_Yes(fCustom2))  ||  (!flag && !flag_No(fCustom2))) {
-      return false;
-    }
-    
-    flag = ie->GetCustomFlag(3);
-    if ((flag && !flag_Yes(fCustom3))  ||  (!flag && !flag_No(fCustom3))) {
-      return false;
-    }
-    
-    flag = ie->GetCustomFlag(4);
-    if ((flag && !flag_Yes(fCustom4))  ||  (!flag && !flag_No(fCustom4))) {
-      return false;
-    }
-    
-    flag = ie->GetCustomFlag(5);
-    if ((flag && !flag_Yes(fCustom5))  ||  (!flag && !flag_No(fCustom5))) {
-      return false;
-    }
-    
-    flag = ie->GetCustomFlag(6);
-    if ((flag && !flag_Yes(fCustom6))  ||  (!flag && !flag_No(fCustom6))) {
-      return false;
-    }
-    
     // If we reach here, the game matched all flag restrictions.
     return true;
 }
@@ -10865,57 +10758,25 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     bool wToMove = true;
     bool bToMove = true;
 
-    flagT fStdStart = FLAG_BOTH;
-    flagT fPromotions = FLAG_BOTH;
     flagT fComments = FLAG_BOTH;
     flagT fVariations = FLAG_BOTH;
     flagT fAnnotations = FLAG_BOTH;
     flagT fDelete = FLAG_BOTH;
-    flagT fWhiteOp = FLAG_BOTH;
-    flagT fBlackOp = FLAG_BOTH;
-    flagT fMiddlegame = FLAG_BOTH;
-    flagT fEndgame = FLAG_BOTH;
-    flagT fNovelty = FLAG_BOTH;
-    flagT fPawnStruct = FLAG_BOTH;
-    flagT fTactics = FLAG_BOTH;
-    flagT fKside = FLAG_BOTH;
-    flagT fQside = FLAG_BOTH;
-    flagT fBrilliancy = FLAG_BOTH;
-    flagT fBlunder = FLAG_BOTH;
-    flagT fUser = FLAG_BOTH;
-    flagT fCustom1 = FLAG_BOTH;
-    flagT fCustom2 = FLAG_BOTH;
-    flagT fCustom3 = FLAG_BOTH;
-    flagT fCustom4 = FLAG_BOTH;
-    flagT fCustom5 = FLAG_BOTH;
-    flagT fCustom6 = FLAG_BOTH;
         
     int pgnTextCount = 0;
     char ** sPgnText = NULL;
 
     const char * options[] = {
-        "white", "black", "player", "event", "site", "round", "annotator", "annotated",
-        "date", "results", "elo", "welo", "belo", "delo",
-        "wtitles", "btitles", "toMove", "flag",
-        "eco", "length", "gnum", "filter",
-        "fStdStart", "fPromotions", "fComments", "fVariations",
-        "fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
-        "fMiddlegame", "fEndgame", "fNovelty", "fPawnStructure",
-        "fTactics", "fKingside", "fQueenside", "fBrilliancy", "fBlunder",
-        "fUser", "fCustom1" , "fCustom2" , "fCustom3" ,
-        "fCustom4" , "fCustom5" , "fCustom6" , "pgn", NULL
+        "annotator", "annotated", "results",
+        "wtitles", "btitles", "toMove",
+        "fComments", "fVariations", "fAnnotations",
+        "fDelete", "pgn", NULL
     };
     enum {
-        OPT_WHITE, OPT_BLACK, OPT_PLAYER, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_ANNOTATOR, OPT_ANNOTATED,
-        OPT_DATE, OPT_RESULTS, OPT_ELO, OPT_WELO, OPT_BELO, OPT_DELO,
-        OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE, OPT_FLAG,
-        OPT_ECO, OPT_LENGTH, OPT_GAMENUMBER, OPT_FILTER,
-        OPT_FSTDSTART, OPT_FPROMOTIONS, OPT_FCOMMENTS, OPT_FVARIATIONS,
-        OPT_FANNOTATIONS, OPT_FDELETE, OPT_FWHITEOP, OPT_FBLACKOP,
-        OPT_FMIDDLEGAME, OPT_FENDGAME, OPT_FNOVELTY, OPT_FPAWNSTRUCT,
-        OPT_FTACTICS, OPT_FKSIDE, OPT_FQSIDE, OPT_FBRILLIANCY, OPT_FBLUNDER,
-        OPT_FUSER, OPT_FCUSTOM1, OPT_FCUSTOM2, OPT_FCUSTOM3,
-        OPT_FCUSTOM4,  OPT_FCUSTOM5, OPT_FCUSTOM6, OPT_PGN
+        OPT_ANNOTATOR, OPT_ANNOTATED, OPT_RESULTS,
+        OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
+        OPT_FCOMMENTS, OPT_FVARIATIONS, OPT_FANNOTATIONS,
+        OPT_FDELETE, OPT_PGN
     };
 
     int arg = 2;
@@ -10968,30 +10829,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
             }
             break;
 
-        case OPT_FSTDSTART:    fStdStart    = strGetFlag (value); break;
-        case OPT_FPROMOTIONS:  fPromotions  = strGetFlag (value); break;
         case OPT_FCOMMENTS:    fComments    = strGetFlag (value); break;
         case OPT_FVARIATIONS:  fVariations  = strGetFlag (value); break;
         case OPT_FANNOTATIONS: fAnnotations = strGetFlag (value); break;
         case OPT_FDELETE:      fDelete      = strGetFlag (value); break;
-        case OPT_FWHITEOP:     fWhiteOp     = strGetFlag (value); break;
-        case OPT_FBLACKOP:     fBlackOp     = strGetFlag (value); break;
-        case OPT_FMIDDLEGAME:  fMiddlegame  = strGetFlag (value); break;
-        case OPT_FENDGAME:     fEndgame     = strGetFlag (value); break;
-        case OPT_FNOVELTY:     fNovelty     = strGetFlag (value); break;
-        case OPT_FPAWNSTRUCT:  fPawnStruct  = strGetFlag (value); break;
-        case OPT_FTACTICS:     fTactics     = strGetFlag (value); break;
-        case OPT_FKSIDE:       fKside       = strGetFlag (value); break;
-        case OPT_FQSIDE:       fQside       = strGetFlag (value); break;
-        case OPT_FBRILLIANCY:  fBrilliancy  = strGetFlag (value); break;
-        case OPT_FBLUNDER:     fBlunder     = strGetFlag (value); break;
-        case OPT_FCUSTOM1:     fCustom1     = strGetFlag (value); break;
-        case OPT_FCUSTOM2:     fCustom2     = strGetFlag (value); break;
-        case OPT_FCUSTOM3:     fCustom3     = strGetFlag (value); break;
-        case OPT_FCUSTOM4:     fCustom4     = strGetFlag (value); break;
-        case OPT_FCUSTOM5:     fCustom5     = strGetFlag (value); break;
-        case OPT_FCUSTOM6:     fCustom6     = strGetFlag (value); break;
-        case OPT_FUSER:        fUser        = strGetFlag (value); break;
 
         case OPT_PGN:
             if (Tcl_SplitList (ti, (char *)value, &pgnTextCount,
@@ -11084,13 +10925,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 
         const IndexEntry* ie = base->getIndexEntry(i);
         bool match = false;
-        if (matchGameFlags (ie, fStdStart, fPromotions,
-                            fComments, fVariations, fAnnotations, fDelete,
-                            fWhiteOp, fBlackOp, fMiddlegame, fEndgame,
-                            fNovelty, fPawnStruct, fTactics, fKside,
-                            fQside, fBrilliancy, fBlunder, fUser,
-                            fCustom1, fCustom2, fCustom3, fCustom4, fCustom5, fCustom6
-                           )) {
+        if (matchGameFlags (ie, fComments, fVariations, fAnnotations, fDelete)) {
             if (matchGameHeader (ie, mWhite, mBlack, results,
                                  wToMove, bToMove, bAnnotated)) {
                 match = true;
