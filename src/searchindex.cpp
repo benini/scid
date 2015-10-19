@@ -39,10 +39,10 @@ class SearchName {
 
 public:
 	SearchName(const scidBaseT* base,
-	                std::string pattern,
-	                nameT name_type,
-	                idNumberT (IndexEntry::* f1) () const,
-	                idNumberT (IndexEntry::* f2) () const = 0)
+	           std::string pattern,
+	           nameT name_type,
+	           idNumberT (IndexEntry::* f1) () const,
+	           idNumberT (IndexEntry::* f2) () const = 0)
 	: base_(base), f1_(f1), f2_(f2) {
 		idNumberT n = base->getNameBase()->GetNumNames(name_type);
 		mask_.resize(n);
@@ -72,7 +72,7 @@ public:
 		}
 	}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		bool res = mask_[(base_->getIndexEntry(gnum)->*f1_)()];
 		if (!res && f2_ != 0) {
 			return mask_[(base_->getIndexEntry(gnum)->*f2_)()];
@@ -86,13 +86,14 @@ class SearchFlag {
 	uint32_t flagMask_;
 
 public:
-	SearchFlag(const scidBaseT* base, const char* flags)
+	SearchFlag(const scidBaseT* base,
+	           const char* flags)
 	: base_(base) {
 		flagMask_ = IndexEntry::StrToFlagMask(flags);
 		ASSERT(flagMask_ != 0);
 	}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		return base_->getIndexEntry(gnum)->GetFlag(flagMask_);
 	}
 };
@@ -105,13 +106,14 @@ protected:
 	long min_;
 	long max_;
 
-	SearchRange(const scidBaseT* base, T (IndexEntry::* f) () const)
+	SearchRange(const scidBaseT* base,
+	            T (IndexEntry::* f) () const)
 	: base_(base), f_(f), min_(0), max_(0) {}
 
 public:
 	SearchRange(const scidBaseT* base,
-	                 const char* range,
-	                 T (IndexEntry::* f) () const)
+	            const char* range,
+	            T (IndexEntry::* f) () const)
 	: base_(base), f_(f) {
 		char* next;
 		min_ = std::strtol(range, &next, 10);
@@ -121,7 +123,7 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 	}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		long v = (base_->getIndexEntry(gnum)->*f_)();
 		if (v < min_ || v > max_) return false;
 		return true;
@@ -131,8 +133,8 @@ public:
 class SearchRangeDate : public SearchRange<dateT> {
 public:
 	SearchRangeDate(const scidBaseT* base,
-	                     const char* range,
-	                     dateT (IndexEntry::* f) () const)
+	                const char* range,
+	                dateT (IndexEntry::* f) () const)
 	: SearchRange<dateT>(base, f) {
 		// Extract two whitespace-separated dates:
 		const char* v = strFirstWord(range);
@@ -146,8 +148,8 @@ public:
 class SearchRangeEco : public SearchRange<ecoT> {
 public:
 	SearchRangeEco(const scidBaseT* base,
-	                    const char* range,
-	                    ecoT (IndexEntry::* f) () const)
+	               const char* range,
+	               ecoT (IndexEntry::* f) () const)
 	: SearchRange<ecoT>(base, f) {
 		// Extract two whitespace-separated ECO codes:
 		const char* v = strFirstWord(range);
@@ -161,10 +163,11 @@ public:
 	}
 };
 
-class SearchRangeGamenum : public SearchRange<void> {
+class SearchRangeGamenum : public SearchRange<gamenumT> {
 public:
-	SearchRangeGamenum(const scidBaseT* base, const char* range)
-	: SearchRange<void>(base, range, 0) {
+	SearchRangeGamenum(const scidBaseT* base,
+	                   const char* range)
+	: SearchRange<gamenumT>(base, range, 0) {
 		// Set up game number range:
 		// Note that a negative number means a count from the end,
 		// so -1 = last game, -2 = second to last, etc.
@@ -175,7 +178,7 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 	}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		if (static_cast<long>(gnum) < min_ ||
 			static_cast<long>(gnum) > max_) return false;
 		return true;
@@ -190,14 +193,14 @@ protected:
 
 public:
 	SearchRangeElo(const scidBaseT* base,
-	                    const char* range,
-	                    eloT (IndexEntry::* f1) (const NameBase*) const,
-	                    eloT (IndexEntry::* f2) (const NameBase*) const = 0)
+	               const char* range,
+	               eloT (IndexEntry::* f1) (const NameBase*) const,
+	               eloT (IndexEntry::* f2) (const NameBase*) const = 0)
 	: SearchRange<eloT>(base, range, 0), fElo1_(f1), fElo2_(f2) {
 		nb_ = base_->getNameBase();
 	}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
 		long v2 = min_;
 		if (fElo2_ != 0) v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
@@ -209,12 +212,12 @@ public:
 class SearchRangeEloDiff : public SearchRangeElo {
 public:
 	SearchRangeEloDiff(const scidBaseT* base,
-	                        const char* range,
-	                        eloT (IndexEntry::* f1) (const NameBase*) const,
-	                        eloT (IndexEntry::* f2) (const NameBase*) const)
+	                   const char* range,
+	                   eloT (IndexEntry::* f1) (const NameBase*) const,
+	                   eloT (IndexEntry::* f2) (const NameBase*) const)
 	: SearchRangeElo(base, range, f1, f2) {}
 
-	bool operator() (gamenumT gnum) {
+	bool operator() (gamenumT gnum) const {
 		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
 		long v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
 		long v = v1 - v2;
