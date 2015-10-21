@@ -289,34 +289,6 @@ strLength (const char * str)
 
 
 //////////////////////////////////////////////////////////////////////
-//   MATH functions
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// log2(): Returns logarithm (base 2) of the integer x.
-//      log2(0 or 1) = 0, log2(2 or 3) = 1,
-//      log2(4/5/6/7) = 2, etc.
-//
-inline uint
-log2 (uint x)
-{
-    uint result = 0;
-    x = x >> 1;
-    while (x) { result++; x = x >> 1; }
-    return result;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// isPowerOf2():
-//      Fast test for a power of two. Returns true (nonzero) only
-//      if x is a power of two (0, 1, 2, 4, 8, 16, etc).
-//
-inline uint
-isPowerOf2 (uint x)
-{
-    return ((x & (x-1)) == 0);
-}
-
-//////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
 // TODO: remove this functions
 

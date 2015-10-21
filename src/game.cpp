@@ -1275,8 +1275,18 @@ void Game::MakeHomePawnList (byte * pbPawnList)
 
     while (err == OK) {
         uint hpNew = CurrentPos->GetHPSig();
-        if (hpNew != hpOld && !NonStandardStart) {
-            byte changeValue = (byte) (log2 (hpOld - hpNew));
+        uint changed = hpOld - hpNew;
+        if (changed != 0 && !NonStandardStart) {
+            // Find the idx of the moved pawn
+            uint changeValue = 0;
+            while (1) {
+                changed = changed >> 1;
+                if (changed == 0) break;
+                changeValue++;
+            }
+
+            // There are only 16 pawns, so we can store two pawn moves
+            // in every byte
             if (halfByte == 0) {
                 *pbList = (changeValue << 4);  halfByte = 1;
             } else {

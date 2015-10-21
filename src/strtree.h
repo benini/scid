@@ -145,7 +145,6 @@ class StrTree
     bool  GetAllocateStrings () { return AllocateStrings; }
 
     uint    Size ()    { return TotalSize; }
-    uint    LogSize () { return log2 (TotalSize); }
     uint    Height()   { return TreeHeight; }
     uint    FirstByteSize (byte b) { return TreeSize[b]; }
 
