@@ -10662,11 +10662,9 @@ matchGameFlags (const IndexEntry* ie, flagT fComments, flagT fVars, flagT fNags,
 //    header search criteria.
 bool
 matchGameHeader (const IndexEntry* ie,
-                 bool * mWhite, bool * mBlack, bool * results,
+                 bool * mWhite, bool * mBlack,
                  bool wToMove, bool bToMove, bool bAnnotaded)
 {
-    if (!results[ie->GetResult()]) { return false; }
-
     uint halfmoves = ie->GetNumHalfMoves();
     if ((halfmoves % 2) == 0) {
         // This game ends with White to move:
@@ -10746,10 +10744,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     bool * mWhite = NULL;
     bool * mBlack = NULL;
 
-    bool results [NUM_RESULT_TYPES];
-    results[RESULT_White] = results[RESULT_Black] = true;
-    results[RESULT_Draw] = results[RESULT_None] = true;
-
 	bool bAnnotated = false;
 
 	bool * wTitles = NULL;
@@ -10767,13 +10761,13 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     char ** sPgnText = NULL;
 
     const char * options[] = {
-        "annotator", "annotated", "results",
+        "annotator", "annotated",
         "wtitles", "btitles", "toMove",
         "fComments", "fVariations", "fAnnotations",
         "fDelete", "pgn", NULL
     };
     enum {
-        OPT_ANNOTATOR, OPT_ANNOTATED, OPT_RESULTS,
+        OPT_ANNOTATOR, OPT_ANNOTATED,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
         OPT_FCOMMENTS, OPT_FVARIATIONS, OPT_FANNOTATIONS,
         OPT_FDELETE, OPT_PGN
@@ -10797,18 +10791,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 		case OPT_ANNOTATED:
 			bAnnotated = strGetBoolean(value);
 			break;
-
-        case OPT_RESULTS:
-            // Extract four results in the order 1-0, draw, 0-1, none:
-            value = strFirstWord (value);
-            results[RESULT_White] = strGetBoolean (value);
-            value = strNextWord (value);
-            results[RESULT_Draw] = strGetBoolean (value);
-            value = strNextWord (value);
-            results[RESULT_Black] = strGetBoolean (value);
-            value = strNextWord (value);
-            results[RESULT_None] = strGetBoolean (value);
-            break;
 
         case OPT_WTITLES:
             wTitles = parseTitles (value);
@@ -10926,7 +10908,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
         const IndexEntry* ie = base->getIndexEntry(i);
         bool match = false;
         if (matchGameFlags (ie, fComments, fVariations, fAnnotations, fDelete)) {
-            if (matchGameHeader (ie, mWhite, mBlack, results,
+            if (matchGameHeader (ie, mWhite, mBlack,
                                  wToMove, bToMove, bAnnotated)) {
                 match = true;
             }

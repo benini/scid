@@ -98,6 +98,29 @@ public:
 	}
 };
 
+class SearchResult {
+	const scidBaseT* base_;
+	bool result_[NUM_RESULT_TYPES];
+
+public:
+	SearchResult(const scidBaseT* base,
+	             const char* results)
+	: base_(base) {
+		std::fill_n(result_, NUM_RESULT_TYPES, false);
+		const char* end = RESULT_CHAR + NUM_RESULT_TYPES;
+		while (*results != 0) {
+			const char* it = std::find(RESULT_CHAR, end, *results);
+			if (it != end) result_[std::distance(RESULT_CHAR, it)] = true;
+			results++;
+		}
+	}
+
+	bool operator() (gamenumT gnum) const {
+		resultT r = base_->getIndexEntry(gnum)->GetResult();
+		return result_[r];
+	}
+};
+
 template <typename T>
 class SearchRange {
 protected:
@@ -398,6 +421,9 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 	);
 	if (param == "flag") return std::partition(itB, itE,
 		SearchFlag(base, param.getValue())
+	);
+	if (param == "result") return std::partition(itB, itE,
+		SearchResult(base, param.getValue())
 	);
 
 	param.invalidate();

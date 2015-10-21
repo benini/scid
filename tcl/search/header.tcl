@@ -4,22 +4,11 @@
 
 namespace eval ::search::header {}
 
-set sWhite "";  set sBlack "";  set sEvent ""; set sSite "";  set sRound ""; set sAnnotator ""; set sAnnotated 0;
-set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
-set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
-set sEloDiffMin "-[sc_info limit elo]"; set sEloDiffMax "+[sc_info limit elo]"
 set sTitleList [list gm im fm none wgm wim wfm w]
 foreach i $sTitleList {
   set sTitles(w:$i) 1
   set sTitles(b:$i) 1
 }
-set sGlMin 0; set sGlMax 999
-set sEcoMin "A00";  set sEcoMax "E99"; set sEco Yes
-set sDateMin "0000.00.00"; set sDateMax "[sc_info limit year].12.31"
-set sResWin 1; set sResLoss 1; set sResDraw 1; set sResOther 1
-set sGnumMin 1; set sGnumMax -1
-set sIgnoreCol No
-set sSideToMove wb
 set sHeaderFlagList {StdStart Promotions Comments Variations Annotations \
       DeleteFlag WhiteOpFlag BlackOpFlag MiddlegameFlag EndgameFlag \
       NoveltyFlag PawnFlag TacticsFlag KsideFlag QsideFlag \
@@ -29,12 +18,46 @@ set sHeaderCustomFlagList {  CustomFlag1 CustomFlag2 CustomFlag3 CustomFlag4 Cus
 
 set sHeaderFlagChars {S X _ _ _ D W B M E N P T K Q ! ? U 1 2 3 4 5 6}
 
-foreach i [ concat $sHeaderFlagList $sHeaderCustomFlagList ] {
-  set sHeaderFlags($i) both
-}
 set sPgntext(1) ""
 set sPgntext(2) ""
 set sPgntext(3) ""
+
+# checkDates:
+#    Checks minimum/maximum search dates in header search window and
+#    extends them if necessary.
+proc checkDates {} {
+  global sDateMin sDateMax
+  if {[string length $sDateMin] == 0} { set sDateMin "0000" }
+  if {[string length $sDateMax] == 0} { set sDateMax [sc_info limit year]}
+  if {[string length $sDateMin] == 4} { append sDateMin ".??.??" }
+  if {[string length $sDateMax] == 4} { append sDateMax ".12.31" }
+  if {[string length $sDateMin] == 7} { append sDateMin ".??" }
+  if {[string length $sDateMax] == 7} { append sDateMax ".31" }
+}
+
+proc ::search::header::defaults {} {
+  set ::sWhite "";  set ::sBlack ""
+  set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotator ""; set ::sAnnotated 0
+  set ::sWhiteEloMin 0; set ::sWhiteEloMax [sc_info limit elo]
+  set ::sBlackEloMin 0; set ::sBlackEloMax [sc_info limit elo]
+  set ::sEloDiffMin "-[sc_info limit elo]"
+  set ::sEloDiffMax "+[sc_info limit elo]"
+  set ::sGlMin 0; set ::sGlMax 999
+  set ::sEcoMin "A00";  set ::sEcoMax "E99"; set ::sEco Yes
+  set ::sGnumMin 1; set ::sGnumMax -1
+  set ::sDateMin "0000.00.00"; set ::sDateMax "[sc_info limit year].12.31"
+  set ::sResWin ""; set ::sResLoss ""; set ::sResDraw ""; set ::sResOther ""
+  set ::sIgnoreCol No
+  set ::sSideToMove wb
+  foreach flag  [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] { set ::sHeaderFlags($flag) both }
+  foreach i [array names ::sPgntext] { set ::sPgntext($i) "" }
+  foreach i $::sTitleList {
+    set ::sTitles(w:$i) 1
+    set ::sTitles(b:$i) 1
+  }
+}
+
+::search::header::defaults
 
 trace variable sDateMin w ::utils::validate::Date
 trace variable sDateMax w ::utils::validate::Date
@@ -55,51 +78,6 @@ trace variable sGnumMax w {::utils::validate::Integer -9999999 0}
 foreach i {sEcoMin sEcoMax} {
   trace variable $i w {::utils::validate::Regexp {^$|^[A-Ea-e]$|^[A-Ea-e][0-9]$|^[A-Ea-e][0-9][0-9]$|^[A-Ea-e][0-9][0-9][a-z]$|^[A-Ea-e][0-9][0-9][a-z][1-4]$}}
 }
-
-# checkDates:
-#    Checks minimum/maximum search dates in header search window and
-#    extends them if necessary.
-proc checkDates {} {
-  global sDateMin sDateMax
-  if {[string length $sDateMin] == 0} { set sDateMin "0000" }
-  if {[string length $sDateMax] == 0} { set sDateMax [sc_info limit year]}
-  if {[string length $sDateMin] == 4} { append sDateMin ".??.??" }
-  if {[string length $sDateMax] == 4} { append sDateMax ".12.31" }
-  if {[string length $sDateMin] == 7} { append sDateMin ".??" }
-  if {[string length $sDateMax] == 7} { append sDateMax ".31" }
-}
-
-proc ::search::header::defaults {} {
-  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol sSideToMove
-  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-  global sEloDiffMin sEloDiffMax
-  global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax
-  global sGnumMin sGnumMax
-  global sResWin sResLoss sResDraw sResOther
-  global sPgntext sTitles
-  
-  set sWhite "";  set sBlack ""
-  set sEvent ""; set sSite "";  set sRound ""; set sAnnotator ""; set sAnnotated 0
-  set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
-  set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
-  set sEloDiffMin "-[sc_info limit elo]"
-  set sEloDiffMax "+[sc_info limit elo]"
-  set sGlMin 0; set sGlMax 999
-  set sEcoMin "A00";  set sEcoMax "E99"; set sEco Yes
-  set sGnumMin 1; set sGnumMax -1
-  set sDateMin "0000.00.00"; set sDateMax "[sc_info limit year].12.31"
-  set sResWin 1; set sResLoss 1; set sResDraw 1; set sResOther 1
-  set sIgnoreCol No
-  set sSideToMove wb
-  foreach flag  [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] { set sHeaderFlags($flag) both }
-  foreach i [array names sPgntext] { set sPgntext($i) "" }
-  foreach i $::sTitleList {
-    set sTitles(w:$i) 1
-    set sTitles(b:$i) 1
-  }
-}
-
-::search::header::defaults
 
 set sHeaderFlagFrame 0
 
@@ -252,12 +230,11 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   pack .sh.res -side top -fill x
   ttk::label $w.res.l1 -textvar ::tr(Result:) -font $bold
   pack $w.res.l1 -side left
-  foreach i {win draw loss other} \
-      v {sResWin sResDraw sResLoss sResOther} \
-      text {"1-0 "  "1/2-1/2 "  "0-1 "  "* "} {
-        ttk::checkbutton $w.res.e$i -text $text -variable $v -offvalue 0 -onvalue 1
-        pack $w.res.e$i -side left
-      }
+  ttk::checkbutton $w.res.ewin -text "1-0 " -variable sResWin -offvalue "1" -onvalue ""
+  ttk::checkbutton $w.res.edraw -text "1/2-1/2 " -variable sResDraw -offvalue "=" -onvalue ""
+  ttk::checkbutton $w.res.eloss -text "0-1 " -variable sResLoss -offvalue "0" -onvalue ""
+  ttk::checkbutton $w.res.eother -text "* " -variable sResOther -offvalue "*" -onvalue ""
+  pack $w.res.ewin $w.res.edraw $w.res.eloss $w.res.eother -side left
   
   ttk::label $w.gl.l1 -textvar ::tr(GameLength:) -font $bold
   ttk::label $w.gl.l2 -text "-" -font $regular
@@ -474,13 +451,19 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
         }
     }
 
+    set results ""
+    append results $sResWin
+    append results $sResDraw
+    append results $sResLoss
+    append results $sResOther
+
     progressBarSet .sh.fprogress.progress 301 21
     set err [catch { sc_filter search $dbase $filter header \
           -filter RESET \
           -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \
           -date [list $sDateMin $sDateMax] \
-          -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+          -result! $results \
           -welo [list $sWhiteEloMin $sWhiteEloMax] \
           -belo [list $sBlackEloMin $sBlackEloMax] \
           -delo [list $sEloDiffMin $sEloDiffMax] \
@@ -507,7 +490,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -white $sBlack -black $sWhite \
           -event $sEvent -site $sSite -round $sRound \
           -date [list $sDateMin $sDateMax] \
-          -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+          -result! $results \
           -welo [list $sBlackEloMin $sBlackEloMax] \
           -belo [list $sWhiteEloMin $sWhiteEloMax] \
           -delo [list $deloMin $deloMax] \
