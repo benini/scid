@@ -419,6 +419,15 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 	if (param == "length") return std::partition(itB, itE,
 		SearchRange<ushort>(base, param.getValue(), &IndexEntry::GetNumHalfMoves)
 	);
+	if (param == "n_variations") return std::partition(itB, itE,
+		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetVariationCount)
+	);
+	if (param == "n_comments") return std::partition(itB, itE,
+		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetCommentCount)
+	);
+	if (param == "n_nags") return std::partition(itB, itE,
+		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetNagCount)
+	);
 	if (param == "flag") return std::partition(itB, itE,
 		SearchFlag(base, param.getValue())
 	);

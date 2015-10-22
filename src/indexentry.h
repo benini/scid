@@ -447,22 +447,6 @@ public:
     bool GetVariationsFlag () const { return (GetVariationCount() > 0); }
     bool GetNagsFlag () const       { return (GetNagCount() > 0); }
     bool GetDeleteFlag () const     { return (Flags & IDX_MASK_DELETE) != 0; }
-    bool GetWhiteOpFlag () const    { return (Flags & IDX_MASK_WHITE_OP) != 0; }
-    bool GetBlackOpFlag () const    { return (Flags & IDX_MASK_BLACK_OP) != 0; }
-    bool GetMiddlegameFlag () const { return (Flags & IDX_MASK_MIDDLEGAME) != 0; }
-    bool GetEndgameFlag () const    { return (Flags & IDX_MASK_ENDGAME) != 0; }
-    bool GetNoveltyFlag () const    { return (Flags & IDX_MASK_NOVELTY) != 0; }
-    bool GetPawnStructFlag () const { return (Flags & IDX_MASK_PAWN) != 0; }
-    bool GetTacticsFlag () const    { return (Flags & IDX_MASK_TACTICS) != 0; }
-    bool GetKingsideFlag () const   { return (Flags & IDX_MASK_KSIDE) != 0; }
-    bool GetQueensideFlag () const  { return (Flags & IDX_MASK_QSIDE) != 0; }
-    bool GetBrilliancyFlag () const { return (Flags & IDX_MASK_BRILLIANCY) != 0; }
-    bool GetBlunderFlag () const    { return (Flags & IDX_MASK_BLUNDER) != 0; }
-    bool GetUserFlag () const       { return (Flags & IDX_MASK_USER) != 0; }
-    // Custom flags are bits numbered from 1 to 6 from left to right
-    bool GetCustomFlag (byte c) const {
-      return (Length_High & CUSTOM_FLAG_MASK[c-1]) != 0;
-    }
 
     static uint CharToFlag (char ch);
     static uint32_t CharToFlagMask (char flag);

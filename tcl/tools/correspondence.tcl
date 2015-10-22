@@ -2503,7 +2503,7 @@ namespace eval CorrespondenceChess {
 					-white $White    \
 					-black $Black    \
 					-pgn $sPgnlist   \
-					-fDelete no      \
+					-flag! D \
 					-filter 2        \
 					-gnum [list 1 -1] \
 					]

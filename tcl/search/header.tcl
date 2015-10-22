@@ -451,6 +451,21 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
         }
     }
 
+    set fCounts(Variations) "-n_variations"
+    set fCountsV(Variations) ""
+    set fCounts(Comments) "-n_comments"
+    set fCountsV(Comments) ""
+    set fCounts(Annotations) "-n_nags"
+    set fCountsV(Annotations) ""
+    foreach i {"Variations" "Comments" "Annotations"} {
+        if  { $sHeaderFlags($i) == "yes" } {
+             append fCounts($i) "!"
+             set fCountsV($i) "0"
+        } elseif  { $sHeaderFlags($i) == "no" } {
+             set fCountsV($i) "0"
+        }
+    }
+
     set results ""
     append results $sResWin
     append results $sResDraw
@@ -474,9 +489,9 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -flag $flagsYes -flag! $flagsNo \
-          -fComments $sHeaderFlags(Comments) \
-          -fVariations $sHeaderFlags(Variations) \
-          -fAnnotations $sHeaderFlags(Annotations) \
+          $fCounts(Variations) $fCountsV(Variations) \
+          $fCounts(Comments) $fCountsV(Comments) \
+          $fCounts(Annotations) $fCountsV(Annotations) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
     }]
 
@@ -501,9 +516,9 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -flag $flagsYes -flag! $flagsNo \
-          -fComments $sHeaderFlags(Comments) \
-          -fVariations $sHeaderFlags(Variations) \
-          -fAnnotations $sHeaderFlags(Annotations) \
+          $fCounts(Variations) $fCountsV(Variations) \
+          $fCounts(Comments) $fCountsV(Comments) \
+          $fCounts(Annotations) $fCountsV(Annotations) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
         }
 
@@ -523,7 +538,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
 
     set str "[sc_filter count $dbase $filter] / [sc_base numGames $dbase]"
 
-    after idle "::notify::DatabaseModified $dbase"
+    after idle "::notify::DatabaseModified $dbase dbfilter"
     
     grab release .sh.b.stop
     pack forget .sh.b.stop

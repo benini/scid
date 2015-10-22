@@ -81,7 +81,8 @@ proc ::windows::gamelist::DatabaseModified {{dbase} {filter -1}} {
 		if {$::gamelistBase($w) == $dbase} {
 			if {$filter == -1} {
 				::windows::gamelist::update_ $w 0
-			} elseif {$filter == $::gamelistFilter($w)} {
+			} elseif {$filter == $::gamelistFilter($w) || \
+			          $filter == [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]} {
 				::windows::gamelist::update_ $w 1
 			}
 			::windows::gamelist::updateStats_ $w

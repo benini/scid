@@ -10623,40 +10623,6 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// matchGameFlags():
-//    Called by sc_search_header to test a particular game against the
-//    specified index flag restrictions, for example, excluding
-//    deleted games or games without comments.
-bool
-matchGameFlags (const IndexEntry* ie, flagT fComments, flagT fVars, flagT fNags, flagT fDelete)
-{
-    bool flag;
-
-    flag = ie->GetCommentsFlag();
-    if ((flag && !flag_Yes(fComments))  ||  (!flag && !flag_No(fComments))) {
-        return false;
-    }
-
-    flag = ie->GetVariationsFlag();
-    if ((flag && !flag_Yes(fVars))  ||  (!flag && !flag_No(fVars))) {
-        return false;
-    }
-
-    flag = ie->GetNagsFlag();
-    if ((flag && !flag_Yes(fNags))  ||  (!flag && !flag_No(fNags))) {
-        return false;
-    }
-
-    flag = ie->GetDeleteFlag();
-    if ((flag && !flag_Yes(fDelete))  ||  (!flag && !flag_No(fDelete))) {
-        return false;
-    }
-
-    // If we reach here, the game matched all flag restrictions.
-    return true;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // matchGameHeader():
 //    Called by sc_search_header to test a particular game against the
 //    header search criteria.
@@ -10752,25 +10718,18 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     bool wToMove = true;
     bool bToMove = true;
 
-    flagT fComments = FLAG_BOTH;
-    flagT fVariations = FLAG_BOTH;
-    flagT fAnnotations = FLAG_BOTH;
-    flagT fDelete = FLAG_BOTH;
-        
     int pgnTextCount = 0;
     char ** sPgnText = NULL;
 
     const char * options[] = {
         "annotator", "annotated",
         "wtitles", "btitles", "toMove",
-        "fComments", "fVariations", "fAnnotations",
-        "fDelete", "pgn", NULL
+        "pgn", NULL
     };
     enum {
         OPT_ANNOTATOR, OPT_ANNOTATED,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
-        OPT_FCOMMENTS, OPT_FVARIATIONS, OPT_FANNOTATIONS,
-        OPT_FDELETE, OPT_PGN
+        OPT_PGN
     };
 
     int arg = 2;
@@ -10810,11 +10769,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
                 bToMove = true;
             }
             break;
-
-        case OPT_FCOMMENTS:    fComments    = strGetFlag (value); break;
-        case OPT_FVARIATIONS:  fVariations  = strGetFlag (value); break;
-        case OPT_FANNOTATIONS: fAnnotations = strGetFlag (value); break;
-        case OPT_FDELETE:      fDelete      = strGetFlag (value); break;
 
         case OPT_PGN:
             if (Tcl_SplitList (ti, (char *)value, &pgnTextCount,
@@ -10896,7 +10850,17 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
         }
     }
 
+    bool skipSearch = false;
+    if ((sAnnotator == NULL || *sAnnotator == 0) &&
+        (mWhite == NULL && mBlack == NULL) &&
+        (bAnnotated == false) &&
+        (wToMove == true && bToMove == true) &&
+        (pgnTextCount == 0)) {
+        skipSearch = true;
+    }
+
     // Here is the loop that searches on each game:
+    if (!skipSearch)
     for (uint i=0, n = base->numGames(); i < n; i++) {
         if ((i % 5000) == 0) {  // Update the percentage done bar:
             if (!progress.report(i,n)) return UI_Result(ti, ERROR_UserCancel);
@@ -10907,12 +10871,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 
         const IndexEntry* ie = base->getIndexEntry(i);
         bool match = false;
-        if (matchGameFlags (ie, fComments, fVariations, fAnnotations, fDelete)) {
             if (matchGameHeader (ie, mWhite, mBlack,
                                  wToMove, bToMove, bAnnotated)) {
                 match = true;
             }
-        }
 
 
 		// Without annotations the search for annotator can be skipped
@@ -10991,7 +10953,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 
     progress.report(1,1);
 
-    return TCL_OK;
+    return UI_Result(ti, OK);;
 }
 
 
