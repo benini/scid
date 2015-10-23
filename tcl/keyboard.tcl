@@ -106,7 +106,7 @@ proc keyboardShortcuts {w} {
 	}
 
 	# Change current database
-	set totalBaseSlots [sc_base count total]
+	set totalBaseSlots [sc_info limit bases]
 	for {set i 1} { $i <= $totalBaseSlots} {incr i} {
 		bind $w <Control-Key-$i> "::file::SwitchToBase $i"
 	}

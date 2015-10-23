@@ -519,7 +519,7 @@ proc clickBaseType {x y} {
 
 proc changeBaseType {baseNum} {
   global temp_dbtype ::windows::switcher::base_types numBaseTypeIcons
-  if {$baseNum > [sc_base count total]} { return }
+  if {$baseNum > [sc_info limit bases]} { return }
   set temp_dbtype [sc_base extra $baseNum type]
   if {$temp_dbtype >= $numBaseTypeIcons} { set temp_dbtype 0 }
   toplevel .btypeWin
@@ -649,7 +649,7 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
 }
 
 set baseWin 0
-set sw_nBases_ [sc_base count total]
+set sw_nBases_ [sc_info limit bases]
 set ::windows::switcher::wins {}
 
 proc ::windows::switcher::Open {{w .baseWin}} {

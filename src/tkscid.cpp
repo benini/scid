@@ -410,35 +410,6 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_count:
-//    Return count of free/used/total base slots.
-int
-sc_base_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = { "free", "used", "total" };
-    enum { OPT_FREE, OPT_USED, OPT_TOTAL };
-    int optionMode = OPT_USED;
-
-    if (argc > 2) {
-        optionMode = strUniqueMatch (argv[2], options);
-
-        if (optionMode < OPT_FREE || argc > 3) {
-            return errorResult (ti, "Usage: sc_base count [free|used|total]");
-        }
-    }
-
-    if (optionMode == OPT_TOTAL) {
-        return setUintResult (ti, MAX_BASES);
-    }
-
-    int numUsed = 0, numFree = 0;
-    for (int i=0; i < MAX_BASES; i++) {
-        if (dbList[i].inUse) { numUsed++; } else { numFree++; }
-    }
-    return setIntResult (ti, optionMode == OPT_USED ? numUsed : numFree);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  exportGame:
 //    Called by sc_base_export() to export a single game.
 void
@@ -5938,10 +5909,10 @@ int
 sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "elo", "games", "nags", "year", NULL
+        "elo", "games", "nags", "year", "bases", NULL
     };
     enum {
-        LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR
+        LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR, LIM_BASES
     };
     int index = -1;
     int result = 0;
@@ -5965,11 +5936,15 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         result = YEAR_MAX;
         break;
 
+    case LIM_BASES:
+        result = MAX_BASES;
+        break;
+
     default:
-        return InvalidCommand (ti, "sc_info limit", options);
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_info limit <elo|games|nags|year|bases>");
     }
 
-    return setIntResult (ti, result);
+    return UI_Result(ti, OK, result);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

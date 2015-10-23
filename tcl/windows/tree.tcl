@@ -37,7 +37,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
 
 # ################################################################################
 proc ::tree::ConfigMenus { { lang "" } } {
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+  for {set i [sc_info limit bases] } {$i > 0} {incr i -1} {
     ::tree::doConfigMenus $i $lang
   }
 }
@@ -270,7 +270,7 @@ proc ::tree::closeTree {baseNumber} {
 proc ::tree::toggleTraining { baseNumber } {
   global tree
   
-  for {set i 1 } {$i <= [sc_base count total]} {incr i} {
+  for {set i 1 } {$i <= [sc_info limit bases]} {incr i} {
     if {! [winfo exists .treeWin$baseNumber] || $i == $baseNumber } { continue }
     set tree(training$i) 0
   }

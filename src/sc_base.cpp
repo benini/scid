@@ -476,7 +476,6 @@ UI_res_t sc_base_switch (scidBaseT* dbase, UI_handle_t ti)
 
 //TODO: move this function here from tkscid.cpp
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_count       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_slot        (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_stats       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
@@ -490,7 +489,7 @@ uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** 
 UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "close",           "compact",         "copygames",       "count",
+        "close",           "compact",         "copygames",
         "create",          "creatememory",    "current",         "duplicates",
         "ecoStats",        "export",          "extra",           "filename",
         "gameflag",        "gamelocation",    "gameslist",       "import",
@@ -500,7 +499,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
         NULL
     };
     enum {
-        BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,    BASE_COUNT,
+        BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,
         BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
         BASE_ECOSTATS,     BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
         BASE_GAMEFLAG,     BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_IMPORT,
@@ -513,9 +512,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	int index = strUniqueMatch (argv[1], options);
 	switch (index) {
-	case BASE_COUNT:
-		return sc_base_count (cd, ti, argc, argv);
-
 	case BASE_CREATE:
 		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base create filename");
 		return sc_base_open(ti, argv[2], true, FMODE_Both);
