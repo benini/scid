@@ -80,12 +80,6 @@ static scidBaseT* clipbase = NULL;
 const int MAX_BASES = 9;
 const int CLIPBASE_NUM = MAX_BASES - 1;
 
-// Filter operations:
-typedef uint filterOpT;
-const filterOpT FILTEROP_AND = 0;
-const filterOpT FILTEROP_OR = 1;
-const filterOpT FILTEROP_RESET = 2;
-
 // Tablebase probe modes:
 #define PROBE_NONE 0
 #define PROBE_RESULT 1
@@ -329,27 +323,6 @@ str_prefix_len (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     return setUintResult (ti, strPrefix (argv[1], argv[2]));
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strGetFilterOp:
-//    Converts a string value to a filter operation value.
-filterOpT
-strGetFilterOp (const char * str)
-{
-    switch (*str) {
-        // AND:
-        case 'A': case 'a': case '0': return FILTEROP_AND;
-        // OR:
-        case 'O': case 'o': case '1': return FILTEROP_OR;
-        // RESET:
-        case 'R': case 'r': case '2': return FILTEROP_RESET;
-    }
-    // Default is RESET.
-    return FILTEROP_RESET;
-}
-
-
-
 
 scidBaseT* DBasePool_find(const char* filename) {
     for (int i=0, n=MAX_BASES; i<n; i++) {

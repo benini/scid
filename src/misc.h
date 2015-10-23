@@ -116,6 +116,25 @@ inline std::string to_string(int val) {
 #endif
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strGetFilterOp:
+//    Converts a string value to a filter operation value.
+enum filterOpT { FILTEROP_AND, FILTEROP_OR, FILTEROP_RESET };
+
+inline filterOpT strGetFilterOp (const char * str)
+{
+    switch (*str) {
+        // AND:
+        case 'A': case 'a': case '0': return FILTEROP_AND;
+        // OR:
+        case 'O': case 'o': case '1': return FILTEROP_OR;
+        // RESET:
+        case 'R': case 'r': case '2': return FILTEROP_RESET;
+    }
+    // Default is RESET.
+    return FILTEROP_RESET;
+}
+
 // ECO string routines
 //
 void eco_ToString (ecoT ecoCode, char * ecoStr, bool extensions = true);
