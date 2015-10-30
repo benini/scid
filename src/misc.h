@@ -23,7 +23,42 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
+#include <cstdlib>
 #include <vector>
+
+/**
+ * class StrRange - parse a string interpreting its content as 1 or 2 integers
+ *                  separated by whitespace.
+ * The integers represent the min and max value of a range.
+ * If only one integer is provided it will represent both the min and max value.
+ *
+ * inRange()  :  Return true if @val is >= min and <= max
+ */
+class StrRange {
+protected:
+	long min_;
+	long max_;
+
+protected:
+	StrRange()
+	: min_(0), max_(0) {}
+
+public:
+	explicit StrRange(const char* range) {
+		char* next;
+		min_ = std::strtol(range, &next, 10);
+		char* end;
+		max_ = std::strtol(next, &end, 10);
+		if (next == end) max_ = min_;
+		if (min_ > max_) std::swap(min_, max_);
+	}
+
+	bool inRange(long val) const {
+		if (val < min_ || val > max_) return false;
+		return true;
+	}
+};
+
 
 /**
  * class VectorBig - store data into chunks to avoid (or minimize) reallocations
@@ -34,7 +69,11 @@
  *              i.e with @count==16777214 and @CHUNKSHIFT==16 will use 256 pointers
  */
 template <class T, size_t CHUNKSHIFT>
-struct VectorBig {
+class VectorBig {
+	std::vector<T*> index_;
+	size_t size_;
+
+public:
 	VectorBig() : size_(0) {}
 	~VectorBig() { resize(0); }
 
@@ -76,10 +115,6 @@ struct VectorBig {
 	void push_back(const T& e) {
 		resize(size_ + 1, e);
 	}
-
-private:
-	std::vector<T*> index_;
-	size_t size_;
 };
 
 

@@ -306,7 +306,7 @@ void scidBaseT::deleteFilter(const char* filterName) {
 	}
 }
 
-HFilter scidBaseT::getFilter (const char* filterName) {
+HFilter scidBaseT::getFilter (const char* filterName) const {
 	const Filter* mask = 0;
 	std::string name = filterName;
 	int split = 0;

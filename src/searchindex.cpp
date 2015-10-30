@@ -75,6 +75,35 @@ public:
 	}
 };
 
+class SearchSiteCountry {
+	const scidBaseT* base_;
+	std::vector<bool> mask_;
+
+public:
+	SearchSiteCountry(const scidBaseT* base,
+	                  std::string country)
+	: base_(base) {
+		idNumberT n = base->getNameBase()->GetNumNames(NAME_SITE);
+		mask_.resize(n);
+
+		std::transform(country.begin(), country.end(), country.begin(), ::toupper);
+		const NameBase* nb = base_->getNameBase();
+		for (idNumberT i=0; i < n; i++) {
+			const char* site = nb->GetName(NAME_SITE, i);
+			const char* it = site;
+			while (*it != 0) it++;
+			if (std::distance(site, it) > 3) it -= 3;
+			std::string tmp = it;
+			std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::toupper);
+			mask_[i] = (tmp == country);
+		}
+	}
+
+	bool operator() (gamenumT gnum) const {
+		return mask_[base_->getIndexEntry(gnum)->GetSite()];
+	}
+};
+
 class SearchFlag {
 	const scidBaseT* base_;
 	uint32_t flagMask_;
@@ -116,34 +145,25 @@ public:
 };
 
 template <typename T>
-class SearchRange {
+class SearchRange : public StrRange {
 protected:
 	const scidBaseT* base_;
 	T (IndexEntry::* f_) () const;
-	long min_;
-	long max_;
 
+protected:
 	SearchRange(const scidBaseT* base,
 	            T (IndexEntry::* f) () const)
-	: base_(base), f_(f), min_(0), max_(0) {}
+	: base_(base), f_(f) {}
 
 public:
 	SearchRange(const scidBaseT* base,
 	            const char* range,
 	            T (IndexEntry::* f) () const)
-	: base_(base), f_(f) {
-		char* next;
-		min_ = std::strtol(range, &next, 10);
-		char* end;
-		max_ = std::strtol(next, &end, 10);
-		if (next == end) max_ = min_;
-		if (min_ > max_) std::swap(min_, max_);
-	}
+	: StrRange(range), base_(base), f_(f) {}
 
 	bool operator() (gamenumT gnum) const {
 		long v = (base_->getIndexEntry(gnum)->*f_)();
-		if (v < min_ || v > max_) return false;
-		return true;
+		return inRange(v);
 	}
 };
 
@@ -385,6 +405,9 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 	);
 	if (param == "site") return std::partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_SITE, &IndexEntry::GetSite)
+	);
+	if (param == "sitecountry") return std::partition(itB, itE,
+		SearchSiteCountry(base, param.getValue())
 	);
 	if (param == "round") return std::partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_ROUND, &IndexEntry::GetRound)

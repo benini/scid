@@ -80,7 +80,7 @@ struct scidBaseT {
 
 	std::string newFilter();
 	void deleteFilter(const char* filterName);
-	HFilter getFilter(const char* filterName);
+	HFilter getFilter(const char* filterName) const;
 
 	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
@@ -195,14 +195,14 @@ private:
 	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 	void calcNameFreq ();
 
-	Filter* fetchFilter(uint idx) {
+	Filter* fetchFilter(uint idx) const {
 		if (idx == 0) return dbFilter;
 		if (idx == 1) return treeFilter;
 		idx -= 2;
 		if (idx >= filters_.size()) return 0;
 		return filters_[idx].second;
 	}
-	Filter* fetchFilter(const std::string& name) {
+	Filter* fetchFilter(const std::string& name) const {
 		Filter* res = 0;
 		if (name == "dbfilter") res = dbFilter;
 		else if (name == "tree") res = treeFilter;
