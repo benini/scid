@@ -61,9 +61,9 @@ proc ::tourney::Open {} {
   $w.menu.file add command -label TmtFileClose -command "destroy $w"
   $w.menu add cascade -label TmtSort -menu $w.menu.sort
   menu $w.menu.sort
-  foreach name {Date Players Games Elo Site Event Winner} {
+  foreach name {Date Players Games Elo Site Event} {
     $w.menu.sort add radiobutton -label TmtSor$name \
-      -variable ::tourney::sort -value $name -command {::tourney::refresh -fast}
+      -variable ::tourney::sort -value $name -command {::tourney::refresh}
   }
 
   foreach i {t o1 o2 o3 b} {frame $w.$i}
@@ -201,7 +201,7 @@ proc ::tourney::ConfigMenus {{lang ""}} {
   foreach idx {0 2} tag {Update Close} {
     configMenuText $m.file $idx TmtFile$tag $lang
   }
-  foreach idx {0 1 2 3 4 5 6} tag {Date Players Games Elo Site Event Winner} {
+  foreach idx {0 1 2 3 4 5} tag {Date Players Games Elo Site Event} {
     configMenuText $m.sort $idx TmtSort$tag $lang
   }
 }
@@ -238,52 +238,38 @@ proc ::tourney::refresh {{option ""}} {
   $t configure -state normal
   $t delete 1.0 end
   update
-  set fastmode 0
-  if {$option == "-fast"} { set fastmode 1 }
 
-  if {$fastmode  &&  $::tourney::list != ""} {
-    set tlist $::tourney::list
-  } else {
-    if {[catch {sc_base tournaments \
-                  -start $::tourney::start \
-                  -end $::tourney::end \
-                  -size 2500 \
-                  -minPlayers $::tourney::minPlayers \
-                  -maxPlayers $::tourney::maxPlayers \
-                  -minGames $::tourney::minGames \
-                  -maxGames $::tourney::maxGames \
-                  -minElo $::tourney::minElo \
-                  -maxElo $::tourney::maxElo \
-                  -country [string toupper $::tourney::country] \
-                  -site $::tourney::site \
-                  -event $::tourney::event \
-                  -player $::tourney::player \
-                } tlist]} {
-      $t insert end $tlist
-      $t configure -state disabled
-      unbusyCursor .
+  set ::curr_db [sc_base current]
+  set filter [sc_filter new $::curr_db]
+  sc_filter search $::curr_db $filter header \
+      -filter RESET \
+      -date [list $::tourney::start $::tourney::end] \
+      -site $::tourney::site \
+      -sitecountry [string toupper $::tourney::country] \
+      -event $::tourney::event
+  set err [catch {sc_base tournaments $::curr_db $filter $::tourney::size \
+      -n_players [list $::tourney::minPlayers $::tourney::maxPlayers] \
+      -n_games [list $::tourney::minGames $::tourney::maxGames] \
+      -avgelo [list $::tourney::minElo $::tourney::maxElo] \
+      -player $::tourney::player \
+      -sort $::tourney::sort \
+  } tlist]
+  sc_filter release $::curr_db $filter
+  unbusyCursor .
+
+  if {$err} {
+      ERROR::MessageBox
       return
-    }
-    set ::tourney::list $tlist
-  }
-  switch $::tourney::sort {
-    "None" {}
-    "Date" { set tlist [lsort -decreasing -index 0 $tlist] }
-    "Players" { set tlist [lsort -integer -decreasing -index 3 $tlist] }
-    "Games" { set tlist [lsort -integer -decreasing -index 4 $tlist] }
-    "Elo" { set tlist [lsort -integer -decreasing -index 5 $tlist] }
-    "Site" { set tlist [lsort -dict -index 1 $tlist] }
-    "Event" { set tlist [lsort -dict -index 2 $tlist] }
-    "Winner" { set tlist [lsort -dict -index 7 $tlist] }
   }
 
   if {[llength $tlist] > 0} {
-    foreach i {Date Players Games Elo Site Event Winner} {
+    foreach i {Date Players Games Elo Site Event} {
       $t tag configure s$i -font font_SmallBold
-      $t tag bind s$i <1> "set ::tourney::sort $i; ::tourney::refresh -fast"
+      $t tag bind s$i <1> "set ::tourney::sort $i; ::tourney::refresh"
       $t tag bind s$i <Any-Enter> "$t tag config s$i -foreground red"
       $t tag bind s$i <Any-Leave> "$t tag config s$i -foreground {}"
     }
+    $t tag configure sWinner -font font_SmallBold
     $t insert end "\t\t"
     $t insert end [tr TmtSortDate] sDate
     $t insert end "\t"
@@ -355,7 +341,6 @@ proc ::tourney::refresh {{option ""}} {
   }
   $t insert end "\n"
   $t configure -state disabled
-  unbusyCursor .
 }
 
 proc ::tourney::check {} {

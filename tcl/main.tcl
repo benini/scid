@@ -576,9 +576,10 @@ loadPlayersPhoto
 # Try to change the engine name: ignore version number, try to ignore blanks
 # TODO: rename this function (spellcheck playernames, converts to lower case and remove spaces)
 proc trimEngineName { engine } {
-    set spell_name [sc_name retrievename $engine]
-    if {$spell_name != ""} { set engine $spell_name }
-    
+    catch {
+        set spell_name [sc_name retrievename $engine]
+        if {$spell_name != ""} { set engine $spell_name }
+    }
     set engine [string tolower $engine]
     
     if { [string first "deep " $engine] == 0 } {

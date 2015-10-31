@@ -19,6 +19,7 @@
 #ifndef SCIDBASE_H
 #define SCIDBASE_H
 
+#include "misc.h"
 #include "index.h"
 #include "namebase.h"
 #include "gfile.h"

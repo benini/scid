@@ -119,11 +119,10 @@ const char PGN_SUFFIX[] = ".pgn";
 
 //  General types
 
-typedef unsigned char           byte;           //  8 bit unsigned
-typedef unsigned short          ushort;         // 16 bit unsigned
-typedef unsigned int            uint;           // 32 bit unsigned
-typedef signed   int            sint;           // 32 bit signed
-typedef unsigned long           ulong;
+typedef uint8_t  byte;           //  8 bit unsigned
+typedef uint16_t ushort;         // 16 bit unsigned
+typedef uint32_t uint;           // 32 bit unsigned
+typedef int32_t  sint;           // 32 bit signed
 
 
 //  compareT: comparison type

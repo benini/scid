@@ -21,6 +21,7 @@
 #include "misc.h"
 #include "scidbase.h"
 #include "pgnparse.h"
+#include "searchtournaments.h"
 #include <string>
 #include <cstring>
 
@@ -344,7 +345,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
  *
  * Return:
  *   On success, returns a list of two elements: the number of
- *   games imported, and a string containing import errors
+ *   games imported and a string containing import errors
  *   or warnings.
  */
 UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
@@ -378,7 +379,7 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 
 
 /**
- * sc_base_list() - return the list of opened databases
+ * sc_base_list() - return a baseId list of opened databases
  */
 UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
 {
@@ -474,6 +475,131 @@ UI_res_t sc_base_switch (scidBaseT* dbase, UI_handle_t ti)
 }
 
 
+/**
+ * sc_base_tournaments() - return a list of tournaments
+ *
+ * Games with the same [Event], [Site] and [EventDate] tags are considered
+ * a tournament (also games with empty [EventDate] tag are included).
+ * The list returned can be restricted based on the average elo of the
+ * partecipants, the number of games, the number of players and the name
+ * of a partecipant.
+ * Ranges can be specified with one or two numbers separated by spaces (min max).
+ * The returned list can be sorted according to the following criteria:
+ * - "Date"    : date of the first games in the tournament
+ * - "Players" : number of partecipants to the tournament
+ * - "Games"   : number of games
+ * - "Elo"     : average elo of the partecipants
+ * - "Site"    : site name
+ * - "Event"   : event name
+ *
+ * Return:
+ *   On success, return a list of tournaments.
+ *   For each tournament the following info are provided:
+ *   date of the first games, site name, event name, number of players,
+ *   number of games, average elo of the partecipants, lowest game number,
+ *   winner name, winner elo, winner score, 2nd place name, 2nd elo, 2nd score.
+ */
+UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv) {
+	const char* usage = "Usage: sc_base tournaments baseId filterName n_maxResults [-avgelo range] [-n_games range] [-n_players range] [-sort criteria] ";
+	if (argc < 5) return UI_Result(ti, ERROR_BadArg, usage);
+
+	const HFilter filter = dbase->getFilter(argv[3]);
+	if (!filter) return UI_Result(ti, ERROR_BadArg, usage);
+
+	SearchTournaments search(dbase, filter);
+
+	const char* sortCriteria = 0;
+	long nResults = strGetUnsigned(argv[4]);
+
+	static const char* options[] = {
+		"-avgelo", "-n_games", "-n_players", "-player", "-sort", NULL
+	};
+	enum { AVGELO, N_GAMES, N_PLAYERS, PLAYER, SORT };
+
+	for (int i = 5; (i + 1) < argc; i += 2) {
+		int index = strUniqueMatch(argv[i], options);
+		const char* value = argv[i + 1];
+		switch (index) {
+		case AVGELO:
+			search.filterByAvgElo(StrRange(value));
+			break;
+		case N_GAMES:
+			search.filterByNGames(StrRange(value));
+			break;
+		case N_PLAYERS:
+			search.filterByNPlayers(StrRange(value));
+			break;
+		case PLAYER:
+			if (value != 0 && *value != 0) {
+				search.filterByPlayer(value);
+			}
+			break;
+		case SORT:
+			sortCriteria = value;
+			break;
+		default:
+			return UI_Result(ti, ERROR_BadArg, usage);
+		}
+	}
+
+	if (sortCriteria != 0) {
+		if (!search.sort(sortCriteria, nResults))
+			return UI_Result(ti, ERROR_BadArg, usage);
+	}
+
+	SearchTournaments::Iter it = search.begin();
+	SearchTournaments::Iter it_end = search.end();
+	if (std::distance(it, it_end) > nResults) {
+		it_end = it + nResults;
+	}
+
+	char buf_date[16];
+	const NameBase* nb = dbase->getNameBase();
+	UI_List res(std::distance(it, it_end));
+	UI_List tourney(14);
+	for (; it != it_end; it++) {
+		tourney.clear();
+		date_DecodeToString(it->getStartDate(), buf_date);
+		strTrimDate(buf_date);
+		tourney.push_back(buf_date);
+		tourney.push_back(nb->GetName(NAME_SITE, it->getSiteId()));
+		tourney.push_back(nb->GetName(NAME_EVENT, it->getEventId()));
+		tourney.push_back(it->nPlayers());
+		tourney.push_back(it->nGames());
+		tourney.push_back(it->getAvgElo());
+		tourney.push_back(it->getStartGameNum() + 1);
+		const char* name1st = "";
+		eloT elo1st = 0;
+		double score1st = 0.0;
+		const char* name2nd = "";
+		eloT elo2nd = 0;
+		double score2nd = 0.0;
+		if (it->nPlayers() > 0) {
+			const Tourney::Player& p = it->getPlayer(0);
+			name1st = nb->GetName(NAME_PLAYER, p.nameId);
+			elo1st = p.elo;
+			score1st = p.score / 2.0;
+		}
+		if (it->nPlayers() > 1) {
+			const Tourney::Player& p = it->getPlayer(1);
+			name2nd = nb->GetName(NAME_PLAYER, p.nameId);
+			elo2nd = p.elo;
+			score2nd = p.score / 2.0;
+		}
+		tourney.push_back(name1st);
+		tourney.push_back(elo1st);
+		tourney.push_back(score1st);
+		tourney.push_back(name2nd);
+		tourney.push_back(elo2nd);
+		tourney.push_back(score2nd);
+
+		res.push_back(tourney);
+	}
+
+	return UI_Result(ti, OK, res);
+}
+
+
 //TODO: move this function here from tkscid.cpp
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
@@ -482,7 +608,6 @@ UI_res_t sc_base_stats       (UI_extra_t, UI_handle_t, int argc, const char ** a
 UI_res_t sc_base_ecoStats    (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_tournaments (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
 
 
@@ -551,9 +676,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	case BASE_TAG:
 		return sc_base_tag (cd, ti, argc, argv);
 
-	case BASE_TOURNAMENTS:
-		return sc_base_tournaments (cd, ti, argc, argv);
-
 	}
 
 	//New multi-base functions
@@ -604,6 +726,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_SWITCH:
 		return sc_base_switch (dbase, ti);
+
+	case BASE_TOURNAMENTS:
+		return sc_base_tournaments (dbase, ti, argc, argv);
 
 	}
 
