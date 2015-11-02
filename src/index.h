@@ -144,7 +144,8 @@ public:
     }
     
     void SetDescription (const char* str) {
-        strncpy(Header.description, str, SCID_DESC_LENGTH +1);
+        strncpy(Header.description, str, SCID_DESC_LENGTH);
+        Header.description[SCID_DESC_LENGTH] = 0;
         Dirty = true;
     }
     
