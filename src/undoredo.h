@@ -21,7 +21,7 @@
 
 #include <vector>
 
-template <class T, unsigned int undomax>
+template <class T, unsigned int UNDOMAX>
 class UndoRedo {
 	typedef std::vector<T*> contT;
 	contT undo_, redo_;
@@ -45,6 +45,11 @@ public:
 	~UndoRedo() { clear(); }
 
 	void clear() { clear(undo_); clear(redo_); }
+	bool undoAll(T*& current) {
+		if (undo_.size() >= UNDOMAX) return false;
+		while (! undo_.empty()) undo(current);
+		return true;
+	}
 	void undo(T*& current) { doUndoRedo(undo_, redo_, current); }
 	void redo(T*& current) { doUndoRedo(redo_, undo_, current); }
 	size_t undoSize() { return undo_.size(); }
@@ -52,7 +57,7 @@ public:
 	void store (T* current) {
 		undo_.push_back(current->clone());
 		clear(redo_);
-		if (undo_.size() > undomax) {
+		if (undo_.size() > UNDOMAX) {
 			delete undo_.front();
 			undo_.erase(undo_.begin());
 		}

@@ -236,7 +236,7 @@ proc updateMainToolbar {} {
 
   if {[sc_game undo size] > 0} {
     set ::gameInfoBar(tb_BD_Undo) "undoFeature undo"
-    set ::gameInfoBar(tb_BD_Revert) "::game::Reload"
+    set ::gameInfoBar(tb_BD_Revert) "undoFeature undoAll"
   } else {
     catch { unset ::gameInfoBar(tb_BD_Undo) }
     catch { unset ::gameInfoBar(tb_BD_Revert) }
@@ -977,6 +977,9 @@ proc undoFeature {action} {
         notify::GameChanged
     } elseif {$action == "redo"} {
         sc_game redo
+        notify::GameChanged
+    } elseif {$action == "undoAll"} {
+        sc_game undoAll
         notify::GameChanged
     }
 }

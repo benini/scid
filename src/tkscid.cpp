@@ -2431,7 +2431,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "pop",        "push",       "SANtoUCI",   "save",
         "scores",     "startBoard", "strip",      "summary",
         "tags",       "truncate",   "truncatefree",
-        "undo",       "undoPoint" , "redo",       NULL
+        "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
     enum {
         GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,
@@ -2441,7 +2441,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
         GAME_SCORES,     GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
         GAME_TAGS,       GAME_TRUNCATE,   GAME_TRUNCATEANDFREE,
-        GAME_UNDO,       GAME_UNDO_POINT, GAME_REDO
+        GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
     char old_language = 0;
@@ -2570,6 +2570,25 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return UI_Result(ti, OK, (uint) db->gameAlterations.undoSize());
         }
         db->gameAlterations.undo(db->game);
+        break;
+
+    case GAME_UNDO_ALL:
+        if (! db->gameAlterations.undoAll(db->game)) {
+            db->gameAltered = false;
+            db->gameAlterations.clear();
+            if (db->gameNumber < 0) {
+                db->game->Clear();
+                return UI_Result(ti, OK);
+            }
+            const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
+            errorT err = db->getGame(ie, db->bbuf);
+            if (err != OK) return UI_Result(ti, err);
+            err = db->game->Decode (db->bbuf, GAME_DECODE_ALL);
+            if (err != OK) return UI_Result(ti, err);
+            db->game->LoadStandardTags (ie, db->getNameBase());
+            db->game->MoveToPly(0);
+            return UI_Result(ti, OK);
+        }
         break;
 
     case GAME_UNDO_POINT:
@@ -3077,9 +3096,9 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
     }
 
     Position * gamePos = NULL;
-    bool moveFound [MAX_LEGAL_MOVES];
-    int moveScore [MAX_LEGAL_MOVES];
-    bool movePrinted [MAX_LEGAL_MOVES];
+    bool moveFound [MAX_LEGAL_MOVES] = {0};
+    int moveScore [MAX_LEGAL_MOVES] = {0};
+    bool movePrinted [MAX_LEGAL_MOVES] = {0};
     uint winCount = 0;
     uint drawCount = 0;
     uint lossCount = 0;

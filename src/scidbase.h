@@ -176,7 +176,7 @@ struct scidBaseT {
 	Game* game;       // the active game for this base.
 	int gameNumber;   // game number of active game.
 	bool gameAltered; // true if game is modified
-	UndoRedo<Game, 30> gameAlterations;
+	UndoRedo<Game, 100> gameAlterations;
 
 private:
 	GFile* gfile;

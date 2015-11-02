@@ -118,7 +118,7 @@ menuText E EditPaste "Paste Last Clipbase Game" 0 \
   {Paste the active Clipbase game here}
 menuText E EditPastePGN "Paste Clipboard text as PGN game..." 18 \
   {Interpret the clipboard text as a game in PGN notation and paste it here}
-menuText E EditSetup "Setup Start Board..." 0 \
+menuText E EditSetup "Set Up Start Board..." 0 \
   {Set the start position for this game}
 menuText E EditCopyBoard "Copy Position" 6 \
   {Copy the current board in FEN notation to the text selection (clipboard)}
