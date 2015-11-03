@@ -100,6 +100,7 @@ Index::Open (const char* filename, fileModeT fmode)
     }
 
     FilePtr->ReadNBytes (Header.magic, 8);
+    Header.magic[8] = 0;
     if (strCompare (Header.magic, INDEX_MAGIC) != 0) {
         delete FilePtr;
         FilePtr = NULL;
@@ -123,9 +124,11 @@ Index::Open (const char* filename, fileModeT fmode)
     Header.numGames = FilePtr->ReadThreeBytes ();
     Header.autoLoad = FilePtr->ReadThreeBytes ();
     FilePtr->ReadNBytes (Header.description, SCID_DESC_LENGTH + 1);
+    Header.description[SCID_DESC_LENGTH] = 0;
     if (Header.version >= 400) {
         for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
             FilePtr->ReadNBytes (Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
+            Header.customFlagDesc[i][CUSTOM_FLAG_DESC_LENGTH] = 0;
         }
     } 
 
