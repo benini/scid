@@ -479,33 +479,35 @@ scidBaseT::TreeStat::TreeStat()
 
 std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 	ASSERT(*filter);
-	std::vector<FullMove> v1;
-	v1.reserve(50);
-	std::vector<scidBaseT::TreeStat> v2;
-	v2.reserve(50);
-	for(gamenumT gnum=0, n = numGames(); gnum < n; gnum++) {
-		if(filter.get(gnum) == 0) continue;
-		uint ply = filter.get(gnum) - 1;
-		const IndexEntry* ie = getIndexEntry (gnum);
+
+	std::vector<scidBaseT::TreeStat> res;
+	std::vector<FullMove> v;
+	for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
+		uint ply = filter.get(gnum);
+		if (ply == 0) continue;
+		else ply--;
+
+		const IndexEntry* ie = getIndexEntry(gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
 		if (move.isNull()) {
 			move = gfile->ReadGame(ie->GetOffset(), ie->GetLength()).getMove(ply);
 		}
-		uint i=0;
-		while (i < v1.size() && v1[i] != move) i++;
-		if (i == v1.size()) {
-			v1.push_back(move);
-			v2.push_back(scidBaseT::TreeStat());
+
+		size_t i = 0;
+		while (i < v.size() && v[i] != move) i++;
+		if (i == v.size()) {
+			v.push_back(move);
+			res.push_back(scidBaseT::TreeStat());
 		}
-		v2[i].add(ie->GetResult(), ie->GetWhiteElo(nb), ie->GetBlackElo(nb));
+		res[i].add(ie->GetResult(), ie->GetWhiteElo(nb), ie->GetBlackElo(nb));
 	}
 
-	for (uint i=0; i < v1.size(); i++) {
-		v2[i].SAN = (v1[i].isNull()) ? "[end]" : v1[i].getSAN(&(v2[i].toMove));
+	for (size_t i = 0, n = v.size(); i < n; i++) {
+		res[i].SAN = (v[i].isNull()) ? "[end]" : v[i].getSAN(&(res[i].toMove));
 	}
 
-	std::sort(v2.begin(), v2.end());
-	return v2;
+	std::sort(res.begin(), res.end());
+	return res;
 }
 
 errorT scidBaseT::getCompactStat(uint* n_deleted,
