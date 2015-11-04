@@ -212,7 +212,9 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 }
 
 errorT scidBaseT::importGame(scidBaseT* sourceBase, uint gNum) {
+	if (sourceBase == this) return ERROR_BadArg;
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+
 	errorT err = addGameHelper(sourceBase, gNum);
 	if (err != OK) return err;
 	ASSERT(numGames() > 0);
@@ -221,7 +223,9 @@ errorT scidBaseT::importGame(scidBaseT* sourceBase, uint gNum) {
 
 errorT scidBaseT::importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
 	ASSERT(*filter);
+	if (sourceBase == this) return ERROR_BadArg;
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+
 	errorT err = OK;
 	uint iProgress = 0;
 	uint totGames = filter.count();
@@ -240,6 +244,9 @@ errorT scidBaseT::importGames(scidBaseT* sourceBase, const HFilter& filter, cons
 }
 
 errorT scidBaseT::addGameHelper(scidBaseT* sourceBase, uint gNum) {
+	// Importing a game from the same base works, but it's too dangerous
+	ASSERT(sourceBase != this);
+
 	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
 	errorT err = sourceBase->gfile->ReadGame(sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength());
 	if (err != OK) return err;
