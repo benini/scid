@@ -29,7 +29,6 @@
 //    the game is included, and what position to show when the game
 //    is loaded: 1 means the start position, 2 means the position after
 //    Whites first move, etc.
-
 class Filter
 {
   private:
@@ -89,29 +88,6 @@ public:
 };
 
 
-
-inline void
-Filter::Set (uint index, byte value)
-{
-    ASSERT (index < FilterSize);
-	if (Data == NULL){
-        if (value == 1)
-	        return;
-		Allocate();
-	}
-    if (Data[index] != 0) FilterCount--;
-    if (value != 0) FilterCount++;
-    Data[index] = value;
-}
-
-inline byte
-Filter::Get (uint index) const
-{
-    ASSERT (index < FilterSize);
-    byte res = (Data == NULL) ? 1 : Data[index];
-    return res;
-}
-
 //////////////////////////////////////////////////////////////////////
 //
 // CompressedFilter class:
@@ -119,8 +95,6 @@ Filter::Get (uint index) const
 //    Random access to individual values is not possible.
 //    A CompressedFilter is created from, or restored to, a regular
 //    filter with the methods CompressFrom() and UncompressTo().
-
-
 class CompressedFilter
 {
   private:
@@ -136,7 +110,6 @@ class CompressedFilter
         if (CompressedData != NULL) delete[] CompressedData;
     }
 
-    inline void Init();
     inline void Clear();
 
     uint Size() const { return CFilterSize; }
@@ -150,7 +123,91 @@ class CompressedFilter
   private:
     CompressedFilter(const CompressedFilter&);
     void operator=(const CompressedFilter&);
+
+    inline void Init();
 };
+
+
+inline void Filter::Init (uint size) {
+    Free();
+    FilterSize = size;
+    FilterCount = size;
+    Capacity = size;
+    Data = NULL;
+}
+
+inline void Filter::Allocate()
+{
+    Free();
+    Capacity = FilterSize > Capacity ? FilterSize : Capacity;
+    Data = new byte [Capacity];
+    byte * pb = Data;
+    for (uint i=0; i < FilterSize; i++) { *pb++ = 1; }
+}
+
+inline void Filter::Free()
+{
+    if(Data != NULL) {
+        delete[] Data;
+        Data = NULL;
+    }
+}
+
+inline void Filter::Set (uint index, byte value)
+{
+    ASSERT (index < FilterSize);
+	if (Data == NULL){
+        if (value == 1)
+	        return;
+		Allocate();
+	}
+    if (Data[index] != 0) FilterCount--;
+    if (value != 0) FilterCount++;
+    Data[index] = value;
+}
+
+inline byte Filter::Get (uint index) const
+{
+    ASSERT (index < FilterSize);
+    byte res = (Data == NULL) ? 1 : Data[index];
+    return res;
+}
+
+inline void Filter::Fill (byte value)
+{
+    if (value == 1) {
+        if (Data != NULL) Free();
+        FilterCount = FilterSize;
+    } else {
+        if (Data == NULL) Allocate();
+        FilterCount = (value != 0) ? FilterSize : 0;
+        memset(Data, value, FilterSize);
+    }
+}
+
+inline void Filter::Append (byte value)
+{
+    if (value != 0) FilterCount++;
+    if (value != 1 && Data == NULL) Allocate();
+    if (Data != NULL) {
+        if (FilterSize >= Capacity) SetCapacity(FilterSize + 1000);
+        Data[FilterSize] = value;
+    }
+    FilterSize++;
+}
+
+inline void Filter::SetCapacity(gamenumT size)
+{
+    if (size > Capacity) {
+        Capacity = size;
+        if (Data != NULL) {
+            byte * newData = new byte [Capacity];
+            for (uint i=0; i < FilterSize; i++) newData[i] = Data[i];
+            delete[] Data;
+            Data = newData;
+        }
+    }
+}
 
 inline void
 CompressedFilter::Init ()
