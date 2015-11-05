@@ -82,7 +82,8 @@ proc InitDirs {} {
   if {$::windowsOS} {
     set scidUserDir $scidExeDir
   } else {
-    set scidUserDir [file nativename "~/.scid"]
+    regexp {(\d+\.\d+).*} $::scidVersion -> version
+    set scidUserDir [file nativename "~/.scid$version"]
   }
 
   # scidConfigDir, scidDataDir, scidLogDir:
