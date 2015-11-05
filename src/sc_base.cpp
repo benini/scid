@@ -459,6 +459,64 @@ UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 
 
 /**
+ * sc_base_stats() - return statistics about a database.
+ *
+ * The returned values are specific for every subcomand:
+ * dates   -> {minimum year} {maximum year} {mean year}
+ * flag ?  -> {number of games with the ? flag set}
+ *            ? must be a valid flag char (see IndexEntry::CharToFlag())
+ * flags   -> {n_games with D flag set} {n_games with W flag set} {n_games with B flag set}
+ * ratings -> {minimum elo} {maximum elo {mean elo}
+ * results -> {number of games won by white} {number of draws} {number of
+ *             games won by black} {number of games with no result}
+ */
+UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
+{
+	const char* usage = "Usage: sc_base stats baseId <dates|flag ?|flags|ratings|results>";
+	if (argc < 4) return UI_Result(ti, ERROR_BadArg, usage);
+
+	const char* subcmd = argv[3];
+	const scidBaseT::Stats& stats = dbase->getStats();
+	UI_List res(4);
+
+	enum { OPT_DATE, OPT_FLAG, OPT_FLAGS, OPT_RATINGS, OPT_RESULTS };
+	const char * options[] = { "dates", "flag", "flags", "ratings", "results", NULL };
+	switch (strExactMatch(subcmd, options)) {
+	case OPT_DATE:
+		res.push_back(date_GetYear(stats.minDate));
+		res.push_back(date_GetYear(stats.maxDate));
+		res.push_back(stats.nYears == 0 ? 0 : stats.sumYears / stats.nYears);
+		break;
+	case OPT_FLAG: {
+		uint flag = (argc != 5) ? 0 : IndexEntry::CharToFlag(*(argv[4]));
+		if (flag == 0) return UI_Result(ti, ERROR_BadArg, usage);
+		res.push_back(stats.flagCount[flag]);
+		break; }
+	case OPT_FLAGS:
+		res.push_back(stats.flagCount[IDX_FLAG_DELETE]);
+		res.push_back(stats.flagCount[IDX_FLAG_WHITE_OP]);
+		res.push_back(stats.flagCount[IDX_FLAG_BLACK_OP]);
+		break;
+	case OPT_RATINGS:
+		res.push_back(stats.minRating);
+		res.push_back(stats.maxRating);
+		res.push_back(stats.nRatings == 0 ? 0 : stats.sumRatings / stats.nRatings);
+		break;
+	case OPT_RESULTS:
+		res.push_back(stats.nResults[RESULT_White]);
+		res.push_back(stats.nResults[RESULT_Draw]);
+		res.push_back(stats.nResults[RESULT_Black]);
+		res.push_back(stats.nResults[RESULT_None]);
+		break;
+	default:
+		return UI_Result(ti, ERROR_BadArg, usage);
+	}
+
+	return UI_Result(ti, OK, res);
+}
+
+
+/**
  * sc_base_switch() - change the current database and the current game
  *
  * DEPRECATED
@@ -604,7 +662,6 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_slot        (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_stats       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_ecoStats    (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
@@ -670,9 +727,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	case BASE_SLOT:
 		return sc_base_slot (cd, ti, argc, argv);
 
-	case BASE_STATS:
-		return sc_base_stats (cd, ti, argc, argv);
-
 	case BASE_TAG:
 		return sc_base_tag (cd, ti, argc, argv);
 
@@ -723,6 +777,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_SORTCACHE:
 		return sc_base_sortcache(dbase, ti, argc, argv);
+
+	case BASE_STATS:
+		return sc_base_stats(dbase, ti, argc, argv);
 
 	case BASE_SWITCH:
 		return sc_base_switch (dbase, ti);

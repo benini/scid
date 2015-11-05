@@ -807,72 +807,6 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_stats:
-//    Return statistics about the current database.
-int
-sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * options[] = { "flags", "dates", "ratings", "results", NULL };
-    enum { OPT_FLAGS, OPT_DATE, OPT_RATING, OPT_RESULTS };
-
-    int option = -1;
-    if (argc > 2) { option = strUniqueMatch (argv[2], options); }
-
-    scidBaseT * basePtr = db;
-    if (argc > 3) {
-        int baseNum = strGetInteger (argv[3]);
-        if (baseNum < 1 || baseNum > MAX_BASES) {
-            return errorResult (ti, "Invalid database number.");
-        }
-        basePtr = &(dbList[baseNum - 1]);
-    }
-
-    const scidBaseT::Stats* stats = basePtr->getStats();
-
-    if (option == OPT_FLAGS) {
-        appendUintElement (ti, stats->flagCount [IDX_FLAG_DELETE]);
-        appendUintElement (ti, stats->flagCount [IDX_FLAG_WHITE_OP]);
-        appendUintElement (ti, stats->flagCount [IDX_FLAG_BLACK_OP]);
-
-    } else if (option == OPT_DATE) {
-        // Date information: minimum year, maximum year, and mean year:
-        appendUintElement (ti, date_GetYear (stats->minDate));
-        appendUintElement (ti, date_GetYear (stats->maxDate));
-        uint64_t avgYear = 0;
-        if (stats->nYears > 0) {
-            avgYear = stats->sumYears / stats->nYears;
-        }
-        appendUintElement (ti, avgYear);
-
-    } else if (option == OPT_RATING) {
-        // Rating information: minimum, maximum, and mean rating:
-        appendUintElement (ti, stats->minRating);
-        appendUintElement (ti, stats->maxRating);
-        uint avgRating = 0;
-        if (stats->nRatings > 0) {
-            avgRating = stats->sumRatings / stats->nRatings;
-        }
-        appendUintElement (ti, avgRating);
-
-    } else if (option == OPT_RESULTS) {
-        // Result frequencies: 1-0, =-=, 0-1, *
-        appendUintElement (ti, stats->nResults[RESULT_White]);
-        appendUintElement (ti, stats->nResults[RESULT_Draw]);
-        appendUintElement (ti, stats->nResults[RESULT_Black]);
-        appendUintElement (ti, stats->nResults[RESULT_None]);
-
-    } else if (strIsPrefix ("flag:", argv[2])) {
-        uint flag = IndexEntry::CharToFlag (argv[2][5]);
-        appendUintElement (ti, stats->flagCount [flag]);
-
-    } else {
-        return InvalidCommand (ti, "sc_base stats", options);
-    }
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_ecoStats:
 //    Return ECO opening code statistics about the current database.
 int
@@ -912,24 +846,24 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Invalid ECO prefix");
     }
 
-    const scidBaseT::Stats* stats = db->getStats();
+    const scidBaseT::Stats& stats = db->getStats();
     const scidBaseT::Stats::Eco * result = NULL;
     switch (length) {
     case 0:
-        result = &(stats->ecoCount0[0]);
+        result = &(stats.ecoCount0[0]);
         break;
     case 1:
-        result = &(stats->ecoCount1[index]);
+        result = &(stats.ecoCount1[index]);
         break;
     case 2:
-        result = &(stats->ecoCount2[index]);
+        result = &(stats.ecoCount2[index]);
         break;
     case 3:
-        result = &(stats->ecoCount3[index]);
+        result = &(stats.ecoCount3[index]);
         break;
     case 4:
     case 5:
-        result = &(stats->ecoCount4[index]);
+        result = &(stats.ecoCount4[index]);
         break;
     }
     ASSERT (result != NULL);
@@ -8455,7 +8389,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No report has been created yet.");
     }
 
-    const scidBaseT::Stats* stats = db->getStats();
+    const scidBaseT::Stats& stats = db->getStats();
     switch (index) {
     case OPT_AVGLENGTH:
         if (argc != 4) {
@@ -8532,7 +8466,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             resultT result = strGetResult (argv[3]);
             appendUintElement (ti, report->PercentFreq (result));
-            uint freq = stats->nResults[result] * 1000;
+            uint freq = stats.nResults[result] * 1000;
             freq = freq / db->numGames();
             appendUintElement (ti, freq);
         }
@@ -8609,12 +8543,12 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case OPT_SCORE:
         appendUintElement (ti, report->PercentScore());
         {
-            uint percent = stats->nResults[RESULT_White] * 2;
-            percent += stats->nResults[RESULT_Draw];
+            uint percent = stats.nResults[RESULT_White] * 2;
+            percent += stats.nResults[RESULT_Draw];
             percent = percent * 500;
-            uint sum = (stats->nResults[RESULT_White] +
-                                 stats->nResults[RESULT_Draw] +
-                                 stats->nResults[RESULT_Black]);
+            uint sum = (stats.nResults[RESULT_White] +
+                                 stats.nResults[RESULT_Draw] +
+                                 stats.nResults[RESULT_Black]);
             if (sum != 0)
             	percent = percent / sum;
             	else

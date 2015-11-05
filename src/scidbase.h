@@ -51,6 +51,8 @@ struct scidBaseT {
 		Eco ecoCount2 [50];
 		Eco ecoCount3 [500];
 		Eco ecoCount4 [500*26];
+
+		Stats(const scidBaseT* dbase);
 	};
 
 	struct TreeStat {
@@ -117,7 +119,7 @@ struct scidBaseT {
 	errorT invertFlag(uint flag, uint gNum);
 	errorT invertFlag(uint flag, const HFilter& filter);
 
-	const Stats* getStats() const;
+	const Stats& getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0) calcNameFreq();
@@ -183,7 +185,6 @@ private:
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
-	mutable bool validStats_;
 	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
 	uint* duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
@@ -282,7 +283,7 @@ inline errorT scidBaseT::setFlag(bool value, uint flag, uint gNum){
 	IndexEntry* ie = idx->FetchEntry (gNum);
 	ie->SetFlag (flag, value);
 	errorT res = idx->WriteEntry (ie, gNum, false);
-	validStats_ = false;
+	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
 	// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
 	// idx->IndexUpdated(gNum);
 	return res;
