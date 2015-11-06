@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <ctype.h>     // For isspace() function.
 #include <sys/stat.h>  // Needed for fileSize() function.
+#include <cmath>
 
 // Table of direction between any two chessboard squares
 directionT sqDir[66][66];
@@ -148,6 +149,24 @@ eco_BasicCode (ecoT eco)
     eco /= 131;
     eco *= 131;
     return eco + 1;
+}
+
+/**
+ * ecoReduce() - maps eco to a smaller set
+ * @eco: the eco value to convert (must be != 0)
+ *
+ * Scid ECO subcodes use 131 values for each canonical ECO.
+ * For example A00 is divided in A00,A00a,A00a1,A00a2,A00a3,A00a4,A00b...A00z4
+ * corresponding to eco values 1,2,3,4,5,6,7...131 (value 0 means no ECO).
+ * This functions will map subECOs like A00a1...A00a4 into A00a, reducing
+ * the 131 values to 27. The previous sequence will became 0,1,1,1,1,1,2...26
+ */
+ecoT eco_Reduce(ecoT eco) {
+	ASSERT(eco != 0);
+
+	eco--;
+	ecoT res = (eco / 131) * 27;
+	return res + static_cast<ecoT>(std::ceil((eco % 131) / 5.0));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

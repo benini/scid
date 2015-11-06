@@ -463,6 +463,13 @@ UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
  *
  * The returned values are specific for every subcomand:
  * dates   -> {minimum year} {maximum year} {mean year}
+ * eco ?   -> {number of games with for the ? eco} {white wins} {draws}
+ *            {black wins} {n_games with empty result} {score in %}
+ *            ? must be a valid ECO code or an abbreviation, for example:
+ *            A returns the sum of all the A00,A00a...A99z4
+ *            A1 returns the sum of all the A10,A10a,A10a1...A19z4
+ *            A10 returns the sum of all the A10,A10a,A10a1...A10z4
+ *            An empty string returns the sum of all valid ECO codes
  * flag ?  -> {number of games with the ? flag set}
  *            ? must be a valid flag char (see IndexEntry::CharToFlag())
  * flags   -> {n_games with D flag set} {n_games with W flag set} {n_games with B flag set}
@@ -472,21 +479,36 @@ UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
  */
 UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
 {
-	const char* usage = "Usage: sc_base stats baseId <dates|flag ?|flags|ratings|results>";
+	const char* usage = "Usage: sc_base stats baseId <dates|eco ?|flag ?|flags|ratings|results>";
 	if (argc < 4) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const char* subcmd = argv[3];
 	const scidBaseT::Stats& stats = dbase->getStats();
-	UI_List res(4);
+	UI_List res(6);
 
-	enum { OPT_DATE, OPT_FLAG, OPT_FLAGS, OPT_RATINGS, OPT_RESULTS };
-	const char * options[] = { "dates", "flag", "flags", "ratings", "results", NULL };
+	enum { OPT_DATE, OPT_ECO, OPT_FLAG, OPT_FLAGS, OPT_RATINGS, OPT_RESULTS };
+	const char * options[] = { "dates", "eco", "flag", "flags", "ratings", "results", NULL };
 	switch (strExactMatch(subcmd, options)) {
 	case OPT_DATE:
 		res.push_back(date_GetYear(stats.minDate));
 		res.push_back(date_GetYear(stats.maxDate));
 		res.push_back(stats.nYears == 0 ? 0 : stats.sumYears / stats.nYears);
 		break;
+	case OPT_ECO: {
+		const scidBaseT::Stats::Eco* eco = (argc != 5) ? 0 : stats.getEcoStats(argv[4]);
+		if (eco == 0) return UI_Result(ti, ERROR_BadArg, usage);
+		res.push_back(eco->count);
+		res.push_back(eco->results[RESULT_White]);
+		res.push_back(eco->results[RESULT_Draw]);
+		res.push_back(eco->results[RESULT_Black]);
+		res.push_back(eco->results[RESULT_None]);
+		ASSERT(eco->count >= eco->results[RESULT_None]);
+		uint count = eco->count - eco->results[RESULT_None];
+		uint score = eco->results[RESULT_White] * 2;
+		score += eco->results[RESULT_Draw];
+		score *= 500;
+		res.push_back(count == 0 ? 0.0 : score / count / 10.0);
+		break; }
 	case OPT_FLAG: {
 		uint flag = (argc != 5) ? 0 : IndexEntry::CharToFlag(*(argv[4]));
 		if (flag == 0) return UI_Result(ti, ERROR_BadArg, usage);
@@ -662,7 +684,6 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_slot        (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_ecoStats    (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
@@ -673,7 +694,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
     static const char * options [] = {
         "close",           "compact",         "copygames",
         "create",          "creatememory",    "current",         "duplicates",
-        "ecoStats",        "export",          "extra",           "filename",
+        "export",          "extra",           "filename",
         "gameflag",        "gamelocation",    "gameslist",       "import",
         "inUse",           "isReadOnly",      "list",            "numGames",        "open",
         "piecetrack",      "slot",            "sortcache",       "stats",
@@ -683,7 +704,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
     enum {
         BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,
         BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
-        BASE_ECOSTATS,     BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
+        BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
         BASE_GAMEFLAG,     BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_IMPORT,
         BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
         BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
@@ -704,9 +725,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_CURRENT:
 		return UI_Result(ti, OK, currentBase + 1);
-
-	case BASE_ECOSTATS:
-		return sc_base_ecoStats (cd, ti, argc, argv);
 
 	case BASE_EXPORT:
 		return sc_base_export (cd, ti, argc, argv);

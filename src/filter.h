@@ -156,11 +156,10 @@ inline void Filter::Free()
 inline void Filter::Set (uint index, byte value)
 {
     ASSERT (index < FilterSize);
-	if (Data == NULL){
-        if (value == 1)
-	        return;
-		Allocate();
-	}
+    if (Data == NULL) {
+        if (value == 1) return;
+        Allocate();
+    }
     if (Data[index] != 0) FilterCount--;
     if (value != 0) FilterCount++;
     Data[index] = value;

@@ -125,9 +125,10 @@ proc ::windows::eco::Refresh {{code "x"}} {
   set wins {}
   set draws {}
 
+  set ::curr_db [sc_base current]
   foreach i $subcodes {
     set subcode "$code$i"
-    set stats [sc_base ecoStats $subcode]
+    set stats [sc_base stats $::curr_db eco $subcode]
     set freq [lindex $stats 0]
     incr count
     lappend data $count
@@ -170,7 +171,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
   ::utils::graph::redraw eco
   $text.text configure -state normal
   $text.text delete 1.0 end
-  set stats [sc_base eco $code]
+  set stats [sc_base stats $::curr_db eco $code]
   if {$len == 0} {
     set section $::tr(ECOAllSections)
   } elseif {$len < 3} {

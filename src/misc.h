@@ -182,6 +182,7 @@ inline void eco_ToExtendedString (ecoT ecoCode, char * ecoStr) {
 ecoT eco_FromString (const char * ecoStr);
 ecoT eco_LastSubCode (ecoT ecoCode);
 ecoT eco_BasicCode (ecoT ecoCode);
+ecoT eco_Reduce(ecoT eco);
 
 // String routines. Some are identical to ANSI standard functions, but
 //      I have included them:

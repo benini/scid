@@ -42,17 +42,24 @@ struct scidBaseT {
 		uint64_t sumRatings;
 		uint minRating;
 		uint maxRating;
+
+		Stats(const scidBaseT* dbase);
+
 		struct Eco {
 			uint count;
 			uint results [NUM_RESULT_TYPES];
-		};
-		Eco ecoCount0 [1];
-		Eco ecoCount1 [5];
-		Eco ecoCount2 [50];
-		Eco ecoCount3 [500];
-		Eco ecoCount4 [500*26];
 
-		Stats(const scidBaseT* dbase);
+			Eco();
+		};
+		const Eco* getEcoStats(const char* ecoStr) const;
+
+	private:
+		Eco ecoEmpty_;
+		Eco ecoValid_;
+		Eco ecoStats_ [(1 + (1<<16)/131)*27];
+		Eco ecoGroup1_[(1 + (1<<16)/131)/100];
+		Eco ecoGroup2_[(1 + (1<<16)/131)/10];
+		Eco ecoGroup3_[(1 + (1<<16)/131)];
 	};
 
 	struct TreeStat {

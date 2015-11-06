@@ -348,56 +348,23 @@ const scidBaseT::Stats& scidBaseT::getStats() const {
 	return *stats_;
 }
 
+scidBaseT::Stats::Eco::Eco()
+: count(0) {
+	std::fill_n(results, NUM_RESULT_TYPES, 0);
+}
+
 scidBaseT::Stats::Stats(const scidBaseT* dbase) {
-	uint i;
-	// Zero out all stats:
-	for (i = 0; i < IDX_NUM_FLAGS; i++) { flagCount[i] = 0; }
-	nRatings = 0;
-	sumRatings = 0;
-	minRating = 0;
-	maxRating = 0;
+	std::fill(flagCount, flagCount + IDX_NUM_FLAGS, 0);
 	minDate = ZERO_DATE;
 	maxDate = ZERO_DATE;
 	nYears = 0;
 	sumYears = 0;
-	for (i=0; i < NUM_RESULT_TYPES; i++) {
-		nResults[i] = 0;
-	}
-	for (i=0; i < 1; i++) {
-		ecoCount0[i].count = 0;
-		ecoCount0[i].results[RESULT_White] = 0;
-		ecoCount0[i].results[RESULT_Black] = 0;
-		ecoCount0[i].results[RESULT_Draw] = 0;
-		ecoCount0[i].results[RESULT_None] = 0;
-	}
-	for (i=0; i < 5; i++) {
-		ecoCount1[i].count = 0;
-		ecoCount1[i].results[RESULT_White] = 0;
-		ecoCount1[i].results[RESULT_Black] = 0;
-		ecoCount1[i].results[RESULT_Draw] = 0;
-		ecoCount1[i].results[RESULT_None] = 0;
-	}
-	for (i=0; i < 50; i++) {
-		ecoCount2[i].count = 0;
-		ecoCount2[i].results[RESULT_White] = 0;
-		ecoCount2[i].results[RESULT_Black] = 0;
-		ecoCount2[i].results[RESULT_Draw] = 0;
-		ecoCount2[i].results[RESULT_None] = 0;
-	}
-	for (i=0; i < 500; i++) {
-		ecoCount3[i].count = 0;
-		ecoCount3[i].results[RESULT_White] = 0;
-		ecoCount3[i].results[RESULT_Black] = 0;
-		ecoCount3[i].results[RESULT_Draw] = 0;
-		ecoCount3[i].results[RESULT_None] = 0;
-	}
-	for (i=0; i < 500*26; i++) {
-		ecoCount4[i].count = 0;
-		ecoCount4[i].results[RESULT_White] = 0;
-		ecoCount4[i].results[RESULT_Black] = 0;
-		ecoCount4[i].results[RESULT_Draw] = 0;
-		ecoCount4[i].results[RESULT_None] = 0;
-	}
+	std::fill_n(nResults, NUM_RESULT_TYPES, 0);
+	nRatings = 0;
+	sumRatings = 0;
+	minRating = 0;
+	maxRating = 0;
+
 	// Read stats from index entry of each game:
 	for (gamenumT gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
 		const IndexEntry* ie = dbase->getIndexEntry(gnum);
@@ -436,32 +403,57 @@ scidBaseT::Stats::Stats(const scidBaseT* dbase) {
 			}
 		}
 
-		ecoT eco = ie->GetEcoCode();
-		ecoStringT ecoStr;
-		eco_ToExtendedString (eco, ecoStr);
-		uint length = strLength (ecoStr);
 		resultT result = ie->GetResult();
-		if (length >= 3) {
-			uint code = 0;
-			ecoCount0[code].count++;
-			ecoCount0[code].results[result]++;
-			code = ecoStr[0] - 'A';
-			ecoCount1[code].count++;
-			ecoCount1[code].results[result]++;
-			code = (code * 10) + (ecoStr[1] - '0');
-			ecoCount2[code].count++;
-			ecoCount2[code].results[result]++;
-			code = (code * 10) + (ecoStr[2] - '0');
-			ecoCount3[code].count++;
-			ecoCount3[code].results[result]++;
-			if (length >= 4) {
-				code = (code * 26) + (ecoStr[3] - 'a');
-				ecoCount4[code].count++;
-				ecoCount4[code].results[result]++;
-			}
+		ecoT eco = ie->GetEcoCode();
+		if (eco == 0) {
+			ecoEmpty_.count++;
+			ecoEmpty_.results[result]++;
+		} else {
+			ecoValid_.count++;
+			ecoValid_.results[result]++;
+			eco = eco_Reduce(eco);
+			ecoStats_[eco].count++;
+			ecoStats_[eco].results[result]++;
+			eco /= 27;
+			ecoGroup3_[eco].count++;
+			ecoGroup3_[eco].results[result]++;
+			eco /= 10;
+			ecoGroup2_[eco].count++;
+			ecoGroup2_[eco].results[result]++;
+			eco /= 10;
+			ecoGroup1_[eco].count++;
+			ecoGroup1_[eco].results[result]++;
 		}
 	}
 }
+
+const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) const {
+	ASSERT(ecoStr != 0);
+
+	if (*ecoStr == 0) return &ecoValid_;
+
+	ecoT eco = eco_FromString(ecoStr);
+	if (eco == 0) return 0;
+	eco = eco_Reduce(eco);
+
+	switch(strlen(ecoStr)) {
+	case 0:
+		return &ecoValid_;
+	case 1:
+		return &(ecoGroup1_[eco / 2700]);
+	case 2:
+		return &(ecoGroup2_[eco / 270]);
+	case 3:
+		return &(ecoGroup3_[eco / 27]);
+	case 4:
+	case 5:
+		return &(ecoStats_[eco]);
+	}
+
+	return 0;
+}
+
+
 
 double scidBaseT::TreeStat::expVect_[1600];
 
