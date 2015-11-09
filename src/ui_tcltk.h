@@ -122,10 +122,12 @@ public:
 	}
 
 	~List() {
+		clear();
 		if (list_ != stackBuf_) delete [] list_;
 	}
 
 	void clear() {
+		for (int i=0; i < i_; i++) Tcl_DecrRefCount(list_[i]);
 		i_ = 0;
 	}
 
@@ -161,7 +163,9 @@ inline Tcl_Obj* ObjMaker(const std::string& s) {
 	return Tcl_NewStringObj(s.c_str(), s.length());
 }
 inline Tcl_Obj* ObjMaker(const List& v) {
-	return Tcl_NewListObj(v.i_, v.list_);
+	Tcl_Obj* res = Tcl_NewListObj(v.i_, v.list_);
+	const_cast<List&>(v).i_ = 0;
+	return res;
 }
 
 template <typename T>

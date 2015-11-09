@@ -153,7 +153,6 @@ inline UI_res_t UI_Result(UI_handle_t ti, errorT res, const T& value) {
  *              will be stored in the list
  *
  * An heterogeneous container used to pass values from c++ to UI
- * The object created must be used in UI_Result (to avoid memory leakage).
  *
  * Typical usage:
  * UI_List uiList(2);
