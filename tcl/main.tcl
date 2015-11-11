@@ -997,6 +997,9 @@ proc resizeMainBoard {} {
     if {$::showGameInfo} {
       set availh [expr $availh - [winfo height .main.gameInfo] ]
     }
+    if { [llength [pack slaves .main.tb]] != 0 } {
+      set availh [expr $availh - [winfo height .main.tb] ]
+    }
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
   }
 }
@@ -1352,14 +1355,6 @@ proc redrawToolbar {} {
     }
   }
   if {$seenAny} {
-    grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
-  } else {
-    grid forget .main.tb
-  }
-}
-
-proc setToolbar {x} {
-  if {$x} {
     grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
   } else {
     grid forget .main.tb
