@@ -1248,7 +1248,7 @@ proc InitToolbar {{tb}} {
 	  engine ToolsAnalysis
 	} {
 	  set helpMessage(.main.tb.$b) $m
-	  # ::utils::tooltip::Set $tb.$b $m
+	  ::utils::tooltip::Set $tb.$b $m
 	}
 	redrawToolbar
 }

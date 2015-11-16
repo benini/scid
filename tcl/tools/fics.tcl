@@ -699,7 +699,7 @@ namespace eval fics {
       } else {
         if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
-      updateBoard -pgn -animate
+      ::notify::GameChanged
       set ::fics::rated [string equal [lindex $line 5] "rated"]
       # display the win / draw / loss score
       if { $::fics::rated } { ::fics::writechan "assess" "noecho" }
@@ -1081,7 +1081,7 @@ namespace eval fics {
       if {$fen != [sc_pos fen]} {
         sc_game startBoard $fen
       }
-      updateBoard -pgn -animate
+      ::notify::GameChanged
     }
   }
   ################################################################################
