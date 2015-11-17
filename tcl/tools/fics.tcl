@@ -1197,7 +1197,7 @@ namespace eval fics {
   #
   ################################################################################
   proc setOfferStatus { idx x y } {
-    global ::fics::height ::fics::width
+    global ::fics::height ::fics::width ::fics::off
 
     set w .fics.f.top.foffers
     if { $idx != -1 } {
@@ -1218,7 +1218,7 @@ namespace eval fics {
         append anchor "e"
       }
 
-      $w.c create text $x $y -tags status -text $m -font font_offers -anchor $anchor -width 150
+      $w.c create text [expr $x + $off] $y -tags status -text $m -font font_offers -anchor $anchor
       $w.c raise game_$idx
     } else {
       $w.c delete status
