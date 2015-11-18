@@ -1140,17 +1140,31 @@ namespace eval fics {
     #first erase the canvas
     foreach id [ $w.c find all] { $w.c delete $id }
 
-    # draw scales
-    $w.c create line $off [expr $height - $off ] $width [expr $height - $off] -fill blue
-    $w.c create line $off 0 $off [expr $height - $off] -fill blue
-    $w.c create text 1 1 -fill black -anchor nw -text ELO
-    $w.c create text [expr $width - 1 ] [expr $height - 1 ] -fill black -anchor se -text [tr Time]
+    # Draw horizontal lines
+    set y_unit [expr $height / 31.0]
+    for {set i 0} {$i < 31} {incr i} {
+      set y [expr $height - $i * $y_unit]
+      $w.c create line 0 $y $width $y -fill "light gray"
+    }
 
-    # draw time markers at 5', 15'
-    set x [ expr $off + 5 * ($width - $off) / ($offers_maxtime - $offers_mintime)]
-    $w.c create line $x 0 $x [expr $height - $off] -fill red
-    set x [ expr $off + 15 * ($width - $off) / ($offers_maxtime - $offers_mintime)]
-    $w.c create line $x 0 $x [expr $height - $off] -fill red
+    # Draw horizontal tics and labels
+    set x1_tick [expr $width - $off]
+    set x_text [expr $width - 2]
+    foreach elo [list 5 10 15 20 25 30] {
+      set y [expr $height - $elo * $y_unit]
+      $w.c create line $x1_tick $y $width $y -fill black
+      $w.c create text $x_text $y -fill black -anchor se -text [expr $elo * 100]
+    }
+
+    # Draw vertical lines, tics and labels
+    set x_unit [expr ($width - 3 * $off) / 60.0]
+    set y2_tick [expr $height - $off]
+    foreach t [list 2 5 10 15 30 60] {
+      set x [expr $t * $x_unit + $off]
+      $w.c create line $x $height $x 0 -fill "light gray"
+      $w.c create line $x $height $x $y2_tick -fill black
+      $w.c create text [expr $x + 2] $height -fill black -anchor sw -text "${t}m"
+    }
 
     foreach g $::fics::soughtlist {
       array set l $g
@@ -1170,8 +1184,9 @@ namespace eval fics {
         set fillcolor gray
       }
 
-      set x [ expr $off + $tt * ($width - $off) / ($offers_maxtime - $offers_mintime)]
-      set y [ expr $height - $off - ( $l(elo) - $offers_minelo ) * ($height - $off) / ($offers_maxelo - $offers_minelo)]
+      set x [expr $tt * $x_unit + $off]
+      set y [expr $height - ($l(elo) / 100.0) * $y_unit]
+
       if { $l(rated) == "rated" } {
         set object "oval"
       } else {
