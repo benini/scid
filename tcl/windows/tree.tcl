@@ -57,8 +57,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     return
   }
 
-  if {[catch {sc_base filename $baseNumber} fname]} { return }
-
   if {$baseNumber == [sc_base current]} { set ::treeWin 1 }
   set w .treeWin$baseNumber
   
@@ -67,7 +65,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   setWinSize $w
   
   # Set the tree window title now:
-  ::setTitle $w "Scid: [tr WindowsTree] $baseNumber [file tail $fname]"
+  ::setTitle $w "Scid: [tr WindowsTree] $baseNumber"
   set ::treeWin$baseNumber 1
   set tree(training$baseNumber) 0
   set tree(autorefresh$baseNumber) 1
@@ -189,8 +187,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   pack $w.statusframe -side bottom -fill x
   grid rowconfigure $w.statusframe 0 -weight 1
   grid columnconfigure $w.statusframe 0 -weight 1
-  ttk::label $w.status -anchor w -font font_Small \
-      -relief sunken -textvar tree(status$baseNumber)
+  ttk::label $w.status -anchor w -font font_Small -relief sunken
   grid $w.status -in $w.statusframe -column 0 -row 0 -sticky nsew
   canvas $w.progress -height 0 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
@@ -396,14 +393,19 @@ proc ::tree::dorefresh { baseNumber } {
   }
   $w.buttons.stop configure -state normal
   
-  set base $baseNumber
-
   set filtered 0
   if { $tree(allgames$baseNumber) == 0 } {
     set filtered 1
   }
   
-  set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -filtered $filtered]
+  set err [ catch { sc_tree search -hide $tree(training$baseNumber) \
+                                   -sort $tree(order$baseNumber) \
+                                   -base $baseNumber \
+                                   -filtered $filtered } moves]
+  if { $err } {
+    set tree(status$baseNumber) ""
+    set moves [ERROR::getErrorMsg]
+  }
   catch {$w.f.tl itemconfigure 0 -foreground darkBlue}
 
   foreach button {best graph training allgames close} {
@@ -663,23 +665,26 @@ proc ::tree::getColorScore { line } {
 }
 ################################################################################
 proc ::tree::status { msg baseNumber } {
-  
   global tree
+
+  set w .treeWin$baseNumber
+  if { $tree(status$baseNumber) == "" } {
+    catch {sc_base filename $baseNumber} tree(status$baseNumber)
+    set tree(status$baseNumber) [file tail $tree(status$baseNumber)]
+    ::setTitle $w "Scid: [tr WindowsTree] $baseNumber: $tree(status$baseNumber)"
+  }
+
   if {$msg != ""} {
-    set tree(status$baseNumber) $msg
-    return
+    set status $msg
+  } else {
+    set status "  $::tr(Database) $baseNumber: $tree(status$baseNumber)"
+    if {$tree(locked$baseNumber)} { append status " ($::tr(TreeLocked))" }
+    if {! $tree(allgames$baseNumber)} {
+      append status "   $::tr(Filter)"
+      append status ": [::windows::gamelist::filterText "" $baseNumber]"
+    }
   }
-  set s "  $::tr(Database)"
-  # set base [sc_base current]
-  # if {$tree(locked$baseNumber)} { set base $tree(base$baseNumber) }
-  set base $baseNumber
-  set status "  $::tr(Database) $base: [file tail [sc_base filename $base]]"
-  if {$tree(locked$baseNumber)} { append status " ($::tr(TreeLocked))" }
-  if {! $tree(allgames$baseNumber)} {
-    append status "   $::tr(Filter)"
-    append status ": [::windows::gamelist::filterText "" $base]"
-  }
-  set tree(status$baseNumber) $status
+  $w.status configure -text $status
 }
 
 ################################################################################

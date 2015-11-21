@@ -8853,7 +8853,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (sortMethod < 0) { return errorResult (ti, usageStr); }
-    if (!base->inUse) { return setResult (ti, errMsgNotOpen(ti)); }
+    if (!base->inUse) { return UI_Result(ti, ERROR_FileNotOpen);  }
 
     search_pool.insert(&base);
     base->treeFilter->Fill(0);

@@ -358,6 +358,7 @@ proc progressWindow {args} {
 }
 
 proc progressBarSet { canvasname width height } {
+  update idletasks
   set ::progressCanvas(name) $canvasname
   set ::progressCanvas(w) $width
   set ::progressCanvas(h) $height
