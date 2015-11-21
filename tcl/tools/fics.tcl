@@ -1141,8 +1141,8 @@ namespace eval fics {
     foreach id [ $w.c find all] { $w.c delete $id }
 
     # Draw horizontal lines
-    set y_unit [expr $height / 31.0]
-    for {set i 0} {$i < 31} {incr i} {
+    set y_unit [expr $height / 32.0]
+    for {set i 0} {$i < 32} {incr i} {
       set y [expr $height - $i * $y_unit]
       $w.c create line 0 $y $width $y -fill "light gray"
     }
