@@ -41,6 +41,7 @@
 #include "stored.h"
 #include "timer.h"
 #include "tree.h"
+#include "dbasepool.h"
 #include "ui.h"
 #include <time.h>
 #include <sys/stat.h>
@@ -52,33 +53,57 @@
 #include "tkscid.h"
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Global variables:
+//TODO: delete
+extern scidBaseT * dbList;
+extern int currentBase;
+extern scidBaseT* db;
+extern scidBaseT* clipbase;
+const int MAX_BASES = 9;
+const int CLIPBASE_NUM = MAX_BASES - 1;
+/////////////////
 
-static scidBaseT * dbList = NULL;      // array of database slots.
+
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
 static SpellChecker* spellChk;         // Name correction.
 static OpTable * reports[2] = {NULL, NULL};
 
+void scid_Exit(void*) {
+	DBasePool::closeAll();
+	if (scratchGame != NULL) delete scratchGame;
+	if (ecoBook != NULL) delete ecoBook;
+	if (spellChk != NULL) delete spellChk;
+	for (size_t i = 0, n = sizeof(reports) / sizeof(reports[0]); i < n; i++) {
+		if (reports[i] != NULL) delete reports[i];
+	}
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Main procedure
+//
+int
+main(int argc, char * argv[])
+{
+	srand(time(NULL));
+
+	scratchGame = new Game;
+	DBasePool::init();
+
+	return UI_Main(argc, argv, scid_Exit);
+}
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Global variables:
 static const char * reportTypeName[2] = { "opening", "player" };
 static const uint REPORT_OPENING = 0;
 static const uint REPORT_PLAYER = 1;
 
 static char decimalPointChar = '.';
 static uint htmlDiagStyle = 0;
-
-//Current database
-int currentBase = 0;
-static scidBaseT* db = NULL;
-
-//Clipbase database
-static scidBaseT* clipbase = NULL;
-
-// MAX_BASES is the maximum number of databases that can be open,
-// including the clipbase database.
-const int MAX_BASES = 9;
-const int CLIPBASE_NUM = MAX_BASES - 1;
 
 // Tablebase probe modes:
 #define PROBE_NONE 0
@@ -258,38 +283,6 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
 }
 
 
-
-void scid_Exit (void*) {
-    if (dbList != NULL) delete [] dbList;
-    if (scratchGame != NULL) delete scratchGame;
-    if (ecoBook != NULL) delete ecoBook;
-    if (spellChk != NULL) delete spellChk;
-    for (size_t i=0, n = sizeof(reports)/sizeof(reports[0]); i<n; i++) {
-        if (reports[i] != NULL) delete reports[i];
-    }
-};
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Main procedure
-//
-int
-main (int argc, char * argv[])
-{
-    srand (time(NULL));
-    
-    // Initialise global Scid database variables:
-    scratchGame = new Game;
-    dbList = new scidBaseT [MAX_BASES];
-    currentBase = 0;
-    db = &(dbList[currentBase]);
-    // Initialise the clipbase database:
-    clipbase = &(dbList[CLIPBASE_NUM]);
-    clipbase->Open(FMODE_Memory, "<clipbase>");
-    clipbase->idx->SetType (2);
-
-    return UI_Main(argc, argv, scid_Exit);
-}
-
 /////////////////////////////////////////////////////////////////////
 //  MISC functions
 /////////////////////////////////////////////////////////////////////
@@ -323,47 +316,6 @@ str_prefix_len (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     return setUintResult (ti, strPrefix (argv[1], argv[2]));
 }
-
-scidBaseT* DBasePool_find(const char* filename) {
-    for (int i=0, n=MAX_BASES; i<n; i++) {
-        if (dbList[i].inUse && dbList[i].getFileName() == filename)
-            return &(dbList[i]);
-    }
-    return 0;
-}
-
-scidBaseT* DBasePool_findEmpty() {
-    for (int i=0, n=MAX_BASES; i<n; i++) {
-        if (! dbList[i].inUse) { return &(dbList[i]); }
-    }
-    return 0;
-}
-
-scidBaseT* DBasePool_getBase(int baseId) {
-    if (baseId < 1 || baseId > MAX_BASES) return 0;
-    scidBaseT* res = &(dbList[baseId - 1]);
-    return res->inUse ? res : 0;
-}
-
-std::vector<int> DBasePool_getBasesId() {
-    std::vector<int> res;
-    for (int i=0, n=MAX_BASES; i<n; i++) {
-        if (dbList[i].inUse) res.push_back(i +1);
-    }
-    return res;
-}
-
-int switchCurrentBase(scidBaseT* dbase) {
-    for (int i=0; i < MAX_BASES; i++) {
-        if ((dbList + i) == dbase) {
-            currentBase = i;
-            db = dbase;
-            break;
-        }
-    }
-    return currentBase +1;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_inUse
@@ -1773,7 +1725,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_NEW:
         if (argc == 3 || argc == 4) {
-            scidBaseT* dbase = DBasePool_getBase(strGetUnsigned(argv[2]));
+            scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
             if (dbase == NULL) return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
             if (argc == 4) {
                 //TODO: Use argv[4] (FEN) instead of current Position
@@ -1808,7 +1760,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
-    scidBaseT* dbase = DBasePool_getBase(strGetUnsigned(argv[2]));
+    scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
     if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
     HFilter filter = dbase->getFilter(argv[3]);
     if (!filter) return errorResult (ti, "sc_filter: invalid filterName");
@@ -4039,7 +3991,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         baseArg++;
     }
     if (argc < baseArg  ||  argc > baseArg+1) return errorResult(ti, usage);
-    scidBaseT* base = DBasePool_getBase(strGetInteger (argv[baseArg]));
+    scidBaseT* base = DBasePool::getBase(strGetInteger (argv[baseArg]));
     if (base == 0) return UI_Result(ti, ERROR_BadArg);
 
     // First, move to the deepest ECO position in the game.
@@ -4290,7 +4242,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     scidBaseT * dbase = db;
     Game* currGame = db->game;
     if (argc == 4) {
-        dbase = DBasePool_getBase(strGetUnsigned(argv[3]));
+        dbase = DBasePool::getBase(strGetUnsigned(argv[3]));
         if (dbase == 0) return errorResult (ti, "Invalid database number.");
     } else if (argc != 3) {
         return errorResult (ti, "Usage: sc_game save <gameNumber> [targetbaseId]");
@@ -9273,7 +9225,7 @@ sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 4) {
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
   }
-  scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
+  scidBaseT* base = DBasePool::getBase(strGetInteger(argv[2]));
   if (base) base->treeCache.CacheResize(strGetUnsigned(argv[3]));
   return TCL_OK;
 }
@@ -9286,7 +9238,7 @@ sc_tree_cacheinfo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 3) {
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
   }
-  scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
+  scidBaseT* base = DBasePool::getBase(strGetInteger(argv[2]));
   if (base) {
     appendUintElement (ti, base->treeCache.UsedSize());
     appendUintElement (ti, base->treeCache.Size());
