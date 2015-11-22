@@ -1098,6 +1098,9 @@ proc CreateMainBoard { {w} } {
   grid $w.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
 
   toggleGameInfo
+  updateStatusBar
+  updateMainToolbar
+  updateTitle
 }
 
 proc CreateGameInfo {} {
