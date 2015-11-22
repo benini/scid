@@ -135,42 +135,41 @@ proc ::file::Open_ {{fName ""} } {
     if {$fName == ""} { return 2}
   }
 
-  set tmpName $fName
-  if {[file extension $tmpName] == ".si4"} { set tmpName [file rootname $tmpName] }
-  foreach i [sc_base list] {
-    if {$tmpName == [sc_base filename $i]} {
-      tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
-      return 1
-    }
+  set ext [string tolower [file extension "$fName"] ]
+  if {"$ext" == ".si4"} { set fName [file rootname "$fName"] }
+  if {[sc_base slot $fName] != 0} {
+    tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
+    return 1
   }
 
-  set ext [string tolower [file extension "$fName"] ]
   set err 0
   if {"$ext" == ".si3"} {
     set err [::file::Upgrade [file rootname "$fName"] ]
   } elseif {"$ext" == ".pgn" || "$ext" == ".epd"} {
     # PGN or EPD file:
-    if {[catch {sc_base creatememory "$fName"} ::file::lastOpened]} {
+    set err [catch {sc_base creatememory "$fName"} ::file::lastOpened]
+    if {$err} {
       ERROR::MessageBox "$fName\n"
-      set err 1
     } else {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
       set ::initialDir(base) [file dirname "$fName"]
       ::recentFiles::add "$fName"
     }
-  } else {
-    if {"$ext" == ".si4"} { set fName [file rootname "$fName"] }
+  } elseif {"$ext" == ".si4"} {
     progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..."
     set err [catch {sc_base open "$fName"} ::file::lastOpened]
     closeProgressWindow
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
-      ERROR::MessageBox "$fName\n"
+      ERROR::MessageBox "$fName.si4\n"
     } else {
       set ::initialDir(base) [file dirname "$fName"]
       ::recentFiles::add "$fName.si4"
     }
+  } else {
+    tk_messageBox -title "Scid: opening file" -message "Unsupported database format:  $ext"
+    set err 1
   }
   
   return $err

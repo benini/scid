@@ -337,31 +337,6 @@ sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_slot: takes a database (.si3 or .pgn file) name and returns
-//    the slot number it is using if it is already opened, or 0 if
-//    it is not loaded yet.
-int base_opened (const char * filename)
-{
-    for (int i=0; i < CLIPBASE_NUM; i++) {
-        if (dbList[i].inUse  &&  dbList[i].getFileName() == filename) {
-            return i;
-        }
-    }
-    return -1;
-}
-int
-sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_base slot <filename>");
-    }
-    fileNameT fname;
-    strCopy (fname, argv[2]);
-
-    return setIntResult (ti, base_opened (fname) + 1);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  exportGame:
 //    Called by sc_base_export() to export a single game.
 void

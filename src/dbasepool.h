@@ -51,10 +51,10 @@ void closeAll();
  *            Other databases require file extension ("example.pgn").
  *
  * Return:
- * - a pointer to the scidBaseT object corresponding to @filename.
- * - 0 (nullptr) if not found.
+ * - the handle of the database corresponding to @filename.
+ * - 0 if not found.
  */
-scidBaseT* find(const char* filename);
+int find(const char* filename);
 
 
 /**

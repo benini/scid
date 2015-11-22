@@ -50,10 +50,10 @@ void DBasePool::closeAll() {
 	delete[] dbList;
 }
 
-scidBaseT* DBasePool::find(const char* filename) {
+int DBasePool::find(const char* filename) {
 	for (int i = 0, n = MAX_BASES; i < n; i++) {
 		if (dbList[i].inUse && dbList[i].getFileName() == filename)
-			return &(dbList[i]);
+			return i + 1;
 	}
 	return 0;
 }

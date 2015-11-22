@@ -432,6 +432,26 @@ UI_res_t sc_base_open (UI_handle_t ti, const char* filename, bool create = false
 
 
 /**
+ * sc_base_slot() - get the handle of an opened database
+ * @filename: the filename of the wanted database.
+ *            Database in native Scid format do not use extension ("example").
+ *            Other databases require file extension ("example.pgn").
+ *
+ * Return:
+ * - the handle of the database corresponding to @filename.
+ * - 0 if not found.
+ */
+UI_res_t sc_base_slot(UI_handle_t ti, int argc, const char** argv)
+{
+	const char* usage = "Usage: sc_base slot filename";
+	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+
+	int res = DBasePool::find(argv[2]);
+	return UI_Result(ti, OK, res);
+}
+
+
+/**
  * sc_base_sortcache() - create/release a sortcache
  *
  * A sortchace is used to speed up the other sc_base functions with the same "sortCrit"
@@ -571,7 +591,8 @@ UI_res_t sc_base_switch(scidBaseT* dbase, UI_handle_t ti)
  *   number of games, average elo of the partecipants, lowest game number,
  *   winner name, winner elo, winner score, 2nd place name, 2nd elo, 2nd score.
  */
-UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv) {
+UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
+{
 	const char* usage = "Usage: sc_base tournaments baseId filterName n_maxResults [-avgelo range] [-n_games range] [-n_players range] [-sort criteria] ";
 	if (argc < 5) return UI_Result(ti, ERROR_BadArg, usage);
 
@@ -674,7 +695,6 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 //TODO: move this function here from tkscid.cpp
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_slot        (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
@@ -734,7 +754,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 		return sc_base_piecetrack (cd, ti, argc, argv);
 
 	case BASE_SLOT:
-		return sc_base_slot (cd, ti, argc, argv);
+		return sc_base_slot (ti, argc, argv);
 
 	case BASE_TAG:
 		return sc_base_tag (cd, ti, argc, argv);
