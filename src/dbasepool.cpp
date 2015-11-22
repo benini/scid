@@ -24,7 +24,6 @@
 scidBaseT * dbList = NULL;      // array of database slots.
 
 //Current database
-int currentBase = 0;
 scidBaseT* db = NULL;
 
 //Clipbase database
@@ -37,8 +36,7 @@ const int CLIPBASE_NUM = MAX_BASES - 1;
 
 void DBasePool::init() {
 	dbList = new scidBaseT[MAX_BASES];
-	currentBase = 0;
-	db = &(dbList[currentBase]);
+	db = &(dbList[0]);
 
 	clipbase = &(dbList[CLIPBASE_NUM]);
 	clipbase->Open(FMODE_Memory, "<clipbase>");
@@ -80,6 +78,7 @@ std::vector<int> DBasePool::getHandles() {
 }
 
 int DBasePool::switchCurrent(scidBaseT* dbase) {
+	static int currentBase = 0;
 	if (dbase != 0) {
 		for (int i = 0; i < MAX_BASES; i++) {
 			if ((dbList + i) == dbase) {

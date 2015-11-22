@@ -55,7 +55,6 @@
 
 //TODO: delete
 extern scidBaseT * dbList;
-extern int currentBase;
 extern scidBaseT* db;
 extern scidBaseT* clipbase;
 const int MAX_BASES = 9;
@@ -9321,14 +9320,10 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     Position * pos = db->game->GetCurrentPos();
     
-    int baseNum = -1;
-    int oldCurrentBase = currentBase;
-    bool searchInRefBase = false;
+    int oldCurrentBase = DBasePool::switchCurrent();
     if (argc == 7) {
-      baseNum = strGetUnsigned( argv[6] );
-      searchInRefBase = true;
-      currentBase = baseNum - 1;
-      db = &(dbList[currentBase]);
+        int baseNum = strGetUnsigned( argv[6] );
+        DBasePool::switchCurrent( DBasePool::getBase(baseNum) );
     }
     
     Progress progress = UI_CreateProgress(ti);
@@ -9505,10 +9500,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
 #endif
 
-    if (searchInRefBase ) {
-      currentBase = oldCurrentBase;
-      db = &(dbList[currentBase]);
-    }
+    DBasePool::switchCurrent( DBasePool::getBase(oldCurrentBase) );
     
 return TCL_OK;
 }
