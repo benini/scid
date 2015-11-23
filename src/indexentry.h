@@ -79,6 +79,7 @@ const uint MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
 #define  IDX_MASK_BRILLIANCY    (1 << IDX_FLAG_BRILLIANCY)
 #define  IDX_MASK_BLUNDER       (1 << IDX_FLAG_BLUNDER)
 #define  IDX_MASK_USER          (1 << IDX_FLAG_USER)
+#define  IDX_MASK_ALLFLAGS      (0xFFFFFFFF)
 
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
@@ -452,7 +453,6 @@ public:
     static uint32_t CharToFlagMask (char flag);
     static uint32_t StrToFlagMask (const char* flags);
     uint GetFlagStr (char * str, const char * flags) const;
-    void SetFlagStr (const char * flags);
 
     static uint EncodeCount (uint x) {
         if (x <= 10) { return x; }
@@ -794,25 +794,6 @@ inline uint32_t IndexEntry::StrToFlagMask(const char* flags)
         res |= IndexEntry::CharToFlagMask(*(flags++));
     }
     return res;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::SetFlagStr():
-//    Sets user-settable flags by passing a string containing the
-//    letters of each flag that should be set.
-inline void
-IndexEntry::SetFlagStr (const char * flags)
-{
-    // First, unset all user-settable flags:
-    static const uint32_t userMask = StrToFlagMask("DWBMENPTKQ!?U123456");
-    SetFlag(userMask, false);
-
-    // Now set flags according to flags string:
-    if (flags != 0 && *flags != 0) {
-        uint32_t mask = StrToFlagMask(flags);
-        ASSERT(mask != 0);
-        SetFlag(mask, true);
-    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

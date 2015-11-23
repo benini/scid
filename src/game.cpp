@@ -3759,11 +3759,12 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         ie->SetWhiteRatingType (WhiteRatingType);
         ie->SetBlackRatingType (BlackRatingType);
 
+        ie->SetFlag(IDX_MASK_ALLFLAGS, false);
         ie->SetStartFlag (NonStandardStart);
         ie->SetCommentCount (commentCount);
         ie->SetVariationCount (varCount);
         ie->SetNagCount (nagCount);
-        ie->SetFlagStr (ScidFlags);
+        ie->SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
 
         // Make the home pawn change list:
         MakeHomePawnList (ie->GetHomePawnData());
