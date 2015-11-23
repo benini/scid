@@ -90,6 +90,10 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.ccWindow) 10
   set winHeight(.ccWindow) 20
 
+  # Default fics window size
+  set winWidth(.fics) 500
+  set winHeight(.fics) 600
+
   # Default size for input engine console:
   ###---### needs adjustment!
   set winWidth(.inputengineconsole) 10
