@@ -3,10 +3,13 @@
 # Tooltips
 #
 
-package require tooltip
+set useLocalTklib [catch {package require tooltip}]
+if {$useLocalTklib} {
+  source [file nativename [file join $::scidTclDir "utils/tklib_tooltip.tcl"]]
+}
 
 namespace eval ::utils::tooltip {
-  variable font
+  global ::utils::tooltip::font
 
   if {![info exists font]} {
     set font TkDefaultFont

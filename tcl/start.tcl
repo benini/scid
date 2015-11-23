@@ -191,6 +191,7 @@ foreach ns {
   ::pinfo
   ::commenteditor
   ::unsafe
+  ::utils::tooltip
 } {
   namespace eval $ns {}
 }
@@ -284,6 +285,8 @@ proc createFonts {} {
   set font [font configure font_Small -family]
   font create font_SmallBold -family $font -size $fontsize -weight bold
   font create font_SmallItalic -family $font -size $fontsize -slant italic
+
+  set ::utils::tooltip::font font_Small
 }
 createFonts
 

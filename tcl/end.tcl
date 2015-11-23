@@ -1328,7 +1328,7 @@ if {$loadAtStart(eco)} {
 proc getTopLevel {} {
   
   set topl {}
-  set exclude { ".tooltip" ".glistExtra" ".menu" "." ".pgnPopup" }
+  set exclude { ".glistExtra" ".menu" "." ".pgnPopup" }
   foreach c [winfo children .] {
     if { $c != [winfo toplevel $c] } { continue }
     # Tk report .__tk_filedialog as toplevel window even if the window has been closed
