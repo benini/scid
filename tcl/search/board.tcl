@@ -68,7 +68,8 @@ proc ::search::board {{ref_base ""}} {
   dialogbutton $w.b.search -textvar ::tr(Search) -command {
     .sb.b.stop configure -state normal
     grab .sb.b.stop
-    set base [lindex $refDatabaseB 0]
+
+    regexp {(\d+).*} $::refDatabaseB -> base
     progressBarSet .sb.fprogress.progress 301 21
     set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
 
@@ -76,7 +77,7 @@ proc ::search::board {{ref_base ""}} {
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
-    ::notify::DatabaseModified [sc_base current] dbfilter
+    ::notify::DatabaseModified $base dbfilter
   }
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5

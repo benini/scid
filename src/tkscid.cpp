@@ -9264,16 +9264,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 
-inline uint
-startFilterSize (scidBaseT * base, filterOpT filterOp)
-{
-    if (filterOp == FILTEROP_AND) {
-        return base->dbFilter->Count();
-    }
-    return base->numGames();
-}
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_search_board:
 //    Searches for exact match for the current position.
@@ -9284,9 +9274,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usageStr =
         "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip> [<base>]";
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
 
     if (argc < 6  ||  argc > 7) { return errorResult (ti, usageStr); }
     filterOpT filterOp = strGetFilterOp (argv[2]);
@@ -9315,15 +9302,14 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     bool searchInVars = strGetBoolean (argv[4]);
     bool flip = false;
-//     if (argc == 6) { flip = strGetBoolean (argv[5]); }
     flip = strGetBoolean (argv[5]);
 
     Position * pos = db->game->GetCurrentPos();
     
-    int oldCurrentBase = DBasePool::switchCurrent();
+    scidBaseT* dbase = db;
     if (argc == 7) {
-        int baseNum = strGetUnsigned( argv[6] );
-        DBasePool::switchCurrent( DBasePool::getBase(baseNum) );
+        dbase = DBasePool::getBase(strGetUnsigned(argv[6]));
+        if (dbase == 0) return UI_Result(ti, ERROR_FileNotOpen);
     }
     
     Progress progress = UI_CreateProgress(ti);
@@ -9343,7 +9329,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         msigFlip = matsig_Make (posFlip->GetMaterial());
     }
 
-    HFilter filter = db->getFilter("dbfilter");
+    HFilter filter = dbase->getFilter("dbfilter");
     uint skipcount = 0;
 
     // If filter operation is to reset the filter, reset it:
@@ -9351,12 +9337,13 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         filter.fill(1);
         filterOp = FILTEROP_AND;
     }
-    uint startFilterCount = startFilterSize (db, filterOp);
+    uint startFilterCount = filter.count();
 
     // Here is the loop that searches on each game:
-    Game * g = scratchGame;
-    uint gameNum = 0, n = db->numGames();
-    for (; gameNum < n; gameNum++) {
+    Game tmpGame;
+    Game* g = &tmpGame;
+    gamenumT gameNum = 0;
+    for (gamenumT n = dbase->numGames(); gameNum < n; gameNum++) {
         if ((gameNum % 5000) == 0) {  // Update the percentage done bar:
             if (!progress.report(gameNum, n)) break;
         }
@@ -9377,7 +9364,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        const IndexEntry* ie = db->getIndexEntry(gameNum);
+        const IndexEntry* ie = dbase->getIndexEntry(gameNum);
         if (ie->GetLength() == 0) {
             // Skip games with no gamefile record:
             filter.set (gameNum, 0);
@@ -9434,12 +9421,12 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         // At this point, the game needs to be loaded:
-        if (db->getGame(ie, db->bbuf) != OK) {
+        if (dbase->getGame(ie, dbase->bbuf) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
         uint ply = 0;
         if (useVars) {
-            g->Decode (db->bbuf, GAME_DECODE_NONE);
+            g->Decode (dbase->bbuf, GAME_DECODE_NONE);
             // Try matching the game without variations first:
             if (ply == 0  &&  possibleMatch) {
                 if (g->ExactMatch (pos, NULL, NULL, searchType)) {
@@ -9466,14 +9453,14 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             // No searching in variations:
             if (possibleMatch) {
-                if (g->ExactMatch (pos, db->bbuf, NULL, searchType)) {
+                if (g->ExactMatch (pos, dbase->bbuf, NULL, searchType)) {
                     // Set its auto-load move number to the matching move:
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                db->bbuf->BackToStart();
-                if (g->ExactMatch (posFlip, db->bbuf, NULL, searchType)) {
+                dbase->bbuf->BackToStart();
+                if (g->ExactMatch (posFlip, dbase->bbuf, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
@@ -9488,7 +9475,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now print statistics and time for the search:
     char temp[200];
     int centisecs = timer.CentiSecs();
-    if (gameNum != db->numGames()) {
+    if (gameNum != dbase->numGames()) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
     sprintf (temp, "%d / %d  (%d%c%02d s)",
@@ -9500,8 +9487,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
 #endif
 
-    DBasePool::switchCurrent( DBasePool::getBase(oldCurrentBase) );
-    
 return TCL_OK;
 }
 
@@ -9830,7 +9815,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         filter.fill(1);
         filterOp = FILTEROP_AND;
     }
-    uint startFilterCount = startFilterSize (db, filterOp);
+    uint startFilterCount = filter.count();
 
     // Here is the loop that searches on each game:
     gamenumT gameNum = 0, n = db->numGames();

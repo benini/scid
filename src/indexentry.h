@@ -804,7 +804,8 @@ inline void
 IndexEntry::SetFlagStr (const char * flags)
 {
     // First, unset all user-settable flags:
-    SetFlag(~0, false);
+    static const uint32_t userMask = StrToFlagMask("DWBMENPTKQ!?U123456");
+    SetFlag(userMask, false);
 
     // Now set flags according to flags string:
     if (flags != 0 && *flags != 0) {
