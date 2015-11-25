@@ -69,6 +69,16 @@ scidBaseT* getBase(int baseHandle);
 
 
 /**
+ * getClipBase() - return the handle of the clipbase
+ *
+ * The clipbase is a special memory database that is always open and valid.
+ * Return:
+ * - the handle of the clipbase.
+ */
+int getClipBase();
+
+
+/**
  * getFreeSlot() - search for a free database slot.
  *
  * Return:

@@ -25,8 +25,6 @@ struct scidBaseT;
 #define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
 
-int sc_clipbase_paste (TCL_ARGS);
-
 int sc_eco_base       (TCL_ARGS);
 int sc_eco_game       (TCL_ARGS);
 int sc_eco_read       (TCL_ARGS);

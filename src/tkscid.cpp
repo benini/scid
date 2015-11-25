@@ -55,9 +55,7 @@
 
 //TODO: delete
 extern scidBaseT* db;
-extern scidBaseT* clipbase;
 const int MAX_BASES = 9;
-const int CLIPBASE_NUM = MAX_BASES - 1;
 /////////////////
 
 
@@ -1201,6 +1199,9 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //////////////////////////////////////////////////////////////////////
 /// CLIPBASE functions
 
+int sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const char ** argv);
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_clipbase:
 //    Game clipbase functions.
@@ -1208,6 +1209,8 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    scidBaseT* clipbase = DBasePool::getBase(DBasePool::getClipBase());
+
     static const char * options [] = {
         "clear", "paste", NULL
     };
@@ -1221,12 +1224,12 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case CLIP_CLEAR:
         clipbase->Close();
-        clipbase->Open();
+        clipbase->Open(FMODE_Memory, "<clipbase>");
         clipbase->idx->SetType (2);
         return TCL_OK;
 
     case CLIP_PASTE:
-        return sc_clipbase_paste (cd, ti, argc, argv);
+        return sc_clipbase_paste (clipbase, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_clipbase", options);
@@ -1239,7 +1242,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_clipbase_paste:
 //    Paste the active clipbase game, replacing the current game state.
 int
-sc_clipbase_paste (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const char ** argv)
 {
     // Cannot paste the clipbase game when already in the clipbase:
     if (db == clipbase) { return TCL_OK; }
@@ -5105,7 +5108,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case INFO_CLIPBASE:
-        return setUintResult (ti, CLIPBASE_NUM + 1);
+        return UI_Result(ti, OK, DBasePool::getClipBase());
 
     case INFO_DECIMAL:
         if (argc >= 3) {

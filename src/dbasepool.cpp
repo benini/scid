@@ -21,26 +21,26 @@
 #include "scidbase.h"
 
 
-static scidBaseT* dbList = NULL;      // array of database slots.
 
 //Current database
 scidBaseT* db = NULL;
 
-//Clipbase database
-scidBaseT* clipbase = NULL;
-
+namespace {
 // MAX_BASES is the maximum number of databases that can be open,
 // including the clipbase database.
 const int MAX_BASES = 9;
 const int CLIPBASE_NUM = MAX_BASES - 1;
 
+scidBaseT* dbList = NULL;      // array of database slots.
+}
+
 void DBasePool::init() {
 	dbList = new scidBaseT[MAX_BASES];
-	db = &(dbList[0]);
 
-	clipbase = &(dbList[CLIPBASE_NUM]);
-	clipbase->Open(FMODE_Memory, "<clipbase>");
-	clipbase->idx->SetType(2);
+	dbList[CLIPBASE_NUM].Open(FMODE_Memory, "<clipbase>");
+	dbList[CLIPBASE_NUM].idx->SetType(2);
+
+	DBasePool::switchCurrent(&(dbList[CLIPBASE_NUM]));
 }
 
 void DBasePool::closeAll() {
@@ -60,6 +60,10 @@ scidBaseT* DBasePool::getBase(int baseHandle) {
 	if (baseHandle < 1 || baseHandle > MAX_BASES) return 0;
 	scidBaseT* res = &(dbList[baseHandle - 1]);
 	return res->inUse ? res : 0;
+}
+
+int DBasePool::getClipBase() {
+	return CLIPBASE_NUM + 1;
 }
 
 scidBaseT* DBasePool::getFreeSlot() {

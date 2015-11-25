@@ -81,7 +81,7 @@ struct scidBaseT {
 	scidBaseT() { Init(); }
 	~scidBaseT();
 
-	errorT Open (fileModeT mode = FMODE_Memory,
+	errorT Open (fileModeT mode,
 	             const char* filename = "",
 	             bool create = true,
 	             const Progress& progress = Progress());
