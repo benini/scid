@@ -722,9 +722,11 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
   variable icons
   if {! [winfo exists $w]} { return }
 
-  set n_bases 0
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
-    if {[sc_base inUse $i]} {
+      $w.c itemconfigure tag$i -state hidden
+  }
+  set n_bases 0
+  foreach i [sc_base list] {
       incr n_bases
       set color white
       if {$i == $selected} { set color lightSteelBlue }
@@ -751,9 +753,6 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
       }
       $w.c.f$i.ngames configure -background $color -text "$txt"
       $w.c itemconfigure tag$i -state normal
-    } else {
-      $w.c itemconfigure tag$i -state hidden
-    }
   }
 
   set iconWidth [winfo width $w.c.f$::clipbase_db]

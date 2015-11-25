@@ -54,7 +54,6 @@
 
 
 //TODO: delete
-extern scidBaseT * dbList;
 extern scidBaseT* db;
 extern scidBaseT* clipbase;
 const int MAX_BASES = 9;
@@ -322,13 +321,10 @@ str_prefix_len (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    scidBaseT * basePtr = db;
+    const scidBaseT* basePtr = db;
     if (argc > 2) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum < 1 || baseNum > MAX_BASES) {
-            return errorResult (ti, "Invalid database number.");
-        }
-        basePtr = &(dbList[baseNum - 1]);
+        basePtr = DBasePool::getBase(strGetUnsigned(argv[2]));
+        if (basePtr == 0) return UI_Result(ti, OK, false);
     }
 
     return UI_Result(ti, OK, basePtr->inUse);
@@ -3707,21 +3703,15 @@ int
 sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_game merge <baseNum> <gameNum> [<endPly>]";
-    scidBaseT * base = db;
     if (argc < 4  ||  argc > 5) { return errorResult (ti, usage); }
 
-    int baseNum = strGetInteger (argv[2]);
-    if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-        base = &(dbList[baseNum - 1]);
-    }
+    const scidBaseT* base = DBasePool::getBase(strGetUnsigned(argv[2]));
+    if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
+
     uint gnum = strGetUnsigned (argv[3]);
     uint endPly = 9999;     // Defaults to huge number for all moves.
     if (argc == 5) { endPly = strGetUnsigned (argv[4]); }
 
-    // Check we have a valid database and game number:
-    if (! base->inUse) {
-        return errorResult (ti, "The selected database is not open.");
-    }
     if (gnum < 1  ||  gnum > base->numGames()) {
         return errorResult (ti, "Invalid game number.");
     }
@@ -4049,7 +4039,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         OPT_NOMARKS, OPT_UNICODE,
     };
 
-    scidBaseT * base = db;
+    const scidBaseT* base = db;
     Game * g = db->game;
     uint lineWidth = 99999;
     g->ResetPgnStyle();
@@ -4085,12 +4075,8 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             lineWidth = value;
 
         } else if (index == OPT_BASE) {
-            if (value >= 1  &&  value <= (uint)MAX_BASES) {
-                base = &(dbList[value - 1]);
-            }
-            if (! base->inUse) {
-                return setResult (ti, "The selected database is not in use.");
-            }
+            base = DBasePool::getBase(value);
+            if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
             g = base->game;
 
         } else if (index == OPT_GAME_NUMBER) {
@@ -4458,7 +4444,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     };
     enum { OPT_BASE, OPT_GNUM };
 
-    scidBaseT * base = db;
+    const scidBaseT* base = db;
     uint gnum = 0;
 
     int arg = 2;
@@ -4468,10 +4454,8 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         arg += 2;
 
         if (index == OPT_BASE) {
-            int baseNum = strGetUnsigned (value);
-            if (baseNum >= 1 && baseNum <= MAX_BASES) {
-                base = &(dbList[baseNum - 1]);
-            }
+            base = DBasePool::getBase(strGetUnsigned(value));
+            if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
         } else if (index == OPT_GNUM) {
             gnum = strGetUnsigned (value);
         } else {
@@ -8557,20 +8541,17 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "best", "move", "positions", "search", "size",
-        "cachesize", "cacheinfo", "clean", NULL
+        "cachesize", "cacheinfo", NULL
     };
     enum {
         TREE_BEST, TREE_MOVE, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
-        TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
+        TREE_CACHESIZE, TREE_CACHEINFO
     };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case TREE_CLEAN:
-        return sc_tree_clean (cd, ti, argc, argv);
-
     case TREE_MOVE:
         return sc_tree_move (cd, ti, argc, argv);
 
@@ -8597,26 +8578,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-int
-sc_tree_clean (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_tree clean <baseNum>");
-    }
-
-    scidBaseT * base = db;
-    int baseNum = strGetInteger (argv[2]);
-    if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-        base = &(dbList[baseNum - 1]);
-    }
-    if (!base->inUse) {
-        return setResult (ti, errMsgNotOpen(ti));
-    }
-
-    base->treeFilter->Fill(1);
-	return TCL_OK;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_tree_move:
@@ -8631,14 +8592,8 @@ sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_tree move <baseNum> <lineNum>");
     }
 
-    scidBaseT * base = db;
-    int baseNum = strGetInteger (argv[2]);
-    if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-        base = &(dbList[baseNum - 1]);
-    }
-    if (!base->inUse) {
-        return setResult (ti, errMsgNotOpen(ti));
-    }
+    const scidBaseT* base = DBasePool::getBase(strGetUnsigned(argv[2]));
+    if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
 
     int selection = strGetInteger (argv[3]);
     if (argv[3][0] == 'r'  &&  strIsPrefix (argv[3], "random")) {
@@ -8661,7 +8616,7 @@ sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return TCL_OK;
     }
 
-    treeNodeT * node = &(base->tree.node[selection - 1]);
+    const treeNodeT* node = &(base->tree.node[selection - 1]);
 
     // If the san string first char is not a letter, it is the
     // empty move (e.g. "[end]") so we do NOT add a move:
@@ -8761,10 +8716,8 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else if (strIsPrefix (argv[arg], "-hideMoves")) {
             hideMoves = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-base")) {
-            int baseNum = strGetInteger (argv[arg+1]);
-            if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-                base = &(dbList[baseNum - 1]);
-            }
+            base = DBasePool::getBase(strGetUnsigned(argv[arg+1]));
+            if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
         } else if (strIsPrefix (argv[arg], "-time")) {
             showTimeStats = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-filtered")) {
@@ -9306,7 +9259,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     Position * pos = db->game->GetCurrentPos();
     
-    scidBaseT* dbase = db;
+    const scidBaseT* dbase = db;
     if (argc == 7) {
         dbase = DBasePool::getBase(strGetUnsigned(argv[6]));
         if (dbase == 0) return UI_Result(ti, ERROR_FileNotOpen);

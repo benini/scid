@@ -21,7 +21,7 @@
 #include "scidbase.h"
 
 
-scidBaseT * dbList = NULL;      // array of database slots.
+static scidBaseT* dbList = NULL;      // array of database slots.
 
 //Current database
 scidBaseT* db = NULL;

@@ -106,7 +106,6 @@ int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);
-int sc_tree_clean     (TCL_ARGS);
 
 int sc_var_delete     (TCL_ARGS);
 int sc_var_delete_free(TCL_ARGS);
