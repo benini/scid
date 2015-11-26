@@ -288,7 +288,8 @@ proc ::docking::show_menu { path x y} {
   }
   
   set localX [expr $x - [winfo rootx $path]]
-  set tab [$path identify tab $localX 1]
+  set localY [expr $y - [winfo rooty $path]]
+  set tab [$path identify tab $localX $localY]
   if {$tab == ""} { return }
   set iconW 20
   if {$tab == 0} {
