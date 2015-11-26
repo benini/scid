@@ -58,9 +58,11 @@ proc ::windows::gamelist::OpenTreeBest { {base} {w} } {
 		destroy $w
 		return
 	}
-	ttk::frame $w.buttons; ttk::button $w.buttons.filter
 	set ::gamelistTitle($w) "[tr TreeBestGames]:"
 	::windows::gamelist::createWin_ $w $base "tree"
+
+	grid forget $w.buttons
+	set ::gamelistPosMask($w) 1
 }
 
 proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
@@ -113,6 +115,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 			}
 		}
 	}
+
 	foreach base $bases {
 		update idletasks
 		#TODO: [sc_filter release $base $f]
@@ -437,7 +440,7 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 	set ::gamelistPosMask($w) 0
 	set ::gamelistMenu($w) ""
 	keyboardShortcuts $w
-	if {$filter != "tree"} { ::windows::gamelist::createMenu_ $w }
+	::windows::gamelist::createMenu_ $w
 	if {[info exists ::recentSort]} {
 		set idx [lsearch -exact $::recentSort "[sc_base filename $base]"]
 		if {$idx != -1} { set ::glist_Sort(ly$w) [lindex $::recentSort [expr $idx +1]] }
