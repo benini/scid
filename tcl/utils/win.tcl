@@ -295,7 +295,7 @@ proc ::docking::show_menu { path x y} {
   if {$tab == 0} {
     set isIcon [expr {$localX < $iconW ? 1 : 0}]
   } else {
-    set isIcon [expr [$path identify tab [expr $localX - $iconW] 1] != $tab]
+    set isIcon [expr [$path identify tab [expr $localX - $iconW] $localY] != $tab]
   }
 
   # display window's menu (workaround for windows where the menu
