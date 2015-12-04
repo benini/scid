@@ -102,33 +102,33 @@ public:
 	/**
 	 * add*fix() - add a general correction
 	 *
-	 * Return: true if successful
-	 * Adds a general prefix, infix or suffix correction given a spellcheck file
-	 * line in the form:
+	 * Adds a general prefix, infix or suffix correction.
+	 * Syntax for @s is:
 	 * %Suffix "wrong suffix" "correct suffix"
+	 * Return: OK if successful
 	 */
-	bool addPrefix(const char* s) { return add(prefix_, s); }
-	bool addInfix (const char* s) { return add(infix_, s); }
-	bool addSuffix(const char* s) { return add(suffix_,s); }
+	errorT addPrefix(const char* s) { return add(prefix_, s); }
+	errorT addInfix (const char* s) { return add(infix_, s); }
+	errorT addSuffix(const char* s) { return add(suffix_,s); }
 
 private:
-	bool add(Cont& v, const char* s) {
+	errorT add(Cont& v, const char* s) {
 		ASSERT(s != 0);
 		std::vector<size_t> parse;
 		for (size_t i=0; *(s+i) != 0; i++) {
 			if (*(s+i) == '"') parse.push_back(i);
 		}
-		if (parse.size() != 4) return false;
+		if (parse.size() != 4) return ERROR_CorruptData;
 		parse[0] += 1; //skip "
 		parse[1] -= parse[0]; //n_chars
-		if (parse[1] == 0) return false;
+		if (parse[1] == 0) return ERROR_CorruptData;
 		parse[2] += 1; //skip "
 		parse[3] -= parse[2]; //n_chars
 		v.push_back(std::make_pair(
 			std::string(s + parse[0], parse[1]),
 			std::string(s + parse[2], parse[3])
 		));
-		return true;
+		return OK;
 	}
 };
 
@@ -228,23 +228,22 @@ public:
  * %Bio This is a generic information
  */
 class PlayerInfo {
-	std::vector<std::string> bioData_;
-	std::string comment_;
+	const char* comment_;
+	std::vector<const char*> bio_;
+
+	friend class SpellChkLoader;
+	friend class SpellChecker;
 
 public:
-	explicit PlayerInfo(const std::string& s) : comment_(s) {}
-	void addBioData(const char* str) { bioData_.push_back(str); }
-
-	const char* getBioData(size_t idx) const {
-		if (idx >= bioData_.size()) return 0;
-		return bioData_[idx].c_str();
-	}
+	PlayerInfo(const char* s) : comment_(s) {}
 	const char* getTitle() const;
 	const char* getLastCountry() const;
 	dateT getBirthdate() const;
 	dateT getDeathdate() const;
 	eloT getPeakRating() const;
-	const char* GetComment() const { return comment_.c_str(); }
+	const char* GetComment() const {
+		return (comment_ != 0) ? comment_ : "";
+	}
 };
 
 
@@ -255,26 +254,49 @@ public:
  * if SPELLCHKVALIDATE is defined also check the spell file for errors.
  */
 class SpellChecker {
-	std::string excludeChars_[NUM_NAME_TYPES];
-
 	struct Idx {
 		std::string alias;
-		uint32_t idx;
+		int32_t idx;
 
 		bool operator<(const Idx& b) const { return alias < b.alias; }
 		bool operator<(const std::string& b)  const { return alias < b; }
 	};
-	std::vector<Idx> idx_[NUM_NAME_TYPES];
 	typedef std::vector<Idx>::const_iterator IdxIt;
 
-	std::vector<std::string> names_[NUM_NAME_TYPES];
+	NameNormalizer general_[NUM_NAME_TYPES];
+	std::string excludeChars_[NUM_NAME_TYPES];
+	std::vector<Idx> idx_[NUM_NAME_TYPES];
+	std::vector<const char*> names_[NUM_NAME_TYPES];
 	std::vector<PlayerInfo> pInfo_;
 	std::vector<PlayerElo>  pElo_;
+	char* staticStrings_;
 
-	NameNormalizer general_[NUM_NAME_TYPES];
+	friend class SpellChkLoader;
 
 public:
-	errorT read(const char* filename, const Progress& progress);
+	~SpellChecker() {
+		free(staticStrings_);
+	}
+
+	/**
+	 * Create() - Create a new SpellChecker object
+	 *
+	 * Create a new SpellChecker reading from @filename.
+	 * It's the caller's responsibility to free the object with "delete".
+	 * Return:
+	 * - OK and a pointer to the new object
+	 * - on error the ERROR_*CODE* and NULL
+	 */
+	static std::pair<errorT, SpellChecker*> Create(const char* filename,
+	                                               const Progress& progress) {
+		SpellChecker* res = new SpellChecker;
+		errorT err = res->read(filename, progress);
+		if (err != OK) {
+			delete res;
+			res = NULL;
+		}
+		return std::make_pair(err, res);
+	}
 
 	/**
 	 * find() - search for correct names
@@ -296,7 +318,7 @@ public:
 		if (nt != NAME_PLAYER) it = idxFind(nt, name);
 		else it = idxFindPlayer(name);
 		for (; it.first != it.second && res.size() < nMaxRes; it.first++) {
-			const char* corrected = names_[nt][it.first->idx].c_str();
+			const char* corrected = names_[nt][it.first->idx];
 			if (std::find(res.begin(), res.end(), corrected) == res.end()) {
 				res.push_back(corrected);
 			}
@@ -309,10 +331,25 @@ public:
 		return general_[nt];
 	}
 
-	const PlayerInfo* getPlayerInfo(const char* name) const {
+	/**
+	* SpellChecker::getPlayerInfo() - get extra info about a player
+	*
+	* Get extra data like titles/gender, countries, highest elo,
+	* date of birth, date of death or biographic informations.
+	* Return:
+	* - on success a pointer to a valid PlayerInfo object containing
+	*   the available data. If @bio != 0 the vector is filled with
+	*   the available biographic informations.
+	* - if @name is not found or is ambiguous (match multiple players)
+	*   returns NULL and @bio is untouched.
+	*/
+	const PlayerInfo* getPlayerInfo(const char* name,
+	                                std::vector<const char*>* bio = 0) const {
 		ASSERT(name != 0);
 		IdxIt it = idxFindPlayerUnambiguous(name);
 		if (it == idx_[NAME_PLAYER].end()) return 0; // not found
+
+		if (bio != 0) *bio = pInfo_[it->idx].bio_;
 		return &(pInfo_[it->idx]);
 	}
 
@@ -334,6 +371,12 @@ public:
 	}
 
 private:
+	SpellChecker() : staticStrings_(NULL) {}
+	SpellChecker(const SpellChecker&);
+	SpellChecker& operator=(const SpellChecker&);
+
+	errorT read(const char* filename, const Progress& progress);
+
 	std::string normalizeAndTransform(const nameT& nt, const char* s) const { 
 		std::string res;
 		for (const char* i = s; *i != 0; i++) {

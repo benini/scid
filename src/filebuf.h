@@ -46,17 +46,37 @@ public:
 	uint ReadThreeBytes () { return read<3>(); }
 	uint ReadFourBytes () { return read<4>(); }
 	uint ReadNBytes (char* str, uint count) { return (uint) sgetn(str, count); }
-	uint ReadLine (char* str, uint maxLength) {
-		uint res = 1;
-		while (res < maxLength) {
-			int ch = sbumpc();
-			if (ch == EOF) break;
-			res += 1;
-			*str++ = ch & 255;
-			if (ch == '\n') { break; }
+	/**
+	 * getline() - Extracts characters until end of file or end of line ('\n')
+	 * @str:    pointer to the character string to store the characters to
+	 * @count: 	size of character string pointed to by @str
+	 *
+	 * This function is similar to std::fstream::getline, but without the Sentry.
+	 * The characters are copied to @str, excluding the '\n' char, and before
+	 * returning, even in case of errors, a null character will be added.
+	 * Return:
+	 * - the number of characters read, including the '\n' char
+	 * - 0 if the buffer is too small
+	 */
+	size_t getline(char* str, size_t count) {
+		ASSERT(str != 0);
+		ASSERT(count != 0);
+
+		size_t n = 0;
+		for (int ch = sgetc(); ch != EOF; ch = snextc()) {
+			++n;
+			if (ch == '\n') {
+				sbumpc();
+				break;
+			}
+			if (n >= count) {
+				n = 0; //Fail if buffer is full
+				break;
+			}
+			*str++ = static_cast<char>(ch);
 		}
 		*str = 0;
-		return res -1;
+		return n;
 	}
 
 	//Returns the number of characters successfully written

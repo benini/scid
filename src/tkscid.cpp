@@ -7277,16 +7277,16 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Print biography if applicable:
     if (spChecker != NULL) {
-        const PlayerInfo* pInfo = spChecker->getPlayerInfo(playerName);
+        std::vector<const char*> bio;
+        const PlayerInfo* pInfo = spChecker->getPlayerInfo(playerName, &bio);
         if (pInfo != 0) {
-            const char* note;
-            for (size_t i=0; (note = pInfo->getBioData(i)) != 0; i++) {
+            for (size_t i=0, n=bio.size(); i < n; i++) {
                 if (i == 0) {
                     Tcl_AppendResult (ti, newline, startHeading,
                               translate (ti, "Biography"), ":",
                               endHeading, newline, NULL);
                 }
-                Tcl_AppendResult (ti, "  ", note, newline, NULL);
+                Tcl_AppendResult (ti, "  ", bio[i], newline, NULL);
             }
         }
     }
@@ -7972,14 +7972,12 @@ sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 2) {
         const char * filename = argv[2];
         Progress progress = UI_CreateProgress(ti);
-        SpellChecker* temp_spellChecker = new SpellChecker;
-        errorT err = temp_spellChecker->read(filename, progress);
-        if (err != OK) {
-            delete temp_spellChecker;
-            return UI_Result(ti, err, "Error reading name spellcheck file.");
+        std::pair<errorT, SpellChecker*> newSpell = SpellChecker::Create(filename, progress);
+        if (newSpell.first != OK) {
+            return UI_Result(ti, newSpell.first, "Error reading name spellcheck file.");
         }
         if (spellChk != NULL) { delete spellChk; }
-        spellChk = temp_spellChecker;
+        spellChk = newSpell.second;
         progress.report(1, 1);
     }
 

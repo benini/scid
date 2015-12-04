@@ -343,6 +343,26 @@ strLength (const char * str)
 }
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strTrimRight():
+//      Trims the provided string in-place, removing the
+//      end characters that match the trimChars.
+//      Returns the number of characters trimmed.
+//      E.g., strTrimRight("abcyzyz", "yz") would leave the string
+//      as "abc" and return 4.
+inline uint strTrimRight (char* target, const char* trimChars)
+{
+	int oldSz = strlen(target);
+	int sz = oldSz;
+	while (--sz >= 0) {
+		if (strchr(trimChars, target[sz]) == 0) break;
+	}
+	if (++sz == oldSz) return 0;
+	target[sz] = 0;
+	return oldSz - sz;
+}
+
+
 //////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
 // TODO: remove this functions

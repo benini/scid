@@ -1,3 +1,325 @@
+/*
+* Copyright (C) 2015 Fulvio Benini
+* Copyright (c) 2001-2003  Shane Hudson (2nd part of the file)
+
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "spellchk.h"
+#include "date.h"
+#include "filebuf.h"
+#include "misc.h"
+
+
+namespace {
+
+enum InfoType {
+	SPELL_SECTIONSTART,
+	SPELL_NEWNAME, SPELL_ALIAS, SPELL_PREFIX, SPELL_INFIX, SPELL_SUFFIX,
+	SPELL_BIO, SPELL_ELO,
+	SPELL_EMPTY, SPELL_OLDBIO, SPELL_UNKNOWN
+};
+
+struct Parser {
+	char* name;
+	char* extra;
+	enum InfoType type;
+
+	Parser(char* line);
+};
+
+/**
+ * Parser::Parser() - Parse a "spelling" line.
+ *
+ * Fill data members doing the following tasks:
+ * - separate the optional comment (a comment starts with '#' and
+ *   extend to the end of the line) from the name data.
+ * - remove leading and trailing white-spaces.
+ * - identify the type of data
+ */
+Parser::Parser(char* line) {
+	ASSERT(line != 0);
+
+	extra = strchr(line, '#');
+	if (extra != NULL) {
+		// Make [line, extra) a null terminated string
+		*extra++ = 0;
+	}
+	name = (char*) strTrimLeft(line);
+	strTrimRight(name);
+
+	type = SPELL_UNKNOWN;
+	switch (*name) {
+		case 0:
+			type = SPELL_EMPTY;
+			break;
+		case '>':
+			type = SPELL_OLDBIO;
+			break;
+		case '=':
+			type = SPELL_ALIAS;
+			// Skip over "=" and spaces:
+			name++;
+			while (*name == ' ') { name++; }
+			break;
+		case '%':
+			if (strIsPrefix("%Elo ", name)) {
+				type = SPELL_ELO;
+				name += 5; //Skip "%Elo "
+			} else if (strIsPrefix("%Bio ", name)) {
+				type = SPELL_BIO;
+				name += 5; //Skip "%Bio "
+			} else if (strIsPrefix("%Prefix ", name)) {
+				type = SPELL_PREFIX;
+			} else if (strIsPrefix("%Infix ", name)) {
+				type = SPELL_INFIX;
+			} else if (strIsPrefix("%Suffix ", name)) {
+				type = SPELL_SUFFIX;
+			}
+			break;
+		case '@':
+			type = SPELL_SECTIONSTART;
+			name++; //Skip '@'
+			// Now check if there is a list of characters to exclude from
+			// comparisons, e.g:   @PLAYER ", .-"
+			// would indicate to exclude dots, commas, spaces and dashes.
+			extra = strchr(name, '"');
+			if (extra != NULL) {
+				char* end = strchr(++extra, '"');
+				if (end != NULL) {
+					*end = 0;
+				} else {
+					extra = NULL;
+				}
+			}
+			break;
+		default:
+			type = SPELL_NEWNAME;
+			if (extra != NULL) {
+				// Spelling files can provide player informations like titles/gender,
+				// countries, highest elo, date of birth, date of death. For example:
+				// Polgar, Judit           #gm+w HUN [2735] 1976
+				strTrimRight(extra);
+			}
+	}
+}
+
+} // End of anonymous namespace
+
+
+/**
+ * class SpellChkLoader - load data into a SpellChecker object
+ *
+ * This class take parsed "spelling" data and store it into the right
+ * data members of the associated SpellChecker object.
+ * Reading from a "spelling" file is not stateless and the Parser object
+ * cannot contain all the necessary data: a SpellChkLoader object keep track
+ * of the current nameT section and the current correct name.
+ * The SpellChkValidate object is used to log ignored data, usually
+ * caused by typos like "@Eol" or "@Preffix".
+ */
+class SpellChkLoader {
+	SpellChecker& sp_;
+	SpellChecker::SpellChkValidate& validate_;
+	nameT nt_;
+	int32_t nameIdx_;
+
+public:
+	SpellChkLoader(SpellChecker& sp, SpellChecker::SpellChkValidate& v)
+	: sp_(sp), validate_(v), nt_(NAME_INVALID), nameIdx_(-1) {
+	}
+
+	errorT load(const Parser& data, bool* keepBuffer) {
+		ASSERT(keepBuffer != 0);
+		*keepBuffer = false;
+
+		switch (data.type) {
+			case SPELL_SECTIONSTART:
+				nt_ = NameBase::NameTypeFromString(data.name);
+				if (nt_ >= NUM_NAME_TYPES) return ERROR_CorruptData;
+				if (data.extra != NULL) {
+					sp_.excludeChars_[nt_] = data.extra;
+				} else {
+					sp_.excludeChars_[nt_].clear();
+				}
+				nameIdx_ = -1;
+				return OK;
+			case SPELL_NEWNAME:
+			case SPELL_ALIAS:
+			case SPELL_PREFIX:
+			case SPELL_INFIX:
+			case SPELL_SUFFIX:
+				return nameSection(data, keepBuffer);
+			case SPELL_BIO:
+			case SPELL_ELO:
+				return playerInfo(data, keepBuffer);
+			case SPELL_EMPTY:
+				return OK;
+			case SPELL_OLDBIO:
+			case SPELL_UNKNOWN:
+				validate_.ignoredLine(data.name);
+				return OK;
+		}
+
+		ASSERT(0);
+		return ERROR_CorruptData;
+	}
+
+private:
+	errorT nameSection(const Parser& data, bool* keepBuffer) {
+		// Must be in a valid name section
+		if (nt_ >= NUM_NAME_TYPES) return ERROR_CorruptData;
+
+		switch (data.type) {
+			case SPELL_NEWNAME:
+				*keepBuffer = true;
+				nameIdx_ = sp_.names_[nt_].size();
+				sp_.names_[nt_].push_back(data.name);
+				if (nt_ == NAME_PLAYER) {
+					sp_.pInfo_.push_back(data.extra);
+				}
+				// go in SPELL_ALIAS:
+			case SPELL_ALIAS:
+				if (nameIdx_ == -1) {
+					return ERROR_CorruptData;
+				} else {
+					SpellChecker::Idx tmp = {
+						sp_.normalizeAndTransform(nt_, data.name),
+						nameIdx_
+					};
+					sp_.idx_[nt_].push_back(tmp);
+				}
+				return OK;
+			case SPELL_PREFIX:
+				return sp_.general_[nt_].addPrefix(data.name);
+			case SPELL_INFIX:
+				return sp_.general_[nt_].addInfix(data.name);
+			case SPELL_SUFFIX:
+				return sp_.general_[nt_].addSuffix(data.name);
+			default:
+				ASSERT(0);
+		}
+
+		return ERROR_CorruptData;
+	}
+
+	errorT playerInfo(const Parser& data, bool* keepBuffer) {
+		// SPELL_BIO and SPELL_ELO are valid only for a PLAYER name
+		if (nt_ != NAME_PLAYER || nameIdx_ == -1) return ERROR_CorruptData;
+
+		if (data.type == SPELL_BIO) {
+			*keepBuffer = true;
+			sp_.pInfo_[nameIdx_].bio_.push_back(data.name);
+		} else {
+			ASSERT(data.type == SPELL_ELO);
+			// if necessary, add empty PlayerElo objects
+			sp_.pElo_.resize(nameIdx_ + 1);
+			sp_.pElo_[nameIdx_].AddEloData(data.name);
+		}
+
+		return OK;
+	}
+};
+
+
+/**
+ * SpellChecker::read() - Read a "spelling" file.
+ *
+ * This functions tries to open the @filename file and to load the data
+ * into the SpellChecker object.
+ * The object must be empty. In practice the requirement is to not call
+ * this function twice, because this is the only non-const member function.
+ * If the function fails (result != OK) the object state is undefined
+ * and the only valid operation is to destroy the object.
+ * If SPELLCHKVALIDATE is defined, it also creates a @filename.validate log.
+ */
+errorT SpellChecker::read(const char* filename, const Progress& progress)
+{
+	ASSERT(filename != NULL);
+	ASSERT(staticStrings_ == NULL);
+
+	// Open the file and get the file size.
+	Filebuf file;
+	std::streamsize fileSize = -1;
+	if (file.open(filename, std::ios::in | std::ios::binary | std::ios::ate) != 0) {
+		fileSize = file.pubseekoff(0, std::ios::cur, std::ios::in);
+		file.pubseekoff(0, std::ios::beg, std::ios::in);
+	}
+	if (fileSize == -1) return ERROR_FileOpen;
+
+	SpellChkValidate validate(filename, *this);
+
+	// Parse the file lines
+	staticStrings_ = (char*) malloc(fileSize + 1);
+	char* bEnd = staticStrings_ + fileSize + 1;
+	char* line = staticStrings_;
+	size_t nRead;
+	uint report_i = 0;
+	std::streamsize report_done = 0;
+	SpellChkLoader loader(*this, validate);
+	while ((nRead = file.getline(line, std::distance(line, bEnd))) != 0) {
+		report_done += nRead;
+		if ((++report_i % 10000) == 0) {
+			if (!progress.report(report_done, fileSize))
+				return ERROR_UserCancel;
+		}
+
+		bool keepBuffer;
+		errorT err = loader.load(Parser(line), &keepBuffer);
+		if (err != OK) return err;
+
+		if (keepBuffer) line += nRead;
+	}
+	if (report_done != fileSize || file.sgetc() != EOF) return ERROR_FileRead;
+
+	// Success:
+	if (pElo_.size() > 0) {
+		// if necessary, add empty PlayerElo objects
+		pElo_.resize(pInfo_.size());
+		validate.checkEloData();
+	}
+
+	#if CPP11_SUPPORT
+	// Free unused memory
+	char* shrink = (char*) realloc(staticStrings_, std::distance(staticStrings_,line));
+	if (shrink != NULL && shrink != staticStrings_) {
+		// Unlikely, but realloc() moved the memory: update the pointers.
+		const char* oldAddr = staticStrings_;
+		staticStrings_ = shrink;
+		for (nameT i=0; i < NUM_NAME_TYPES; i++) {
+			for (auto& e : (names_[i]))
+				e = staticStrings_ + std::distance(oldAddr, e);
+		}
+		for (auto& e : pInfo_) {
+			e.comment_ = staticStrings_ + std::distance(oldAddr, e.comment_);
+			for (auto& bio : e.bio_) {
+				bio = staticStrings_ + std::distance(oldAddr, bio);
+			}
+		}
+	}
+	#endif
+
+	// Sort the index
+	for (nameT i=0; i < NUM_NAME_TYPES; i++) {
+		std::sort(idx_[i].begin(), idx_[i].end());
+		validate.idxDuplicates(i);
+	}
+	return OK;
+}
+
+
 //////////////////////////////////////////////////////////////////////
 //
 //  FILE:       spellchk.cpp
@@ -11,138 +333,6 @@
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
-
-#include "spellchk.h"
-#include "date.h"
-#include "filebuf.h"
-#include <ctype.h>
-
-static void
-getNameAndComment (char * line, char ** name, char ** comment)
-{
-    char * s = line;
-    // Find the first comment char (#) and make it the end-of-string,
-    while (*s != 0) {
-        if (*s == '#') {
-            *comment = s+1;
-            *s = 0;
-            break;
-        } else {
-            s++;
-            *comment = s;
-        }
-    }
-
-    // Strip leading spaces and trailing newline, tab and space chars:
-    s = line;
-    s = (char *) strTrimLeft(s);
-    strTrimRight (s);
-    strTrimRight (*comment);
-    *name = s;
-}
-
-errorT SpellChecker::read(const char* filename, const Progress& progress)
-{
-    char line [1024];
-    nameT nt = NAME_INVALID;
-
-    Filebuf fp;
-    if (fp.Open (filename, FMODE_ReadOnly) != OK) { return ERROR_FileOpen; }
-
-    SpellChkValidate validate(filename, *this);
-
-    uint report_i = 0;
-    size_t report_done = 0;
-    size_t lineLen = 0;
-    size_t fileSize = fp.pubseekoff(0, std::ios_base::end);
-    fp.pubseekoff(0, std::ios_base::beg);
-    while ((lineLen = fp.ReadLine (line, 1024)) != 0) {
-        report_done += lineLen;
-        if ((report_i++ % 10000) == 0) progress.report(report_done, fileSize);
-
-        char * name = NULL;
-        char * comment = NULL;
-        getNameAndComment (line, &name, &comment);
-
-        // Now s contains just the name, no extra space or comment.
-        if (*name == 0) {
-            // Empty or comment-only line; do nothing.
-        } else if (*name == '>') {
-            // Old biography line: do nothing with it.
-        } else if (*name == '%') {
-            // Elo data, biography or other unknown info line:
-            if (nt >= NUM_NAME_TYPES) return ERROR_Corrupt;
-
-            if (strIsPrefix ("%Elo ", name)) {
-                if (names_[nt].size() == 0) return ERROR_Corrupt;
-                pElo_.resize(names_[NAME_PLAYER].size());
-                pElo_.back().AddEloData(name);
-                continue;
-            }
-            if (strIsPrefix ("%Bio ", name)) {
-                if (names_[nt].size() == 0) return ERROR_Corrupt;
-                pInfo_.back().addBioData(name+5);
-                continue;
-            }
-            if (strIsPrefix ("%Prefix ", name)) {
-                if (general_[nt].addPrefix(name)) continue;
-            }
-            if (strIsPrefix ("%Infix ", name)) {
-                if (general_[nt].addInfix(name)) continue;
-            }
-            if (strIsPrefix ("%Suffix ", name)) {
-                if (general_[nt].addSuffix(name)) continue;
-            }
-            validate.ignoredLine(name);
-        } else if (*name == '@') {
-            // Name type line: "@PLAYER", "@SITE", "@EVENT" or "@ROUND"
-            nt = NameBase::NameTypeFromString (name+1);
-            if (nt >= NUM_NAME_TYPES) return ERROR_Corrupt;
-
-                // Now check if there is a list of characters to exclude from
-                // comparisons, e.g:   @PLAYER ", .-"
-                // would indicate to exclude dots, commas, spaces and dashes.
-                char * start = strchr (name, '"');
-                if (start != NULL) {
-                    char * end = strchr (start + 1, '"');
-                    if (end != NULL) {
-                        *end = 0;
-                        excludeChars_[nt] = start + 1;
-                    } else {
-                        return ERROR_Corrupt;
-                    }
-                }
-        } else {
-            if (*name == '=') {
-                if (nt >= NUM_NAME_TYPES || names_[nt].size() == 0) {
-                    return ERROR_Corrupt;
-                }
-
-                // Incorrect spelling of name. Skip over "=" and spaces:
-                name++;
-                while (*name == ' ') { name++; }
-            } else {
-                // Correctly spelt name; add to the list:
-                names_[nt].push_back(name);
-                pInfo_.push_back(PlayerInfo(comment));
-            }
-            Idx tmp;
-            tmp.alias = normalizeAndTransform(nt, name);
-            tmp.idx = names_[nt].size() -1;
-            idx_[nt].push_back(tmp);
-        }
-    }
-
-    for (nameT i=0; i < NUM_NAME_TYPES; i++) {
-        std::sort(idx_[i].begin(), idx_[i].end());
-        validate.idxDuplicates(i);
-    }
-    if (pElo_.size() > 0) {
-        pElo_.resize(names_[NAME_PLAYER].size());
-        validate.checkEloData();
-    }
-    return OK;
-}
 
 // Retrieve the list of Rating figures for given player (aka node) from the given (ssp) string
 // The string is formatted as:
@@ -158,10 +348,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 //
 void PlayerElo::AddEloData(const char * str)
 {
-    // Skip the %Elo prefix. TODO: Apparently it may or may not be there....
-    //
-    if (strIsPrefix ("%Elo ", str)) { str += 4; }
-    
     while (1) {
         // Get the year in which the rating figures to follow were published
         //
@@ -211,10 +397,11 @@ PlayerInfo::getTitle() const
     };
     const char ** titlePtr = titles;
 
-    if (comment_.empty()) { return ""; }
+    const char* comment = GetComment();
+    if (*comment == 0) { return ""; }
 
     while (*titlePtr != NULL) {
-        if (strIsPrefix (*titlePtr, comment_.c_str())) { return *titlePtr; }
+        if (strIsPrefix (*titlePtr, comment)) { return *titlePtr; }
         titlePtr++;
     }
     return "";
@@ -232,9 +419,9 @@ PlayerInfo::getLastCountry() const
     static char country[4];
     country[0] = 0;
 
-    if (comment_.empty()) { return ""; }
+    const char* start = GetComment();
+    if (*start == 0) { return ""; }
 
-    const char * start = comment_.c_str();
     // Skip over the title field:
     while (*start != ' '  &&  *start != 0) { start++; }
     while (*start == ' ') { start++; }
@@ -258,8 +445,9 @@ PlayerInfo::getLastCountry() const
 eloT
 PlayerInfo::getPeakRating() const
 {
-    if (comment_.empty()) { return 0; }
-    const char * s = comment_.c_str();
+    const char* s = GetComment();
+    if (*s == 0) { return 0; }
+
     while (*s != '['  &&  *s != 0) { s++; }
     if (*s != '[') { return 0; }
     s++;
@@ -274,8 +462,9 @@ PlayerInfo::getPeakRating() const
 dateT
 PlayerInfo::getBirthdate() const
 {
-    if (comment_.empty()) { return ZERO_DATE; }
-    const char * s = comment_.c_str();
+    const char* s = GetComment();
+    if (*s == 0) { return ZERO_DATE; }
+
     // Find the end-bracket character after the rating:
     while (*s != ']'  &&  *s != 0) { s++; }
     if (*s != ']') { return ZERO_DATE; }
@@ -293,8 +482,9 @@ PlayerInfo::getBirthdate() const
 dateT
 PlayerInfo::getDeathdate() const
 {
-    if (comment_.empty()) { return ZERO_DATE; }
-    const char * s = comment_.c_str();
+    const char* s = GetComment();
+    if (*s == 0) { return ZERO_DATE; }
+
     // Find the end-bracket character after the rating:
     while (*s != ']'  &&  *s != 0) { s++; }
     if (*s != ']') { return ZERO_DATE; }

@@ -14,6 +14,7 @@ matrix:
       apt:
         packages:
           - clang-3.7
+          - tcl
           - tcl-dev
           - tk
         sources:
@@ -26,6 +27,7 @@ matrix:
       apt:
         packages:
           - clang-3.5
+          - tcl
           - tcl-dev
           - tk
         sources:
@@ -38,6 +40,7 @@ matrix:
       apt:
         packages:
           - g++-5
+          - tcl
           - tcl-dev
           - tk
         sources:
@@ -49,18 +52,17 @@ matrix:
       apt:
         packages:
           - g++-4.9
+          - tcl
           - tcl-dev
           - tk
         sources:
           - ubuntu-toolchain-r-test
 
-
 script:
+  - if [ "$TRAVIS_OS_NAME" != "osx" ]; then LINUX_ONLY="COMPILE=${COMP} LINK=${COMP}"; fi
   - if [ "${COMP}" == "clang++-3.7" ]; then scan-build-3.7 ${COMP} -std=c++11 -c -Wall -DASSERTIONS -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp src/polyglot/*.cpp; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then ./configure && make; fi
-  - ./configure COMPILE="${COMP}" LINK="${COMP}" && make
+  - ./configure ${LINUX_ONLY} && make && size tkscid
   - make clean
-  - ./configure COMPILE="${COMP}" LINK="${COMP}" THREADS="" && make
+  - ./configure ${LINUX_ONLY} THREADS="" && make && size tkscid
   - make clean
-  - ./configure COMPILE="${COMP}" LINK="${COMP}" DEBUG="-DASSERTIONS -DSPELLCHKVALIDATE" && make
-
+  - ./configure ${LINUX_ONLY} DEBUG="-DASSERTIONS -DSPELLCHKVALIDATE" && make && size tkscid

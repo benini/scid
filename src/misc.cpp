@@ -513,39 +513,6 @@ strTrimLeft (const char * target, const char * trimChars)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strTrimRight():
-//      Trims the provided string in-place, removing the
-//      end characters that match the trimChars.
-//      Returns the number of characters trimmed.
-//      E.g., strTrimRight("abcyzyz", "yz") would leave the string
-//      as "abc" and return 4.
-uint
-strTrimRight (char * target, const char * trimChars)
-{
-    uint trimCount = 0;
-    char * s = target;
-    char * lastNonTrim = NULL;
-    while (*s) {
-        if (strContainsChar (trimChars, *s)) {
-            trimCount++;
-        } else {
-            lastNonTrim = s;
-            trimCount = 0;
-        }
-        s++;
-    }
-    if (lastNonTrim != NULL) {
-        // End the string after the last nontrimmable char:
-        lastNonTrim++;
-        *lastNonTrim = 0;
-    } else {
-       // The string only contained trimmable characters:
-        *target = 0;
-    }
-    return trimCount;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strTrimSuffix():
 //      Trims the provided string in-place, at the last
 //      occurrence of the provided suffix character.
