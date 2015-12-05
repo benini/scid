@@ -105,9 +105,9 @@ proc ::file::Open {{fName ""}} {
 proc ::file::openBaseAsTree { { fName "" } } {
   set current [sc_base current]
   set err [::file::Open_ "$fName"]
-  if {$err == 0} { ::tree::make $::file::lastOpened 1 }
   sc_base switch $current
   ::notify::DatabaseChanged
+  if {$err == 0} { ::tree::make $::file::lastOpened 1 }
   return $err
 }
 
