@@ -306,7 +306,7 @@ proc addVerticalRule {w {xpadding 5} {relief sunken}} {
 #   Creates a window with a label, progress bar, and (if specified),
 #   a cancel button and cancellation command.
 #
-proc progressWindow {args} {
+proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   set w .progressWin
   if {[winfo exists $w]} { return }
   set ::progressWin_focus [focus]
@@ -314,21 +314,6 @@ proc progressWindow {args} {
   pack [ttk::frame $w.f] -expand 1
   
   wm resizable $w 0 0
-  if {[llength $args] == 2} {
-    set title [lindex $args 0]
-    set text [lindex $args 1]
-    set b 0
-  } elseif {[llength $args] == 3 || [llength $args] == 4} {
-    set title [lindex $args 0]
-    set text [lindex $args 1]
-    set button [lindex $args 2]
-    if {[llength $args] == 3} {
-      set command "progressBarCancel"
-    } else {
-      set command [lindex $args 3]
-    }
-    set b 1
-  } else { return }
   wm title $w $title
   ttk::label $w.f.t -text $text
   pack $w.f.t -side top -expand 1 -fill both
@@ -337,7 +322,7 @@ proc progressWindow {args} {
   $w.f.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   pack $w.f.c -side top -pady 10
-  if {$b} {
+  if {$button != ""} {
     pack [ttk::frame $w.f.b] -side bottom -fill x
     ttk::button $w.f.b.cancel -text $button -command "$command"
     pack $w.f.b.cancel -side right -padx 5 -pady 2
@@ -352,9 +337,7 @@ proc progressWindow {args} {
   set ::progressWin_time [clock seconds]
   progressBarSet $w.f.c 401 21
 
-  set ::progressCanvas(show) "catch {wm deiconify $w}; set ::progressCanvas(show) {}"
-  after cancel { eval $::progressCanvas(show) }
-  after    500 { eval $::progressCanvas(show) }
+  set ::progressCanvas(show) "catch {wm deiconify $w}"
 }
 
 proc progressBarSet { canvasname width height } {
@@ -375,7 +358,11 @@ proc progressBarCancel { } {
 
 proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
   if {$done == "init"} {
-    return $::progressCanvas(init)
+    if {[info exists ::progressCanvas(init)]} {
+      return $::progressCanvas(init)
+    }
+    # No progress bar
+    return -code break
   }
 
   if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
@@ -383,7 +370,11 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
     return -code break
   }
 
-  if {$estimated > 1} { eval $::progressCanvas(show) }
+  if {$::progressCanvas(show) != ""} {
+    if {$elapsed == 0 && $estimated < 2} { return }
+    eval $::progressCanvas(show)
+    set ::progressCanvas(show) {}
+  }
 
   set width $::progressCanvas(w)
   if {$total > 0} {
