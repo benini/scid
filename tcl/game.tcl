@@ -347,16 +347,7 @@ namespace eval ::gameHistory {
 namespace eval ::notify {
   # To be called when the current game change or the Header infos (player names, site, result, etc) are modified
   proc GameChanged {} {
-    global gamePlayers
-    set gamePlayers(nameW) [sc_game info white]
-    set eloW [sc_game info welo]
-    if {$eloW == 0} { set gamePlayers(eloW) "" } else { set gamePlayers(eloW) "($eloW)" }
-    set ::gamePlayers(clockW) ""
-    set gamePlayers(nameB) [sc_game info black]
-    set eloB [sc_game info belo]
-    if {$eloB == 0} { set gamePlayers(eloB) "" } else { set gamePlayers(eloB) "($eloB)" }
-    set ::gamePlayers(clockB) ""
-
+    updateMainGame
     ::notify::PosChanged -pgn
     ::windows::gamelist::Refresh 0
   }

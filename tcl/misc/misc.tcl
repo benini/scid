@@ -580,6 +580,14 @@ namespace eval gameclock {
     $::gameclock::data(id$n) itemconfigure clock$n -fill $fg
     $::gameclock::data(id$n) itemconfigure aig$n -fill $fg
   }
+  ################################################################################
+  proc isRunning { } {
+    global ::gameclock::data
+    catch {
+      if {$data(running1) || $data(running2)} { return 1 }
+    }
+    return 0
+  }
 }
 ################################################################################
 # html generation

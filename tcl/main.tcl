@@ -95,6 +95,21 @@ proc moveEntry_Char {ch} {
     updateStatusBar
 }
 
+# updateMainGame:
+#   Updates the main board with games's info
+#
+proc updateMainGame {} {
+    global gamePlayers
+    set gamePlayers(nameW)  [sc_game info white]
+    set gamePlayers(nameB)  [sc_game info black]
+    set eloW                [sc_game info welo]
+    set gamePlayers(eloW)   [expr {$eloW == 0 ? "" : "($eloW)"}]
+    set eloB                [sc_game info belo]
+    set gamePlayers(eloB)   [expr {$eloB == 0 ? "" : "($eloB)"}]
+    set gamePlayers(clockW) ""
+    set gamePlayers(clockB) ""
+}
+
 # updateTitle:
 #   Updates the main Scid window title.
 #
@@ -145,6 +160,23 @@ proc updateStatusBar {} {
         return
     }
 
+    # show [%clk] command (if we are not playing)
+    set toMove  [sc_pos side]
+    set comment [sc_pos getComment]
+    if { ![gameclock::isRunning] } {
+        set ::gamePlayers(clockW) ""
+        set ::gamePlayers(clockB) ""
+        set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
+        set prevCom [sc_pos getPrevComment]
+        if {$toMove == "white"} {
+            regexp $clkExp $comment -> ::gamePlayers(clockB)
+            regexp $clkExp $prevCom -> ::gamePlayers(clockW)
+        } else {
+            regexp $clkExp $comment -> ::gamePlayers(clockW)
+            regexp $clkExp $prevCom -> ::gamePlayers(clockB)
+        }
+    }
+
     if {[info exists ::guessedAddMove]} {
         set ::gameLastMove [lindex $::guessedAddMove 1]
         ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "blue" ".main.menuaddchoice"
@@ -162,7 +194,6 @@ proc updateStatusBar {} {
         return
     }
 
-    set comment [sc_pos getComment]
     # remove technical comments, notify only human readable ones
     regsub -all {\[%.*\]} $comment {} comment
 
@@ -181,7 +212,7 @@ proc updateStatusBar {} {
       regsub {B} $move "\u2657" move
       regsub {N} $move "\u2658" move
       set number "[sc_pos moveNumber]"
-      if {[sc_pos side] == "white"} {
+      if {$toMove == "white"} {
         incr number -1
         append number ".."
       }
@@ -815,7 +846,7 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
     set san [sc_game info previous]
     after idle [list ::utils::sound::AnnounceNewMove $san]
 
-    updateBoard -pgn $animate
+    ::notify::PosChanged -pgn $animate
 }
 
 proc suggestMove {} {

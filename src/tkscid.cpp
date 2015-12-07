@@ -5693,7 +5693,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "isAt", "isCheck", "isLegal", "isPromotion", "movelist",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location",
-        "attacks", NULL
+        "attacks", "getPrevComment", NULL
     };
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
@@ -5701,7 +5701,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
-        POS_ATTACKS
+        POS_ATTACKS, POS_GETPREVCOMMENT
     };
 
     char boardStr[200];
@@ -5741,6 +5741,8 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
+    case POS_GETPREVCOMMENT:
+        return UI_Result(ti, OK, db->game->GetPreviousMoveComment());
 
     case POS_GETNAGS:
         return sc_pos_getNags (cd, ti, argc, argv);

@@ -370,6 +370,19 @@ public:
 
     void     SetMoveComment (const char * comment);
     const char* GetMoveComment () { return CurrentMove->prev->comment.c_str(); }
+    /**
+     * Game::GetPreviousMoveComment()
+     * Return the comment on the move previously played by CurrentPos->ToMove
+     * If there are no previous moves, return an empty comment.
+     */
+    const char* GetPreviousMoveComment() {
+        ASSERT(CurrentMove != NULL);
+        moveT* m = CurrentMove->prev;
+        if (m == NULL || m->prev == NULL) return "";
+        moveT* mp = m->prev->varParent;
+        if (mp != NULL && mp->prev != NULL) m = mp;
+        return m->prev->comment.c_str();
+    }
 
     inline errorT AddNag (byte nag);
     inline errorT RemoveNag (bool isMoveNag);
