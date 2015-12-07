@@ -985,6 +985,7 @@ proc compactDB {{base -1}} {
   append msg "Unused names: [lindex $stats 1]\n"
   append msg "Sparse games: [lindex $stats 2]\n"
   append msg "Missing names (bad idx): [lindex $stats 3]"
+  append msg "\n\nProceed?"
   set confirm [tk_messageBox -type okcancel -icon info -parent . \
                -title [concat "Scid: " $::tr(CompactDatabase)] \
                -message "$msg"]
@@ -1012,12 +1013,22 @@ proc compactDB {{base -1}} {
   set err [catch {sc_base compact $base} result]
   closeProgressWindow
   if {$err} {
-    ERROR::MessageBox "$::tr(CompactDatabase)\n"
+    set extra "$::tr(CompactDatabase)\n"
+    if {$::errorCode == $::ERROR::FileOpen} {
+      append extra "\n$::ERROR::msg(CompactCreate)"
+    } else {
+      if {$::errorCode == $::ERROR::CompactRemoveIdx ||
+          $::errorCode == $::ERROR::CompactRemoveName ||
+          $::errorCode == $::ERROR::CompactRemoveGame } {
+        append extra "\n$::ERROR::msg(CompactRemove)"
+      }
+    }
+    ERROR::MessageBox "$extra"
     ::file::SwitchToBase $::clipbase_db 0
     ::notify::DatabaseChanged
   } else {
     set msg "[sc_base filename $base]\n\n"
-	append msg [tr GameFileCompacted]
+    append msg [tr GameFileCompacted]
     tk_messageBox -type ok -icon info -parent . \
         -title [concat "Scid: " $::tr(CompactDatabase)] \
         -message "$msg"

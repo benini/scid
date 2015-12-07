@@ -75,7 +75,7 @@ Index::Create(const char* filename)
         } else {
             delete FilePtr;
             FilePtr = NULL;
-            return ERROR_FileWrite;
+            return ERROR_FileOpen;
         }
     }
     return OK;

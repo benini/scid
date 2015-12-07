@@ -606,9 +606,9 @@ errorT scidBaseT::compact(const Progress& progress) {
 	std::vector<std::string> filters(filters_.size());
 	for (size_t i = 0; i < filters_.size(); i++) filters[i] = filters_[i].first;
 	if (Close() != OK) return ERROR_FileInUse;
-	if (std::remove((filename + INDEX_SUFFIX).c_str())    != 0) return ERROR_FileWrite;
-	if (std::remove((filename + NAMEBASE_SUFFIX).c_str()) != 0) return ERROR_FileWrite;
-	if (std::remove((filename + GFILE_SUFFIX).c_str())    != 0) return ERROR_FileWrite;
+	if (std::remove((filename + INDEX_SUFFIX).c_str())    != 0) return ERROR_CompactRemoveIdx;
+	if (std::remove((filename + NAMEBASE_SUFFIX).c_str()) != 0) return ERROR_CompactRemoveName;
+	if (std::remove((filename + GFILE_SUFFIX).c_str())    != 0) return ERROR_CompactRemoveGame;
 
 	//8) Success: rename the files and open the new database
 	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);

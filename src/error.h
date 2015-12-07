@@ -39,6 +39,9 @@ const errorT
     ERROR_FileVersion    = 109,
     ERROR_OldScidVersion = 110,
     ERROR_FileReadOnly   = 111,
+    ERROR_CompactRemoveIdx  = 121,
+    ERROR_CompactRemoveName = 122,
+    ERROR_CompactRemoveGame = 123,
 
     // Memory Allocation, corrupt data
     ERROR_MallocFailed   = 151,

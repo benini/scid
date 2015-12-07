@@ -41,6 +41,9 @@ namespace eval ERROR {
   set FileVersion      109
   set OldScidVersion   110
   set FileReadOnly     111
+  set CompactRemoveIdx  121
+  set CompactRemoveName 122
+  set CompactRemoveGame 123
   set MallocFailed     151
   set CorruptData      152
   set Corrupt          152
@@ -101,6 +104,17 @@ after idle {
     "Old format Scid file, now out of date."
   set ::ERROR::msg($::ERROR::FileReadOnly) \
     $::tr(ErrReadOnly)
+
+  set ::ERROR::msg(CompactCreate) \
+    "A temporary database from a previous unsuccessfully compact operation already exists.\nPlease remove the files with suffix __COMPACT__ and retry.\n"
+  set ::ERROR::msg(CompactRemove) \
+    "A compacted database has been successfully created with suffix __COMPACT__.\nHowever Scid could not remove the original database (due to insufficient privileges or because a file is opened in another program).\nPlease rename it manually.\n"
+  set ::ERROR::msg($::ERROR::CompactRemoveIdx) \
+    "Cannot remove the original .si4 file.\n"
+  set ::ERROR::msg($::ERROR::CompactRemoveName) \
+    "Cannot remove the original .sn4 file.\n"
+  set ::ERROR::msg($::ERROR::CompactRemoveGame) \
+    "Cannot remove the original .sg4 file.\n"
   set ::ERROR::msg($::ERROR::Full) \
     "Error: insufficient space"
   set ::ERROR::msg($::ERROR::NameDataLoss) \
