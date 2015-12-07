@@ -1172,6 +1172,9 @@ proc drawArrow {sq color} {
 proc MouseWheelRedirector {W X Y D} {
     # Generate an MWheel virtual event to the window that has the mouse pointer
     set w [winfo containing -displayof $W $X $Y]
+    # Check for active "grab"
+    set grabW [grab current $w]
+    if {$grabW != ""} { set w $grabW}
     # For virtual events we can't use the attribute "-delta" and we get away
     # without a global variable by using instead "-data" which maps to %d
     event generate $w <<MWheel>> -data $D -rootx $X -rooty $Y
@@ -1179,6 +1182,8 @@ proc MouseWheelRedirector {W X Y D} {
 
 proc ShiftMouseWheelRedirector {W X Y D} {
     set w [winfo containing -displayof $W $X $Y]
+    set grabW [grab current $w]
+    if {$grabW != ""} { set w $grabW}
     event generate $w <<Shift-MWheel>> -data $D -rootx $X -rooty $Y
 }
 
