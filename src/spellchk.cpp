@@ -195,11 +195,10 @@ private:
 				if (nameIdx_ == -1) {
 					return ERROR_CorruptData;
 				} else {
-					SpellChecker::Idx tmp = {
+					sp_.idx_[nt_].push_back(SpellChecker::Idx(
 						sp_.normalizeAndTransform(nt_, data.name),
 						nameIdx_
-					};
-					sp_.idx_[nt_].push_back(tmp);
+						));
 				}
 				return OK;
 			case SPELL_PREFIX:

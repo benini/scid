@@ -258,6 +258,8 @@ class SpellChecker {
 		std::string alias;
 		int32_t idx;
 
+		Idx() {}
+		Idx(const std::string& a, int32_t i) : alias(a), idx(i) {}
 		bool operator<(const Idx& b) const { return alias < b.alias; }
 		bool operator<(const std::string& b)  const { return alias < b; }
 	};

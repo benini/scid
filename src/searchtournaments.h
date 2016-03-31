@@ -28,10 +28,7 @@
 /**
  * class TourneyGame - Private class used by Tourney and SearchTournaments
  */
-class TourneyGame {
-	friend class Tourney;
-	friend class SearchTournaments;
-
+struct TourneyGame {
 	idNumberT siteID_;
 	idNumberT eventID_;
 	dateT     eventDate_;
