@@ -39,8 +39,6 @@ public:
 		return (open(filename, mode) != 0) ? OK : ERROR_FileOpen;
 	}
 
-	errorT Seek (uint position) { return (position != seekpos(position)) ? ERROR_FileSeek : OK; }
-
 	uint ReadOneByte () { return sbumpc() & 255; }
 	uint ReadTwoBytes () { return read<2>(); }
 	uint ReadThreeBytes () { return read<3>(); }

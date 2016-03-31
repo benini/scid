@@ -6,6 +6,7 @@ include_directories(${GTEST_INCLUDE_DIRS} ../src)
 file(GLOB TESTS *.cpp)
 set(SCID_OBJ
 	../src/misc.o
+	../src/index.o ../src/namebase.o ../src/sortcache.o
 )
 
 add_executable(runAll ${TESTS} ${SCID_OBJ})

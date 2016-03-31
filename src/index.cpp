@@ -32,24 +32,21 @@ void Index::Init ()
     Header.autoLoad = 1;
     Header.description[0] = 0;
     memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
-    Dirty = false;
+    Header.dirty_ = false;
     FilePtr = NULL;
     fileMode_ = FMODE_Memory;
     for(uint i=0; i < SORTING_CACHE_MAX; i++) sortingCaches[i] = NULL;
-    filter_changed_ = true;
-    badNameIdCount_ = 0;
-    sequentialWrite_ = 0;
+    nInvalidNameId_ = 0;
+    seqWrite_ = 0;
     entries_.resize(0);
 }
 
 errorT Index::Clear ()
 {
     errorT res = OK;
-    if (Dirty && fileMode_ == FMODE_Both) res = WriteHeader();
-    if (FilePtr != NULL)  delete FilePtr;
-    for(uint i=0; i<SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i]) delete sortingCaches[i];
-    }
+    if (Header.dirty_ && fileMode_ == FMODE_Both) res = WriteHeader();
+    delete FilePtr;
+    for(uint i=0; i<SORTING_CACHE_MAX; i++) delete sortingCaches[i];
     Init();
     return res;
 }
@@ -61,24 +58,21 @@ errorT Index::Clear ()
 errorT
 Index::Create(const char* filename)
 {
+    ASSERT(filename != 0);
+
     Clear();
-    if (filename != 0) {
-        fileNameT fname;
-        strCopy (fname, filename);
-        strAppend (fname, INDEX_SUFFIX);
-        FilePtr = new Filebuf;
-        //Check that the file does not exists
-        if (FilePtr->Open(fname, FMODE_ReadOnly) != OK && 
-            FilePtr->Open(fname, FMODE_Create) == OK) {
-            fileMode_ = FMODE_Both;
-            return WriteHeader();
-        } else {
-            delete FilePtr;
-            FilePtr = NULL;
-            return ERROR_FileOpen;
-        }
+    FilePtr = new Filebuf;
+    std::string fname = filename;
+    fname += INDEX_SUFFIX;
+    //Check that the file does not exists and then create it
+    if (FilePtr->Open(fname.c_str(), FMODE_ReadOnly) == OK ||
+        FilePtr->Open(fname.c_str(), FMODE_Create) != OK) {
+        delete FilePtr;
+        FilePtr = NULL;
+        return ERROR_FileOpen;
     }
-    return OK;
+    fileMode_ = FMODE_Both;
+    return WriteHeader();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,6 +82,8 @@ Index::Create(const char* filename)
 errorT
 Index::Open (const char* filename, fileModeT fmode)
 {
+    ASSERT(filename != 0);
+
     Clear();
     FilePtr = new Filebuf;
     std::string fname = filename;
@@ -144,6 +140,8 @@ errorT
 Index::ReadEntireFile (NameBase* nb, const Progress& progress)
 {
     ASSERT (FilePtr != NULL);
+    ASSERT (entries_.size() == 0);
+
     if (fileMode_ == FMODE_WriteOnly) { return ERROR_FileMode; }
     entries_.resize(Header.numGames);
 
@@ -152,30 +150,35 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
         maxIdx[nt] = nb->GetNumNames(nt);
     }
 
-    uint n = 0;
-    for (gamenumT i=0; i < Header.numGames; i++) {
-        if ((i % 10000) == 0) {
-            if (!progress.report(i, Header.numGames)) return ERROR_UserCancel;
+    gamenumT gNum = 0;
+    for (; FilePtr->sgetc() != EOF; gNum++) {
+        if ((gNum % 10000) == 0) {
+            if (!progress.report(gNum, Header.numGames)) return ERROR_UserCancel;
         }
 
-        IndexEntry* ie = FetchEntry(i);
+        IndexEntry* ie = FetchEntry(gNum);
         errorT err = ie->Read(FilePtr, Header.version);
         if (err != OK) return err;
 
         if (ie->GetWhite() >= maxIdx[NAME_PLAYER]) {
-            ie->SetWhiteName(nb, "?"); n++;
+            ie->SetWhiteName(nb, "?");
+            nInvalidNameId_++;
         }
         if (ie->GetBlack() >= maxIdx[NAME_PLAYER]) {
-            ie->SetBlackName(nb, "?"); n++;
+            ie->SetBlackName(nb, "?");
+            nInvalidNameId_++;
         }
         if (ie->GetEvent() >= maxIdx[NAME_EVENT] ) {
-            ie->SetEventName(nb, "?"); n++;
+            ie->SetEventName(nb, "?");
+            nInvalidNameId_++;
         }
         if (ie->GetSite()  >= maxIdx[NAME_SITE]  ) {
-            ie->SetSiteName(nb, "?"); n++;
+            ie->SetSiteName(nb, "?");
+            nInvalidNameId_++;
         }
         if (ie->GetRound() >= maxIdx[NAME_ROUND] ) {
-            ie->SetRoundName(nb, "?"); n++;
+            ie->SetRoundName(nb, "?");
+            nInvalidNameId_++;
         }
 
         eloT eloW = ie->GetWhiteElo();
@@ -184,8 +187,10 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
         if (eloB > 0) nb->AddElo (ie->GetBlack(), eloB);
     }
     progress.report(1,1);
-    badNameIdCount_ = n;
-    return (n == 0) ? OK : ERROR_NameDataLoss;
+
+    if (gNum != Header.numGames) return ERROR_FileRead;
+    if (nInvalidNameId_ != 0) return ERROR_NameDataLoss;
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -196,9 +201,9 @@ errorT
 Index::WriteHeader ()
 {
     if (FilePtr == NULL) return OK;
-    if (FilePtr->Seek (0) != OK) return ERROR_FileWrite;
+    if (FilePtr->pubseekpos(0) != std::streampos(0)) return ERROR_FileWrite;
 
-    sequentialWrite_ = 0;
+    seqWrite_ = 0;
     uint n = 0;
     n += FilePtr->WriteNBytes (Header.magic, 8);
     n += FilePtr->WriteTwoBytes (Header.version);
@@ -210,7 +215,7 @@ Index::WriteHeader ()
         n += FilePtr->WriteNBytes (Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
     }
     if (n != INDEX_HEADER_SIZE || FilePtr->pubsync() == -1) return ERROR_FileWrite;
-    Dirty = false;
+    Header.dirty_ = false;
     return OK;
 }
 
@@ -226,7 +231,7 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
     if (idx == Header.numGames) {
         entries_.push_back(*ie);
         Header.numGames++;
-        Dirty = true;
+        Header.dirty_ = true;
     } else {
         IndexEntry* copyToMemory = FetchEntry(idx);
         *copyToMemory = *ie;
@@ -234,11 +239,16 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
     if (FilePtr == NULL) return OK;
 
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
-    if ((sequentialWrite_ == 0) || (idx != sequentialWrite_ + 1)) {
-        FilePtr->Seek(INDEX_ENTRY_SIZE * idx + INDEX_HEADER_SIZE);
+
+    if ((seqWrite_ == 0) || (idx != seqWrite_ + 1)) {
+        std::streampos pos = INDEX_ENTRY_SIZE * idx + INDEX_HEADER_SIZE;
+        if (FilePtr->pubseekpos(pos) != pos) {
+            seqWrite_ = 0;
+            return ERROR_FileWrite;
+        }
     }
     errorT res = ie->Write (FilePtr, Header.version);
-    sequentialWrite_ = (res == OK) ? idx : 0;
+    seqWrite_ = (res == OK) ? idx : 0;
     return res;
 }
 
@@ -268,6 +278,11 @@ SortCache* Index::CreateSortCache (const NameBase *nbase, const char *criteria) 
 void Index::FreeSortCache(const char* criteria) const
 {
     for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
+        if (criteria == 0) {
+            delete sortingCaches[i];
+            sortingCaches[i] = NULL;
+            continue;
+        }
         if (sortingCaches[i] != NULL && sortingCaches[i]->MatchCriteria(criteria)) {
             if (0 == sortingCaches[i]->ReleaseCount()) {
                 delete sortingCaches[i];

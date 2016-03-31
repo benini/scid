@@ -83,86 +83,6 @@ const uint MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
 
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
-// Bitmask functions for index entry decoding:
-inline byte u32_high_8( uint x )
-{
-    return (byte)(x >> 24);
-}
-
-inline uint u32_low_24( uint x )
-{
-    return x & 0x00FFFFFF;
-}
-
-inline uint u32_high_12( uint x )
-{
-    return x >> 20;
-}
-
-inline uint u32_low_20( uint x )
-{
-    return x & 0x000FFFFF;
-}
-
-inline byte u16_high_4( ushort x )
-{
-    return (byte)(x >> 12);
-}
-
-inline ushort u16_low_12( ushort x )
-{
-    return x & 0x0FFF;
-}
-
-inline byte u8_high_4( byte x )
-{
-    return x >> 4;
-}
-
-inline byte u8_low_4( byte x )
-{
-    return x & 0x0F;
-}
-
-inline byte u8_high_3( byte x )
-{
-    return x >> 5;
-}
-
-inline byte u8_low_5( byte x )
-{
-    return x & 0x1F;
-}
-
-inline uint u32_set_high_8( uint u, byte x )
-{
-    return u32_low_24(u) | ((uint)x << 24);
-}
-
-inline uint u32_set_low_24( uint u, uint x )
-{
-    return (u & 0xFF000000) | (x & 0x00FFFFFF);
-}
-
-inline uint u32_set_high_12( uint u, uint x )
-{
-    return u32_low_20(u) | (x << 20);
-}
-
-inline uint u32_set_low_20( uint u, uint x )
-{
-    return (u & 0xFFF00000) | (x & 0x000FFFFF);
-}
-
-inline ushort u16_set_high_4( ushort u, byte x )
-{
-    return u16_low_12(u) | ((ushort)x << 12);
-}
-
-inline ushort u16_set_low_12( ushort u, ushort x )
-{
-    return (u & 0xF000) | (x & 0x0FFF);
-}
 
 
 // Total on-disk size per index entry: currently 47 bytes.
@@ -181,34 +101,30 @@ const uint  OLD_INDEX_ENTRY_SIZE = 46;
 
 class IndexEntry
 {
-    uint16_t  NumHalfMoves;
+    uint32_t  Offset;            // Start of gamefile record for this game.
+    uint16_t  Length_Low;        // Length of gamefile record for this game. 17 bits are used so the max
+                                 // length is 128 ko (131071). So 7 bits are usable for custom flags or other.
+    byte      Length_High;       // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
     // Name ID values are packed into 12 bytes, saving 8 bytes over the
     // simpler method of just storing each as a 4-byte idNumberT.
+    byte      WhiteBlack_High;   // High bits of White, Black.
     uint16_t  WhiteID_Low;       // Lower 16 bits of White ID.
     uint16_t  BlackID_Low;       // Lower 16 bits of Black ID.
     uint16_t  EventID_Low;       // Lower 16 bits of Site.
     uint16_t  SiteID_Low;        // Lower 16 bits of Site ID.
     uint16_t  RoundID_Low;       // Lower 16 bits of Round ID.
-    byte      WhiteBlack_High;   // High bits of White, Black.
-    byte      EventSiteRnd_High; // High bits of Event, Site, Round.
-    ecoT      EcoCode;           // ECO code
-    dateT     Dates;             // Date and EventDate fields.
-    eloT      WhiteElo;	         
-    eloT      BlackElo;	         
-    matSigT   FinalMatSig;       // material of the final position in the game,
-                                 // and the StoredLineCode in the top 8 bits.
     uint16_t  Flags;
     uint16_t  VarCounts;         // Counters for comments, variations, etc.
                                  // VarCounts also stores the result.
-			  
-    uint32_t  Offset;            // Start of gamefile record for this game.
-
-    // Length of gamefile record for this game. 17 bits are used so the max length is
-    // 128 ko (131071). So 7 bits are usable for custom flags or other.
-    uint16_t  Length_Low;
-    byte      Length_High;       // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
-
+    ecoT      EcoCode;           // ECO code
+    dateT     Dates;             // Date and EventDate fields.
+    eloT      WhiteElo;
+    eloT      BlackElo;
+    matSigT   FinalMatSig;       // material of the final position in the game,
+                                 // and the StoredLineCode in the top 8 bits.
+    uint16_t  NumHalfMoves;
     byte      HomePawnData [HPSIG_SIZE];  // homePawnSig data.
+    byte      EventSiteRnd_High; // High bits of Event, Site, Round.
     
 public:
     void Init();
@@ -220,7 +136,7 @@ public:
     void SetOffset (uint offset) { Offset = offset; }
     uint GetLength () const { return (Length_Low + ((Length_High & 0x80) << 9)); }
     void SetLength (uint length) {
-        ASSERT(length >= 0 && length < 131072);
+        ASSERT(length >= 0 && length < MAX_GAME_LENGTH);
         Length_Low = (unsigned short) (length & 0xFFFF);
         // preserve the last 7 bits
         Length_High = ( Length_High & 0x7F ) | (byte) ( (length >> 16) << 7 );
@@ -405,9 +321,7 @@ public:
         uint dyear = date_GetYear (GetDate());
         // Due to a compact encoding format, the EventDate
         // must be within a few years of the Date.
-        if (eyear < (dyear - 3)  ||  eyear > (dyear + 3)) { eyear = 0; }
-
-        if (eyear == 0) {
+        if ((eyear + 3) < dyear  ||  eyear > (dyear + 3)) {
             codedDate = 0; 
         } else {
             codedDate |= (((eyear + 4 - dyear) & 7) << 9);
@@ -454,19 +368,6 @@ public:
     static uint32_t StrToFlagMask (const char* flags);
     uint GetFlagStr (char * str, const char * flags) const;
 
-    static uint EncodeCount (uint x) {
-        if (x <= 10) { return x; }
-        if (x <= 12) { return 10; }
-        if (x <= 17) { return 11; }  // 11 indicates 15 (13-17)
-        if (x <= 24) { return 12; }  // 12 indicates 20 (18-24)
-        if (x <= 34) { return 13; }  // 13 indicates 30 (25-34)
-        if (x <= 44) { return 14; }  // 14 indicates 40 (35-44)
-        return 15;                   // 15 indicates 50 or more
-    }
-    static uint DecodeCount (uint x) {
-        static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
-        return countCodes[x & 15]; 
-    }
     uint GetVariationCount () const { return DecodeCount(VarCounts & 15); }
     uint GetCommentCount () const   { return DecodeCount((VarCounts >> 4) & 15); }
     uint GetNagCount () const       { return DecodeCount((VarCounts >> 8) & 15); }
@@ -530,6 +431,81 @@ public:
         FinalMatSig = u32_set_high_8 (FinalMatSig, b);
     }
 
+private:
+    static uint EncodeCount (uint x) {
+        if (x <= 10) { return x; }
+        if (x <= 12) { return 10; }
+        if (x <= 17) { return 11; }  // 11 indicates 15 (13-17)
+        if (x <= 24) { return 12; }  // 12 indicates 20 (18-24)
+        if (x <= 34) { return 13; }  // 13 indicates 30 (25-34)
+        if (x <= 44) { return 14; }  // 14 indicates 40 (35-44)
+        return 15;                   // 15 indicates 50 or more
+    }
+    static uint DecodeCount (uint x) {
+        static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
+        return countCodes[x & 15];
+    }
+
+// Bitmask functions for index entry decoding:
+    static byte u32_high_8( uint x )
+    {
+        return (byte)(x >> 24);
+    }
+
+    static uint u32_low_24( uint x )
+    {
+        return x & 0x00FFFFFF;
+    }
+
+    static uint u32_high_12( uint x )
+    {
+        return x >> 20;
+    }
+
+    static uint u32_low_20( uint x )
+    {
+        return x & 0x000FFFFF;
+    }
+
+    static byte u16_high_4( ushort x )
+    {
+        return (byte)(x >> 12);
+    }
+
+    static ushort u16_low_12( ushort x )
+    {
+        return x & 0x0FFF;
+    }
+
+    static uint u32_set_high_8( uint u, byte x )
+    {
+        return u32_low_24(u) | ((uint)x << 24);
+    }
+
+    static uint u32_set_low_24( uint u, uint x )
+    {
+        return (u & 0xFF000000) | (x & 0x00FFFFFF);
+    }
+
+    static uint u32_set_high_12( uint u, uint x )
+    {
+        return u32_low_20(u) | (x << 20);
+    }
+
+    static uint u32_set_low_20( uint u, uint x )
+    {
+        return (u & 0xFFF00000) | (x & 0x000FFFFF);
+    }
+
+    static ushort u16_set_high_4( ushort u, byte x )
+    {
+        return u16_low_12(u) | ((ushort)x << 12);
+    }
+
+    static ushort u16_set_low_12( ushort u, ushort x )
+    {
+        return (u & 0xF000) | (x & 0x0FFF);
+    }
 };
 
 

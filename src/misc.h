@@ -75,6 +75,8 @@ class VectorBig {
 
 public:
 	VectorBig() : size_(0) {}
+	VectorBig(const VectorBig&);
+	VectorBig& operator=(const VectorBig&);
 	~VectorBig() { resize(0); }
 
 	const T& operator[] (size_t idx) const {

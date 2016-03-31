@@ -550,7 +550,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 		uint stLine = ie->GetStoredLineCode();
 		sort.push_back(std::make_pair(stLine, i));
 	}
-	std::stable_sort(sort.begin(), sort.end());
+	std::sort(sort.begin(), sort.end());
 
 	//2) Create a new temporary database
 	std::string filename = fileName_;
@@ -560,9 +560,10 @@ errorT scidBaseT::compact(const Progress& progress) {
 	if (err_Create != OK) return err_Create;
 
 	//3) Copy the Index Header
+	idx->FreeSortCache(0);
 	tmp.idx->SetType (idx->GetType());
 	tmp.idx->SetDescription (idx->GetDescription());
-	tmp.idx->SetAutoLoad (idx->GetAutoLoad());
+	gamenumT oldAutoload = idx->GetAutoLoad();
 	for (byte b = IDX_FLAG_CUSTOM1; b < IDX_FLAG_CUSTOM1 + CUSTOM_FLAG_MAX ; b++ ) {
 		const char* flagDesc = idx->GetCustomFlagDesc(b);
 		tmp.idx->SetCustomFlagDesc(b, flagDesc);
@@ -575,9 +576,12 @@ errorT scidBaseT::compact(const Progress& progress) {
 	for (sort_t::iterator it = sort.begin(); it != sort.end(); it++) {
 		err_AddGame = tmp.addGameHelper(this, (*it).second);
 		if (err_AddGame != OK) break;
+
+		if ((it->second + 1) == oldAutoload) {
+			tmp.idx->SetAutoLoad(tmp.numGames());
+		}
 		//TODO:
 		//- update bookmarks game number
-		//- update autoload game number
 		//  (*it).second   == old game number
 		//  tmp.numGames() == new game number
 		if (iProgress++ % 10000 == 0) {

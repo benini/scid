@@ -68,6 +68,17 @@ const uint IDX_NOT_FOUND = 0xffffffff;
 class Index
 {
 private:
+    // The complete index will be loaded in memory and can be pretty huge.
+    // To avoid the slow reallocation when adding games we split the data in chunks.
+    // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
+    // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
+    VectorBig<IndexEntry, 16> entries_; // A two-level array of the entire index.
+    mutable SortCache* sortingCaches[SORTING_CACHE_MAX];
+    Filebuf*     FilePtr;       // filehandle for opened index file.
+    fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
+    int nInvalidNameId_;
+    gamenumT seqWrite_;
+
     struct { // one at the start of the index file.
         char        magic[9];    // 8-byte identifier for Scid index files.
         versionT    version;     // version number. 2 bytes.
@@ -78,47 +89,42 @@ private:
         char        description [SCID_DESC_LENGTH + 1];
         // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
         char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
+        bool        dirty_;      // If true, Header needs rewriting to disk.
     } Header;
-    bool         Dirty;         // If true, Header needs rewriting to disk.
-
-    Filebuf*     FilePtr;       // filehandle for opened index file.
-    fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
-
-    mutable SortCache* sortingCaches[SORTING_CACHE_MAX];
-    bool filter_changed_;
-    int badNameIdCount_;
-    uint sequentialWrite_;
-
-    // The complete index will be loaded in memory and can be pretty huge.
-    // To avoid the slow reallocation when adding games we split the data in chunks.
-    // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
-    // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
-    VectorBig<IndexEntry, 16> entries_; // A two-level array of the entire index.
-
-    Index(const Index&);
-    Index& operator=(const Index&);
-    void Init ();
-    errorT Clear ();
-    errorT write (const IndexEntry* ie, gamenumT idx);
 
 public:
     Index()  { entries_.reserve(MAX_GAMES); Init(); }
+    Index(const Index&);
+    Index& operator=(const Index&);
     ~Index() { Clear(); }
 
-    errorT Open(const char* filename, fileModeT fmode = FMODE_Both);
+    errorT Open(const char* filename, fileModeT fmode);
+    errorT ReadEntireFile (NameBase* nb, const Progress& progress);
     errorT Create(const char* filename);
     errorT Close() { return Clear(); }
 
-    gamenumT GetNumGames () const { return Header.numGames; }
-    int GetBadNameIdCount() const { return badNameIdCount_; }
+    const IndexEntry* GetEntry (gamenumT g) const {
+        ASSERT(g < GetNumGames());
+        return &(entries_[g]);
+    }
 
-    errorT ReadEntireFile (NameBase* nb, const Progress& progress);
+    /**
+     * GetBadNameIdCount() - return the number of invalid name handles.
+     *
+     * To save space, avoiding duplicates, the index keep handles
+     * to strings stored in the namebase file.
+     * If one of the two files is corrupted, the index may have
+     * handles to strings that do not exists.
+     * This functions returns the number of invalid name handles.
+     */
+    int GetBadNameIdCount() const { return nInvalidNameId_; }
 
-    IndexEntry* FetchEntry (gamenumT g) { return &(entries_[g]); }
-    const IndexEntry* GetEntry (gamenumT g) const { return &(entries_[g]); }
-
-    uint        GetType () const { return Header.baseType; }
-    versionT    GetVersion () const { return Header.version; }
+    /**
+     * Header getter functions
+     */
+    gamenumT    GetNumGames ()    const { return Header.numGames; }
+    uint        GetType ()        const { return Header.baseType; }
+    versionT    GetVersion ()     const { return Header.version; }
     const char* GetDescription () const { return Header.description; }
     const char* GetCustomFlagDesc (byte c) const {
         if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return 0;
@@ -128,40 +134,63 @@ public:
         return (Header.autoLoad <= Header.numGames) ? Header.autoLoad : Header.numGames;
     }
 
-    // Functions that modify the Header
-    // For performance reasons changes are not immediately written to index file.
-    // Changes are automatically written to file when the object is destroyed or closed.
-    // However, for maximum security against power loss, crash, etc,
-    // manually call the function WriteHeader()
+    /**
+     * Header setter functions
+     * The header is written as a whole and for performance reasons this functions
+     * do not immediately writes changes to the index file.
+     * Changes are automatically written to file when the object is destroyed or closed.
+     * However, for maximum security against power loss, crash, etc, it is recommended
+     * to call the function WriteHeader() after using this functions.
+     */
     void SetType (uint t) {
         Header.baseType = t;
-        Dirty = true;
+        Header.dirty_ = true;
     }
-    
-    void SetVersion (versionT v) {
-        Header.version = v;
-        Dirty = true;
-    }
-    
     void SetDescription (const char* str) {
         strncpy(Header.description, str, SCID_DESC_LENGTH);
         Header.description[SCID_DESC_LENGTH] = 0;
-        Dirty = true;
+        Header.dirty_ = true;
     }
-    
     void SetCustomFlagDesc (byte c, const char* str) {
         if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return;
         char* flagDesc = Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
         strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
         flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
-        Dirty = true;
+        Header.dirty_ = true;
     }
     void SetAutoLoad (gamenumT gnum) {
         Header.autoLoad = gnum;
-        Dirty = true;
+        Header.dirty_ = true;
     }
 
+    /**
+     * WriteHeader() - write Header to the disk
+     */
     errorT WriteHeader ();
+
+    /**
+     * FetchEntry() - return a modifiable pointer to a game's IndexEntry
+     *
+     * The pointer returned by this function allow to modify the IndexEntry
+     * informations of a game. If modified, the IndexEntry object must be
+     * passed to WriteEntry() to write the changes to the disks.
+     * This functions is very error prone. For example:
+     * IndexEntry* ie = FetchEntry(0);
+     * ie->SetWhiteName(nb, "New player with white");
+     * oops(); // the function oops() may call GetEntry(0) and get a messy object.
+     * ie->SetBlackName(nb, "New player with black");
+     *
+     * A safer alternative is to create a temporary copy of the IndexEntry object
+     * returned by GetEntry() and then write all the changes in a single step
+     */
+    IndexEntry* FetchEntry (gamenumT g) {
+        ASSERT(g < GetNumGames());
+        return &(entries_[g]);
+    }
+
+    /**
+     * WriteEntry() - modify a game in the Index
+     */
     errorT WriteEntry (const IndexEntry* ie, gamenumT idx, bool flush = true) {
         errorT res = write(ie, idx);
         if (flush && res == OK && FilePtr != NULL) {
@@ -169,6 +198,10 @@ public:
         }
         return res;
     }
+
+    /**
+     * AddGame() - add a game to the Index
+     */
     errorT AddGame (const IndexEntry* ie) {
         return WriteEntry(ie, GetNumGames(), false);
     }
@@ -187,7 +220,8 @@ public:
 
     /* FreeCache
      * Release the memory of a SortCache (previously created by CreateSortingCache)
-     * criteria: string that identify the sort order
+     * criteria: string that identify the sort order.
+     *           If criteria==0 release all the SortCaches
      */
     void FreeSortCache(const char* criteria) const;
 
@@ -222,6 +256,11 @@ public:
      * if gnum == IDX_NOT_FOUND the sortcache will be completely rebuild (faster for a large number of updates)
      */
     errorT IndexUpdated(uint gnum) const;
+
+private:
+    void Init ();
+    errorT Clear ();
+    errorT write (const IndexEntry* ie, gamenumT idx);
 };
 
 
