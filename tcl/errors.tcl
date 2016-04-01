@@ -115,6 +115,8 @@ after idle {
     "Cannot remove the original .sn4 file.\n"
   set ::ERROR::msg($::ERROR::CompactRemoveGame) \
     "Cannot remove the original .sg4 file.\n"
+  set ::ERROR::msg($::ERROR::CorruptData) \
+    "Error while processing data: corrupted.\n"
   set ::ERROR::msg($::ERROR::Full) \
     "Error: insufficient space"
   set ::ERROR::msg($::ERROR::NameDataLoss) \

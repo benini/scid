@@ -152,6 +152,8 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
 
     gamenumT gNum = 0;
     for (; FilePtr->sgetc() != EOF; gNum++) {
+        if (gNum == Header.numGames) return ERROR_CorruptData;
+
         if ((gNum % 10000) == 0) {
             if (!progress.report(gNum, Header.numGames)) return ERROR_UserCancel;
         }
