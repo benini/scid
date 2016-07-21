@@ -202,10 +202,6 @@ const byte RATING_BCF = 6;
 extern const char * ratingTypeNames [17];   // Defined in game.cpp
 
 
-// NameBase types: see namebase.h and namebase.cpp
-
-typedef uint            idNumberT;
-typedef uint            nameT;
 
 // Result Type
 

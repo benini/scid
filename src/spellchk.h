@@ -20,6 +20,7 @@
 #define SPELLCHK_H
 
 #include "namebase.h"
+#include "date.h"
 #include <string>
 #include <vector>
 #include <utility>

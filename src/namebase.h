@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 2001  Shane Hudson.
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -21,17 +21,21 @@
 #define SCID_NAMEBASE_H
 
 #include "common.h"
-#include "date.h"
 #include "misc.h"
+#include <vector>
 #include <map>
 
+static const char* NAMEBASE_SUFFIX = ".sn4";
 
 // There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
-const nameT
-    NAME_PLAYER = 0,  NAME_EVENT = 1,  NAME_SITE = 2, NAME_ROUND = 3,
-    NAME_FIRST = 0, NAME_LAST = 3, NAME_INVALID = 99;
+typedef uint nameT;
+enum {
+    NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND,
+    NUM_NAME_TYPES,
+    NAME_INVALID = 99
+};
 
-const uint NUM_NAME_TYPES = 4;
+typedef uint idNumberT;
 
 const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "player",
@@ -40,16 +44,14 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "round"
 };
 
-const char NAMEBASE_SUFFIX[] = ".sn4";
 
-
-//////////////////////////////////////////////////////////////////////
-//  NameBase:  Class definition
 class NameBase
 {
+    static const char* NAMEBASE_MAGIC;
+
     std::string filename_;
-    VectorBig<const char*,14> names_[NUM_NAME_TYPES];
-    VectorBig<eloT       ,14> eloV_;
+    std::vector<const char*> names_[NUM_NAME_TYPES];
+    std::vector<eloT> eloV_;
     struct idxCmp {
         bool operator() (const char* str1, const char* str2) const {
             // Compatibility: strCompare_INLINE is not consistent with strcmp
@@ -57,20 +59,14 @@ class NameBase
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
-    typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
-
-    NameBase(const NameBase&);
-    NameBase& operator=(const NameBase&);
-    void Init();
-    void SetFileName (const char *s) { filename_ = s; filename_ += NAMEBASE_SUFFIX; }
 
 public:
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
 
-    NameBase();
-    ~NameBase();
-    void Clear() { Init(); }
+    NameBase() {}
+    ~NameBase() { Clear(); }
+    void Clear();
 
     errorT    Create (const char* filename);
     errorT    ReadEntireFile (const char* filename);
@@ -87,6 +83,13 @@ public:
                                idNumberT * array) const;
 
     idNumberT GetNumNames (nameT n) const  { return names_[n].size(); }
+
+private:
+    typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
+
+    NameBase(const NameBase&);
+    NameBase& operator=(const NameBase&);
+    bool setFileName(const char* filename);
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H

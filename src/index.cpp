@@ -146,7 +146,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
     entries_.resize(Header.numGames);
 
     idNumberT maxIdx[NUM_NAME_TYPES];
-    for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
+    for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         maxIdx[nt] = nb->GetNumNames(nt);
     }
 

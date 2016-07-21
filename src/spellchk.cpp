@@ -148,7 +148,7 @@ public:
 		switch (data.type) {
 			case SPELL_SECTIONSTART:
 				nt_ = NameBase::NameTypeFromString(data.name);
-				if (nt_ >= NUM_NAME_TYPES) return ERROR_CorruptData;
+				if (!NameBase::IsValidNameType(nt_)) return ERROR_CorruptData;
 				if (data.extra != NULL) {
 					sp_.excludeChars_[nt_] = data.extra;
 				} else {
@@ -180,7 +180,7 @@ public:
 private:
 	errorT nameSection(const Parser& data, bool* keepBuffer) {
 		// Must be in a valid name section
-		if (nt_ >= NUM_NAME_TYPES) return ERROR_CorruptData;
+		if (!NameBase::IsValidNameType(nt_)) return ERROR_CorruptData;
 
 		switch (data.type) {
 			case SPELL_NEWNAME:

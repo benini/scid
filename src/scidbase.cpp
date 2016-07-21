@@ -130,7 +130,9 @@ void scidBaseT::clear() {
 	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
 	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
 	treeCache.Clear();
-	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
+	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+		nameFreq_[nt].resize(0);
+	}
 }
 
 errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {

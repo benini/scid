@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 2001  Shane Hudson.
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -22,26 +22,15 @@
 #include "misc.h"
 #include "filebuf.h"
 
-const char NAMEBASE_MAGIC[8] = "Scid.sn";
+// NameBase file signature, used to identify the file format
+const char* NameBase::NAMEBASE_MAGIC = "Scid.sn";
 
-const idNumberT MAX_NAMES = (1<<22) -1;
-
-NameBase::NameBase() {
-    names_[NAME_PLAYER].reserve(MAX_NAMES);
-    names_[NAME_EVENT ].reserve(MAX_NAMES);
-    names_[NAME_SITE  ].reserve(MAX_NAMES);
-    names_[NAME_ROUND ].reserve(MAX_NAMES);
-    eloV_.reserve(MAX_NAMES);
-    Init();
-}
-
-NameBase::~NameBase() {
-    for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-        for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
-    }
-}
-
-void NameBase::Init ()
+/**
+* NameBase::clear() - clears file associations and frees memory
+*
+* Clears file associations and frees memory, leaving the object empty.
+*/
+void NameBase::Clear()
 {
     filename_.clear();
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
@@ -52,48 +41,98 @@ void NameBase::Init ()
     eloV_.resize(0);
 }
 
+/**
+ * NameBase::setFileName() - Sets the name of the associated file
+ * @filename: the filename (without extension)
+ *
+ * Sets the name of the file associated with the NameBase object.
+ * The object must be empty and not associated with another file.
+ * Return true if successful.
+ */
+bool NameBase::setFileName(const char* filename)
+{
+    ASSERT(filename != 0);
+
+    if (!filename_.empty()) return false;
+    for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
+        if (names_[n].size() != 0 || idx_[n].size() != 0) return false;
+    }
+
+    filename_ = filename;
+    filename_ += NAMEBASE_SUFFIX;
+    return true;
+}
+
+/**
+ * NameBase::Create() - Create an empty NameBase file
+ * @filename: the filename (without extension)
+ *
+ * Create a NameBase file that contains only the header and no names.
+ * Return OK if successful.
+ */
 errorT NameBase::Create(const char* filename)
 {
-    SetFileName(filename);
+    if (!setFileName(filename)) return ERROR_FileInUse;
     std::vector<int> v[NUM_NAME_TYPES];
     return WriteNameFile(v);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::ReadNameFile():
-//      Reads the entire name file into memory.
-//
+/**
+ * NameBase::ReadNameFile() - Reads a NameBase file into memory.
+ * @filename: the filename (without extension) of the file to be read
+ *
+ * A NameBase file starts with an header containing:
+ * - header_magic (8 bytes): identify the file format
+ * - unused (4 bytes):  obsolete timeStamp
+ * - number of NAME_PLAYER names stored in the file (3 bytes)
+ * - number of NAME_EVENT names stored in the file (3 bytes)
+ * - number of NAME_SITE names stored in the file (3 bytes)
+ * - number of NAME_ROUND names stored in the file (3 bytes)
+ * - unused (12 bytes): obsolete max frequency
+ * Names are stored using front-coding and each record is composed by:
+ * - name_id (2-3 bytes): the idx (idNumberT) stored in the Index (.si4) file
+ * - unused (1-3 bytes): obsolete frequency
+ * - length (1 byte): the total number of bytes of the name (max 255)
+ * - prefix (1 byte): the number of bytes in common with the previous name
+ * - name (0-255 bytes): the part of the name that differs from the previous one.
+ * Return OK if successful.
+ */
 errorT
 NameBase::ReadEntireFile (const char* filename)
 {
-    SetFileName(filename);
+    if (!setFileName(filename)) return ERROR_FileInUse;
     Filebuf file;
     if (file.Open(filename_.c_str(), FMODE_ReadOnly) != OK) return ERROR_FileOpen;
 
-    char Header_magic[8]; // magic identifier must be "Scid.sn"
+    char Header_magic[9] = {0}; // magic identifier must be "Scid.sn"
     file.ReadNBytes(Header_magic, 8);
     if (strcmp (Header_magic, NAMEBASE_MAGIC) != 0) return ERROR_BadMagic;
 
     // *** Compatibility ***
     // Even if timeStamp is not used we still need to read the bytes
     file.ReadFourBytes();
-    // *** Compatibility ***
+    // ***
+
     idNumberT Header_numNames[NUM_NAME_TYPES];
     Header_numNames[NAME_PLAYER] = file.ReadThreeBytes();
     Header_numNames[NAME_EVENT] = file.ReadThreeBytes();
     Header_numNames[NAME_SITE] = file.ReadThreeBytes();
     Header_numNames[NAME_ROUND] = file.ReadThreeBytes();
-    uint Header_maxFrequency[NUM_NAME_TYPES];
-    Header_maxFrequency[NAME_PLAYER] = file.ReadThreeBytes();
-    Header_maxFrequency[NAME_EVENT] = file.ReadThreeBytes();
-    Header_maxFrequency[NAME_SITE] = file.ReadThreeBytes();
-    Header_maxFrequency[NAME_ROUND] = file.ReadThreeBytes();
+
+    // *** Compatibility ***
+    // Even if frequency is no longer used we still need to read the bytes
+    uint obsolete_maxFreq[NUM_NAME_TYPES];
+    obsolete_maxFreq[NAME_PLAYER] = file.ReadThreeBytes();
+    obsolete_maxFreq[NAME_EVENT] = file.ReadThreeBytes();
+    obsolete_maxFreq[NAME_SITE] = file.ReadThreeBytes();
+    obsolete_maxFreq[NAME_ROUND] = file.ReadThreeBytes();
+    // ***
 
     eloV_.resize(Header_numNames[NAME_PLAYER], 0);
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         names_[nt].resize(Header_numNames[nt], 0);
         idNumberT id;
-        char prevName[1024] = {0};
+        std::string prevName;
         for (idNumberT i = 0; i < Header_numNames[nt]; i++) {
             if (Header_numNames[nt] >= 65536) {
                 id = file.ReadThreeBytes();
@@ -104,29 +143,32 @@ NameBase::ReadEntireFile (const char* filename)
             // *** Compatibility ***
             // Even if frequency is no longer used we still need to read the bytes
             // Frequencies can be stored in 1, 2 or 3 bytes:
-            if (Header_maxFrequency[nt] >= 65536) {
+            if (obsolete_maxFreq[nt] >= 65536) {
                 file.ReadThreeBytes();
-            } else if (Header_maxFrequency[nt] >= 256) {
+            } else if (obsolete_maxFreq[nt] >= 256) {
                 file.ReadTwoBytes();
             } else {  // Frequencies all <= 255: fit in one byte
                 file.ReadOneByte();
             }
-            // *** Compatibility ***
+            // ***
 
             // Read the name string.
             // All strings EXCEPT the first are front-coded.
             uint length = file.ReadOneByte();
             uint prefix = (i > 0) ? file.ReadOneByte() : 0;
-            if (prefix > length) return ERROR_Corrupt;
             char* name = new char[length +1];
-            memcpy(name, prevName, prefix);
-            uint nr = file.ReadNBytes(name + prefix, (length - prefix));
-            if (nr != (length - prefix)) {
+            if (prefix > length || prefix != prevName.copy(name, prefix)) {
+                delete[] name;
+                return ERROR_Corrupt;
+            }
+
+            uint extra_chars = length - prefix;
+            if (extra_chars != file.ReadNBytes(name + prefix, extra_chars)) {
                 delete[] name;
                 return ERROR_FileRead;
             }
             name[length] = 0;
-            strcpy(prevName, name);
+            prevName = name;
 
             if (id < Header_numNames[nt] && names_[nt][id] == 0) {
                 names_[nt][id] = name;
@@ -149,6 +191,8 @@ NameBase::ReadEntireFile (const char* filename)
 errorT
 NameBase::WriteNameFile (const std::vector<int>* freq)
 {
+    ASSERT(freq != 0);
+
     Filebuf file;
     if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
 
@@ -157,7 +201,7 @@ NameBase::WriteNameFile (const std::vector<int>* freq)
     // *** Compatibility ***
     // Even if timeStamp is not used we still need to write the bytes
     file.WriteFourBytes(0);
-    // *** Compatibility ***
+    // ***
 
     file.WriteThreeBytes(names_[NAME_PLAYER].size());
     file.WriteThreeBytes(names_[NAME_EVENT].size());
@@ -173,11 +217,11 @@ NameBase::WriteNameFile (const std::vector<int>* freq)
         }
         file.WriteThreeBytes(maxFreq[n]);
     }
-    // *** Compatibility ***
+    // ***
 
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         char prevName[1024] = {0};
-        size_t numNames = names_[nt].size();
+        size_t numNames = idx_[nt].size();
         for (iterator it = idx_[nt].begin(); it != idx_[nt].end(); it++) {
             const char* name = (*it).first;
             idNumberT id = (*it).second;
@@ -198,7 +242,7 @@ NameBase::WriteNameFile (const std::vector<int>* freq)
             } else {
                 file.WriteOneByte(freq[nt][id]);
             }
-            // *** Compatibility ***
+            // ***
 
             ASSERT(strlen(name) < 256);
             byte length = strlen(name);
@@ -228,19 +272,16 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
     if (it != idx_[nt].end()) {
         *idPtr = (*it).second;
     } else {
+        static const uint NAME_MAX_ID [NUM_NAME_TYPES] = {
+            1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
+             524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
+             524287, /* Site names:   Maximum of 2^19 -1 =   524,287 */
+             262143  /* Round names:  Maximum of 2^18 -1 =   262,143 */
+        };
+        if (names_[nt].size() >= NAME_MAX_ID[nt]) return ERROR_Full; // Too many names already.
+
         const size_t strLen = strlen(str);
-        if (! filename_.empty()) { // .sn4 file limits
-            static const uint NAME_MAX_ID [NUM_NAME_TYPES] = { 
-                1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
-                 524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
-                 524287, /* Site names:   Maximum of 2^19 -1 =   524,287 */
-                 262143  /* Round names:  Maximum of 2^18 -1 =   262,143 */
-            };
-            if (names_[nt].size() >= NAME_MAX_ID[nt]) return ERROR_Full; // Too many names already.
-            if (strLen > 255) return ERROR_NameTooLong; // Max 255 chars
-        } else {
-            if (names_[nt].size() >= MAX_NAMES) return ERROR_Full; // Too many names already.
-        }
+        if (strLen > 255) return ERROR_NameTooLong;
 
         char* name = new char[strLen +1];
         strcpy(name, str);
