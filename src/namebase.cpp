@@ -91,7 +91,7 @@ NameBase::ReadEntireFile (const char* filename)
 
     eloV_.resize(Header_numNames[NAME_PLAYER], 0);
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-        names_[nt].resize(Header_numNames[nt]);
+        names_[nt].resize(Header_numNames[nt], 0);
         idNumberT id;
         char prevName[1024] = {0};
         for (idNumberT i = 0; i < Header_numNames[nt]; i++) {
@@ -100,7 +100,6 @@ NameBase::ReadEntireFile (const char* filename)
             } else {
                 id = file.ReadTwoBytes();
             }
-            if (id >= Header_numNames[nt]) return ERROR_Corrupt;
 
             // *** Compatibility ***
             // Even if frequency is no longer used we still need to read the bytes
@@ -122,12 +121,20 @@ NameBase::ReadEntireFile (const char* filename)
             char* name = new char[length +1];
             memcpy(name, prevName, prefix);
             uint nr = file.ReadNBytes(name + prefix, (length - prefix));
-            if (nr != (length - prefix)) return ERROR_FileRead;
+            if (nr != (length - prefix)) {
+                delete[] name;
+                return ERROR_FileRead;
+            }
             name[length] = 0;
             strcpy(prevName, name);
 
-            names_[nt][id] = name;
-            idx_[nt].insert(idx_[nt].end(), std::make_pair(name, id));
+            if (id < Header_numNames[nt] && names_[nt][id] == 0) {
+                names_[nt][id] = name;
+                idx_[nt].insert(idx_[nt].end(), std::make_pair(name, id));
+            } else {
+                delete[] name;
+                return ERROR_Corrupt;
+            }
         }
     }
 
