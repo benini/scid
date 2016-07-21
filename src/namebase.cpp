@@ -182,6 +182,8 @@ NameBase::ReadEntireFile (const char* filename)
                 return ERROR_Corrupt;
             }
         }
+
+        if (idx_[nt].size() != names_[nt].size()) return ERROR_Corrupt;
     }
 
     return OK;
@@ -196,6 +198,10 @@ errorT
 NameBase::WriteNameFile (const std::vector<int>* freq)
 {
     ASSERT(freq != 0);
+
+    for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+        if (idx_[nt].size() != names_[nt].size()) return ERROR_Corrupt;
+    }
 
     Filebuf file;
     if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
@@ -263,19 +269,24 @@ NameBase::WriteNameFile (const std::vector<int>* freq)
     return OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::AddName(): Add a name to a namebase.
-// If it already exists, OK is returned.
-//
+/**
+ * NameBase::AddName() - Returns the idNumberT corresponding to @str
+ * @nt: a valid name type
+ * @str: the name to lookup/add
+ * @idPtr: valid pointer to the idNumberT object where the result will be stored
+ *
+ * This function ensure that a name is stored inside the NameBase object and return
+ * the corresponding idNumberT in @idPtr.
+ * Names are not duplicated inside a NameBase object, multiple calls to AddName()
+ * with equal @nt and @str will result in the same idNumberT.
+ * Return OK if successful.
+ */
 errorT
 NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
 
-    iterator it = idx_[nt].find(str);
-    if (it != idx_[nt].end()) {
-        *idPtr = (*it).second;
-    } else {
+    if (FindExactName(nt, str, idPtr) != OK) {
         static const uint NAME_MAX_ID [NUM_NAME_TYPES] = {
             1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
              524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
@@ -290,8 +301,11 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
         char* name = new char[strLen +1];
         strcpy(name, str);
         *idPtr = names_[nt].size();
+        if (!idx_[nt].insert(std::make_pair(name, *idPtr)).second) {
+            delete[] name;
+            return ERROR;
+        }
         names_[nt].push_back(name);
-        idx_[nt][name] = *idPtr;
         if (nt == NAME_PLAYER) eloV_.push_back(0);
     }
     return OK;
