@@ -5348,10 +5348,10 @@ int
 sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "game", "index", "name", NULL
+        "game", "index", NULL
     };
     enum {
-        SUFFIX_OPT_GAME, SUFFIX_OPT_INDEX, SUFFIX_OPT_NAME
+        SUFFIX_OPT_GAME, SUFFIX_OPT_INDEX
     };
     int index = -1;
 
@@ -5362,7 +5362,6 @@ sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
         case SUFFIX_OPT_GAME:  suffix = GFILE_SUFFIX;    break;
         case SUFFIX_OPT_INDEX: suffix = INDEX_SUFFIX;    break;
-        case SUFFIX_OPT_NAME:  suffix = NAMEBASE_SUFFIX; break;
         default: return InvalidCommand (ti, "sc_info suffix", options);
     }
 

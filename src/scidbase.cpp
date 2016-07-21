@@ -599,6 +599,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	errorT err_NbWrite = tmp.nb->WriteNameFile(tmp.nameFreq_);
 	errorT err_Close = tmp.Close();
 
+	const char* NAMEBASE_SUFFIX = NameBase::Suffix();
 	//6) Error: cleanup and report
 	if (err_NbWrite != OK || err_Close != OK || err_UserCancel || err_AddGame != OK) {
 		std::remove((tmpfile + INDEX_SUFFIX).c_str());

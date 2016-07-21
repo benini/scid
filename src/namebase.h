@@ -25,8 +25,6 @@
 #include <vector>
 #include <map>
 
-static const char* NAMEBASE_SUFFIX = ".sn4";
-
 // There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
 typedef uint nameT;
 enum {
@@ -48,6 +46,7 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
 class NameBase
 {
     static const char* NAMEBASE_MAGIC;
+    static const char* NAMEBASE_SUFFIX;
 
     std::string filename_;
     std::vector<const char*> names_[NUM_NAME_TYPES];
@@ -63,6 +62,7 @@ class NameBase
 public:
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
+    static const char* Suffix() { return NAMEBASE_SUFFIX; }
 
     NameBase() {}
     ~NameBase() { Clear(); }

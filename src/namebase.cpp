@@ -25,6 +25,10 @@
 // NameBase file signature, used to identify the file format
 const char* NameBase::NAMEBASE_MAGIC = "Scid.sn";
 
+// NameBase file extension
+const char* NameBase::NAMEBASE_SUFFIX = ".sn4";
+
+
 /**
 * NameBase::clear() - clears file associations and frees memory
 *
