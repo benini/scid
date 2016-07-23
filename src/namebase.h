@@ -53,8 +53,19 @@ class NameBase
     std::vector<eloT> eloV_;
     struct idxCmp {
         bool operator() (const char* str1, const char* str2) const {
-            // Compatibility: strCompare_INLINE is not consistent with strcmp
-            return strCompare_INLINE(str1, str2) < 0;
+            // *** Compatibility ***
+            // Older code used a custom StrTree class with a peculiar sorting:
+            // - the first char is treated as unsigned byte
+            // - the remaing part is treated as signed bytes and use the function
+            //   strComapare_INLINE() (not consistent with std::strcmp())
+            // The old StrTree class did also have unpredictable behaviors when
+            // feeded with names not sorted according to that criteria
+            // (i.e. it can create namebase with duplicate entries).
+            // ***
+            if (*str1 == *str2)
+                return strCompare_INLINE(str1, str2) < 0;
+
+            return static_cast<uint>(*str1) < static_cast<uint>(*str2);
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
