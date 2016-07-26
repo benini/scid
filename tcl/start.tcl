@@ -465,7 +465,7 @@ utils/bibliography.tcl
 }
 
 foreach f $tcl_files {
-    source [file nativename [file join $::scidTclDir "$f"]]
+    source -encoding utf-8 [file nativename [file join $::scidTclDir "$f"]]
 }
 
 ###

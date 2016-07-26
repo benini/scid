@@ -213,20 +213,20 @@ proc setLanguageTemp { lang } {
 }
 
 addLanguage E English 0 iso8859-1 english.tcl
-addLanguage K Catal‡ 2 iso8859-1 catalan.tcl
-addLanguage C Czech 0 iso8859-1 czech.tcl
+addLanguage K Catal√† 2 iso8859-1 catalan.tcl
+addLanguage C Czech 0 iso8859-2 czech.tcl
 addLanguage D Deutsch 0 iso8859-1 deutsch.tcl
 addLanguage F Francais 0 iso8859-1 francais.tcl
 addLanguage G Greek 0 utf-8 greek.tcl
-addLanguage H Hungarian 0 iso8859-1 hungary.tcl
+addLanguage H Hungarian 0 iso8859-2 hungary.tcl
 addLanguage I Italian 0 iso8859-1 italian.tcl
 addLanguage N Nederlands 0 iso8859-1 nederlan.tcl
 addLanguage O Norsk 1 iso8859-1 norsk.tcl
-addLanguage P Polish 0 iso8859-1 polish.tcl
+addLanguage P Polish 0 iso8859-2 polish.tcl
 addLanguage B {Brazil Portuguese} 0 iso8859-1 portbr.tcl
 addLanguage R Russian 1 utf-8 russian.tcl
-addLanguage Y Serbian 2 iso8859-1 serbian.tcl
-addLanguage S EspaÒol 1 iso8859-1 spanish.tcl
+addLanguage Y Serbian 2 iso8859-2 serbian.tcl
+addLanguage S Espa√±ol 1 iso8859-1 spanish.tcl
 addLanguage U Suomi 1 iso8859-1 suomi.tcl
 addLanguage W Swedish 1 iso8859-1 swedish.tcl
 
