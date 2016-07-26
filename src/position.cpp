@@ -690,10 +690,9 @@ Position::AddPiece (pieceT p, squareT sq)
 {
     ASSERT (p != EMPTY);
     colorT c = piece_Color(p);
-    ASSERT (c != NOCOLOR);
+    if ((c != WHITE && c != BLACK) || Count[c] > 15)
+        return ERROR_PieceCount;
 
-    if (Count[c] == 16) { return ERROR_PieceCount; }
-    ASSERT(Count[c] <= 15);
     if (piece_Type(p) == KING) {
         // Check there is not already a King:
         if (Material[p] > 0) { return ERROR_PieceCount; }
