@@ -19,7 +19,7 @@ AllowNoIcons=yes
 LicenseFile=COPYING
 Compression=bzip/9
 SourceDir=.
-OutputDir=.
+OutputDir=winpackage
 OutputBaseFilename={# AppName}-{# AppVersion}
 ChangesAssociations=yes
 PrivilegesRequired=lowest
@@ -47,20 +47,20 @@ Source: "Release\*"; DestDir: "{app}\bin"
 Source: "scid.eco"; DestDir: "{app}\bin"
 Source: "img\*"; DestDir: "{app}\bin\img"; Flags: recursesubdirs
 Source: "tcl\*"; DestDir: "{app}\bin\tcl"; Flags: recursesubdirs
-Source: "bases\*"; DestDir: "{app}\bin\bases"; Flags: recursesubdirs
 Source: "books\*"; DestDir: "{app}\bin\books"; Flags: recursesubdirs
-Source: "spelling.ssp"; DestDir: "{app}\bin";  Tasks: copy_photos
-Source: "photos\*"; DestDir: "{app}\bin\photos"; Flags: recursesubdirs; Tasks: copy_photos
-Source: "phalanx-scid.exe"; DestDir: "{app}\bin\engines";
-Source: "stockfish.exe"; DestDir: "{app}\bin\engines"; Tasks: install_stockfish
 Source: "html\*"; DestDir: "{app}\bin\html"; Flags: recursesubdirs
 Source: "sounds\*"; DestDir: "{app}\bin\sounds"; Flags: recursesubdirs
 Source: "bitmaps\*"; DestDir: "{app}\bitmaps"; Flags: recursesubdirs
 Source: "bitmaps2\*"; DestDir: "{app}\bitmaps2"; Flags: recursesubdirs
 Source: "help\*"; DestDir: "{app}\help"; Flags: recursesubdirs
 Source: "COPYING"; DestDir: "{app}"
-Source: "Example.*"; DestDir: "{app}"
-Source: "scidsnd.exe"; DestDir: "{app}\bin"
+Source: "winpackage\bases\*"; DestDir: "{app}\bin\bases"; Flags: recursesubdirs
+Source: "winpackage\Example.*"; DestDir: "{app}"
+Source: "winpackage\scidsnd.exe"; DestDir: "{app}\bin"
+Source: "winpackage\phalanx-scid.exe"; DestDir: "{app}\bin\engines";
+Source: "winpackage\stockfish.exe"; DestDir: "{app}\bin\engines"; Tasks: install_stockfish
+Source: "winpackage\spelling.ssp"; DestDir: "{app}\bin";  Tasks: copy_photos
+Source: "winpackage\photos\*"; DestDir: "{app}\bin\photos"; Flags: recursesubdirs; Tasks: copy_photos
 Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tcl8.6\*"; DestDir: "{app}\lib\tcl8.6"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tk8.6\*"; DestDir: "{app}\lib\tk8.6"; Flags: recursesubdirs
