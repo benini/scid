@@ -46,7 +46,7 @@ proc createToplevel { {w} {closeto ""} } {
     }
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
-    docking::add_tab $f e
+    docking::add_tab $f
     set ::docking::layout_dest_notebook $old_dest
   } else  {
     toplevel $w

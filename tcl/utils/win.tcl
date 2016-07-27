@@ -1,3 +1,19 @@
+# Copyright (C) 2008-2009 Pascal Georges
+# Copyright (C) 2013-2016 Fulvio Benini
+#
+# This file is part of Scid (Shane's Chess Information Database).
+#
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
+#
+# Scid is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 
 # ::utils::win::Centre
 #
@@ -492,32 +508,98 @@ proc ::docking::__dock {wnd} {
 }
 
 ################################################################################
-proc ::docking::add_tab {path anchor args} {
+# The coefficients for the selections of the container Notebook
+# have been calculated doing a linear regression of this matrix:
+# board   tabs    tabs^2   similar  sim^2   sim^3   area     fitness
+# 0       0       0        0        0       0       0,9      120900
+# 0       0       0        0        0       0       0,5      120500
+# 0       0       0        0        0       0       0,1      120100
+# 0       5       25       5        25      125     0,9      99900
+# 0       5       25       5        25      125     0,5      99500
+# 0       5       25       5        25      125     0,1      99100
+# 0       3       9        3        9       27      0,9      93900
+# 0       3       9        3        9       27      0,5      93500
+# 0       3       9        3        9       27      0,1      93100
+# 0       2       4        2        4       8       0,9      87900
+# 0       2       4        2        4       8       0,5      87500
+# 0       2       4        2        4       8       0,1      87100
+# 0       4       16       3        9       27      0,9      81900
+# 0       4       16       3        9       27      0,5      81500
+# 0       4       16       3        9       27      0,1      81100
+# 0       3       9        2        4       8       0,9      75900
+# 0       3       9        2        4       8       0,5      75500
+# 0       3       9        2        4       8       0,1      75100
+# 0       2       4        1        1       1       0,9      69900
+# 0       2       4        1        1       1       0,5      69500
+# 0       2       4        1        1       1       0,1      69100
+# 0       3       9        1        1       1       0,9      63900
+# 0       3       9        1        1       1       0,5      63500
+# 0       3       9        1        1       1       0,1      63100
+# 0       2       4        1        1       1       0,9      57900
+# 0       2       4        1        1       1       0,5      57500
+# 0       2       4        1        1       1       0,1      57100
+# 0       1       1        0        0       0       0,9      39900
+# 0       1       1        0        0       0       0,5      39500
+# 0       1       1        0        0       0       0,1      39100
+# 0       3       9        0        0       0       0,9      33900
+# 0       3       9        0        0       0       0,5      33500
+# 0       3       9        0        0       0       0,1      33100
+# 1       2       4        1        1       1       0,9      9900
+# 1       2       4        1        1       1       0,5      9500
+# 1       2       4        1        1       1       0,1      9100
+# 1       1       1        0        0       0       0,9      7900
+# 1       1       1        0        0       0       0,5      7500
+# 1       1       1        0        0       0       0,1      7100
+# 1       2       4        0        0       0       0,9      5900
+# 1       2       4        0        0       0       0,5      5500
+# 1       2       4        0        0       0       0,1      5100
+# Improving the matrix and recalculating can improve the select algorithm
+proc ::docking::add_tab {path} {
   variable tbs
-  
+
   if { $::docking::layout_dest_notebook == ""} {
-    # scan all tabs to find the most suitable
     set dsttab {}
-    
-    foreach tb [array names tbs] {
-      set x [winfo rootx $tb]
-      set y [winfo rooty $tb]
-      set w [winfo width $tb]
-      set h [winfo height $tb]
-      switch $anchor {
-        n { set rel {$y < $_y} }
-        w { set rel {$x < $_x} }
-        s { set rel {$y > $_y} }
-        e { set rel {$x > $_x} }
+    set best_fitting ""
+    foreach tb [array names ::docking::tbs] {
+      if {[::docking::get_class $tb] != "TNotebook"} { continue }
+
+      set tabs [$tb tabs]
+
+      # Features
+      set feat(0) 1
+      set coeff(0) "105622.84"
+      # number of boards
+      set feat(1) [llength [lsearch -all -regexp $tabs ".*main"]]
+      set coeff(1) "-48019.31"
+      # number of tabs
+      set feat(2) [llength $tabs]
+      set coeff(2) "-51266.84"
+      # number of tabs^2
+      set feat(3) [expr { $feat(2) * $feat(2) }]
+      set coeff(3) "8661.97"
+      # number of similar windows
+      set name_striptrailnum [regsub {\d*$} $path ""]
+      set feat(4) [llength [lsearch -all -regexp $tabs ".*$name_striptrailnum.*"]]
+      set coeff(4) "29942.45"
+      # number of similar windows^2
+      set feat(5) [expr { $feat(4) * $feat(4) }]
+      set coeff(5) "-3053.05"
+      # number of similar windows^3
+      set feat(6) [expr { $feat(4) * $feat(4) * $feat(4) }]
+      set coeff(6) "-323.52"
+      # ratio between the area of the notebook and the screen
+      set feat(7) [expr { double([winfo width $tb] * [winfo height $tb]) }]
+	  set feat(7) [expr { $feat(7) / ([winfo screenwidth $tb] * [winfo screenheight $tb]) }]
+      set coeff(7) "1000"
+
+      set fit 0;
+      for {set i 0} {$i < [array size feat]} {incr i} {
+        set fit [expr { $fit + $feat($i) * $coeff($i)}]
       }
-      if {$dsttab==""} {
+
+      if {$best_fitting == "" || $fit > $best_fitting} {
+        set best_fitting $fit
         set dsttab $tb
-        set _x $x
-        set _y $y
-      } elseif { [expr $rel] } {
-        set dsttab $tb
-        set _x $x
-        set _y $y
       }
     }
   } else  {
@@ -525,7 +607,7 @@ proc ::docking::add_tab {path anchor args} {
   }
   
   set title $path
-  eval [list $dsttab add $path] $args -text "$title"
+  eval [list $dsttab add $path] -text "$title"
   setMenuMark $dsttab $path
   $dsttab select $path
 }
