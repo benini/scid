@@ -403,7 +403,6 @@ proc ::reviewgame::updateStats {} {
 ################################################################################
 proc ::reviewgame::isGoodScore {engine player} {
   global ::reviewgame::margin
-  puts "isGoodScore engine $engine player $player"
   if { ![::board::isFlipped .main.board] } {
     # if player plays white
     if {$player >= [expr $engine - $margin]} {
@@ -414,7 +413,6 @@ proc ::reviewgame::isGoodScore {engine player} {
       return 1
     }
   }
-  puts "return 0"
   return 0
 }
 ################################################################################
@@ -477,8 +475,6 @@ proc ::reviewgame::sendToEngine {text} {
 proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   global ::reviewgame::analysisEngine ::reviewgame::engineSlot
   
-  puts "startAnalyze $move"
-  
   set pb $::reviewgame::window.finfo.pb
   set length [$pb cget -maximum]
   set ::reviewgame::progressBarTimer  [expr ( $analysisTime * 1000 * $::reviewgame::progressBarStep ) / $length ]
@@ -496,7 +492,6 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   if {$move != ""} {
     sc_game push copyfast
     set ::reviewgame::pushedgame 1
-    # puts "::uci::sc_move_add $move"
     # ::uci::sc_move_add $move
     sc_move addSan $move
     set ::analysis(fen$engineSlot) [sc_pos fen]
@@ -529,7 +524,6 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   set analysisEngine(score,$sequence) [lindex $pv 1]
   set analysisEngine(moves,$sequence) [lindex $pv 2]
   
-  puts "résultat analyse $sequence : $analysisEngine(score,$sequence) $analysisEngine(moves,$sequence)"
   set analysisEngine(analyzeMode) 0
   ::reviewgame::sendToEngine  "stop"
   
@@ -596,7 +590,6 @@ proc ::reviewgame::playerCanMove {} {
     return 1
   }
   
-  puts "DEBUG : ::reviewgame::playerCanMove returned 0"
   return 0
 }
 

@@ -1046,7 +1046,6 @@ namespace eval fics {
     }
 
     if {$fen != [sc_pos fen]} {
-      puts "Debug fen \n$fen\n[sc_pos fen]"
       # Create a game in an opened base
       if {![sc_base inUse]} {
         sc_base switch $::clipbase_db

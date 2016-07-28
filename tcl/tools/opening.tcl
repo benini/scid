@@ -165,7 +165,6 @@ namespace eval opening {
       set hashList [lsort -unique $hashList]
       lappend allLinesHashList $hashList
     }
-    # puts "$allLinesFenList"
     
     closeProgressWindow
   }

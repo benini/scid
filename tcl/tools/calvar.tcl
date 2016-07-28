@@ -276,7 +276,6 @@ namespace eval calvar {
   ################################################################################
   proc addLineToCompute {line {n 4} } {
     global ::calvar::analysisQueue
-    puts "====>>> addLineToCompute $line"
     if {$line != ""} {
       lappend analysisQueue $line
     }
@@ -293,7 +292,6 @@ namespace eval calvar {
   ################################################################################
   proc computeLine {line {n 4} } {
     set ::calvar::working 1
-    puts "---->>>> computeLine $line"
     set moves [ lindex $line 0 ]
     set nag [ lindex $line 1 ]
     set fen [ lindex $line 2 ]
@@ -319,10 +317,6 @@ namespace eval calvar {
       lappend ::analysis(multiPV$n) [list [lindex $elt 0] [lindex $elt 1] $line [lindex $elt 3]]
     }
     
-    puts "==================================="
-    puts "handleResult $::analysis(multiPV$n)"
-    puts "==================================="
-    
     if { [llength $moves] != [llength $usermoves]} {
       set comment " error in user moves [lrange $moves [llength $usermoves] end ]"
       puts $comment
@@ -344,8 +338,6 @@ namespace eval calvar {
   # Try to merge the variation with an existing one.
   ################################################################################
   proc addVar {usermoves engmoves nag comment engscore} {
-    puts "addVar usermoves $usermoves engmoves $engmoves nag $nag comment $comment"
-
     # Cannot add a variation to an empty variation:
     if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
       # enter the first move as dummy variation
@@ -388,8 +380,6 @@ namespace eval calvar {
   # Try to merge the variation with an existing one.
   ################################################################################
   proc addMissedLine {moves score depth} {
-    puts "addMissedLine moves $moves score $score depth $depth"
-
     # Cannot add a variation to an empty variation:
     if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
       # enter the first move as dummy variation
@@ -443,7 +433,6 @@ namespace eval calvar {
         addMissedLine $engmoves $engscore $engdepth
       } else {
         # the user considered at least one line (skip those that are below)
-        puts "position done :: Line present"
         break
       }
     }

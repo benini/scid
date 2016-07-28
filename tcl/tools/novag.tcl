@@ -100,7 +100,6 @@ namespace eval novag {
   ##########################################################
   proc send {msg} {
     global ::novag::fd
-    puts "sending $msg"
     puts $fd "$msg\n\r"
   }
   ##########################################################
@@ -111,7 +110,6 @@ namespace eval novag {
     
     set l [gets $fd]
     if { $l == "" } { return }
-    puts "received $l"
     $output insert end "$l\n"
     $output yview moveto 1
     
