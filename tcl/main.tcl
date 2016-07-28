@@ -1,7 +1,7 @@
 # Copyright (C) 1999-2004 Shane Hudson
 # Copyright (C) 2006-2009 Pascal Georges
 # Copyright (C) 2008-2011 Alexander Wagner
-# Copyright (C) 2013-2014 Fulvio Benini
+# Copyright (C) 2013-2016 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 #
@@ -1013,6 +1013,12 @@ proc undoFeature {action} {
         sc_game undoAll
         notify::GameChanged
     }
+}
+
+proc setPlayMode { callback } {
+    set ::playMode "$callback"
+    if {$::playMode == ""} { unset ::playMode }
+    ::notify::PosChanged
 }
 
 ################################################################################

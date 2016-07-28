@@ -41,6 +41,11 @@ namespace eval reviewgame {
 #
 ################################################################################
 proc ::reviewgame::start {} {
+  if { ! [::reviewgame::launchengine] } {
+    tk_messageBox -type ok -icon warning -title "Scid" -message "This feature require at least one UCI engine"
+    return
+  }
+
   set w $::reviewgame::window
   createToplevel $w
   setTitle $w [::tr "GameReview" ]
@@ -128,24 +133,27 @@ proc ::reviewgame::start {} {
   
   set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
   
-  if { ! [::reviewgame::launchengine] } {
-    tk_messageBox -title "Scid" -icon error -type ok -message "Error launching engine"
-    return
-  }
-  
-  bind $w <Destroy> { ::reviewgame::endTraining }
+  bind $w <Destroy> "if {\[string equal $w %W\]} {::reviewgame::endTraining}"
   bind $w <Configure> "recordWinSize $w"
   bind $w <F1> { helpWindow ReviewGame }
   ::createToplevelFinalize $w
-  
   set ::reviewgame::prevFen [sc_pos fen]
   set ::reviewgame::movesLikePlayer 0
   set ::reviewgame::movesLikeEngine 0
   set ::reviewgame::numberMovesPlayed 0
+  ::setPlayMode "::reviewgame::callback"
   ::reviewgame::resetValues
   ::reviewgame::mainLoop
   
 }
+
+proc ::reviewgame::callback {cmd} {
+  switch $cmd {
+      stop { destroy $::reviewgame::window }
+  }
+  return 0
+}
+
 ################################################################################
 #
 ################################################################################
@@ -173,6 +181,7 @@ proc ::reviewgame::endTraining {} {
   bind $w <Destroy> {}
   destroy $w
   ::docking::cleanup $w
+  ::setPlayMode ""
   
   catch { ::uci::closeUCIengine $::reviewgame::engineSlot }
 }
@@ -446,7 +455,6 @@ proc ::reviewgame::launchengine {} {
     incr index
   }
   if { ! $engineFound } {
-    tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "This feature require at least one UCI engine"
     return 0
   }
   
@@ -512,8 +520,10 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   if { ! $analysisEngine(analyzeMode) } { return }
   
   after cancel ::reviewgame::updateProgressBar
-  $::reviewgame::window.finfo.pb configure -value 0
-  
+  if { [winfo exists $::reviewgame::window.finfo.pb]} {
+    $::reviewgame::window.finfo.pb configure -value 0
+  }
+
   incr ::reviewgame::sequence
   set pv [lindex $::analysis(multiPV$::reviewgame::engineSlot) 0]
   set analysisEngine(score,$sequence) [lindex $pv 1]
