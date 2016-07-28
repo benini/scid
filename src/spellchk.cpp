@@ -351,7 +351,7 @@ void PlayerElo::AddEloData(const char * str)
         // Get the year in which the rating figures to follow were published
         //
         str = strTrimLeft (str);
-        if (! isdigit (*str)) { break; }
+        if (! isdigit(static_cast<unsigned char>(*str))) { break; }
         uint16_t year = strGetUnsigned (str);
         str += 4;
         if (*str != ':') { break; }
@@ -361,7 +361,7 @@ void PlayerElo::AddEloData(const char * str)
         //
         eloT elo = 0;
         while (1) {
-            if (isdigit (*str)) {
+            if (isdigit(static_cast<unsigned char>(*str))) {
                 elo = strGetUnsigned (str);
                 str += 4;
             } else if (*str == '?') {

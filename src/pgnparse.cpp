@@ -364,20 +364,19 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
         standardPlayerName (value);
 #endif
         // Check for a rating in parentheses at the end of the player name:
-        uint elo = 0;
         uint len = strLength (value);
         if (len > 7  &&  value[len-1] == ')'
-            &&  isdigit(value[len-2])  &&  isdigit(value[len-3])
-            &&  isdigit(value[len-4])  &&  isdigit(value[len-5])
+            &&  isdigit(static_cast<unsigned char>(value[len-2]))
+            &&  isdigit(static_cast<unsigned char>(value[len-3]))
+            &&  isdigit(static_cast<unsigned char>(value[len-4]))
+            &&  isdigit(static_cast<unsigned char>(value[len-5]))
             &&  value[len-6] == '('  &&  value[len-7] == ' ') {
-            value[len-7] = 0;
-            elo = strGetUnsigned (&(value[len-5]));
-            if (elo > MAX_ELO) {
-                LogError ("Warning: rating too large: ", value);
-                elo = MAX_ELO;
+            uint elo = strGetUnsigned (&(value[len-5]));
+            if (elo <= MAX_ELO) {
+                value[len - 7] = 0;
+                game->SetWhiteElo(elo);
+                game->SetWhiteRatingType(RATING_Elo);
             }
-            game->SetWhiteElo (elo);
-            game->SetWhiteRatingType (RATING_Elo);
         }
         game->SetWhiteStr (value);
 
@@ -386,20 +385,19 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
         standardPlayerName (value);
 #endif
         // Check for a rating in parentheses at the end of the player name:
-        uint elo = 0;
         uint len = strLength (value);
         if (len > 7  &&  value[len-1] == ')'
-            &&  isdigit(value[len-2])  &&  isdigit(value[len-3])
-            &&  isdigit(value[len-4])  &&  isdigit(value[len-5])
+            &&  isdigit(static_cast<unsigned char>(value[len-2]))
+            &&  isdigit(static_cast<unsigned char>(value[len-3]))
+            &&  isdigit(static_cast<unsigned char>(value[len-4]))
+            &&  isdigit(static_cast<unsigned char>(value[len-5]))
             &&  value[len-6] == '('  &&  value[len-7] == ' ') {
-            value[len-7] = 0;
-            elo = strGetUnsigned (&(value[len-5]));
-            if (elo > MAX_ELO) {
-                LogError ("Warning: rating too large: ", value);
-                elo = MAX_ELO;
+            uint elo = strGetUnsigned (&(value[len-5]));
+            if (elo <= MAX_ELO) {
+                value[len - 7] = 0;
+                game->SetBlackElo(elo);
+                game->SetBlackRatingType(RATING_Elo);
             }
-            game->SetBlackElo (elo);
-            game->SetBlackRatingType (RATING_Elo);
         }
         game->SetBlackStr (value);
 
@@ -804,7 +802,7 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         char *temp = buffer;
         // Verify if token is all digits, or could be a result:
         while (*temp) {
-            if (! isdigit(*temp)) {
+            if (! isdigit(static_cast<unsigned char>(*temp))) {
                 allDigits = 0;
                 break;
             }

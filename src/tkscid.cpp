@@ -4240,12 +4240,19 @@ addScoreToList (Tcl_Interp * ti, int moveCounter, const char * comment,
 {
     char buffer[1024];
     if (comment == NULL) { return false; }
+    const char* avoid_overflow = comment;
     while (*comment != 0  &&  *comment != '+'  &&  *comment != '-') {
         comment++;
     }
-    if (*comment == 0  || ! isdigit(*(comment+1))) { return false; }
+    if (*comment == 0  ||
+        ! isdigit(static_cast<unsigned char>(*(comment+1)))) {
+        return false;
+    }
     //Klimmek: ignore game results like 1-0 or 0-1 in a comment
-    if (*comment == '-' && isdigit(*(comment-1))) { return false; }
+    if (*comment == '-' && comment != avoid_overflow &&
+        isdigit(static_cast<unsigned char>(*(comment-1)))) {
+        return false;
+    }
     // OK, now we have found "+[digit]" or "-[digit]" in the comment,
     // so extract its evaluation and add it to our list:
     sprintf (buffer, "%.1f", (float)moveCounter * 0.5);
