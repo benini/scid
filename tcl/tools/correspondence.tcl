@@ -1557,6 +1557,9 @@ namespace eval CorrespondenceChess {
 	# for the ongoing game.
 	#----------------------------------------------------------------------
 	proc EnableEngineAnalysis {on} {
+		# Broken: depends on the old menu structure
+		# TODO: use the new callback mechanism ::setPlayMode()
+		return
 
 		if {$on == 0} {
 			set m .menu.tools
