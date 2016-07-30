@@ -1,5 +1,5 @@
 /*
-# Copyright (C) 2014 Fulvio Benini
+# Copyright (C) 2014-2016 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -101,6 +101,10 @@ struct scidBaseT {
 	const IndexEntry* getIndexEntry(gamenumT g) const {
 		return idx->GetEntry(g);
 	}
+	const IndexEntry* getIndexEntry_bounds(gamenumT g) const {
+		if (g < numGames()) return getIndexEntry(g);
+		return 0;
+	}
 	const NameBase* getNameBase() const {
 		return nb;
 	}
@@ -110,6 +114,16 @@ struct scidBaseT {
 	errorT getGame(const IndexEntry* ie, ByteBuffer* bb) const {
 		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
 	}
+
+	struct GamePos {
+		unsigned int RAVdepth;
+		unsigned int RAVnum;
+		std::string FEN;
+		std::vector<int> NAGs;
+		std::string comment;
+		std::string lastMoveSAN;
+	};
+	errorT getGame(const IndexEntry* ie, std::vector<GamePos>& dest);
 
 	errorT importGame(scidBaseT* sourceBase, uint gNum);
 	errorT importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
@@ -200,6 +214,7 @@ private:
 	scidBaseT& operator=(const scidBaseT&);
 	void Init();
 	void clear();
+	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT addGameHelper(scidBaseT* sourceBase, uint gNum);
 	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 	void calcNameFreq ();
