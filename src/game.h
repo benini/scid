@@ -489,7 +489,12 @@ public:
 
     uint      GetPgnOffset () {
                   PgnLastMovePos = 0;
-                  if (!calcAbsPlyNumber_(FirstMove, CurrentMove->prev)) return 1;
+                  moveT* lastMove = CurrentMove->prev;
+                  if (AtVarStart()) {
+                      lastMove = lastMove->varParent;
+                      if (lastMove != 0) lastMove = lastMove->prev;
+                  }
+                  if (!calcAbsPlyNumber_(FirstMove, lastMove)) return 1;
                   return PgnLastMovePos;
               }
 
