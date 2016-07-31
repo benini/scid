@@ -333,6 +333,62 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 
 
 /**
+* sc_base_getGame() - return all the positions of a game
+* @gameNum: the number of the requested game
+*
+* Return a list containing all the positions of a game, including variations.
+* The positions are sorted according to pgn standard:
+* "The alternate move sequence given by an RAV is one that may be legally played
+* by first unplaying the move that appears immediately prior to the RAV".
+* For each position the following informations are provided:
+* RAVdepth: current variation depth.
+* RAVnum: current variation num.
+* FEN: "Forsyth-Edwards Notation" describing the current position.
+* NAGS: "Numeric Annotation Glyph" is a non-negative integer from 0 to 255
+*       used to indicate a simple annotation in a language independent manner.
+* comment: text annotation of the current position.
+* lastMoveSAN: the last move that was played to reach the current position.
+*              The move is indicated using English "Standard Algebraic Notation".
+*/
+UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv) {
+	const char* usage = "Usage: sc_base getGame baseId gameNum";
+	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
+
+	const IndexEntry* ie = 0;
+	gamenumT gNum = strGetUnsigned(argv[3]);
+	if (gNum > 0) ie = dbase->getIndexEntry_bounds(gNum - 1);
+	if (ie == 0) return UI_Result(ti, ERROR_BadArg, usage);
+
+	std::vector<scidBaseT::GamePos> gamepos;
+	errorT err = dbase->getGame(ie, gamepos);
+	if (err != OK) return UI_Result(ti, err);
+
+	size_t n = gamepos.size();
+	UI_List res(n);
+	UI_List posInfo(6);
+	for (size_t i = 0; i < n; i++) {
+		posInfo.clear();
+		posInfo.push_back(gamepos[i].RAVdepth);
+		posInfo.push_back(gamepos[i].RAVnum);
+		posInfo.push_back(gamepos[i].FEN);
+		std::string nags;
+		for (size_t iNag = 0, nNag = gamepos[i].NAGs.size(); iNag < nNag; iNag++) {
+			char temp[20];
+			game_printNag(gamepos[i].NAGs[iNag], temp, true, PGN_FORMAT_Plain);
+			if (!nags.empty()) nags += ' ';
+			nags += temp;
+		}
+		posInfo.push_back(nags);
+		posInfo.push_back(gamepos[i].comment);
+		posInfo.push_back(gamepos[i].lastMoveSAN);
+		res.push_back(posInfo);
+	}
+
+	return UI_Result(ti, OK, res);
+}
+
+
+/**
  * sc_base_import() - import games from non-native database
  *
  * Return:
@@ -705,8 +761,8 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	static const char * options [] = {
 	    "close",           "compact",         "copygames",
 	    "create",          "creatememory",    "current",         "duplicates",
-	    "export",          "extra",           "filename",
-	    "gameflag",        "gamelocation",    "gameslist",       "import",
+	    "export",          "extra",           "filename",        "gameflag",
+	    "gamelocation",    "gameslist",       "getGame",         "import",
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
 	    "piecetrack",      "slot",            "sortcache",       "stats",
 	    "switch",          "tag",             "tournaments",     "type",
@@ -715,8 +771,8 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	enum {
 	    BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,
 	    BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
-	    BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
-	    BASE_GAMEFLAG,     BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_IMPORT,
+	    BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,     BASE_GAMEFLAG,
+	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
 	    BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
 	    BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE
@@ -794,6 +850,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_GAMESLIST:
 		return sc_base_gameslist(dbase, ti, argc, argv);
+
+	case BASE_GETGAME:
+		return sc_base_getGame(dbase, ti, argc, argv);
 
 	case BASE_IMPORT:
 		return sc_base_import (dbase, ti, argc, argv);
