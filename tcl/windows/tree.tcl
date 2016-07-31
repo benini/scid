@@ -138,10 +138,9 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set helpMessage($w.menu.mask,3) TreeMaskSave
   $w.menu.mask add command -label TreeMaskClose -command "::tree::mask::close"
   set helpMessage($w.menu.mask,4) TreeMaskClose
-  #TODO: remove this
-  $w.menu.mask add command -label TreeMaskFillWithGame
+  $w.menu.mask add command -label TreeMaskFillWithGame -command "::tree::mask::fillWithGame"
   set helpMessage($w.menu.mask,5) TreeMaskFillWithGame
-  $w.menu.mask add command -label TreeMaskFillWithBase
+  $w.menu.mask add command -label TreeMaskFillWithBase -command "::tree::mask::fillWithBase"
   set helpMessage($w.menu.mask,6) TreeMaskFillWithBase
 
   $w.menu.mask add command -label TreeMaskSearch -command "::tree::mask::searchMask $baseNumber"
@@ -1357,7 +1356,7 @@ proc ::tree::mask::getNag { move { fen "" }} {
 ################################################################################
 #
 ################################################################################
-proc ::tree::mask::setNag { move nag {fen ""} } {
+proc ::tree::mask::setNag { move nag {fen ""} {refresh 1} } {
   global ::tree::mask::mask
   
   if { $nag == [::tr "None"] } {
@@ -1380,7 +1379,7 @@ proc ::tree::mask::setNag { move nag {fen ""} } {
   set newmove [lreplace [lindex $moves $idxm] 1 1 $nag ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
   set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
-  ::tree::refresh
+  if {$refresh} { ::tree::refresh }
 }
 ################################################################################
 #
@@ -1429,7 +1428,6 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
   set newmove [lreplace [lindex $moves $idxm] 3 3 $comment ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
   set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
-  ::tree::refresh
 }
 ################################################################################
 #
@@ -1464,7 +1462,6 @@ proc ::tree::mask::setPositionComment { comment {fen ""} } {
   
   set newpos [ lreplace $mask($fen) 1 1 $comment ]
   set mask($fen) $newpos
-  ::tree::refresh
 }
 ################################################################################
 #
@@ -1528,7 +1525,6 @@ proc ::tree::mask::addComment { { move "" } } {
   if {$move == ""} {
     set oldComment [::tree::mask::getPositionComment]
     ::setTitle $w [::tr CommentPosition]
-  } else  {
     set oldComment [::tree::mask::getComment $move ]
     ::setTitle $w [::tr CommentMove]
   }
@@ -1553,26 +1549,94 @@ proc ::tree::mask::updateComment { { move "" } } {
   } else  {
     ::tree::mask::setComment $move $newComment
   }
+  ::tree::refresh
 }
+################################################################################
+#
+################################################################################
+proc ::tree::mask::fillWithBase {} {
+  if {$::tree::mask::maskFile == ""} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
+    return
+  }
 
+  set n [sc_base numGames $::curr_db]
+  progressWindow "Scid" "[tr TreeMaskFillWithBase]" $::tr(Stop)
+  for {set gnum 1} { $gnum <= $n} {incr gnum} {
+    if {[catch { updateProgressWindow $gnum $n }]} { break }
+    ::tree::mask::fillWithGame $::curr_db $gnum 0
+  }
+  closeProgressWindow
+  ::notify::PosChanged
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::fillWithGame { {base ""} {gnum ""} {refresh 1} } {
+  if {$::tree::mask::maskFile == ""} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
+    return
+  }
+
+  if {$base == ""} {
+    set base [sc_base current]
+    set gnum [sc_game number]
+  }
+
+  set lastRAVd 0
+  set lastRAVn 0
+  set iFEN(0) 0
+  set iFENvar(0) 0
+  set game [sc_base getGame $base $gnum]
+  set n [llength $game]
+  for {set i 0} { $i < $n} {incr i} {
+    # Quick assign
+    foreach {RAVd RAVn FEN NAGs comment lastMoveSAN} [lindex $game $i] {}
+
+    if { $RAVd > $lastRAVd || ($RAVd == $lastRAVd && $RAVn != $lastRAVn) } {
+      # New variation
+      set parent [expr { $RAVd - 1 }]
+      set iFEN($RAVd) $iFENrav($parent)
+    }
+
+    set fromFEN [lindex [lindex $game $iFEN($RAVd)] 2]
+    ::tree::mask::feedMask "$fromFEN" "$lastMoveSAN" "$NAGs" "$comment"
+
+    set lastRAVd $RAVd
+    set lastRAVn $RAVn
+    set iFENrav($RAVd) $iFEN($RAVd)
+    set iFEN($RAVd) $i
+  }
+
+  set ::tree::mask::dirty 1
+  if {$refresh} { ::notify::PosChanged }
+}
 ################################################################################
 # Take current position information and fill the mask (move, nag, comments, etc)
 ################################################################################
-proc ::tree::mask::feedMask { fen } {
+proc ::tree::mask::feedMask { fen move nag comment } {
+  global ::tree::mask::mask
+
   set stdNags { "!!" "!" "!?" "?!" "??" "~"}
   set fen [toShortFen $fen]
-  set move [sc_game info previousMoveNT]
-  set comment [sc_pos getComment $fen ]
   
   if {$move == ""} {
     set move "null"
   }
-  
+
   # add move if not in mask
   if { ![moveExists $move $fen]} {
-    addToMask $move $fen
+    if {![info exists mask($fen)]} {
+      set mask($fen) { {} {} }
+    }
+    set moves [ lindex $mask($fen) 0 ]
+    if {[lsearch $moves $move] == -1} {
+      lappend moves [list $move {} $::tree::mask::defaultColor {} {} {}]
+      set newpos [lreplace $mask($fen) 0 0 $moves]
+      set mask($fen) $newpos
+    }
   }
-  
+
   if {$move == "null"} {
     set comment "$comment [getPositionComment]"
     setPositionComment $comment $fen
@@ -1580,7 +1644,6 @@ proc ::tree::mask::feedMask { fen } {
   }
   
   # NAG
-  set nag [string trim [sc_pos getNags]]
   if {$nag == 0} { set nag "" }
   if {$nag != ""} {
     # append the NAGs to comment if not standard
@@ -1592,17 +1655,16 @@ proc ::tree::mask::feedMask { fen } {
       if {$oldNag != $::tree::mask::emptyNag && $oldNag != $nag} {
         set comment "<$oldNag>(?!?) $comment"
       }
-      setNag $move $nag $fen
+      setNag $move $nag $fen 0
     }
   }
-  
+
   # append comment
   set oldComment [getComment $move $fen]
   if { $oldComment != "" && $oldComment != $comment } {
     set comment "$oldComment\n$comment"
   }
   setComment $move $comment $fen
-  
 }
 ################################################################################
 #  trim the fen to keep position data only

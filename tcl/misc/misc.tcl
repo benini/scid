@@ -401,20 +401,11 @@ proc updateProgressWindow {done total} {
   set w .progressWin
   if {! [winfo exists $w]} { return }
   set elapsed [expr {[clock seconds] - $::progressWin_time}]
-  set width 401
-  if {$total > 0} {
-    set width [expr {int(double($width) * double($done) / double($total))}]
-  }
-  $w.f.c coords bar 0 0 $width 21
   set estimated $elapsed
   if {$done != 0} {
     set estimated [expr {int(double($elapsed) * double($total) / double($done))}]
   }
-  set t [format "%d:%02d / %d:%02d" \
-      [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
-      [expr {$estimated / 60}] [expr {$estimated % 60}]]
-  $w.f.c itemconfigure time -text $t
-  update
+  ::progressCallBack "$done" "$total" "$elapsed" "$estimated"
 }
 
 proc closeProgressWindow {} {
