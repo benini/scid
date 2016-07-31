@@ -1525,6 +1525,7 @@ proc ::tree::mask::addComment { { move "" } } {
   if {$move == ""} {
     set oldComment [::tree::mask::getPositionComment]
     ::setTitle $w [::tr CommentPosition]
+  } else  {
     set oldComment [::tree::mask::getComment $move ]
     ::setTitle $w [::tr CommentMove]
   }
