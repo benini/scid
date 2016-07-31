@@ -206,8 +206,7 @@ proc ::tooltip::register {w args} {
                 set args [lreplace $args 0 1]
             }
 	    default	{
-		return -code error "unknown option \"$key\":\
-			should be -index, -items or -tag"
+	        break
 	    }
 	}
 	set key [lindex $args 0]
@@ -483,4 +482,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.4.5
+package provide tooltip 1.4.6

@@ -3,7 +3,7 @@
 # Tooltips
 #
 
-set useLocalTklib [catch {package require tooltip}]
+set useLocalTklib [catch {package require tooltip 1.4.6}]
 if {$useLocalTklib} {
   source [file nativename [file join $::scidTclDir "utils/tklib_tooltip.tcl"]]
 }
