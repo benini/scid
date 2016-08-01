@@ -8,6 +8,11 @@
 #endif
 #include <assert.h>
 
+#if defined (_WIN32)
+#include <windows.h>
+#endif
+
+
 // SMP stuff
 
 #if defined (SMP)
@@ -3467,8 +3472,6 @@ static bool FRegisterTb
 // File mapping - Win32 code only
 
 #if defined (_WIN32)
-
-#include <windows.h>
 
 static BYTE * PbMapFileForRead
 	(

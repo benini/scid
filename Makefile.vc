@@ -225,7 +225,7 @@ SCID_XOBJS = \
 OPTIMIZE	= -ZI -Fd$(TMP_DIR)\ -Od
 !message *** Build 'Debug' Version	= yes
 !else
-OPTIMIZE	= -O2 /EHsc
+OPTIMIZE	= -Ox /EHsc
 !message *** Build 'Release' Version	= yes
 !if "$(GLOBAL_OPT)" == "1"
 OPTIMIZE	= $(OPTIMIZE) -GL
@@ -260,6 +260,8 @@ PROFILE		= $(PROFILE) -DWIN32 -DWIN32_LEAN_AND_MEAN
 #
 CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) \
 			$(SCID_INCLUDES) -c -nologo
+!message *** CFLAGS: $(CFLAGS)
+
 
 
 #--------------------------------------------------------------------
@@ -278,7 +280,7 @@ LDFLAGS		= $(LDFLAGS) -ltcg:status
 !endif
 !endif
 LDFLAGS		= $(LDFLAGS) -nologo
-
+!message *** LDFLAGS: $(LDFLAGS)
 
 !message ===============================================================================
 !message
