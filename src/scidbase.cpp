@@ -30,7 +30,7 @@ void scidBaseT::Init() {
 	gameAltered = false;
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
-	fileMode = FMODE_Both;
+	fileMode_ = FMODE_None;
 	gfile = new GFile;
 	bbuf = new ByteBuffer(BBUF_SIZE);
 	dbFilter = new Filter(0);
@@ -54,31 +54,30 @@ scidBaseT::~scidBaseT() {
 	}
 }
 
-errorT scidBaseT::Open (fileModeT mode,
+errorT scidBaseT::Open (fileModeT fMode,
                         const char* filename,
-                        bool create,
                         const Progress& progress) {
 	if (inUse) return ERROR_FileInUse;
 	if (filename == 0) filename = "";
 
 	inUse = true;
-	fileMode = mode;
 	errorT err = OK;
 
-	if (fileMode == FMODE_Memory) {
+	if (fMode == FMODE_Memory) {
 		idx->SetDescription ("In-memory database");
 		gfile->CreateMemoryOnly();
 	} else {
-		if (create) {
+		if (fMode == FMODE_Create) {
+			fMode = FMODE_Both;
 			idx->SetDescription ("");
 			err = idx->Create(filename);
 			if (err == OK) err = idx->WriteHeader();
 			if (err == OK) err = nb->Create(filename);
-			if (err == OK) err = gfile->Create (filename, FMODE_Both);
+			if (err == OK) err = gfile->Create(filename);
 		} else {
-			err = idx->Open(filename, fileMode);
+			err = idx->Open(filename, fMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
-			if (err == OK) err = gfile->Open (filename, fileMode);
+			if (err == OK) err = gfile->Open(filename, fMode);
 			if (err == OK) err = idx->ReadEntireFile (nb, progress);
 		}
 	}
@@ -90,6 +89,7 @@ errorT scidBaseT::Open (fileModeT mode,
 		return err;
 	}
 
+	fileMode_ = fMode;
 	fileName_ = filename;
 	gameNumber = -1;
 
@@ -115,6 +115,7 @@ errorT scidBaseT::Close () {
 	clear();
 	game->Clear();
 	inUse = false;
+	fileMode_ = FMODE_None;
 	fileName_ = "<empty>";
 	gameNumber = -1;
 	gameAltered = false;
@@ -137,7 +138,7 @@ void scidBaseT::clear() {
 
 errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 	clear();
-	if (fileMode != FMODE_Memory && writeFiles) {
+	if (fileMode_ != FMODE_Memory && writeFiles) {
 		gfile->FlushAll();
 		calcNameFreq();
 		errorT errNb = nb->WriteNameFile(nameFreq_);
@@ -303,7 +304,7 @@ errorT scidBaseT::getGame(const IndexEntry* ie, std::vector<GamePos>& dest) {
 }
 
 errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
-	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+	if (isReadOnly()) return ERROR_FileReadOnly;
 
 	IndexEntry iE;
 	iE.Init();
@@ -327,29 +328,29 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	return errSave;
 }
 
-errorT scidBaseT::importGame(scidBaseT* sourceBase, uint gNum) {
-	if (sourceBase == this) return ERROR_BadArg;
-	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
+	if (srcBase == this) return ERROR_BadArg;
+	if (isReadOnly()) return ERROR_FileReadOnly;
 
-	errorT err = addGameHelper(sourceBase, gNum);
+	errorT err = importGameHelper(srcBase, gNum);
 	if (err != OK) return err;
 	ASSERT(numGames() > 0);
 	return clearCaches(numGames() -1);
 }
 
-errorT scidBaseT::importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
+errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress) {
 	ASSERT(*filter);
-	if (sourceBase == this) return ERROR_BadArg;
-	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
+	if (srcBase == this) return ERROR_BadArg;
+	if (isReadOnly()) return ERROR_FileReadOnly;
 
 	errorT err = OK;
 	uint iProgress = 0;
 	uint totGames = filter.count();
 	Filter* f; int i_filters=0;
 	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
-	for (gamenumT gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
+	for (gamenumT gNum = 0, n = srcBase->numGames(); gNum < n; gNum++) {
 		if (filter.get(gNum) == 0) continue;
-		err = addGameHelper(sourceBase, gNum);
+		err = importGameHelper(srcBase, gNum);
 		if (err != OK) break;
 		if (iProgress++ % 10000 == 0) {
 			if (!progress.report(iProgress, totGames)) break;
@@ -359,12 +360,12 @@ errorT scidBaseT::importGames(scidBaseT* sourceBase, const HFilter& filter, cons
 	return (err == OK) ? errClear : err;
 }
 
-errorT scidBaseT::addGameHelper(scidBaseT* sourceBase, uint gNum) {
+errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
 	// Importing a game from the same base works, but it's too dangerous
 	ASSERT(sourceBase != this);
 
 	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
-	errorT err = sourceBase->gfile->ReadGame(sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength());
+	errorT err = sourceBase->getGame(srcIe, sourceBase->bbuf);
 	if (err != OK) return err;
 
 	IndexEntry iE = *srcIe;
@@ -595,7 +596,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 		const IndexEntry* ie = getIndexEntry(gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
 		if (move.isNull()) {
-			move = gfile->ReadGame(ie->GetOffset(), ie->GetLength()).getMove(ply);
+			move = getGame(ie).getMove(ply);
 		}
 
 		size_t i = 0;
@@ -652,7 +653,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 }
 
 errorT scidBaseT::compact(const Progress& progress) {
-	if (fileMode != FMODE_Both) {
+	if (fileMode_ != FMODE_Both) {
 		//Older scid version to be upgraded are opened read only
 		if (idx->GetVersion() == SCID_VERSION) return ERROR_FileMode;
 	}
@@ -673,7 +674,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	std::string filename = fileName_;
 	std::string tmpfile = filename + "__COMPACT__";
 	scidBaseT tmp;
-	errorT err_Create = tmp.Open(FMODE_Both, tmpfile.c_str());
+	errorT err_Create = tmp.Open(FMODE_Create, tmpfile.c_str());
 	if (err_Create != OK) return err_Create;
 
 	//3) Copy the Index Header
@@ -691,7 +692,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	bool err_UserCancel = false;
 	errorT err_AddGame = OK;
 	for (sort_t::iterator it = sort.begin(); it != sort.end(); it++) {
-		err_AddGame = tmp.addGameHelper(this, (*it).second);
+		err_AddGame = tmp.importGameHelper(this, (*it).second);
 		if (err_AddGame != OK) break;
 
 		if ((it->second + 1) == oldAutoload) {
@@ -736,7 +737,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), NAMEBASE_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), GFILE_SUFFIX);
-	errorT res = Open(FMODE_Both, filename.c_str(), false);
+	errorT res = Open(FMODE_Both, filename.c_str());
 	for (size_t i = 0; i <filters.size(); i++) {
 		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}

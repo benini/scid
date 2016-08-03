@@ -70,17 +70,15 @@ public:
     GFile()  { Init(); }
     ~GFile();
 
-    errorT   Create (const char * filename, fileModeT fmode);
+    errorT   Create (const char * filename);
     errorT   CreateMemoryOnly ();
     errorT   Open (const char * filename, fileModeT fmode);
     errorT   Close ();
     void     FlushAll ()  { Flush (&CurrentBlock); }
     
     errorT   AddGame (ByteBuffer * bb, uint * offset);
-    FastGame ReadGame (uint offset, uint length) {
-        const byte* b = read_(offset, length);
-        if (b == 0) length = 0; //Error
-        return FastGame::Create(b, b+length);
+    const byte* getGame(uint offset, uint length) {
+        return read_(offset, length);
     }
     errorT   ReadGame (ByteBuffer * bb, uint offset, uint length) {
         const byte* b = read_(offset, length);

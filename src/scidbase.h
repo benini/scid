@@ -82,8 +82,7 @@ struct scidBaseT {
 	~scidBaseT();
 
 	errorT Open (fileModeT mode,
-	             const char* filename = "",
-	             bool create = true,
+	             const char* filename = 0,
 	             const Progress& progress = Progress());
 
 	errorT Close ();
@@ -93,7 +92,7 @@ struct scidBaseT {
 	HFilter getFilter(const char* filterName) const;
 
 	const std::string& getFileName() const { return fileName_; }
-	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
+	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }
 	gamenumT numGames() const { return idx->GetNumGames(); }
 	errorT getExtraInfo(const std::string& tagname, std::string* res) const;
 	errorT setExtraInfo(const std::string& tagname, const char* new_value);
@@ -109,7 +108,10 @@ struct scidBaseT {
 		return nb;
 	}
 	FastGame getGame(const IndexEntry* ie) const {
-		return gfile->ReadGame(ie->GetOffset(), ie->GetLength());
+		uint length = ie->GetLength();
+		const byte* b = gfile->getGame(ie->GetOffset(), length);
+		if (b == 0) length = 0; // Error
+		return FastGame::Create(b, b + length);
 	}
 	errorT getGame(const IndexEntry* ie, ByteBuffer* bb) const {
 		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
@@ -125,8 +127,8 @@ struct scidBaseT {
 	};
 	errorT getGame(const IndexEntry* ie, std::vector<GamePos>& dest);
 
-	errorT importGame(scidBaseT* sourceBase, uint gNum);
-	errorT importGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
+	errorT importGame(const scidBaseT* srcBase, uint gNum);
+	errorT importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress);
 	template <class T, class P>
 	errorT importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg);
 
@@ -204,7 +206,7 @@ struct scidBaseT {
 private:
 	GFile* gfile;
 	std::string fileName_; // File name without ".si" suffix
-	fileModeT fileMode; // Read-only, write-only, or both.
+	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
 	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
@@ -215,7 +217,7 @@ private:
 	void Init();
 	void clear();
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
-	errorT addGameHelper(scidBaseT* sourceBase, uint gNum);
+	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 	void calcNameFreq ();
 

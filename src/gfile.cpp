@@ -60,20 +60,19 @@ GFile::Close ()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::Create():
-//      Create a new gfile. The parameter "fmode" can be writeonly or
-//      both, but it makes no sense for it to be readonly.
+//      Create a new gfile.
 //
 errorT
-GFile::Create (const char * filename, fileModeT fmode)
+GFile::Create (const char * filename)
 {
     if (Handle != NULL) { return ERROR_FileInUse; }
     sprintf (FileName, "%s%s", filename, GFILE_SUFFIX);
-    FileMode = fmode;
     Handle = new MFile;
-    if (Handle->Create (FileName, fmode) != OK) {
+    if (Handle->Create (FileName, FMODE_Both) != OK) {
         Close();
         return ERROR_FileOpen;
     }
+    FileMode = FMODE_Both;
     return OK;
 }
 
