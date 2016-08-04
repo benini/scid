@@ -7,7 +7,7 @@
 #
 proc ::game::Clear {} {
   set confirm [::game::ConfirmDiscard]
-  if {$confirm == 0} { return }
+  if {$confirm == 0} { return "cancel"}
   if {$confirm == 1} { ::notify::DatabaseModified $::curr_db }
   if {$confirm == 2} { ::notify::DatabaseModified $::clipbase_db }
   

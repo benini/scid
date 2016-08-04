@@ -977,6 +977,7 @@ proc baseIsCompactable {} {
 
 proc compactDB {{base -1}} {
   if {$base < 0} { set base [sc_base current] }
+  if {[::game::Clear] == "cancel"} { return }
   if {[catch {sc_base compact $base stats} stats]} {
     return [ERROR::MessageBox "$::tr(CompactDatabase)\n"]
   }
@@ -1033,6 +1034,7 @@ proc compactDB {{base -1}} {
         -title [concat "Scid: " $::tr(CompactDatabase)] \
         -message "$msg"
     ::notify::DatabaseModified $base
+    ::game::Clear
   }
 }
 
