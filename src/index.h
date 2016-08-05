@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 1999-2002  Shane Hudson
 * Copyright (c) 2006-2009  Pascal Georges
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -28,6 +28,7 @@
 #include "filebuf.h"
 #include <string>
 #include <vector>
+#include <cstring>
 
 class NameBase;
 class SortCache;
@@ -136,37 +137,44 @@ public:
 
     /**
      * Header setter functions
-     * The header is written as a whole and for performance reasons this functions
-     * do not immediately writes changes to the index file.
-     * Changes are automatically written to file when the object is destroyed or closed.
-     * However, for maximum security against power loss, crash, etc, it is recommended
-     * to call the function WriteHeader() after using this functions.
      */
-    void SetType (uint t) {
+    errorT copyHeaderInfo(const Index& src) {
+        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
+        Header.baseType = src.Header.baseType;
+        Header.autoLoad = src.Header.autoLoad;
+        std::memcpy(Header.description, src.Header.description, sizeof Header.description);
+        std::memcpy(Header.customFlagDesc, src.Header.customFlagDesc, sizeof Header.customFlagDesc);
+        Header.dirty_ = true;
+        return flush();
+    }
+    errorT SetType (uint t) {
+        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         Header.baseType = t;
         Header.dirty_ = true;
+        return flush();
     }
-    void SetDescription (const char* str) {
+    errorT SetDescription (const char* str) {
+        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         strncpy(Header.description, str, SCID_DESC_LENGTH);
         Header.description[SCID_DESC_LENGTH] = 0;
         Header.dirty_ = true;
+        return flush();
     }
-    void SetCustomFlagDesc (byte c, const char* str) {
-        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return;
+    errorT SetCustomFlagDesc (byte c, const char* str) {
+        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
+        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return ERROR_BadArg;
         char* flagDesc = Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
         strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
         flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
         Header.dirty_ = true;
+        return flush();
     }
-    void SetAutoLoad (gamenumT gnum) {
+    errorT SetAutoLoad (gamenumT gnum) {
+        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         Header.autoLoad = gnum;
         Header.dirty_ = true;
+        return flush();
     }
-
-    /**
-     * WriteHeader() - write Header to the disk
-     */
-    errorT WriteHeader ();
 
     /**
      * FetchEntry() - return a modifiable pointer to a game's IndexEntry
@@ -193,17 +201,31 @@ public:
      */
     errorT WriteEntry (const IndexEntry* ie, gamenumT idx, bool flush = true) {
         errorT res = write(ie, idx);
-        if (flush && res == OK && FilePtr != NULL) {
-            res = (FilePtr->pubsync() != -1) ? OK : ERROR_FileWrite;;
-        }
+        if (flush && res == OK) res = this->flush();
         return res;
     }
 
     /**
      * AddGame() - add a game to the Index
+     * @ie: valid pointer to the IndexEntry object with data for the new game.
+     *
+     * For performance reasons this function can cache the changes and they are
+     * automatically written to file when the object is destroyed or closed.
+     * However, for maximum security against power loss, crash, etc, it is
+     * recommended to call the function flush() after using this function.
      */
     errorT AddGame (const IndexEntry* ie) {
         return WriteEntry(ie, GetNumGames(), false);
+    }
+
+    /**
+     * flush() - writes all cached data to the file
+     */
+    errorT flush() {
+        if (FilePtr == 0) return OK;
+        errorT errHeader = (Header.dirty_) ? WriteHeader() : OK;
+        errorT errSync = (FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
+        return (errHeader == OK) ? errSync : errHeader;
     }
 
     /* CreateSortingCache
@@ -261,6 +283,7 @@ private:
     void Init ();
     errorT Clear ();
     errorT write (const IndexEntry* ie, gamenumT idx);
+    errorT WriteHeader ();
 };
 
 

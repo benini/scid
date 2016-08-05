@@ -38,7 +38,7 @@ void DBasePool::init() {
 	dbList = new scidBaseT[MAX_BASES];
 
 	dbList[CLIPBASE_NUM].Open(FMODE_Memory, "<clipbase>");
-	dbList[CLIPBASE_NUM].idx->SetType(2);
+	dbList[CLIPBASE_NUM].setExtraInfo("type", "2");
 
 	DBasePool::switchCurrent(&(dbList[CLIPBASE_NUM]));
 }

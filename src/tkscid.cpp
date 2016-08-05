@@ -1225,7 +1225,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case CLIP_CLEAR:
         clipbase->Close();
         clipbase->Open(FMODE_Memory, "<clipbase>");
-        clipbase->idx->SetType (2);
+        clipbase->setExtraInfo("type", "2");
         return TCL_OK;
 
     case CLIP_PASTE:

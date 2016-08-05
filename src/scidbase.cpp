@@ -71,7 +71,6 @@ errorT scidBaseT::Open (fileModeT fMode,
 			fMode = FMODE_Both;
 			idx->SetDescription ("");
 			err = idx->Create(filename);
-			if (err == OK) err = idx->WriteHeader();
 			if (err == OK) err = nb->Create(filename);
 			if (err == OK) err = gfile->Create(filename);
 		} else {
@@ -143,7 +142,7 @@ errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 		calcNameFreq();
 		errorT errNb = nb->WriteNameFile(nameFreq_);
 		if (errNb != OK) return errNb;
-		errorT errIdx = idx->WriteHeader();
+		errorT errIdx = idx->flush();
 		if (errIdx != OK) return errIdx;
 	}
 	idx->IndexUpdated(gNum);
@@ -172,20 +171,18 @@ errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) con
 
 errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value) {
 	if (tagname == "description") {
-		idx->SetDescription(new_value);
+		return idx->SetDescription(new_value);
 	} else if (tagname == "autoload") {
-		idx->SetAutoLoad(strGetUnsigned(new_value));
+		return idx->SetAutoLoad(strGetUnsigned(new_value));
 	} else if (tagname == "type") {
-		idx->SetType(strGetUnsigned(new_value));
+		return idx->SetType(strGetUnsigned(new_value));
 	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
 		uint flagType = IndexEntry::CharToFlag(tagname[4]);
 		if (flagType == 0) return ERROR_BadArg;
 		if (idx->GetCustomFlagDesc(flagType) == 0) return ERROR_BadArg;
-		idx->SetCustomFlagDesc(flagType, new_value);
-	} else {
-		return ERROR_BadArg;
+		return idx->SetCustomFlagDesc(flagType, new_value);
 	}
-	return idx->WriteHeader();
+	return ERROR_BadArg;
 }
 
 /**

@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 1999-2002  Shane Hudson
 * Copyright (c) 2006-2009  Pascal Georges
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -43,8 +43,7 @@ void Index::Init ()
 
 errorT Index::Clear ()
 {
-    errorT res = OK;
-    if (Header.dirty_ && fileMode_ == FMODE_Both) res = WriteHeader();
+    errorT res = flush();
     delete FilePtr;
     for(uint i=0; i<SORTING_CACHE_MAX; i++) delete sortingCaches[i];
     Init();
@@ -202,7 +201,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
 errorT
 Index::WriteHeader ()
 {
-    if (FilePtr == NULL) return OK;
+    ASSERT(FilePtr != NULL);
     if (FilePtr->pubseekpos(0) != std::streampos(0)) return ERROR_FileWrite;
 
     seqWrite_ = 0;
@@ -225,6 +224,7 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
 {
     if (idx > Header.numGames) return ERROR_BadArg;
     if (idx >= MAX_GAMES) return ERROR_IndexFull;
+    if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
 
     for (uint i=0; i<SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] != NULL) sortingCaches[i]->PrepareForChanges(idx);
@@ -239,8 +239,6 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
         *copyToMemory = *ie;
     }
     if (FilePtr == NULL) return OK;
-
-    if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
 
     if ((seqWrite_ == 0) || (idx != seqWrite_ + 1)) {
         std::streampos pos = INDEX_ENTRY_SIZE * idx + INDEX_HEADER_SIZE;
