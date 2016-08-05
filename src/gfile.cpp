@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 2001  Shane Hudson
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -20,6 +20,7 @@
 #include "gfile.h"
 #include "mfile.h"
 #include "misc.h"
+#include <algorithm>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::Init(): Initialise the GFile.
@@ -39,7 +40,7 @@ GFile::Init ()
 }
 
 GFile::~GFile() {
-    FlushAll();
+    flush();
     if (Handle != NULL) delete Handle;
 }
 
@@ -49,10 +50,8 @@ errorT
 GFile::Close ()
 {
     if (Handle == NULL) { return ERROR_FileNotOpen; }
-    if (CurrentBlock.dirty  &&  FileMode != FMODE_ReadOnly) {
-        if (Flush (&CurrentBlock) != OK) { return ERROR_FileWrite; }
-    }
-
+    errorT errFlush = flush();
+    if (errFlush != OK) return errFlush;
     delete Handle;
     Init();
     return OK;
@@ -86,7 +85,6 @@ GFile::CreateMemoryOnly ()
     return OK;
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::Open():
 //      Open a gfile for reading, writing, or both.
@@ -117,11 +115,11 @@ GFile::Open (const char * filename, fileModeT fmode)
 // GFile::Flush():
 //      Flush any blocks that have been modified to the disk.
 //
-errorT
-GFile::Flush (gfBlockT * blk)
+errorT GFile::flush()
 {
     if (Handle == NULL) { return ERROR_FileNotOpen; }
-    if (FileMode == FMODE_ReadOnly) { return ERROR_FileMode; }
+
+    gfBlockT* blk = &CurrentBlock;
     if (!blk->dirty) {
         // File is clean, no need to write anything.
         return OK;
@@ -154,10 +152,13 @@ GFile::Flush (gfBlockT * blk)
 //      Fetch a single block from the file.
 //
 errorT
-GFile::Fetch (gfBlockT * blk, int blkNum)
+GFile::Fetch(int blkNum)
 {
     if (Handle == NULL) { return ERROR_FileNotOpen; }
-    if (blk->dirty  &&  FileMode != FMODE_ReadOnly) { Flush(blk); }
+
+    if (CurrentBlock.dirty  &&  FileMode != FMODE_ReadOnly) flush();
+
+    gfBlockT* blk = &CurrentBlock;
     uint filePos = blkNum * GF_BLOCKSIZE;
     if (Offset != filePos) {
         if (Handle->Seek(filePos) != OK) { return ERROR_FileSeek; }
@@ -184,10 +185,8 @@ GFile::Fetch (gfBlockT * blk, int blkNum)
 //      last block, or a new block is added if the record will not
 //      fit in the last block.
 //
-errorT
-GFile::AddGame (ByteBuffer * bb, uint * offset)
+errorT GFile::addGame(const byte* src, size_t length, uint& resOffset)
 {
-    *offset = 0;
     if (Handle == NULL) { return ERROR_FileNotOpen; }
     if (FileMode == FMODE_ReadOnly) { return ERROR_FileMode; }
     if (NumBlocks == 0) { // First block for this file
@@ -197,27 +196,27 @@ GFile::AddGame (ByteBuffer * bb, uint * offset)
     } else {
         // Either add to the last block, or make a new block:
         
-        if (LastBlockSize + bb->GetByteCount() > GF_BLOCKSIZE) {
+        if (LastBlockSize + length > GF_BLOCKSIZE) {
             // Need a new block!
             
-            if (Flush(&CurrentBlock) != OK) { return ERROR_FileWrite; }
+            if (flush() != OK) { return ERROR_FileWrite; }
             CurrentBlock.blockNum = NumBlocks++;
             CurrentBlock.length = 0;
         } else {
             // It will fit in the last block. Fetch it:
             
             if (CurrentBlock.blockNum != (int) NumBlocks - 1) {
-                Fetch (&CurrentBlock, NumBlocks - 1);
+                Fetch(NumBlocks - 1);
             }
         }
     }
     
     // Now, CurrentBlock contains the block the game will be added to.
-    ASSERT (CurrentBlock.length + bb->GetByteCount() <= GF_BLOCKSIZE);
+    ASSERT(CurrentBlock.length + length <= GF_BLOCKSIZE);
 
-    bb->CopyTo (&(CurrentBlock.data[CurrentBlock.length]));
-    *offset = CurrentBlock.blockNum * GF_BLOCKSIZE + CurrentBlock.length;
-    CurrentBlock.length += bb->GetByteCount();
+    std::copy(src, src + length, &(CurrentBlock.data[CurrentBlock.length]));
+    resOffset = CurrentBlock.blockNum * GF_BLOCKSIZE + CurrentBlock.length;
+    CurrentBlock.length += length;
     LastBlockSize = CurrentBlock.length;
     CurrentBlock.dirty = true;
     return OK;

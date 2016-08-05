@@ -70,9 +70,7 @@ class ByteBuffer
     }
     void   GetFixedString (char *str, uint length);
     uint   GetTerminatedString (char **str);
-    void   CopyTo (byte * target) {
-        memcpy( target , Buffer, ByteCount);
-    }
+    const byte* getData() { return Buffer; }
 
 /*
  * Writing to a bytebuffer is very error-prone

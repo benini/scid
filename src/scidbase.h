@@ -27,6 +27,7 @@
 #include "game.h"
 #include "tree.h"
 #include "stored.h"
+#include "fastgame.h"
 #include <vector>
 
 
@@ -113,8 +114,14 @@ struct scidBaseT {
 		if (b == 0) length = 0; // Error
 		return FastGame::Create(b, b + length);
 	}
-	errorT getGame(const IndexEntry* ie, ByteBuffer* bb) const {
-		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
+	errorT getGame(const IndexEntry* ie, ByteBuffer* destBuf) const {
+		uint length = ie->GetLength();
+		const byte* b = gfile->getGame(ie->GetOffset(), length);
+		if (b == 0) return ERROR_FileRead;
+		// The data for the game is not actually copied into the bytebuffer, which would
+		// be slower and a waste of time if the bytebuffer is not going to be modified.
+		destBuf->ProvideExternal(const_cast<byte*>(b), length);
+		return OK;
 	}
 
 	struct GamePos {

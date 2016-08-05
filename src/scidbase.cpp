@@ -139,7 +139,7 @@ void scidBaseT::clear() {
 errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 	clear();
 	if (fileMode_ != FMODE_Memory && writeFiles) {
-		gfile->FlushAll();
+		gfile->flush();
 		calcNameFreq();
 		errorT errNb = nb->WriteNameFile(nameFreq_);
 		if (errNb != OK) return errNb;
@@ -381,7 +381,7 @@ errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
 errorT scidBaseT::saveGameHelper(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx) {
 	// Now try writing the game to the gfile:
 	uint offset = 0;
-	errorT errGFile = gfile->AddGame (bytebuf, &offset);
+	errorT errGFile = gfile->addGame (bytebuf->getData(), bytebuf->GetByteCount(), offset);
 	if (errGFile != OK) return errGFile;
 	iE->SetOffset (offset);
 	iE->SetLength (bytebuf->GetByteCount());

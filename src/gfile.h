@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 1999  Shane Hudson
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2016  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -23,7 +23,6 @@
 
 #include "common.h"
 #include "bytebuf.h"
-#include "fastgame.h"
 
 class MFile;
 
@@ -49,23 +48,6 @@ private:
         byte  data [GF_BLOCKSIZE];
     }  CurrentBlock;
 
-    GFile(const GFile&);
-    GFile& operator=(const GFile&);
-    void Init ();
-    errorT Fetch (gfBlockT * blk, int blockNum);
-    errorT Flush (gfBlockT * blk);
-    const byte* read_ (uint offset, uint length)
-    {
-        int blockNum = (offset / GF_BLOCKSIZE);
-        int endBlockNum = (offset + length - 1) / GF_BLOCKSIZE;
-        if (endBlockNum != blockNum  || blockNum >= NumBlocks) return 0;
-        if (CurrentBlock.blockNum != blockNum) {
-            if (Fetch (&CurrentBlock, blockNum) != OK) return 0;
-        }
-
-        return CurrentBlock.data + (offset % GF_BLOCKSIZE);
-    }
-
 public:
     GFile()  { Init(); }
     ~GFile();
@@ -74,20 +56,26 @@ public:
     errorT   CreateMemoryOnly ();
     errorT   Open (const char * filename, fileModeT fmode);
     errorT   Close ();
-    void     FlushAll ()  { Flush (&CurrentBlock); }
+    errorT   flush();
     
-    errorT   AddGame (ByteBuffer * bb, uint * offset);
+    errorT addGame(const byte* src, size_t length, uint& resOffset);
+
     const byte* getGame(uint offset, uint length) {
-        return read_(offset, length);
+        int blockNum = (offset / GF_BLOCKSIZE);
+        int endBlockNum = (offset + length - 1) / GF_BLOCKSIZE;
+        if (endBlockNum != blockNum  || blockNum >= NumBlocks) return 0;
+        if (CurrentBlock.blockNum != blockNum) {
+            if (Fetch (blockNum) != OK) return 0;
+        }
+
+        return CurrentBlock.data + (offset % GF_BLOCKSIZE);
     }
-    errorT   ReadGame (ByteBuffer * bb, uint offset, uint length) {
-        const byte* b = read_(offset, length);
-        if (b == 0) return ERROR_FileRead;
-        // The data for the game is not actually copied into the bytebuffer, which would
-        // be slower and a waste of time if the bytebuffer is not going to be modified.
-        bb->ProvideExternal ((byte*) b, length);
-        return OK;
-    }
+
+private:
+    GFile(const GFile&);
+    GFile& operator=(const GFile&);
+    void Init ();
+    errorT Fetch(int blockNum);
 };
 
 #endif // SCID_GFLE_H
