@@ -314,6 +314,9 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
 	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
 
+	const IndexEntry* ieOld = getIndexEntry_bounds(gnum);
+	if (ieOld) iE.copyUserFlags(*ieOld);
+
 	errorT errSave = saveGameHelper(&iE, bbuf, gnum);
 	if (errSave == OK && clearCache) {
 		if (gnum >= numGames()) {
@@ -390,11 +393,6 @@ errorT scidBaseT::saveGameHelper(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT o
 	// or the name file, since there might be more games saved yet and
 	// writing them now would then be a waste of time.
 	if (oldIdx < numGames()) {
-		const IndexEntry* ieOld = getIndexEntry(oldIdx);
-		// Remember previous user-settable flags:
-		for (uint flag = IDX_FLAG_DELETE; flag < IDX_NUM_FLAGS; flag++) {
-			iE->SetFlag(1 << flag, ieOld->GetFlag(1 << flag));
-		}
 		errorT err = idx->WriteEntry (iE, oldIdx);
 		if (err != OK) return err;
 	} else {
@@ -469,7 +467,7 @@ scidBaseT::Stats::Eco::Eco()
 }
 
 scidBaseT::Stats::Stats(const scidBaseT* dbase) {
-	std::fill(flagCount, flagCount + IDX_NUM_FLAGS, 0);
+	std::fill(flagCount, flagCount + IndexEntry::IDX_NUM_FLAGS, 0);
 	minDate = ZERO_DATE;
 	maxDate = ZERO_DATE;
 	nYears = 0;
@@ -511,7 +509,7 @@ scidBaseT::Stats::Stats(const scidBaseT* dbase) {
 			sumYears += date_GetYear (date);
 		}
 
-		for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
+		for (uint flag = 0; flag < IndexEntry::IDX_NUM_FLAGS; flag++) {
 			bool value = ie->GetFlag (1 << flag);
 			if (value) {
 				flagCount[flag]++;
@@ -676,13 +674,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 
 	//3) Copy the Index Header
 	idx->FreeSortCache(0);
-	tmp.idx->SetType (idx->GetType());
-	tmp.idx->SetDescription (idx->GetDescription());
+	tmp.idx->copyHeaderInfo(*idx);
 	gamenumT oldAutoload = idx->GetAutoLoad();
-	for (byte b = IDX_FLAG_CUSTOM1; b < IDX_FLAG_CUSTOM1 + CUSTOM_FLAG_MAX ; b++ ) {
-		const char* flagDesc = idx->GetCustomFlagDesc(b);
-		tmp.idx->SetCustomFlagDesc(b, flagDesc);
-	}
 
 	//4) Copy the games
 	uint iProgress = 0;

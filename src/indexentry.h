@@ -35,55 +35,7 @@ const uint HPSIG_SIZE = 9;
 
 const uint MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
 
-// IndexEntry Flag types:
-#define  IDX_NUM_FLAGS 22
-
-#define  IDX_FLAG_START         0   // Game has own start position.
-#define  IDX_FLAG_PROMO         1   // Game contains promotion(s).
-#define  IDX_FLAG_UPROMO        2   // Game contains promotion(s).
-#define  IDX_FLAG_DELETE        3   // Game marked for deletion.
-#define  IDX_FLAG_WHITE_OP      4   // White openings flag.
-#define  IDX_FLAG_BLACK_OP      5   // Black openings flag.
-#define  IDX_FLAG_MIDDLEGAME    6   // Middlegames flag.
-#define  IDX_FLAG_ENDGAME       7   // Endgames flag.
-#define  IDX_FLAG_NOVELTY       8   // Novelty flag.
-#define  IDX_FLAG_PAWN          9   // Pawn structure flag.
-#define  IDX_FLAG_TACTICS      10   // Tactics flag.
-#define  IDX_FLAG_KSIDE        11   // Kingside play flag.
-#define  IDX_FLAG_QSIDE        12   // Queenside play flag.
-#define  IDX_FLAG_BRILLIANCY   13   // Brilliancy or good play.
-#define  IDX_FLAG_BLUNDER      14   // Blunder or bad play.
-#define  IDX_FLAG_USER         15   // User-defined flag.
-
-#define  IDX_FLAG_CUSTOM1      16   // Custom flag.
-#define  IDX_FLAG_CUSTOM2      17   // Custom flag.
-#define  IDX_FLAG_CUSTOM3      18   // Custom flag.
-#define  IDX_FLAG_CUSTOM4      19   // Custom flag.
-#define  IDX_FLAG_CUSTOM5      20   // Custom flag.
-#define  IDX_FLAG_CUSTOM6      21   // Custom flag.
-
-
-#define  IDX_MASK_START         (1 << IDX_FLAG_START)
-#define  IDX_MASK_PROMO         (1 << IDX_FLAG_PROMO)
-#define  IDX_MASK_UPROMO        (1 << IDX_FLAG_UPROMO)
-#define  IDX_MASK_DELETE        (1 << IDX_FLAG_DELETE)
-#define  IDX_MASK_WHITE_OP      (1 << IDX_FLAG_WHITE_OP)
-#define  IDX_MASK_BLACK_OP      (1 << IDX_FLAG_BLACK_OP)
-#define  IDX_MASK_MIDDLEGAME    (1 << IDX_FLAG_MIDDLEGAME)
-#define  IDX_MASK_ENDGAME       (1 << IDX_FLAG_ENDGAME)
-#define  IDX_MASK_NOVELTY       (1 << IDX_FLAG_NOVELTY)
-#define  IDX_MASK_PAWN          (1 << IDX_FLAG_PAWN)
-#define  IDX_MASK_TACTICS       (1 << IDX_FLAG_TACTICS)
-#define  IDX_MASK_KSIDE         (1 << IDX_FLAG_KSIDE)
-#define  IDX_MASK_QSIDE         (1 << IDX_FLAG_QSIDE)
-#define  IDX_MASK_BRILLIANCY    (1 << IDX_FLAG_BRILLIANCY)
-#define  IDX_MASK_BLUNDER       (1 << IDX_FLAG_BLUNDER)
-#define  IDX_MASK_USER          (1 << IDX_FLAG_USER)
-#define  IDX_MASK_ALLFLAGS      (0xFFFFFFFF)
-
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
-
-
 
 // Total on-disk size per index entry: currently 47 bytes.
 const uint  INDEX_ENTRY_SIZE = 47;
@@ -133,13 +85,13 @@ public:
 
 
     uint GetOffset () const { return Offset; }
-    void SetOffset (uint offset) { Offset = offset; }
+    void SetOffset (uint32_t offset) { Offset = offset; }
     uint GetLength () const { return (Length_Low + ((Length_High & 0x80) << 9)); }
-    void SetLength (uint length) {
+    void SetLength (size_t length) {
         ASSERT(length >= 0 && length < MAX_GAME_LENGTH);
-        Length_Low = (unsigned short) (length & 0xFFFF);
+        Length_Low = static_cast<uint16_t>(length & 0xFFFF);
         // preserve the last 7 bits
-        Length_High = ( Length_High & 0x7F ) | (byte) ( (length >> 16) << 7 );
+        Length_High = ( Length_High & 0x7F ) | static_cast<byte>( (length >> 16) << 7 );
     }
 
 
@@ -355,18 +307,18 @@ public:
         }
         return (tmp & mask) == mask;
     }
-    bool GetStartFlag () const      { return (Flags & IDX_MASK_START) != 0; }
-    bool GetPromotionsFlag () const { return (Flags & IDX_MASK_PROMO) != 0; }
-    bool GetUnderPromoFlag() const  { return (Flags & IDX_MASK_UPROMO) != 0; }
+    bool GetStartFlag () const      { return (Flags & (1 << IDX_FLAG_START)) != 0; }
+    bool GetPromotionsFlag () const { return (Flags & (1 << IDX_FLAG_PROMO)) != 0; }
+    bool GetUnderPromoFlag() const  { return (Flags & (1 << IDX_FLAG_UPROMO)) != 0; }
     bool GetCommentsFlag () const   { return (GetCommentCount() > 0); }
     bool GetVariationsFlag () const { return (GetVariationCount() > 0); }
     bool GetNagsFlag () const       { return (GetNagCount() > 0); }
-    bool GetDeleteFlag () const     { return (Flags & IDX_MASK_DELETE) != 0; }
+    bool GetDeleteFlag () const     { return (Flags & (1 << IDX_FLAG_DELETE)) != 0; }
 
     static uint CharToFlag (char ch);
     static uint32_t CharToFlagMask (char flag);
     static uint32_t StrToFlagMask (const char* flags);
-    uint GetFlagStr (char * str, const char * flags) const;
+    uint GetFlagStr(char* dest, const char* flags) const;
 
     uint GetVariationCount () const { return DecodeCount(VarCounts & 15); }
     uint GetCommentCount () const   { return DecodeCount((VarCounts >> 4) & 15); }
@@ -377,7 +329,12 @@ public:
     const byte* GetHomePawnData () const { return HomePawnData; }
     byte* GetHomePawnData () { return HomePawnData; }
 
-
+    void copyUserFlags(const IndexEntry& ie) {
+        uint16_t notuser = (1 << IDX_FLAG_START) |  (1 << IDX_FLAG_PROMO) | (1 << IDX_FLAG_UPROMO);
+        Flags = (Flags & notuser) | (ie.Flags & (~notuser));
+        byte custom = ie.Length_High & 0x3F;
+        Length_High = (Length_High & 0xC0) | custom;
+    }
     void SetFlag (uint32_t flagMask, bool b) {
         uint16_t flagLow = flagMask & 0xFFFF;
         if (flagLow != 0) {
@@ -397,22 +354,11 @@ public:
             }
         }
     }
-    void SetStartFlag (bool b)      { SetFlag (IDX_MASK_START, b); }
-    void SetPromotionsFlag (bool b) { SetFlag (IDX_MASK_PROMO, b); }
-    void SetUnderPromoFlag (bool b) { SetFlag (IDX_MASK_UPROMO, b); }
-    void SetDeleteFlag (bool b)     { SetFlag (IDX_MASK_DELETE, b); }
-    void SetUserFlag (bool b)       { SetFlag (IDX_MASK_USER, b); }
-    void SetBlackOpFlag (bool b)    { SetFlag (IDX_MASK_BLACK_OP, b); }
-    void SetMiddlegameFlag (bool b) { SetFlag (IDX_MASK_MIDDLEGAME, b); }
-    void SetEndgameFlag (bool b)    { SetFlag (IDX_MASK_ENDGAME, b); }
-    void SetNoveltyFlag (bool b)    { SetFlag (IDX_MASK_NOVELTY, b); }
-    void SetPawnStructFlag (bool b) { SetFlag (IDX_MASK_PAWN, b); }
-    void SetTacticsFlag (bool b)    { SetFlag (IDX_MASK_TACTICS, b); }
-    void SetKingsideFlag (bool b)   { SetFlag (IDX_MASK_KSIDE, b); }
-    void SetQueensideFlag (bool b)  { SetFlag (IDX_MASK_QSIDE, b); }
-    void SetBrilliancyFlag (bool b) { SetFlag (IDX_MASK_BRILLIANCY, b); }
-    void SetBlunderFlag (bool b)    { SetFlag (IDX_MASK_BLUNDER, b); }
-    void SetWhiteOpFlag (bool b)    { SetFlag (IDX_MASK_WHITE_OP, b); }
+    void SetStartFlag (bool b)      { SetFlag(1 << IDX_FLAG_START, b); }
+    void SetPromotionsFlag (bool b) { SetFlag(1 << IDX_FLAG_PROMO, b); }
+    void SetUnderPromoFlag (bool b) { SetFlag(1 << IDX_FLAG_UPROMO, b); }
+    void SetDeleteFlag (bool b)     { SetFlag(1 << IDX_FLAG_DELETE, b); }
+    void clearFlags() { return SetFlag(IDX_MASK_ALLFLAGS, false); }
 
     void SetVariationCount (uint x) {
         VarCounts = (VarCounts & 0xFFF0U) | EncodeCount(x);
@@ -430,6 +376,34 @@ public:
     void SetStoredLineCode (byte b)    {
         FinalMatSig = u32_set_high_8 (FinalMatSig, b);
     }
+
+    enum {
+        // IndexEntry Flag types:
+        IDX_FLAG_START      =  0,   // Game has own start position.
+        IDX_FLAG_PROMO      =  1,   // Game contains promotion(s).
+        IDX_FLAG_UPROMO     =  2,   // Game contains promotion(s).
+        IDX_FLAG_DELETE     =  3,   // Game marked for deletion.
+        IDX_FLAG_WHITE_OP   =  4,   // White openings flag.
+        IDX_FLAG_BLACK_OP   =  5,   // Black openings flag.
+        IDX_FLAG_MIDDLEGAME =  6,   // Middlegames flag.
+        IDX_FLAG_ENDGAME    =  7,   // Endgames flag.
+        IDX_FLAG_NOVELTY    =  8,   // Novelty flag.
+        IDX_FLAG_PAWN       =  9,   // Pawn structure flag.
+        IDX_FLAG_TACTICS    = 10,   // Tactics flag.
+        IDX_FLAG_KSIDE      = 11,   // Kingside play flag.
+        IDX_FLAG_QSIDE      = 12,   // Queenside play flag.
+        IDX_FLAG_BRILLIANCY = 13,   // Brilliancy or good play.
+        IDX_FLAG_BLUNDER    = 14,   // Blunder or bad play.
+        IDX_FLAG_USER       = 15,   // User-defined flag.
+        IDX_FLAG_CUSTOM1    = 16,   // Custom flag.
+        IDX_FLAG_CUSTOM2    = 17,   // Custom flag.
+        IDX_FLAG_CUSTOM3    = 18,   // Custom flag.
+        IDX_FLAG_CUSTOM4    = 19,   // Custom flag.
+        IDX_FLAG_CUSTOM5    = 20,   // Custom flag.
+        IDX_FLAG_CUSTOM6    = 21,   // Custom flag.
+        IDX_NUM_FLAGS       = 22,
+        IDX_MASK_ALLFLAGS   = 0xFFFFFFFF
+    };
 
 private:
     static uint EncodeCount (uint x) {
@@ -554,7 +528,7 @@ IndexEntry::Read (T* file, versionT version)
     // Length of each gamefile record and its offset.
     Offset = file->ReadFourBytes ();
     Length_Low = file->ReadTwoBytes ();
-	Length_High = (version < 400) ? 0 : file->ReadOneByte();
+    Length_High = (version < 400) ? 0 : file->ReadOneByte();
     Flags = file->ReadTwoBytes (); 
 
     // White and Black player names:
@@ -778,7 +752,7 @@ inline uint32_t IndexEntry::StrToFlagMask(const char* flags)
 //    user-settable flags set for this game.
 //    Returns the number of specified flags that are turned on.
 inline uint
-IndexEntry::GetFlagStr (char * str, const char * flags) const
+IndexEntry::GetFlagStr(char* dest, const char* flags) const
 {
     if (flags == NULL) { flags = "DWBMENPTKQ!?U123456"; }
     uint count = 0;
@@ -786,12 +760,12 @@ IndexEntry::GetFlagStr (char * str, const char * flags) const
         uint32_t mask = CharToFlagMask(*flags);
         ASSERT(mask != 0);
         if (GetFlag(mask)) {
-            *str++ = *flags;
+            *dest++ = *flags;
             count++;
         }
         flags++;
     }
-    *str = 0;
+    *dest = 0;
     return count;
 }
 

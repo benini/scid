@@ -108,7 +108,7 @@ protected:
 		EXPECT_EQ(max4, ie->GetBlackRatingType());
 		EXPECT_EQ(max16, ie->GetEcoCode());
 		EXPECT_EQ(max16, ie->GetNumHalfMoves());
-		for (size_t i = 0; i < IDX_NUM_FLAGS; i++) {
+		for (size_t i = 0; i < IndexEntry::IDX_NUM_FLAGS; i++) {
 			EXPECT_TRUE(ie->GetFlag(1 << i));
 		}
 		EXPECT_EQ(50, ie->GetVariationCount());
@@ -140,7 +140,8 @@ TEST_F(Test_Index, file_io) {
 
 		index_out.SetType(5);
 		index_out.SetDescription("unit test");
-		for (auto flag = IDX_FLAG_CUSTOM1; flag < IDX_FLAG_CUSTOM1 + CUSTOM_FLAG_MAX; flag++) {
+		byte begin = IndexEntry::IDX_FLAG_CUSTOM1;
+		for (auto flag = begin; flag < begin + CUSTOM_FLAG_MAX; flag++) {
 			index_out.SetCustomFlagDesc(flag, (std::to_string(flag) + " desc").c_str());
 		}
 		index_out.SetAutoLoad(2);
@@ -152,7 +153,8 @@ TEST_F(Test_Index, file_io) {
 		ASSERT_EQ(2, index_in.GetNumGames());
 		EXPECT_EQ(5, index_in.GetType());
 		EXPECT_STREQ("unit test", index_in.GetDescription());
-		for (auto flag = IDX_FLAG_CUSTOM1; flag < IDX_FLAG_CUSTOM1 + CUSTOM_FLAG_MAX; flag++) {
+		byte begin = IndexEntry::IDX_FLAG_CUSTOM1;
+		for (auto flag = begin; flag < begin + CUSTOM_FLAG_MAX; flag++) {
 			EXPECT_STREQ((std::to_string(flag) + " desc").c_str(),
 				index_in.GetCustomFlagDesc(flag));
 		}
@@ -223,7 +225,7 @@ TEST_F(Test_Index, max_values) {
 		EXPECT_EQ(max4, ie->GetBlackRatingType());
 		EXPECT_EQ(max16, ie->GetEcoCode());
 		EXPECT_EQ(max10, ie->GetNumHalfMoves());
-		for (size_t i = 0; i < IDX_NUM_FLAGS; i++) {
+		for (size_t i = 0; i < IndexEntry::IDX_NUM_FLAGS; i++) {
 			EXPECT_TRUE(ie->GetFlag(1 << i));
 		}
 		EXPECT_EQ(50, ie->GetVariationCount());
@@ -233,4 +235,53 @@ TEST_F(Test_Index, max_values) {
 		EXPECT_EQ(max8, ie->GetStoredLineCode());
 	}
 	std::remove("test_index2.si4");
+}
+
+TEST_F(Test_Index, IndexEntry_SetFlag) {
+	IndexEntry ie;
+	ie.Init();
+
+	auto check = [](const auto& ie, const auto& v) {
+		for (size_t i = 0, n = v.size(); i < n; i++) {
+			EXPECT_EQ(v[i], ie.GetFlag(1 << i));
+		}
+		EXPECT_EQ(0, ie.GetLength());
+
+		//Test copy
+		IndexEntry ieCopy;
+		ieCopy.Init();
+		ieCopy.copyUserFlags(ie);
+		char buf1[IndexEntry::IDX_NUM_FLAGS + 1];
+		char buf2[IndexEntry::IDX_NUM_FLAGS + 1];
+		ie.GetFlagStr(buf1, 0);
+		ieCopy.GetFlagStr(buf2, 0);
+		EXPECT_STREQ(buf1, buf2);
+	};
+
+	std::vector<bool> flags(IndexEntry::IDX_NUM_FLAGS, false);
+	check(ie, flags);
+	// Set one flag at the time
+	for (size_t i = 0, n = flags.size(); i < n; i++) {
+		flags[i] = !flags[i];
+		ie.SetFlag(1 << i, flags[i]);
+		check(ie, flags);
+	}
+
+	//Test clear
+	IndexEntry ieCopy;
+	ieCopy.Init();
+	ieCopy.copyUserFlags(ie);
+	ieCopy.SetStartFlag(true);
+	ieCopy.SetPromotionsFlag(true);
+	ieCopy.SetUnderPromoFlag(true);
+	check(ieCopy, std::vector<bool>(IndexEntry::IDX_NUM_FLAGS, true));
+	ieCopy.clearFlags();
+	check(ieCopy, std::vector<bool>(IndexEntry::IDX_NUM_FLAGS, false));
+
+	// Clear one flag at the time
+	for (size_t i = 0, n = flags.size(); i < n; i++) {
+		flags[i] = !flags[i];
+		ie.SetFlag(1 << i, flags[i]);
+		check(ie, flags);
+	}
 }

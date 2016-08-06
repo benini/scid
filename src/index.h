@@ -128,8 +128,8 @@ public:
     versionT    GetVersion ()     const { return Header.version; }
     const char* GetDescription () const { return Header.description; }
     const char* GetCustomFlagDesc (byte c) const {
-        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return 0;
-        return Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
+        if (c < IndexEntry::IDX_FLAG_CUSTOM1 || c > IndexEntry::IDX_FLAG_CUSTOM6) return 0;
+        return Header.customFlagDesc[c - IndexEntry::IDX_FLAG_CUSTOM1];
     }
     gamenumT GetAutoLoad () const {
         return (Header.autoLoad <= Header.numGames) ? Header.autoLoad : Header.numGames;
@@ -162,8 +162,8 @@ public:
     }
     errorT SetCustomFlagDesc (byte c, const char* str) {
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return ERROR_BadArg;
-        char* flagDesc = Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
+        if (c < IndexEntry::IDX_FLAG_CUSTOM1 || c > IndexEntry::IDX_FLAG_CUSTOM6) return ERROR_BadArg;
+        char* flagDesc = Header.customFlagDesc[c - IndexEntry::IDX_FLAG_CUSTOM1];
         strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
         flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
         Header.dirty_ = true;

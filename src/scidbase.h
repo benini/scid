@@ -33,7 +33,7 @@
 
 struct scidBaseT {
 	struct Stats {
-		uint flagCount [IDX_NUM_FLAGS]; // Num of games with each flag set.
+		uint flagCount[IndexEntry::IDX_NUM_FLAGS]; // Num of games with each flag set.
 		dateT minDate;
 		dateT maxDate;
 		uint64_t nYears;

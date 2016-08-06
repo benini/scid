@@ -582,9 +582,9 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
 		res.push_back(stats.flagCount[flag]);
 		break; }
 	case OPT_FLAGS:
-		res.push_back(stats.flagCount[IDX_FLAG_DELETE]);
-		res.push_back(stats.flagCount[IDX_FLAG_WHITE_OP]);
-		res.push_back(stats.flagCount[IDX_FLAG_BLACK_OP]);
+		res.push_back(stats.flagCount[IndexEntry::CharToFlag('D')]);
+		res.push_back(stats.flagCount[IndexEntry::CharToFlag('W')]);
+		res.push_back(stats.flagCount[IndexEntry::CharToFlag('B')]);
 		break;
 	case OPT_RATINGS:
 		res.push_back(stats.minRating);

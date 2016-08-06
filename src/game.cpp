@@ -3759,7 +3759,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         ie->SetWhiteRatingType (WhiteRatingType);
         ie->SetBlackRatingType (BlackRatingType);
 
-        ie->SetFlag(IDX_MASK_ALLFLAGS, false);
+        ie->clearFlags();
         ie->SetStartFlag (NonStandardStart);
         ie->SetCommentCount (commentCount);
         ie->SetVariationCount (varCount);
