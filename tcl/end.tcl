@@ -1414,15 +1414,15 @@ if { $::docking::USE_DOCKING } {
   if {$startup(crosstable)} { crosstabWin }
   if {$startup(book)} { ::book::open }
 }
-if {$startup(stats)} { ::windows::stats::Open }
-if {$startup(tip)} { ::tip::show }
-if {$startup(finder)} { ::file::finder::Open }
-
 menuUpdateBases
 setLanguageMenus
 
 update
 update idletasks
+
+if {$startup(stats)} { ::windows::stats::Open }
+if {$startup(finder)} { ::file::finder::Open }
+if {$startup(tip)} { ::tip::show }
 
 #keyboardShortcuts hack
 bind . <FocusIn> { if {[string equal %W "."]} { focus .main } }
