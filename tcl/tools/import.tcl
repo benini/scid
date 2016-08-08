@@ -65,9 +65,7 @@ proc importPgnGame {} {
     .importWin.pane.err.text insert end $result
     .importWin.pane.err.text configure -state disabled
     if {! $err} {
-      updateBoard -pgn
-      updateTitle
-      ::windows::gamelist::Refresh
+      ::notify::GameChanged
     }
   }
   button $w.b.cancel -textvar ::tr(Close) -command {
