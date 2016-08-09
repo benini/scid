@@ -121,6 +121,30 @@ public:
     int GetBadNameIdCount() const { return nInvalidNameId_; }
 
     /**
+     * calcNameFreq() - calculate the usage of NameBase's names
+     * @nb: the NameBase linked to this Index
+     * @resVec: an array of std::vectors where the stats will be stored.
+     *
+     * This functions counts how many times every names contained in @nb
+     * is used and store the result into a corresponding record in @resVec
+     */
+    void calcNameFreq(const NameBase& nb, std::vector<int>(&resVec)[NUM_NAME_TYPES]) const {
+        for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
+            resVec[n].clear();
+            resVec[n].resize(nb.GetNumNames(n), 0);
+        }
+
+        for (gamenumT i = 0, n = GetNumGames(); i < n; i++) {
+            const IndexEntry* ie = GetEntry(i);
+            resVec[NAME_PLAYER][ie->GetWhite()] += 1;
+            resVec[NAME_PLAYER][ie->GetBlack()] += 1;
+            resVec[NAME_EVENT][ie->GetEvent()] += 1;
+            resVec[NAME_SITE][ie->GetSite()] += 1;
+            resVec[NAME_ROUND][ie->GetRound()] += 1;
+        }
+    }
+
+    /**
      * Header getter functions
      */
     gamenumT    GetNumGames ()    const { return Header.numGames; }

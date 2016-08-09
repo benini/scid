@@ -21,8 +21,6 @@
 #define SCID_BYTEBUF_H
 
 #include "common.h"
-#include <string.h>
-
 
 class ByteBuffer
 {

@@ -26,8 +26,8 @@
 #include "undoredo.h"
 #include "game.h"
 #include "tree.h"
-#include "stored.h"
 #include "fastgame.h"
+#include "bytebuf.h"
 #include <vector>
 
 
@@ -152,7 +152,7 @@ struct scidBaseT {
 	const Stats& getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
-		if (nameFreq_[nt].size() == 0) calcNameFreq();
+		if (nameFreq_[nt].size() == 0) idx->calcNameFreq(*nb, nameFreq_);
 		return nameFreq_[nt][id];
 	}
 
@@ -226,7 +226,6 @@ private:
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
-	void calcNameFreq ();
 
 	Filter* fetchFilter(uint idx) const {
 		if (idx == 0) return dbFilter;

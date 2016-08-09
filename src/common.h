@@ -22,6 +22,7 @@
 	#define CPP11_SUPPORT 0
 #endif
 
+#include <cstddef>
 #if defined(_MSC_VER) && _MSC_VER <= 1600
 typedef unsigned __int8   uint8_t;
 typedef unsigned __int16  uint16_t;

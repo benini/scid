@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "position.h"
+#include "stored.h"
 #include "fastgame.h"
 
 

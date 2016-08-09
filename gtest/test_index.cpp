@@ -15,6 +15,7 @@
 */
 
 #include "index.h"
+#include <vector>
 #include <gtest/gtest.h>
 
 class Test_Index : public ::testing::Test {
@@ -283,5 +284,61 @@ TEST_F(Test_Index, IndexEntry_SetFlag) {
 		flags[i] = !flags[i];
 		ie.SetFlag(1 << i, flags[i]);
 		check(ie, flags);
+	}
+}
+
+TEST_F(Test_Index, Index_calcNameFreq) {
+	Index idx;
+	NameBase nb;
+
+	const char* names [] = { "test", "tèst", "test ", "test1", "test2", "test3" };
+	nameT types[] = { NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND };
+	std::vector <int> nameFreq[NUM_NAME_TYPES];
+	std::vector <int> expected[NUM_NAME_TYPES];
+
+	//Add names with index 0
+	IndexEntry ie;
+	ie.Init();
+	idNumberT id;
+	for (auto& nt : types) {
+		EXPECT_EQ(OK, nb.AddName(nt, "?", &id));
+		EXPECT_EQ(id, 0);
+		expected[nt].push_back(1);
+	}
+	expected[NAME_PLAYER][0] += 1;
+	idx.AddGame(&ie);
+
+	for (auto& name : names) {
+		for (auto& nt : types) {
+			EXPECT_EQ(OK, nb.AddName(nt, name, &id));
+			EXPECT_EQ(id, expected[nt].size());
+			expected[nt].push_back(0);
+
+			switch (nt) {
+			case NAME_PLAYER:
+				EXPECT_EQ(OK, ie.SetWhiteName(&nb, name));
+				EXPECT_EQ(OK, ie.SetBlackName(&nb, name));
+				break;
+			case NAME_EVENT:
+				EXPECT_EQ(OK, ie.SetEventName(&nb, name));
+				break;
+			case NAME_SITE:
+				EXPECT_EQ(OK, ie.SetSiteName(&nb, name));
+				break;
+			case NAME_ROUND:
+				EXPECT_EQ(OK, ie.SetRoundName(&nb, name));
+				break;
+			}
+			idx.AddGame(&ie);
+			idx.calcNameFreq(nb, nameFreq);
+			expected[NAME_PLAYER][ie.GetWhite()] += 1;
+			expected[NAME_PLAYER][ie.GetBlack()] += 1;
+			expected[NAME_EVENT][ie.GetEvent()] += 1;
+			expected[NAME_SITE][ie.GetSite()] += 1;
+			expected[NAME_ROUND][ie.GetRound()] += 1;
+			for (auto& t : types) {
+				EXPECT_TRUE(expected[t] == nameFreq[t]);
+			}
+		}
 	}
 }

@@ -139,7 +139,7 @@ errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 	clear();
 	if (fileMode_ != FMODE_Memory && writeFiles) {
 		gfile->flush();
-		calcNameFreq();
+		idx->calcNameFreq(*nb, nameFreq_);
 		errorT errNb = nb->WriteNameFile(nameFreq_);
 		if (errNb != OK) return errNb;
 		errorT errIdx = idx->flush();
@@ -440,21 +440,7 @@ HFilter scidBaseT::getFilter (const char* filterName) const {
 }
 
 
-void scidBaseT::calcNameFreq () {
-	for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-		nameFreq_[n].clear();
-		nameFreq_[n].resize(nb->GetNumNames(n), 0);
-	}
 
-	for (gamenumT i=0, n = numGames(); i < n; i++) {
-		const IndexEntry* ie = getIndexEntry (i);
-		nameFreq_[NAME_PLAYER][ie->GetWhite()] += 1;
-		nameFreq_[NAME_PLAYER][ie->GetBlack()] += 1;
-		nameFreq_[NAME_EVENT][ie->GetEvent()] += 1;
-		nameFreq_[NAME_SITE][ie->GetSite()] += 1;
-		nameFreq_[NAME_ROUND][ie->GetRound()] += 1;
-	}
-}
 
 const scidBaseT::Stats& scidBaseT::getStats() const {
 	if (stats_ == NULL) stats_ = new scidBaseT::Stats(this);
@@ -701,7 +687,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	//5) Finalize the new database
-	tmp.calcNameFreq();
+	tmp.idx->calcNameFreq(*tmp.nb, tmp.nameFreq_);
 	errorT err_NbWrite = tmp.nb->WriteNameFile(tmp.nameFreq_);
 	errorT err_Close = tmp.Close();
 

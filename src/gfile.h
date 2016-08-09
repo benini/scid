@@ -22,7 +22,6 @@
 #define SCID_GFILE_H
 
 #include "common.h"
-#include "bytebuf.h"
 
 class MFile;
 
