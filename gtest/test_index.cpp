@@ -247,16 +247,6 @@ TEST_F(Test_Index, IndexEntry_SetFlag) {
 			EXPECT_EQ(v[i], ie.GetFlag(1 << i));
 		}
 		EXPECT_EQ(0, ie.GetLength());
-
-		//Test copy
-		IndexEntry ieCopy;
-		ieCopy.Init();
-		ieCopy.copyUserFlags(ie);
-		char buf1[IndexEntry::IDX_NUM_FLAGS + 1];
-		char buf2[IndexEntry::IDX_NUM_FLAGS + 1];
-		ie.GetFlagStr(buf1, 0);
-		ieCopy.GetFlagStr(buf2, 0);
-		EXPECT_STREQ(buf1, buf2);
 	};
 
 	std::vector<bool> flags(IndexEntry::IDX_NUM_FLAGS, false);
@@ -269,12 +259,7 @@ TEST_F(Test_Index, IndexEntry_SetFlag) {
 	}
 
 	//Test clear
-	IndexEntry ieCopy;
-	ieCopy.Init();
-	ieCopy.copyUserFlags(ie);
-	ieCopy.SetStartFlag(true);
-	ieCopy.SetPromotionsFlag(true);
-	ieCopy.SetUnderPromoFlag(true);
+	IndexEntry ieCopy = ie;;
 	check(ieCopy, std::vector<bool>(IndexEntry::IDX_NUM_FLAGS, true));
 	ieCopy.clearFlags();
 	check(ieCopy, std::vector<bool>(IndexEntry::IDX_NUM_FLAGS, false));

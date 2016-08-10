@@ -4211,10 +4211,20 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game save <gameNumber> [targetbaseId]");
     }
 
-    currGame->SaveState ();
-    gamenumT gnum = strGetUnsigned (argv[2]);
-    if (gnum <= 0) gnum = IDX_NOT_FOUND;
-    else gnum--;
+    gamenumT gnum = strGetUnsigned(argv[2]);
+    if (gnum == 0) {
+        gnum = IDX_NOT_FOUND;
+    } else {
+        gnum -= 1;
+        const IndexEntry* ieOld = dbase->getIndexEntry_bounds(gnum);
+        if (ieOld == 0) return ERROR_BadArg;
+        // User-settable flags were stored in currGame when the game
+        // was loaded, but the user may have changed them.
+        char buf[IndexEntry::IDX_NUM_FLAGS + 1];
+        ieOld->GetFlagStr(buf, "WBMENPTKQ!?U123456");
+        currGame->SetScidFlags(buf);
+    }
+    currGame->SaveState();
     errorT res = dbase->saveGame(currGame, true, gnum);
     currGame->RestoreState ();
     if (res == OK) {

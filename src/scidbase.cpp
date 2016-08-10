@@ -316,9 +316,6 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
 	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
 
-	const IndexEntry* ieOld = getIndexEntry_bounds(gnum);
-	if (ieOld) iE.copyUserFlags(*ieOld);
-
 	errorT errSave = saveGameHelper(&iE, bbuf, gnum);
 	if (errSave == OK && clearCache) {
 		if (gnum >= numGames()) {

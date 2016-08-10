@@ -329,12 +329,6 @@ public:
     const byte* GetHomePawnData () const { return HomePawnData; }
     byte* GetHomePawnData () { return HomePawnData; }
 
-    void copyUserFlags(const IndexEntry& ie) {
-        uint16_t notuser = (1 << IDX_FLAG_START) |  (1 << IDX_FLAG_PROMO) | (1 << IDX_FLAG_UPROMO);
-        Flags = (Flags & notuser) | (ie.Flags & (~notuser));
-        byte custom = ie.Length_High & 0x3F;
-        Length_High = (Length_High & 0xC0) | custom;
-    }
     void SetFlag (uint32_t flagMask, bool b) {
         uint16_t flagLow = flagMask & 0xFFFF;
         if (flagLow != 0) {
