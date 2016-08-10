@@ -21,6 +21,7 @@
 #include "namebase.h"
 #include "misc.h"
 #include "filebuf.h"
+#include "index.h"
 
 // NameBase file signature, used to identify the file format
 const char* NameBase::NAMEBASE_MAGIC = "Scid.sn";
@@ -36,6 +37,11 @@ const char* NameBase::NAMEBASE_SUFFIX = ".sn4";
 */
 void NameBase::Clear()
 {
+    if (modified_) {
+        ASSERT(0);
+        flush(0);
+    }
+
     filename_.clear();
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
         for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
@@ -77,8 +83,7 @@ bool NameBase::setFileName(const char* filename)
 errorT NameBase::Create(const char* filename)
 {
     if (!setFileName(filename)) return ERROR_FileInUse;
-    std::vector<int> v[NUM_NAME_TYPES];
-    return WriteNameFile(v);
+    return WriteNameFile(0);
 }
 
 /**
@@ -195,13 +200,14 @@ NameBase::ReadEntireFile (const char* filename)
 //      the strings are front-coded to save space.
 //
 errorT
-NameBase::WriteNameFile (const std::vector<int>* freq)
+NameBase::WriteNameFile(const Index* idx)
 {
-    ASSERT(freq != 0);
-
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         if (idx_[nt].size() != names_[nt].size()) return ERROR_Corrupt;
     }
+
+    std::vector<int> freq[NUM_NAME_TYPES];
+    if (idx != 0) idx->calcNameFreq(*this, freq);
 
     Filebuf file;
     if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
@@ -307,6 +313,8 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
         }
         names_[nt].push_back(name);
         if (nt == NAME_PLAYER) eloV_.push_back(0);
+
+        modified_ = true;
     }
     return OK;
 }

@@ -139,8 +139,10 @@ errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 	clear();
 	if (fileMode_ != FMODE_Memory && writeFiles) {
 		gfile->flush();
-		idx->calcNameFreq(*nb, nameFreq_);
-		errorT errNb = nb->WriteNameFile(nameFreq_);
+		// Force writing of Namebase because some old code do have direct
+		// access to the Index, and the names frequency may have been changed.
+		nb->hackedNameFreq();
+		errorT errNb = nb->flush(idx);
 		if (errNb != OK) return errNb;
 		errorT errIdx = idx->flush();
 		if (errIdx != OK) return errIdx;
@@ -687,8 +689,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	//5) Finalize the new database
-	tmp.idx->calcNameFreq(*tmp.nb, tmp.nameFreq_);
-	errorT err_NbWrite = tmp.nb->WriteNameFile(tmp.nameFreq_);
+	errorT err_NbWrite = tmp.clearCaches();
 	errorT err_Close = tmp.Close();
 
 	const char* NAMEBASE_SUFFIX = NameBase::Suffix();

@@ -25,6 +25,8 @@
 #include <vector>
 #include <map>
 
+class Index;
+
 // There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
 typedef uint nameT;
 enum {
@@ -69,19 +71,26 @@ class NameBase
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
+    bool modified_;
 
 public:
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
     static const char* Suffix() { return NAMEBASE_SUFFIX; }
 
-    NameBase() {}
+    NameBase() : modified_(false) {}
     ~NameBase() { Clear(); }
     void Clear();
 
     errorT    Create (const char* filename);
     errorT    ReadEntireFile (const char* filename);
-    errorT    WriteNameFile (const std::vector<int>* freq);
+    errorT flush(const Index* idx) {
+        errorT err = OK;
+        if (modified_ && !filename_.empty()) err = WriteNameFile(idx);
+        if (err == OK) modified_ = false;
+        return err;
+    }
+    void hackedNameFreq() { modified_ = true; }
 
     const char* GetName (nameT nt, idNumberT id) const { return names_[nt][id]; }
     eloT GetElo (idNumberT id) const { return eloV_[id]; }
@@ -101,6 +110,7 @@ private:
     NameBase(const NameBase&);
     NameBase& operator=(const NameBase&);
     bool setFileName(const char* filename);
+    errorT WriteNameFile(const Index* idx);
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H
