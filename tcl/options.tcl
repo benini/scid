@@ -554,8 +554,16 @@ set default_exportEndFile(LaTeX) {\end{document}
 
 
 set default_exportStartFile(HTML) {<html>
-  <head><title>Scid export</title></head>
+  <head>
+    <title>Scid export</title>
+    <style>
+      @media print {
+        table { page-break-inside: avoid; }
+      }
+    </style>
+  </head>
   <body bgcolor="#ffffff">
+
 }
 set default_exportEndFile(HTML) {</body>
   </html>
