@@ -75,16 +75,6 @@ GFile::Create (const char * filename)
     return OK;
 }
 
-errorT
-GFile::CreateMemoryOnly ()
-{
-    if (Handle != NULL) { return ERROR_FileInUse; }
-    FileMode = FMODE_Both;
-    Handle = new MFile;
-
-    return OK;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::Open():
 //      Open a gfile for reading, writing, or both.

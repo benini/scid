@@ -16,11 +16,39 @@
 * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "common.h"
 #include "scidbase.h"
+#include "codec_memory.h"
+#include "codec_scid4.h"
+#include "common.h"
 #include "stored.h"
 #include <algorithm>
 #include <math.h>
+
+ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
+                                     fileModeT fMode, const char* filename,
+                                     const Progress& progress, Index* idx,
+                                     NameBase* nb) {
+	ICodecDatabase* res = 0;
+	errorT err = ERROR;
+	switch (codec) {
+	case ICodecDatabase::MEMORY:
+		res = new CodecMemory();
+		break;
+	case ICodecDatabase::SCID4:
+		res = new CodecScid4();
+		break;
+	}
+
+	if (res != 0) {
+		err = res->dyn_open(fMode, filename, progress, idx, nb);
+		if (err != OK && err != ERROR_NameDataLoss) {
+			delete res;
+			res = 0;
+		}
+	}
+	if (resError) *resError = err;
+	return res;
+}
 
 void scidBaseT::Init() {
 	idx = new Index;
@@ -31,7 +59,7 @@ void scidBaseT::Init() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	fileMode_ = FMODE_None;
-	gfile = new GFile;
+	codec_ = 0;
 	bbuf = new ByteBuffer(BBUF_SIZE);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
@@ -40,11 +68,11 @@ void scidBaseT::Init() {
 }
 
 scidBaseT::~scidBaseT() {
+	delete codec_;
 	if (duplicates_ != NULL) delete[] duplicates_;
 	if (idx != NULL) delete idx;
 	if (nb != NULL) delete nb;
 	if (game != NULL) delete game;
-	if (gfile != NULL) delete gfile;
 	if (bbuf != NULL) delete bbuf;
 	if (stats_ != NULL) delete stats_;
 	if (dbFilter != NULL) delete dbFilter;
@@ -54,63 +82,55 @@ scidBaseT::~scidBaseT() {
 	}
 }
 
-errorT scidBaseT::Open (fileModeT fMode,
-                        const char* filename,
-                        const Progress& progress) {
+errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
+                       const char* filename, const Progress& progress) {
 	if (inUse) return ERROR_FileInUse;
 	if (filename == 0) filename = "";
 
 	inUse = true;
-	errorT err = OK;
 
-	if (fMode == FMODE_Memory) {
-		idx->SetDescription ("In-memory database");
-		gfile->CreateMemoryOnly();
-	} else {
-		if (fMode == FMODE_Create) {
-			fMode = FMODE_Both;
-			idx->SetDescription ("");
-			err = idx->Create(filename);
-			if (err == OK) err = nb->Create(filename);
-			if (err == OK) err = gfile->Create(filename);
-		} else {
-			err = idx->Open(filename, fMode);
-			if (err == OK) err = nb->ReadEntireFile(filename);
-			if (err == OK) err = gfile->Open(filename, fMode);
-			if (err == OK) err = idx->ReadEntireFile (nb, progress);
-		}
-	}
-	if (err != OK && err != ERROR_NameDataLoss) {
+	delete codec_;
+	errorT err = OK;
+	codec_ = ICodecDatabase::make(dbtype, &err, fMode, filename, progress, idx, nb);
+	if (codec_ == 0) {
 		idx->Close();
 		nb->Clear();
-		gfile->Close();
 		inUse = false;
 		return err;
 	}
 
+	if (fMode == FMODE_Create) fMode = FMODE_Both;
 	fileMode_ = fMode;
 	fileName_ = filename;
 	gameNumber = -1;
+	if (dbtype == ICodecDatabase::MEMORY) {
+		idx->SetDescription("In-memory database");
+	}
 
-	// Initialise the filters: all games match at move 1 by default.
-	Filter* f; int i_filters=0;
-	while ( (f = fetchFilter(i_filters++)) ) f->Init(numGames());
+	// Initialize the filters: all the games are included by default.
+	for (size_t i = 0; true; i++) {
+		Filter* f = fetchFilter(i);
+		if (f == 0) break;
+		f->Init(numGames());
+	}
 
 	// Ensure an old treefile is not still around:
 	std::remove((fileName_ + ".stc").c_str());
-	//Default treeCache size: 250
+	// Default treeCache size: 250
 	treeCache.CacheResize(250);
 
 	return err;
 }
 
 errorT scidBaseT::Close () {
+	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
-	errorT errGFile = gfile->Close();
+	nb->Clear();
 	//TODO:
 	//if (errIdx != OK || errGFile != OK) do not close the database:
 	//maybe the user can try something to avoid the data loss
-	nb->Clear();
+	delete codec_;
+	codec_ = 0;
 	clear();
 	game->Clear();
 	inUse = false;
@@ -136,20 +156,16 @@ void scidBaseT::clear() {
 }
 
 errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
+	errorT res = OK;
 	clear();
-	if (fileMode_ != FMODE_Memory && writeFiles) {
-		gfile->flush();
+	if (writeFiles) {
 		// Force writing of Namebase because some old code do have direct
 		// access to the Index, and the names frequency may have been changed.
 		nb->hackedNameFreq();
-		errorT errNb = nb->flush(idx);
-		if (errNb != OK) return errNb;
-		errorT errIdx = idx->flush();
-		if (errIdx != OK) return errIdx;
+		res = codec_->flush();
 	}
 	idx->IndexUpdated(gNum);
-
-	return OK;
+	return res;
 }
 
 errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {
@@ -224,7 +240,7 @@ scidBaseT::GamePos scidBaseT::makeGamePos(Game& game, unsigned int ravNum) {
 * @ie: a valid pointer to the IndexEntry of the desired game
 * @dest: a container of GamePos objects where the positions will be stored.
 *
-* This function iterate alle the positions of the game pointed by @ie and
+* This function iterate all the positions of the game pointed by @ie and
 * stores the positions in @dest. The container is NOT automatically cleared
 * and the container should support push_back().
 * The order of positions and of Recursive Annotation Variations (RAV)
@@ -305,31 +321,32 @@ errorT scidBaseT::getGame(const IndexEntry* ie, std::vector<GamePos>& dest) {
 errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	if (isReadOnly()) return ERROR_FileReadOnly;
 
-	IndexEntry iE;
-	iE.Init();
-	errorT err = game->Encode (bbuf, &iE);
-	if (err != OK) return err;
-
-	if ((err = iE.SetWhiteName(nb, game->GetWhiteStr())) != OK) return err;
-	if ((err = iE.SetBlackName(nb, game->GetBlackStr())) != OK) return err;
-	if ((err = iE.SetEventName(nb, game->GetEventStr())) != OK) return err;
-	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
-	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
-
-	errorT errSave = saveGameHelper(&iE, bbuf, gnum);
-	if (errSave == OK && clearCache) {
-		if (gnum >= numGames()) {
-			ASSERT(numGames() > 0);
-			gnum = numGames() -1;
+	errorT err = OK;
+	if (gnum < numGames()) {
+		err = codec_->saveGame(game, gnum);
+	} else {
+		gnum = numGames();
+		err = codec_->addGame(game);
+		if (err == OK) {
+			// Add the new game to filters
+			for (size_t i = 0; true; i++) {
+				Filter* f = fetchFilter(i);
+				if (f == 0) break;
+				byte val = f->isWhole() ? 1 : 0;
+				f->Append(val);
+			}
 		}
-		return clearCaches(gnum);
 	}
-	return errSave;
+
+	if (err == OK && clearCache) err = clearCaches(gnum);
+
+	return err;
 }
 
 errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
 	if (srcBase == this) return ERROR_BadArg;
 	if (isReadOnly()) return ERROR_FileReadOnly;
+	if (gNum >= srcBase->numGames()) return ERROR_BadArg;
 
 	errorT err = importGameHelper(srcBase, gNum);
 	if (err != OK) return err;
@@ -360,50 +377,39 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 }
 
 errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
-	// Importing a game from the same base works, but it's too dangerous
-	ASSERT(sourceBase != this);
-
 	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
-	errorT err = sourceBase->getGame(srcIe, sourceBase->bbuf);
+	uint gameDataLen = srcIe->GetLength();
+	const byte* gameData =
+	    sourceBase->codec_->getGameData(srcIe->GetOffset(), gameDataLen);
+	if (gameData == 0) return ERROR_FileRead;
+
+	IndexEntry ie = *srcIe;
+	errorT err;
+	err = ie.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb));
+	if (err != OK) return err;
+	err = ie.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb));
+	if (err != OK) return err;
+	err = ie.SetEventName(nb, srcIe->GetEventName(sourceBase->nb));
+	if (err != OK) return err;
+	err = ie.SetSiteName(nb, srcIe->GetSiteName(sourceBase->nb));
+	if (err != OK) return err;
+	err = ie.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb));
 	if (err != OK) return err;
 
-	IndexEntry iE = *srcIe;
-	if ((err = iE.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetEventName(nb, srcIe->GetEventName(sourceBase->nb))) != OK) return err;
-	if ((err = iE.SetSiteName (nb, srcIe->GetSiteName(sourceBase->nb) )) != OK) return err;
-	if ((err = iE.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb))) != OK) return err;
+	nb->AddElo(ie.GetWhite(), ie.GetWhiteElo());
+	nb->AddElo(ie.GetBlack(), ie.GetBlackElo());
 
-	return saveGameHelper(&iE, sourceBase->bbuf);
-}
-
-errorT scidBaseT::saveGameHelper(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx) {
-	// Now try writing the game to the gfile:
-	uint offset = 0;
-	errorT errGFile = gfile->addGame (bytebuf->getData(), bytebuf->GetByteCount(), offset);
-	if (errGFile != OK) return errGFile;
-	iE->SetOffset (offset);
-	iE->SetLength (bytebuf->GetByteCount());
-
-	nb->AddElo(iE->GetWhite(), iE->GetWhiteElo());
-	nb->AddElo(iE->GetBlack(), iE->GetBlackElo());
-
-	// Last of all, we write the new idxEntry, but NOT the index header
-	// or the name file, since there might be more games saved yet and
-	// writing them now would then be a waste of time.
-	if (oldIdx < numGames()) {
-		errorT err = idx->WriteEntry (iE, oldIdx);
-		if (err != OK) return err;
-	} else {
-		errorT err = idx->AddGame(iE);
-		if (err != OK) return err;
-
+	err = codec_->addGame(&ie, gameData, gameDataLen);
+	if (err == OK) {
 		// Add the new game to filters
-		Filter* f; int i_filters=0;
-		while ( (f = fetchFilter(i_filters++)) ) f->Append(f->isWhole() ? 1 : 0);
+		for (size_t i = 0; true; i++) {
+			Filter* f = fetchFilter(i);
+			if (f == 0) break;
+			byte val = f->isWhole() ? 1 : 0;
+			f->Append(val);
+		}
 	}
-
-	return OK;
+	return err;
 }
 
 std::string scidBaseT::newFilter() {
@@ -633,34 +639,42 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 }
 
 errorT scidBaseT::compact(const Progress& progress) {
+	std::vector<std::string> filenames = codec_->getFilenames();
+	if (filenames.empty()) return ERROR_CodecUnsupFeat;
+
 	if (fileMode_ != FMODE_Both) {
 		//Older scid version to be upgraded are opened read only
 		if (idx->GetVersion() == SCID_VERSION) return ERROR_FileMode;
 	}
 
-	//1) Create the list of games to be copied
+	//1) Create a new temporary database
+	std::string filename = fileName_;
+	std::string tmpfile = filename + "__COMPACT__";
+	ICodecDatabase::Codec dbtype = codec_->getType();
+	scidBaseT tmp;
+	errorT err_Create = tmp.Open(dbtype, FMODE_Create, tmpfile.c_str());
+	if (err_Create != OK) return err_Create;
+
+	//2) Copy the Index Header
+	idx->FreeSortCache(0);
+	tmp.idx->copyHeaderInfo(*idx);
+	gamenumT autoloadOld = idx->GetAutoLoad();
+	gamenumT autoloadNew = 1;
+
+	//3) Create the list of games to be copied
 	typedef std::vector< std::pair<byte, uint> > sort_t;
 	sort_t sort;
 	uint n_deleted = 0;
-	for (gamenumT i=0, n= numGames(); i < n; i++) {
-		const IndexEntry* ie = getIndexEntry (i);
-		if (ie->GetDeleteFlag()) { n_deleted++; continue; }
+	for (gamenumT i = 0, n = numGames(); i < n; i++) {
+		const IndexEntry* ie = getIndexEntry(i);
+		if (ie->GetDeleteFlag()) {
+			n_deleted++;
+			continue;
+		}
 		uint stLine = ie->GetStoredLineCode();
 		sort.push_back(std::make_pair(stLine, i));
 	}
-	std::sort(sort.begin(), sort.end());
-
-	//2) Create a new temporary database
-	std::string filename = fileName_;
-	std::string tmpfile = filename + "__COMPACT__";
-	scidBaseT tmp;
-	errorT err_Create = tmp.Open(FMODE_Create, tmpfile.c_str());
-	if (err_Create != OK) return err_Create;
-
-	//3) Copy the Index Header
-	idx->FreeSortCache(0);
-	tmp.idx->copyHeaderInfo(*idx);
-	gamenumT oldAutoload = idx->GetAutoLoad();
+	std::stable_sort(sort.begin(), sort.end());
 
 	//4) Copy the games
 	uint iProgress = 0;
@@ -670,9 +684,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 		err_AddGame = tmp.importGameHelper(this, (*it).second);
 		if (err_AddGame != OK) break;
 
-		if ((it->second + 1) == oldAutoload) {
-			tmp.idx->SetAutoLoad(tmp.numGames());
-		}
+		gamenumT oldGnum = it->second + 1;
+		if (oldGnum == autoloadOld) autoloadNew = tmp.numGames();
 		//TODO:
 		//- update bookmarks game number
 		//  (*it).second   == old game number
@@ -686,33 +699,39 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	//5) Finalize the new database
+	tmp.idx->SetAutoLoad(autoloadNew);
+	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
 	errorT err_NbWrite = tmp.clearCaches();
 	errorT err_Close = tmp.Close();
+	if (err_Close == OK) err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
-	const char* NAMEBASE_SUFFIX = NameBase::Suffix();
 	//6) Error: cleanup and report
 	if (err_NbWrite != OK || err_Close != OK || err_UserCancel || err_AddGame != OK) {
-		std::remove((tmpfile + INDEX_SUFFIX).c_str());
-		std::remove((tmpfile + NAMEBASE_SUFFIX).c_str());
-		std::remove((tmpfile + GFILE_SUFFIX).c_str());
+		for (size_t i = 0, n = tmp_filenames.size(); i < n; i++) {
+			std::remove(tmp_filenames[i].c_str());
+		}
 		if (err_UserCancel) return ERROR_UserCancel;
 		return (err_Close != OK) ? err_Close : ((err_NbWrite != OK) ? err_NbWrite : err_AddGame);
 	}
 
-	//7) Reset the filters and remove the old database
+	//7) Remember the active filters and remove the old database
 	std::vector<std::string> filters(filters_.size());
-	for (size_t i = 0; i < filters_.size(); i++) filters[i] = filters_[i].first;
+	for (size_t i = 0, n = filters_.size(); i < n; i++) {
+		filters[i] = filters_[i].first;
+	}
 	if (Close() != OK) return ERROR_FileInUse;
-	if (std::remove((filename + INDEX_SUFFIX).c_str())    != 0) return ERROR_CompactRemoveIdx;
-	if (std::remove((filename + NAMEBASE_SUFFIX).c_str()) != 0) return ERROR_CompactRemoveName;
-	if (std::remove((filename + GFILE_SUFFIX).c_str())    != 0) return ERROR_CompactRemoveGame;
+	for (size_t i = 0, n = filenames.size(); i < n; i++) {
+		if (std::remove(filenames[i].c_str()) != 0) return ERROR_CompactRemove;
+	}
 
 	//8) Success: rename the files and open the new database
-	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);
-	renameFile (tmpfile.c_str(), filename.c_str(), NAMEBASE_SUFFIX);
-	renameFile (tmpfile.c_str(), filename.c_str(), GFILE_SUFFIX);
-	errorT res = Open(FMODE_Both, filename.c_str());
-	for (size_t i = 0; i <filters.size(); i++) {
+	for (size_t i = 0, n = filenames.size(); i < n; i++) {
+		const char* s1 = tmp_filenames[i].c_str();
+		const char* s2 = filenames[i].c_str();
+		std::rename(s1, s2);
+	}
+	errorT res = Open(dbtype, FMODE_Both, filename.c_str());
+	for (size_t i = 0, n = filters.size(); i < n; i++) {
 		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}
 	return res;

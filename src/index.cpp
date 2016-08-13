@@ -84,6 +84,7 @@ Index::Open (const char* filename, fileModeT fmode)
     ASSERT(filename != 0);
 
     Clear();
+    if (fmode == FMODE_WriteOnly) return ERROR_FileMode;
     FilePtr = new Filebuf;
     std::string fname = filename;
     fname += INDEX_SUFFIX;

@@ -41,9 +41,7 @@ namespace eval ERROR {
   set FileVersion      109
   set OldScidVersion   110
   set FileReadOnly     111
-  set CompactRemoveIdx  121
-  set CompactRemoveName 122
-  set CompactRemoveGame 123
+  set CompactRemove    121
   set MallocFailed     151
   set CorruptData      152
   set Corrupt          152
@@ -72,6 +70,7 @@ namespace eval ERROR {
   set PGNTag           501
   set BufferFull       601
   set BufferRead       602
+  set CodecUnsupFeat   701
 
 }
 
@@ -107,14 +106,8 @@ after idle {
 
   set ::ERROR::msg(CompactCreate) \
     "A temporary database from a previous unsuccessfully compact operation already exists.\nPlease remove the files with suffix __COMPACT__ and retry.\n"
-  set ::ERROR::msg(CompactRemove) \
+  set ::ERROR::msg($::ERROR::CompactRemove) \
     "A compacted database has been successfully created with suffix __COMPACT__.\nHowever Scid could not remove the original database (due to insufficient privileges or because a file is opened in another program).\nPlease rename it manually.\n"
-  set ::ERROR::msg($::ERROR::CompactRemoveIdx) \
-    "Cannot remove the original .si4 file.\n"
-  set ::ERROR::msg($::ERROR::CompactRemoveName) \
-    "Cannot remove the original .sn4 file.\n"
-  set ::ERROR::msg($::ERROR::CompactRemoveGame) \
-    "Cannot remove the original .sg4 file.\n"
   set ::ERROR::msg($::ERROR::CorruptData) \
     "Error while processing data: corrupted.\n"
   set ::ERROR::msg($::ERROR::Full) \
@@ -123,4 +116,7 @@ after idle {
     "Some names (player, event, site or round) are missing and have been replaced by \"?\"\nCompact the database to make the changes permanent."
   set ::ERROR::msg($::ERROR::NameTooLong) \
     "The entered values are too long"
+
+  set ::ERROR::msg($::ERROR::CodecUnsupFeat) \
+    "The requested function is not supported by this type of database."
 }

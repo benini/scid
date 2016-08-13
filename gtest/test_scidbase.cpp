@@ -288,7 +288,7 @@ TEST_F(Test_Scidbase, getGamePos1) {
 	pgnParser.Reset(test_pgn);
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(FMODE_Memory));
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game, true));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
@@ -315,7 +315,7 @@ TEST_F(Test_Scidbase, getGamePos2) {
 	pgnParser.Reset(test_pgn);
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(FMODE_Memory));
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game, true));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
@@ -331,7 +331,7 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	pgnParser.Reset(test_pgn);
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(FMODE_Memory));
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game, true));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 

@@ -457,6 +457,7 @@ UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char
  * sc_base_open() - open/create a Scid database
  * @filename:    the filename of the database to open/create
  * @fMode:       open the database read-only|read-write|create|in_memory
+ * @codec:       the type of the database
  *
  * Only database in native Scid format che be opened directly with this function.
  * Other formats (like pgn for example) call sc_base_open with @fMode == FMODE_MEMORY
@@ -464,7 +465,7 @@ UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char
  * If @fMode == FMODE_Both and the file cannot be opened for writing, the database will
  * be opened read-only.
  */
-UI_res_t sc_base_open (UI_handle_t ti, const char* filename, fileModeT fMode)
+UI_res_t sc_base_open(UI_handle_t ti, const char* filename, fileModeT fMode, ICodecDatabase::Codec codec)
 {
 	if (DBasePool::find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
 
@@ -472,10 +473,10 @@ UI_res_t sc_base_open (UI_handle_t ti, const char* filename, fileModeT fMode)
 	if (dbase == 0) return UI_Result(ti, ERROR_Full);
 
 	Progress progress = UI_CreateProgress(ti);
-	errorT err = dbase->Open(fMode, filename, progress);
+	errorT err = dbase->Open(codec, fMode, filename, progress);
 
 	if (err != OK && err != ERROR_NameDataLoss && fMode == FMODE_Both) {
-		err = dbase->Open(FMODE_ReadOnly, filename, progress);
+		err = dbase->Open(codec, FMODE_ReadOnly, filename, progress);
 	}
 	progress.report(1,1);
 
@@ -783,11 +784,11 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	switch (index) {
 	case BASE_CREATE:
 		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base create filename");
-		return sc_base_open(ti, argv[2], FMODE_Create);
+		return sc_base_open(ti, argv[2], FMODE_Create, ICodecDatabase::SCID4);
 
 	case BASE_CREATEMEMORY:
 		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base creatememory filename");
-		return sc_base_open(ti, argv[2], FMODE_Memory);
+		return sc_base_open(ti, argv[2], FMODE_Memory, ICodecDatabase::MEMORY);
 
 	case BASE_CURRENT:
 		return sc_base_switch(0, ti);
@@ -803,7 +804,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_OPEN:
 		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base open filename");
-		return sc_base_open(ti, argv[2], FMODE_Both);
+		return sc_base_open(ti, argv[2], FMODE_Both, ICodecDatabase::SCID4);
 
 	case BASE_PTRACK:
 		return sc_base_piecetrack (cd, ti, argc, argv);

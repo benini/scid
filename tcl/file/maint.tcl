@@ -1017,12 +1017,6 @@ proc compactDB {{base -1}} {
     set extra "$::tr(CompactDatabase)\n"
     if {$::errorCode == $::ERROR::FileOpen} {
       append extra "\n$::ERROR::msg(CompactCreate)"
-    } else {
-      if {$::errorCode == $::ERROR::CompactRemoveIdx ||
-          $::errorCode == $::ERROR::CompactRemoveName ||
-          $::errorCode == $::ERROR::CompactRemoveGame } {
-        append extra "\n$::ERROR::msg(CompactRemove)"
-      }
     }
     ERROR::MessageBox "$extra"
     ::file::SwitchToBase $::clipbase_db 0

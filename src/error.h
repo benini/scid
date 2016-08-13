@@ -39,9 +39,7 @@ const errorT
     ERROR_FileVersion    = 109,
     ERROR_OldScidVersion = 110,
     ERROR_FileReadOnly   = 111,
-    ERROR_CompactRemoveIdx  = 121,
-    ERROR_CompactRemoveName = 122,
-    ERROR_CompactRemoveGame = 123,
+    ERROR_CompactRemove  = 121,
 
     // Memory Allocation, corrupt data
     ERROR_MallocFailed   = 151,
@@ -78,7 +76,10 @@ const errorT
 
     // Buffer errors
     ERROR_BufferFull = 601,
-    ERROR_BufferRead = 602;
+    ERROR_BufferRead = 602,
+
+    // Codec errors
+    ERROR_CodecUnsupFeat = 701;
 
 #endif   // #ifdef SCID_ERROR_H
 

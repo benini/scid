@@ -1224,7 +1224,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case CLIP_CLEAR:
         clipbase->Close();
-        clipbase->Open(FMODE_Memory, "<clipbase>");
+        clipbase->Open(ICodecDatabase::MEMORY, FMODE_Memory, "<clipbase>");
         clipbase->setExtraInfo("type", "2");
         return TCL_OK;
 

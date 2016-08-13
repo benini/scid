@@ -52,7 +52,6 @@ public:
     ~GFile();
 
     errorT   Create (const char * filename);
-    errorT   CreateMemoryOnly ();
     errorT   Open (const char * filename, fileModeT fmode);
     errorT   Close ();
     errorT   flush();

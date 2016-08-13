@@ -22,12 +22,12 @@
 #include "misc.h"
 #include "index.h"
 #include "namebase.h"
-#include "gfile.h"
 #include "undoredo.h"
 #include "game.h"
 #include "tree.h"
 #include "fastgame.h"
 #include "bytebuf.h"
+#include "codec.h"
 #include <vector>
 
 
@@ -82,9 +82,10 @@ struct scidBaseT {
 	scidBaseT() { Init(); }
 	~scidBaseT();
 
-	errorT Open (fileModeT mode,
-	             const char* filename = 0,
-	             const Progress& progress = Progress());
+	errorT Open(ICodecDatabase::Codec dbtype,
+	            fileModeT mode,
+	            const char* filename = 0,
+	            const Progress& progress = Progress());
 
 	errorT Close ();
 
@@ -110,13 +111,13 @@ struct scidBaseT {
 	}
 	FastGame getGame(const IndexEntry* ie) const {
 		uint length = ie->GetLength();
-		const byte* b = gfile->getGame(ie->GetOffset(), length);
+		const byte* b = codec_->getGameData(ie->GetOffset(), length);
 		if (b == 0) length = 0; // Error
 		return FastGame::Create(b, b + length);
 	}
 	errorT getGame(const IndexEntry* ie, ByteBuffer* destBuf) const {
 		uint length = ie->GetLength();
-		const byte* b = gfile->getGame(ie->GetOffset(), length);
+		const byte* b = codec_->getGameData(ie->GetOffset(), length);
 		if (b == 0) return ERROR_FileRead;
 		// The data for the game is not actually copied into the bytebuffer, which would
 		// be slower and a waste of time if the bytebuffer is not going to be modified.
@@ -211,7 +212,7 @@ struct scidBaseT {
 	UndoRedo<Game, 100> gameAlterations;
 
 private:
-	GFile* gfile;
+	ICodecDatabase* codec_;
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
@@ -225,7 +226,6 @@ private:
 	void clear();
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
-	errorT saveGameHelper(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 
 	Filter* fetchFilter(uint idx) const {
 		if (idx == 0) return dbFilter;

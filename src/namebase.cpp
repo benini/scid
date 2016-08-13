@@ -38,7 +38,7 @@ const char* NameBase::NAMEBASE_SUFFIX = ".sn4";
 void NameBase::Clear()
 {
     if (modified_) {
-        ASSERT(0);
+        ASSERT(filename_.empty());
         flush(0);
     }
 
