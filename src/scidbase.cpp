@@ -18,6 +18,7 @@
 
 #include "scidbase.h"
 #include "codec_memory.h"
+#include "codec_pgn.h"
 #include "codec_scid4.h"
 #include "common.h"
 #include "stored.h"
@@ -36,6 +37,9 @@ ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
 		break;
 	case ICodecDatabase::SCID4:
 		res = new CodecScid4();
+		break;
+	case ICodecDatabase::PGN:
+		res = new CodecPgn();
 		break;
 	}
 

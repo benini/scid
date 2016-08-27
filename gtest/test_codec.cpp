@@ -27,7 +27,7 @@
 #include <vector>
 
 ICodecDatabase::Codec codecs[] = {
-	ICodecDatabase::MEMORY, ICodecDatabase::SCID4
+	ICodecDatabase::MEMORY, ICodecDatabase::SCID4, ICodecDatabase::PGN
 };
 
 std::vector< std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
@@ -41,6 +41,12 @@ std::vector< std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
 	{ ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_Memory) },
 	{ ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_WriteOnly) },
 	{ ICodecDatabase::SCID4, "empty_filename" },
+
+	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_None) },
+	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_Memory) },
+	{ ICodecDatabase::PGN, "saveGame_native" },
+	{ ICodecDatabase::PGN, "saveGame_game" },
+	{ ICodecDatabase::PGN, "empty_filename" }
 };
 
 class Supports {

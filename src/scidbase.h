@@ -279,14 +279,15 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImporte
 		if (res != OK) break;
 
 		if ((++nImported % 200) == 0) {
-			if (!progress.report(codec.countParsed(), codec.countTotal())) {
+			std::pair<size_t, size_t> count = codec.parseProgress();
+			if (!progress.report(count.first, count.second)) {
 				res = ERROR_UserCancel;
 				break;
 			}
 		}
 	}
 
-	errorMsg = codec.getErrors();
+	errorMsg = codec.parseErrors();
 	clearCaches();
 	progress.report(1,1);
 

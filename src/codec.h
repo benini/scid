@@ -50,7 +50,7 @@ public:
 	* - on error:   return 0 (destroy the object that was created) and
 	*               set @resError to an appropriate error code.
 	*/
-	enum Codec { MEMORY, SCID4 };
+	enum Codec { MEMORY, SCID4, PGN };
 	static ICodecDatabase* make(Codec codec, errorT* resError, fileModeT fMode,
 	                            const char* filename, const Progress& progress,
 	                            Index* idx, NameBase* nb);

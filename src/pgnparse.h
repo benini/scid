@@ -109,21 +109,6 @@ class PgnParser
 
 };
 
-
-class CodecPgn {
-    MFile file_;
-    PgnParser parser_;
-    uint fileSize_;
-
-public:
-    errorT open(const char* filename);
-    errorT parseNext(Game* g) { return parser_.ParseGame(g); }
-    uint countParsed()        { return parser_.BytesUsed(); }
-    uint countTotal()         { return fileSize_; }
-    const char* getErrors()   { return parser_.ErrorMessages(); }
-};
-
-
 #endif // idndef SCID_PGNPARSE_H
 
 //////////////////////////////////////////////////////////////////////

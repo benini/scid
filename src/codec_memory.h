@@ -22,6 +22,7 @@
 #include "bytebuf.h"
 #include "codec.h"
 #include "common.h"
+#include "game.h"
 #include "index.h"
 #include "namebase.h"
 #include <algorithm>

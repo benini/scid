@@ -16,16 +16,15 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "codec_pgn.h"
 #include "common.h"
+#include "dbasepool.h"
 #include "misc.h"
 #include "scidbase.h"
-#include "pgnparse.h"
 #include "searchtournaments.h"
-#include "dbasepool.h"
 #include "ui.h"
-#include <string>
 #include <cstring>
-
+#include <string>
 
 /*
 * This "sc_base" functions are used by the UI to access the databases.
@@ -411,7 +410,7 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 
 	// if (pgn) {
 		CodecPgn codec;
-		err = codec.open(filename);
+		err = codec.open(filename, FMODE_ReadOnly);
 		if (err == OK) {
 			err = dbase->importGames(codec, progress, gamesSeen, errorMsg);
 		}

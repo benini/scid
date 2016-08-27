@@ -72,19 +72,6 @@ std::string pgnLatin1_to_utf8 (const char* c) {
     return res;
 }
 
-
-errorT CodecPgn::open(const char* filename) {
-    errorT res = file_.Open(filename, FMODE_ReadOnly);
-    if (res == OK) {
-        parser_.Reset(&file_);
-        fileSize_ = fileSize (filename, "");
-        if (fileSize_ < 1) { fileSize_ = 1; }
-        parser_.IgnorePreGameText();
-    }
-    return res;
-}
-
-
 void
 PgnParser::Reset()
 {
