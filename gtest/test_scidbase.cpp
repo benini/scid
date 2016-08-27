@@ -340,3 +340,114 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	EXPECT_EQ(test_pgn, encodePgn(gamepos));
 }
 
+TEST_F(Test_Scidbase, saveGame) {
+	PgnParser pgnParser;
+	pgnParser.Reset(test_pgnShort.c_str());
+	Game game0;
+	pgnParser.ParseMoves(&game0);
+	pgnParser.Reset(test_pgnLong.c_str());
+	Game game1;
+	pgnParser.ParseMoves(&game1);
+
+	scidBaseT dbase;
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
+	HFilter dbfilter = dbase.getFilter("dbfilter");
+	EXPECT_EQ(0, dbfilter.count());
+
+	{
+		ASSERT_EQ(OK, dbase.saveGame(&game0, true));
+		EXPECT_EQ(1, dbase.numGames());
+		EXPECT_EQ(1, dbfilter.count());
+		auto ie0 = dbase.getIndexEntry_bounds(0);
+		auto ie1 = dbase.getIndexEntry_bounds(1);
+		EXPECT_NE(nullptr, ie0);
+		EXPECT_EQ(nullptr, ie1);
+		EXPECT_NE(ie0, ie1);
+		std::vector<scidBaseT::GamePos> gamepos;
+		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
+	}
+	{
+		ASSERT_EQ(OK, dbase.saveGame(&game1, true));
+		EXPECT_EQ(2, dbase.numGames());
+		EXPECT_EQ(2, dbfilter.count());
+		auto ie0 = dbase.getIndexEntry_bounds(0);
+		auto ie1 = dbase.getIndexEntry_bounds(1);
+		EXPECT_NE(nullptr, ie0);
+		EXPECT_NE(nullptr, ie1);
+		EXPECT_NE(ie0, ie1);
+		std::vector<scidBaseT::GamePos> gamepos;
+		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
+		gamepos.clear();
+		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
+	}
+}
+
+TEST_F(Test_Scidbase, importGames) {
+	PgnParser pgnParser;
+	pgnParser.Reset(test_pgnShort.c_str());
+	Game game0;
+	pgnParser.ParseMoves(&game0);
+	pgnParser.Reset(test_pgnLong.c_str());
+	Game game1;
+	pgnParser.ParseMoves(&game1);
+
+	scidBaseT srcBase;
+	ASSERT_EQ(OK, srcBase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, srcBase.saveGame(&game0, true));
+	ASSERT_EQ(OK, srcBase.saveGame(&game1, true));
+	ASSERT_EQ(OK, srcBase.saveGame(&game1, true));
+	ASSERT_EQ(3, srcBase.numGames());
+	HFilter srcFilter = srcBase.getFilter("dbfilter");
+	srcFilter.set(1, 0);
+
+	scidBaseT dbase;
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
+	HFilter dbfilter = dbase.getFilter("dbfilter");
+
+	EXPECT_EQ(ERROR_BadArg, dbase.importGame(&dbase, 0));
+	EXPECT_EQ(ERROR_BadArg, dbase.importGames(&dbase, dbfilter, Progress()));
+	EXPECT_EQ(ERROR_BadArg, dbase.importGame(&srcBase, 3));
+	EXPECT_EQ(0, dbase.numGames());
+	EXPECT_EQ(0, dbfilter.count());
+
+	{
+		EXPECT_EQ(OK, dbase.importGame(&srcBase, 1));
+		EXPECT_EQ(1, dbase.numGames());
+		EXPECT_EQ(1, dbfilter.count());
+		auto ie0 = dbase.getIndexEntry_bounds(0);
+		auto ie1 = dbase.getIndexEntry_bounds(1);
+		EXPECT_NE(nullptr, ie0);
+		EXPECT_EQ(nullptr, ie1);
+		EXPECT_NE(ie0, ie1);
+		std::vector<scidBaseT::GamePos> gamepos;
+		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
+	}
+	{
+		EXPECT_EQ(OK, dbase.importGames(&srcBase, srcFilter, Progress()));
+		EXPECT_EQ(3, dbase.numGames());
+		EXPECT_EQ(3, dbfilter.count());
+		auto ie0 = dbase.getIndexEntry_bounds(0);
+		auto ie1 = dbase.getIndexEntry_bounds(1);
+		auto ie2 = dbase.getIndexEntry_bounds(2);
+		EXPECT_NE(nullptr, ie0);
+		EXPECT_NE(nullptr, ie1);
+		EXPECT_NE(nullptr, ie2);
+		EXPECT_NE(ie0, ie1);
+		EXPECT_NE(ie0, ie2);
+		std::vector<scidBaseT::GamePos> gamepos;
+		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
+		gamepos.clear();
+		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
+		gamepos.clear();
+		EXPECT_EQ(OK, dbase.getGame(ie2, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
+	}
+}
