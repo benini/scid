@@ -104,7 +104,7 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	if (targetBase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
 	errorT err = OK;
 	const HFilter filter = dbase->getFilter(argv[3]);
-	if (*filter) {
+	if (filter != 0) {
 		err = targetBase->importGames(dbase, filter, UI_CreateProgress(ti));
 	} else {
 		uint gNum = strGetUnsigned (argv[3]);
@@ -204,7 +204,7 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 		bool value = (cmd == 2);
 
 		const HFilter filter = dbase->getFilter(argv[3]);
-		if (*filter || (std::strcmp("all", argv[3]) == 0)) {
+		if (filter != 0 || (std::strcmp("all", argv[3]) == 0)) {
 			switch (cmd) {
 			case 2:
 			case 3: return UI_Result(ti, dbase->setFlag(value, flagType, filter));
@@ -245,6 +245,8 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 	if (argc < 6) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const HFilter filter = dbase->getFilter(argv[3]);
+	if (filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
+
 	const char* sort = argv[4];
 	uint gnumber = strGetUnsigned (argv[5]);
 	uint location = 0;
@@ -274,6 +276,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	uint start = strGetUnsigned (argv[3]);
 	uint count = strGetUnsigned (argv[4]);
 	const HFilter filter = dbase->getFilter(argv[5]);
+	if (filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
 	const char* sort = argv[6];
 	uint* idxList = new uint[count];
 	errorT err = dbase->GetRange(sort, start, count, filter, idxList);
@@ -289,8 +292,8 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		uint idx = idxList[i];
 		if (idx == IDX_NOT_FOUND) break;
 
-		uint ply = 0;
-		if (*filter) ply = filter.get(idx) -1;
+		ASSERT(filter->get(idx) != 0);
+		uint ply = filter->get(idx) -1;
 
 		const IndexEntry* ie = dbase->getIndexEntry(idx);
 
@@ -713,7 +716,7 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 	if (argc < 5) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const HFilter filter = dbase->getFilter(argv[3]);
-	if (!filter) return UI_Result(ti, ERROR_BadArg, usage);
+	if (filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
 
 	SearchTournaments search(dbase, filter);
 

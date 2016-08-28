@@ -58,36 +58,6 @@ class Filter
     void    SetCapacity (gamenumT size);
 };
 
-class HFilter {
-    Filter* f_;
-    const Filter* mask_;
-
-public:
-    explicit HFilter(Filter* f = NULL, const Filter* mask = NULL) : f_(f), mask_(mask) {}
-
-    bool operator! () const { return f_ == NULL; }
-    bool operator* () const { return f_ != NULL; }
-    bool isWhole() const { return f_->isWhole(); }
-    uint count() const {
-        uint res = f_->Count();
-        if (mask_ == NULL) return res;
-        if (res == f_->Size()) return mask_->Count();
-        for (uint i=0, n = f_->Size(); i < n; i++) {
-            if (f_->Get(i) != 0 && mask_->Get(i) == 0) --res;
-        }
-        return res;
-    }
-    byte get(gamenumT index) const {
-        byte res = f_->Get(index);
-        if (res != 0 && mask_ != NULL) return mask_->Get(index);
-        return res;
-    }
-
-    void set (gamenumT index, byte value) { return f_->Set(index, value); }
-    void fill (byte value) { return f_->Fill(value); }
-};
-
-
 //////////////////////////////////////////////////////////////////////
 //
 // CompressedFilter class:

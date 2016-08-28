@@ -145,12 +145,16 @@ inline Tcl_Obj* ObjMaker(bool v) {
 inline Tcl_Obj* ObjMaker(int v) {
 	return Tcl_NewIntObj(v);
 }
-inline Tcl_Obj* ObjMaker(uint v) {
-	ASSERT(v < static_cast<uint>(std::numeric_limits<int>::max()));
+inline Tcl_Obj* ObjMaker(unsigned int v) {
+	ASSERT(v <= static_cast<unsigned int>(std::numeric_limits<int>::max()));
 	return Tcl_NewIntObj(static_cast<int>(v));
 }
-inline Tcl_Obj* ObjMaker(uint64_t v) {
-	ASSERT(v < static_cast<uint64_t>(std::numeric_limits<int>::max()));
+inline Tcl_Obj* ObjMaker(unsigned long v) {
+	ASSERT(v <= static_cast<unsigned long>(std::numeric_limits<int>::max()));
+	return Tcl_NewIntObj(static_cast<int>(v));
+}
+inline Tcl_Obj* ObjMaker(unsigned long long v) {
+	ASSERT(v <= static_cast<unsigned long long>(std::numeric_limits<int>::max()));
 	return Tcl_NewIntObj(static_cast<int>(v));
 }
 inline Tcl_Obj* ObjMaker(double v) {

@@ -107,7 +107,7 @@ private:
 	SearchPos& operator=(const SearchPos&);
 	template <colorT TOMOVE, bool STOREDLINE>
 	bool SetFilter (scidBaseT* base, HFilter& filter, const Progress& prg) {
-		filter.fill(0);
+		filter->clear();
 		long progress = 0;
 		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);

@@ -19,17 +19,16 @@
 #ifndef SCIDBASE_H
 #define SCIDBASE_H
 
-#include "misc.h"
-#include "index.h"
-#include "namebase.h"
-#include "undoredo.h"
-#include "game.h"
-#include "tree.h"
-#include "fastgame.h"
 #include "bytebuf.h"
 #include "codec.h"
+#include "fastgame.h"
+#include "game.h"
+#include "index.h"
+#include "misc.h"
+#include "namebase.h"
+#include "tree.h"
+#include "undoredo.h"
 #include <vector>
-
 
 struct scidBaseT {
 	struct Stats {
@@ -169,13 +168,16 @@ struct scidBaseT {
 	void FreeSortCache(const char* criteria) const {
 		return idx->FreeSortCache(criteria);
 	}
-	errorT GetRange(const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const {
+	errorT GetRange(const char* criteria, uint idx, uint count,
+	                const HFilter& filter, uint* result) const {
 		return this->idx->GetRange(nb, criteria, idx, count, filter, result);
 	}
-	uint GetRangeLocation(const char *criteria, const HFilter& filter, uint gnumber) const {
+	uint GetRangeLocation(const char* criteria, const HFilter& filter,
+	                      uint gnumber) const {
 		return idx->GetRangeLocation(nb, criteria, filter, gnumber);
 	}
-	uint GetRangeLocation(const char *criteria, const HFilter& filter, const char* text, uint start, bool forward) const {
+	uint GetRangeLocation(const char* criteria, const HFilter& filter,
+	                      const char* text, uint start, bool forward) const {
 		return idx->GetRangeLocation(nb, criteria, filter, text, start, forward);
 	}
 
@@ -302,7 +304,7 @@ inline errorT scidBaseT::invertFlag(uint flag, uint gNum) {
 inline errorT scidBaseT::invertFlag(uint flag, const HFilter& filter) {
 	errorT res = OK;
 	for (gamenumT i = 0, n = numGames(); i < n; i++) {
-		if (*filter && filter.get(i) == 0) continue;
+		if (filter != 0 && filter->get(i) == 0) continue;
 		res = invertFlag(flag, i);
 		if (res != OK) return res;
 	}
@@ -323,7 +325,7 @@ inline errorT scidBaseT::setFlag(bool value, uint flag, uint gNum){
 inline errorT scidBaseT::setFlag(bool value, uint flag, const HFilter& filter) {
 	errorT res = OK;
 	for (gamenumT gNum = 0, n = numGames(); gNum < n; gNum++) {
-		if (*filter && filter.get(gNum) == 0) continue;
+		if (filter != 0 && filter->get(gNum) == 0) continue;
 		res = setFlag(value, flag, gNum);
 		if (res != OK) return res;
 	}

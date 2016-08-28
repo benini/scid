@@ -356,13 +356,14 @@ errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
 }
 
 errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress) {
-	ASSERT(*filter);
+	ASSERT(srcBase != 0);
+	ASSERT(filter != 0);
 	if (srcBase == this) return ERROR_BadArg;
 	if (isReadOnly()) return ERROR_FileReadOnly;
 
 	errorT err = OK;
 	uint iProgress = 0;
-	uint totGames = filter.count();
+	uint totGames = filter->size();
 	Filter* f; int i_filters=0;
 	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
 	for (gamenumT gNum = 0, n = srcBase->numGames(); gNum < n; gNum++) {
@@ -571,7 +572,7 @@ scidBaseT::TreeStat::TreeStat()
 }
 
 std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
-	ASSERT(*filter);
+	ASSERT(filter != 0);
 
 	std::vector<scidBaseT::TreeStat> res;
 	std::vector<FullMove> v;
@@ -672,7 +673,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 			n_deleted++;
 			continue;
 		}
-		uint stLine = ie->GetStoredLineCode();
+		byte stLine = ie->GetStoredLineCode();
 		sort.push_back(std::make_pair(stLine, i));
 	}
 	std::stable_sort(sort.begin(), sort.end());

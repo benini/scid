@@ -19,9 +19,9 @@
 #include "common.h"
 #include "misc.h"
 #include "scidbase.h"
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 namespace {
 
@@ -353,28 +353,26 @@ std::vector<SearchParam> parseParams(int argc, const char ** argv, filterOpT& fi
  *         @filter is reset to include all games
  *         @filterOp is changed to FILTEROP_AND
  */
-std::vector<gamenumT> gamesToSearch(const scidBaseT* base, HFilter& filter, filterOpT& filterOp) {
+std::vector<gamenumT> collectGames(const scidBaseT* base, HFilter& filter,
+                                   filterOpT& filterOp) {
+	ASSERT(base != 0);
+	ASSERT(filter != 0);
+
 	std::vector<gamenumT> res;
-	res.reserve(base->numGames());
-
-	if (filterOp == FILTEROP_RESET) {
-		for (gamenumT i = 0, n=base->numGames(); i < n; i++) {
-			res.push_back(i);
-		}
-		filter.fill(1);
+	switch (filterOp) {
+	case FILTEROP_RESET:
+		filter->includeAll();
 		filterOp = FILTEROP_AND;
-	} else {
-		for (gamenumT i = 0, n=base->numGames(); i < n; i++) {
-			byte v = filter.get(i);
-			if (filterOp == FILTEROP_AND) {
-				if (v != 0) res.push_back(i);
-			} else {
-				//filterOp == FILTEROP_OR
-				if (v == 0) res.push_back(i);
-			}
-		}
+	case FILTEROP_AND:
+		res.resize(filter->size());
+		std::copy(filter->begin(), filter->end(), res.begin());
+		break;
+	case FILTEROP_OR:
+		HFilterInverted excluded(filter);
+		res.resize(excluded.size());
+		std::copy(excluded.begin(), excluded.end(), res.begin());
+		break;
 	}
-
 	return res;
 }
 
@@ -498,13 +496,14 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
  * -welo "2700 4000" -belo|! "0 2700" -delo "-200 200"
  * means (white elo > 2700 && white elo < 4000) || (belo is not in the range 0-2700) && ((welo - belo) > -200 && (welo - belo) < 200)
  */
-errorT search_index(const scidBaseT* base, HFilter& filter, int argc, const char ** argv, const Progress& progress)
-{
-	ASSERT(*filter);
+errorT search_index(const scidBaseT* base, HFilter& filter, int argc,
+                    const char** argv, const Progress& progress) {
+	ASSERT(base != 0);
+	ASSERT(filter != 0);
 
 	filterOpT filterOp = FILTEROP_RESET;
 	std::vector<SearchParam> params = parseParams(argc, argv, filterOp);
-	std::vector<gamenumT> glist = gamesToSearch(base, filter, filterOp);
+	std::vector<gamenumT> glist = collectGames(base, filter, filterOp);
 
 	// Partition glist so that the range [glist.begin(), it_res)
 	// contains the matching games
@@ -541,11 +540,13 @@ errorT search_index(const scidBaseT* base, HFilter& filter, int argc, const char
 
 	if (filterOp == FILTEROP_AND) {
 		// Remove nonmatching games from @filter
-		for (iter it = it_res; it != glist.end(); it++) filter.set(*it, 0);
+		for (iter it = it_res; it != glist.end(); ++it)
+			filter->erase(*it);
 	} else {
 		// filterOp == FILTEROP_OR
 		// Add matching games to @filter
-		for (iter it = glist.begin(); it != it_res; it++) filter.set(*it, 1);
+		for (iter it = glist.begin(); it != it_res; ++it)
+			filter->set(*it, 1);
 	}
 	progress.report(1,1);
 

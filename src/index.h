@@ -24,8 +24,8 @@
 #include "common.h"
 #include "date.h"
 #include "indexentry.h"
-#include "filter.h"
 #include "filebuf.h"
+#include "hfilter.h"
 #include <string>
 #include <vector>
 #include <cstring>
@@ -282,7 +282,8 @@ public:
      *           *result* array must have size >= count
      *           if there aren't enough result to reach count: result[last_result + 1] = IDX_NOT_FOUND
      */
-    errorT GetRange(const NameBase *nbase, const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const;
+    errorT GetRange(const NameBase* nbase, const char* criteria, uint idx,
+                    uint count, const HFilter& filter, uint* result) const;
 
     /* GetRangeLocation
      * Find the location of a game into a sorted Range.

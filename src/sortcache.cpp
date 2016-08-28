@@ -225,18 +225,18 @@ errorT SortCache::GetRange( uint start, uint count, const HFilter& filter, uint 
 {
 	if (count == 0) return OK;
 	if (start >= numGames) { *result = IDX_NOT_FOUND; return OK; }
-	bool use_filter = (*filter && filter.count() != numGames);
+	bool use_filter = (filter != 0 && filter->size() != numGames);
 
 	if (!sorted_) { // Not fully sorted
-		std::vector<uint> v;
+		std::vector<gamenumT> v;
 		if (use_filter) {
-			v.resize(filter.count());
-			for(uint i=0, gnum=0; gnum < numGames; gnum++) {
-				if(filter.get(gnum) != 0) v[i++] = gnum;
-			}
+			v.resize(filter->size());
+			std::copy(filter->begin(), filter->end(), v.begin());
 		} else {
 			v.resize(numGames);
-			for (uint i=0; i < numGames; ++i) v[i] = i;
+			for (gamenumT i = 0; i < numGames; ++i) {
+				v[i] = i;
+			}
 		}
 
 		if (start >= v.size()) {
@@ -293,19 +293,19 @@ return: IDX_NOT_FOUND if gnumber is not found
 */
 uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
 {
+	ASSERT(filter != 0);
 	if (gnumber == 0 || gnumber > numGames) return IDX_NOT_FOUND;
-	gnumber--;
-	if (*filter && filter.get(gnumber) == 0) return IDX_NOT_FOUND;
+	if (filter->get(--gnumber) == 0) return IDX_NOT_FOUND;
 	uint res = 0;
 	if (!sorted_) {
 		for (uint i=0; i < numGames; i++) {
-			if (*filter && filter.get(i) == 0) continue;
+			if (filter->get(i) == 0) continue;
 			if (Compare(i, gnumber) <0) ++res;
 		}
 		return res;
 	} else {
 		for(uint i=0; i < numGames; i++) {
-			if (*filter && filter.get(fullMap[i]) == 0) continue;
+			if (filter->get(fullMap[i]) == 0) continue;
 			if (fullMap[i] == gnumber) return res;
 			res++;
 		}

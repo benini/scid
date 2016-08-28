@@ -353,12 +353,12 @@ TEST_F(Test_Scidbase, saveGame) {
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
 	HFilter dbfilter = dbase.getFilter("dbfilter");
-	EXPECT_EQ(0, dbfilter.count());
+	EXPECT_EQ(0, dbfilter->size());
 
 	{
 		ASSERT_EQ(OK, dbase.saveGame(&game0, true));
 		EXPECT_EQ(1, dbase.numGames());
-		EXPECT_EQ(1, dbfilter.count());
+		EXPECT_EQ(1, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
 		auto ie1 = dbase.getIndexEntry_bounds(1);
 		EXPECT_NE(nullptr, ie0);
@@ -371,7 +371,7 @@ TEST_F(Test_Scidbase, saveGame) {
 	{
 		ASSERT_EQ(OK, dbase.saveGame(&game1, true));
 		EXPECT_EQ(2, dbase.numGames());
-		EXPECT_EQ(2, dbfilter.count());
+		EXPECT_EQ(2, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
 		auto ie1 = dbase.getIndexEntry_bounds(1);
 		EXPECT_NE(nullptr, ie0);
@@ -402,7 +402,7 @@ TEST_F(Test_Scidbase, importGames) {
 	ASSERT_EQ(OK, srcBase.saveGame(&game1, true));
 	ASSERT_EQ(3, srcBase.numGames());
 	HFilter srcFilter = srcBase.getFilter("dbfilter");
-	srcFilter.set(1, 0);
+	srcFilter->erase(1);
 
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
@@ -413,12 +413,12 @@ TEST_F(Test_Scidbase, importGames) {
 	EXPECT_EQ(ERROR_BadArg, dbase.importGames(&dbase, dbfilter, Progress()));
 	EXPECT_EQ(ERROR_BadArg, dbase.importGame(&srcBase, 3));
 	EXPECT_EQ(0, dbase.numGames());
-	EXPECT_EQ(0, dbfilter.count());
+	EXPECT_EQ(0, dbfilter->size());
 
 	{
 		EXPECT_EQ(OK, dbase.importGame(&srcBase, 1));
 		EXPECT_EQ(1, dbase.numGames());
-		EXPECT_EQ(1, dbfilter.count());
+		EXPECT_EQ(1, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
 		auto ie1 = dbase.getIndexEntry_bounds(1);
 		EXPECT_NE(nullptr, ie0);
@@ -431,7 +431,7 @@ TEST_F(Test_Scidbase, importGames) {
 	{
 		EXPECT_EQ(OK, dbase.importGames(&srcBase, srcFilter, Progress()));
 		EXPECT_EQ(3, dbase.numGames());
-		EXPECT_EQ(3, dbfilter.count());
+		EXPECT_EQ(3, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
 		auto ie1 = dbase.getIndexEntry_bounds(1);
 		auto ie2 = dbase.getIndexEntry_bounds(2);

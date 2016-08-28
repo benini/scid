@@ -294,21 +294,22 @@ void Index::FreeSortCache(const char* criteria) const
     }
 }
 
-errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const
-{
-    ASSERT(result != 0);
+errorT Index::GetRange(const NameBase* nbase, const char* criteria, uint idx,
+                       uint count, const HFilter& filter, uint* result) const {
     ASSERT(criteria != 0 && strlen(criteria) > 1);
+    ASSERT(filter != 0);
+    ASSERT(result != 0);
     if (criteria[0] == 'N') {
         uint i=0;
         if (criteria[1] == '+') {
             for(gamenumT gnum=0; gnum < GetNumGames() && i < count; gnum++) {
-                if (*filter && filter.get(gnum) == 0) continue;
+                if (filter->get(gnum) == 0) continue;
                 if (idx == 0) result[i++] = gnum;
                 else idx--;
             }
         } else {
             for(gamenumT gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
-                if (*filter && filter.get(gnum -1) == 0) continue;
+                if (filter->get(gnum -1) == 0) continue;
                 if (idx == 0) result[i++] = gnum -1;
                 else idx--;
             }
@@ -333,9 +334,12 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
     return OK;
 }
 
-uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter, uint gnumber) const
-{
-    for(uint i=0; i < SORTING_CACHE_MAX; i++) {
+uint Index::GetRangeLocation(const NameBase* nbase, const char* criteria,
+                             const HFilter& filter, uint gnumber) const {
+    ASSERT(nbase != 0);
+    ASSERT(criteria != 0 && strlen(criteria) > 1);
+    ASSERT(filter != 0);
+    for (uint i = 0; i < SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] == NULL) continue;
         if (sortingCaches[i]->MatchCriteria(criteria) ) {
             return sortingCaches[i]->IndexToFilteredCount (gnumber, filter);

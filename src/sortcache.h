@@ -20,7 +20,7 @@
 #ifndef SORTINGCACHE_DEFINED
 #define SORTINGCACHE_DEFINED
 
-#include "filter.h"
+#include "hfilter.h"
 #include "index.h"
 #include <string>
 

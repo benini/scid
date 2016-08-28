@@ -1692,7 +1692,8 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case FILTER_COUNT:
         if (argc == 2) {
-            return setUintResult(ti, db->getFilter("dbfilter").count());
+            size_t res = db->getFilter("dbfilter")->size();
+            return UI_Result(ti, OK, res);
         }
         break;
 
@@ -1736,12 +1737,12 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
     if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
     HFilter filter = dbase->getFilter(argv[3]);
-    if (!filter) return errorResult (ti, "sc_filter: invalid filterName");
+    if (filter == 0) return errorResult (ti, "sc_filter: invalid filterName");
     switch (index) {
     case FILTER_AND:
         if (argc == 5) {
             const HFilter f = dbase->getFilter(argv[4]);
-            if (*f) {
+            if (f != 0) {
                 for (uint i=0, n = dbase->numGames(); i < n; i++) {
                     if (filter.get(i) != 0 && f.get(i) == 0) filter.set(i, 0);
                 }
@@ -1753,7 +1754,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_OR:
         if (argc == 5) {
             const HFilter f = dbase->getFilter(argv[4]);
-            if (*f) {
+            if (f != 0) {
                 for (uint i=0, n = dbase->numGames(); i < n; i++) {
                     if (filter.get(i) == 0) filter.set(i, f.get(i));
                 }
@@ -1765,7 +1766,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_COPY:
         if (argc == 5) {
             const HFilter f = dbase->getFilter(argv[4]);
-            if (*f) {
+            if (f != 0) {
                 for (uint i=0, n = dbase->numGames(); i < n; i++) {
                     filter.set(i, f.get(i));
                 }
@@ -1788,15 +1789,26 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (res[0] == '+') res = res.substr(1, res.find('+', 1) -1);
         if (argc > 4) {
             const HFilter maskfilter = dbase->getFilter(argv[4]);
-            if (*maskfilter) res = '+' + res + "+" + argv[4];
+            if (maskfilter == 0)
+                return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid filterName");
+            res = '+' + res + "+" + argv[4];
         }
         return UI_Result(ti, OK, res);
         }
 
     case FILTER_SET:
         if (argc == 5) {
-            filter.fill(strGetUnsigned(argv[4]));
-            return TCL_OK;
+            switch (strGetUnsigned(argv[4])) {
+            case 0:
+                filter->clear();
+                break;
+            case 1:
+                filter->includeAll();
+                break;
+            default:
+                return UI_Result(ti, ERROR_BadArg);
+            }
+            return UI_Result(ti, OK);
         } else if (argc > 5) {
             uint gNum = strGetUnsigned (argv[5]);
             if (gNum > 0 && gNum <= dbase->numGames()) {
@@ -1829,7 +1841,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_filter set baseId filterName value [gnumber [count sortCrit] ]");
 
     case FILTER_COUNT:
-        return setUintResult (ti, filter.count());
+        return setUintResult (ti, filter->size());
 
     case FILTER_RELEASE:
         dbase->deleteFilter(argv[3]);
@@ -1843,7 +1855,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
 
     case FILTER_ISWHOLE:
-        return UI_Result(ti, OK, filter.isWhole());
+        return UI_Result(ti, OK, filter->isPrimaryWhole());
 
     case FILTER_TREESTATS: {
             std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
@@ -1900,7 +1912,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     //if (nWrited != db->tbuf->GetByteCount()) error
                 }
                 if (!end) {
-                    end = ! progress.report(start, filter.count());
+                    end = ! progress.report(start, filter->size());
                 }
             }
             if (argc > 8) fprintf(exportFile, "%s", argv[8]);
@@ -9305,10 +9317,10 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter.fill(1);
+        filter->includeAll();
         filterOp = FILTEROP_AND;
     }
-    uint startFilterCount = filter.count();
+    size_t startFilterCount = filter->size();
 
     // Here is the loop that searches on each game:
     Game tmpGame;
@@ -9449,8 +9461,9 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (gameNum != dbase->numGames()) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
-    sprintf (temp, "%d / %d  (%d%c%02d s)",
-             filter.count(), startFilterCount,
+    sprintf (temp, "%lu / %lu  (%d%c%02d s)",
+             static_cast<unsigned long>(filter->size()),
+             static_cast<unsigned long>(startFilterCount),
              centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
 #ifdef SHOW_SKIPPED_STATS
@@ -9783,10 +9796,10 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter.fill(1);
+        filter->includeAll();
         filterOp = FILTEROP_AND;
     }
-    uint startFilterCount = filter.count();
+    size_t startFilterCount = filter->size();
 
     // Here is the loop that searches on each game:
     gamenumT gameNum = 0, n = db->numGames();
@@ -9912,8 +9925,9 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     if (gameNum != n) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
-    sprintf (temp, "%d / %d  (%d%c%02d s)",
-             filter.count(), startFilterCount,
+    sprintf (temp, "%lu / %lu  (%d%c%02d s)",
+             static_cast<unsigned long>(filter->size()),
+             static_cast<unsigned long>(startFilterCount),
              centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
 #ifdef SHOW_SKIPPED_STATS

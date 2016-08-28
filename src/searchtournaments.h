@@ -314,7 +314,9 @@ private:
 
 inline SearchTournaments::SearchTournaments(const scidBaseT* dbase, const HFilter& filter)
 : dbase_(dbase) {
-	games_.reserve(filter.count());
+	ASSERT(dbase != 0);
+	ASSERT(filter != 0);
+	games_.reserve(filter->size());
 	for (uint i=0, n = dbase->numGames(); i < n; i++) {
 		if (filter.get(i) == 0) continue;
 		games_.push_back( TourneyGame(dbase->getIndexEntry(i), i) );
