@@ -26,6 +26,9 @@
 #include <cstring>
 #include <string>
 
+static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
+                           fileModeT fMode, ICodecDatabase::Codec codec);
+
 /*
 * This "sc_base" functions are used by the UI to access the databases.
 * To encapsulate database internal complexity this functions should only
@@ -109,6 +112,39 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		err = targetBase->importGame(dbase, gNum -1);
 	}
 	return UI_Result(ti, err);
+}
+
+
+/**
+ * sc_base_create() - crate a database
+ * @codec : the type of the database
+ * @filename: the filename of the wanted database.
+ *            Database in native Scid format do not use extension ("example").
+ *            Other databases require file extension ("example.pgn").
+ *
+ * Return:
+ * - on success the handle assigned to the database
+ */
+UI_res_t sc_base_create(UI_handle_t ti, int argc, const char** argv) {
+	const char* usage = "Usage: sc_base create <MEMORY|SCID4|PGN> filename";
+	if (argc != 4 && argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+
+	// Old interface defaults to SCID4
+	ICodecDatabase::Codec codec = ICodecDatabase::SCID4;
+	if (argc == 4) {
+		if (std::strcmp("MEMORY", argv[2]) == 0)
+			codec = ICodecDatabase::MEMORY;
+		else if (std::strcmp("SCID4", argv[2]) == 0)
+			codec = ICodecDatabase::SCID4;
+		else if (std::strcmp("PGN", argv[2]) == 0)
+			codec = ICodecDatabase::PGN;
+		else
+			return UI_Result(ti, ERROR_BadArg, usage);
+	}
+
+	return doOpenBase(
+	    ti, argc == 4 ? argv[3] : argv[2],
+	    codec == ICodecDatabase::MEMORY ? FMODE_Memory : FMODE_Create, codec);
 }
 
 
@@ -453,19 +489,16 @@ UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 
 
 /**
- * sc_base_open() - open/create a Scid database
+ * doOpenBase() - open/create a database
  * @filename:    the filename of the database to open/create
  * @fMode:       open the database read-only|read-write|create|in_memory
  * @codec:       the type of the database
  *
- * Only database in native Scid format che be opened directly with this function.
- * Other formats (like pgn for example) call sc_base_open with @fMode == FMODE_MEMORY
- * and then import the games into the memory database.
- * If @fMode == FMODE_Both and the file cannot be opened for writing, the database will
- * be opened read-only.
+ * If @fMode == FMODE_Both, and the file cannot be opened for writing, this
+ * function will try to open the database read-only.
  */
-UI_res_t sc_base_open(UI_handle_t ti, const char* filename, fileModeT fMode, ICodecDatabase::Codec codec)
-{
+static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
+                           fileModeT fMode, ICodecDatabase::Codec codec) {
 	if (DBasePool::find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
 
 	scidBaseT* dbase = DBasePool::getFreeSlot();
@@ -483,6 +516,34 @@ UI_res_t sc_base_open(UI_handle_t ti, const char* filename, fileModeT fMode, ICo
 
 	int res = DBasePool::switchCurrent(dbase);
 	return UI_Result(ti, err, res);
+}
+
+/**
+ * sc_base_open() - open a database
+ * @codec : the type of the database
+ * @filename: the filename of the wanted database.
+ *            Database in native Scid format do not use extension ("example").
+ *            Other databases require file extension ("example.pgn").
+ *
+ * Return:
+ * - on success or with ERROR_NameDataLoss: the handle assigned to the database
+ */
+UI_res_t sc_base_open(UI_handle_t ti, int argc, const char** argv) {
+	const char* usage = "Usage: sc_base open <SCID4|PGN> filename";
+	if (argc != 4 && argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+
+	// Old interface defaults to SCID4
+	ICodecDatabase::Codec codec = ICodecDatabase::SCID4;
+	if (argc == 4) {
+		if (std::strcmp("SCID4", argv[2]) == 0)
+			codec = ICodecDatabase::SCID4;
+		else if (std::strcmp("PGN", argv[2]) == 0)
+			codec = ICodecDatabase::PGN;
+		else
+			return UI_Result(ti, ERROR_BadArg, usage);
+	}
+
+	return doOpenBase(ti, argc == 4 ? argv[3] : argv[2], FMODE_Both, codec);
 }
 
 
@@ -759,7 +820,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 {
 	static const char * options [] = {
 	    "close",           "compact",         "copygames",
-	    "create",          "creatememory",    "current",         "duplicates",
+	    "create",          "current",         "duplicates",
 	    "export",          "extra",           "filename",        "gameflag",
 	    "gamelocation",    "gameslist",       "getGame",         "import",
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
@@ -769,7 +830,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	};
 	enum {
 	    BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,
-	    BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
+	    BASE_CREATE,       BASE_CURRENT,      BASE_DUPLICATES,
 	    BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,     BASE_GAMEFLAG,
 	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
@@ -782,12 +843,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	int index = strUniqueMatch (argv[1], options);
 	switch (index) {
 	case BASE_CREATE:
-		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base create filename");
-		return sc_base_open(ti, argv[2], FMODE_Create, ICodecDatabase::SCID4);
-
-	case BASE_CREATEMEMORY:
-		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base creatememory filename");
-		return sc_base_open(ti, argv[2], FMODE_Memory, ICodecDatabase::MEMORY);
+		return sc_base_create(ti, argc, argv);
 
 	case BASE_CURRENT:
 		return sc_base_switch(0, ti);
@@ -802,8 +858,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 		return sc_base_list(ti, argc, argv);
 
 	case BASE_OPEN:
-		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base open filename");
-		return sc_base_open(ti, argv[2], FMODE_Both, ICodecDatabase::SCID4);
+		return sc_base_open(ti, argc, argv);
 
 	case BASE_PTRACK:
 		return sc_base_piecetrack (cd, ti, argc, argv);
@@ -813,7 +868,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_TAG:
 		return sc_base_tag (cd, ti, argc, argv);
-
 	}
 
 	//New multi-base functions

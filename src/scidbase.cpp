@@ -107,9 +107,6 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	fileMode_ = fMode;
 	fileName_ = filename;
 	gameNumber = -1;
-	if (dbtype == ICodecDatabase::MEMORY) {
-		idx->SetDescription("In-memory database");
-	}
 
 	// Initialize the filters: all the games are included by default.
 	for (size_t i = 0; true; i++) {
