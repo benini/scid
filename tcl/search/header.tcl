@@ -421,7 +421,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     if {$::refFilterH == ""} {
         set filter "dbfilter"
     } else {
-        set filter [sc_filter link $dbase $::refFilterH]
+        set filter [sc_filter compose $dbase $::refFilterH ""]
     }
 
     if {$sEco == "Yes"} {
@@ -536,14 +536,14 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
         unset fOrig
     }
 
-    set str "[sc_filter count $dbase $filter] / [sc_base numGames $dbase]"
-
-    after idle "::notify::DatabaseModified $dbase dbfilter"
+    foreach {filterSz gameSz mainSz} [sc_filter sizes $dbase $filter] {}
+    set str "[::utils::thousands $mainSz] / [::utils::thousands $gameSz]"
+    .sh.status configure -text $str
     
     grab release .sh.b.stop
     pack forget .sh.b.stop
-    .sh.status configure -text $str
 
+    ::notify::DatabaseModified $dbase $filter
   }
   
   ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20

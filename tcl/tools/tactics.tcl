@@ -326,7 +326,7 @@ namespace eval tactics {
 
         #TODO:
         #sc_filter release $::tactics::baseId $::tactics::filter
-        sc_filter set $::tactics::baseId "dbfilter" 1
+        sc_filter reset $::tactics::baseId dbfilter full
         catch { ::uci::closeUCIengine $::tactics::engineSlot }
 
         unset ::playMode

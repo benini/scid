@@ -41,6 +41,7 @@ class Filter
     Filter& operator=(const Filter&);
     void Allocate();
     void Free();
+    void SetCapacity (gamenumT size);
     friend class CompressedFilter;
     
   public:
@@ -55,7 +56,6 @@ class Filter
     byte    Get (gamenumT index) const;       // Gets the value at index.
     void    Fill (byte value);                // Sets all values.
     void    Append (byte value);              // Appends one value.
-    void    SetCapacity (gamenumT size);
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -159,7 +159,9 @@ inline void Filter::Append (byte value)
     if (value != 0) FilterCount++;
     if (value != 1 && Data == NULL) Allocate();
     if (Data != NULL) {
-        if (FilterSize >= Capacity) SetCapacity(FilterSize + 1000);
+        if (FilterSize >= Capacity) {
+            SetCapacity(FilterSize > 512 ? FilterSize * 2 : 1024);
+        }
         Data[FilterSize] = value;
     }
     FilterSize++;

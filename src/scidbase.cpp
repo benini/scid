@@ -109,11 +109,9 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	gameNumber = -1;
 
 	// Initialize the filters: all the games are included by default.
-	for (size_t i = 0; true; i++) {
-		Filter* f = fetchFilter(i);
-		if (f == 0) break;
-		f->Init(numGames());
-	}
+	dbFilter->Init(numGames());
+	treeFilter->Init(numGames());
+	ASSERT(filters_.empty());
 
 	// Ensure an old treefile is not still around:
 	std::remove((fileName_ + ".stc").c_str());
@@ -328,15 +326,7 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	} else {
 		gnum = numGames();
 		err = codec_->addGame(game);
-		if (err == OK) {
-			// Add the new game to filters
-			for (size_t i = 0; true; i++) {
-				Filter* f = fetchFilter(i);
-				if (f == 0) break;
-				byte val = f->isWhole() ? 1 : 0;
-				f->Append(val);
-			}
-		}
+		if (err == OK) extendFilters();
 	}
 
 	if (err == OK && clearCache) err = clearCaches(gnum);
@@ -364,8 +354,6 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 	errorT err = OK;
 	uint iProgress = 0;
 	uint totGames = filter->size();
-	Filter* f; int i_filters=0;
-	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
 	for (gamenumT gNum = 0, n = srcBase->numGames(); gNum < n; gNum++) {
 		if (filter.get(gNum) == 0) continue;
 		err = importGameHelper(srcBase, gNum);
@@ -402,29 +390,50 @@ errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
 	nb->AddElo(ie.GetBlack(), ie.GetBlackElo());
 
 	err = codec_->addGame(&ie, gameData, gameDataLen);
-	if (err == OK) {
-		// Add the new game to filters
-		for (size_t i = 0; true; i++) {
-			Filter* f = fetchFilter(i);
-			if (f == 0) break;
-			byte val = f->isWhole() ? 1 : 0;
-			f->Append(val);
-		}
-	}
+	if (err == OK) extendFilters();
 	return err;
 }
 
+/**
+ * Filters
+ */
 std::string scidBaseT::newFilter() {
-	std::string newname = (filters_.size() == 0) ? "a_" : filters_.back().first;
-	if (newname[0] == 'z') newname = 'a' + newname;
-	else newname = ++(newname[0]) + newname.substr(1);
+	std::string newname = (filters_.size() == 0)
+		? "a_"
+		: filters_.back().first;
+	if (newname[0] == 'z') {
+		newname = 'a' + newname;
+	} else {
+		newname = ++(newname[0]) + newname.substr(1);
+	}
 	filters_.push_back(std::make_pair(newname, new Filter(numGames())));
 	return newname;
 }
 
-void scidBaseT::deleteFilter(const char* filterName) {
-	for (uint i=0; i < filters_.size(); i++) {
-		if (filters_[i].first == filterName) {
+std::string scidBaseT::composeFilter(const std::string& mainFilter,
+                                     const std::string& maskFilter) const {
+	std::string res;
+	if (mainFilter.empty()) return res;
+
+	if (mainFilter[0] != '+') {
+		res = mainFilter;
+	} else {
+		size_t maskName = mainFilter.find('+', 1);
+		if (maskName != std::string::npos)
+			res = mainFilter.substr(1, maskName - 1);
+	}
+
+	if (!maskFilter.empty()) {
+		res = '+' + res + "+" + maskFilter;
+	}
+
+	if (getFilter(res) == 0) res.clear();
+	return res;
+}
+
+void scidBaseT::deleteFilter(const char* filterId) {
+	for (size_t i = 0, n = filters_.size(); i < n; i++) {
+		if (filters_[i].first == filterId) {
 			delete filters_[i].second;
 			filters_.erase(filters_.begin() + i);
 			break;
@@ -432,23 +441,45 @@ void scidBaseT::deleteFilter(const char* filterName) {
 	}
 }
 
-HFilter scidBaseT::getFilter (const char* filterName) const {
-	const Filter* mask = 0;
-	std::string name = filterName;
-	int split = 0;
-	if (filterName[split++] == '+') {
-		while (filterName[split] != '+') {
-			if (filterName[split++] == 0) return HFilter(); // Malformed filterName
-		}
-		name = name.substr(1, split -1);
-		mask = fetchFilter(filterName + split + 1);
+void scidBaseT::extendFilters() {
+	dbFilter->Append(dbFilter->isWhole() ? 1 : 0);
+	treeFilter->Append(treeFilter->isWhole() ? 1 : 0);
+	for (size_t i = 0, n = filters_.size(); i < n; i++) {
+		Filter* filter = filters_[i].second;
+		filter->Append(filter->isWhole() ? 1 : 0);
 	}
-	return HFilter(fetchFilter(name), mask);
 }
 
+Filter* scidBaseT::fetchFilter(const std::string& filterId) const {
+	if (filterId == "dbfilter") return dbFilter;
+	if (filterId == "tree") return treeFilter;
 
+	for (size_t i = 0, n = filters_.size(); i < n; i++) {
+		if (filterId == filters_[i].first)
+			return filters_[i].second;
+	}
+	return 0;
+}
 
+HFilter scidBaseT::getFilterHelper(const std::string& filterId,
+                                   bool unmasked) const {
+	Filter* main = 0;
+	const Filter* mask = 0;
+	if (filterId.empty() || filterId[0] != '+') {
+		main = fetchFilter(filterId);
+	} else {
+		size_t maskName = filterId.find('+', 1);
+		if (maskName != std::string::npos) {
+			main = fetchFilter(filterId.substr(1, maskName - 1));
+			if (!unmasked) mask = fetchFilter(filterId.substr(maskName + 1));
+		}
+	}
+	return HFilter(main, mask);
+}
 
+/**
+ * Statistics
+ */
 const scidBaseT::Stats& scidBaseT::getStats() const {
 	if (stats_ == NULL) stats_ = new scidBaseT::Stats(this);
 	return *stats_;

@@ -1669,21 +1669,21 @@ translateECO (Tcl_Interp * ti, const char * strFrom, DString * dstrTo)
 //    remove:    removes game number <x> from the filter.
 //    stats:     prints filter statistics.
 int
-sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int index = -1;
     static const char * options [] = {
         "count", "first", "frequency",
         "last", "negate", "next",
-        "previous", "set", "stats",
-        "link", "search", "release", "isWhole",
+        "previous", "stats",
+        "search", "release",
         "treestats", "export", "copy", "and", "or", "new", NULL
     };
     enum {
         FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
         FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
-        FILTER_PREV, FILTER_SET, FILTER_STATS,
-        FILTER_LINK, FILTER_SEARCH, FILTER_RELEASE, FILTER_ISWHOLE,
+        FILTER_PREV, FILTER_STATS,
+        FILTER_SEARCH, FILTER_RELEASE,
         FILTER_TREESTATS, FILTER_EXPORT, FILTER_COPY, FILTER_AND, FILTER_OR, FILTER_NEW
     };
 
@@ -1784,62 +1784,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         return UI_Result(ti, OK);
 
-    case FILTER_LINK: {
-        std::string res = argv[3];
-        if (res[0] == '+') res = res.substr(1, res.find('+', 1) -1);
-        if (argc > 4) {
-            const HFilter maskfilter = dbase->getFilter(argv[4]);
-            if (maskfilter == 0)
-                return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid filterName");
-            res = '+' + res + "+" + argv[4];
-        }
-        return UI_Result(ti, OK, res);
-        }
-
-    case FILTER_SET:
-        if (argc == 5) {
-            switch (strGetUnsigned(argv[4])) {
-            case 0:
-                filter->clear();
-                break;
-            case 1:
-                filter->includeAll();
-                break;
-            default:
-                return UI_Result(ti, ERROR_BadArg);
-            }
-            return UI_Result(ti, OK);
-        } else if (argc > 5) {
-            uint gNum = strGetUnsigned (argv[5]);
-            if (gNum > 0 && gNum <= dbase->numGames()) {
-                uint val = strGetUnsigned(argv[4]);
-                if (argc == 8) {
-                    uint start = dbase->GetRangeLocation (argv[7], filter, gNum);
-                    if (start == IDX_NOT_FOUND) return UI_Result(ti, ERROR_BadArg);
-                    int tmp = strGetInteger (argv[6]);
-                    uint count = std::abs(tmp);
-                    if (tmp < 0) {
-                        if (start >= count) {
-                            start = start - count +1;
-                        } else {
-                            count = start +1;
-                            start = 0;
-                        }
-                    }
-                    uint* idxList = new uint[count];
-                    dbase->GetRange(argv[7], start, count, filter, idxList);
-                    for (uint i = 0; i < count; ++i) {
-                        if (idxList[i] == IDX_NOT_FOUND) break;
-                        filter.set(idxList[i], val);
-                    }
-                    delete [] idxList;
-                }
-                filter.set(gNum -1, val);
-                return TCL_OK;
-            }
-        }
-        return errorResult (ti, "Usage: sc_filter set baseId filterName value [gnumber [count sortCrit] ]");
-
     case FILTER_COUNT:
         return setUintResult (ti, filter->size());
 
@@ -1853,9 +1797,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
         }
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
-
-    case FILTER_ISWHOLE:
-        return UI_Result(ti, OK, filter->isPrimaryWhole());
 
     case FILTER_TREESTATS: {
             std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
@@ -3989,7 +3930,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // is found, until a position not in any database game is reached:
     Progress progress = UI_CreateProgress(ti);
     std::string filtername = base->newFilter();
-    HFilter filter = base->getFilter(filtername.c_str());
+    HFilter filter = base->getFilter(filtername);
     dateT currentDate = g->GetDate();
     while (g->MoveForward() == OK) {
         SearchPos(g->GetCurrentPos()).setFilter(base, filter, Progress());

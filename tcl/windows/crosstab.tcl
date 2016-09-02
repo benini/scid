@@ -267,7 +267,7 @@ proc ::crosstab::Open {} {
     destroy .crosstabWin
   }
   button $w.b.setfilter -textvar ::tr(SetFilter) -command "
-    sc_filter set $::crosstab(dbase) dbfilter 0
+    sc_filter reset $::crosstab(dbase) dbfilter empty
     $w.b.addfilter invoke
   "
   button $w.b.addfilter -textvar ::tr(AddToFilter) -command {

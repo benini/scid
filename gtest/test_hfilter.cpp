@@ -110,7 +110,6 @@ TEST_P(Test_HFilter, hfilter_constFunc) {
 	ASSERT_TRUE(filter != 0);
 	ASSERT_FALSE(filter == 0);
 
-	EXPECT_EQ(numGames_ == mainSz_, filter->isPrimaryWhole());
 	EXPECT_EQ(equivMap_.size(), filter->size());
 	EXPECT_EQ(equivInv_.size(), filter->sizeInverted());
 	EXPECT_TRUE(equal(equivMap_, filter));
@@ -229,7 +228,6 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 		ASSERT_FALSE(filter == 0);
 
 		filter->includeAll();
-		EXPECT_TRUE(filter->isPrimaryWhole());
 		for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
 			auto expected = (mask_ == nullptr) ? 1 : (*mask_)[gnum];
 			EXPECT_EQ(expected, filter->get(gnum));

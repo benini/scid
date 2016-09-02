@@ -190,6 +190,7 @@ SCID_OBJS = \
 	$(TMP_DIR)\filter.obj \
 	$(TMP_DIR)\searchindex.obj \
 	$(TMP_DIR)\sc_base.obj \
+	$(TMP_DIR)\sc_filter.obj \
 	$(TMP_DIR)\dbasepool.obj \
 	$(TMP_DIR)\polyglot\attack.obj $(TMP_DIR)\polyglot\board.obj $(TMP_DIR)\polyglot\book.obj \
 	$(TMP_DIR)\polyglot\colour.obj $(TMP_DIR)\polyglot\fen.obj $(TMP_DIR)\polyglot\hash.obj \

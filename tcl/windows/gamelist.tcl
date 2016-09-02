@@ -84,7 +84,7 @@ proc ::windows::gamelist::DatabaseModified {{dbase} {filter -1}} {
 			if {$filter == -1} {
 				::windows::gamelist::update_ $w 0
 			} elseif {$filter == $::gamelistFilter($w) || \
-			          $filter == [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]} {
+			          $filter == [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]} {
 				::windows::gamelist::update_ $w 1
 			}
 			::windows::gamelist::updateStats_ $w
@@ -132,7 +132,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 				if { $::gamelistBase($w) == $base && $::gamelistPosMask($w) != 0 } {
 					$w.games.glist tag configure fsmall -foreground ""
 					$w.buttons.boardFilter configure -image tb_BoardMask
-					set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w) $f]
+					set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) $f]
 					::notify::DatabaseModified $base $::gamelistFilter($w)
 				}
 			}
@@ -144,7 +144,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 proc ::windows::gamelist::FilterReset {{w} {base}} {
 	set f "dbfilter"
 	if {$w != "" && $base == $::gamelistBase($w)}  { set f $::gamelistFilter($w) }
-	sc_filter set $base $f 1
+	sc_filter reset $base $f full
 	::notify::DatabaseModified $base $f
 }
 
@@ -181,19 +181,25 @@ proc ::windows::gamelist::FilterExport {{w}} {
 
 # Returns text describing state of filter for specified
 # database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
-proc ::windows::gamelist::filterText {{w ""} {base 0}} {
-	if {$base == 0} { set base [sc_base current] }
-	set gameCount [sc_base numGames $base]
-	if {$gameCount == 0} { return $::tr(noGames) }
+proc ::windows::gamelist::filterText {{w ""} {base -1}} {
+	if {$base == -1} { set base [sc_base current] }
 	set f "dbfilter"
 	if {$w != "" && $base == $::gamelistBase($w)}  {
 		set f $::gamelistFilter($w)
 	}
-	set filterCount [sc_filter count $base $f]
-	if {$gameCount == $filterCount} {
-		return "$::tr(all) / [::utils::thousands $gameCount 100000]"
+
+	foreach {filterSz gameSz mainSz} [sc_filter sizes $base $f] {}
+	return [formatFilterText $filterSz $gameSz]
+}
+
+# Returns text describing state of filter for specified
+# database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
+proc ::windows::gamelist::formatFilterText {filterSz gameSz} {
+	if {$gameSz == 0} { return $::tr(noGames) }
+	if {$gameSz == $filterSz} {
+		return "$::tr(all) / [::utils::thousands $gameSz 100000]"
 	}
-	return "[::utils::thousands $filterCount 100000] / [::utils::thousands $gameCount 100000]"
+	return "[::utils::thousands $filterSz 100000] / [::utils::thousands $gameSz 100000]"
 }
 
 proc ::windows::gamelist::GetBase {{w}} {
@@ -241,12 +247,12 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 proc ::windows::gamelist::Awesome {{w} {txt}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
 
-	set filter [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
+	set filter [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]
 	if {$txt == ""} {
 		# Quick way to reset the filter: search an empty string
-		sc_filter set "$::gamelistBase($w)" $filter 1
+		sc_filter reset "$::gamelistBase($w)" $filter full
 	} else {
-		sc_filter set "$::gamelistBase($w)" $filter 0
+		sc_filter reset "$::gamelistBase($w)" $filter empty
 		#Split the string using " + "
 		foreach {dummy sub} [regexp -all -inline {(.+?)(?:\s\+\s|$)} $txt] {
 			set cmd "sc_filter search $::gamelistBase($w) $filter header -filter OR"
@@ -573,14 +579,18 @@ proc ::windows::gamelist::filter_ {{w} {type}} {
 }
 
 proc ::windows::gamelist::update_ {{w} {moveUp}} {
-	set fr [::windows::gamelist::filterText $w $::gamelistBase($w)]
-	set fn [file tail [sc_base filename $::gamelistBase($w)]]
-	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
-	if {[sc_filter isWhole $::gamelistBase($w) $::gamelistFilter($w)]} {
+	set f $::gamelistFilter($w)
+	foreach {filterSz gameSz mainSz} [sc_filter sizes $::gamelistBase($w) $f] {}
+
+	if {$gameSz == $mainSz} {
 		$w.buttons.filter configure -image tb_search_on
 	} else {
 		$w.buttons.filter configure -image tb_search_off
 	}
+
+	set fr [::windows::gamelist::formatFilterText $filterSz $gameSz]
+	set fn [file tail [sc_base filename $::gamelistBase($w)]]
+	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
 	if {$moveUp} {
 		#Reset double-click behavior
 		set ::glistClickOp($w.games.glist) 0
@@ -596,7 +606,7 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 	} else {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
-		set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
+		set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]
 		$w.games.glist tag configure fsmall -foreground ""
 		$w.buttons.boardFilter configure -image tb_BoardMask
 		::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
@@ -887,7 +897,7 @@ proc glist.create {{w} {layout}} {
     foreach {idx ply} [split [%W selection] "_"] {}
     if {[info exists idx]} {
       glist.movesel_ %W next +1 end;
-      sc_filter set $::glistBase(%W) $::glistFilter(%W) 0 $idx
+      sc_filter remove $::glistBase(%W) $::glistFilter(%W) $idx
       ::notify::DatabaseModified $::glistBase(%W)
     }
     break
@@ -1154,12 +1164,10 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
 
 proc glist.removeFromFilter_ {{w} {idx} {dir ""}} {
   if {$dir == ""} {
-    sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx
-    ::notify::DatabaseModified $::glistBase($w)
-    return
+    sc_filter remove $::glistBase($w) $::glistFilter($w) $idx
+  } else {
+    sc_filter remove $::glistBase($w) $::glistFilter($w) $idx $dir $::glistSortStr($w)
   }
-  set fc [sc_filter count $::glistBase($w) $::glistFilter($w)]
-  sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx $dir$fc $::glistSortStr($w)
   ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w) 
   if {$dir == "+"} { glist.ybar_ $w moveto 1 }
 }

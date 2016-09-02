@@ -55,7 +55,7 @@ public:
     errorT   Open (const char * filename, fileModeT fmode);
     errorT   Close ();
     errorT   flush();
-    
+
     errorT addGame(const byte* src, size_t length, uint& resOffset);
 
     const byte* getGame(uint offset, uint length) {

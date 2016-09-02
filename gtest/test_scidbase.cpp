@@ -451,3 +451,47 @@ TEST_F(Test_Scidbase, importGames) {
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }
+
+TEST_F(Test_Scidbase, new_compose_delete_get_Filter) {
+	scidBaseT dbase;
+	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+
+	std::vector<std::pair<std::string, bool>> tests = {
+	    {" dbfilter", false},   {"dbfilter ", false}, {"+dbfilter+", true},
+	    {"tree", true},         {"+dbfilter", false}, {"++dbfilter", false},
+	    {"++dbfilter+", false}, {"", false},          {"+", false},
+	    {"++", false},          {"+++", false},       {" +", false},
+	    {"+ ", false}
+	};
+
+	auto check = [&]() {
+		std::string mask;
+		for (const auto& e : tests) {
+			bool valid = dbase.getFilter(e.first) != 0;
+			EXPECT_EQ(e.second, valid);
+
+			auto composed = dbase.composeFilter(e.first, mask);
+			EXPECT_EQ(valid, dbase.getFilter(composed) != nullptr);
+			if (valid) {
+				mask = e.first;
+				if (e.first[0] != '+')
+					EXPECT_EQ(e.first, dbase.composeFilter(composed, ""));
+			}
+		}
+	};
+
+	check();
+
+	for (size_t i = 0; i < 100; i++) {
+		tests.emplace_back(dbase.newFilter(), true);
+		auto unique = std::find(tests.begin(), tests.end(), tests.back());
+		EXPECT_EQ(tests.end(), ++unique);
+		check();
+	}
+
+	for (size_t i = 0, n = tests.size(); i < n; i += 4) {
+		tests[i].second = false;
+		dbase.deleteFilter(tests[i].first.c_str());
+		check();
+	}
+}

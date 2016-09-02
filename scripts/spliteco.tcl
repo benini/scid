@@ -1,6 +1,6 @@
 #!/bin/sh
 # \
-exec tkscid "$0" "$@"
+exec `dirname $0`/tkscid "$0" "$@"
 
 # spliteco:
 #   Takes a Scid-format database and produces a number of smaller
@@ -31,10 +31,8 @@ proc main {} {
   if {$ngroups != 5  &&  $ngroups != 50  &&  $ngroups != 500} { usage }
 
   # Strip suffix if necessary:
-  set suffix [file extension $basename]
-  if {$suffix == ".si3" || $suffix == ".sn3" || $suffix == ".sg3"} {
-    set basename [file rootname $basename]
-  }
+  set basename [file rootname $basename]
+
   # Try to open the database:
   if {[catch {sc_base open $basename} frombase]} {
     err "Error opening database \"$basename\": $frombase"
@@ -111,7 +109,7 @@ proc split {frombase newbasename startECO endECO} {
     exit 1
   }
   sc_base switch $frombase
-  sc_filter set $frombase dbfilter 1
+  sc_filter reset $frombase dbfilter full
   sc_search header -eco [list $startECO $endECO]
   set ngames [sc_filter count]
   if {[catch {sc_base copygames $frombase dbfilter $tobase} err]} {

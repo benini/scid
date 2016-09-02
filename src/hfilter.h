@@ -142,11 +142,6 @@ public:
 	void includeAll() { return main_->Fill(1); }
 
 	/* Convenience function, behave like:
-	 * return main_->size() == scidBaseT::numGames();
-	 */
-	bool isPrimaryWhole() const { return main_->isWhole(); }
-
-	/* Convenience function, behave like:
 	 * auto it = std::map::find(gnum);
 	 * if (it == std::map::end()) return 0;
 	 * return 1 + it->second;

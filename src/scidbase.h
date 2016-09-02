@@ -88,10 +88,6 @@ struct scidBaseT {
 
 	errorT Close ();
 
-	std::string newFilter();
-	void deleteFilter(const char* filterName);
-	HFilter getFilter(const char* filterName) const;
-
 	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }
 	gamenumT numGames() const { return idx->GetNumGames(); }
@@ -148,6 +144,28 @@ struct scidBaseT {
 	errorT setFlag(bool value, uint flag, const HFilter& filter);
 	errorT invertFlag(uint flag, uint gNum);
 	errorT invertFlag(uint flag, const HFilter& filter);
+
+	/**
+	 * Filters
+	 * @filterId: unique identifier of a Filter
+	 *
+	 * A Filter is a selection of games, usually obtained searching the
+	 * database. A new Filter is created calling the function newFilter()
+	 * and must be released calling the function deleteFilter().
+	 * A composed Filter is a special contruct created combining two Filters
+	 * and includes only the games contained in both Filters.
+	 * A composed Filter should NOT be released.
+	 */
+	std::string newFilter();
+	std::string composeFilter(const std::string& mainFilter,
+	                          const std::string& maskFilter) const;
+	void deleteFilter(const char* filterId);
+	HFilter getFilter(const std::string& filterId) const {
+		return getFilterHelper(filterId, false);
+	}
+	HFilter getMainFilter(const std::string& filterId) const {
+		return getFilterHelper(filterId, true);
+	}
 
 	const Stats& getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
@@ -229,27 +247,10 @@ private:
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 
-	Filter* fetchFilter(uint idx) const {
-		if (idx == 0) return dbFilter;
-		if (idx == 1) return treeFilter;
-		idx -= 2;
-		if (idx >= filters_.size()) return 0;
-		return filters_[idx].second;
-	}
-	Filter* fetchFilter(const std::string& name) const {
-		Filter* res = 0;
-		if (name == "dbfilter") res = dbFilter;
-		else if (name == "tree") res = treeFilter;
-		else {
-			for (uint i=0; i < filters_.size(); i++) {
-				if (filters_[i].first == name) {
-					res = filters_[i].second;
-					break;
-				}
-			}
-		}
-		return res;
-	}
+	void extendFilters();
+	Filter* fetchFilter(const std::string& filterId) const;
+	HFilter getFilterHelper(const std::string& filterId,
+	                        bool unmasked = false) const;
 };
 
 inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {

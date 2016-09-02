@@ -153,10 +153,12 @@ inline Tcl_Obj* ObjMaker(unsigned long v) {
 	ASSERT(v <= static_cast<unsigned long>(std::numeric_limits<int>::max()));
 	return Tcl_NewIntObj(static_cast<int>(v));
 }
+#ifdef CPP11_SUPPORT
 inline Tcl_Obj* ObjMaker(unsigned long long v) {
 	ASSERT(v <= static_cast<unsigned long long>(std::numeric_limits<int>::max()));
 	return Tcl_NewIntObj(static_cast<int>(v));
 }
+#endif
 inline Tcl_Obj* ObjMaker(double v) {
 	return Tcl_NewDoubleObj(v);
 }
