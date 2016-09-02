@@ -17,6 +17,7 @@ matrix:
           - tcl
           - tcl-dev
           - tk
+          - cloc
         sources:
           - ubuntu-toolchain-r-test
           - llvm-toolchain-precise-3.7
@@ -71,6 +72,8 @@ before_install:
 
 script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then LINUX_ONLY="COMPILE=${COMP} LINK=${COMP}"; fi
+  - if [ "${COMP}" == "clang++-3.7" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
+  - if [ "${COMP}" == "clang++-3.7" ]; then cloc tcl --exclude-dir=lang; fi
   - if [ "${COMP}" == "clang++-3.7" ]; then scan-build-3.7 ${COMP} -std=c++11 -c -Wall -DASSERTIONS -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp src/polyglot/*.cpp; fi
   - if [ "${COMP}" == "g++-5" ]; then ./configure COMPILE="${COMP}" LINK="${COMP}" && make test && make clean; fi
   - ./configure ${LINUX_ONLY} && make && size tkscid
