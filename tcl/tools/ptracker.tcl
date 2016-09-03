@@ -329,7 +329,7 @@ proc ::ptrack::refresh {{type "all"}} {
   if {$::ptrack::mode == "-time"} { set timeMode 1 }
 
   progressBarSet $w.progress 401 21
-  set err [catch { sc_base piecetrack $::ptrack::mode \
+  set err [catch { eval sc_base piecetrack $::ptrack::mode \
               $::ptrack::moves(start) $::ptrack::moves(end) \
               $::ptrack::select} ::ptrack::data]
 
