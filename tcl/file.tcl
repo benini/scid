@@ -145,7 +145,7 @@ proc ::file::Open_ {{fName ""} } {
   set err 0
   if {"$ext" == ".si3"} {
     set err [::file::Upgrade [file rootname "$fName"] ]
-  } elseif {"$ext" == ".pgn" || "$ext" == ".epd"} {
+  } elseif {"$ext" == ".pgn" || "$ext" == ".epd" || "$ext" == ".gz"} {
     # PGN or EPD file:
     set err [catch {sc_base create MEMORY "$fName"} ::file::lastOpened]
     if {$err} {
