@@ -825,12 +825,12 @@ static int comp_open_file (decode_info **res, FILE *fd, int check_crc)
   return (COMP_ERR_NONE);
 }
 
-static int comp_tell_blocks (decode_info *info)
-{
-  if (info == 0 || info->magic != DECODE_MAGIC)
-    return (-1);
-  return (info->n_blk);
-}
+// static int comp_tell_blocks (decode_info *info)
+// {
+//   if (info == 0 || info->magic != DECODE_MAGIC)
+//     return (-1);
+//   return (info->n_blk);
+// }
 
 static int comp_init_block (decode_block *block, int block_size, uchar *orig)
 {

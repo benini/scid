@@ -488,8 +488,8 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             char line [1024];
             uint pos = 0;
             while (1) {
-                fgets (line, 1024, exportFile);
-                if (feof (exportFile)) { break; }
+                char* err = fgets(line, 1024, exportFile);
+                if (err == 0 || feof(exportFile)) break;
                 const char * s = strTrimLeft (line, " ");
                 if (strIsCasePrefix (endMarker, s)) {
                     // We have seen the line to stop at, so break out
@@ -8658,7 +8658,7 @@ int
 sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * usageStr =
-      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score] [-time <0|1>]";
+      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score]";
 
     // Sort options: these should match the moveSortE enumerated type.
     static const char * sortOptions[] = {
@@ -8667,7 +8667,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     char tempTrans[10];
     bool hideMoves = false;
-    bool showTimeStats = true;
     const bool listMode = false;
     bool inFilterOnly = false;
     int sortMethod = SORT_FREQUENCY; // default move order: frequency
@@ -8689,8 +8688,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else if (strIsPrefix (argv[arg], "-base")) {
             base = DBasePool::getBase(strGetUnsigned(argv[arg+1]));
             if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
-        } else if (strIsPrefix (argv[arg], "-time")) {
-            showTimeStats = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-filtered")) {
             inFilterOnly = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-cancel")) {
@@ -9088,24 +9085,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             output->Append ("\n");
         }
     }
-
-    // Print timing and other information:
-#if 0
-    if (showTimeStats  &&  !listMode) {
-        int csecs = timer.CentiSecs();
-        sprintf (temp, "\n  Time: %d%c%02d s",
-                 csecs / 100, decimalPointChar, csecs % 100);
-        output->Append (temp);
-
-        if (foundInCache) {
-            output->Append ("  (Found in cache)");
-        } else {
-#ifdef SHOW_SKIPPED_STATS
-            output->Append ("  Skipped: ", skipcount, " games.");
-#endif
-        }
-    }
-#endif
 
     if (! listMode) {
     	Tcl_AppendResult (ti, output->Data(), NULL);

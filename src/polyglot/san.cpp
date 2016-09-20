@@ -162,8 +162,9 @@ int move_from_san(const char string[], const board_t * board) {
    san_to_lan(string,board,s,256);
    move = move_from_lan(s,board);
 
-   ASSERT(!UseSlowDebug||move==move_from_san_debug(string,board));
-
+   if (UseSlowDebug) {
+	   ASSERT(move == move_from_san_debug(string, board));
+   }
    return move;
 }
 

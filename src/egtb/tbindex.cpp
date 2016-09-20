@@ -244,7 +244,8 @@ static void* PvMalloc
 #endif
 	if (NULL == pv)
 		{
-		printf ("*** Cannot allocate %d bytes of memory\n", cb);
+		printf("*** Cannot allocate %lu bytes of memory\n",
+		       static_cast<unsigned long>(cb));
 		exit (1);
 		}
 	cbAllocated += cb;
@@ -1206,7 +1207,7 @@ static void VInitEnumerations (void)
 								rgcTriplePawnless[pi1][pi2][pi3]);
 					}
 #endif
-		printf ("\nAllocated %dk\n\n", (cbAllocated + 1023)/1024);
+		printf ("\nAllocated %luk\n\n", (cbAllocated + 1023)/1024);
 		}
 	}
 

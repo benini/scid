@@ -1080,7 +1080,6 @@ OpTable::PrintLaTeX (DString * dstr, const char * title, const char * comment)
 
     // Print each row:
     for (uint row=0; row < NumRows; row++) {
-        uint lastNote = 0;
         dstr->Append ("\\textbf{", row+1, "}");
         uint nSameMoves = 0;
         if (row > 0) { nSameMoves = Row[row]->CommonLength(Row[row-1]); }
@@ -1118,9 +1117,6 @@ OpTable::PrintLaTeX (DString * dstr, const char * title, const char * comment)
                 dstr->Append ("}}");
 #endif
                 dstr->Append ("$");
-                lastNote = NumNotes;
-            } else {
-                lastNote = 0;
             }
         }
 
@@ -2115,17 +2111,17 @@ OpTable::ThemeReport (DString * dstr, uint argc, const char ** argv)
         nextCell = " & ";  nextCellRight = nextCell;
     }
 
-    const char * themeName [NUM_POSTHEMES] = {NULL};
-    themeName [POSTHEME_CastSame]  = "Same-side castling:         ";
-    themeName [POSTHEME_CastOpp]   = "Opposite castling:          ";
-    themeName [POSTHEME_QueenSwap] = "Queens exchanged:           ";
-    themeName [POSTHEME_OneBPair]  = "Only 1 side has Bishop pair:";
-    themeName [POSTHEME_Kstorm]    = "Kingside pawn storm:        ";
-    themeName [POSTHEME_WIQP]      = "White Isolated Queen Pawn:  ";
-    themeName [POSTHEME_BIQP]      = "Black Isolated Queen Pawn:  ";
-    themeName [POSTHEME_WAdvPawn]  = "White Pawn on 5/6/7th rank: ";
-    themeName [POSTHEME_BAdvPawn]  = "Black Pawn on 2/3/4th rank: ";
-    themeName [POSTHEME_OpenFyle]  = "Open c/d/e file:            ";
+    // const char * themeName [NUM_POSTHEMES] = {NULL};
+    // themeName [POSTHEME_CastSame]  = "Same-side castling:         ";
+    // themeName [POSTHEME_CastOpp]   = "Opposite castling:          ";
+    // themeName [POSTHEME_QueenSwap] = "Queens exchanged:           ";
+    // themeName [POSTHEME_OneBPair]  = "Only 1 side has Bishop pair:";
+    // themeName [POSTHEME_Kstorm]    = "Kingside pawn storm:        ";
+    // themeName [POSTHEME_WIQP]      = "White Isolated Queen Pawn:  ";
+    // themeName [POSTHEME_BIQP]      = "Black Isolated Queen Pawn:  ";
+    // themeName [POSTHEME_WAdvPawn]  = "White Pawn on 5/6/7th rank: ";
+    // themeName [POSTHEME_BAdvPawn]  = "Black Pawn on 2/3/4th rank: ";
+    // themeName [POSTHEME_OpenFyle]  = "Open c/d/e file:            ";
 
     char tempStr [250];
     //sprintf (tempStr, argv[0], (StartLength + (OPTABLE_COLUMNS * 2)) / 2);
