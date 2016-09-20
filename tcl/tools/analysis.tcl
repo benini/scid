@@ -1647,7 +1647,7 @@ proc addAllVariations {{n 1}} {
 #
 ################################################################################
 proc makeAnalysisMove {{n 1} {comment ""}} {
-    regexp {[^[:alpha:]]*(.*?) .*} $::analysis(moves$n) -> move
+    regexp {[^[:alpha:]]*(.*?)( .*|$)} $::analysis(moves$n) -> move
     if {![info exists move]} { return 0 }
 
     if { $::analysis(uci$n) } {
