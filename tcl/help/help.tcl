@@ -477,48 +477,6 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <a Moves>enter chess moves</a>.
   </p>
   
-  <h3>Game navigation buttons</h3>
-  <p>
-  The navigation buttons above the board have the following meanings, from
-  left to right:
-  <ul>
-  <li> <button tb_start> Move to the start of the game. [Home] </li>
-  <li> <button tb_prev> Move back one move. [Left] </li>
-  <li> <button tb_next> Move forward one move. [Right] </li>
-  <li> <button tb_end> Move to the end of the game. [End] </li>
-  <li> <button tb_invar> Move into a variation. [v] </li>
-  <li> <button tb_outvar> Move out of the current variation. [z] </li>
-  <li> <button tb_addvar> Add a new variation. [Ctrl-A]</li>
-  <li> <button tb_comment_avail> Signifies that the current move has a
-  textual comment attached. This comment is displayed in a tooltip
-  upon mouse hovering on the button. Pressing the button also opens up
-  the <a Comment>Comment editor</a></li>
-  <li> <button tb_play> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
-  <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>.
-  [Ctrl-Space] </li>
-  <li> <button tb_flip> Rotate the board 180 degrees. [.]</li>
-  <li> <button tb_coords> Show/hide board coordinates. [0]</li>
-  </ul>
-  Keyboard shortcuts are given in square brackets.
-  
-  <h4><name Autoplay>Autoplay mode</name></h4>
-  <p>
-  In autoplay mode, Scid automatically plays the moves in the current game,
-  moving forward until the end of the game. The time delay between moves can
-  be set from the <menu>Options: Moves</menu> menu, and is saved to your
-  options file when you save options.
-  </p>
-  <p>
-  The shortcut key <b>Control+Z</b> starts or stops autoplay mode, and
-  you can also exit autoplay mode by pressing the <b>Escape</b> key.
-  </p>
-  <p>
-  If you start autoplay mode when the <a Analysis>analysis window</a> is open,
-  the game is <term>annotated</term>: the score and analysis for each position
-  are added to the game as a new variation just before each move is made.
-  See the <a Analysis>analysis window</a> help page for details.
-  </p>
-  
   <h3>The game information area</h3>
   <p>
   The area below the chessboard showing information about the game is
