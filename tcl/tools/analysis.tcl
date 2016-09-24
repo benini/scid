@@ -548,25 +548,20 @@ proc ::enginelist::edit {index} {
         if {$i == "Cmd"} {
             ttk::button $f.b$i -text "..." -command {
                 if {$::windowsOS} {
-                    set scid_temp(filetype) {
+                    set ftype {
                         {"Applications" {".bat" ".exe"} }
                         {"All files" {"*"} }
                     }
+                    set fName [tk_getOpenFile -initialdir $engines(newDir) \
+                        -title "Scid: [tr ToolsAnalysis]" -filetypes $ftype]
                 } else {
-                    set scid_temp(filetype) {
-                        {"All files" {"*"} }
-                    }
+                    set fName [tk_getOpenFile -initialdir $engines(newDir) \
+                        -title "Scid: [tr ToolsAnalysis]"]
                 }
-                set scid_temp(cmd) [tk_getOpenFile -initialdir $engines(newDir) \
-                        -title "Scid: [tr ToolsAnalysis]" -filetypes $scid_temp(filetype)]
-                if {$scid_temp(cmd) != ""} {
-                    set engines(newCmd) $scid_temp(cmd)
-                    # if {[string first " " $scid_temp(cmd)] >= 0} {
-                    # The command contains spaces, so put it in quotes:
-                    # set engines(newCmd) "\"$scid_temp(cmd)\""
-                    # }
+                if {$fName != ""} {
+                    set engines(newCmd) $fName
                     # Set the directory from the executable path if possible:
-                    set engines(newDir) [file dirname $scid_temp(cmd)]
+                    set engines(newDir) [file dirname $fName]
                     if {$engines(newDir) == ""} [ set engines(newDir) .]
                 }
             }

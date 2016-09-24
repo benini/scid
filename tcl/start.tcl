@@ -200,6 +200,15 @@ proc ::splash::add {text} {
 #TODO: decide what to do with all the splash messages (delete?)
 }
 
+# Platform specific operations
+if { $unixOS } {
+  # adds a checkbox to show hidden files
+  catch {tk_getOpenFile -with-invalid-argument}
+  namespace eval ::tk::dialog::file {
+    variable showHiddenBtn 1
+    variable showHiddenVar 0
+  }
+}
 
 # Reversed mouse buttons in mac (::MB2 and ::MB3 are middle and right mouse buttons respectively.):
 if { $macOS } {

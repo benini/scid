@@ -1,10 +1,3 @@
-# adds a checkbox to show hidden files
-catch {tk_getOpenFile -with-invalid-argument}
-namespace eval ::tk::dialog::file {
-  variable showHiddenBtn 1
-  variable showHiddenVar 0
-}
-
 # ::file::Exit
 #
 #    Prompt for confirmation then exit.
