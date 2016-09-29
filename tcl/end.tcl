@@ -1114,7 +1114,6 @@ proc helpAbout {} {
   set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
-  append str "Using Tcl/Tk version: [info patchlevel]\n\n"
   append str "Copyright (C) 1999-2004 Shane Hudson\n"
   append str "Copyright (C) 2006-2009 Pascal Georges\n"
   append str "Copyright (C) 2008-2011 Alexander Wagner\n"
@@ -1122,6 +1121,14 @@ proc helpAbout {} {
   append str "Copyright (C) 2009-2016 Fulvio Benini\n"
   append str "\nScid is licenced under the\n"
   append str "GNU General Public License.\n"
+
+  append str "\n\nUsing Tcl/Tk version: [info patchlevel]\n"
+  append str "Loaded packages:\n"
+  foreach {pkg} [lsort [package names]] {
+    set ver [package provide $pkg]
+    if {$ver != ""} { append str "$pkg\($ver),  " }
+  }
+  regsub ",  $" $str "." str
 
   tk_messageBox -title "About Scid" -message $str -type ok
 }
