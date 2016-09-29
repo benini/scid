@@ -80,24 +80,24 @@ int HS_[80] = /* hash codes for squares */
 
 tdist dist[120*120];
 
-inline int taxi_dist( int a, int b )
+int taxi_dist( int a, int b )
 { return abs( a%10 - b%10 ) + abs( a/10 - b/10 ); }
 
-inline int diag_dist( int a, int b )
+int diag_dist( int a, int b )
 {
 	int fdi = abs( a%10 - b%10 );
 	int rdi = abs( a/10 - b/10 );
 	return abs(rdi-fdi) + max(rdi,fdi);
 }
 
-inline int max_dist( int a, int b )
+int max_dist( int a, int b )
 {
 	int fdi = abs( a%10 - b%10 );
 	int rdi = abs( a/10 - b/10 );
 	return max(rdi,fdi);
 }
 
-inline int min_dist( int a, int b )
+int min_dist( int a, int b )
 {
 	int fdi = abs( a%10 - b%10 );
 	int rdi = abs( a/10 - b/10 );

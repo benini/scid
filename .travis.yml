@@ -7,20 +7,24 @@ os:
 matrix:
   exclude:
   - os: linux
+  - os: osx
   include:
+  - os: osx
+    env: COMP=c++
+
   - os: linux
-    env: COMP=clang++-3.7
+    env: COMP=clang++-3.8
     addons:
       apt:
         packages:
-          - clang-3.7
+          - clang-3.8
           - tcl
           - tcl-dev
           - tk
           - cloc
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-precise-3.7
+          - llvm-toolchain-precise-3.8
 
   - os: linux
     env: COMP=clang++-3.5
@@ -36,11 +40,11 @@ matrix:
           - llvm-toolchain-precise-3.5
 
   - os: linux
-    env: COMP=g++-5
+    env: COMP=g++-6
     addons:
       apt:
         packages:
-          - g++-5
+          - g++-6
           - tcl
           - tcl-dev
           - tk
@@ -65,17 +69,23 @@ before_install:
  - cd googletest
  - cmake CMakeLists.txt
  - make
- - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo mv googletest/include/gtest /usr/include && sudo cp googlemock/gtest/*.a /usr/lib; fi
- - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo mv googlemock/include/gmock /usr/include && sudo cp googlemock/*.a /usr/lib; fi
+ - sudo mv googletest/include/gtest /usr/include && sudo cp googlemock/gtest/*.a /usr/lib
+ - sudo mv googlemock/include/gmock /usr/include && sudo cp googlemock/*.a /usr/lib
  - cd $TRAVIS_BUILD_DIR
 
 
 script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then LINUX_ONLY="COMPILE=${COMP} LINK=${COMP}"; fi
-  - if [ "${COMP}" == "clang++-3.7" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
-  - if [ "${COMP}" == "clang++-3.7" ]; then cloc tcl --exclude-dir=lang; fi
-  - if [ "${COMP}" == "clang++-3.7" ]; then scan-build-3.7 ${COMP} -std=c++11 -c -Wall -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp src/polyglot/*.cpp; fi
-  - if [ "${COMP}" == "g++-5" ]; then ./configure COMPILE="${COMP}" LINK="${COMP}" && make test && make clean; fi
+  - if [ "${COMP}" == "clang++-3.8" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
+  - if [ "${COMP}" == "clang++-3.8" ]; then cloc tcl --exclude-dir=lang; fi
+  - if [ "${COMP}" == "clang++-3.8" ]; then scan-build-3.8 ${COMP} -std=c++11 -c -Wall -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp; fi
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="${COMP}" && make
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir Release && cd Release && cmake .. -DCMAKE_CXX_COMPILER="${COMP}" && make VERBOSE=1 && size scid
+  - cd $TRAVIS_BUILD_DIR
+  - if [ "${COMP}" == "g++-6" ]; then ./configure ${LINUX_ONLY} && make test; fi
+  - if [ "${COMP}" == "g++-6" ]; then make clean; fi
   - ./configure ${LINUX_ONLY} && make && size tkscid
   - make clean
   - ./configure ${LINUX_ONLY} THREADS="" && make && size tkscid
