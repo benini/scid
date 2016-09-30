@@ -44,8 +44,16 @@ inline int Main (int argc, char* argv[], void (*exit) (void*)) {
 		}
 	}
 	if (search_tcl) {
-		char sourceFileName [1024] = {0};
-		strncpy(sourceFileName, Tcl_GetNameOfExecutable(), 1000);
+		char sourceFileName [4096] = {0};
+		#ifndef WIN32
+		// Expand symbolic links
+		char* exec_name = realpath(Tcl_GetNameOfExecutable(), 0);
+		strncpy(sourceFileName, exec_name, 4000);
+		free(exec_name);
+		#else
+		strncpy(sourceFileName, Tcl_GetNameOfExecutable(), 4000);
+		#endif
+
 		char* dirname = strrchr(sourceFileName, '/');
 		if (dirname == 0) dirname = sourceFileName;
 		else dirname += 1;
