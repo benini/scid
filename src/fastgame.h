@@ -431,41 +431,68 @@ private:
 			board_.getCount<enemy>(PAWN) + board_.getCount<enemy>(captured));
 	}
 
-	static inline squareT decodeKing (squareT from, byte val) {
-		ASSERT (val <= 8);
-		static const char sqdiff[] = { 0, -9, -8, -7, -1, 1, 7, 8, 9};
-		return 0x3F & (from + sqdiff[val]);
+	/**
+	 * decode*() - decode a move from Scid format
+	 * @from: start square of the moving piece
+	 * @val: index of the target square
+	 *
+	 * Excluding queens, the other chess pieces cannot reach more than 16 target
+	 * squares from any given position. This allow to store the target square of
+	 * a move into 4 bits, as an index of all the possible target squares.
+	 * Return:
+	 * - the target square
+	 * Error handling:
+	 * - Debug code will check if the decoded value is a valid [0-63] square.
+	 * - Release code will force the returned valid to be a valid [0-63] square
+	 *   but, for performance reasons, do not report invalid encoded moves.
+	 */
+	static inline squareT square_forceValid(int sq) {
+		ASSERT(sq >= 0 && sq <= 63);
+		return 0x3F & static_cast<squareT>(sq);
 	}
-	static inline squareT decodeQueen2byte (byte val) {
-		return 0x3F & (val - 64);
+	static inline squareT decodeKing(squareT from, byte val) {
+		ASSERT(val <= 8);
+		static const int sqdiff[] = {0, -9, -8, -7, -1, 1, 7, 8, 9};
+		int to = static_cast<int>(from) + sqdiff[val];
+		return square_forceValid(to);
 	}
-	static inline squareT decodeBishop (squareT from, byte val) {
-		byte fyle = (val & 7);
-		int fylediff = (int)fyle - (int)square_Fyle(from);
-		if (val >= 8) return 0x3F & (from - 7 * fylediff);
-		else return 0x3F & (from + 9 * fylediff);
+	static inline squareT decodeQueen2byte(byte val) {
+		int to = static_cast<int>(val) - 64;
+		return square_forceValid(to);
 	}
-	static inline squareT decodeKnight (squareT from, byte val) {
-		ASSERT (val <= 16);
-		static const char sqdiff[] = { 0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0 };
-		return 0x3F & (from + sqdiff[val]);
+	static inline squareT decodeBishop(squareT from, byte val) {
+		int fylediff = static_cast<int>(square_Fyle(val)) -
+		               static_cast<int>(square_Fyle(from));
+		int to = (val >= 8) ? static_cast<int>(from) - 7 * fylediff
+		                    : static_cast<int>(from) + 9 * fylediff;
+		return square_forceValid(to);
 	}
-	static inline squareT decodeRook (squareT from, byte val) {
-		ASSERT (val <= 16);
-		if (val >= 8) return square_Make (square_Fyle(from), (val - 8));
-		else return square_Make (val, square_Rank(from));
+	static inline squareT decodeKnight(squareT from, byte val) {
+		ASSERT(val <= 16);
+		static const int sqdiff[] = {0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0};
+		int to = static_cast<int>(from) + sqdiff[val];
+		return square_forceValid(to);
+	}
+	static inline squareT decodeRook(squareT from, byte val) {
+		ASSERT(val <= 16);
+		if (val >= 8)
+			return square_Make(square_Fyle(from), (val - 8));
+		else
+			return square_Make(val, square_Rank(from));
 	}
 	template <colorT color>
-	static inline squareT decodePawn (squareT from, byte val, pieceT& promo, bool& enPassant) {
-		ASSERT (val <= 16);
-		static const char sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
+	static inline squareT decodePawn(squareT from, byte val, pieceT& promo,
+	                                 bool& enPassant) {
+		ASSERT(val <= 16);
+		static const int sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
 		static const pieceT promoPieceFromVal [] = {
 			0,0,0,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK, BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,0
 		};
 		promo = promoPieceFromVal[val];
 		enPassant = (val == 0 || val == 2);
-		if (color == WHITE) return 0x3F & (from + sqdiff[val]);
-		else return 0x3F & (from - sqdiff[val]);
+		int to = (color == WHITE) ? static_cast<int>(from) + sqdiff[val]
+		                          : static_cast<int>(from) - sqdiff[val];
+		return square_forceValid(to);
 	}
 
 	struct Dummy {

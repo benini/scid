@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # Scid (Shane's Chess Information Database)
 #
 # Copyright (C) 1999-2004 Shane Hudson
@@ -611,7 +609,7 @@ if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
 }
 
 ### Audio move announcement options:
-set ::utils::sound::soundFolder [file nativename [file join $::scidExeDir sounds]]
+set ::utils::sound::soundFolder [file nativename [file join $::scidShareDir sounds]]
 set ::utils::sound::announceNew 0
 set ::utils::sound::announceForward 0
 set ::utils::sound::announceBack 0
