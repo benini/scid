@@ -1948,7 +1948,7 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
     ToMove = enemy;
 
-#ifdef ASSERTIONS
+#ifndef NDEBUG
     // Do a SLOW, careful check for corruption:
     if (AssertPos() != OK) {
         abort();
@@ -2036,7 +2036,7 @@ Position::UndoSimpleMove (simpleMoveT * m)
         AddToBoard (rook, rookfrom);
     }
 
-#ifdef ASSERTIONS
+#ifndef NDEBUG
     if (AssertPos() != OK) {
         abort();
     }

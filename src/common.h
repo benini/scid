@@ -81,17 +81,8 @@ const char PGN_SUFFIX[] = ".pgn";
 //    if an assert fails you can go to the code to see why) and that
 //    it MUST be a statement, not part of a larger expression.
 //    Adapted from the book "Writing Solid Code".
-
-
-#ifdef ASSERTIONS
 #include <assert.h>
-    #define ASSERT(f) assert(f)
-
-#else   // #ifndef ASSERTIONS
-
-    #define ASSERT(f) 
-
-#endif  // #ifdef ASSERTIONS
+#define ASSERT(f) assert(f)
 
 
 // Bit Manipulations

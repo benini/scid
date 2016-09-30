@@ -15,7 +15,7 @@ exec tclsh "$0" ${1+"$@"}
 #
 set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
-set var(DEBUG) #-DASSERTIONS
+set var(DEBUG) {-DNDEBUG}
 set var(OBJS) {$(SCIDOBJS)}
 set var(THREADS) {-std=c++11 -pthread}
 set var(OPTIMIZE) {-O3 -march=native -fno-rtti -fno-exceptions}
@@ -331,7 +331,7 @@ proc usage {} {
     puts {Valid options are:}
     puts {  BINDIR       The location for scid executables for "make install".}
     puts {  COMPILE      Your C++ compiler. Default: "g++".}
-    puts {  DEBUG        Debugging flags. Use DEBUG="-DASSERTIONS" for assertions.}
+    puts {  DEBUG        Debugging flags. Defaut: "-DNDEBUG"}
     puts {  LANGUAGES    Multi-language support. Use LANGUAGES="" for English only.}
     puts {  LINK         Your C++ linker. Default: "g++".}
     puts {  OPTIMIZE     C++ optimizations. Default: "-O3 -fno-rtti -fno-exceptions".}
