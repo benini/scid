@@ -860,26 +860,27 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
             for (uint count = 0; count < MaxClashes; count++) {
                 if (clash != NULL) {
                     if (OutputFormat == CROSSTABLE_Hypertext) {
-                      if (CurrentGame == clash->gameNum)
-                        sprintf (stemp, "<green><g_%u>%c</g></green>",
-                                 clash->gameNum,
-                                 RESULT_CHAR[clash->result]);
-                      else
-                        sprintf (stemp, "<blue><g_%u>%c</g></blue>",
-                                 clash->gameNum,
-                                 RESULT_CHAR[clash->result]);
+                        if (CurrentGame == clash->gameNum)
+                            sprintf(stemp, "<green><g_%u>%c</g></green>",
+                                    clash->gameNum, RESULT_CHAR[clash->result]);
+                        else
+                            sprintf(stemp, "<blue><g_%u>%c</g></blue>",
+                                    clash->gameNum, RESULT_CHAR[clash->result]);
                         dstr->Append (stemp);
                     } else {
                         dstr->AddChar (RESULT_CHAR[clash->result]);
                     }
-		    switch (clash->result) {
-		      case 1:
-			  r_won++; break;
-		      case 2:
-			  r_loss++; break;
-		      case 3:
-			  r_draw++; break;
-		    }
+                    switch (clash->result) {
+                    case 1:
+                        r_won++;
+                        break;
+                    case 2:
+                        r_loss++;
+                        break;
+                    case 3:
+                        r_draw++;
+                        break;
+                    }
                     clash = clash->next;
                 } else {
                     dstr->AddChar (index == opp ? 'X' : '.');

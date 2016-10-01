@@ -292,7 +292,7 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 
 	#if CPP11_SUPPORT
 	// Free unused memory
-	char* shrink = (char*) realloc(staticStrings_, std::distance(staticStrings_,line));
+	char* shrink = (char*) realloc(staticStrings_, 1 + std::distance(staticStrings_,line));
 	if (shrink != NULL && shrink != staticStrings_) {
 		// Unlikely, but realloc() moved the memory: update the pointers.
 		const char* oldAddr = staticStrings_;

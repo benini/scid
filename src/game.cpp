@@ -2295,7 +2295,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             char* q = buf;
 
             for (char const* p = m->san; *p; ++p) {
-                ASSERT(q - buf < sizeof(buf) - 4);
+                ASSERT(q - buf < static_cast<std::ptrdiff_t>(sizeof(buf) - 4));
 
                 switch (*p) {
                     case 'K':    q = strncpy(q, "\xe2\x99\x94", 3) + 3; break;

@@ -335,10 +335,8 @@ nodeT<C> *
 StrTree<C>::MakeSubTree (int size, uint depth)
 {
     if (size == 0) { return NULL; }
-    int nLeft, nRight, mid;
-    nLeft = (size - 1) / 2;
-    nRight = size - nLeft - 1;
-    mid = nLeft + 1;
+    int nLeft = (size - 1) / 2;
+    int nRight = size - nLeft - 1;
 
     nodeT<C> * leftNode;
     nodeT<C> * root;
