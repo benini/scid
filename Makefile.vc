@@ -347,7 +347,7 @@ $(TMP_DIR)\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
 {src\polyglot}.cpp{$(TMP_DIR)\polyglot}.obj:
 	$(CC) $(CFLAGS) -Fo$(TMP_DIR)\polyglot\ $<
 	
-.rc{$(TMP_DIR)}.res:
+{resources\win}.rc{$(TMP_DIR)}.res:
 	$(RC) -r -Fo$(TMP_DIR)\$(@B).res $<
 
 
