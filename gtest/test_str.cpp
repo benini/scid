@@ -113,19 +113,19 @@ TEST_F(Test_StrTrimRight, performance) {
 	size_t nLines = createRandom(buf1, buf2, lineLen);
 
 	Timer t1;
-	for (auto i = 0; i < nLines; i++) {
+	for (size_t i = 0; i < nLines; i++) {
 		strTrimRight(buf1 + lineLen * i);
 	}
 	auto tNew = t1.MilliSecs();
 
 	Timer t2;
-	for (auto i = 0; i < nLines; i++) {
+	for (size_t i = 0; i < nLines; i++) {
 		v4_6_2::strTrimRight(buf2 + lineLen * i, WHITESPACE);
 	}
 	auto tOld = t2.MilliSecs();
 
-	EXPECT_LT(tNew, tOld);
-	for (auto i = 0; i < nLines; i++) {
+	EXPECT_LE(tNew, tOld);
+	for (size_t i = 0; i < nLines; i++) {
 		ASSERT_STREQ(buf2 + lineLen * i, buf1 + lineLen * i);
 	}
 

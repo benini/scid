@@ -15,35 +15,16 @@
 
 cmake_minimum_required(VERSION 2.6)
 project(scid)
+set(CPACK_PACKAGE_VERSION 4.6.5)
+set(
+  CPACK_PACKAGE_DESCRIPTION_SUMMARY
+  "chess database application with play and training functionality"
+)
+include(CPack)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "release")
 endif()
-
-
-# engine phalanx
-file(GLOB PHALANX_SRC engines/phalanx-scid/*.c)
-add_executable(phalanx-scid ${PHALANX_SRC})
-install(TARGETS phalanx-scid DESTINATION bin)
-
-
-# engine togaII
-file(GLOB TOGAII_SRC engines/togaII1.2.1a/src/*.cpp)
-add_executable(togaII ${TOGAII_SRC})
-install(TARGETS togaII DESTINATION bin)
-
-
-# engine scidlet
-file(GLOB SCIDLET_SRC engines/scidlet/*.cpp)
-set(SCIDLET_EXTRA
-  src/engine.cpp
-  src/recog.cpp
-  src/misc.cpp
-  src/position.cpp
-  src/dstring.cpp
-)
-add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
-install(TARGETS scidlet DESTINATION bin)
 
 
 # scid
@@ -84,10 +65,27 @@ install(DIRECTORY sounds DESTINATION scid)
 install(DIRECTORY tcl DESTINATION scid)
 
 
-# package
-set(CPACK_PACKAGE_VERSION 4.6.5)
-set(
-  CPACK_PACKAGE_DESCRIPTION_SUMMARY
-  "chess database application with play and training functionality"
+# engine phalanx
+file(GLOB PHALANX_SRC engines/phalanx-scid/*.c)
+add_executable(phalanx-scid ${PHALANX_SRC})
+set_target_properties(phalanx-scid PROPERTIES COMPILE_FLAGS "-Wno-format-security -Wno-unused-result")
+install(TARGETS phalanx-scid DESTINATION bin)
+
+
+# engine togaII
+file(GLOB TOGAII_SRC engines/togaII1.2.1a/src/*.cpp)
+add_executable(togaII ${TOGAII_SRC})
+install(TARGETS togaII DESTINATION bin)
+
+
+# engine scidlet
+file(GLOB SCIDLET_SRC engines/scidlet/*.cpp)
+set(SCIDLET_EXTRA
+  src/engine.cpp
+  src/recog.cpp
+  src/misc.cpp
+  src/position.cpp
+  src/dstring.cpp
 )
-include (CPack)
+add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
+install(TARGETS scidlet DESTINATION bin)

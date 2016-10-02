@@ -1,23 +1,39 @@
+# Copyright (C) 2016 Fulvio Benini
+# This file is part of Scid (Shane's Chess Information Database).
+#
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
+#
+# Scid is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Scid. If not, see <http://www.gnu.org/licenses/>.
+
 cmake_minimum_required(VERSION 2.6)
+project(scid_gtest)
+
+file(GLOB GTEST_SRC *.cpp)
+set(GTEST_EXTRA
+  ../src/misc.cpp
+  ../src/index.cpp ../src/namebase.cpp ../src/sortcache.cpp
+  ../src/gfile.cpp ../src/bytebuf.cpp ../src/mfile.cpp
+  ../src/game.cpp ../src/position.cpp ../src/textbuf.cpp ../src/dstring.cpp ../src/matsig.cpp ../src/date.cpp
+  ../src/stored.cpp
+  ../src/pgnparse.cpp
+  ../src/scidbase.cpp
+)
+include_directories(../src)
+add_executable(runAll ${GTEST_SRC} ${GTEST_EXTRA})
+set_target_properties(runAll PROPERTIES COMPILE_FLAGS "-Wall -std=c++1y -O3")
+set_target_properties(runAll PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 find_package(GTest REQUIRED)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O3")
-include_directories(${GTEST_INCLUDE_DIRS} ../src)
-file(GLOB TESTS *.cpp)
-set(SCID_OBJ
-	../src/misc.o
-	../src/index.o ../src/namebase.o ../src/sortcache.o
-	../src/gfile.o ../src/bytebuf.o ../src/mfile.o
-	../src/game.o ../src/position.o ../src/textbuf.o ../src/dstring.o ../src/matsig.o ../src/date.o
-	../src/stored.o
-	../src/pgnparse.o
-	../src/scidbase.o
-)
+include_directories(${GTEST_INCLUDE_DIRS})
+target_link_libraries(runAll ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
 
-add_executable(runAll ${TESTS} ${SCID_OBJ})
-target_link_libraries(runAll ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
-
-find_package(ZLIB)
-if (ZLIB_FOUND)
-	target_link_libraries( runAll ${ZLIB_LIBRARIES} )
-endif(ZLIB_FOUND)
+find_package(Threads REQUIRED)
+target_link_libraries(runAll ${CMAKE_THREAD_LIBS_INIT})

@@ -27,19 +27,6 @@ matrix:
           - llvm-toolchain-precise-3.8
 
   - os: linux
-    env: COMP=clang++-3.5
-    addons:
-      apt:
-        packages:
-          - clang-3.5
-          - tcl
-          - tcl-dev
-          - tk
-        sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-precise-3.5
-
-  - os: linux
     env: COMP=g++-6
     addons:
       apt:
@@ -48,6 +35,7 @@ matrix:
           - tcl
           - tcl-dev
           - tk
+          - cloc
         sources:
           - ubuntu-toolchain-r-test
 
@@ -60,6 +48,7 @@ matrix:
           - tcl
           - tcl-dev
           - tk
+          - cloc
         sources:
           - ubuntu-toolchain-r-test
 
@@ -76,16 +65,17 @@ before_install:
 
 script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then LINUX_ONLY="COMPILE=${COMP} LINK=${COMP}"; fi
-  - if [ "${COMP}" == "clang++-3.8" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
-  - if [ "${COMP}" == "clang++-3.8" ]; then cloc tcl --exclude-dir=lang; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
   - if [ "${COMP}" == "clang++-3.8" ]; then scan-build-3.8 ${COMP} -std=c++11 -c -Wall -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp; fi
   - cd $TRAVIS_BUILD_DIR
   - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="${COMP}" && make
   - cd $TRAVIS_BUILD_DIR
+  - mkdir Testing && cd Testing && cmake ../gtest -DCMAKE_CXX_COMPILER="${COMP}" && make
+  - cd $TRAVIS_BUILD_DIR/gtest && ./runAll
+  - cd $TRAVIS_BUILD_DIR
   - mkdir Release && cd Release && cmake .. -DCMAKE_CXX_COMPILER="${COMP}" && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR
-  - if [ "${COMP}" == "g++-6" ]; then ./configure ${LINUX_ONLY} && make test; fi
-  - if [ "${COMP}" == "g++-6" ]; then make clean; fi
   - ./configure ${LINUX_ONLY} && make && size tkscid
   - make clean
   - ./configure ${LINUX_ONLY} THREADS="" && make && size tkscid

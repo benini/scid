@@ -83,7 +83,8 @@ protected:
 		}
 	}
 
-	std::unique_ptr<Filter> makeFilter(const auto* data) {
+	template <typename T>
+	std::unique_ptr<Filter> makeFilter(const T* data) {
 		std::unique_ptr<Filter> res = nullptr;
 		if (data != nullptr) {
 			res = std::make_unique<Filter>(data->size());
@@ -94,7 +95,8 @@ protected:
 		return res;
 	};
 
-	bool equal(const auto& map, const HFilter& filter) {
+	template <typename T>
+	bool equal(const T& map, const HFilter& filter) {
 		return std::equal(map.begin(), map.end(), filter->begin(),
 		                  filter->end(), [&](auto& a, auto& b) {
 			                  auto value = filter->get(b) - 1;
@@ -195,11 +197,10 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 
 		filter->clear();
 		EXPECT_EQ(0, filter->size());
-		size_t sz = 0;
 		for (auto& gnum : *filter) {
-			sz += 1;
+			// filter is empty and should not enter into this loop
+			EXPECT_NE(gnum, gnum);
 		}
-		EXPECT_EQ(0, sz);
 		for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
 			EXPECT_EQ(0, filter->get(gnum));
 		}
