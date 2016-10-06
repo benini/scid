@@ -118,7 +118,7 @@ proc keyboardShortcuts {w} {
 	bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;	::CorrespondenceChess::FetchGames}
 	bind $w <Control-equal> ::tb::Open
 	bind $w <Control-d> ::windows::switcher::Open
-	bind $w <Control-e> makeCommentWin
+	bind $w <Control-e> "::makeCommentWin toggle"
 	bind $w <Control-i> ::windows::stats::Open
 	bind $w <Control-l> ::windows::gamelist::Open
 	bind $w <Control-m> ::maint::OpenClose
@@ -166,26 +166,6 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-Up> {::game::LoadNextPrev previous}
 	bind $w <Control-Down> {::game::LoadNextPrev next}
 	bind $w <Control-question> ::game::LoadRandom
-
-	#TODO: this bind should not be global
-	# Add null move (also "king take king" move)
-	bind $w <minus><minus> { addMove null null }
-
-	bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
-	bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
-	bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
-	bind $w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
-	bind $w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
-	bind $w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
-	bind $w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
-	bind $w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
-	bind $w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
-	bind $w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
-	bind $w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
-	bind $w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
-	bind $w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
-	bind $w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
-	bind $w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
 }
 
 proc excludeTextWidget {w} {

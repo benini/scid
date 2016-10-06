@@ -221,28 +221,28 @@ namespace eval pgn {
     menu $mctxt
 
     menu $mctxt.evals1
-    $mctxt.evals1 add command -label "Clear" -command {sc_pos addNag X; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "!" -command {sc_pos addNag ! ; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "?" -command {sc_pos addNag ? ; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "!?" -command {sc_pos addNag !? ; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "?!" -command {sc_pos addNag ?! ; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "!!" -command {sc_pos addNag !! ; ::pgn::Refresh 1}
-    $mctxt.evals1 add command -label "??" -command {sc_pos addNag ?? ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "Clear" -command {::addNag X}
+    $mctxt.evals1 add command -label "!" -command {::addNag !}
+    $mctxt.evals1 add command -label "?" -command {::addNag ?}
+    $mctxt.evals1 add command -label "!?" -command {::addNag !?}
+    $mctxt.evals1 add command -label "?!" -command {::addNag ?!}
+    $mctxt.evals1 add command -label "!!" -command {::addNag !!}
+    $mctxt.evals1 add command -label "??" -command {::addNag ??}
 
     menu $mctxt.evals2
-    $mctxt.evals2 add command -label "Clear" -command {sc_pos addNag Y ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "=" -command {sc_pos addNag = ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "~" -command {sc_pos addNag ~ ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "+=" -command {sc_pos addNag += ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "=+" -command {sc_pos addNag =+ ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "+/-" -command {sc_pos addNag +/- ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "-/+" -command {sc_pos addNag -/+ ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "+-" -command {sc_pos addNag +- ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "-+" -command {sc_pos addNag -+ ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "+--" -command {sc_pos addNag +-- ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "--+" -command {sc_pos addNag --+ ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "N" -command {sc_pos addNag N ; ::pgn::Refresh 1}
-    $mctxt.evals2 add command -label "D" -command {sc_pos addNag D ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "Clear" -command {::addNag Y}
+    $mctxt.evals2 add command -label "=" -command {::addNag =}
+    $mctxt.evals2 add command -label "~" -command {::addNag ~}
+    $mctxt.evals2 add command -label "+=" -command {::addNag +=}
+    $mctxt.evals2 add command -label "=+" -command {::addNag =+}
+    $mctxt.evals2 add command -label "+/-" -command {::addNag +/-}
+    $mctxt.evals2 add command -label "-/+" -command {::addNag -/+}
+    $mctxt.evals2 add command -label "+-" -command {::addNag +-}
+    $mctxt.evals2 add command -label "-+" -command {::addNag -+}
+    $mctxt.evals2 add command -label "+--" -command {::addNag +--}
+    $mctxt.evals2 add command -label "--+" -command {::addNag --+}
+    $mctxt.evals2 add command -label "N" -command {::addNag N}
+    $mctxt.evals2 add command -label "D" -command {::addNag D}
 	
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar [sc_var number]"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar [sc_var number]"
@@ -256,7 +256,7 @@ namespace eval pgn {
     $mctxt add separator
     $mctxt add cascade -label "!  ?  ..." -menu $mctxt.evals1
     $mctxt add cascade -label "+-  +/-  ..." -menu $mctxt.evals2
-    $mctxt add command -label "[tr WindowsComment]" -command {makeCommentWin}
+    $mctxt add command -label "[tr WindowsComment]" -command {::makeCommentWin}
     
     $mctxt post [winfo pointerx .] [winfo pointery .]
     

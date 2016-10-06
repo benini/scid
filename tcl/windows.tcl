@@ -14,7 +14,6 @@ namespace eval ::windows {
 
 set treeWin 0
 set pgnWin 0
-set commentWin 0
 set filterGraph 0
 
 ################################################################################

@@ -1133,48 +1133,6 @@ proc helpAbout {} {
   tk_messageBox -title "About Scid" -message $str -type ok
 }
 
-############################################################
-#### Square Bindings:
-# Pascal Georges : allow the drawing of markers directly on the board (not through comment editor)
-set startArrowSquare ""
-
-proc addMarker {sq color} {
-  set to [::board::san $sq]
-  set oldComment [sc_pos getComment]
-  
-  # check if the square is already of the same color
-  set erase [regexp "\[\x5B\]%draw full,$to,$color\[\x5D\]" $oldComment]
-  regsub "\[\x5B\]%draw full,$to,(green|yellow|red)\[\x5D\]" $oldComment "" newComment
-  set newComment [string trim $newComment]
-  if {!$erase} {
-    append newComment " \[%draw full,$to,$color\]"
-  }
-  sc_pos setComment $newComment
-  ::pgn::Refresh 1
-  updateBoard
-}
-
-proc drawArrow {sq color} {
-  global startArrowSquare
-  if {$startArrowSquare == ""} {
-    set startArrowSquare [::board::san $sq]
-  } else  {
-    set oldComment [sc_pos getComment]
-    set to [::board::san $sq]
-    if {$startArrowSquare != $to } {
-      set erase [regexp "\[\x5B\]%draw arrow,$startArrowSquare,$to,$color\[\x5D\]" $oldComment]
-      regsub "\[\x5B\]%draw arrow,$startArrowSquare,$to,(green|yellow|red)\[\x5D\]" $oldComment "" newComment
-      set newComment [string trim $newComment]
-      if {!$erase} {
-        append newComment " \[%draw arrow,$startArrowSquare,$to,$color\]"
-      }
-      sc_pos setComment $newComment
-      ::pgn::Refresh 1
-      updateBoard
-    }
-    set startArrowSquare ""
-  }
-}
 
 proc MouseWheelRedirector {W X Y D} {
     # Generate an MWheel virtual event to the window that has the mouse pointer

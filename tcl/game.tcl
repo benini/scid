@@ -388,7 +388,7 @@ namespace eval ::notify {
     updateAnalysis 1
     updateAnalysis 2
     ::windows::gamelist::PosChanged
-    ::commenteditor::Refresh
+    ::windows::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }
     if {[winfo exists .bookWin]} { ::book::refresh }

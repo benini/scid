@@ -180,6 +180,7 @@ foreach ns {
   ::windows
   ::windows::gamelist ::windows::stats ::tree ::tree::mask ::windows::tree
   ::windows::switcher ::windows::eco ::crosstab ::pgn ::book
+  ::windows::commenteditor
   ::tools
   ::tools::analysis ::tools::email
   ::tools::graphs
@@ -189,7 +190,6 @@ foreach ns {
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
   ::pinfo
-  ::commenteditor
   ::unsafe
   ::utils::tooltip
 } {

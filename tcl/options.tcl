@@ -69,8 +69,8 @@ proc InitWinsDefaultGeometry {} {
   set winHeight(.treeWin) 20
 
   # Default comment editor size:
-  set winWidth(.commentWin)  40
-  set winHeight(.commentWin)  6
+  set winWidth(.commentWin)  530
+  set winHeight(.commentWin) 220
 
   # Default spellcheck results window size:
   set winWidth(.spellcheckWin)  55
@@ -194,6 +194,10 @@ set highcolor   "\#b0d0e0"
 set bestcolor   "\#bebebe"
 set buttoncolor "\#b0c0d0"
 set borderwidth 0
+
+# Square markers color and type
+set ::markColor green
+set ::markType full
 
 # boardCoords: 1 to show board Coordinates, 0 to hide them.
 set boardCoords 0
@@ -351,8 +355,6 @@ set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
 set ::fics::premoveEnabled 1
 set ::fics::playing 0
-
-set ::commenteditor::showboard 1
 
 # default resolvers for player info
 set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query&format=xml"
@@ -743,7 +745,6 @@ proc options.write {} {
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
           ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
           ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
-			 ::commenteditor::showboard \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme autoResizeBoard } {

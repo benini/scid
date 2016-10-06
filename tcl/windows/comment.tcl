@@ -1,478 +1,287 @@
 ############################################################
 ### Comment Editor window
+# Copyright (C) 2016 Fulvio Benini
+#
+# This file is part of Scid (Shane's Chess Information Database).
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
 
-namespace eval ::commenteditor {
-  
-  namespace export open close update storeComment addNag
-  
-  # List of colors and types used to mark a square
-  
-  variable  colorList {}  markTypeList {}
-  lappend   colorList red orange yellow   \
-      green blue darkBlue \
-      purple white black
-  # Each list is a set of buttons in the dialog menu:
-  lappend   markTypeList [list full circle disk x + - = ? !]
-  lappend   markTypeList [list 1 2 3 4 5 6 7 8 9]
-  
-  # IO state of the comment editor
-  variable  State
-  array set State [list isOpen 0 \
-      markColor red  markType full  text "" \
-      pending ""]
-  
-  proc addMark {args} {eval ::board::mark::add $args}
-  proc delMark {args} {eval ::board::mark::remove $args}
+namespace eval ::windows::commenteditor {
+	variable isOpen 0
+	variable w_ .commentWin
+	variable undoComment_ 1
+	variable undoNAGs_ 1
+
+	proc clearComment_ {} {
+		if {[sc_pos getComment] != ""} {
+			undoFeature save
+			sc_pos setComment ""
+		}
+		notify_
+	}
+
+	proc clearNAGs_ {} {
+		if {[sc_pos getNags] != 0} {
+			undoFeature save
+			sc_pos clearNags
+		}
+		notify_
+	}
+
+	proc notify_ {} {
+		after idle "::notify::PosChanged -pgn"
+	}
+
+	proc storeComment_ {} {
+		variable w_
+		# The "end-1c" below is because Tk adds a newline to text contents:
+		set oldComment [sc_pos getComment]
+		set newComment [$w_.cf.txtframe.text get 1.0 end-1c]
+		if {[string compare "$oldComment" "$newComment"] == 0} { return }
+
+		variable undoComment_
+		if { $undoComment_ } {
+			set undoComment_ 0
+			undoFeature save
+		}
+		sc_pos setComment $newComment
+		after cancel ::windows::commenteditor::notify_
+		after 1500 ::windows::commenteditor::notify_
+	}
+
+	proc storeNAGs_ {} {
+		variable w_
+		set nag_stored [sc_pos getNags]
+		set nag_text [$w_.nf.text get]
+		#sc_pos getNags returns 0 when empty
+		if {$nag_text == ""} { set nag_text 0 }
+		if {[string compare "$nag_text" "$nag_stored"] == 0} { return }
+
+		variable undoNAGs_
+		if { $undoNAGs_ } {
+			set undoNAGs_ 0
+			undoFeature save
+		}
+		sc_pos clearNags
+		foreach {nag} [split "$nag_text" " "] {
+			sc_pos addNag $nag
+		}
+		after cancel ::windows::commenteditor::notify_
+		after 1500 ::windows::commenteditor::notify_
+	}
+
+	proc updateMarkersCol_ {varname args} {
+		variable w_
+		if {![winfo exists $w_.mf]} { return }
+
+		foreach b [winfo children $w_.mf.markers] {
+			$b configure -foreground $::markColor
+		}
+	}
+	trace add variable ::markColor write "::windows::commenteditor::updateMarkersCol_"
+
 }
 
-proc ::commenteditor::addNag {nag} {
-  if {![winfo exists .commentWin]} { return }
-  .commentWin.nf.tf.text insert end "$nag  "
-  ::commenteditor::storeComment
-  ::pgn::Refresh 1
+proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
+	variable w_
+	variable undoNAGs_
+	variable undoComment_
+
+	if {[::createToplevel $w_] == "already_exists"} {
+		if { $focus_if_exists } {
+			focus $w_.cf.txtframe.text
+		} else {
+			focus .
+			destroy $w_
+			if {$undoComment_ == 0 || $undoNAGs_ == 0} {
+				after cancel ::windows::commenteditor::notify_
+				after 1 ::windows::commenteditor::notify_
+			}
+		}
+		return
+	}
+
+	::setTitle $w_ "Scid: [tr {Comment editor}]"
+	setWinLocation $w_
+	setWinSize $w_
+	keyboardShortcuts $w_
+
+	# NAGs frame:
+	ttk::frame $w_.nf
+	ttk::label $w_.nf.label -font font_Bold -text [tr AnnotationSymbols]
+	ttk::button $w_.nf.clear -text [tr Clear] -command "::windows::commenteditor::clearNAGs_"
+	ttk::entry $w_.nf.text
+	ttk::frame $w_.nf.b
+	set i 0
+	foreach {nag description} {
+		! GoodMove
+		? PoorMove
+		!! ExcellentMove
+		?? Blunder
+		!? InterestingMove
+		?! DubiousMove
+		+-- WhiteCrushing
+		--+ BlackCrushing
+		+- WhiteDecisiveAdvantage
+		-+ BlackDecisiveAdvantage
+		+/- WhiteClearAdvantage
+		-/+ BlackClearAdvantage
+		+= WhiteSlightAdvantage
+		=+ BlackSlightAdvantage
+		= Equality
+		~ Unclear
+		N Novelty
+		D Diagram
+	} {
+		ttk::button $w_.nf.b.b$i -text "$nag" -width 3 -command "::addNag $nag"
+		::utils::tooltip::Set $w_.nf.b.b$i $description
+		grid $w_.nf.b.b$i -row [expr {$i % 2}] -column [expr {int($i / 2)}] -padx 2 -pady 2
+		incr i
+	}
+	grid columnconfig $w_.nf 0 -weight 1
+	grid $w_.nf.label $w_.nf.clear -sticky nsew
+	grid $w_.nf.text -sticky nsew -columnspan 2
+	grid $w_.nf.b -sticky nsew -columnspan 2
+
+	# Comment frame:
+	ttk::frame $w_.cf
+	ttk::label $w_.cf.label -font font_Bold -text [tr Comment]
+	ttk::button $w_.cf.clear -text [tr Clear] -command "::windows::commenteditor::clearComment_"
+	ttk::frame $w_.cf.txtframe
+	autoscrollframe -bars y $w_.cf.txtframe text $w_.cf.txtframe.text \
+		-background white -wrap word -font font_Regular
+	grid rowconfig $w_.cf 1 -weight 1
+	grid columnconfig $w_.cf 0 -weight 1
+	grid $w_.cf.label $w_.cf.clear -sticky nsew
+	grid $w_.cf.txtframe -sticky nsew -columnspan 2
+
+	### Markers frame
+	ttk::frame $w_.mf
+	ttk::label $w_.mf.header -font font_Bold -text $::tr(InsertMark:)
+	set usage "Usage (on the main board):\n"
+	append usage "ctrl+click --> mark square\n"
+	append usage "ctrl+drag --> draw arrow"
+	ttk::label $w_.mf.usage -text "$usage"
+	ttk::frame $w_.mf.colors
+	set i 0
+	foreach color {
+		green
+		red
+		orange
+		yellow
+		blue
+		darkBlue
+		purple
+		white
+		black
+		gray
+	} {
+		radiobutton $w_.mf.colors.col_$color \
+			-indicatoron "false" \
+			-background "$color" -selectcolor "$color" \
+			-text " " -width 2 \
+			-variable "::markColor" -value "$color"
+		grid $w_.mf.colors.col_$color -row [expr {$i / 2}] -column [expr {int($i % 2)}]
+		incr i
+	}
+	ttk::frame $w_.mf.markers
+	set i 0
+	foreach {marker lbl} {
+		full █
+		circle ◯
+		disk ⬤
+		+ +
+		- -
+		X X
+		! !
+		? ?
+		= =
+		A A
+		B B
+		C C
+		D D
+		E E
+		F F
+		0 0
+		1 1
+		2 2
+		3 3
+		4 4
+		5 5
+		6 6
+		7 7
+		8 8
+		9 9
+	} {
+		radiobutton $w_.mf.markers.mark_$marker \
+			-indicatoron "false" \
+			-foreground "$::markColor" -background "light gray" -selectcolor "dark gray" \
+			-text "$lbl" -width 2 \
+			-variable "::markType" -value "$marker"
+		grid $w_.mf.markers.mark_$marker -row [expr {$i % 5}] -column [expr {int($i / 5)}]
+		incr i
+	}
+	grid $w_.mf.header -columnspan 2 -sticky nsew -padx 8
+	grid $w_.mf.usage -columnspan 2 -sticky nsew -padx 8
+	grid $w_.mf.colors -row 2 -column 0 -sticky nsew -padx 8 -pady 8
+	grid $w_.mf.markers -row 2 -column 1 -sticky nsew -pady 8 -padx 8
+
+	# Arrange frames:
+	grid $w_.cf -row 0 -column 0 -columnspan 2 -sticky nsew
+	grid $w_.mf -row 0 -rowspan 2 -column 2 -sticky nsew
+	grid $w_.nf -row 1 -column 0 -columnspan 2 -sticky nsew
+	grid rowconfig $w_ 0 -weight 1
+	grid columnconfig $w_ 0 -weight 1
+
+	# Load current NAGs and comment
+	Refresh
+
+	# Add bindings at the end, especially <Configure>
+	bind $w_ <F1> {helpWindow Comment}
+	bind $w_ <Configure> "recordWinSize $w_"
+	bind $w_ <Destroy> "if {\[string equal $w_ %W\]} { set ::windows::commenteditor::isOpen 0 }"
+	bind $w_.nf.text <KeyRelease> "::windows::commenteditor::storeNAGs_"
+	bind $w_.cf.txtframe.text <KeyRelease> "::windows::commenteditor::storeComment_"
+	::createToplevelFinalize $w_
+
+	set ::windows::commenteditor::isOpen 1
+	after idle focus $w_.cf.txtframe.text
 }
 
-proc makeCommentWin {} {
-  ::commenteditor::Open 1
+# Gets the comment and NAGs for the current position and updates the
+# corresponding widgets.
+# Disables NAGs widgets if at vstart (NAGs cannot be inserted before moves).
+proc ::windows::commenteditor::Refresh {} {
+	variable w_
+	if {![winfo exists $w_]} { return }
+
+	variable undoNAGs_ 1
+	variable undoComment_ 1
+
+	set comment [sc_pos getComment]
+	$w_.cf.txtframe.text delete 1.0 end
+	$w_.cf.txtframe.text insert end $comment
+
+	set nag [sc_pos getNags]
+	$w_.nf.text configure -state normal
+	$w_.nf.text delete 0 end
+	if {$nag != "0"} {
+		$w_.nf.text insert end $nag
+	}
+	# if at vstart, disable NAG codes
+	if {[sc_pos isAt vstart]} {
+		set state "disabled"
+	} else	{
+		set state "normal"
+	}
+	$w_.nf.clear configure -state $state
+	$w_.nf.text configure -state $state
+	foreach c [winfo children $w_.nf.b] {
+		$c configure -state $state
+	}
 }
 
-proc ::commenteditor::toggleboard { } {
-  if {$::commenteditor::showboard == 1} {
-     pack forget .commentWin.markFrame 
-	  set ::commenteditor::showboard 0
-  } else { 
-	  pack .commentWin.markFrame -fill both -expand 1 -padx 1 -anchor n -before .commentWin.nf -side left
-	  set ::commenteditor::showboard 1
-  }
+proc makeCommentWin {{toggle ""}} {
+	::windows::commenteditor::createWin [string compare "$toggle" "toggle"]
 }
-
-# ::commenteditor::Open --
-#
-proc ::commenteditor::Open {{toggle 0}} {
-  global commentWin highcolor helpMessage
-  variable colorList
-  variable markTypeList
-  variable State
-
-  set w .commentWin
-  if {[::createToplevel $w] == "already_exists"} {
-    if {$toggle != 0} {
-      ::commenteditor::storeComment
-      destroy $w
-    }
-    return
-  }
-  set commentWin 1
-  set State(isOpen) 1
-  setWinLocation $w
-  keyboardShortcuts $w
-  set mark [ttk::frame $w.markFrame]
-  if {$::commenteditor::showboard == 1} { pack $mark -side left -fill both -expand 1 -padx 1 -anchor n }
-  
-  # Comment frame:
-  ttk::frame $w.cf
-  text $w.cf.text -width $::winWidth($w) -height $::winHeight($w) -background white -wrap word -font font_Regular \
-      -yscrollcommand ".commentWin.cf.scroll set" -setgrid 1
-  ttk::scrollbar $w.cf.scroll -command ".commentWin.cf.text yview"
-  ttk::label $w.cf.label -font font_Bold -textvar ::tr(Comment)
-  bindFocusColors $w.cf.text
-
-  bind $w.cf.text <FocusOut> { ::commenteditor::storeComment }
-  bind $w <Control-a> {::commenteditor::storeComment; sc_var create; updateBoard -pgn}
-  bind $w.cf.text <Alt-Left>  {::commenteditor::storeComment; ::move::Back}
-  bind $w.cf.text <Alt-Right> {::commenteditor::storeComment; ::move::Forward}
-  # switch to the NAG entry
-  bind $w.cf.text <Alt-n> { focus .commentWin.nf.tf.text }
-
-  bind $w.cf.text <Alt-b> { ::commenteditor::toggleboard }
-  
-  # NAG frame:
-  ttk::frame $w.nf -width 100
-  ttk::frame $w.nf.tf
-  ttk::entry $w.nf.tf.text -width 20 -background white
-  bindFocusColors $w.nf.tf.text
-  # switch to the edit frame
-  bind $w.nf.tf.text <Alt-n> { focus .commentWin.cf.text }
-  
-  set nagbox $w.nf.tf.text
-  set nagbuttons $w.nf.b
-  ttk::frame $w.nf.b
-  set i 0
-  set row 0
-  set column 0
-  foreach {nag description} {
-    ! GoodMove
-    ? PoorMove
-    !! ExcellentMove
-    ?? Blunder
-    !? InterestingMove
-    ?! DubiousMove
-    +-- WhiteCrushing
-    --+ BlackCrushing
-    +- WhiteDecisiveAdvantage
-    -+ BlackDecisiveAdvantage
-    +/- WhiteClearAdvantage
-    -/+ BlackClearAdvantage
-    += WhiteSlightAdvantage
-    =+ BlackSlightAdvantage
-    = Equality
-    ~ Unclear
-    N Novelty
-    D Diagram
-  } {
-    ttk::button $nagbuttons.b$i -takefocus 0 -text "$nag" -width 2 -command [namespace code [list addNag "$nag"]]
-    # set helpMessage(E,$nagbuttons.b$i) $description
-    ::utils::tooltip::Set $nagbuttons.b$i $description
-    grid $nagbuttons.b$i -row [expr {$i % 2}] -column [expr {int($i / 2)}] -padx 2 -pady 2
-    incr i
-  }
-  
-  ttk::label $w.nf.label -font font_Bold -textvar ::tr(AnnotationSymbols)
-  pack $w.nf -side top -pady 1 -expand 0 
-  #addHorizontalRule $w
-  
-  ttk::button $w.nf.tf.clear -textvar ::tr(Clear) -command {
-    .commentWin.nf.tf.text delete 0 end
-    ::commenteditor::storeComment
-    ::pgn::Refresh 1
-    updateBoard
-  }
-  set helpMessage(E,$w.nf.tf.clear) {Clear all symbols for this move}
-  pack $w.nf.label -side top -expand 0
-  pack $w.nf.tf -side top
-  pack $w.nf.tf.text -side left
-  pack $w.nf.tf.clear -side right -padx 20 -pady 5
-  pack $w.nf.b -side top
-  
-  ttk::frame $w.b
-  pack $w.b -side bottom -ipady 4 -expand 0 -padx 1
-  
-  pack $w.cf -side top -expand 1 -fill both 
-  pack $w.cf.label -side top -pady 2
-  pack $w.cf.scroll -side right -fill y
-  pack $w.cf.text -side right -expand 1 -fill both
-  
-  # Main buttons:
-
-  ttk::button $w.b.showboard -image tb_coords -command { ::commenteditor::toggleboard }
-  
-  dialogbutton $w.b.clear -textvar ::tr(Clear) -command [namespace code [list ClearComments .commentWin]]
-  set helpMessage(E,$w.b.clear) {Clear this comment}
-  dialogbutton $w.b.revert -textvar ::tr(Revert) -command ::commenteditor::Refresh
-  set helpMessage(E,$w.b.revert) {Revert to the stored comment}
-  dialogbutton $w.b.store -textvar ::tr(Store) -command [namespace code {storeComment; ::pgn::Refresh 1; updateBoard}]
-  set helpMessage(E,$w.b.store) {Store this comment in the game}
-  ttk::frame $w.b.space -width 10
-  dialogbutton $w.b.close -textvar ::tr(Close) -command { focus .; destroy .commentWin}
-  set helpMessage(E,$w.b.close) {Close the comment editor window}
-  
-  pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear $w.b.showboard -side right -padx 1
-  
-  ### Insert-mark frame
-  
-  ttk::label $mark.header -font font_Bold -text $::tr(InsertMark:)
-  pack $mark.header -side top -ipady 1 -fill x -padx 1
-  
-  # pack [ttk::frame $mark.usage] -side bottom -pady 1 -expand true
-  # pack [ttk::label $mark.usage.text -text [string trim $::tr(InsertMarkHelp)] -justify left]
-  ::utils::tooltip::Set $mark.header [string trim $::tr(InsertMarkHelp)]
-  
-  # Subframes for insert board and two button rows:
-
-  pack [ttk::frame [set colorButtons $mark.colorButtons]] -side top -pady 1 -anchor n
-  pack [ttk::frame [set insertBoard $mark.insertBoard]] -side top -pady 1
-  pack [ttk::frame [set typeButtons $mark.typeButtons]] -side top -pady 1 -anchor s
-
-  # Left subframe: color (radio)buttons
-  foreach color $colorList {
-    image create photo markColor_$color -width 18 -height 18
-    markColor_$color put $color -to 1 1 16 16
-    radiobutton $colorButtons.c$color -image markColor_$color -variable [namespace current]::State(markColor) \
-        -value $color -takefocus 0 -command [namespace code [list SetMarkColor $color]] -indicatoron 0
-    pack $colorButtons.c$color -side left -padx 0 -pady 3
-  }
-  
-  # Central subframe: a small board
-  set board [::board::new $insertBoard.board 25]
-  ::board::showMarks $board 1
-  set ::board::_mark($board) $::board::_mark(.main.board)
-  ::board::update $board
-  pack $board -side top
-  for {set square 0} {$square < 64} {incr square} {
-    ::board::bind $board $square <ButtonPress-1> [namespace code [list InsertMark $board $square]]
-    ::board::bind $board $square <ButtonRelease-1> [namespace code [list ButtonReleased $board %b %X %Y]]
-    ::board::bind $board $square <ButtonPress-$::MB3> [namespace code [list InsertMark $board [expr {$square + 64}]]]
-  }
-  
-  # Right subframe: type/shape (pseudo-radio)buttons
-  set size 20	;# button/rectangle size
-  pack [set types [ttk::frame $typeButtons.all]] -side left -padx 10
-  set row 0
-  foreach buttons $markTypeList {
-    set column 0
-    foreach shape $buttons {
-      set color [::board::defaultColor [expr {($column + $row) % 2}]]
-      # Create and draw a button:
-      set button [ttk::frame $types.button_${shape} -class PseudoButton]
-      grid $button -row $row -column $column -padx 1 -pady 1
-      # The "board" is a 1x1 board, containing one single square.
-      set board1x1 [canvas $button.bd -height $size -width $size -highlightthickness 0 -borderwidth 1 -relief raised]
-      $board1x1 create rectangle 0 0 $size $size -fill $color -outline "" -tag [list sq0 button${shape}]
-      ::board::mark::add $types.button_${shape} $shape 0 $State(markColor) "false"
-      pack $board1x1
-      bind $board1x1 <Button-1> [namespace code [list SetMarkType $board $shape]]
-      incr column
-    } ;# foreach shape
-    incr row
-  } ;# foreach button_line
-  # "Press" button:
-  SetMarkType $board $State(markType)
-
-  # Add bindings at the end, especially <Configure>
-  bind $w <F1> {helpWindow Comment}
-  bind $w <Control-n> {helpWindow NAGs}
-  bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
-  bind $w <Configure> "recordWinSize $w"
-
-  ### Start editing
-  ::setTitle $w "Scid: [tr {Comment editor}]"
-  wm iconname $w "Scid: [tr {Comment editor}]"
-  ::commenteditor::Refresh
-  focus $w.cf.text
-  ::createToplevelFinalize $w
-}
-
-# ::commenteditor::SetMarkColor --
-#
-#	Called when a color is selected.
-#
-# Arguments:
-#	color	The selected color.
-# Results:
-#	TODO
-#
-proc ::commenteditor::SetMarkColor {color} {
-  variable   markTypeList
-  variable   State
-  set path   .commentWin.markFrame.typeButtons.all
-  set square 0	;# square number of a 1x1-board
-  foreach buttons $markTypeList {
-    foreach shape $buttons {
-      set button $path.button_${shape}
-      if {$shape == "square"} {
-        $button.bd itemconfigure sq$square \
-            -fill $color -outline $color
-      } else {
-        $button.bd delete mark
-        addMark $button $shape $square $color "false"
-      }
-    }
-  }
-  set State(markColor) $color
-}
-
-# ::commenteditor::SetMarkType --
-#
-# Arguments:
-#	board	The frame variable of the board.
-#	type	The selected type/shape, e.g. "circle", "1", etc.
-# Results:
-#	TODO
-#
-proc ::commenteditor::SetMarkType {board type} {
-  variable State
-  set cur_type $State(markType)
-  set path .commentWin.markFrame.typeButtons.all
-  $path.button_${cur_type}.bd configure -relief raised
-  $path.button_${type}.bd configure -relief sunken
-  set State(markType) $type
-}
-
-# ::commenteditor::InsertMark --
-#
-#	Called when a square is selected on the insert board.
-#
-# Arguments:
-#	board	The frame variable of the board.
-#	from	Number (0-63) of the selected square
-#		(+64 if right mouse button used).
-#	to	Number of destination square (0-63) if an
-#		arrow is to be drawn (+64 if right mouse button).
-# Results:
-#	TODO
-#
-proc ::commenteditor::InsertMark {board square} {
-  variable State
-  set textwin .commentWin.cf.text
-  if {![string length $State(pending)]} {
-    set State(pending) $square
-    return
-  }
-  # Right mouse click results in square-no + 64:
-  set from [expr {$State(pending) % 64}]
-  set to   [expr {$square         % 64}]
-  
-  set key $::board::mark::Command
-  array set tag [list remove 0 value {}]
-  if {$square == $State(pending)} {
-    if {$square >= 64} { return }
-    if {[lsearch [$textwin tag names] $square] >= 0} {
-      array set tag [list remove 1 value $square]
-      delMark $board $square
-    } else {
-      set tag(value) $square
-      addMark $board $State(markType) $square $State(markColor)
-      set to [::board::san $square]
-      set State(text) "\[%$key $State(markType),$to,$State(markColor)\]"
-    }
-  } else {
-    if {($square & 64) != ($State(pending) & 64)} {
-      if {$square < 64} { set State(pending) $square }
-      return
-    }
-    if {[lsearch [$textwin tag names] ${from}:${to}] >= 0} {
-      set tag(remove) 1
-      set tag(value)  [list ${from}:${to} ${to}:${from}]
-      delMark $board $from $to
-    } else {
-      set tag(value) [list ${from}:${to} ${to}:${from}]
-      addMark $board arrow $from $to $State(markColor)
-      set from [::board::san $from]
-      set to   [::board::san $to]
-      set State(text) "\[%$key arrow,$from,$to,$State(markColor)\]"
-    }
-  }
-  set State(pending) ""
-  
-  if {$tag(remove)} {
-    set remove [lindex $tag(value) 0]
-    if [llength [$textwin tag range $remove]] {
-      $textwin delete $remove.first $remove.last
-    }
-    eval $textwin tag delete $tag(value)
-  } else {
-    $textwin insert insert $State(text) $tag(value)
-  }
-}
-
-# ::commenteditor::ClearComments --
-#
-#	Called when the 'Clear' button is pressed.
-#
-# Arguments:
-#	win	The window variable.
-# Results:
-#	Clears text area and chess board of the comment editor.
-#
-proc ::commenteditor::ClearComments {win} {
-  ${win}.cf.text delete 0.0 end
-  set board ${win}.markFrame.insertBoard.board
-  ::board::setmarks $board ""
-  ::board::update $board
-}
-
-# ::commenteditor::ButtonReleased --
-#
-#	Auxiliary routine:
-#	Called when a button is released over a square.
-#
-# Arguments:
-#	board	The frame variable of the board.
-#	button	The number (%b) of the button that was released.
-#	x_root	The x-coordinate (%X) from the event.
-#	y_root	The y-coordinate (%Y) from the event.
-# Results:
-#
-proc ::commenteditor::ButtonReleased {board button x_root y_root} {
-  set square [::board::getSquare $board $x_root $y_root]
-  if {$square < 0}  {
-    set $State(pending) ""
-    return
-  }
-  if {$button != 1} {set square [expr {$square + 64}]}
-  InsertMark $board $square
-}
-
-# ::commenteditor::storeComment --
-#
-#	Set the comment of the current position to
-#	the text of the commenteditor.
-#
-proc ::commenteditor::storeComment {} {
-  if {![winfo exists .commentWin]} { return }
-  undoFeature save
-  set nag [sc_pos getNags]
-  if {$nag == "0"} { set nag "" }
-  if { $nag != [.commentWin.nf.tf.text get] } {
-    sc_pos clearNags
-    foreach i [split [.commentWin.nf.tf.text get] " "] {
-      sc_pos addNag $i
-    }
-  }
-  
-  # The "end-1c" below is because Tk adds a newline to text contents:
-  set newComment [.commentWin.cf.text get 1.0 end-1c]
-  set oldComment [sc_pos getComment]
-  if {[string compare $oldComment $newComment]} {
-    sc_pos setComment $newComment
-    updateStatusBar
-    ::pgn::Refresh 1
-    updateBoard
-  }
-}
-
-# ::commenteditor::Refresh --
-#
-#	(Re)builds textwindow and board of the comment editor.
-#
-proc ::commenteditor::Refresh {} {
-  if {![winfo exists .commentWin]} { return }
-  
-  set nag [sc_pos getNags]
-  .commentWin.nf.tf.text configure -state normal
-  .commentWin.nf.tf.text delete 0 end
-  if {$nag != "0"} {
-    .commentWin.nf.tf.text insert end $nag
-  }
-  
-  # if at vstart, disable NAG codes
-  if {[sc_pos isAt vstart]} {
-    set state "disabled"
-  } else  {
-    set state "normal"
-  }
-  foreach c [winfo children .commentWin.nf.tf] {
-    $c configure -state $state 
-  }
-  foreach c [winfo children .commentWin.nf.b] {
-    $c configure -state $state
-  }
-  
-  # Rewrite text window, tag embedded commands,
-  # and draw marks according to text window commands.
-  set text  .commentWin.cf.text
-  set board .commentWin.markFrame.insertBoard.board
-  set comment [sc_pos getComment]
-  set offset  0
-  ::board::setmarks $board $comment
-  $text delete 1.0 end
-  foreach {mark pos} [::board::mark::getEmbeddedCmds $comment] {
-    foreach {type square arg color} $mark {begin end} $pos {break}  ;# set
-    set square [::board::sq $square]
-    regsub -all -- {[^[:alnum:]]} $color {_} _color
-    switch -- $type {
-      arrow   { set arg  [::board::sq $arg]
-        set tags [list ${square}:${arg} ${arg}:${square} \
-            ${square}:${arg}:$_color]
-      }
-      default { set tags [list $square ${square}:$type:$_color] }
-    }
-    $text insert insert [string range $comment $offset [expr {$begin-1}]]
-    $text insert insert [string range $comment $begin $end] $tags
-    set offset [expr {$end + 1}]
-  }
-  $text insert insert [string range $comment $offset end]
-  ::board::update $board [sc_pos board]
-}
-
-### End of namespace ::commenteditor

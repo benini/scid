@@ -198,7 +198,7 @@ proc updateStatusBar {} {
     regsub -all {\[%.*\]} $comment {} comment
 
     if {$comment != ""} {
-        ::board::setInfoAlert .main.board "Comment:" "$comment" "green" "makeCommentWin"
+        ::board::setInfoAlert .main.board "Comment:" "$comment" "green" "::makeCommentWin"
         return
     }
     
@@ -806,10 +806,6 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
     }
 
     undoFeature save
-    if {[winfo exists .commentWin]} {
-        ::commenteditor::storeComment
-        .commentWin.cf.text delete 0.0 end
-    }
     if {($action == "mainline" || $action == "var") && ![sc_pos isAt vend]} {
         sc_var create
     }
@@ -997,6 +993,48 @@ proc backSquare {} {
     ::utils::sound::AnnounceBack
 }
 
+# addMarker:
+#   add/delete square markers and arrows to the current position
+#
+proc addMarker {w x y} {
+    set sq [::board::getSquare $w $x $y]
+    if {! [info exists ::markStartSq]} {
+        set ::markStartSq [::board::san $sq]
+        return
+    }
+
+    set from $::markStartSq
+    unset ::markStartSq
+    set to [::board::san $sq]
+    if {$from == "" || $to == ""} { return }
+
+    if {$from == $to } {
+        set cmd "$::markType,$to,$::markColor"
+        set cmd_erase "\[a-z\]*,$to,\[a-z\]*"
+    } else {
+        set cmd "arrow,$from,$to,$::markColor"
+        set cmd_erase "arrow,$from,$to,\[a-z\]*"
+    }
+    set oldComment [sc_pos getComment]
+    regsub -all " *\\\[%draw $cmd\\\]" $oldComment "" newComment
+    if {$newComment == $oldComment} {
+        regsub -all " *\\\[%draw $cmd_erase\\\]" $oldComment "" newComment
+        append newComment " \[%draw $cmd\]"
+    }
+
+    sc_pos setComment $newComment
+    ::notify::PosChanged -pgn
+}
+
+# addNag:
+#   add a Nag to the current position
+#
+proc addNag {nag} {
+    undoFeature save
+    sc_pos addNag "$nag"
+    ::notify::PosChanged -pgn
+}
+
 ################################################################################
 #
 ################################################################################
@@ -1084,12 +1122,8 @@ proc CreateMainBoard { {w} } {
     ::board::bind $w.board $i <Enter> "enterSquare $i"
     ::board::bind $w.board $i <Leave> "leaveSquare $i"
     ::board::bind $w.board $i <ButtonPress-1> "pressSquare $i"
-    ::board::bind $w.board $i <Control-ButtonPress-1> "drawArrow $i green"
-    ::board::bind $w.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
-    ::board::bind $w.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
-    ::board::bind $w.board $i <Shift-ButtonPress-1> "addMarker $i green"
-    ::board::bind $w.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
-    ::board::bind $w.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
+    ::board::bind $w.board $i <Control-ButtonPress-1> "addMarker $w.board %X %Y"
+    ::board::bind $w.board $i <Control-ButtonRelease-1> "addMarker $w.board %X %Y"
     ::board::bind $w.board $i <B1-Motion> "::board::dragPiece $w.board %X %Y"
     ::board::bind $w.board $i <ButtonRelease-1> "releaseSquare $w.board %X %Y"
     ::board::bind $w.board $i <ButtonPress-$::MB3> backSquare

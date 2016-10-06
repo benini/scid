@@ -123,7 +123,6 @@ proc ::move::Forward {{count 1}} {
 	set move [sc_game info next]
 	if {$count == 1} {
 		if {[sc_var count] != 0 && ! $::autoplayMode && $::showVarPopup} {
-			::commenteditor::storeComment
 			showVars
 			set bArrows $::showVarArrows
 		} else {

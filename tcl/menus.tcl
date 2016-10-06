@@ -208,7 +208,7 @@ $m add cascade -label CorrespondenceChess -menu $m.correspondence
 set m .menu.windows
 menu $m
 .menu add cascade -label Windows -menu $m
-$m add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
+$m add checkbutton -label WindowsComment -var ::windows::commenteditor::isOpen -command "::makeCommentWin toggle" -accelerator "Ctrl+E"
 $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator

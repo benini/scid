@@ -394,7 +394,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         } else {
           $w tag configure $commentTag -foreground $::pgnColor(Comment)
         }
-        $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::commenteditor::Open"
+        $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::makeCommentWin"
         $w tag bind $commentTag <Any-Enter> "$w tag configure $commentTag -underline 1
         $w configure -cursor hand2"
         $w tag bind $commentTag <Any-Leave> "$w tag configure $commentTag -underline 0

@@ -246,9 +246,6 @@ set scid_busycursorState 0
 proc doBusyCursor {w flag} {
   global scid_busycursor
   if {! [winfo exists $w]} { return }
-  # The comment editor window "flashes" when its cursor is changed,
-  # no idea why but skip over it:
-  if {$w == ".commentWin"} { return }
   if {[winfo class $w] == "Menu"} { return }
   
   if {$flag} {
