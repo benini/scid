@@ -182,6 +182,9 @@ protected:
 	}
 
 private:
+	CodecMemory(const CodecMemory&);
+	CodecMemory& operator=(const CodecMemory&);
+
 	/**
 	* CodecMemory::doAddGame() - add/replace a game into the database
 	* @ie:  valid pointer to the IndexEntry with new header data of the game.
