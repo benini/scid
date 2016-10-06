@@ -56,10 +56,11 @@ matrix:
 before_install:
  - git clone https://github.com/google/googletest.git googletest
  - cd googletest
- - cmake CMakeLists.txt
- - make
- - sudo mv googletest/include/gtest /usr/include && sudo cp googlemock/gtest/*.a /usr/lib
- - sudo mv googlemock/include/gmock /usr/include && sudo cp googlemock/*.a /usr/lib
+ - cmake . && make
+ - sudo cp -a googletest/include/gtest /usr/local/include
+ - sudo cp -a googlemock/gtest/*.a /usr/local/lib
+ - sudo cp -a googlemock/include/gmock /usr/local/include
+ - sudo cp -a googlemock/*.a /usr/local/lib
  - cd $TRAVIS_BUILD_DIR
 
 

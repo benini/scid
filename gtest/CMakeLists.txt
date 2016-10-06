@@ -28,7 +28,7 @@ set(GTEST_EXTRA
 )
 include_directories(../src)
 add_executable(runAll ${GTEST_SRC} ${GTEST_EXTRA})
-set_target_properties(runAll PROPERTIES COMPILE_FLAGS "-Wall -std=c++1y -O3")
+set_target_properties(runAll PROPERTIES COMPILE_FLAGS "-Wall -std=c++14 -O3")
 set_target_properties(runAll PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 find_package(GTest REQUIRED)
