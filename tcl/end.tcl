@@ -1368,8 +1368,7 @@ proc CreateMainWin { mainWin } {
 if { $::docking::USE_DOCKING } {
   CreateMainWin .
   ::docking::layout_restore 1
-  keyboardShortcuts TPanedwindow
-  keyboardShortcuts TNotebook
+  keyboardShortcuts .
 } else {
   CreateMainWin .main
   if {$startup(switcher)} { ::windows::switcher::Open }
@@ -1388,9 +1387,6 @@ update idletasks
 if {$startup(stats)} { ::windows::stats::Open }
 if {$startup(finder)} { ::file::finder::Open }
 if {$startup(tip)} { ::tip::show }
-
-#keyboardShortcuts hack
-bind . <FocusIn> { if {[string equal %W "."]} { focus .main } }
 
 # Try to load the spellcheck file:
 if {$loadAtStart(spell)} {

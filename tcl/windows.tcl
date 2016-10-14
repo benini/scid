@@ -45,12 +45,64 @@ proc createToplevel { {w} {closeto ""} } {
     }
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
-    docking::add_tab $f
+    docking::add_tab "$f" "$f"
     set ::docking::layout_dest_notebook $old_dest
   } else  {
     toplevel $w
   }
 }
+
+
+proc createWindow { {w} {default_w} {default_h} {title} } {
+	# Raise window if already exists
+	if { [winfo exists $w] } {
+		if {[winfo toplevel $w] == $w} {
+			wm deiconify $w
+		} else {
+			[::docking::find_tbn $w] select $w
+		}
+		return 0
+	}
+
+	# Set default width and height values, if they do not exists
+	if {![info exists ::winWidth($w)]} {
+		set ::winWidth($w) $default_w
+	}
+	if {![info exists ::winHeight($w)]} {
+		set ::winHeight($w) $default_h
+	}
+
+	# Create the window
+	frame $w
+	if { $::docking::USE_DOCKING } {
+		docking::add_tab $w "$title"
+	} else {
+		wm manage $w
+		wm title $w "Scid: $title"
+		setWinLocation $w
+		setWinSize $w
+	}
+
+	keyboardShortcuts $w
+	after idle "bind $w <Destroy> \"+cleanupWindow $w %W\""
+
+	return 1
+}
+
+proc cleanupWindow { {w} {w_destroy} } {
+	if {[string equal $w $w_destroy]} {
+		if {[winfo toplevel $w] == $w} {
+			scan [wm geometry $w] "%dx%d+%d+%d" l h x y
+			set ::winWidth($w) $l
+			set ::winHeight($w) $h
+			set ::winX($w) $x
+			set ::winY($w) $y
+		} else {
+			::docking::cleanup $w
+		}
+	}
+}
+
 
 ################################################################################
 # In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up

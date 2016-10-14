@@ -474,8 +474,10 @@ proc ::docking::undock {srctab} {
   
   setMenuVisibility $f true
   
-  wm title $f $name
-  
+  wm title $f "Scid: $name"
+  setWinLocation $f
+  setWinSize $f
+
   # Uncomment this code to dock windows that have been previously undocked
   # wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
   
@@ -554,7 +556,7 @@ proc ::docking::__dock {wnd} {
 # 1       2       4        0        0       0       0,5      5500
 # 1       2       4        0        0       0       0,1      5100
 # Improving the matrix and recalculating can improve the select algorithm
-proc ::docking::add_tab {path} {
+proc ::docking::add_tab { {path} {title} } {
   variable tbs
 
   if { $::docking::layout_dest_notebook == ""} {
@@ -606,8 +608,7 @@ proc ::docking::add_tab {path} {
     set dsttab $::docking::layout_dest_notebook
   }
   
-  set title $path
-  eval [list $dsttab add $path] -text "$title"
+  $dsttab add $path -text "$title"
   setMenuMark $dsttab $path
   $dsttab select $path
 }

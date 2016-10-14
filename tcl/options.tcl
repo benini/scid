@@ -68,10 +68,6 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.treeWin)  58
   set winHeight(.treeWin) 20
 
-  # Default comment editor size:
-  set winWidth(.commentWin)  530
-  set winHeight(.commentWin) 220
-
   # Default spellcheck results window size:
   set winWidth(.spellcheckWin)  55
   set winHeight(.spellcheckWin) 25

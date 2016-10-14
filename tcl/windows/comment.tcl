@@ -88,7 +88,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	variable undoNAGs_
 	variable undoComment_
 
-	if {[::createToplevel $w_] == "already_exists"} {
+	if {! [::createWindow $w_ 530 220 "[tr {Comment editor}]"]} {
 		if { $focus_if_exists } {
 			focus $w_.cf.txtframe.text
 		} else {
@@ -101,11 +101,6 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 		}
 		return
 	}
-
-	::setTitle $w_ "Scid: [tr {Comment editor}]"
-	setWinLocation $w_
-	setWinSize $w_
-	keyboardShortcuts $w_
 
 	# NAGs frame:
 	ttk::frame $w_.nf
@@ -239,11 +234,9 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 
 	# Add bindings at the end, especially <Configure>
 	bind $w_ <F1> {helpWindow Comment}
-	bind $w_ <Configure> "recordWinSize $w_"
 	bind $w_ <Destroy> "if {\[string equal $w_ %W\]} { set ::windows::commenteditor::isOpen 0 }"
 	bind $w_.nf.text <KeyRelease> "::windows::commenteditor::storeNAGs_"
 	bind $w_.cf.txtframe.text <KeyRelease> "::windows::commenteditor::storeComment_"
-	::createToplevelFinalize $w_
 
 	set ::windows::commenteditor::isOpen 1
 	after idle focus $w_.cf.txtframe.text
