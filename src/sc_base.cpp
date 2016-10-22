@@ -26,9 +26,7 @@
 #include <cstring>
 #include <string>
 
-static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
-                           fileModeT fMode, ICodecDatabase::Codec codec);
-
+namespace {
 /*
 * This "sc_base" functions are used by the UI to access the databases.
 * To encapsulate database internal complexity this functions should only
@@ -48,10 +46,41 @@ static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
 
 
 /**
+ * doOpenBase() - open/create a database
+ * @filename:    the filename of the database to open/create
+ * @fMode:       open the database read-only|read-write|create|in_memory
+ * @codec:       the type of the database
+ *
+ * If @fMode == FMODE_Both, and the file cannot be opened for writing, this
+ * function will try to open the database read-only.
+ */
+static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
+                           fileModeT fMode, ICodecDatabase::Codec codec) {
+	if (DBasePool::find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
+
+	scidBaseT* dbase = DBasePool::getFreeSlot();
+	if (dbase == 0) return UI_Result(ti, ERROR_Full);
+
+	Progress progress = UI_CreateProgress(ti);
+	errorT err = dbase->Open(codec, fMode, filename, progress);
+
+	if (err != OK && err != ERROR_NameDataLoss && fMode == FMODE_Both) {
+		err = dbase->Open(codec, FMODE_ReadOnly, filename, progress);
+	}
+	progress.report(1,1);
+
+	if (err != OK && err != ERROR_NameDataLoss) return UI_Result(ti, err);
+
+	int res = DBasePool::switchCurrent(dbase);
+	return UI_Result(ti, err, res);
+}
+
+
+/**
  * sc_base_close() - close a database
  */
-UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int argc,
+                       const char** argv) {
 	if (dbase->getFileName() == "<clipbase>") {
 		return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
 	}
@@ -69,8 +98,8 @@ UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int argc, const char** 
  * - makes search operations faster
  * - replace bad names with "???"
  */
-UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc,
+                         const char** argv) {
 	const char* usage = "Usage: sc_base compact baseId [stats]";
 
 	if (argc == 3) {
@@ -78,7 +107,8 @@ UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc, const char*
 		return UI_Result(ti, res);
 	} else if (argc == 4 && std::strcmp("stats", argv[3]) == 0) {
 		uint n_deleted, n_unused, n_sparse, n_badNameId;
-		errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
+		errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse,
+		                                   &n_badNameId);
 		UI_List val(4);
 		val.push_back(n_deleted);
 		val.push_back(n_unused);
@@ -100,15 +130,19 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
 	scidBaseT* targetBase = DBasePool::getBase(strGetUnsigned(argv[4]));
-	if (targetBase == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
-	if (targetBase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
+	if (targetBase == 0)
+		return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
+	if (targetBase->isReadOnly())
+		return UI_Result(ti, ERROR_FileReadOnly);
+
 	errorT err = OK;
 	const HFilter filter = dbase->getFilter(argv[3]);
 	if (filter != 0) {
 		err = targetBase->importGames(dbase, filter, UI_CreateProgress(ti));
 	} else {
 		uint gNum = strGetUnsigned (argv[3]);
-		if (gNum == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
+		if (gNum == 0)
+			return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
 		err = targetBase->importGame(dbase, gNum -1);
 	}
 	return UI_Result(ti, err);
@@ -195,10 +229,14 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 	if (argc != 6) return UI_Result(ti, ERROR_BadArg, usage);
 
 	int cmd = 0;
-	if      (std::strcmp("get",    argv[4]) == 0) cmd = 1;
-	else if (std::strcmp("set",    argv[4]) == 0) cmd = 2;
-	else if (std::strcmp("unset",  argv[4]) == 0) cmd = 3;
-	else if (std::strcmp("invert", argv[4]) == 0) cmd = 4;
+	if (std::strcmp("get", argv[4]) == 0)
+		cmd = 1;
+	else if (std::strcmp("set", argv[4]) == 0)
+		cmd = 2;
+	else if (std::strcmp("unset", argv[4]) == 0)
+		cmd = 3;
+	else if (std::strcmp("invert", argv[4]) == 0)
+		cmd = 4;
 	uint flagType = IndexEntry::CharToFlagMask(argv[5][0]);
 	if (flagType != 0 && cmd != 0) {
 		bool value = (cmd == 2);
@@ -492,36 +530,6 @@ UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 
 
 /**
- * doOpenBase() - open/create a database
- * @filename:    the filename of the database to open/create
- * @fMode:       open the database read-only|read-write|create|in_memory
- * @codec:       the type of the database
- *
- * If @fMode == FMODE_Both, and the file cannot be opened for writing, this
- * function will try to open the database read-only.
- */
-static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
-                           fileModeT fMode, ICodecDatabase::Codec codec) {
-	if (DBasePool::find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
-
-	scidBaseT* dbase = DBasePool::getFreeSlot();
-	if (dbase == 0) return UI_Result(ti, ERROR_Full);
-
-	Progress progress = UI_CreateProgress(ti);
-	errorT err = dbase->Open(codec, fMode, filename, progress);
-
-	if (err != OK && err != ERROR_NameDataLoss && fMode == FMODE_Both) {
-		err = dbase->Open(codec, FMODE_ReadOnly, filename, progress);
-	}
-	progress.report(1,1);
-
-	if (err != OK && err != ERROR_NameDataLoss) return UI_Result(ti, err);
-
-	int res = DBasePool::switchCurrent(dbase);
-	return UI_Result(ti, err, res);
-}
-
-/**
  * sc_base_open() - open a database
  * @codec : the type of the database
  * @filename: the filename of the wanted database.
@@ -692,14 +700,14 @@ UI_res_t sc_base_switch(scidBaseT* dbase, UI_handle_t ti)
  * Games with the same [Event], [Site] and [EventDate] tags are considered
  * a tournament (also games with empty [EventDate] tag are included).
  * The list returned can be restricted based on the average elo of the
- * partecipants, the number of games, the number of players and the name
- * of a partecipant.
+ * participants, the number of games, the number of players and the name
+ * of a participant.
  * Ranges can be specified with one or two numbers separated by spaces (min max).
  * The returned list can be sorted according to the following criteria:
  * - "Date"    : date of the first games in the tournament
- * - "Players" : number of partecipants to the tournament
+ * - "Players" : number of participants to the tournament
  * - "Games"   : number of games
- * - "Elo"     : average elo of the partecipants
+ * - "Elo"     : average elo of the participants
  * - "Site"    : site name
  * - "Event"   : event name
  *
@@ -707,7 +715,7 @@ UI_res_t sc_base_switch(scidBaseT* dbase, UI_handle_t ti)
  *   On success, return a list of tournaments.
  *   For each tournament the following info are provided:
  *   date of the first games, site name, event name, number of players,
- *   number of games, average elo of the partecipants, lowest game number,
+ *   number of games, average elo of the participants, lowest game number,
  *   winner name, winner elo, winner score, 2nd place name, 2nd elo, 2nd score.
  */
 UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
@@ -810,6 +818,7 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 	return UI_Result(ti, OK, res);
 }
 
+} // End of anonymous namespace
 
 //TODO: move this function here from tkscid.cpp
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);

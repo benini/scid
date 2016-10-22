@@ -21,6 +21,7 @@
 #include "scidbase.h"
 #include "ui.h"
 
+namespace {
 /*
 * Filters are used to select games, usually when performing searches.
 * To encapsulate database internal complexity this functions should only
@@ -157,6 +158,8 @@ UI_res_t sc_filter_sizes(UI_handle_t ti, const scidBaseT& dbase, HFilter& filter
 	res.push_back(unmasked.size());
 	return UI_Result(ti, OK, res);
 }
+
+} // End of anonymous namespace
 
 int sc_filter_old(ClientData cd, Tcl_Interp* ti, int argc, const char** argv);
 
