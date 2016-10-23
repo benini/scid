@@ -155,7 +155,7 @@ class moveT
     byte         nagCount;
     byte         nags[MAX_NAGS];
 
-    bool isNull () const { return isNullMove(&moveData); }
+    bool isNull () const { return moveData.isNullMove(); }
 };
 
 

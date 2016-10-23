@@ -5658,7 +5658,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
-        "isAt", "isCheck", "isLegal", "isPromotion", "movelist",
+        "isAt", "isCheck", "isLegal", "isPromotion",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location",
         "attacks", "getPrevComment", NULL
@@ -5666,7 +5666,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
-        POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
+        POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
         POS_ATTACKS, POS_GETPREVCOMMENT
@@ -5781,34 +5781,6 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         UI_List res(v.size());
         for (size_t i=0, n=v.size(); i < n; i++) res.push_back(v[i]);
         return UI_Result(ti, OK, res);
-    }
-
-    case MOVELIST: {
-        Position * pos = db->game->GetCurrentPos();
-        MoveList mlist;
-        pos->GenerateMoves(&mlist);
-        for (uint i = 0; i < mlist.Size(); i++) {
-            pos->DoSimpleMove(mlist.Get(i));
-
-            MoveList mlist1, mlist2;
-            pos->GenerateMoves(&mlist2);
-            pos->SetToMove ((pos->GetToMove() == WHITE) ? BLACK : WHITE);
-            pos->GenerateMoves(&mlist1);
-            mlist.Get(i)->score = mlist1.Size() - mlist2.Size();
-
-            pos->SetToMove ((pos->GetToMove() == WHITE) ? BLACK : WHITE);
-            pos->UndoSimpleMove(mlist.Get(i));
-        }
-        mlist.Sort();
-        char tmp[16];
-        Tcl_Obj** res = new Tcl_Obj* [mlist.Size()];
-        for (uint i = 0; i < mlist.Size(); i++) {
-            pos->MakeSANString(mlist.Get(i), tmp, SAN_CHECKTEST);
-            res[i] = Tcl_NewStringObj(tmp, -1);
-        }
-        Tcl_SetObjResult(ti, Tcl_NewListObj(mlist.Size(), res));
-        delete [] res;
-        return TCL_OK;
     }
 
     case POS_ATTACKS:
@@ -5940,6 +5912,19 @@ sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return UI_Result(ti, OK, res);
 }
 
+// Lambda class used by sc_pos_bestSquare() and sc_pos_isLegal()
+namespace {
+class SelectBySquare {
+	squareT sq_;
+
+public:
+	explicit SelectBySquare(squareT sq) : sq_(sq) {}
+	bool operator()(const simpleMoveT& sm) {
+		return sm.from == sq_ || sm.to == sq_;
+	}
+};
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_bestSquare:
 //    Takes a square and returns the best square that makes a move
@@ -5971,7 +5956,8 @@ sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Restrict the list of legal moves to contain only those that
     // move to or from the specified square:
-    mlist.SelectBySquare (sq);
+    mlist.erase(std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq)),
+                mlist.end());
 
      // If no matching legal moves, return -1:
     if (mlist.Size() == 0) {
@@ -6001,7 +5987,8 @@ sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (eco >= bestEco) {
                     secondBestEco = bestEco;
                     bestEco = eco;
-                    mlist.MoveToFront (i);
+                    std::rotate(mlist.begin(), mlist.begin() + i,
+                                mlist.begin() + i + 1);
                 }
             }
         }
@@ -6195,9 +6182,9 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // contain moves that include sq1 and sq2 as to/from squares:
     MoveList mlist;
     pos->GenerateMoves(&mlist);
-    mlist.SelectBySquare (sq1);
-    mlist.SelectBySquare (sq2);
-    bool found = (mlist.Size() > 0);
+    simpleMoveT* end1 = std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq1));
+    bool found = mlist.begin() !=
+                 std::partition(mlist.begin(), end1, SelectBySquare(sq2));
     return UI_Result(ti, OK, found);
 }
 

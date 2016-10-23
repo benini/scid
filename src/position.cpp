@@ -21,6 +21,7 @@
 #include "hash.h"
 #include "sqmove.h"
 #include "dstring.h"
+#include <algorithm>
 #include <string.h>
 #include <stdlib.h>
 
@@ -218,16 +219,10 @@ inline void
 Position::AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo)
 {
     ASSERT (mlist != NULL);
-    simpleMoveT * sm = mlist->Add();
-
     // We do NOT set the pre-move castling/ep flags, or the captured
     // piece info, here since that is ONLY needed if the move is
     // going to be executed with DoSimpleMove() and then undone.
-    sm->from = from;
-    sm->to = to;
-    sm->promote = promo;
-    sm->movingPiece = Board[from];
-    sm->capturedPiece = Board[to];
+    mlist->emplace_back(from, to, promo, Board[from], Board[to]);
 }
 
 
@@ -969,7 +964,7 @@ Position::IsLegalMove (simpleMoveT * sm) {
             if (IsKingInCheck()) { return false; }
             MoveList mlist;
             GenCastling (&mlist);
-            return (mlist.Find(sm) >= 0);
+            return std::find(mlist.begin(), mlist.end(), cmpMove(*sm)) != mlist.end();
         }
     }
 
@@ -1836,7 +1831,7 @@ Position::DoSimpleMove (simpleMoveT * sm)
 	LegalMoves.Clear();
 
     // Check for a null (empty) move:
-    if (isNullMove(sm)) {
+    if (sm->isNullMove()) {
         ToMove = enemy;
         EPTarget = NULL_SQUARE;
         return;
@@ -1979,7 +1974,7 @@ Position::UndoSimpleMove (simpleMoveT * m)
 	LegalMoves.Clear();
 
     // Check for a null move:
-    if (isNullMove(m)) {
+    if (m->isNullMove()) {
         return;
     }
 
@@ -2165,7 +2160,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         }
 
     } else if (p == KING) {
-        if (isNullMove(m)) {
+        if (m->isNullMove()) {
             //*c++ = 'n'; *c++ = 'u'; *c++ = 'l'; *c++ = 'l';
             *c++ = '-'; *c++ = '-';
         } else

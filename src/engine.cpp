@@ -17,6 +17,7 @@
 #include "recog.h"
 #include "sqmove.h"
 #include "sqlist.h"
+#include <algorithm>
 
 // The Engine class implements the Scid built-in chess engine.
 // See engine.h for details.
@@ -1407,7 +1408,7 @@ Engine::Think (MoveList * mlist)
         sm->score = -Quiesce (-Infinity, Infinity);
         UndoMove(sm);
     }
-    mlist->Sort();
+    std::sort(mlist->begin(), mlist->end());
 
     // Check for an easy move, one that scores more than two pawns
     // better than any alternative:
@@ -1486,7 +1487,7 @@ Engine::Think (MoveList * mlist)
         mlist->Get(0)->score = 1 << 30;
 
         // Sort the move list based on node counts from this iteration:
-        mlist->Sort();
+        std::sort(mlist->begin(), mlist->end());
     }
 
     return bestScore;
@@ -1555,7 +1556,8 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
             UpdatePV (sm);
             PrintPV (depth, bestScore);
             StoreHash (depth, SCORE_EXACT, score, sm, isOnlyMove);
-            mlist->MoveToFront (movenum);
+            std::rotate(mlist->begin(), mlist->begin() + movenum,
+                        mlist->begin() + movenum + 1);
             if (movenum > 0) { EasyMove = false; }
         }
     }
@@ -1690,7 +1692,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
     if (Pos.IsLegalMove (&hashmove)) {
         gotHashMove = true;
         // For now, we only add the hash move to the move list.
-        mlist.Add (&hashmove);
+        mlist.push_back(hashmove);
         mlist.Get(0)->score = ENGINE_HASH_SCORE;
     } else {
         // No hash table move, so generate and score all the moves now.
@@ -1710,8 +1712,8 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
     // Search each move:
     for (uint movenum = 0; movenum < mlist.Size(); movenum++) {
         // Find the highest-scoring remaining move:
-        mlist.FindBest (movenum);
-        simpleMoveT * sm = mlist.Get (movenum);
+        MoveList::iterator sm = std::min_element(mlist.begin() + movenum, mlist.end());
+        std::iter_swap(mlist.begin() + movenum, sm);
 
         // Move-specific extensions:
         int extensions = baseExtensions;
@@ -1814,9 +1816,9 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
             mlist.Clear();
             Pos.GenerateMoves (&mlist, EMPTY, GEN_ALL_MOVES, InCheck[Ply]);
             ScoreMoves (&mlist);
-            int hashIndex = mlist.Find (&hashmove);
-            if (hashIndex >= 0) {
-                mlist.SwapWithFirst (hashIndex);
+            MoveList::iterator hm = std::find(mlist.begin(), mlist.end(), cmpMove(hashmove));
+            if (hm != mlist.end()) {
+                std::iter_swap(mlist.begin(), hm);
             } else {
                 // The hash table move was legal, but not found in the
                 // move list -- Bizarre!
@@ -1909,8 +1911,8 @@ Engine::Quiesce (int alpha, int beta)
 
     for (uint i = 0; i < mlist.Size(); i++) {
         // Find the highest-scoring remaining move, make it and search:
-        mlist.FindBest(i);
-        simpleMoveT * sm = mlist.Get(i);
+        MoveList::iterator sm = std::min_element(mlist.begin() + i, mlist.end());
+        std::iter_swap(mlist.begin() + i, sm);
         pieceT promote = piece_Type(sm->promote);
 
         // Skip underpromotions:

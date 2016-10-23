@@ -16,7 +16,7 @@
 // chess engine built into Scid.
 
 #include "../../src/engine.h"
-
+#include <algorithm>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -892,10 +892,10 @@ selectPonderMove (Engine * engine, simpleMoveT * selected)
     bool pvMoveFound = false;
     principalVarT * pv = engine->GetPV();
     if (pv->length >= 2) {
-        simpleMoveT * pvMove = &(pv->move[1]);
-        int index = mlist.Find (pvMove);
-        if (index >= 0) {
-            mlist.MoveToFront (index);
+        MoveList::iterator it =
+            std::find(mlist.begin(), mlist.end(), cmpMove(pv->move[1]));
+        if (it != mlist.end()) {
+            std::rotate(mlist.begin(), it, it + 1);
             pvMoveFound = true;
         }
     }
@@ -1141,8 +1141,9 @@ main (int argc, char ** argv)
         int score = 0;
 
         if (ponder.guessed) {
-            int index = mlist.Find (&ponder.reply);
-            if (index >= 0) { mlist.MoveToFront (index); }
+            MoveList::iterator it =
+                std::find(mlist.begin(), mlist.end(), cmpMove(ponder.reply));
+            if (it != mlist.end()) std::rotate(mlist.begin(), it, it + 1);
             makeReply (engine, &mlist, ponder.score);
             continue;
         }
