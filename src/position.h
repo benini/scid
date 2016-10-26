@@ -141,10 +141,9 @@ private:
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
 public:
-    Position()   { Init(); }
+    Position();
     static const Position& getStdStart();
 
-    void        Init();
     void        Clear();        // No pieces on board
     void        StdStart() { *this = getStdStart(); }
     bool        IsStdStart();
@@ -155,7 +154,6 @@ public:
     byte *      GetMaterial ()           { return Material; }
     void        SetEPTarget (squareT s)  { EPTarget = s; LegalMoves.Clear();}
     squareT     GetEPTarget ()           { return EPTarget; }
-    bool        GetEPFlag ()             { return (EPTarget != NS); }
     void        SetToMove (colorT c)     { ToMove = c; }
     colorT      GetToMove ()             { return ToMove; }
     void        SetPlyCounter (ushort x) { PlyCounter = x; }

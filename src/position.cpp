@@ -546,14 +546,7 @@ Position::GetHPSig (void)
     return hpSig;
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::Init():
-//      Initialise the position after it is constructed.
-//
-void
-Position::Init (void)
-{
+Position::Position() {
     // Setting up a valid board is left to StdStart() or Clear().
     Board [COLOR_SQUARE] = EMPTY;
     Board [NULL_SQUARE] = END_OF_BOARD;
@@ -1129,13 +1122,11 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
 
     if (ToMove == WHITE) {
         pawn = WP;
-        promoteRank = RANK_8;
         if (toRank < RANK_3) { return ERROR_InvalidMove; }
         from = square_Make(fromFyle, toRank - 1);
         if (toRank == RANK_4  &&  fromFyle == toFyle) { backup = to - 16; }
     } else {
         pawn = BP;
-        promoteRank = RANK_1;
         if (toRank > RANK_6) { return ERROR_InvalidMove; }
         from = square_Make(fromFyle, toRank + 1);
         if (toRank == RANK_5  &&  fromFyle == toFyle) { backup = to + 16; }
@@ -2997,9 +2988,8 @@ Position::PrintFEN (char * str, uint flags)
 {
     ASSERT (str != NULL);
     uint emptyRun, iRank, iFyle;
-    pieceT * pBoard = Board;
     for (iRank = 0; iRank < 8; iRank++) {
-        pBoard = &(Board[(7 - iRank) * 8]);
+        const pieceT* pBoard = &(Board[(7 - iRank) * 8]);
         emptyRun = 0;
         if (iRank > 0  &&  flags > FEN_COMPACT) { *str++ = '/'; }
         for (iFyle = 0; iFyle < 8; iFyle++, pBoard++) {
