@@ -1333,16 +1333,6 @@ int calcHomePawnMask (pieceT pawn, const pieceT* board)
     return result;
 }
 
-// updateHomePawnMask:
-//      Clears one fyle from a home pawn mask.
-//
-uint updateHomePawnMask (uint oldMask, fyleT f)
-{
-    uint newMask = oldMask;
-    newMask &= ~((uint) 1 << f);
-    return newMask;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // patternsMatch():
 //      Used by Game::MaterialMatch() to test patterns.
@@ -2137,7 +2127,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
     const char * nextColumn = "\t";
     const char * endColumn = "\n";
     const char * endTable = "\n";
-    const char * newline = "\n";
     bool printDiagrams = false;
 
     if (IsHtmlFormat()) {
@@ -2148,7 +2137,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         nextColumn = "</b></td>\n  <td width=\"45%\" align=left><b>";
         endColumn = "</b></td>\n</tr>\n";
         endTable = "</table>\n";
-        newline = "<br>\n";
         printDiagrams = true;
     }
     if (IsLatexFormat()) {
@@ -2159,12 +2147,10 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         nextColumn = "&";
         endColumn = "\\\\\n";
         endTable = "\\end{tabular}\n\n";
-        newline = "\n";
         printDiagrams = true;
     }
     if (IsColorFormat()) {
         startTable = "<br>";
-        newline = "<br>";
         endColumn = "<br>";
     }
 
