@@ -1304,7 +1304,7 @@ Engine::ProbeHash (int depth, int * score, simpleMoveT * bestMove, bool * isOnly
     // sufficient, because it will be useful for move ordering anyway.
     if (bestMove != NULL  &&  ttEntry->bestMove != 0) {
         tte_GetBestMove (ttEntry, bestMove);
-        pieceT * board = Pos.GetBoard();
+        const pieceT* board = Pos.GetBoard();
         bestMove->movingPiece = board[bestMove->from];
     }
     if (isOnlyMove != NULL) {

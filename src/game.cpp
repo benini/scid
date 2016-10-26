@@ -1312,15 +1312,15 @@ void Game::MakeHomePawnList (byte * pbPawnList)
     pbPawnList[0] = (byte) count;
 }
 
+namespace {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // calcHomePawnMask():
 //      Computes the homePawn mask for a position.
 //
-inline int
-calcHomePawnMask (pieceT pawn, pieceT * board)
+int calcHomePawnMask (pieceT pawn, const pieceT* board)
 {
     ASSERT (pawn == WP  ||  pawn == BP);
-    pieceT * bd = &(board[ (pawn == WP ? H2 : H7) ]);
+    const pieceT* bd = &(board[ (pawn == WP ? H2 : H7) ]);
     int result = 0;
     if (*bd == pawn) { result |= 128; }  bd--;   // H-fyle pawn
     if (*bd == pawn) { result |=  64; }  bd--;   // G-fyle pawn
@@ -1336,8 +1336,7 @@ calcHomePawnMask (pieceT pawn, pieceT * board)
 // updateHomePawnMask:
 //      Clears one fyle from a home pawn mask.
 //
-inline uint
-updateHomePawnMask (uint oldMask, fyleT f)
+uint updateHomePawnMask (uint oldMask, fyleT f)
 {
     uint newMask = oldMask;
     newMask &= ~((uint) 1 << f);
@@ -1352,7 +1351,7 @@ updateHomePawnMask (uint oldMask, fyleT f)
 int
 patternsMatch (Position * pos, patternT * ptn)
 {
-    pieceT * board = pos->GetBoard();
+    const pieceT* board = pos->GetBoard();
     while (ptn != NULL) {
         if (ptn->rankMatch == NO_RANK) {
 
@@ -1390,6 +1389,7 @@ patternsMatch (Position * pos, patternT * ptn)
     // If we reach here, all patterns matched:
     return 1;
 }
+} // end of anonymous namespace
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::MaterialMatch(): Material search test.
@@ -1473,7 +1473,7 @@ Game::MaterialMatch (ByteBuffer * buf, byte * min, byte * max,
 
                 // Search for the white and black bishop, to find their
                 // square color:
-                pieceT * bd = CurrentPos->GetBoard();
+                const pieceT* bd = CurrentPos->GetBoard();
                 for (squareT sq = A1; sq <= H8; sq++) {
                     if (bd[sq] == WB) {
                         whiteBishCol = BOARD_SQUARECOLOR [sq];
@@ -1566,7 +1566,7 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
     uint bpawnFyle [8] = {0, 0, 0, 0, 0, 0, 0, 0};;
 
     if (searchType == GAME_EXACT_MATCH_Fyles) {
-        pieceT * board = searchPos->GetBoard();
+        const pieceT* board = searchPos->GetBoard();
         uint fyle = 0;
         for (squareT sq = A1; sq <= H8; sq++, board++) {
             if (*board == WP) {
@@ -1592,10 +1592,10 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
     check_pawnMaskWhite = check_pawnMaskBlack = false;
 
     while (err == OK) {
-        pieceT * currentBoard = CurrentPos->GetBoard();
-        pieceT * board = searchPos->GetBoard();
-        pieceT * b1 = currentBoard;
-        pieceT * b2 = board;
+        const pieceT* currentBoard = CurrentPos->GetBoard();
+        const pieceT* board = searchPos->GetBoard();
+        const pieceT* b1 = currentBoard;
+        const pieceT* b2 = board;
         bool found = true;
 
         // If NO_SPEEDUPS is defined, a slower search is done without
@@ -1775,7 +1775,7 @@ Game::VarExactMatch (Position * searchPos, gameExactMatchT searchType)
     uint bpawnFyle [8] = {0, 0, 0, 0, 0, 0, 0, 0};;
 
     if (searchType == GAME_EXACT_MATCH_Fyles) {
-        pieceT * board = searchPos->GetBoard();
+        const pieceT* board = searchPos->GetBoard();
         uint fyle = 0;
         for (squareT sq = A1; sq <= H8; sq++, board++) {
             if (*board == WP) {
@@ -1805,8 +1805,8 @@ Game::VarExactMatch (Position * searchPos, gameExactMatchT searchType)
             &&  searchPos->PieceCount(WQ) == CurrentPos->PieceCount(WQ)
             &&  searchPos->PieceCount(BQ) == CurrentPos->PieceCount(BQ)) {
             match = true;
-            pieceT * b1 = CurrentPos->GetBoard();
-            pieceT * b2 = searchPos->GetBoard();
+            const pieceT* b1 = CurrentPos->GetBoard();
+            const pieceT* b2 = searchPos->GetBoard();
             if (searchType == GAME_EXACT_MATCH_Pawns) {
                 for (squareT sq = A1;  sq <= H8;  sq++, b1++, b2++) {
                     if (*b1 != *b2  &&  (*b1 == WP  ||  *b1 == BP)) {
@@ -3356,7 +3356,7 @@ decodeMove (ByteBuffer * buf, simpleMoveT * sm, byte val, Position * pos)
     sm->from = sqList[sm->pieceNum];
     if (sm->from > H8) { return ERROR_Decode; }
 
-    pieceT * board = pos->GetBoard();
+    const pieceT* board = pos->GetBoard();
     sm->movingPiece = board[sm->from];
     sm->capturedPiece = EMPTY;
     sm->promote = EMPTY;

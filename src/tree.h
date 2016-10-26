@@ -191,8 +191,8 @@ TreeCache::LookupIndex (Position * pos)
     for (uint i=0; i < NumInUse; i++) {
         if (Cache[i].toMove_ != pos->GetToMove()) { continue; }
 
-        pieceT * board = pos->GetBoard();
-        pieceT * board2 = Cache[i].board_;
+        const pieceT* board = pos->GetBoard();
+        const pieceT* board2 = Cache[i].board_;
         bool found = true;
         for (squareT sq=A1; sq <= H8; sq++, board++, board2++) {
             if (*board != *board2) { found = false; break; }

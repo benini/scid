@@ -32,7 +32,7 @@ public:
 			nPieces_[WHITE][i] = 0;
 			nPieces_[BLACK][i] = 0;
 		}
-		pieceT* board = pos->GetBoard();
+		const pieceT* board = pos->GetBoard();
 		squareT wkSq = 0;
 		squareT bkSq = 0;
 		for (squareT i = 0; i < 64; ++i) {

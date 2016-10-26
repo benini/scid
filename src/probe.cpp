@@ -256,7 +256,7 @@ scid_TB_Probe (Position * pos, int * score)
     firstSq[WP] = &(wSquares [C_PIECES * (x_piecePawn   - 1) ]);
     firstSq[BP] = &(bSquares [C_PIECES * (x_piecePawn   - 1) ]);
 
-    pieceT * board = pos->GetBoard();
+    const pieceT* board = pos->GetBoard();
 
     for (squareT sq = A1; sq <= H8; sq++) {
         pieceT pce = board[sq];

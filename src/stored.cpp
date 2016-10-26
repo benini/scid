@@ -631,7 +631,7 @@ fm +1512, fm +1514, fm +1517, fm +1519, fm +1522, fm +1525, fm +1528, fm +1530,
 fm +1532, fm +1535, fm +1539, fm +1543, fm +1547, fm +1552, fm +1555, fm +1559
 };
 
-StoredLine::StoredLine(pieceT* board, colorT toMove)
+StoredLine::StoredLine(const pieceT* board, colorT toMove)
 {
 	Board search(board);
 	for (uint line = 1; line < STORED_LINES; line++) {

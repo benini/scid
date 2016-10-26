@@ -60,7 +60,7 @@ inline bool posHasAdvancedPawn (Position * pos, colorT c)
 
 inline bool posHasKPawnStorm (Position * pos, colorT c)
 {
-    pieceT * bd = pos->GetBoard();
+    const pieceT* bd = pos->GetBoard();
     // A kingside pawn storm by White is defined to be a situation
     // where there is no longer any white pawn on h2, g2, h3 or g3,
     // but there is a white pawn on the g or h file.

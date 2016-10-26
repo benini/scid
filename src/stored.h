@@ -24,7 +24,7 @@ const uint STORED_LINES = 255;
 
 class StoredLine {
 public:
-	StoredLine(pieceT* board, colorT toMove);
+	StoredLine(const pieceT* board, colorT toMove);
 	//Result:
 	//-2 : the game cannot reach the searched position
 	//-1 : the game can reach the searched position

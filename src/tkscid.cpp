@@ -8759,7 +8759,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             }
             if (!foundMatch) {
-                pieceT * bd = pos->GetBoard();
+                const pieceT* bd = pos->GetBoard();
                 bool isStartPos =
                     (bd[A1]==WR  &&  bd[B1]==WN  &&  bd[C1]==WB  &&  bd[D1]==WQ  &&
                      bd[E1]==WK  &&  bd[F1]==WB  &&  bd[G1]==WN  &&  bd[H1]==WR  &&

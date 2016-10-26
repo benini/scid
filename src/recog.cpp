@@ -263,7 +263,7 @@ int
 Recognizer::KBNK (Position * pos)
 {
     byte * material = pos->GetMaterial();
-    pieceT * board = pos->GetBoard();
+    const pieceT* board = pos->GetBoard();
     squareT wk, bk, wb, wn;
     colorT stm = pos->GetToMove();
 
@@ -1050,7 +1050,7 @@ Recognizer::KRPKR (Position * pos)
     // Incomplete but correct
 
     byte * material = pos->GetMaterial();
-    pieceT * board = pos->GetBoard();
+    const pieceT* board = pos->GetBoard();
     squareT wk, bk, wr, wp, br;
     colorT stm = pos->GetToMove();
 

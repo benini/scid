@@ -191,8 +191,8 @@ public:
     }
     uint        GetSquares (pieceT p, SquareList * sqlist);
 
-    pieceT *    GetBoard () {
-        Board[COLOR_SQUARE] = COLOR_CHAR[ToMove];
+    const pieceT* GetBoard() const {
+        const_cast<Position*>(this)->Board[COLOR_SQUARE] = COLOR_CHAR[ToMove];
         return Board;
     }
 
