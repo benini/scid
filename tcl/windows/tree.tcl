@@ -255,7 +255,6 @@ proc ::tree::closeTree {baseNumber} {
   
   if {[winfo exists .treeGraph$baseNumber]} { destroy .treeGraph$baseNumber }
   destroy .treeBest$baseNumber
-  ::docking::cleanup .treeWin$baseNumber
   destroy .treeWin$baseNumber
   if {$::tree(locked$baseNumber)} { ::file::Close $baseNumber }
   set curr_base [sc_base current]
