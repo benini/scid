@@ -2181,11 +2181,11 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         } else {
             // disambiguate moves here:
             // SHOULD handle 3-way ambiguity!  Looks like it does ok.
-            bool ambiguous_fyle = false;
-            bool ambiguous_rank = false;
-            char r, f, f2;
-            f = square_FyleChar(from);
-            r = square_RankChar(from);
+            bool unique_fyle = true;
+            bool unique_rank = true;
+            bool ambiguity = false;
+            char f = square_FyleChar(from);
+            char r = square_RankChar(from);
             MoveList mlist;
             MatchLegalMove (&mlist, p, to);
 
@@ -2194,18 +2194,21 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
                 squareT from2 = m2->from;
                 pieceT p2 = piece_Type(Board[from2]);
                 if ((to == m2->to) && (from != from2) && (p2 == p)) {
-                    /* we have an ambiguity */
-                    f2 = square_FyleChar (from2);
-                    if (f == f2) {  // ambiguous fyle, so print rank
-                        ambiguous_fyle = true;
-                    } else {        // ambiguous rank, so print fyle
-                        ambiguous_rank = true;
+                    ambiguity = true;
+                    if (f == square_FyleChar(from2)) {
+                        unique_fyle = false;
+                    }
+                    if (r == square_RankChar(from2)) {
+                        unique_rank = false;
                     }
                 }
             }
-            if (ambiguous_rank) { *c++ = f; }  // print from-fyle
-            if (ambiguous_fyle) { *c++ = r; }  // print from-rank
-
+            if (ambiguity) {
+                if (!unique_rank || unique_fyle)
+                    { *c++ = f; }  // print from-fyle
+                if (!unique_fyle)
+                    { *c++ = r; }  // print from-rank
+            }
             if (Board[to] != EMPTY) { *c++ = 'x'; }
             *c++ = square_FyleChar (to);
             *c++ = square_RankChar (to);
