@@ -25,8 +25,6 @@
 #include "game.h"
 #include "index.h"
 #include "namebase.h"
-#include <algorithm>
-#include <iterator>
 #include <vector>
 
 #if !CPP11_SUPPORT
@@ -177,7 +175,7 @@ protected:
 		if (maxmem != static_cast<uint32_t>(maxmem)) return ERROR_BufferFull;
 
 		resOffset = v_.size();
-		std::copy(src, src + length, std::back_inserter(v_));
+		v_.insert(v_.end(), src, src + length);
 		return OK;
 	}
 
