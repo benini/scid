@@ -120,24 +120,29 @@ public:
 };
 
 
-class ProgressImp {
-public:
-	virtual ~ProgressImp() {}
-	virtual bool report(uint done, uint total) = 0;
-};
 
 class Progress {
-	ProgressImp* f_;
 public:
-	Progress(ProgressImp* f = 0) : f_(f) {}
+	struct Impl {
+		virtual ~Impl() {}
+		virtual bool report(uint done, uint total, const char* msg) = 0;
+	};
+
+	Progress(Impl* f = NULL) : f_(f) {}
 	Progress(const Progress&);
 	Progress& operator=(const Progress&);
-	~Progress() { if (f_) delete f_;}
+	~Progress() { delete f_; }
 
 	bool report(uint done, uint total) const {
-		if (f_) return f_->report(done, total);
+		return operator()(done, total);
+	}
+	bool operator()(uint done, uint total, const char* msg = NULL) const {
+		if (f_) return f_->report(done, total, msg);
 		return true;
 	}
+
+private:
+	Impl* f_;
 };
 
 

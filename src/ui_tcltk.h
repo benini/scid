@@ -72,7 +72,7 @@ inline int Main (int argc, char* argv[], void (*exit) (void*)) {
 }
 
 
-class tcl_Progress : public ProgressImp {
+class tcl_Progress : public Progress::Impl {
 	UI_handle_t ti_;
 	Timer timer_;
 
@@ -80,24 +80,33 @@ public:
 	tcl_Progress(UI_handle_t ti) : ti_(ti) {}
 	virtual ~tcl_Progress() {}
 
-	virtual bool report(uint done, uint total) {
+	virtual bool report(uint done, uint total, const char* msg) {
 		uint64_t elapsed = timer_.MilliSecs();
 		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
-		std::ostringstream tmp;
-		tmp << "::progressCallBack";
-		tmp << " " << done << " " << total << " " << elapsed / 1000 << " " << estimated / 1000;
-		return TCL_OK == Tcl_EvalEx(ti_, tmp.str().c_str(), -1, 0);
+		Tcl_Obj* tmp[5];
+		tmp[0] = Tcl_NewStringObj("::progressCallBack", -1);
+		tmp[1] = Tcl_NewIntObj(done);
+		tmp[2] = Tcl_NewIntObj(total);
+		tmp[3] = Tcl_NewIntObj(elapsed / 1000);
+		tmp[4] = Tcl_NewIntObj(estimated / 1000);
+		Tcl_Obj* cmd = Tcl_NewListObj(5, tmp);
+		if (msg != NULL)
+			Tcl_ListObjAppendElement(ti_, cmd, Tcl_NewStringObj(msg, -1));
+		Tcl_IncrRefCount(cmd);
+		int res = Tcl_EvalObjEx(ti_, cmd, TCL_EVAL_GLOBAL);
+		Tcl_DecrRefCount(cmd);
+		return res == TCL_OK;
 	}
 };
 
-class tcl_ProgressPosMask : public ProgressImp {
+class tcl_ProgressPosMask : public Progress::Impl {
 	UI_handle_t ti_;
 
 public:
 	tcl_ProgressPosMask(UI_handle_t ti) : ti_(ti) {}
 	virtual ~tcl_ProgressPosMask() {}
 
-	virtual bool report(uint done, uint total) {
+	virtual bool report(uint done, uint total, const char*) {
 		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
 	}
 };

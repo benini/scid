@@ -306,24 +306,31 @@ proc addVerticalRule {w {xpadding 5} {relief sunken}} {
 proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   set w .progressWin
   if {[winfo exists $w]} { return }
+
   set ::progressWin_focus [focus]
+
   toplevel $w
-  pack [ttk::frame $w.f] -expand 1
-  
   wm resizable $w 0 0
   wm title $w $title
-  ttk::label $w.f.t -text $text
-  pack $w.f.t -side top -expand 1 -fill both
 
+  ttk::frame $w.f
+  ttk::label $w.f.t -text $text
+  autoscrollframe -bars y $w.f.cmsg text $w.f.cmsg.text -width 70 -height 14 -wrap word -font font_Regular
   canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
   $w.f.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
-  pack $w.f.c -side top -pady 10
-  if {$button != ""} {
-    pack [ttk::frame $w.f.b] -side bottom -fill x
-    ttk::button $w.f.b.cancel -text $button -command "$command"
-    pack $w.f.b.cancel -side right -padx 5 -pady 2
-  }
+  ttk::button $w.f.cancel -text $button -command "$command"
+
+  grid $w.f.t -row 0 -columnspan 2 -padx 3 -pady 5 -sticky news
+  grid $w.f.cmsg -row 1 -columnspan 2 -sticky news
+  grid $w.f.c -row 2 -column 0 -padx 3 -pady 5 -stick w
+  grid $w.f.cancel -row 2 -column 1 -padx 3
+  grid $w.f -sticky news
+  grid rowconfigure $w.f 1 -weight 1
+  grid columnconfigure $w.f 0 -weight 1
+  grid remove $w.f.cmsg
+  if {$button == ""} { grid remove $w.f.cancel }
+
   # Set up geometry for middle of screen:
   set x [expr ([winfo screenwidth $w] - 400) / 2]
   set y [expr ([winfo screenheight $w] - 40) / 2]
@@ -353,7 +360,7 @@ proc progressBarCancel { } {
 }
 
 
-proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
+proc progressCallBack {done {total 1} {elapsed 0} {estimated 0} {msg ""}} {
   if {$done == "init"} {
     if {[info exists ::progressCanvas(init)]} {
       return $::progressCanvas(init)
@@ -368,7 +375,7 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
   }
 
   if {$::progressCanvas(show) != ""} {
-    if {$elapsed == 0 && $estimated < 2} { return }
+    if {$elapsed == 0 && $estimated < 2 && $msg == ""} { return }
     eval $::progressCanvas(show)
     set ::progressCanvas(show) {}
   }
@@ -383,6 +390,16 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
       [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
       [expr {$estimated / 60}] [expr {$estimated % 60}]]
   $::progressCanvas(name) itemconfigure time -text $t
+
+  if {$msg != ""} {
+    catch {
+      set widget "$::progressCanvas(name)msg"
+      grid $widget
+      append widget ".text"
+      $widget insert end "$msg\n"
+    }
+  }
+
   update
 }
 
@@ -405,10 +422,18 @@ proc updateProgressWindow {done total} {
   ::progressCallBack "$done" "$total" "$elapsed" "$estimated"
 }
 
-proc closeProgressWindow {} {
+proc closeProgressWindow {{force false}} {
   set w .progressWin
   if {! [winfo exists $w]} { return }
 
+  if {!$force && [$w.f.cmsg.text index end] != "2.0" } {
+    $w.f.cancel configure -text "$::tr(Close)"
+    $w.f.cancel configure -command "closeProgressWindow true"
+    grid forget $w.f.c
+    grid $w.f.cancel
+    $w.f.cmsg.text configure -state disabled
+    return
+  }
   grab release $w
   destroy $w
   update idletasks
