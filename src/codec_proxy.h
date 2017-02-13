@@ -186,7 +186,7 @@ private:
 			err = CodecMemory::addGame(&g);
 			if (err != OK) break;
 
-			if ((++nImported % 200) == 0) {
+			if (++nImported % 256 == 0) {
 				std::pair<size_t, size_t> count = parseProgress();
 				if (!progress.report(count.first, count.second)) {
 					err = ERROR_UserCancel;
@@ -194,7 +194,7 @@ private:
 				}
 			}
 		}
-		progress.report(1, 1);
+		progress(1, 1, parseErrors());
 
 		return (err == ERROR_NotFound) ? OK : err;
 	}

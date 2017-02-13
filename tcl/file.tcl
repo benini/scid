@@ -138,8 +138,20 @@ proc ::file::Open_ {{fName ""} } {
   set err 0
   if {"$ext" == ".si3"} {
     set err [::file::Upgrade [file rootname "$fName"] ]
-  } elseif {"$ext" == ".pgn" || "$ext" == ".epd" || "$ext" == ".gz"} {
-    # PGN or EPD file:
+  } elseif {"$ext" == ".pgn"} {
+    # PGN file:
+    progressWindow "Scid" "$::tr(OpeningTheDatabase): $fName..." $::tr(Cancel)
+    set err [catch {sc_base open PGN "$fName"} ::file::lastOpened]
+    closeProgressWindow
+    if {$err} {
+      ERROR::MessageBox "$fName\n"
+    } else {
+      sc_base extra $::file::lastOpened type 3
+      set ::initialDir(base) [file dirname "$fName"]
+      ::recentFiles::add "$fName"
+    }
+  } elseif {"$ext" == ".epd" || "$ext" == ".gz"} {
+    # PNG.gz or EPD file:
     set err [catch {sc_base create MEMORY "$fName"} ::file::lastOpened]
     if {$err} {
       ERROR::MessageBox "$fName\n"
