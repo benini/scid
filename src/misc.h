@@ -200,6 +200,16 @@ ecoT eco_Reduce(ecoT eco);
 //      Currently, strLength() and strPrefix() are inline.
 //      strCompare_INLINE() is an inline equivalent of strCompare().
 
+inline uint32_t strStartHash(const char* str) {
+	typedef unsigned char U;
+	uint32_t result = tolower(U(*str)) * 16777216;
+	if (str[1]) {
+		result += tolower(U(str[1])) * 65536;
+		if (str[2]) result += tolower(U(str[2])) * 256 + tolower(U(str[3]));
+	}
+	return result;
+}
+
 char * strDuplicate (const char * str);
 int    strCompare (const char * s1, const char * s2);
 int    strCaseCompare (const char * s1, const char * s2);

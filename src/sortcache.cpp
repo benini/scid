@@ -523,19 +523,6 @@ SortCache::FullCompare (uint left, uint right)
     return 0;
 }
 
-inline uint SortCache::GetStartHash (const char *strVal)
-{
-	uint result = tolower(*strVal) * 16777216;
-	if( strVal[1])
-	{
-		result += tolower(*(strVal+1)) * 65536;
-		if( strVal[2])
-			result += tolower(*(strVal+2)) * 256 + tolower(*(strVal+3));
-	}
-	partialHashing = true;
-	return result;
-}
-
 uint SortCache::CalcHash (const IndexEntry* ie)
 {
 	uint retValue = 0;
@@ -549,16 +536,20 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 		switch( SortCriteria[i])
 		{
 			case SORTING_white:
-				cacheValue = GetStartHash(ie->GetWhiteName(nbase));
+				cacheValue = strStartHash(ie->GetWhiteName(nbase));
+				partialHashing = true;
 				break;
 			case SORTING_black:
-				cacheValue = GetStartHash(ie->GetBlackName(nbase));
+				cacheValue = strStartHash(ie->GetBlackName(nbase));
+				partialHashing = true;
 				break;
 			case SORTING_site:
-				cacheValue = GetStartHash(ie->GetSiteName(nbase));
+				cacheValue = strStartHash(ie->GetSiteName(nbase));
+				partialHashing = true;
 				break;
 			case SORTING_event:
-				cacheValue = GetStartHash(ie->GetEventName(nbase));
+				cacheValue = strStartHash(ie->GetEventName(nbase));
+				partialHashing = true;
 				break;
 			case SORTING_country:
 			{
@@ -566,7 +557,8 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 				uint slen = strLength (scountry);
 				if (slen > 3) 
 					scountry += slen - 3;
-				cacheValue = GetStartHash(scountry);
+				cacheValue = strStartHash(scountry);
+				partialHashing = true;
 				break;
 			}
 			case SORTING_date:
