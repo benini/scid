@@ -80,7 +80,7 @@ public:
 	* (excluding index info) encoded in native format.
 	* Return a pointer to the requested data or 0 on error.
 	*/
-	virtual const byte* getGameData(uint offset, uint length) = 0;
+	virtual const byte* getGameData(uint32_t offset, uint32_t length) = 0;
 
 	/**
 	* add/saveGame() - add/replace a game of the database

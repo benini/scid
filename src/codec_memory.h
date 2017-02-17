@@ -26,6 +26,7 @@
 #include "index.h"
 #include "namebase.h"
 #include <vector>
+#include <limits>
 
 #if !CPP11_SUPPORT
 #define override
@@ -71,7 +72,7 @@ public:
 	* in native format, stored inside the member vector v_.
 	* Return a pointer to the requested data or 0 on error.
 	*/
-	virtual const byte* getGameData(uint offset, uint length) override {
+	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
 		const byte* res = 0;
 		if (offset + length <= v_.size()) {
 			res = v_.data() + offset;
@@ -168,11 +169,11 @@ protected:
 	* or an error code.
 	*/
 	virtual errorT dyn_addGameData(const byte* src, size_t length,
-	                               uint& resOffset) {
+	                               uint32_t& resOffset) {
 		ASSERT(src != 0);
 
-		size_t maxmem = v_.size() + length;
-		if (maxmem != static_cast<uint32_t>(maxmem)) return ERROR_BufferFull;
+		if (std::numeric_limits<uint32_t>::max() - v_.size() <= length)
+			return ERROR_BufferFull;
 
 		resOffset = v_.size();
 		v_.insert(v_.end(), src, src + length);
@@ -204,7 +205,7 @@ private:
 	                 bool replace = false, gamenumT replaced = 0) {
 		if (replace && replaced >= idx_->GetNumGames()) return ERROR_BadArg;
 
-		uint offset;
+		uint32_t offset;
 		errorT err = dyn_addGameData(src, length, offset);
 		if (err != OK) return err;
 

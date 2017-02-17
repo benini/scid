@@ -84,9 +84,11 @@ public:
     template <class T> errorT Write (T* file, versionT version) const;
 
 
-    uint GetOffset () const { return Offset; }
+    uint32_t GetOffset () const { return Offset; }
     void SetOffset (uint32_t offset) { Offset = offset; }
-    uint GetLength () const { return (Length_Low + ((Length_High & 0x80) << 9)); }
+    uint32_t GetLength() const {
+        return Length_Low + (uint32_t(Length_High & 0x80) << 9);
+    }
     void SetLength (size_t length) {
         ASSERT(length >= 0 && length < MAX_GAME_LENGTH);
         Length_Low = static_cast<uint16_t>(length & 0xFFFF);

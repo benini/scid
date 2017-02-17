@@ -64,7 +64,7 @@ public:
 	* in native format, stored inside the member GFile object gfile_.
 	* Return a pointer to the requested data or 0 on error.
 	*/
-	virtual const byte* getGameData(uint offset, uint length) override {
+	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
 		return gfile_.getGame(offset, length);
 	}
 
@@ -139,7 +139,7 @@ protected:
 	* or an error code.
 	*/
 	virtual errorT dyn_addGameData(const byte* src, size_t length,
-	                               uint& resOffset) override {
+	                               uint32_t& resOffset) override {
 		return gfile_.addGame(src, length, resOffset);
 	}
 };
