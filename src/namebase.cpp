@@ -114,7 +114,7 @@ NameBase::ReadEntireFile (const char* filename)
     if (file.Open(filename_.c_str(), FMODE_ReadOnly) != OK) return ERROR_FileOpen;
 
     char Header_magic[9] = {0}; // magic identifier must be "Scid.sn"
-    file.ReadNBytes(Header_magic, 8);
+    file.sgetn(Header_magic, 8);
     if (strcmp (Header_magic, NAMEBASE_MAGIC) != 0) return ERROR_BadMagic;
 
     // *** Compatibility ***
@@ -171,8 +171,8 @@ NameBase::ReadEntireFile (const char* filename)
                 return ERROR_Corrupt;
             }
 
-            uint extra_chars = length - prefix;
-            if (extra_chars != file.ReadNBytes(name + prefix, extra_chars)) {
+            std::streamsize extra_chars = length - prefix;
+            if (extra_chars != file.sgetn(name + prefix, extra_chars)) {
                 delete[] name;
                 return ERROR_FileRead;
             }
@@ -212,7 +212,7 @@ NameBase::WriteNameFile(const Index* idx)
     Filebuf file;
     if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
 
-    file.WriteNBytes(NAMEBASE_MAGIC, 8);
+    file.sputn(NAMEBASE_MAGIC, 8);
 
     // *** Compatibility ***
     // Even if timeStamp is not used we still need to write the bytes
@@ -268,7 +268,7 @@ NameBase::WriteNameFile(const Index* idx)
                 prefix = (byte) strPrefix (name, prevName);
                 file.WriteOneByte(prefix);
             }
-            file.WriteNBytes(name + prefix, (length - prefix));
+            file.sputn(name + prefix, (length - prefix));
             strcpy(prevName, name);
         }
     }

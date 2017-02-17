@@ -43,7 +43,6 @@ public:
 	uint ReadTwoBytes () { return read<2>(); }
 	uint ReadThreeBytes () { return read<3>(); }
 	uint ReadFourBytes () { return read<4>(); }
-	uint ReadNBytes (char* str, uint count) { return (uint) sgetn(str, count); }
 	/**
 	 * getline() - Extracts characters until end of file or end of line ('\n')
 	 * @str:    pointer to the character string to store the characters to
@@ -82,7 +81,6 @@ public:
 	uint WriteTwoBytes (uint value) { return write<2>(value); }
 	uint WriteThreeBytes (uint value) { return write<3>(value); }
 	uint WriteFourBytes (uint value) { return write<4>(value); }
-	uint WriteNBytes (const char* str, uint count) { return (uint) sputn(str, count); }
 
 private:
 	template <uint nBytes> uint read() {
