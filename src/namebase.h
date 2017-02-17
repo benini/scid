@@ -1,6 +1,6 @@
 /*
 * Copyright (c) 2001  Shane Hudson.
-* Copyright (C) 2014-2016 Fulvio Benini
+* Copyright (C) 2014-2017 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -24,6 +24,7 @@
 #include "misc.h"
 #include <vector>
 #include <map>
+#include <algorithm>
 
 class Index;
 
@@ -103,6 +104,13 @@ public:
                                idNumberT * array) const;
 
     idNumberT GetNumNames (nameT n) const  { return names_[n].size(); }
+
+    std::vector<uint32_t> generateHashMap(nameT nt) const {
+        std::vector<uint32_t> res(names_[nt].size());
+        std::transform(names_[nt].begin(), names_[nt].end(), res.begin(),
+                       strStartHash);
+        return res;
+    }
 
 private:
     typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;

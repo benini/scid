@@ -757,19 +757,6 @@ struct dupCriteriaT {
     bool sameMoves;
 };
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// hashName:
-//    Returns a hash value based on the first 4 letters of a string.
-uint32_t hashName (const char* name)
-{
-    uint32_t res = 0;
-    for (uint i=0; i < 4 && *name != 0; i++) {
-        res += tolower(*name++);
-        res <<= 8;
-    }
-    return res;
-}
-
 bool
 checkDuplicate (scidBaseT * base,
                 const IndexEntry * ie1, const IndexEntry * ie2,
@@ -803,15 +790,6 @@ checkDuplicate (scidBaseT * base,
         eco_ToBasicString (ie1->GetEcoCode(), a);
         eco_ToBasicString (ie2->GetEcoCode(), b);
         if (a[0] != b[0]  ||  a[1] != b[1]  ||  a[2] != b[2]) { return false; }
-    }
-    if (cr->exactNames) {
-        const NameBase* nb = base->getNameBase();
-        const std::string w1 = ie1->GetWhiteName(nb);
-        const std::string b1 = ie1->GetBlackName(nb);
-        const std::string w2 = ie2->GetWhiteName(nb);
-        const std::string b2 = ie2->GetBlackName(nb);
-        if (w1 != w2 && w1 != b2) return false;
-        if (b1 != b2 && b1 != w2) return false;
     }
 
     // There are a lot of "place-holding" games in some database, that have
@@ -937,16 +915,26 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
     // is only compared to others that hash to the same value.
     std::vector<gNumListT> hash(numGames);
     size_t n_hash = 0;
+    const std::vector<uint32_t>& hashMap = (criteria.exactNames)
+            ? std::vector<uint32_t>()
+            : dbase->getNameBase()->generateHashMap(NAME_PLAYER);
     for (gamenumT i=0; i < numGames; i++) {
         const IndexEntry* ie = dbase->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
             &&  (!onlyFilterGames  ||  dbase->dbFilter->Get(i) > 0)) {
 
+            uint32_t wh = ie->GetWhite();
+            uint32_t bl = ie->GetBlack();
+            if (!criteria.exactNames) {
+                wh = hashMap[wh];
+                bl = hashMap[bl];
+            }
+            if (!criteria.sameColors && bl > wh) {
+                std::swap(wh, bl);
+            }
             gNumListT* node = &(hash[n_hash++]);
-            node->hash = hashName(ie->GetWhiteName(dbase->getNameBase()));
-            if (criteria.sameColors) node->hash <<= 32;
-            node->hash += hashName(ie->GetBlackName(dbase->getNameBase()));
+            node->hash = (uint64_t(wh) << 32) + bl;
             node->gNumber = i;
         }
     }
@@ -958,7 +946,7 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
 
     // Now check same-hash games for duplicates:
     for (size_t i=0; i < n_hash; i++) {
-        if ((i % 1000) == 0) {
+        if ((i % 1024) == 0) {
             if (!progress.report(i, numGames)) break;
         }
         gNumListT* head = &(hash[i]);
