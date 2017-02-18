@@ -318,9 +318,10 @@ strCompare (const char * s1, const char * s2)
 
 int strCaseCompare (const char * s1, const char * s2)
 {
+    typedef unsigned char U;
     ASSERT (s1 != NULL  &&  s2 != NULL);
     while (1) {
-        int d = tolower(*s1) - tolower(*s2);
+        int d = tolower(U(*s1)) - tolower(U(*s2));
         if (d != 0 || *s1 == 0) return d;
         s1++; s2++;
     }
@@ -731,9 +732,10 @@ strIsPrefix (const char * prefix, const char * longStr)
 bool
 strIsCasePrefix (const char * prefix, const char * longStr)
 {
+    typedef unsigned char U;
     while (*prefix) {
         if (*longStr == 0) { return false; }
-        if (tolower(*prefix) != tolower(*longStr)) { return false; }
+        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
         prefix++;
         longStr++;
     }
@@ -749,11 +751,12 @@ strIsCasePrefix (const char * prefix, const char * longStr)
 bool
 strIsAlphaPrefix (const char * prefix, const char * longStr)
 {
+    typedef unsigned char U;
     while (*prefix) {
         while (*prefix == ' ') { prefix++; }
         while (*longStr == ' ') { longStr++; }
         if (*longStr == 0) { return false; }
-        if (tolower(*prefix) != tolower(*longStr)) { return false; }
+        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
         prefix++;
         longStr++;
     }
