@@ -228,11 +228,11 @@ static bool		fVerbose = false;	// Print additional information
 
 // Malloc that checks for out-of-memory condition
 
-static size_t	cbAllocated;
+static unsigned long cbAllocated;
 
 static void* PvMalloc
 	(
-	size_t cb
+	unsigned long cb
 	)
 	{
 	void	*pv;
@@ -244,8 +244,7 @@ static void* PvMalloc
 #endif
 	if (NULL == pv)
 		{
-		printf("*** Cannot allocate %lu bytes of memory\n",
-		       static_cast<unsigned long>(cb));
+		printf("*** Cannot allocate %lu bytes of memory\n", cb);
 		exit (1);
 		}
 	cbAllocated += cb;

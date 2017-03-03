@@ -15,7 +15,6 @@
 
 #include "common.h"
 #include "game.h"
-#include "gfile.h"
 #include "position.h"
 #include "pgnparse.h"
 #include "naglatex.h"
@@ -2903,6 +2902,8 @@ void
 Game::CopyStandardTags (Game * fromGame)
 {
     ASSERT (fromGame != NULL);
+    if (this == fromGame) return;
+
     SetEventStr (fromGame->GetEventStr());
     SetSiteStr (fromGame->GetSiteStr());
     SetWhiteStr (fromGame->GetWhiteStr());
@@ -3791,7 +3792,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     
     // as each game entry length is coded on 17 bits, and game must fit in a block
     // return an error if there is an overflow
-    if (buf->GetByteCount() >= MAX_GAME_LENGTH || buf->GetByteCount() > GF_BLOCKSIZE) {
+    if (buf->GetByteCount() >= MAX_GAME_LENGTH) {
       err = ERROR_GameFull;
     }
 

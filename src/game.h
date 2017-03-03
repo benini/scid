@@ -244,7 +244,7 @@ private:
 
     bool        PromotionsFlag;   // True if game has a promotion.
     bool        UnderPromosFlag;  // True if game has a promotion to R/B/N.
-    char        ScidFlags [16];
+    char        ScidFlags [20];
 
     moveChunkT * MoveChunk;
     moveT *     FreeList;
@@ -339,8 +339,10 @@ public:
     void        SetStartPos (Position * pos);
     errorT      SetStartFen (const char * fenStr);
 
-    void        SetScidFlags (const char * s) { strCopy (ScidFlags, s); }
-    const char * GetScidFlags ()              { return ScidFlags; }
+    void SetScidFlags(const char* s) {
+        strncpy(ScidFlags, s, sizeof(ScidFlags) - 1);
+        ScidFlags[sizeof(ScidFlags) - 1] = 0;
+    }
 
     Position *  GetStartPos ()              { return StartPos; }
     Position *  GetCurrentPos ()            { return CurrentPos; }
