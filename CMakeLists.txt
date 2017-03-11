@@ -46,7 +46,7 @@ file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
 add_library(polyglot STATIC ${POLYGLOT_SRC})
 target_link_libraries(scid polyglot)
 
-find_package(TCL REQUIRED)
+find_package(TCL)
 include_directories(${TCL_INCLUDE_PATH})
 target_link_libraries(scid ${TCL_LIBRARY})
 

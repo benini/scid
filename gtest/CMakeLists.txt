@@ -16,24 +16,38 @@
 cmake_minimum_required(VERSION 2.6)
 project(scid_gtest)
 
-file(GLOB GTEST_SRC *.cpp)
-set(GTEST_EXTRA
-  ../src/misc.cpp
-  ../src/index.cpp ../src/namebase.cpp ../src/sortcache.cpp
-  ../src/gfile.cpp ../src/bytebuf.cpp ../src/mfile.cpp
-  ../src/game.cpp ../src/position.cpp ../src/textbuf.cpp ../src/dstring.cpp ../src/matsig.cpp ../src/date.cpp
-  ../src/stored.cpp
-  ../src/pgnparse.cpp
-  ../src/scidbase.cpp
-)
-include_directories(../src)
-add_executable(runAll ${GTEST_SRC} ${GTEST_EXTRA})
-set_target_properties(runAll PROPERTIES COMPILE_FLAGS "-Wall -std=c++14 -O3")
-set_target_properties(runAll PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
-
-find_package(GTest REQUIRED)
+find_package(GTest)
 include_directories(${GTEST_INCLUDE_DIRS})
-target_link_libraries(runAll ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
 
 find_package(Threads REQUIRED)
-target_link_libraries(runAll ${CMAKE_THREAD_LIBS_INIT})
+
+include_directories(../src)
+file(GLOB GTEST_SRC *.cpp)
+set(GTEST_EXTRA
+  ../src/index.cpp
+  ../src/namebase.cpp
+  ../src/gfile.cpp
+  ../src/scidbase.cpp
+  ../src/sortcache.cpp
+  ../src/bytebuf.cpp ../src/mfile.cpp
+  ../src/misc.cpp ../src/textbuf.cpp ../src/dstring.cpp ../src/matsig.cpp ../src/date.cpp
+  ../src/game.cpp ../src/position.cpp
+  ../src/stored.cpp
+  ../src/pgnparse.cpp
+)
+
+add_executable(gtest ${GTEST_SRC} ${GTEST_EXTRA})
+set_target_properties(gtest PROPERTIES OUTPUT_NAME "runAll")
+set_target_properties(gtest PROPERTIES COMPILE_FLAGS "-Wall -std=c++14 -O3")
+target_link_libraries(gtest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
+set_target_properties(coverage PROPERTIES OUTPUT_NAME "runAll")
+set_target_properties(coverage PROPERTIES COMPILE_FLAGS "-Wall -std=c++14 -O3 -coverage")
+set_target_properties(coverage PROPERTIES LINK_FLAGS "-coverage")
+target_link_libraries(coverage ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_custom_command(TARGET coverage POST_BUILD
+	COMMAND ./runAll
+	COMMAND lcov ARGS -c -d . -o test_coverage.info
+	COMMAND genhtml ARGS test_coverage.info -o gcov)
+
