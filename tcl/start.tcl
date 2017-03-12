@@ -412,7 +412,7 @@ utils/string.tcl
 utils/tooltip.tcl
 utils/validate.tcl
 utils/win.tcl
-misc/misc.tcl
+misc.tcl
 htext.tcl
 file.tcl
 file/finder.tcl
@@ -422,8 +422,8 @@ file/spellchk.tcl
 file/maint.tcl
 edit.tcl
 game.tcl
-game/browser.tcl
 windows.tcl
+windows/browser.tcl
 windows/gamelist.tcl
 windows/pgn.tcl
 windows/book.tcl
