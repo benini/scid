@@ -1,21 +1,24 @@
 /*
-* Copyright (C) 2014-2015  Fulvio Benini
+ * Copyright (C) 2014-2017  Fulvio Benini
 
-* This file is part of Scid (Shane's Chess Information Database).
-*
-* Scid is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation.
-*
-* Scid is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Scid (Shane's Chess Information Database).
+ *
+ * Scid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * Scid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+/** @file
+ *  Extends the std:filebuf class with performance improvements.
+ */
 
 #ifndef FILEBUF_H
 #define FILEBUF_H
@@ -23,37 +26,61 @@
 #include "common.h"
 #include <fstream>
 
-class Filebuf : public std::filebuf
-{
+/**
+ * Adds some helper functions to std::filebuf:
+ * - getline()
+ * - read and write of unsigned integers with size of 32/24/16/8 bit.
+ */
+class Filebuf : public std::filebuf {
 public:
-	errorT Open (const char* filename, fileModeT fmode) {
+	/**
+	 * Opens a file.
+	 * @param filename: path to the file to be opened.
+	 * @param fmode: open the file for reading, writing, or both.
+	 * @returns OK on success, an @e errorT code on failure.
+	 */
+	errorT Open(const char* filename, fileModeT fmode) {
 		std::ios::openmode mode = std::ios::binary;
 		switch (fmode) {
-			case FMODE_ReadOnly:   mode |= std::ios::in;  break;
-			case FMODE_WriteOnly:  mode |= std::ios::out;  break;
-			case FMODE_Both:       mode |= std::ios::in | std::ios::out; break;
-			case FMODE_Create:     mode |= std::ios::in | std::ios::out | std::ios::trunc; break;
-			default:			   return ERROR_FileMode;
+		case FMODE_ReadOnly:
+			mode |= std::ios::in;
+			break;
+		case FMODE_WriteOnly:
+			mode |= std::ios::out;
+			break;
+		case FMODE_Both:
+			mode |= std::ios::in | std::ios::out;
+			break;
+		case FMODE_Create:
+			mode |= std::ios::in | std::ios::out | std::ios::trunc;
+			break;
+		default:
+			return ERROR_FileMode;
 		}
 
 		return (open(filename, mode) != 0) ? OK : ERROR_FileOpen;
 	}
 
-	uint ReadOneByte () { return sbumpc() & 255; }
-	uint ReadTwoBytes () { return read<2>(); }
-	uint ReadThreeBytes () { return read<3>(); }
-	uint ReadFourBytes () { return read<4>(); }
 	/**
-	 * getline() - Extracts characters until end of file or end of line ('\n')
-	 * @str:    pointer to the character string to store the characters to
-	 * @count: 	size of character string pointed to by @str
+	 * Equivalent to std::fstream::getline, but faster (no sentry [27.7.2.1.3]).
 	 *
-	 * This function is similar to std::fstream::getline, but without the Sentry.
-	 * The characters are copied to @str, excluding the '\n' char, and before
-	 * returning, even in case of errors, a null character will be added.
-	 * Return:
-	 * - the number of characters read, including the '\n' char
-	 * - 0 if the buffer is too small
+	 * Extracts characters from @e *this and stores them in successive locations
+	 * of the array whose first element is pointed to by @p str, until  the end
+	 * of line ('\\n' char) or the end of file condition occurs.
+	 * The '\\n' char is not stored into @p str, and a null character, even in
+	 * case of  errors, is appended.
+	 *
+	 * Typical usage: @code
+	 * while (file.getline(buf, sizeof buf)) {
+	 * // use buf
+	 * }
+	 * if (file.sgetc() != EOF) // error
+	 * @endcode
+	 * @param str: pointer to the character string to store the characters to
+	 * @param count: size of character string pointed to by @p str
+	 * @returns
+	 * - the number of characters read, including the '\\n' char
+	 * - 0 on failure or if the buffer is too small.
 	 */
 	size_t getline(char* str, size_t count) {
 		ASSERT(str != 0);
@@ -67,7 +94,7 @@ public:
 				break;
 			}
 			if (n >= count) {
-				n = 0; //Fail if buffer is full
+				n = 0; // Fail: buffer too small
 				break;
 			}
 			*str++ = static_cast<char>(ch);
@@ -76,29 +103,166 @@ public:
 		return n;
 	}
 
-	//Returns the number of characters successfully written
-	uint WriteOneByte (byte value) { return (sputc(value) == value) ? 1 : 0; }
-	uint WriteTwoBytes (uint value) { return write<2>(value); }
-	uint WriteThreeBytes (uint value) { return write<3>(value); }
-	uint WriteFourBytes (uint value) { return write<4>(value); }
+	/**
+	 * Reads a 8-bit unsigned integer.
+	 * This function do not check for errors or EOF.
+	 */
+	byte ReadOneByte() { return byte(sbumpc()); }
+
+	/**
+	 * Reads a 16-bit unsigned integer.
+	 * This function do not check for errors or EOF.
+	 */
+	uint16_t ReadTwoBytes() { return read<2>(); }
+
+	/**
+	 * Reads a 24-bit unsigned integer.
+	 * This function do not check for errors or EOF.
+	 */
+	uint32_t ReadThreeBytes() { return read<3>(); }
+
+	/**
+	 * Reads a 32-bit unsigned integer.
+	 * This function do not check for errors or EOF.
+	 */
+	uint32_t ReadFourBytes() { return read<4>(); }
+
+	/**
+	 * Writes a 8-bit unsigned integer.
+	 * @returns the number of characters successfully written.
+	 */
+	uint32_t WriteOneByte(byte value) {
+		return (sputc(value) == value) ? 1 : 0;
+	}
+
+	/**
+	 * Writes a 16-bit unsigned integer.
+	 * @returns the number of characters successfully written.
+	 */
+	uint32_t WriteTwoBytes(uint32_t value) { return write<2>(value); }
+
+	/**
+	 * Writes a 24-bit unsigned integer.
+	 * @returns the number of characters successfully written.
+	 */
+	uint32_t WriteThreeBytes(uint32_t value) { return write<3>(value); }
+
+	/**
+	 * Writes a 32-bit unsigned integer.
+	 * @returns the number of characters successfully written.
+	 */
+	uint32_t WriteFourBytes(uint32_t value) { return write<4>(value); }
 
 private:
-	template <uint nBytes> uint read() {
-		uint res = 0;
-		if (nBytes > 3) res += ReadOneByte() << 24;
-		if (nBytes > 2) res += ReadOneByte() << 16;
-		if (nBytes > 1) res += ReadOneByte() << 8;
+	template <int nBytes> uint32_t read() {
+		uint32_t res = 0;
+		if (nBytes > 3)
+			res += ReadOneByte() << 24;
+		if (nBytes > 2)
+			res += ReadOneByte() << 16;
+		if (nBytes > 1)
+			res += ReadOneByte() << 8;
 		return res + ReadOneByte();
 	}
 
-	template <uint nBytes> uint write(uint v) {
-		uint res = 0;
-		if (nBytes > 3) res += WriteOneByte((v >> 24) & 255);
-		if (nBytes > 2) res += WriteOneByte((v >> 16) & 255);
-		if (nBytes > 1) res += WriteOneByte((v >> 8) & 255);
+	template <int nBytes> uint32_t write(uint32_t v) {
+		uint32_t res = 0;
+		if (nBytes > 3)
+			res += WriteOneByte((v >> 24) & 255);
+		if (nBytes > 2)
+			res += WriteOneByte((v >> 16) & 255);
+		if (nBytes > 1)
+			res += WriteOneByte((v >> 8) & 255);
 		return res + WriteOneByte(v & 255);
 	}
 };
 
-#endif  // FILEBUF_H
+/**
+ * Optimizes std::filebuf for random-access reading.
+ */
+class FilebufAppend : protected Filebuf {
+	std::streamoff fileSz_;
+	std::streamoff filePos_;
 
+public:
+	FilebufAppend() : fileSz_(0), filePos_(-1) {}
+
+	/**
+	 * Opens a file and store its size.
+	 * @param filename: path to the file to be opened.
+	 * @param fmode: open the file for reading, writing, or both.
+	 * @returns OK on success, an @e errorT code on failure.
+	 */
+	errorT open(const std::string& filename, fileModeT fmode) {
+		errorT res = Open(filename.c_str(), fmode);
+		if (res != OK)
+			return res;
+		fileSz_ = pubseekoff(0, std::ios::end);
+		if (fileSz_ == -1)
+			return ERROR_FileSeek;
+		return OK;
+	}
+
+	/**
+	 * Returns the size of the file.
+	 */
+	size_t size() const { return fileSz_; }
+
+	/**
+	 * Invokes std::filebuf::sync() to write all pending output to the file.
+	 * @returns 0 in case of success, -1 in case of failure.
+	 */
+	int pubsync() { return sync(); }
+
+	/**
+	 * Writes, at the end of the file, @p count characters from the character
+	 * array whose first element is pointed to by @p s.
+	 * @returns OK in case of success, an error code otherwise.
+	 */
+	errorT append(const char_type* s, std::streamsize count) {
+		assert(s != 0);
+
+		if (filePos_ != -2) { // Seek to end of file, if necessary.
+			filePos_ = seekpos(fileSz_);
+			if (filePos_ == -1)
+				return ERROR_FileSeek;
+			filePos_ = -2;
+		}
+
+		std::streamsize n = xsputn(s, count);
+		fileSz_ += n;
+		return (n == count) ? OK : ERROR_FileWrite;
+	}
+
+	/**
+	 * Invoke filebuf::xsgetn() and update @e filePos_.
+	 */
+	std::streamsize sgetn(char_type* s, std::streamsize count) {
+		std::streamsize res = xsgetn(s, count);
+		filePos_ += res;
+		return res;
+	}
+
+	/**
+	 * Repositions the internal buffer or invoke filebuf::seekpos().
+	 * In the standard implementation, the buffer must be abandoned to ensure
+	 * consistency when transitioning from reading to writing.
+	 */
+	std::streamoff pubseekpos(std::streamoff pos) {
+		if (filePos_ < 0 || pos < filePos_)
+			return filePos_ = seekpos(pos);
+
+		if (filePos_ != pos) {
+			const std::streamsize avail = egptr() - gptr();
+			if (avail >= pos - filePos_) {
+				gbump(pos - filePos_);
+				filePos_ = pos;
+			} else {
+				filePos_ = seekpos(pos);
+			}
+		}
+		return filePos_;
+	}
+};
+
+#endif // FILEBUF_H

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015 Fulvio Benini
+* Copyright (C) 2015-2017 Fulvio Benini
 
 * Scid is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -15,100 +15,269 @@
 */
 
 #include "filebuf.h"
+#include <algorithm>
 #include <gtest/gtest.h>
+#include <memory>
+#include <random>
 
-using lines = std::vector< std::pair<std::streamsize, std::string> >;
+class Test_Filebuf : public ::testing::Test {};
+class Test_FilebufGetline : public ::testing::TestWithParam<size_t> {};
 
-class Test_FilebufSTLRef {
-protected:
-	const char* filename = "test_filebuf.txt";
+TEST_F(Test_Filebuf, FilebufAppend) {
+	static const char* fname = "test_filebufappend";
+	struct Cleanup {
+		~Cleanup() { std::remove(fname); }
+	} cleanup;
 
-	lines getlineSTL(size_t bufSize) {
-		lines vStl;
-		char* buf = new char[bufSize];
-		std::ifstream stl(filename);
-		size_t i = 0;
-		for (; !stl.eof(); i++) {
-			if (stl.fail()) {
-				// Failed because the buffer is too small
-				stl.clear();
-				vStl.emplace_back(stl.gcount(), buf);
-			}
-			while (stl.getline(buf, bufSize)) {
-				vStl.emplace_back(stl.gcount(), buf);
+	// Generate random data
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> randch(0, 255);
+	std::vector<unsigned char> v(300 * 1024);
+	for (auto& e : v)
+		e = randch(gen);
+
+	try {
+		{ // Test sequential write: write half of the data.
+			FilebufAppend file;
+			ASSERT_EQ(OK, file.open(fname, FMODE_Create));
+			auto buf = reinterpret_cast<const char*>(v.data());
+			file.append(buf, v.size() / 2);
+		}
+		{ // Test random read/write: write the remaining part of the data,
+		  // alternating with random-access read.
+			FilebufAppend file;
+			ASSERT_EQ(OK, file.open(fname, FMODE_Both));
+
+			std::vector<unsigned char> v2(v.size());
+			auto buf2 = reinterpret_cast<char*>(v2.data());
+			auto buf = reinterpret_cast<const char*>(v.data());
+			buf += v.size() / 2;
+			size_t nLeft = v.size() - v.size() / 2;
+			while (nLeft > 0) {
+				auto nCh = std::uniform_int_distribution<>(1, nLeft)(gen);
+				file.append(buf, nCh);
+				buf += nCh;
+				nLeft -= nCh;
+				EXPECT_EQ(file.size(), v.size() - nLeft);
+
+				auto pos =
+				    std::uniform_int_distribution<>(0, file.size() - 1)(gen);
+				auto nRead =
+				    std::uniform_int_distribution<>(1, file.size() - pos)(gen);
+				file.pubseekpos(pos);
+				file.sgetn(buf2, nRead);
+				EXPECT_TRUE(std::equal(v2.begin(), v2.begin() + nRead,
+				                       v.begin() + pos));
 			}
 		}
-		vStl.emplace_back(i, "loops");
-		delete[] buf;
-		return vStl;
-	}
-};
-
-class Test_Filebuf :
-	public Test_FilebufSTLRef,
-	public ::testing::Test {
-};
-
-class Test_FilebufGetline :
-	public Test_FilebufSTLRef,
-	public ::testing::TestWithParam<size_t> {
-	// Test that Filebuf::getline works like std::fstream::getline
-
-protected:
-	lines getlineScid(Filebuf& file, size_t bufSize) {
-		lines vScid;
-		char* buf = new char[bufSize];
-		*buf = 0;
-		size_t i = 0;
-		for (; file.sgetc() != EOF; i++) {
-			size_t n;
-			while ((n = file.getline(buf, bufSize)) != 0) {
-				vScid.emplace_back(n, buf);
-			}
-			if (*buf != 0) {
-				// Failed because the buffer is too small
-				vScid.emplace_back(0, buf);
-				vScid.back().first = vScid.back().second.size();
-			}
+		{ // Test sequential read: read all the file.
+			FilebufAppend file;
+			ASSERT_EQ(OK, file.open(fname, FMODE_ReadOnly));
+			std::vector<unsigned char> v2(v.size());
+			auto buf2 = reinterpret_cast<char*>(v2.data());
+			file.pubseekpos(0);
+			file.sgetn(buf2, v2.size());
+			EXPECT_TRUE(std::equal(v.begin(), v.end(), v2.begin()));
 		}
-		vScid.emplace_back(i, "loops");
-		delete[] buf;
-		return vScid;
+	} catch (...) {
+		FAIL();
 	}
-};
+}
+
+TEST_F(Test_Filebuf, read_write_uint32_t) {
+	static const char* fileName32 = "test_filebuf_uint32_t";
+	struct Cleanup {
+		~Cleanup() { std::remove(fileName32); }
+	} cleanup;
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<uint32_t> dis24(0, (1 << 24) - 1);
+	std::uniform_int_distribution<uint32_t> dis32(0, (uint64_t(1) << 32) - 1);
+
+	// Build a vector for each type of unsigned int.
+	std::vector<uint32_t> v8(1 << 8);
+	std::iota(v8.begin(), v8.end(), 0);
+	std::shuffle(v8.begin(), v8.end(), gen);
+
+	std::vector<uint32_t> v16(1 << 16);
+	std::iota(v16.begin(), v16.end(), 0);
+	std::shuffle(v16.begin(), v16.end(), gen);
+
+	std::vector<uint32_t> v24 = {0, 1, (1 << 24) - 1};
+	for (int i = 0; i < 1000; ++i)
+		v24.push_back(dis24(gen));
+
+	std::vector<uint32_t> v32 = {0, 1, (uint64_t(1) << 32) - 1};
+	for (int i = 0; i < 1000; ++i)
+		v32.push_back(dis32(gen));
+
+	{ // Test sequential write
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fileName32, FMODE_Create));
+
+		for (auto& e : v8) {
+			ASSERT_EQ(1, file.WriteOneByte(e));
+		}
+		for (auto& e : v16) {
+			ASSERT_EQ(2, file.WriteTwoBytes(e));
+		}
+		for (auto& e : v24) {
+			ASSERT_EQ(3, file.WriteThreeBytes(e));
+		}
+		for (auto& e : v32) {
+			ASSERT_EQ(4, file.WriteFourBytes(e));
+		}
+	}
+	{ // Test random write
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fileName32, FMODE_Both));
+
+		std::uniform_int_distribution<> rpos(0, 1000);
+		for (int i = 0; i < 1000; ++i) {
+			int pos = rpos(gen);
+
+			file.pubseekpos(pos / 4);
+			ASSERT_EQ(1, file.WriteOneByte(v8[pos / 4]));
+
+			file.pubseekpos(v8.size() + pos * 2);
+			ASSERT_EQ(2, file.WriteTwoBytes(v16[pos]));
+
+			file.pubseekpos(v8.size() + v16.size() * 2 + pos * 3);
+			ASSERT_EQ(3, file.WriteThreeBytes(v24[pos]));
+
+			file.pubseekpos(v8.size() + v16.size() * 2 + v24.size() * 3 +
+			                pos * 4);
+			ASSERT_EQ(4, file.WriteFourBytes(v32[pos]));
+		}
+	}
+	{ // Test sequential read
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fileName32, FMODE_Both));
+
+		for (int i = 0; i < 2; ++i) {
+			for (auto& e : v8)
+				EXPECT_EQ(e, file.ReadOneByte());
+
+			for (auto& e : v16)
+				EXPECT_EQ(e, file.ReadTwoBytes());
+
+			for (auto& e : v24)
+				EXPECT_EQ(e, file.ReadThreeBytes());
+
+			for (auto& e : v32)
+				EXPECT_EQ(e, file.ReadFourBytes());
+
+			// Read past the end, no error should occur.
+			file.ReadFourBytes();
+			file.pubseekpos(0);
+		}
+	}
+	{ // Test random read
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fileName32, FMODE_Both));
+
+		std::uniform_int_distribution<> rpos(0, 1000);
+		for (int i = 0; i < 1000; ++i) {
+			int pos = rpos(gen);
+
+			file.pubseekpos(pos / 4);
+			EXPECT_EQ(v8[pos / 4], file.ReadOneByte());
+
+			file.pubseekpos(v8.size() + pos * 2);
+			EXPECT_EQ(v16[pos], file.ReadTwoBytes());
+
+			file.pubseekpos(v8.size() + v16.size() * 2 + pos * 3);
+			EXPECT_EQ(v24[pos], file.ReadThreeBytes());
+
+			file.pubseekpos(v8.size() + v16.size() * 2 + v24.size() * 3 +
+			                pos * 4);
+			EXPECT_EQ(v32[pos], file.ReadFourBytes());
+		}
+	}
+}
+
+static const char* filename = "../gtest/utf8.txt";
 
 TEST_F(Test_Filebuf, readAll) {
 	std::streamsize fileSize = -1;
 	Filebuf file;
-	if (file.open(filename, std::ios::in | std::ios::binary | std::ios::ate) != 0) {
+	if (file.open(filename, std::ios::in | std::ios::binary | std::ios::ate) !=
+	    0) {
 		fileSize = file.pubseekoff(0, std::ios::cur, std::ios::in);
 		file.pubseekoff(0, std::ios::beg, std::ios::in);
 	}
-	EXPECT_NE(-1, fileSize);
+	ASSERT_NE(-1, fileSize);
 
-	char* buf = (char*) malloc(fileSize + 1);
-	char* bEnd = buf + fileSize + 1;
-	char* line = buf;
+	std::unique_ptr<char[]> buf(new char[fileSize + 1]);
+	char* line = buf.get();
+	char* bEnd = buf.get() + fileSize + 1;
 	std::streamsize nTot = 0;
 	size_t nRead;
-	while ((nRead = file.getline(line, std::distance(line, bEnd))) != 0) {
+	while ((nRead = file.getline(line, std::distance(line, bEnd)))) {
 		nTot += nRead;
 		line += nRead;
 	}
 	EXPECT_EQ(EOF, file.sgetc());
 	EXPECT_EQ(fileSize, nTot);
 	EXPECT_EQ(bEnd, line + 1);
-
-	lines vStl = getlineSTL(1000);
-	vStl.pop_back();
-	char* s = buf;
-	for (auto& e : vStl) {
-		EXPECT_EQ(e.second, s);
-		s += 1 + e.second.size();
+	{ // Verify that Filebuf::getline behaves like std::fstream::getline
+		const char* s = buf.get();
+		std::fstream stl(filename);
+		char stlBuf[1024];
+		while (stl.getline(stlBuf, sizeof stlBuf)) {
+			std::string tmp(stlBuf);
+			ASSERT_EQ(tmp, s);
+			s += 1 + tmp.size();
+		}
 	}
-	delete[] buf;
 }
 
+using lines = std::vector<std::pair<std::streamsize, std::string> >;
+
+lines getlineSTL(size_t bufSize) {
+	lines vStl;
+	std::unique_ptr<char[]> unique_buf(new char[bufSize]);
+	char* buf = unique_buf.get();
+	std::ifstream stl(filename);
+	size_t i = 0;
+	for (; !stl.eof(); i++) {
+		if (stl.fail()) {
+			// Failed because the buffer is too small
+			stl.clear();
+			vStl.emplace_back(stl.gcount(), buf);
+		}
+		while (stl.getline(buf, bufSize)) {
+			vStl.emplace_back(stl.gcount(), buf);
+		}
+	}
+	vStl.emplace_back(i, "loops");
+	return vStl;
+}
+
+lines getlineScid(Filebuf& file, size_t bufSize) {
+	lines vScid;
+	std::unique_ptr<char[]> unique_buf(new char[bufSize]);
+	char* buf = unique_buf.get();
+	*buf = 0;
+	size_t i = 0;
+	for (; file.sgetc() != EOF; i++) {
+		size_t n;
+		while ((n = file.getline(buf, bufSize)) != 0) {
+			vScid.emplace_back(n, buf);
+		}
+		if (*buf != 0) {
+			// Failed because the buffer is too small
+			vScid.emplace_back(0, buf);
+			vScid.back().first = vScid.back().second.size();
+		}
+	}
+	vScid.emplace_back(i, "loops");
+	return vScid;
+}
+
+// Test with different buffer sizes.
 TEST_P(Test_FilebufGetline, read) {
 	const size_t bufSize = GetParam();
 	lines vStl = getlineSTL(bufSize);
@@ -128,20 +297,30 @@ TEST_P(Test_FilebufGetline, filesize) {
 	const size_t bufSize = GetParam();
 
 	std::streamsize fileSize = -1;
-	Filebuf file;
-	if (file.open(filename, std::ios::in | std::ios::binary | std::ios::ate) != 0) {
-		fileSize = file.pubseekoff(0, std::ios::cur, std::ios::in);
-		file.pubseekoff(0, std::ios::beg, std::ios::in);
+	{ // Verify that all the chars are read.
+		Filebuf file;
+		if (file.open(filename,
+		              std::ios::in | std::ios::binary | std::ios::ate) != 0) {
+			fileSize = file.pubseekoff(0, std::ios::cur, std::ios::in);
+			file.pubseekoff(0, std::ios::beg, std::ios::in);
+		}
+		ASSERT_NE(-1, fileSize);
+
+		lines vScid = getlineScid(file, bufSize);
+		EXPECT_EQ(EOF, file.sgetc());
+
+		vScid.pop_back();
+		std::streamsize nTot = 0;
+		for (auto& e : vScid)
+			nTot += e.first;
+		EXPECT_EQ(fileSize, nTot);
 	}
-	EXPECT_NE(-1, fileSize);
-
-	lines vScid = getlineScid(file, bufSize);
-	EXPECT_EQ(EOF, file.sgetc());
-
-	vScid.pop_back();
-	std::streamsize nTot = 0;
-	for (auto& e : vScid) nTot += e.first;
-	EXPECT_EQ(fileSize, nTot);
+	{ // Verify that FilebufAppend::size() is correct.
+		FilebufAppend fileAppend;
+		fileAppend.open(filename, FMODE_ReadOnly);
+		EXPECT_EQ(fileSize, fileAppend.size());
+	}
 }
 
-INSTANTIATE_TEST_CASE_P(smallbuf, Test_FilebufGetline, ::testing::Values(1000, 100, 10));
+INSTANTIATE_TEST_CASE_P(smallbuf, Test_FilebufGetline,
+                        ::testing::Values(1000, 100, 10));
