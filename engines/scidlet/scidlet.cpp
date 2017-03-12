@@ -409,6 +409,35 @@ readFourBytes (FILE * fp)
     return v;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeString(), readString():
+//      Read/write fixed-length strings.
+//      Lengths of zero bytes ARE allowed.
+errorT
+writeString (FILE * fp, const char * str, uint length)
+{
+    ASSERT (fp != NULL  &&  str != NULL);
+    int result = 0;
+    while (length > 0) {
+        result = putc(*str, fp);
+        str++;
+        length--;
+    }
+    return (result == EOF ? ERROR_FileWrite : OK);
+}
+
+errorT
+readString (FILE * fp, char * str, uint length)
+{
+    ASSERT (fp != NULL  &&  str != NULL);
+    while (length > 0) {
+        *str = getc(fp);
+        str++;
+        length--;
+    }
+    return OK;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // makeBook
 //   Creates Scidlet opening book (SBK) file from a text file.

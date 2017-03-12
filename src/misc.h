@@ -388,16 +388,6 @@ uint    fileSize (const char * name, const char * suffix);
 uint    rawFileSize (const char * name);
 uint    gzipFileSize (const char * name);
 
-bool    fileExists (const char * fname, const char * suffix);
-errorT  renameFile (const char * oldName, const char * newName,
-                    const char * suffix);
-errorT  removeFile (const char * fname, const char * suffix);
-errorT  createFile (const char * fname, const char * suffix);
-
-errorT  writeString (FILE * fp, const char * str, uint length);
-errorT  readString  (FILE * fp, char * str, uint length);
-
-
 #endif  // #ifdef SCID_MISC_H
 
 //////////////////////////////////////////////////////////////////////
