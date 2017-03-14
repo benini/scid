@@ -80,30 +80,6 @@ matsig_isReachable (matSigT mStart, matSigT mTarget, bool promos, bool upromo)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// matsig_Make():
-//      Make a material sig, given an array of material counts as
-//      stored in a Position.
-//
-inline static uint min(uint a, uint b) { return a < b ? a : b; }
-
-matSigT
-matsig_Make (byte * materialCounts)
-{
-    matSigT m = 0;
-    m |= ::min(3, static_cast<uint>(materialCounts[WQ])) << SHIFT_WQ;
-    m |= ::min(3, static_cast<uint>(materialCounts[WR])) << SHIFT_WR;
-    m |= ::min(3, static_cast<uint>(materialCounts[WB])) << SHIFT_WB;
-    m |= ::min(3, static_cast<uint>(materialCounts[WN])) << SHIFT_WN;
-    m |= static_cast<uint>(materialCounts[WP]) << SHIFT_WP;
-    m |= ::min(3, static_cast<uint>(materialCounts[BQ])) << SHIFT_BQ;
-    m |= ::min(3, static_cast<uint>(materialCounts[BR])) << SHIFT_BR;
-    m |= ::min(3, static_cast<uint>(materialCounts[BB])) << SHIFT_BB;
-    m |= ::min(3, static_cast<uint>(materialCounts[BN])) << SHIFT_BN;
-    m |= static_cast<uint>(materialCounts[BP]) << SHIFT_BP;
-    return m;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // hpSig_PossibleMatch():
 //      Returns 1 if a game could match the home pawn signature in hpSig.
 //      The argument changeList is the ordered list of pawns that leave

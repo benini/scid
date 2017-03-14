@@ -292,6 +292,28 @@ int    strContainsIndex (const char * longStr, const char * keyStr);
 bool   strGetBoolean (const char * str);
 int    strGetInteger (const char * str);
 uint   strGetUnsigned (const char * str);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strGetInteger():
+//    Extracts a signed base-10 value from a string.
+//    Defaults to zero (as strtol does) for non-numeric strings.
+inline int
+strGetInteger(const char * str)
+{
+	return std::strtol(str, NULL, 10);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strGetUnsigned():
+//    Extracts an unsigned base-10 value from a string.
+//    Defaults to zero (as strtoul does) for non-numeric strings.
+//
+inline uint
+strGetUnsigned(const char * str)
+{
+	return std::strtoul(str, NULL, 10);
+}
+
 void   strGetIntegers (const char * str, int * results, uint nResults);
 void   strGetUnsigneds (const char * str, uint * results, uint nResults);
 void   strGetBooleans (const char * str, bool * results, uint nResults);

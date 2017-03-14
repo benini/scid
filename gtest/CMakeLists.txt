@@ -29,11 +29,8 @@ set(GTEST_EXTRA
   ../src/gfile.cpp
   ../src/scidbase.cpp
   ../src/sortcache.cpp
-  ../src/bytebuf.cpp ../src/mfile.cpp
-  ../src/misc.cpp ../src/textbuf.cpp ../src/dstring.cpp ../src/matsig.cpp ../src/date.cpp
-  ../src/game.cpp ../src/position.cpp
-  ../src/stored.cpp
-  ../src/pgnparse.cpp
+  ../src/pgnparse.cpp ../src/misc.cpp ../src/mfile.cpp
+  ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/dstring.cpp ../src/stored.cpp
 )
 
 add_executable(gtest ${GTEST_SRC} ${GTEST_EXTRA})

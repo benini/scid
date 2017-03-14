@@ -15,7 +15,6 @@
 #include "common.h"
 #include "misc.h"
 #include "sqmove.h"
-#include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>     // For isspace() function.
 #include <sys/stat.h>  // Needed for fileSize() function.
@@ -883,28 +882,6 @@ strGetBoolean (const char * str)
 
     // default: return false.
     return false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strGetInteger():
-//    Extracts a signed base-10 value from a string.
-//    Defaults to zero (as strtol does) for non-numeric strings.
-int
-strGetInteger (const char * str)
-{
-    return strtol (str, NULL, 10);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strGetUnsigned():
-//    Extracts an unsigned base-10 value from a string.
-//    Defaults to zero (as strtoul does) for non-numeric strings.
-//
-uint
-strGetUnsigned (const char * str)
-{
-    unsigned long ulvalue = strtoul (str, NULL, 10);
-    return (uint) ulvalue;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

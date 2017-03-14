@@ -17,7 +17,7 @@
 #define SCID_DATE_H
 
 #include "common.h"
-
+#include <cstdlib>
 
 // DATE STORAGE FORMAT:
 // In memory, dates are stored in a 32-bit (4-byte) uint, of which only
@@ -46,13 +46,7 @@ const uint YEAR_MAX = 2047;  // 2^11 - 1
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PUBLIC FUNCTIONS
-
-
-void   date_DecodeToString (dateT date, char * str);
-dateT  date_EncodeFromString (const char * str);
 bool   date_ValidString (const char * str);
-dateT  date_AddMonths (dateT date, int numMonths);
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // date_GetYear():
@@ -88,6 +82,79 @@ inline uint
 date_GetMonthDay (dateT date)
 {
     return (uint) (date & 511);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// date_DecodeToString(): convert date to PGN tag string.
+inline void
+date_DecodeToString (dateT date, char * str)
+{
+    ASSERT(str != NULL);
+    uint year, month, day;
+
+    year = date_GetYear (date);
+    month = date_GetMonth (date);
+    day = date_GetDay (date);
+
+    if (year == 0) {
+        *str++ = '?'; *str++ = '?'; *str++ = '?'; *str++ = '?';
+    } else {
+        *str++ = '0' + (year / 1000);
+        *str++ = '0' + (year % 1000) / 100;
+        *str++ = '0' + (year % 100) / 10;
+        *str++ = '0' + (year % 10);
+    }
+    *str++ = '.';
+
+    if (month == 0) {
+        *str++ = '?'; *str++ = '?';
+    } else {
+        *str++ = '0' + (month / 10);
+        *str++ = '0' + (month % 10);
+    }
+    *str++ = '.';
+
+    if (day == 0) {
+        *str++ = '?'; *str++ = '?';
+    } else {
+        *str++ = '0' + (day / 10);
+        *str++ = '0' + (day % 10);
+    }
+    *str = 0;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// date_EncodeFromString(): convert PGN tag string to date.
+//      The date string format is: "yyyy.mm.dd".
+inline dateT
+date_EncodeFromString (const char * str)
+{
+    // Do checks on str's validity as a date string:
+    ASSERT(str != NULL);
+
+    dateT date;
+    uint year, month, day;
+
+    // convert year:
+    year = std::strtoul(str, NULL, 10);
+    if (year > YEAR_MAX) { year = 0; }
+    date = year << YEAR_SHIFT;
+    while (*str != 0  &&  *str != '.') { str++; }
+    if (*str == '.') { str++; }
+
+    // convert month:
+    month = std::strtoul(str, NULL, 10);
+    if (month > 12) { return date; }
+    date |= (month << MONTH_SHIFT);
+    while (*str != 0  &&  *str != '.') { str++; }
+    if (*str == '.') { str++; }
+
+    // convert day:
+    day = std::strtoul(str, NULL, 10);
+    if (day > 31) { return date; }
+    date |= (day << DAY_SHIFT);
+
+    return date;
 }
 
 #endif   // #ifndef SCID_DATE_H

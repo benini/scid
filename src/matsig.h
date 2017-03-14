@@ -17,6 +17,7 @@
 #define SCID_MATSIG_H
 
 #include "common.h"
+#include <algorithm>
 #include <string>
 
 // Matsigs are 32-bit unsigned ints.  We only use 24 bits of this.
@@ -216,9 +217,27 @@ matsig_isReachablePawns (matSigT mStart, matSigT mTarget)
     return true;
 }
 
-matSigT
-matsig_Make (byte * materialCounts);
-
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// matsig_Make():
+//      Make a material sig, given an array of material counts as
+//      stored in a Position.
+//
+inline matSigT
+matsig_Make (byte * materialCounts)
+{
+    matSigT m = 0;
+    m |= std::min<matSigT>(3, materialCounts[WQ]) << SHIFT_WQ;
+    m |= std::min<matSigT>(3, materialCounts[WR]) << SHIFT_WR;
+    m |= std::min<matSigT>(3, materialCounts[WB]) << SHIFT_WB;
+    m |= std::min<matSigT>(3, materialCounts[WN]) << SHIFT_WN;
+    m |= matSigT(materialCounts[WP]) << SHIFT_WP;
+    m |= std::min<matSigT>(3, materialCounts[BQ]) << SHIFT_BQ;
+    m |= std::min<matSigT>(3, materialCounts[BR]) << SHIFT_BR;
+    m |= std::min<matSigT>(3, materialCounts[BB]) << SHIFT_BB;
+    m |= std::min<matSigT>(3, materialCounts[BN]) << SHIFT_BN;
+    m |= matSigT(materialCounts[BP]) << SHIFT_BP;
+    return m;
+}
 
 
 // Common HPSigs:
