@@ -18,6 +18,7 @@
 #define SCID_MOVELIST_H
 
 #include "common.h"
+#include <iterator>
 
 //////////////////////////////////////////////////////////////////////
 //  MoveList:  Constants

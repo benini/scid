@@ -398,7 +398,7 @@ StrTree<C>::Lookup (const char * str)
 
     while (node != NULL) {
         Stat_StrCompares++;
-        int result = strCompare_INLINE (str, node->name);
+        int result = strCompare(str, node->name);
 
         if (result < 0) {
             node = node->left;
@@ -438,7 +438,7 @@ StrTree<C>::Insert (const char * str, nodeT<C> ** returnNode)
         height++;
         Stat_StrCompares++;
 
-        int res = strCompare_INLINE (str, node->name);
+        int res = strCompare(str, node->name);
         if (res < 0) {          // Go into left subtree:
             side = SIDE_Left;
             parent = node;

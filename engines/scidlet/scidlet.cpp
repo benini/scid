@@ -16,6 +16,7 @@
 // chess engine built into Scid.
 
 #include "../../src/engine.h"
+#include "../../src/misc.h"
 #include <algorithm>
 #include <stdarg.h>
 #include <stdlib.h>

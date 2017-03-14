@@ -58,15 +58,16 @@ class NameBase
         bool operator() (const char* str1, const char* str2) const {
             // *** Compatibility ***
             // Older code used a custom StrTree class with a peculiar sorting:
-            // - the first char is treated as unsigned byte
-            // - the remaing part is treated as signed bytes and use the function
-            //   strComapare_INLINE() (not consistent with std::strcmp())
+            // - the first char was interpreted as an unsigned char;
+            // - the remaining part was compared with the function strComapare(),
+            //   which converts the chars to ints, and is not consistent with
+            //   the standard function strcmp().
             // The old StrTree class did also have unpredictable behaviors when
-            // feeded with names not sorted according to that criteria
-            // (i.e. it can create namebase with duplicate entries).
+            // fed with names not sorted according to that criteria, for example
+            // it could create Namebase objects with duplicate entries.
             // ***
             if (*str1 == *str2)
-                return strCompare_INLINE(str1, str2) < 0;
+                return strCompare(str1, str2) < 0;
 
             return static_cast<uint>(*str1) < static_cast<uint>(*str2);
         }

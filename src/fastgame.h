@@ -22,10 +22,10 @@
 #include "common.h"
 #include "fullmove.h"
 #include "position.h"
-#include <string>
 #include <cstdlib>
+#include <cstring>
 #include <sstream>
-
+#include <string>
 
 class FastBoard {
 	byte board_[64];
@@ -46,8 +46,8 @@ public:
 	}
 
 	void Init(Position& pos) {
-		memset(nPieces_, 0, sizeof(nPieces_));
-		memset(board_, 0, sizeof(board_));
+		std::memset(nPieces_, 0, sizeof(nPieces_));
+		std::memset(board_, 0, sizeof(board_));
 		for (byte c=0; c<2; c++) {
 			nPieces_[c][0] = pos.GetCount(c);
 			for (uint i=0, n = nPieces_[c][0]; i < n; ++i) {

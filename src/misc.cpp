@@ -190,22 +190,6 @@ eco_LastSubCode (ecoT eco)
 //   String Routines
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strCopy(): same as strcpy().
-//
-void
-strCopy (char * target, const char * original)
-{
-    ASSERT (target != NULL  &&  original != NULL);
-    while (*original != 0) {
-        *target = *original;
-        target++;
-        original++;
-    }
-    *target = 0;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strCopyExclude(): copies original to target, filtering out any
 //      characters in excludeChars.
 void
@@ -247,86 +231,6 @@ strAppend (char * target, const char * extra)
     *target = 0;
     return target;
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Extra versions of strAppend() for appending an int, a uint, or
-// up to four strings:
-
-char *
-strAppend (char * target, int i)
-{
-    char temp [20];
-    sprintf (temp, "%d", i);
-    return strAppend (target, temp);
-}
-
-char *
-strAppend (char * target, uint u)
-{
-    char temp [20];
-    sprintf (temp, "%u", u);
-    return strAppend (target, temp);
-}
-
-char *
-strAppend (char * target, const char * s1, const char * s2)
-{
-    target = strAppend (target, s1);
-    target = strAppend (target, s2);
-    return target;
-}
-
-char *
-strAppend (char * target, const char * s1, const char * s2, const char * s3)
-{
-    target = strAppend (target, s1);
-    target = strAppend (target, s2);
-    target = strAppend (target, s3);
-    return target;
-}
-
-char *
-strAppend (char * target, const char * s1, const char * s2, const char * s3,
-           const char * s4)
-{
-    target = strAppend (target, s1);
-    target = strAppend (target, s2);
-    target = strAppend (target, s3);
-    target = strAppend (target, s4);
-    return target;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strCompare(): same as strcmp.
-//      strCompare_INLINE() is an inline version, see misc.h.
-//
-int
-strCompare (const char * s1, const char * s2)
-{
-    ASSERT (s1 != NULL  &&  s2 != NULL);
-    while (1) {
-        if (*s1 != *s2) {
-            return (int) *s1 - (int) *s2;
-        }
-        if (*s1 == 0)
-            break;
-        s1++; s2++;
-    }
-    return 0;
-}
-
-int strCaseCompare (const char * s1, const char * s2)
-{
-    typedef unsigned char U;
-    ASSERT (s1 != NULL  &&  s2 != NULL);
-    while (1) {
-        int d = tolower(U(*s1)) - tolower(U(*s2));
-        if (d != 0 || *s1 == 0) return d;
-        s1++; s2++;
-    }
-    return 0;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strCompareRound():
@@ -389,24 +293,6 @@ strDuplicate (const char * original)
     *s = 0;   // Add trailing '\0'.
     //printf ("Dup: %p: %s\n", newStr, newStr);
     return newStr;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strPrefix():
-//       Returns the length of the common prefix of two strings.
-//
-uint
-strPrefix (const char * s1, const char * s2)
-{
-    ASSERT (s1 != NULL  &&  s2 != NULL);
-    uint count = 0;
-    while (*s1 == *s2) {
-        if (*s1 == 0) { // seen end of string, strings are identical
-            return count;
-        }
-        count++; s1++; s2++;
-    }
-    return count;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -707,61 +593,6 @@ strIsUnknownName (const char * str)
     return false;
 }
 
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strIsPrefix():
-//      Returns true if the prefix string is a prefix of longStr.
-bool
-strIsPrefix (const char * prefix, const char * longStr)
-{
-    while (*prefix) {
-        if (*longStr == 0) { return false; }
-        if (*prefix != *longStr) { return false; }
-        prefix++;
-        longStr++;
-    }
-    return true;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strIsCasePrefix():
-//      Returns true if the prefix string is a case-insensitive
-//      prefix of longStr.
-bool
-strIsCasePrefix (const char * prefix, const char * longStr)
-{
-    typedef unsigned char U;
-    while (*prefix) {
-        if (*longStr == 0) { return false; }
-        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
-        prefix++;
-        longStr++;
-    }
-    return true;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strIsAlphaPrefix():
-//      Returns true if the prefix string is a prefix of longStr.
-//      Unlike strIsPrexix(), this version is case-insensitive and
-//      spaces are ignored.
-//      Example: strIsAlphaPrefix ("smith,j", "Smith, John") == true.
-bool
-strIsAlphaPrefix (const char * prefix, const char * longStr)
-{
-    typedef unsigned char U;
-    while (*prefix) {
-        while (*prefix == ' ') { prefix++; }
-        while (*longStr == ' ') { longStr++; }
-        if (*longStr == 0) { return false; }
-        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
-        prefix++;
-        longStr++;
-    }
-    return true;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strIsSurnameOnly():
 //    Returns true if the name appears to be a surname only.
@@ -780,67 +611,6 @@ strIsSurnameOnly (const char * name)
         s++;
     }
     return true;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strContains():
-//      Returns true if longStr contains an occurrence of keyStr,
-//      case-sensitive and NOT ignoring any characters such as spaces.
-bool
-strContains (const char * longStr, const char * keyStr)
-{
-    while (*longStr) {
-        if (strIsPrefix (keyStr, longStr)) { return true; }
-        longStr++;
-    }
-    return false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strCaseContains():
-//      Returns true if longStr contains an occurrence of keyStr,
-//      case-insensitive and NOT ignoring any characters such as spaces.
-bool
-strCaseContains (const char * longStr, const char * keyStr)
-{
-    while (*longStr) {
-        if (strIsCasePrefix (keyStr, longStr)) { return true; }
-        longStr++;
-    }
-    return false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strContainsIndex():
-//      Returns the first index if longStr contains an occurrence of keyStr,
-//      case-sensitive and NOT ignoring any characters such as spaces.
-//      Returns -1 if longStr does not contain keyStr
-int
-strContainsIndex (const char * longStr, const char * keyStr)
-{
-    int index = 0;
-    while (*longStr) {
-        if (strIsPrefix (keyStr, longStr)) { return index; }
-        longStr++;
-        index++;
-    }
-    return -1;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strAlphaContains():
-//      Returns true if longStr contains an occurrence of keyStr,
-//      case-insensitive and ignoring spaces.
-//      Example: strAlphaContains ("Smith, John", "th,j") == true.
-//
-bool
-strAlphaContains (const char * longStr, const char * keyStr)
-{
-    while (*longStr) {
-        if (strIsAlphaPrefix (keyStr, longStr)) { return true; }
-        longStr++;
-    }
-    return false;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

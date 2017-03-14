@@ -196,9 +196,6 @@ ecoT eco_Reduce(ecoT eco);
 //      (a) to keep nice consistent naming conventions, e.g. strCopy.
 //      (b) so stats can easily be kept by modifying the functions.
 //      (c) so some can be made inline for speed if necessary.
-//
-//      Currently, strLength() and strPrefix() are inline.
-//      strCompare_INLINE() is an inline equivalent of strCompare().
 
 inline uint32_t strStartHash(const char* str) {
 	typedef unsigned char U;
@@ -211,28 +208,11 @@ inline uint32_t strStartHash(const char* str) {
 }
 
 char * strDuplicate (const char * str);
-int    strCompare (const char * s1, const char * s2);
-int    strCaseCompare (const char * s1, const char * s2);
 int    strCompareRound (const char * sleft, const char * sright);
 
-inline bool
-strEqual (const char * s1, const char * s2) {
-    return (strCompare (s1, s2) == 0);
-}
-
-void   strCopy (char * target, const char * original);
 void   strCopyExclude (char * target, const char * original,
                        const char * excludeChars);
 char * strAppend (char * target, const char * extra);
-char * strAppend (char * target, uint u);
-char * strAppend (char * target, int i);
-char * strAppend (char * target, const char * s1, const char * s2);
-char * strAppend (char * target, const char * s1, const char * s2);
-char * strAppend (char * target, const char * s1, const char * s2,
-                  const char * s3);
-char * strAppend (char * target, const char * s1, const char * s2,
-                  const char * s4);
-uint   strPrefix (const char * s1, const char * s2);
 uint   strPad (char * target, const char * orig, int length, char pad);
 const char * strFirstChar (const char * target, char matchChar);
 const char * strLastChar (const char * target, char matchChar);
@@ -266,28 +246,9 @@ strPlural (uint x) {
 bool   strIsAllWhitespace (const char * str);
 bool   strIsUnknownName (const char * str);
 
-// strIsPrefix: returns true if prefix is a prefix of longStr.
-bool   strIsPrefix (const char * prefix, const char * longStr);
-
-// strIsCasePrefix: like strIsPrefix, but case-insensitive.
-bool   strIsCasePrefix (const char * prefix, const char * longStr);
-
-// strIsAlphaPrefix: like strIsPrefix, but case-insensitive and space
-//    characters are ignored.
-bool   strIsAlphaPrefix (const char * prefix, const char * longStr);
-
 // strIsSurnameOnly: returns true if a string appears to only
 //    contain a surname.
 bool   strIsSurnameOnly (const char * name);
-
-// strAlphaContains: returns true if longStr contains keyStr,
-//    case-insensitive and ignoring spaces. strContains is similar but
-//    is case-sensitive and does not ignore spaces.
-bool   strAlphaContains (const char * longStr, const char * keyStr);
-
-bool   strContains (const char * longStr, const char * keyStr);
-bool   strCaseContains (const char * longStr, const char * keyStr);
-int    strContainsIndex (const char * longStr, const char * keyStr);
 
 bool   strGetBoolean (const char * str);
 int    strGetInteger (const char * str);
@@ -358,9 +319,17 @@ strContainsChar (const char * str, char ch)
     return false;
 }
 
-inline int
-strCompare_INLINE (const char *s1, const char *s2)
+// WARNING: Avoid this function!
+// Considering that the sign of a char is implementation-defined [3.9.1], the
+// int conversion ("[4.7.3] If the destination type is signed, the value is
+// unchanged if it can be represented in the destination type") can yield
+// different results on different architectures or compilers.
+// A better alternative is the standard function strcmp() that returns the
+// difference between the values of the first pair of characters (both
+// interpreted as unsigned char) that differ in the strings being compared.
+inline int strCompare(const char* s1, const char* s2)
 {
+    ASSERT (s1 != NULL  &&  s2 != NULL);
     while (1) {
         if (*s1 != *s2) {
             return ((int) *s1) - ((int) *s2);
@@ -370,6 +339,138 @@ strCompare_INLINE (const char *s1, const char *s2)
         s1++; s2++;
     }
     return 0;
+}
+
+inline int strCaseCompare(const char* s1, const char* s2)
+{
+    typedef unsigned char U;
+    ASSERT (s1 != NULL  &&  s2 != NULL);
+    while (1) {
+        int d = tolower(U(*s1)) - tolower(U(*s2));
+        if (d != 0 || *s1 == 0) return d;
+        s1++; s2++;
+    }
+    return 0;
+}
+
+inline int strEqual(const char* s1, const char* s2) {
+    return (strCompare(s1, s2) == 0);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strCopy(): same as strcpy().
+//
+inline void
+strCopy (char * target, const char * original)
+{
+    ASSERT (target != NULL  &&  original != NULL);
+    while (*original != 0) {
+        *target = *original;
+        target++;
+        original++;
+    }
+    *target = 0;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strPrefix():
+//       Returns the length of the common prefix of two strings.
+//
+inline uint
+strPrefix (const char * s1, const char * s2)
+{
+    ASSERT (s1 != NULL  &&  s2 != NULL);
+    uint count = 0;
+    while (*s1 == *s2) {
+        if (*s1 == 0) { // seen end of string, strings are identical
+            return count;
+        }
+        count++; s1++; s2++;
+    }
+    return count;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strIsPrefix():
+//      Returns true if the prefix string is a prefix of longStr.
+inline bool
+strIsPrefix (const char * prefix, const char * longStr)
+{
+    while (*prefix) {
+        if (*longStr == 0) { return false; }
+        if (*prefix != *longStr) { return false; }
+        prefix++;
+        longStr++;
+    }
+    return true;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strIsCasePrefix():
+//      Returns true if the prefix string is a case-insensitive
+//      prefix of longStr.
+inline bool
+strIsCasePrefix (const char * prefix, const char * longStr)
+{
+    typedef unsigned char U;
+    while (*prefix) {
+        if (*longStr == 0) { return false; }
+        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
+        prefix++;
+        longStr++;
+    }
+    return true;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strIsAlphaPrefix():
+//      Returns true if the prefix string is a prefix of longStr.
+//      Unlike strIsPrexix(), this version is case-insensitive and
+//      spaces are ignored.
+//      Example: strIsAlphaPrefix ("smith,j", "Smith, John") == true.
+inline bool
+strIsAlphaPrefix (const char * prefix, const char * longStr)
+{
+    typedef unsigned char U;
+    while (*prefix) {
+        while (*prefix == ' ') { prefix++; }
+        while (*longStr == ' ') { longStr++; }
+        if (*longStr == 0) { return false; }
+        if (tolower(U(*prefix)) != tolower(U(*longStr))) { return false; }
+        prefix++;
+        longStr++;
+    }
+    return true;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strContains():
+//      Returns true if longStr contains an occurrence of keyStr,
+//      case-sensitive and NOT ignoring any characters such as spaces.
+inline bool
+strContains (const char * longStr, const char * keyStr)
+{
+    while (*longStr) {
+        if (strIsPrefix (keyStr, longStr)) { return true; }
+        longStr++;
+    }
+    return false;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strAlphaContains():
+//      Returns true if longStr contains an occurrence of keyStr,
+//      case-insensitive and ignoring spaces.
+//      Example: strAlphaContains ("Smith, John", "th,j") == true.
+//
+inline bool
+strAlphaContains (const char * longStr, const char * keyStr)
+{
+    while (*longStr) {
+        if (strIsAlphaPrefix (keyStr, longStr)) { return true; }
+        longStr++;
+    }
+    return false;
 }
 
 inline uint

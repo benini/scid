@@ -20,6 +20,7 @@
 #define SCID_HFILTER_H
 
 #include "filter.h"
+#include <iterator>
 
 /*
  * A database can be searched according to different criteria and the list of

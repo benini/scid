@@ -17,7 +17,6 @@
 #define SCID_POSITION_H
 
 #include "common.h"
-#include "misc.h"
 #include "movelist.h"
 #include "tokens.h"
 #include <stdio.h>

@@ -24,7 +24,6 @@
 #include "fastgame.h"
 #include "game.h"
 #include "index.h"
-#include "misc.h"
 #include "namebase.h"
 #include "tree.h"
 #include "undoredo.h"
