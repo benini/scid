@@ -256,8 +256,8 @@ if {[llength $engines(list)] == 0} {
         set togaII "TogaII.exe"
     }
     set scidEngPaths [list $::scidExeDir [file join $::scidExeDir "engines" ] [file join $::scidShareDir "engines" ] \
-            [ file join $::scidUserDir "engines" ]  [ file join usr local share scid engines ] \
-            [ file join usr local bin ] [ file join  usr bin ] [ file join usr local games ] [ file join usr games ] \
+            [ file join $::scidUserDir "engines" ]  [ file join /usr local share scid engines ] \
+            [ file join /usr local bin ] [ file join  /usr bin ] [ file join /usr local games ] [ file join /usr games ] \
             [file join $::scidExeDir "engines" "phalanx-scid" ] [file join $::scidExeDir "engines" "togaII1.2.1a" "src" ] ]
     
     # The next four lists should have the same length!
