@@ -18,12 +18,10 @@
 
 
 #include "common.h"
+#include "dstring.h"
 #include "pbook.h"
 #include "misc.h"
 #include "mfile.h"
-
-#include <stdio.h>
-#include <string.h>
 
 
 // PBOOK_HASH_BITS: Size of array of hash value counts.

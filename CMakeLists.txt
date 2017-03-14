@@ -79,7 +79,6 @@ set(SCIDLET_EXTRA
   src/recog.cpp
   src/misc.cpp
   src/position.cpp
-  src/dstring.cpp
 )
 add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
 install(TARGETS scidlet DESTINATION bin)

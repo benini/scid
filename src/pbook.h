@@ -18,8 +18,9 @@
 #include "common.h"
 #include "position.h"
 #include "strtree.h"
-#include "dstring.h"
 #include <stdio.h>
+
+class DString;
 
 #define PBOOK_SUFFIX ".epd"
 #define PBOOK_MAX_MATERIAL 32

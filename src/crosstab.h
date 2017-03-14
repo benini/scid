@@ -19,8 +19,9 @@
 
 #include "common.h"
 #include "date.h"
-#include "dstring.h"
 #include "spellchk.h"
+
+class DString;
 
 const uint CROSSTABLE_MaxPlayers = 500;  // Max. number of players.
 const uint CROSSTABLE_MaxRounds =   60;  // Max. number of Swiss event rounds.

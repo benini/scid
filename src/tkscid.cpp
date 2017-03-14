@@ -26,6 +26,7 @@
 
 
 #include "crosstab.h"
+#include "dstring.h"
 #include "engine.h"
 #include "game.h"
 #include "mfile.h"
@@ -45,7 +46,6 @@
 #include "ui.h"
 #include <time.h>
 #include <sys/stat.h>
-#include <stdlib.h>
 #include <set>
 #include <algorithm>
 

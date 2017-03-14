@@ -171,7 +171,6 @@ SCID_EXECS = \
 SCID_OBJS = \
 	$(TMP_DIR)\bytebuf.obj \
 	$(TMP_DIR)\date.obj \
-	$(TMP_DIR)\dstring.obj \
 	$(TMP_DIR)\game.obj \
 	$(TMP_DIR)\gfile.obj \
 	$(TMP_DIR)\index.obj \

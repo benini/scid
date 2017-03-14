@@ -15,7 +15,7 @@
 #ifndef WINCE
 
 #include "crosstab.h"
-#include <string.h>
+#include "dstring.h"
 
 // Expected differences in rating according to performance
 // from 50% to 100%:

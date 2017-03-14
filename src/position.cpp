@@ -23,7 +23,6 @@
 #include "dstring.h"
 #include <algorithm>
 #include <string.h>
-#include <stdlib.h>
 
 static uint hashVal [16][64];
 static uint stdStartHash = 0;

@@ -14,6 +14,7 @@
 
 #include "optable.h"
 #include "crosstab.h"
+#include "dstring.h"
 
 uint
 endgameTheme (matSigT msig)
