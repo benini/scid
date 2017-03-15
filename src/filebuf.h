@@ -131,7 +131,7 @@ public:
 	 * Writes a 8-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	uint32_t WriteOneByte(byte value) {
+	int WriteOneByte(byte value) {
 		return (sputc(value) == value) ? 1 : 0;
 	}
 
@@ -139,19 +139,19 @@ public:
 	 * Writes a 16-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	uint32_t WriteTwoBytes(uint32_t value) { return write<2>(value); }
+	int WriteTwoBytes(uint32_t value) { return write<2>(value); }
 
 	/**
 	 * Writes a 24-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	uint32_t WriteThreeBytes(uint32_t value) { return write<3>(value); }
+	int WriteThreeBytes(uint32_t value) { return write<3>(value); }
 
 	/**
 	 * Writes a 32-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	uint32_t WriteFourBytes(uint32_t value) { return write<4>(value); }
+	int WriteFourBytes(uint32_t value) { return write<4>(value); }
 
 private:
 	template <int nBytes> uint32_t read() {
@@ -166,7 +166,7 @@ private:
 	}
 
 	template <int nBytes> uint32_t write(uint32_t v) {
-		uint32_t res = 0;
+		int res = 0;
 		if (nBytes > 3)
 			res += WriteOneByte((v >> 24) & 255);
 		if (nBytes > 2)

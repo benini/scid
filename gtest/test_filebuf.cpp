@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <memory>
+#include <numeric>
 #include <random>
 
 class Test_Filebuf : public ::testing::Test {};
@@ -318,7 +319,7 @@ TEST_P(Test_FilebufGetline, filesize) {
 	{ // Verify that FilebufAppend::size() is correct.
 		FilebufAppend fileAppend;
 		fileAppend.open(filename, FMODE_ReadOnly);
-		EXPECT_EQ(fileSize, fileAppend.size());
+		EXPECT_EQ(fileSize, std::streamsize(fileAppend.size()));
 	}
 }
 

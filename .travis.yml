@@ -1,4 +1,5 @@
-language: cpp
+dist: trusty
+sudo: false
 
 os:
   - linux
@@ -10,72 +11,62 @@ matrix:
   - os: osx
   include:
   - os: osx
-    env: COMP=c++
+    env: CXX=c++
 
   - os: linux
-    env: COMP=clang++-3.8
+    env: CXX=clang++-4.0 CC=clang-4.0
     addons:
       apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-4.0
         packages:
-          - clang-3.8
+          - clang-4.0
+          - libstdc++-6-dev
           - tcl
           - tcl-dev
           - cloc
-        sources:
-          - ubuntu-toolchain-r-test
-          - llvm-toolchain-precise-3.8
 
   - os: linux
-    env: COMP=g++-6
+    env: CXX=g++-6 CC=gcc-6
     addons:
       apt:
+        sources:
+          - ubuntu-toolchain-r-test
         packages:
           - g++-6
           - tcl
           - tcl-dev
           - cloc
-        sources:
-          - ubuntu-toolchain-r-test
 
   - os: linux
-    env: COMP=g++-4.9
+    env: CXX=g++-4.9 CC=gcc-4.9
     addons:
       apt:
+        sources:
+          - ubuntu-toolchain-r-test
         packages:
           - g++-4.9
           - tcl
           - tcl-dev
           - cloc
-        sources:
-          - ubuntu-toolchain-r-test
-
-
-before_install:
- - git clone https://github.com/google/googletest.git googletest
- - cd googletest
- - cmake . && make
- - sudo cp -a googletest/include/gtest /usr/local/include
- - sudo cp -a googlemock/gtest/*.a /usr/local/lib
- - sudo cp -a googlemock/include/gmock /usr/local/include
- - sudo cp -a googlemock/*.a /usr/local/lib
- - cd $TRAVIS_BUILD_DIR
-
 
 script:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then LINUX_ONLY="COMPILE=${COMP} LINK=${COMP}"; fi
+  - cmake --version
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
-  - if [ "${COMP}" == "clang++-3.8" ]; then scan-build-3.8 ${COMP} -std=c++14 -c -Wall -DSPELLCHKVALIDATE -I/usr/include/tcl src/*.cpp; fi
-  - cmake --version
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="${COMP}" && make
+  - if [ "${CXX}" == "clang++-4.0" ]; then mkdir Analyzer && cd Analyzer && scan-build-4.0 cmake .. && scan-build-4.0 make scid; fi
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Testing && cd Testing && cmake ../gtest -DCMAKE_CXX_COMPILER="${COMP}" && make && ./runAll
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug && make
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Release && cd Release && cmake .. -DCMAKE_CXX_COMPILER="${COMP}" && make VERBOSE=1 && size scid
+  - mkdir Testing && cd Testing && cmake ../gtest && make && ./runAll
   - cd $TRAVIS_BUILD_DIR
-  - ./configure ${LINUX_ONLY} && make && size tkscid
+  - mkdir Release && cd Release && cmake .. && make VERBOSE=1 && size scid
+  - cd $TRAVIS_BUILD_DIR
+  - ./configure && make && size tkscid
   - make clean
-  - ./configure ${LINUX_ONLY} THREADS="" && make && size tkscid
+  - ./configure THREADS="-std=c++98" && make && size tkscid
   - make clean
-  - ./configure ${LINUX_ONLY} DEBUG="-g -DSPELLCHKVALIDATE" && make && size tkscid
+  - ./configure DEBUG="-g -DSPELLCHKVALIDATE" && make && size tkscid
+
