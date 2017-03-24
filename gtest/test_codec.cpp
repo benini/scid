@@ -24,13 +24,22 @@
 #include <gtest/gtest.h>
 #include <iterator>
 #include <memory>
+#include <numeric>
+#include <random>
 #include <vector>
+
+namespace {
+
+fileModeT fmodes[] = {
+	FMODE_Memory, FMODE_Create, FMODE_ReadOnly, FMODE_WriteOnly, FMODE_Both
+};
+const char* filename = "codecbase";
 
 ICodecDatabase::Codec codecs[] = {
 	ICodecDatabase::MEMORY, ICodecDatabase::SCID4, ICodecDatabase::PGN
 };
 
-std::vector< std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
+std::vector<std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_None) },
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_Create) },
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_ReadOnly) },
@@ -62,119 +71,257 @@ public:
 	}
 };
 
-fileModeT fmodes[] = {
-	FMODE_Memory, FMODE_Create, FMODE_ReadOnly, FMODE_WriteOnly, FMODE_Both
-};
-const char* filename = "codecbase";
+template <int nGames, int maxMoves, int maxCommentLen>
+class GameGenerator {
+	typedef std::vector<std::unique_ptr<Game> > Vec;
+	Vec v_;
+	std::vector<std::vector<byte> > encoded_;
+	std::mt19937 mt_;
 
-class Test_Codec : public ::testing::TestWithParam<ICodecDatabase::Codec> {
-protected:
-	Game gameSimple_;
-	IndexEntry gameSimpleIe_;
-	std::vector<byte> gameSimpleData_;
-
-	Game gameComplex_;
-	IndexEntry gameComplexIe_;
-	std::vector<byte> gameComplexData_;
-
-	void SetUpGames(NameBase& nb) {
-		{
-			gameSimpleIe_.Init();
-			gameSimpleIe_.SetWhiteName(&nb, "Simple game White");
-			gameSimpleIe_.SetBlackName(&nb, "Simple game Black");
-			gameSimpleIe_.SetEventName(&nb, "Simple game Event");
-			gameSimpleIe_.SetSiteName(&nb, "Simple game Site");
-			gameSimpleIe_.SetRoundName(&nb, "Simple game Round");
-			gameSimple_.LoadStandardTags(&gameSimpleIe_, &nb);
-			simpleMoveT sm;
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "e2e4", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "e7e5", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "g1f3", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "b8c6", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "f1b5", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "g8f6", true);
-			gameSimple_.AddMove(&sm, NULL);
-			gameSimple_.GetCurrentPos()->ReadCoordMove(&sm, "e1g1", true);
-			gameSimple_.AddMove(&sm, NULL);
-			ByteBuffer bbuf(BBUF_SIZE);
-			gameSimple_.Encode(&bbuf, &gameSimpleIe_);
-			const byte* src = bbuf.getData();
-			std::copy(src, src + bbuf.GetByteCount(),
-			          std::back_inserter(gameSimpleData_));
+public:
+	const Vec& get() {
+		if (v_.empty()) {
+			for (int i = 0; i < nGames; i++) {
+				v_.push_back(genGame());
+			}
+			encodeGames();
 		}
+		return v_;
+	}
 
-		{
-			gameComplexIe_.Init();
-			gameComplexIe_.SetWhiteName(&nb, "Complex game White");
-			gameComplexIe_.SetBlackName(&nb, "Complex game Black");
-			gameComplexIe_.SetEventName(&nb, "Complex game Event");
-			gameComplexIe_.SetSiteName(&nb, "Complex game Site");
-			gameComplexIe_.SetRoundName(&nb, "Complex game Round");
-			gameComplex_.LoadStandardTags(&gameComplexIe_, &nb);
-			gameComplex_.SetScidFlags("WBMENPTKQ!?U123456");
-			simpleMoveT sm;
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "d2d4", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "d7d5", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "c2c4", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.AddVariation();
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "g1f3", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.SetMoveComment("Test comment");
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "g8f6", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "c2c4", true);
-			gameComplex_.AddMove(&sm, NULL);
-			gameComplex_.MoveExitVariation();
-			gameComplex_.MoveForward();
-			gameComplex_.GetCurrentPos()->ReadCoordMove(&sm, "e7e6", true);
-			gameComplex_.AddMove(&sm, NULL);
-			ByteBuffer bbuf(BBUF_SIZE);
-			gameComplex_.Encode(&bbuf, &gameComplexIe_);
-			const byte* src = bbuf.getData();
-			std::copy(src, src + bbuf.GetByteCount(),
-			          std::back_inserter(gameComplexData_));
+	const std::vector<std::vector<byte> >& getNative() {
+		if (encoded_.empty())
+			get();
+
+		return encoded_;
+	}
+
+	void cmp(ICodecDatabase* codec, const Index& idx) {
+		auto encoded = getNative();
+		ASSERT_EQ(encoded.size(), size_t(idx.GetNumGames()));
+		int g = 0;
+		for (auto& game : encoded) {
+			auto entry = idx.GetEntry(g++);
+			auto data = codec->getGameData(entry->GetOffset(), entry->GetLength());
+			ASSERT_NE(nullptr, data);
+			ASSERT_EQ(game.size(), entry->GetLength());
+			EXPECT_TRUE(std::equal(data, data + entry->GetLength(), game.data()));
 		}
 	}
-};
 
+private:
+	void encodeGames() {
+		static ByteBuffer buf(128 * 1024);
+		for (auto& game : v_) {
+			ASSERT_EQ(OK, game->Encode(&buf, NULL));
+			encoded_.emplace_back();
+			auto& v = encoded_.back();
+			v.insert(v.end(), buf.getData(),
+			         buf.getData() + buf.GetByteCount());
+		}
+	}
+
+	std::unique_ptr<Game> genGame() {
+		auto res = std::unique_ptr<Game>(new Game);
+		res->GetCurrentPos()->StdStart();
+		MoveList mlist;
+		for (auto i = rand(0, maxMoves); i > 0; --i) {
+			res->GetCurrentPos()->GenerateMoves(&mlist, EMPTY, GEN_ALL_MOVES, true);
+			if (mlist.Size() == 0)
+				break;
+			res->AddMove(mlist.Get(rand(0, mlist.Size() - 1)), NULL);
+
+			if (rand(0, 6) == 0)
+				res->SetMoveComment(rand_comment().c_str());
+
+			int varOp = rand(0, 80 + int(res->GetVarLevel()) * 20);
+			if (varOp < 20) {
+				res->AddVariation();
+			} else if (varOp > 80) {
+				res->MoveExitVariation();
+				res->MoveForward();
+			}
+		}
+		return res;
+	}
+
+	int rand(int low, int up) {
+		return std::uniform_int_distribution<int>(low, up)(mt_);
+	}
+
+	std::string rand_comment() {
+		size_t len = rand(0, maxCommentLen);
+		std::string res(len, ' ');
+		std::uniform_int_distribution<int> dist{33, 122};
+		std::generate_n(res.begin(), res.size(), [&] () {
+			return static_cast<char>(dist(mt_));
+		});
+		return res;
+	}
+};
+GameGenerator<1000, 2000, 300> gameGenerator;
+
+template <typename Oper>
+void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
+	Supports supports(dbtype);
+	if (!supports(test))
+		return;
+
+	fileModeT fMode = FMODE_Create;
+	if (!supports("FMODE" + std::to_string(fMode))) {
+		fMode = FMODE_Memory;
+		ASSERT_TRUE(supports("FMODE" + std::to_string(fMode)));
+	}
+
+	struct Cleanup {
+		std::vector<std::string> filenames;
+
+		~Cleanup() {
+			for (const auto& fname : filenames) {
+				EXPECT_EQ(0, std::remove(fname.c_str()));
+			}
+		}
+	} cleanup;
+
+	{
+		errorT err;
+		Index idx;
+		NameBase nb;
+		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+		    dbtype, &err, fMode, filename, Progress(), &idx, &nb));
+		ASSERT_NE(nullptr, codec);
+		cleanup.filenames = codec->getFilenames();
+		ASSERT_EQ(OK, err);
+
+		op(codec.get(), idx, nb);
+
+		ASSERT_EQ(gameGenerator.get().size(), size_t(idx.GetNumGames()));
+		ASSERT_EQ(OK, codec->flush());
+		gameGenerator.cmp(codec.get(), idx);
+	}
+
+	if (supports("FMODE" + std::to_string(FMODE_ReadOnly))) {
+		errorT err;
+		Index idx;
+		NameBase nb;
+		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+		    dbtype, &err, FMODE_ReadOnly, filename, Progress(), &idx, &nb));
+		ASSERT_NE(nullptr, codec);
+		ASSERT_EQ(OK, err);
+		ASSERT_EQ(gameGenerator.get().size(), size_t(idx.GetNumGames()));
+
+		gameGenerator.cmp(codec.get(), idx);
+	}
+}
+
+} // end of anonymous namespace
+
+class Test_Codec : public ::testing::TestWithParam<ICodecDatabase::Codec> {};
+
+TEST_P(Test_Codec, addGame_game) {
+	makeDatabase(GetParam(), "addGame_game",
+	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+		for (auto& game : gameGenerator.get()) {
+			ASSERT_EQ(OK, codec->addGame(game.get()));
+		}
+	});
+}
+
+TEST_P(Test_Codec, addGame_native) {
+	makeDatabase(GetParam(), "addGame_native",
+	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+		for (const auto& game : gameGenerator.getNative()) {
+			IndexEntry ie;
+			ie.Init();
+			ie.SetWhiteName(&nb, "Dummy White");
+			ie.SetBlackName(&nb, "Dummy Black");
+			ie.SetEventName(&nb, "Dummy Event");
+			ie.SetSiteName(&nb, "Dummy Site");
+			ie.SetRoundName(&nb, "Dummy Round");
+			ASSERT_EQ(OK, codec->addGame(&ie, game.data(), game.size()));
+		}
+	});
+}
+
+TEST_P(Test_Codec, saveGame_game) {
+	makeDatabase(GetParam(), "saveGame_game",
+	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+		const auto& games = gameGenerator.get();
+		for (size_t i = 0, n = games.size(); i < n; ++i) {
+			ASSERT_EQ(OK, codec->addGame(games[0].get()));
+		}
+		codec->flush();
+
+		std::vector<int> randIdx(games.size());
+		std::iota(randIdx.begin(), randIdx.end(), 0);
+		std::shuffle(randIdx.begin(), randIdx.end(), std::mt19937());
+		for (auto idx : randIdx) {
+			ASSERT_EQ(OK, codec->saveGame(games[idx].get(), idx));
+		}
+	});
+}
+
+TEST_P(Test_Codec, saveGame_native) {
+	makeDatabase(GetParam(), "saveGame_native",
+	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+		 const auto& games = gameGenerator.get();
+		 for (size_t i = 0, n = games.size(); i < n; ++i) {
+			 ASSERT_EQ(OK, codec->addGame(games[0].get()));
+		 }
+		 codec->flush();
+
+		 std::vector<int> randIdx(games.size());
+		 std::iota(randIdx.begin(), randIdx.end(), 0);
+		 std::shuffle(randIdx.begin(), randIdx.end(), std::mt19937());
+		 const auto& nativeGames = gameGenerator.getNative();
+		 for (auto idx : randIdx) {
+			 IndexEntry ie;
+			 ie.Init();
+			 ie.SetWhiteName(&nb, "Dummy White");
+			 ie.SetBlackName(&nb, "Dummy Black");
+			 ie.SetEventName(&nb, "Dummy Event");
+			 ie.SetSiteName(&nb, "Dummy Site");
+			 ie.SetRoundName(&nb, "Dummy Round");
+			 const auto& game = nativeGames[idx];
+			 ASSERT_EQ(OK, codec->saveGame(&ie, game.data(), game.size(), idx));
+		 }
+	});
+}
+
+// Try to get a ICodecDatabase pointer for each supported file mode, then test
+// the consistency of getType() and getFilenames().
 TEST_P(Test_Codec, fileModeT) {
 	ICodecDatabase::Codec dbtype = GetParam();
 	Supports supports(dbtype);
 
-	std::unique_ptr<ICodecDatabase> valid;
-	// Try to obtain a ICodecDatabase pointer for each file mode
+	struct Cleanup {
+		std::vector<std::string> filenames;
+
+		~Cleanup() {
+			for (const auto& fname : filenames) {
+				EXPECT_EQ(0, std::remove(fname.c_str()));
+			}
+		}
+	} cleanup;
+
 	for (auto& fmode : fmodes) {
 		Index idx;
 		NameBase nb;
 		errorT err;
-		ICodecDatabase* codec = ICodecDatabase::make(
-		    dbtype, &err, fmode, filename, Progress(), &idx, &nb);
+		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+		    dbtype, &err, fmode, filename, Progress(), &idx, &nb));
 
-		// Check if the codec should support the current file mode
 		if (supports("FMODE" + std::to_string(fmode))) {
 			ASSERT_NE(nullptr, codec);
 			EXPECT_EQ(dbtype, codec->getType());
+			auto tmp = codec->getFilenames();
+			if (cleanup.filenames.empty())
+				cleanup.filenames = tmp;
+			else
+				EXPECT_TRUE(tmp == cleanup.filenames);
 		} else {
 			EXPECT_EQ(nullptr, codec);
 		}
-
-		if (codec != nullptr) valid = std::unique_ptr<ICodecDatabase>(codec);
-	}
-
-	// Remove the files created
-	ASSERT_NE(nullptr, valid);
-	auto filenames = valid->getFilenames();
-	valid = nullptr; // Close the base
-	for (const auto& filename : filenames) {
-		EXPECT_EQ(0, std::remove(filename.c_str()));
 	}
 }
 
@@ -189,21 +336,21 @@ TEST_P(Test_Codec, create_emptyfilename) {
 	Index idx;
 	NameBase nb;
 	errorT err;
-	ICodecDatabase* codec = ICodecDatabase::make(dbtype, &err, FMODE_Create, "",
-	                                             Progress(), &idx, &nb);
+	auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+	    dbtype, &err, FMODE_Create, "", Progress(), &idx, &nb));
 
 	if (!supports("empty_filename")) {
 		EXPECT_EQ(nullptr, codec);
 	} else {
 		EXPECT_NE(nullptr, codec);
-		auto filenames = codec->getFilenames();
-		delete codec;
-		for (const auto& filename : filenames) {
-			EXPECT_EQ(0, std::remove(filename.c_str()));
+		for (const auto& fname : codec->getFilenames()) {
+			EXPECT_EQ(0, std::remove(fname.c_str()));
 		}
 	}
 }
 
+// Creates two databases; remove the first one and rename the second to the first.
+// This test mimic the process perfomed to finalize the compaction of a database.
 TEST_P(Test_Codec, rename) {
 	ICodecDatabase::Codec dbtype = GetParam();
 	Supports supports(dbtype);
@@ -211,182 +358,62 @@ TEST_P(Test_Codec, rename) {
 	if (!supports("FMODE" + std::to_string(FMODE_Create))) {
 		return;
 	}
+	struct Cleanup {
+		std::vector<std::string> filenames1, filenames2;
 
-	Index idx1, idx2;
-	NameBase nb1, nb2;
-	errorT err;
-	ICodecDatabase* codec1 = ICodecDatabase::make(
-	    dbtype, &err, FMODE_Create, filename, Progress(), &idx1, &nb1);
-	ASSERT_NE(nullptr, codec1);
+		~Cleanup() {
+			for (const auto& fname : filenames1) {
+				EXPECT_EQ(0, std::remove(fname.c_str()));
+			}
+			for (const auto& fname : filenames2) {
+				EXPECT_NE(0, std::remove(fname.c_str()));
+			}
+		}
+	} cleanup;
 
-	std::string renamed_name = std::string(filename) + "__renamed__";
-	ICodecDatabase* codec2 = ICodecDatabase::make(
-	    dbtype, &err, FMODE_Create, renamed_name.c_str(), Progress(), &idx2, &nb2);
-	ASSERT_NE(nullptr, codec2);
+	{
+		Index idx1, idx2;
+		NameBase nb1, nb2;
+		errorT err;
+		auto codec1 = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+		    dbtype, &err, FMODE_Create, filename, Progress(), &idx1, &nb1));
+		EXPECT_EQ(OK, codec1->flush());
+		ASSERT_NE(nullptr, codec1);
+		ASSERT_EQ(OK, err);
 
-	auto filenames1 = codec1->getFilenames();
-	auto filenames2 = codec2->getFilenames();
-	EXPECT_EQ(filenames1.size(), filenames2.size());
+		std::string renamed_name = std::string(filename) + "__renamed__";
+		auto codec2 = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
+		    dbtype, &err, FMODE_Create, renamed_name.c_str(), Progress(), &idx2,
+		    &nb2));
+		EXPECT_EQ(OK, codec2->flush());
+		ASSERT_NE(nullptr, codec2);
+		ASSERT_EQ(OK, err);
 
-	delete codec1;
-	delete codec2;
-	for (const auto& filename : filenames1) {
-		EXPECT_EQ(0, std::remove(filename.c_str()));
+		cleanup.filenames1 = codec1->getFilenames();
+		cleanup.filenames2 = codec2->getFilenames();
+		EXPECT_EQ(cleanup.filenames1.size(), cleanup.filenames2.size());
 	}
-	for (size_t i = 0, n = filenames2.size(); i < n; i++) {
-		const char* s1 = filenames1[i].c_str();
-		const char* s2 = filenames2[i].c_str();
+
+	for (const auto& fname : cleanup.filenames1) {
+		EXPECT_EQ(0, std::remove(fname.c_str()));
+	}
+	for (size_t i = 0, n = cleanup.filenames2.size(); i < n; i++) {
+		const char* s1 = cleanup.filenames1[i].c_str();
+		const char* s2 = cleanup.filenames2[i].c_str();
 		EXPECT_EQ(0, std::rename(s2, s1));
 	}
 
-	if (!supports("FMODE" + std::to_string(FMODE_ReadOnly))) {
-		return;
-	}
-	Index idx_reopen;
-	NameBase nb_reopen;
-	ICodecDatabase* codec3 = ICodecDatabase::make(
-	    dbtype, &err, FMODE_ReadOnly, filename, Progress(), &idx_reopen, &nb_reopen);
-	ASSERT_NE(nullptr, codec3);
-
-	// Remove the files created
-	auto filenames3 = codec3->getFilenames();
-	delete codec3;
-	for (const auto& filename : filenames3) {
-		EXPECT_EQ(0, std::remove(filename.c_str()));
-	}
-}
-
-TEST_P(Test_Codec, addsave) {
-	ICodecDatabase::Codec dbtype = GetParam();
-	Supports supports(dbtype);
-
-	fileModeT fMode = FMODE_Create;
-	if (!supports("FMODE" + std::to_string(fMode))) {
-		fMode = FMODE_Memory;
-	}
-
-	Index idx;
-	NameBase nb;
-	errorT err;
-	ICodecDatabase* codec = ICodecDatabase::make(dbtype, &err, fMode, filename,
-	                                             Progress(), &idx, &nb);
-	ASSERT_NE(nullptr, codec);
-
-	const byte* gameData = codec->getGameData(0, gameSimpleData_.size());
-	EXPECT_EQ(nullptr, gameData);
-
-	auto addNative = [&](auto&& ie, auto&& src, auto&& size) {
-		if (supports("addGame_native")) {
-			errorT err = codec->addGame(&ie, src, size);
-			EXPECT_EQ(OK, err);
-			size_t nGames = idx.GetNumGames();
-			EXPECT_TRUE(nGames > 0);
-			EXPECT_EQ(0, std::memcmp(&ie, idx.GetEntry(--nGames), sizeof(IndexEntry)));
-			EXPECT_EQ(size, ie.GetLength());
-			const byte* gameData =
-			    codec->getGameData(ie.GetOffset(), ie.GetLength());
-			ASSERT_NE(nullptr, codec);
-			EXPECT_TRUE(std::equal(src, src + size, gameData));
-		}
-	};
-	auto saveNative = [&](auto&& ie, auto&& src, auto&& size, auto&& replace) {
-		if (supports("saveGame_native")) {
-			errorT err = codec->saveGame(&ie, src, size, replace);
-			EXPECT_EQ(OK, err);
-			EXPECT_EQ(0, std::memcmp(&ie, idx.GetEntry(replace), sizeof(IndexEntry)));
-			EXPECT_EQ(size, ie.GetLength());
-			const byte* gameData =
-			    codec->getGameData(ie.GetOffset(), ie.GetLength());
-			ASSERT_NE(nullptr, codec);
-			EXPECT_TRUE(std::equal(src, src + size, gameData));
-		}
-	};
-	auto addGame = [&](auto&& game, auto&& src, auto&& size) {
-		if (supports("addGame_game")) {
-			errorT err = codec->addGame(&game);
-			EXPECT_EQ(OK, err);
-			size_t nGames = idx.GetNumGames();
-			EXPECT_TRUE(nGames > 0);
-			const IndexEntry* ie = idx.GetEntry(--nGames);
-			EXPECT_EQ(size, ie->GetLength());
-			const byte* gameData =
-			    codec->getGameData(ie->GetOffset(), ie->GetLength());
-			ASSERT_NE(nullptr, codec);
-			EXPECT_TRUE(std::equal(src, src + size, gameData));
-		}
-	};
-	auto saveGame = [&](auto&& game, auto&& src, auto&& size, auto&& replace) {
-		if (supports("saveGame_game")) {
-			errorT err = codec->saveGame(&game, replace);
-			EXPECT_EQ(OK, err);
-			const IndexEntry* ie = idx.GetEntry(replace);
-			EXPECT_EQ(size, ie->GetLength());
-			const byte* gameData =
-			    codec->getGameData(ie->GetOffset(), ie->GetLength());
-			ASSERT_NE(nullptr, codec);
-			EXPECT_TRUE(std::equal(src, src + size, gameData));
-		}
-	};
-
-	SetUpGames(nb);
-	addNative (gameSimpleIe_,  gameSimpleData_.data(),  gameSimpleData_.size());
-	saveNative(gameComplexIe_, gameComplexData_.data(), gameComplexData_.size(), 0);
-	saveGame  (gameSimple_,    gameSimpleData_.data(),  gameSimpleData_.size(),  0);
-	saveGame  (gameComplex_,   gameComplexData_.data(), gameComplexData_.size(), 0);
-	saveNative(gameSimpleIe_,  gameSimpleData_.data(),  gameSimpleData_.size(),  0);
-	addGame   (gameComplex_,   gameComplexData_.data(), gameComplexData_.size());
-	saveGame  (gameSimple_,    gameSimpleData_.data(),  gameSimpleData_.size(),  1);
-	saveNative(gameComplexIe_, gameComplexData_.data(), gameComplexData_.size(), 1);
-	saveNative(gameSimpleIe_,  gameSimpleData_.data(),  gameSimpleData_.size(),  1);
-	addGame   (gameSimple_,    gameSimpleData_.data(),  gameSimpleData_.size());
-	addNative (gameComplexIe_, gameComplexData_.data(), gameComplexData_.size());
-	saveGame  (gameComplex_,   gameComplexData_.data(), gameComplexData_.size(), 1);
-
-
-	codec->flush();
-
 	if (supports("FMODE" + std::to_string(FMODE_ReadOnly))) {
-		Index idxReopen;
-		NameBase nbReopen;
-		auto codec2 = std::unique_ptr<ICodecDatabase>(
+		errorT err;
+		Index idx_reopen;
+		NameBase nb_reopen;
+		auto codec3 = std::unique_ptr<ICodecDatabase>(
 		    ICodecDatabase::make(dbtype, &err, FMODE_ReadOnly, filename,
-		                         Progress(), &idxReopen, &nbReopen));
-		ASSERT_NE(nullptr, codec2);
+		                         Progress(), &idx_reopen, &nb_reopen));
+		ASSERT_NE(nullptr, codec3);
 
-		auto cmpGame = [&](auto gnum, auto& origIe, auto& origGData) {
-			const IndexEntry* ie = idxReopen.GetEntry(gnum);
-			IndexEntry tmpIe = origIe;
-			EXPECT_STREQ(tmpIe.GetWhiteName(&nb), ie->GetWhiteName(&nbReopen));
-			tmpIe.SetWhite(ie->GetWhite());
-			EXPECT_STREQ(tmpIe.GetBlackName(&nb), ie->GetBlackName(&nbReopen));
-			tmpIe.SetBlack(ie->GetBlack());
-			EXPECT_STREQ(tmpIe.GetEventName(&nb), ie->GetEventName(&nbReopen));
-			tmpIe.SetEvent(ie->GetEvent());
-			EXPECT_STREQ(tmpIe.GetSiteName(&nb), ie->GetSiteName(&nbReopen));
-			tmpIe.SetSite(ie->GetSite());
-			EXPECT_STREQ(tmpIe.GetRoundName(&nb), ie->GetRoundName(&nbReopen));
-			tmpIe.SetRound(ie->GetRound());
-			tmpIe.SetOffset(ie->GetOffset());
-			tmpIe.SetLength(ie->GetLength());
-			EXPECT_EQ(0, std::memcmp(ie, &tmpIe, sizeof(tmpIe)));
-
-			const byte* gameData =
-			    codec2->getGameData(ie->GetOffset(), ie->GetLength());
-			EXPECT_TRUE(
-			    std::equal(origGData.begin(), origGData.end(), gameData));
-		};
-
-		cmpGame(0, gameSimpleIe_, gameSimpleData_);
-		cmpGame(1, gameComplexIe_, gameComplexData_);
-		cmpGame(2, gameSimpleIe_, gameSimpleData_);
-		cmpGame(3, gameComplexIe_, gameComplexData_);
-	}
-
-	// Remove the files created
-	auto filenames = codec->getFilenames();
-	delete codec;
-	for (const auto& filename : filenames) {
-		EXPECT_EQ(0, std::remove(filename.c_str()));
+		auto filenames3 = codec3->getFilenames();
+		EXPECT_TRUE(cleanup.filenames1 == filenames3);
 	}
 }
 
