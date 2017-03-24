@@ -1,20 +1,26 @@
 /*
-# Copyright (C) 2016 Fulvio Benini
+ * Copyright (C) 2016-2017  Fulvio Benini
 
-* This file is part of Scid (Shane's Chess Information Database).
-*
-* Scid is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation.
-*
-* Scid is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Scid. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Scid (Shane's Chess Information Database).
+ *
+ * Scid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * Scid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/** @file
+ * Implements the CodecPgn class, which manages the databases encoded in PGN
+ * format.
+ */
 
 #ifndef CODEC_PGN_H
 #define CODEC_PGN_H
@@ -28,35 +34,33 @@
 #define override
 #endif
 
-class CodecPgn : public CodecProxy {
+class CodecPgn : public CodecProxy<CodecPgn> {
 	PgnParser parser_;
 	std::string filename_;
 	size_t fileSize_;
 	MFile file_;
 
 public:
-	virtual Codec getType() override { return ICodecDatabase::PGN; }
+	Codec getType() override { return ICodecDatabase::PGN; }
 
-	virtual std::vector<std::string> getFilenames() override {
+	std::vector<std::string> getFilenames() override {
 		return std::vector<std::string>(1, filename_);
 	};
 
-	virtual errorT flush() override {
+	errorT flush() override {
 		file_.Flush();
 		return CodecProxy::flush();
 	}
 
 	/**
-	* CodecPgn::open() - open/create a database
-	* @filename: full path of the database to be opened.
-	* @fMode:    valid file access mode.
-	*
-	* This function open/create a database in pgn format.
-	* After successfully opening/creating the file, the PgnParser object parser_
-	* is initialized to be ready for parseNext() calls.
-	* Return OK if successful or an error code.
-	*/
-	virtual errorT open(const char* filename, fileModeT fmode) override {
+	 * Opens/creates a PGN database.
+	 * After successfully opening/creating the file, the PgnParser object @e
+	 * parser_ is initialized to be ready for parseNext() calls.
+	 * @param filename: full path of the pgn file to be opened.
+	 * @param fMode:    valid file access mode.
+	 * @returns OK in case of success, an @p errorT code otherwise.
+	 */
+	errorT open(const char* filename, fileModeT fmode) {
 		filename_ = filename;
 		if (filename_.empty()) return ERROR_FileOpen;
 
@@ -72,27 +76,43 @@ public:
 
 		return res;
 	}
-	virtual errorT parseNext(Game* g) override {
+
+	/**
+	 * Reads the next game.
+	 * @param g: valid pointer to the Game object where the data will be stored.
+	 * @returns
+	 * - OK on success.
+	 * - ERROR_NotFound if there are no more games to be read.
+	 * - ERROR code if the game cannot be read and was skipped.
+	 */
+	errorT parseNext(Game* g) {
 		return parser_.ParseGame(g);
 	}
 
-	virtual std::pair<size_t, size_t> parseProgress() override {
+	/**
+	 * Returns info about the parsing progress.
+	 * @returns a pair<size_t, size_t> where first element is the quantity of
+	 * data parsed and second one is the total amount of data of the database.
+	 */
+	std::pair<size_t, size_t> parseProgress() {
 		return std::make_pair((size_t)parser_.BytesUsed(), fileSize_);
 	}
 
-	virtual const char* parseErrors() override {
+	/**
+	 * Returns the list of errors produced by parseNext() calls.
+	 */
+	const char* parseErrors() {
 		return parser_.ErrorMessages();
 	}
 
-protected:
+public:
 	/**
-	* dyn_addGame() - add a game to the database
-	* @game: valid pointer to a Game object with the new data.
-	*
-	* @game is encoded in pgn format and appended at the end of file_.
-	* Return OK if successful or an error code.
-	*/
-	virtual errorT dyn_addGame(Game* game) override {
+	 * Add a game into the database.
+	 * The @e game is encoded in pgn format and appended at the end of @e file_.
+	 * @param game: valid pointer to a Game object with the new data.
+	 * @returns OK in case of success, an @e errorT code otherwise.
+	 */
+	errorT dyn_addGame(Game* game) {
 		game->SetPgnFormat(PGN_FORMAT_Plain);
 		game->ResetPgnStyle(PGN_STYLE_TAGS | PGN_STYLE_VARS |
 		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
@@ -102,10 +122,6 @@ protected:
 		errorT err = file_.WriteNBytes(pgn.first, pgn.second);
 		if (err == OK) fileSize_ += pgn.second;
 		return err;
-	}
-
-	virtual errorT dyn_saveGame(Game* game, gamenumT replaced) override {
-		return ERROR_CodecUnsupFeat;
 	}
 };
 
