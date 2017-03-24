@@ -31,7 +31,6 @@ file(GLOB GTEST_SRC *.cpp)
 set(GTEST_EXTRA
   ../src/index.cpp
   ../src/namebase.cpp
-  ../src/gfile.cpp
   ../src/scidbase.cpp
   ../src/sortcache.cpp
   ../src/pgnparse.cpp ../src/misc.cpp ../src/mfile.cpp

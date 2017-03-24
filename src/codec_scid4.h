@@ -27,7 +27,7 @@
 
 #include "codec_memory.h"
 #include "common.h"
-#include "gfile.h"
+#include "filebuf.h"
 
 #if !CPP11_SUPPORT
 #define override
@@ -37,12 +37,11 @@
  * This class manages databases encoded in Scid format v4.
  */
 class CodecScid4 : public CodecMemory {
-	GFile gfile_;
 	std::string filename_;
+	FilebufAppend gfile_;
+	char gamecache_[128*1024];
 
 public:
-	virtual ~CodecScid4() { flush(); }
-
 	virtual Codec getType() override { return ICodecDatabase::SCID4; }
 
 	/**
@@ -53,12 +52,22 @@ public:
 		std::vector<std::string> res;
 		res.push_back(filename_ + INDEX_SUFFIX);
 		res.push_back(filename_ + NameBase::Suffix());
-		res.push_back(filename_ + GFILE_SUFFIX);
+		res.push_back(filename_ + ".sg4");
 		return res;
 	};
 
 	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
-		return gfile_.getGame(offset, length);
+		if (offset >= gfile_.size())
+			return NULL;
+		if (length > sizeof(gamecache_))
+			return NULL;
+
+		if (gfile_.pubseekpos(offset) == -1)
+			return NULL;
+		if (gfile_.sgetn(gamecache_, length) != std::streamsize(length))
+			return NULL;
+
+		return reinterpret_cast<const byte*>(gamecache_);
 	}
 
 	virtual errorT flush() override {
@@ -67,7 +76,7 @@ public:
 
 		err = idx_->flush();
 		if (err == OK) err = nb_->flush(idx_);
-		errorT errGfile = gfile_.flush();
+		errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 
 		return (err == OK) ? errGfile : err;
 	}
@@ -84,13 +93,14 @@ protected:
 		filename_ = filename;
 		if (filename_.empty()) return ERROR_FileOpen;
 
+		err = gfile_.open(filename_ + ".sg4", fMode);
+		if (err != OK) return err;
+
 		if (fMode == FMODE_Create) {
 			err = idx->Create(filename);
 			if (err == OK) err = nb->Create(filename);
-			if (err == OK) err = gfile_.Create(filename);
 		} else {
 			err = idx->Open(filename, fMode);
-			if (err == OK) err = gfile_.Open(filename, fMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
 			if (err == OK) err = idx->ReadEntireFile(nb, progress);
 		}
@@ -98,9 +108,33 @@ protected:
 		return err;
 	}
 
-	virtual errorT dyn_addGameData(const byte* src, size_t length,
-	                               uint32_t& resOffset) override {
-		return gfile_.addGame(src, length, resOffset);
+	virtual std::pair<errorT, uint32_t>
+	dyn_addGameData(const byte* src, size_t length) override {
+		ASSERT(length <= std::numeric_limits<std::streamsize>::max());
+		const char* data = reinterpret_cast<const char*>(src);
+
+		// The Scid4 format uses 32-bits to store games' offset.
+		size_t offset = gfile_.size();
+		static const uint32_t MAXSZ = std::numeric_limits<uint32_t>::max();
+		if (offset >= MAXSZ || length >= MAXSZ - offset)
+			return std::make_pair(ERROR_Full, 0);
+
+		// The Scid4 format stores games into blocks of 128KB.
+		// If the current block does not have enough space, we fill it with
+		// random data and use the next one.
+		static const size_t GF_BLOCK = 128 * 1024;
+		if (length > GF_BLOCK)
+			return std::make_pair(ERROR_Full, 0);
+		size_t blockSpace = GF_BLOCK - (offset % GF_BLOCK);
+		if (blockSpace < length) {
+			errorT err = gfile_.append(data, blockSpace);
+			if (err != OK)
+				return std::make_pair(err, 0);
+			offset += blockSpace;
+		}
+
+		errorT err = gfile_.append(data, length);
+		return std::make_pair(err, uint32_t(offset));
 	}
 };
 

@@ -63,11 +63,9 @@ public:
 	}
 
 	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
-		const byte* res = 0;
-		if (offset + length <= v_.size()) {
-			res = v_.data() + offset;
-		}
-		return res;
+		ASSERT(offset < v_.size());
+		ASSERT(length <= v_.size() - offset);
+		return v_.data() + offset;
 	}
 
 	virtual errorT addGame(IndexEntry* ie, const byte* src, size_t length) override {
@@ -122,16 +120,16 @@ protected:
 	 * data (usable to retrieve the data with getGameData()).
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
-	virtual errorT dyn_addGameData(const byte* src, size_t length,
-	                               uint32_t& resOffset) {
+	virtual std::pair<errorT, uint32_t> dyn_addGameData(const byte* src,
+	                                                    size_t length) {
 		ASSERT(src != 0);
 
-		if (std::numeric_limits<uint32_t>::max() - v_.size() <= length)
-			return ERROR_BufferFull;
+		if (v_.size() >= std::numeric_limits<uint32_t>::max())
+			return std::make_pair(ERROR_Full, 0);
 
-		resOffset = v_.size();
+		uint32_t res = v_.size();
 		v_.insert(v_.end(), src, src + length);
-		return OK;
+		return std::make_pair(OK, res);
 	}
 
 private:
@@ -155,11 +153,10 @@ private:
 	                 bool replace = false, gamenumT replaced = 0) {
 		if (replace && replaced >= idx_->GetNumGames()) return ERROR_BadArg;
 
-		uint32_t offset;
-		errorT err = dyn_addGameData(src, length, offset);
-		if (err != OK) return err;
-
-		ie->SetOffset(offset);
+		std::pair<errorT, uint32_t> offset = dyn_addGameData(src, length);
+		if (offset.first != OK)
+			return offset.first;
+		ie->SetOffset(offset.second);
 		ie->SetLength(length);
 
 		if (replace)
