@@ -549,7 +549,6 @@ Position::Position() {
     // Setting up a valid board is left to StdStart() or Clear().
     Board [COLOR_SQUARE] = EMPTY;
     Board [NULL_SQUARE] = END_OF_BOARD;
-	LegalMoves.Clear();
     StrictCastling = true;
 
     // Make sure all tables used for move generation, hashing,
@@ -585,7 +584,6 @@ Position::Clear (void)
     HalfMoveClock = 0;
     Hash = 0;
     PawnHash = 0;
-	LegalMoves.Clear();
     return;
 }
 
@@ -793,11 +791,6 @@ Position::GenerateMoves (MoveList* mlistRes, pieceT pieceType,
     bool genNonCaptures = (genType & GEN_NON_CAPS);
     bool capturesOnly = !genNonCaptures;
 
-    if (LegalMoves.Size() > 0 && pieceType == EMPTY && genType == GEN_ALL_MOVES) {
-        if (mlistRes != NULL) *mlistRes = LegalMoves;
-        return;
-    }
-
     uint mask = 0;
     if (pieceType != EMPTY) {
         mask = 1 << pieceType;
@@ -873,10 +866,6 @@ Position::GenerateMoves (MoveList* mlistRes, pieceT pieceType,
     if (mask & (1 << KING)) {
         bool castling = !numChecks;
         GenKingMoves (mlist, genType, castling);
-    }
-
-    if (pieceType == EMPTY && genType == GEN_ALL_MOVES) {
-        if (mlist != &LegalMoves) LegalMoves = *mlist;
     }
 }
 
@@ -1818,7 +1807,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
     HalfMoveClock++;
     PlyCounter++;
-	LegalMoves.Clear();
 
     // Check for a null (empty) move:
     if (sm->isNullMove()) {
@@ -1961,7 +1949,6 @@ Position::UndoSimpleMove (simpleMoveT * m)
     PlyCounter--;
     ToMove = color_Flip(ToMove);
     m->pieceNum = ListPos[to];
-	LegalMoves.Clear();
 
     // Check for a null move:
     if (m->isNullMove()) {
@@ -2048,8 +2035,6 @@ Position::RelocatePiece (squareT fromSq, squareT toSq)
 
     // If squares are identical, just return success:
     if (fromSq == toSq) { return OK; }
-
-	LegalMoves.Clear();
 
     pieceT piece = Board[fromSq];
     pieceT ptype = piece_Type(piece);
@@ -2217,7 +2202,6 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
     // Now do the check or mate symbol:
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
-		MoveList backup = LegalMoves;
         DoSimpleMove (m);
         if (CalcNumChecks (GetKingSquare()) > 0) {
             char ch = '+';
@@ -2229,7 +2213,6 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
             *c++ = ch;
         }
         UndoSimpleMove (m);
-		LegalMoves = backup;
     }
     *c = 0;
 }
@@ -2618,9 +2601,7 @@ Position::ReadLine (const char * line)
 void
 Position::CalcSANStrings (sanListT *sanList, sanFlagT flag)
 {
-	if( LegalMoves.Size() == 0) {
-        GenerateMoves();
-	}
+    GenerateMoves();
     for (ushort i=0; i < LegalMoves.Size(); i++) {
         MakeSANString (LegalMoves.Get(i), sanList->list[i], flag);
     }
@@ -3213,7 +3194,6 @@ Position::Random (const char * material)
     pieceT pieces [32];         // List of pieces excluding kings
     uint nPieces[2] = {0, 0};   // Number of pieces per side excluding kings.
     uint total = 0;             // Total number of pieces excluding kings.
-	LegalMoves.Clear();
 
     colorT side = WHITE;
 

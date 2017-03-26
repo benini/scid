@@ -151,7 +151,7 @@ public:
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }
     byte *      GetMaterial ()           { return Material; }
-    void        SetEPTarget (squareT s)  { EPTarget = s; LegalMoves.Clear();}
+    void        SetEPTarget (squareT s)  { EPTarget = s; }
     squareT     GetEPTarget ()           { return EPTarget; }
     void        SetToMove (colorT c)     { ToMove = c; }
     colorT      GetToMove ()             { return ToMove; }
@@ -203,9 +203,9 @@ public:
     bool        GetCastling (colorT c, castleDirT dir);
     inline bool CastlingPossible () { return (Castling ? true : false); }
     byte        GetCastlingFlags () { return Castling; }
-    void        SetCastlingFlags (byte b) { Castling = b; LegalMoves.Clear(); }
+    void        SetCastlingFlags (byte b) { Castling = b; }
 
-    void        SetStrictCastling (bool b) { StrictCastling = b; LegalMoves.Clear(); }
+    void        SetStrictCastling (bool b) { StrictCastling = b; }
     bool        GetStrictCastling (void) { return StrictCastling; }
 
     // Hashing
