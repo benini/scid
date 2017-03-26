@@ -20,6 +20,7 @@
     #define snprintf _snprintf
 #endif
 
+namespace {
 
 const uint MAX_COMMENT_SIZE = 16000;
 
@@ -44,33 +45,39 @@ bool charIsSpace (unsigned char c) {
 }
 
 /**
- * pgnLatin1_to_utf8() - convert a char to utf-8 enconding
- * @c: pointer to a null terminated string
- *
+ * Convert a string form ISO 8859/1 (Latin1) to UTF-8.
  * The PGN standard use a subset of ISO 8859/1 (Latin 1):
  * Code value from 0 to 126 are the standard ASCII character set
  * Code value from 127 to 191 are not used for PGN data representation.
  * Code value from 192 to 255 are mostly alphabetic printing characters with
  * various diacritical marks; their use is encouraged for those languages
  * that require such characters.
+ * Latin1 chars must be converted because the Tcl/tk framework uses UTF-8.
+ * @param s: the string to be converted.
+ * @returns @e true is the string was modified.
  */
-std::string pgnLatin1_to_utf8 (const char* c) {
-    std::string res;
-    res = *c;
-    uint8_t v = *c;
-    if (v >= 192) {
-        // Because @c is required to be a null terminated string, it is safe
-        // to access the next char (if @c is the last char, next will be 0)
-        uint8_t next = *(c+1);
-        if ((next >> 6) != 0x02) {
-            //Not a valid utf-8 sequence
-            //Assume it's Latin1 and convert it to utf-8
-            res = static_cast<uint8_t>(0xC3);
-            res += static_cast<uint8_t>(v & 0xBF);
-        }
-    }
-    return res;
+bool pgnLatin1_to_UTF8(std::string& s) {
+	bool res = false;
+	for (std::string::iterator it = s.begin(); it != s.end(); ++it) {
+		unsigned char v = *it;
+		if (v >= 192) {
+			std::string::iterator next = it + 1;
+			if (next != s.end()) {
+				unsigned char nextCh = *next;
+				if ((nextCh >> 6) == 0x02)
+					continue;
+			}
+			// Not a valid UTF-8 sequence: assume it's a Latin1 char and
+			// convert it.
+			res = true;
+			it = s.insert(it, char(0xC3));
+			*++it = v & 0xBF;
+		}
+	}
+	return res;
 }
+
+} // end of anonymous namespace.
 
 void
 PgnParser::Reset()
@@ -298,7 +305,7 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
 {
     const uint maxTagLength = 255;
     char tag [255];
-    char value [255];
+    char value [512];
 
     // Skip any initial whitespace:
     while (charIsSpace(*buffer)  &&  *buffer != 0) { buffer++; }
@@ -339,11 +346,12 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
     if (! seenEndQuote) { return ERROR_PGNTag; }
     value[lastQuoteIndex] = 0;
 
-    std::string tmpUft8;
-    for (const char* i = value; i != value + lastQuoteIndex; i++) {
-        tmpUft8 += pgnLatin1_to_utf8(i);
+    std::string tmpUTF8(value, value + lastQuoteIndex);
+    if (pgnLatin1_to_UTF8(tmpUTF8)) {
+        ASSERT(tmpUTF8.length() < sizeof(value));
+        std::copy(tmpUTF8.begin(), tmpUTF8.end(), value);
+        value[tmpUTF8.length()] = 0;
     }
-    std::copy(tmpUft8.c_str(), tmpUft8.c_str() + tmpUft8.length() + 1, value);
 
     // Now decide what to add to the game based on this tag:
     if (strEqual (tag, "White")) {
@@ -1136,15 +1144,8 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
 
         case TOKEN_Comment: {
             std::string comment = GetComment();
-
-            std::string tmpUft8;
-            const char* end = comment.c_str() + comment.length();
-            for (const char* i = comment.c_str(); i != end; i++) {
-                tmpUft8 += pgnLatin1_to_utf8(i);
-            }
-
-            game->SetMoveComment(tmpUft8.c_str());
-
+            pgnLatin1_to_UTF8(comment);
+            game->SetMoveComment(comment.c_str());
             } break;
 
         case TOKEN_LineComment:
