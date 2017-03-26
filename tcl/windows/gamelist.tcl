@@ -989,6 +989,8 @@ set glist_Headers {"GlistNumber" "GlistResult" "GlistLength" "GlistWhite" "Glist
                    "GlistFlags" "GlistECO" "GlistEndMaterial" "GlistStart" "GlistEDate"
                    "GlistYear" "GlistAverageElo" "GlistRating" "GlistMoveField" }
 
+set glist_DefaultOrder {+ + - + - + - - + + + - - - - - + + - - - - - +}
+
 set glist_SortShortcuts { "N" "r" "m" "w" "W"
                     "b" "B" "d" "e" "n"
                     "s" "A" "C" "V" "D"
@@ -1333,7 +1335,8 @@ proc glist.sort_ {{w} {col_idx} {layout} {clear 0}} {
 
   set exists [lsearch -exact $::glist_Sort($layout) $col_idx ]
   if {$exists == -1} {
-    lappend ::glist_Sort($layout) $col_idx -
+    set order [lindex $::glist_DefaultOrder $col_idx]
+    lappend ::glist_Sort($layout) $col_idx $order
   } else {
     incr exists
     if {[lindex $::glist_Sort($layout) $exists ] == "+"} {
