@@ -109,8 +109,6 @@ private:
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
 
-    MoveList        LegalMoves;     // list of legal moves
-
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Private Functions
 
@@ -219,8 +217,7 @@ public:
                                SquareSet * sqset, bool capturesOnly);
 
     // Generate all legal moves:
-    void  GenerateMoves (MoveList* mlistRes, pieceT mask, genMovesT genType, bool maybeInCheck);
-    void  GenerateMoves () { GenerateMoves (NULL, EMPTY, GEN_ALL_MOVES, true); }
+    void  GenerateMoves (MoveList* mlist, pieceT mask, genMovesT genType, bool maybeInCheck);
     void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }

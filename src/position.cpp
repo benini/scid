@@ -785,9 +785,11 @@ Position::GenPieceMoves (MoveList * mlist, squareT fromSq,
 //    If the specified pieceType is not EMPTY, then only legal
 //    moves for that type of piece are generated.
 void
-Position::GenerateMoves (MoveList* mlistRes, pieceT pieceType,
+Position::GenerateMoves (MoveList* mlist, pieceT pieceType,
                          genMovesT genType, bool maybeInCheck)
 {
+    ASSERT(mlist != NULL);
+
     bool genNonCaptures = (genType & GEN_NON_CAPS);
     bool capturesOnly = !genNonCaptures;
 
@@ -800,7 +802,6 @@ Position::GenerateMoves (MoveList* mlistRes, pieceT pieceType,
     }
 
     // Use the objects own move list if none was provided:
-    MoveList* mlist = (mlistRes != NULL) ? mlistRes : &LegalMoves;
     mlist->Clear();
 
     // Compute which pieces of the side to move are pinned to the king:
@@ -969,14 +970,10 @@ Position::IsLegalMove (simpleMoveT * sm) {
 void
 Position::MatchLegalMove (MoveList * mlist, pieceT mask, squareT target)
 {
-    uint x;
-
     // This function isn't for Pawn or King moves!
     ASSERT (mask != PAWN  &&  mask != KING);
+    ASSERT(mlist != NULL);
 
-    if (mlist == NULL) {
-        mlist = &LegalMoves;
-    }
     mlist->Clear();
 
     uint count = 0;
@@ -1000,7 +997,7 @@ Position::MatchLegalMove (MoveList * mlist, pieceT mask, squareT target)
     // since the King is always the piece at position 0 in the list.
 
     squareT * sqPtr = &(List[ToMove][1]);
-    for (x=1;  x < Count[ToMove]  &&  count < total;  x++, sqPtr++) {
+    for (uint x=1;  x < Count[ToMove]  &&  count < total;  x++, sqPtr++) {
         p = Board[*sqPtr];
         pt = piece_Type(p);
         if (pt == mask) {
@@ -1092,6 +1089,7 @@ Position::MatchLegalMove (MoveList * mlist, pieceT mask, squareT target)
 errorT
 Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote)
 {
+    ASSERT(mlist != NULL);
     pieceT promote2 = promote;
 
     mlist->Clear();
@@ -1210,6 +1208,8 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
 errorT
 Position::MatchKingMove (MoveList * mlist, squareT target)
 {
+    ASSERT(mlist != NULL);
+
     mlist->Clear();
     squareT kingSq = GetKingSquare(ToMove);
     sint diff = (int)target - (int) kingSq;
@@ -1294,6 +1294,7 @@ void
 Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
                             SquareList * checkSquares)
 {
+    ASSERT(mlist != NULL);
     uint numChecks = checkSquares->Size();
     
     // Assert that king IS actually in check:    
@@ -2285,10 +2286,10 @@ Position::ReadCoordMove (simpleMoveT * m, const char * str, bool reverse)
     to = square_Make (toFyle, toRank);
     if (to == NS) { return ERROR_InvalidMove; }
 
-    GenerateMoves();
-
-    for (uint i=0; i < LegalMoves.Size(); i++) {
-        simpleMoveT * sm = LegalMoves.Get(i);
+    MoveList mlist;
+    GenerateMoves(&mlist);
+    for (size_t i = 0, n = mlist.Size(); i < n; i++) {
+        simpleMoveT* sm = mlist.Get(i);
         if (sm->promote == promo) {
             if (sm->from == from  &&  sm->to == to) {
                 *m = *sm;
@@ -2601,11 +2602,12 @@ Position::ReadLine (const char * line)
 void
 Position::CalcSANStrings (sanListT *sanList, sanFlagT flag)
 {
-    GenerateMoves();
-    for (ushort i=0; i < LegalMoves.Size(); i++) {
-        MakeSANString (LegalMoves.Get(i), sanList->list[i], flag);
+    MoveList mlist;
+    GenerateMoves(&mlist);
+    for (size_t i = 0, n = mlist.Size(); i < n; i++) {
+        MakeSANString(mlist.Get(i), sanList->list[i], flag);
     }
-    sanList->num = LegalMoves.Size();
+    sanList->num = mlist.Size();
     sanList->current = true;
 }
 
