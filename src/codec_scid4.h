@@ -42,13 +42,13 @@ class CodecScid4 : public CodecMemory {
 	char gamecache_[128*1024];
 
 public:
-	virtual Codec getType() override { return ICodecDatabase::SCID4; }
+	Codec getType() override { return ICodecDatabase::SCID4; }
 
 	/**
-	* Returns the full path of the three files (index, namebase and gamefile)
-	* used by the database.
-	*/
-	virtual std::vector<std::string> getFilenames() override {
+	 * Returns the full path of the three files (index, namebase and gamefile)
+	 * used by the database.
+	 */
+	std::vector<std::string> getFilenames() override {
 		std::vector<std::string> res;
 		res.push_back(filename_ + INDEX_SUFFIX);
 		res.push_back(filename_ + NameBase::Suffix());
@@ -56,7 +56,7 @@ public:
 		return res;
 	};
 
-	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
+	const byte* getGameData(uint32_t offset, uint32_t length) override {
 		if (offset >= gfile_.size())
 			return NULL;
 		if (length > sizeof(gamecache_))
@@ -70,7 +70,7 @@ public:
 		return reinterpret_cast<const byte*>(gamecache_);
 	}
 
-	virtual errorT flush() override {
+	errorT flush() override {
 		errorT err = CodecMemory::flush();
 		if (err != OK) return err;
 
@@ -82,9 +82,9 @@ public:
 	}
 
 protected:
-	virtual errorT dyn_open(fileModeT fMode, const char* filename,
-	                        const Progress& progress, Index* idx,
-	                        NameBase* nb) override {
+	errorT dyn_open(fileModeT fMode, const char* filename,
+	                const Progress& progress, Index* idx,
+	                NameBase* nb) override {
 		if (filename == 0 || idx == 0 || nb == 0) return ERROR;
 
 		errorT err = CodecMemory::dyn_open(FMODE_Memory, 0, progress, idx, nb);
@@ -108,8 +108,8 @@ protected:
 		return err;
 	}
 
-	virtual std::pair<errorT, uint32_t>
-	dyn_addGameData(const byte* src, size_t length) override {
+	std::pair<errorT, uint32_t> dyn_addGameData(const byte* src,
+	                                            size_t length) override {
 		ASSERT(length <= std::numeric_limits<std::streamsize>::max());
 		const char* data = reinterpret_cast<const char*>(src);
 

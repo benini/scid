@@ -56,28 +56,28 @@ private:
 public:
 	CodecMemory() : idx_(0), nb_(0), bbuf_(BBUF_SIZE) {}
 
-	virtual Codec getType() override { return ICodecDatabase::MEMORY; }
+	Codec getType() override { return ICodecDatabase::MEMORY; }
 
-	virtual std::vector<std::string> getFilenames() override {
+	std::vector<std::string> getFilenames() override {
 		return std::vector<std::string>();
 	}
 
-	virtual const byte* getGameData(uint32_t offset, uint32_t length) override {
+	const byte* getGameData(uint32_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);
 		return v_.data() + offset;
 	}
 
-	virtual errorT addGame(IndexEntry* ie, const byte* src, size_t length) override {
+	errorT addGame(IndexEntry* ie, const byte* src, size_t length) override {
 		return doAddGame(ie, src, length);
 	}
 
-	virtual errorT saveGame(IndexEntry* ie, const byte* src, size_t length,
-	                        gamenumT replaced) override {
+	errorT saveGame(IndexEntry* ie, const byte* src, size_t length,
+	                gamenumT replaced) override {
 		return doAddGame(ie, src, length, true, replaced);
 	}
 
-	virtual errorT addGame(Game* game) override {
+	errorT addGame(Game* game) override {
 		IndexEntry ie;
 		errorT err = encodeGame(game, &ie, &bbuf_);
 		if (err != OK) return err;
@@ -85,7 +85,7 @@ public:
 		return doAddGame(&ie, bbuf_.getData(), bbuf_.GetByteCount());
 	}
 
-	virtual errorT saveGame(Game* game, gamenumT replaced) override {
+	errorT saveGame(Game* game, gamenumT replaced) override {
 		IndexEntry ie;
 		errorT err = encodeGame(game, &ie, &bbuf_);
 		if (err != OK) return err;
@@ -93,13 +93,13 @@ public:
 		return doAddGame(&ie, bbuf_.getData(), bbuf_.GetByteCount(), true, replaced);
 	}
 
-	virtual errorT flush() override {
+	errorT flush() override {
 		return OK;
 	}
 
 protected:
-	virtual errorT dyn_open(fileModeT fMode, const char*, const Progress&,
-	                        Index* idx, NameBase* nb) override {
+	errorT dyn_open(fileModeT fMode, const char*, const Progress&, Index* idx,
+	                NameBase* nb) override {
 		if (idx == 0 || nb == 0) return ERROR;
 		if (fMode != FMODE_Memory) return ERROR;
 		idx_ = idx;
@@ -127,9 +127,9 @@ protected:
 		if (v_.size() >= std::numeric_limits<uint32_t>::max())
 			return std::make_pair(ERROR_Full, 0);
 
-		uint32_t res = v_.size();
+		uint32_t offset = v_.size();
 		v_.insert(v_.end(), src, src + length);
-		return std::make_pair(OK, res);
+		return std::make_pair(OK, offset);
 	}
 
 private:
