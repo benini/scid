@@ -22,7 +22,6 @@
 #include "sqmove.h"
 #include "dstring.h"
 #include <algorithm>
-#include <string.h>
 
 static uint hashVal [16][64];
 static uint stdStartHash = 0;
@@ -2237,8 +2236,12 @@ Position::MakeUCIString (simpleMoveT * m, char * s)
 
     if (from == to && to != NULL_SQUARE) {
       // UCI standard for null move
-      strcpy (c,"0000");
-      return;
+        c[0] = '0';
+        c[1] = '0';
+        c[2] = '0';
+        c[3] = '0';
+        c[4] = 0;
+        return;
     }
 
     *c++ = square_FyleChar(from);

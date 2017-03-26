@@ -17,7 +17,7 @@
 #define SCID_FILTER_H
 
 #include "common.h"
-#include <cstring>
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -150,7 +150,7 @@ inline void Filter::Fill (byte value)
     } else {
         if (Data == NULL) Allocate();
         FilterCount = (value != 0) ? FilterSize : 0;
-        std::memset(Data, value, FilterSize);
+        std::fill(Data, Data + FilterSize, value);
     }
 }
 

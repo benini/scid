@@ -23,7 +23,7 @@
 #include "textbuf.h"
 #include "stored.h"
 #include "dstring.h"
-#include <string.h>
+#include <cstring>
 
 // Piece letters translation
 int language = 0; // default to english
@@ -1073,8 +1073,8 @@ Game::MainVariation ()
     buffer.comment   = CurrentMove->comment;
     buffer.next      = CurrentMove->next;
     buffer.nagCount  = CurrentMove->nagCount;
-    memcpy (buffer.san, CurrentMove->san, sizeof buffer.san);
-    memcpy (buffer.nags, CurrentMove->nags, sizeof buffer.nags);
+    std::memcpy (buffer.san, CurrentMove->san, sizeof buffer.san);
+    std::memcpy (buffer.nags, CurrentMove->nags, sizeof buffer.nags);
 
     m = CurrentMove->varChild->next; // first move in first variation
 
@@ -1082,15 +1082,15 @@ Game::MainVariation ()
     CurrentMove->comment   = m->comment;
     CurrentMove->next      = m->next;
     CurrentMove->nagCount  = m->nagCount;
-    memcpy (CurrentMove->san, m->san, sizeof CurrentMove->san);
-    memcpy (CurrentMove->nags, m->nags, sizeof CurrentMove->nags);
+    std::memcpy (CurrentMove->san, m->san, sizeof CurrentMove->san);
+    std::memcpy (CurrentMove->nags, m->nags, sizeof CurrentMove->nags);
 
     m->moveData  = buffer.moveData;
     m->comment   = buffer.comment;
     m->next      = buffer.next;
     m->nagCount  = buffer.nagCount;
-    memcpy (m->san, buffer.san, sizeof m->san);
-    memcpy (m->nags, buffer.nags, sizeof m->nags);
+    std::memcpy (m->san, buffer.san, sizeof m->san);
+    std::memcpy (m->nags, buffer.nags, sizeof m->nags);
 
     CurrentMove->next->prev = CurrentMove;
     m->next->prev = m;

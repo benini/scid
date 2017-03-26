@@ -21,7 +21,7 @@
 #include "index.h"
 #include "namebase.h"
 #include "sortcache.h"
-#include <string.h>
+#include <cstring>
 
 void Index::Init ()
 {
@@ -31,7 +31,7 @@ void Index::Init ()
     Header.baseType = 0;
     Header.autoLoad = 1;
     Header.description[0] = 0;
-    memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
+    std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
     Header.dirty_ = false;
     FilePtr = NULL;
     fileMode_ = FMODE_Memory;
@@ -296,7 +296,7 @@ void Index::FreeSortCache(const char* criteria) const
 
 errorT Index::GetRange(const NameBase* nbase, const char* criteria, uint idx,
                        uint count, const HFilter& filter, uint* result) const {
-    ASSERT(criteria != 0 && strlen(criteria) > 1);
+    ASSERT(criteria != 0 && *criteria != 0);
     ASSERT(filter != 0);
     ASSERT(result != 0);
     if (criteria[0] == 'N') {
@@ -337,7 +337,7 @@ errorT Index::GetRange(const NameBase* nbase, const char* criteria, uint idx,
 uint Index::GetRangeLocation(const NameBase* nbase, const char* criteria,
                              const HFilter& filter, uint gnumber) const {
     ASSERT(nbase != 0);
-    ASSERT(criteria != 0 && strlen(criteria) > 1);
+    ASSERT(criteria != 0 && *criteria != 0);
     ASSERT(filter != 0);
     for (uint i = 0; i < SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] == NULL) continue;

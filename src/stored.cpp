@@ -57,7 +57,7 @@ public:
 		}
 	}
 	bool operator==(const Board& b) const {
-		return (memcmp(b_, b.b_, sizeof b_) == 0);
+		return (std::memcmp(b_, b.b_, sizeof b_) == 0);
 	}
 	bool neverMatch(const Board& m) const {
 		// Pawns allows to exclude some games:

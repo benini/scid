@@ -20,7 +20,7 @@
 
 #include "common.h"
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
 #include <cstdlib>
@@ -495,7 +495,7 @@ inline uint strTrimRight (char* target, const char* trimChars)
 	int oldSz = strlen(target);
 	int sz = oldSz;
 	while (--sz >= 0) {
-		if (strchr(trimChars, target[sz]) == 0) break;
+		if (std::strchr(trimChars, target[sz]) == 0) break;
 	}
 	if (++sz == oldSz) return 0;
 	target[sz] = 0;

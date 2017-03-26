@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "filter.h"
+#include <cstring>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -86,7 +87,7 @@ CompressedFilter::CompressFrom (Filter * filter)
     byte * tempBuf = new byte [CFilterSize + OVERFLOW_BYTES];
     CompressedLength = packBytemap (filter->Data, tempBuf, CFilterSize);
     CompressedData = new byte [CompressedLength];
-    memcpy (CompressedData, tempBuf, CompressedLength);
+    std::memcpy (CompressedData, tempBuf, CompressedLength);
     delete[] tempBuf;
 
     // Assert that the compressed filter decompresses identical to the
@@ -246,7 +247,7 @@ packBytemap (const byte * inBuffer, byte * outBuffer, uint inLength)
     // Switch to regular copying if necessary:
     if (outBytes > inLength) {
         outBuffer[0] = FLAG_Copied;
-        memcpy (outBuffer + 1, inBuffer, inLength);
+        std::memcpy (outBuffer + 1, inBuffer, inLength);
         return (inLength + 1);
     }
 
@@ -285,7 +286,7 @@ unpackBytemap (const byte * inBuffer, byte * outBuffer, uint inLength,
     if (inBuffer[0] == FLAG_Copied) {
         // outLength MUST be one shorter than inLength:
         if (outLength + 1 != inLength) { return ERROR_Corrupt; }
-        memcpy (outBuffer, inBuffer + 1, outLength);
+        std::memcpy (outBuffer, inBuffer + 1, outLength);
         return OK;
     }
     if (inBuffer[0] != FLAG_Packed) { return ERROR_Corrupt; }
