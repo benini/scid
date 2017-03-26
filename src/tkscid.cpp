@@ -519,7 +519,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 // Print the game, skipping any corrupt games:
                 const IndexEntry* ie = db->getIndexEntry(i);
                 if (ie->GetLength() == 0) { continue; }
-                db->bbuf->Empty();
                 if (db->getGame(ie, db->bbuf) != OK) {
                     continue;
                 }
@@ -1118,7 +1117,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ie->GetLength() == 0) { continue; }
-        db->bbuf->Empty();
         if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
@@ -1236,7 +1234,6 @@ sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const char **
     if (db == clipbase) { return TCL_OK; }
 
     uint location = clipbase->game->GetPgnOffset ();
-    db->bbuf->Empty();
     if (clipbase->game->Encode (db->bbuf, NULL) != OK) {
         return errorResult (ti, "Error encoding game.");
     }
@@ -3606,7 +3603,6 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     db->gameAlterations.clear();
     
-    db->bbuf->Empty();
     uint gnum = strGetUnsigned (argv[2]);
 
     // Check the game number is valid::
@@ -3676,7 +3672,6 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Load the merge game:
 
     const IndexEntry* ie = base->getIndexEntry(gnum);
-    base->bbuf->Empty();
     if (base->getGame(ie, base->bbuf) != OK) {
         return errorResult (ti, "Error loading game.");
     }
@@ -4447,7 +4442,6 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         gnum--;
         const IndexEntry* ie = base->getIndexEntry(gnum);
-        base->bbuf->Empty();
         if (base->getGame(ie, base->bbuf) != OK) {
             return errorResult (ti, "Error loading game.");
         }
