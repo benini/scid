@@ -46,6 +46,7 @@
  */
 template <typename Derived>
 class CodecProxy : public CodecMemory {
+protected:
 	/**
 	 * Opens/creates a database encoded in a non-native format.
 	 * @param filename: full path of the database to be opened.
@@ -64,19 +65,25 @@ class CodecProxy : public CodecMemory {
 	 * - ERROR_NotFound if there are no more games to be read.
 	 * - ERROR code if the game cannot be read and was skipped.
 	 */
-	errorT parseNext(Game* g);
+	errorT parseNext(Game* g) {
+		return ERROR_NotFound;
+	}
 
 	/**
 	 * Returns info about the parsing progress.
 	 * @returns a pair<size_t, size_t> where first element is the quantity of
 	 * data parsed and second one is the total amount of data of the database.
 	 */
-	std::pair<size_t, size_t> parseProgress();
+	std::pair<size_t, size_t> parseProgress() {
+		return std::pair<size_t, size_t>(1, 1);
+	}
 
 	/**
 	 * Returns the list of errors produced by parseNext() calls.
 	 */
-	const char* parseErrors();
+	const char* parseErrors() {
+		return NULL;
+	}
 
 	/**
 	 * Adds a game into the database.
@@ -98,6 +105,7 @@ class CodecProxy : public CodecMemory {
 	}
 
 
+private:
 	errorT addGame(Game* game) override {
 		errorT err = getDerived()->dyn_addGame(game);
 		if (err != OK) return err;
@@ -160,7 +168,7 @@ class CodecProxy : public CodecMemory {
 			err = CodecMemory::addGame(&g);
 			if (err != OK) break;
 
-			if (++nImported % 256 == 0) {
+			if (++nImported % 1024 == 0) {
 				std::pair<size_t, size_t> count = getDerived()->parseProgress();
 				if (!progress.report(count.first, count.second)) {
 					err = ERROR_UserCancel;

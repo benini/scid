@@ -90,7 +90,7 @@ public:
         return Length_Low + (uint32_t(Length_High & 0x80) << 9);
     }
     void SetLength (size_t length) {
-        ASSERT(length >= 0 && length < MAX_GAME_LENGTH);
+        ASSERT(length < MAX_GAME_LENGTH);
         Length_Low = static_cast<uint16_t>(length & 0xFFFF);
         // preserve the last 7 bits
         Length_High = ( Length_High & 0x7F ) | static_cast<byte>( (length >> 16) << 7 );

@@ -72,7 +72,7 @@ void scid_Exit(void*) {
 	for (size_t i = 0, n = sizeof(reports) / sizeof(reports[0]); i < n; i++) {
 		if (reports[i] != NULL) delete reports[i];
 	}
-};
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Main procedure

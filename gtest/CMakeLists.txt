@@ -13,8 +13,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1)
 project(scid_gtest)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_EXTENSIONS OFF)
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_BUILD_TYPE "Debug")
+  set(CMAKE_CXX_FLAGS "-O3")
+endif()
 
 find_package(Threads REQUIRED)
 
@@ -39,13 +46,13 @@ set(GTEST_EXTRA
 
 add_executable(unit-testing ${GTEST_SRC} ${GTEST_EXTRA})
 set_target_properties(unit-testing PROPERTIES OUTPUT_NAME "runAll")
-set_target_properties(unit-testing PROPERTIES COMPILE_FLAGS "-Wall -std=c++14")
+target_compile_options(unit-testing PRIVATE -Wall)
 target_link_libraries(unit-testing gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
 set_target_properties(coverage PROPERTIES OUTPUT_NAME "runAll")
-set_target_properties(coverage PROPERTIES COMPILE_FLAGS "-Wall -std=c++14 -coverage")
-set_target_properties(coverage PROPERTIES LINK_FLAGS "-coverage")
+target_compile_options(coverage PRIVATE -Wall PRIVATE -coverage)
+set_property(TARGET coverage APPEND PROPERTY LINK_FLAGS -coverage)
 target_link_libraries(coverage gtest_main ${CMAKE_THREAD_LIBS_INIT})
 add_custom_command(TARGET coverage POST_BUILD
 	COMMAND ./runAll

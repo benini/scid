@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project(scid)
 set(CPACK_PACKAGE_VERSION 4.6.5)
 set(
@@ -22,29 +22,27 @@ set(
 )
 include(CPack)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "release")
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 
 # scid
 file(GLOB SCID_SRC src/*.cpp)
-add_executable(scid ${SCID_SRC})
-set_target_properties(scid PROPERTIES COMPILE_FLAGS "-Wall -std=c++11")
+file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
+add_executable(scid ${SCID_SRC} ${POLYGLOT_SRC})
+target_compile_options(scid PRIVATE -std=c++11)
+target_compile_options(scid PRIVATE -Wall)
 
 option(SCID_USE_TB "Enable Nalimov tablebases" OFF)
 if(SCID_USE_TB)
-  set_target_properties(scid PROPERTIES COMPILE_FLAGS "-DSCID_USE_TB -DT41_INCLUDE")
+  target_compile_definitions(scid PRIVATE -DSCID_USE_TB PRIVATE -DT41_INCLUDE)
 endif()
 
 option(SPELLCHKVALIDATE "Verify the integrity of spelling files" OFF)
 if(SPELLCHKVALIDATE)
-  set_target_properties(scid PROPERTIES COMPILE_FLAGS "-DSPELLCHKVALIDATE")
+  target_compile_definitions(scid PRIVATE -DSPELLCHKVALIDATE)
 endif()
-
-file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
-add_library(polyglot STATIC ${POLYGLOT_SRC})
-target_link_libraries(scid polyglot)
 
 find_package(TCL)
 include_directories(${TCL_INCLUDE_PATH})

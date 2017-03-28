@@ -65,7 +65,11 @@ public:
 	const byte* getGameData(uint32_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);
+		#if !CPP11_SUPPORT
+		return &v_.front() + offset;
+		#else
 		return v_.data() + offset;
+		#endif
 	}
 
 	errorT addGame(IndexEntry* ie, const byte* src, size_t length) override {

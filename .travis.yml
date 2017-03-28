@@ -58,7 +58,7 @@ script:
   - cd $TRAVIS_BUILD_DIR
   - if [ "${CXX}" == "clang++-4.0" ]; then mkdir Analyzer && cd Analyzer && scan-build-4.0 cmake .. && scan-build-4.0 make scid; fi
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug && make
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON && make
   - cd $TRAVIS_BUILD_DIR
   - mkdir Testing && cd Testing && cmake ../gtest && make && ./runAll
   - cd $TRAVIS_BUILD_DIR

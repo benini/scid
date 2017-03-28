@@ -358,7 +358,7 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 		if (filter.get(gNum) == 0) continue;
 		err = importGameHelper(srcBase, gNum);
 		if (err != OK) break;
-		if (iProgress++ % 10000 == 0) {
+		if (++iProgress % 8192 == 0) {
 			if (!progress.report(iProgress, totGames)) break;
 		}
 	}
@@ -723,7 +723,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 		//- update bookmarks game number
 		//  (*it).second   == old game number
 		//  tmp.numGames() == new game number
-		if (iProgress++ % 10000 == 0) {
+		if (++iProgress % 8192 == 0) {
 			if (!progress.report(iProgress, sort.size())) {
 				err_UserCancel = true;
 				break;

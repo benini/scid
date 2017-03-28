@@ -631,7 +631,7 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
 	case OPT_DATE:
 		res.push_back(date_GetYear(stats.minDate));
 		res.push_back(date_GetYear(stats.maxDate));
-		res.push_back(stats.nYears == 0 ? 0 : stats.sumYears / stats.nYears);
+		res.push_back(stats.nYears == 0 ? 0 : size_t(stats.sumYears / stats.nYears));
 		break;
 	case OPT_ECO: {
 		const scidBaseT::Stats::Eco* eco = (argc != 5) ? 0 : stats.getEcoStats(argv[4]);
@@ -661,7 +661,7 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
 	case OPT_RATINGS:
 		res.push_back(stats.minRating);
 		res.push_back(stats.maxRating);
-		res.push_back(stats.nRatings == 0 ? 0 : stats.sumRatings / stats.nRatings);
+		res.push_back(stats.nRatings == 0 ? 0 : size_t(stats.sumRatings / stats.nRatings));
 		break;
 	case OPT_RESULTS:
 		res.push_back(stats.nResults[RESULT_White]);

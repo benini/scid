@@ -230,7 +230,7 @@ inline int
 Engine::PieceValue (pieceT piece)
 {
     return pieceValues[piece_Type(piece)];
-};
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // isOutpost

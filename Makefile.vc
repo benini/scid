@@ -163,7 +163,6 @@ SCID_TB		= -DSCID_USE_TB -DT41_INCLUDE -Zm101
 #
 SCID_EXECS = \
 	scid.exe \
-	scidlet.exe
 
 ##	SCID_OBJS: not all the .obj files that make up Scid, just the standard
 #	files that most of the Scid programs use.
@@ -305,11 +304,6 @@ setup:
 	@if not exist $(OUT_DIR)\books\nul \
 		@echo *** Creating directory '$(OUT_DIR)\books'...
 	@if not exist $(OUT_DIR)\books\nul mkdir $(OUT_DIR)\books
-
-scidlet.exe: $(TMP_DIR)\scidlet.obj $(SCID_XOBJS)
-	@echo *** scidlet.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\scidlet.obj $(SCID_XOBJS) \
-		/out:$(OUT_DIR)\scidlet.exe
 
 scid.exe: $(TMP_DIR)\scid.obj $(SCID_XOBJS)
 	@echo *** scid.exe

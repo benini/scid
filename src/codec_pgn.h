@@ -49,7 +49,7 @@ public:
 
 	errorT flush() override {
 		file_.Flush();
-		return CodecProxy::flush();
+		return CodecProxy<CodecPgn>::flush();
 	}
 
 	/**
@@ -69,8 +69,14 @@ public:
 		                 : file_.Create(filename, FMODE_Both);
 
 		if (res == OK) {
+			if (FMODE_Create) {
+				fileSize_ = 0;
+			} else {
+				fileSize_ = fileSize(filename, "");
+				if (fileSize_ == 0 && !file_.EndOfFile())
+					return ERROR_FileOpen;
+			}
 			parser_.Reset(&file_);
-			fileSize_ = fileSize(filename, "");
 			parser_.IgnorePreGameText();
 		}
 
@@ -95,7 +101,7 @@ public:
 	 * data parsed and second one is the total amount of data of the database.
 	 */
 	std::pair<size_t, size_t> parseProgress() {
-		return std::make_pair((size_t)parser_.BytesUsed(), fileSize_);
+		return std::make_pair(size_t(parser_.BytesUsed()) / 1024, fileSize_ / 1024);
 	}
 
 	/**
