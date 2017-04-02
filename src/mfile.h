@@ -26,6 +26,25 @@
 #include "common.h"
 #include <stdio.h>
 
+#ifdef ZLIB
+	#include <zlib.h>
+	inline bool gzable() { return true; }
+#else
+	// If the zlib compression library is NOT used, create dummy inline
+	// functions to replace those used in zlib, which saves wrapping every
+	// zlib function call with #ifndef conditions.
+	inline bool gzable() { return false; }
+	typedef void * gzFile;
+	inline gzFile gzopen (const char*, const char*) { return 0; }
+	inline int gzputc (gzFile, int c) { return c; }
+	inline int gzgetc (gzFile) { return -1; }
+	inline int gzread (gzFile, unsigned char*, int) { return 0; }
+	inline int gzeof (gzFile) { return 1; }
+	inline int gzseek (gzFile, int, int) { return 0; }
+	inline int gzclose (gzFile) { return 0; }
+#endif
+
+
 enum mfileT {
     MFILE_REGULAR = 0, MFILE_MEMORY, MFILE_GZIP, MFILE_ZIP, MFILE_SEQREAD
 };

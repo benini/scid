@@ -90,9 +90,9 @@ public:
 		sm.movingPiece = movingPiece;
 		sm.capturedPiece = capturedPiece;
 	}
-	void erase(simpleMoveT* first, simpleMoveT* last) {
-		ASSERT(last == end());
-		ListSize = std::distance(begin(), first);
+	void resize(size_t count) {
+		ASSERT(count <= MAX_LEGAL_MOVES);
+		ListSize = static_cast<uint>(count);
 	}
 	void push_back(const simpleMoveT& sm) {
 		ASSERT(ListSize < MAX_LEGAL_MOVES);

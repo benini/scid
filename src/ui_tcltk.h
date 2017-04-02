@@ -80,15 +80,18 @@ public:
 	tcl_Progress(UI_handle_t ti) : ti_(ti) {}
 	virtual ~tcl_Progress() {}
 
-	virtual bool report(uint done, uint total, const char* msg) {
+	virtual bool report(size_t done, size_t total, const char* msg) {
+		ASSERT(done <= static_cast<size_t>(std::numeric_limits<int>::max()));
+		ASSERT(total <= static_cast<size_t>(std::numeric_limits<int>::max()));
+
 		uint64_t elapsed = timer_.MilliSecs();
 		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
 		Tcl_Obj* tmp[5];
 		tmp[0] = Tcl_NewStringObj("::progressCallBack", -1);
-		tmp[1] = Tcl_NewIntObj(done);
-		tmp[2] = Tcl_NewIntObj(total);
-		tmp[3] = Tcl_NewIntObj(elapsed / 1000);
-		tmp[4] = Tcl_NewIntObj(estimated / 1000);
+		tmp[1] = Tcl_NewIntObj(static_cast<int>(done));
+		tmp[2] = Tcl_NewIntObj(static_cast<int>(total));
+		tmp[3] = Tcl_NewIntObj(static_cast<int>(elapsed / 1000));
+		tmp[4] = Tcl_NewIntObj(static_cast<int>(estimated / 1000));
 		Tcl_Obj* cmd = Tcl_NewListObj(5, tmp);
 		if (msg != NULL)
 			Tcl_ListObjAppendElement(ti_, cmd, Tcl_NewStringObj(msg, -1));
@@ -106,7 +109,7 @@ public:
 	tcl_ProgressPosMask(UI_handle_t ti) : ti_(ti) {}
 	virtual ~tcl_ProgressPosMask() {}
 
-	virtual bool report(uint done, uint total, const char*) {
+	virtual bool report(size_t, size_t, const char*) {
 		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
 	}
 };
@@ -183,7 +186,8 @@ inline Tcl_Obj* ObjMaker(const char* s) {
 	return Tcl_NewStringObj(s, -1);
 }
 inline Tcl_Obj* ObjMaker(const std::string& s) {
-	return Tcl_NewStringObj(s.c_str(), s.length());
+	ASSERT(s.size() <= static_cast<size_t>(std::numeric_limits<int>::max()));
+	return Tcl_NewStringObj(s.c_str(), static_cast<int>(s.size()));
 }
 inline Tcl_Obj* ObjMaker(const List& v) {
 	Tcl_Obj* res = Tcl_NewListObj(v.i_, v.list_);

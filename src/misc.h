@@ -125,7 +125,7 @@ class Progress {
 public:
 	struct Impl {
 		virtual ~Impl() {}
-		virtual bool report(uint done, uint total, const char* msg) = 0;
+		virtual bool report(size_t done, size_t total, const char* msg) = 0;
 	};
 
 	Progress(Impl* f = NULL) : f_(f) {}
@@ -133,10 +133,10 @@ public:
 	Progress& operator=(const Progress&);
 	~Progress() { delete f_; }
 
-	bool report(uint done, uint total) const {
+	bool report(size_t done, size_t total) const {
 		return operator()(done, total);
 	}
-	bool operator()(uint done, uint total, const char* msg = NULL) const {
+	bool operator()(size_t done, size_t total, const char* msg = NULL) const {
 		if (f_) return f_->report(done, total, msg);
 		return true;
 	}
@@ -198,17 +198,23 @@ ecoT eco_Reduce(ecoT eco);
 //      (c) so some can be made inline for speed if necessary.
 
 inline uint32_t strStartHash(const char* str) {
-	typedef unsigned char U;
-	uint32_t result = tolower(U(*str)) * 16777216;
-	if (str[1]) {
-		result += tolower(U(str[1])) * 65536;
-		if (str[2]) result += tolower(U(str[2])) * 256 + tolower(U(str[3]));
-	}
+	ASSERT(str != 0);
+	const unsigned char* s = reinterpret_cast<const unsigned char*>(str);
+
+	uint32_t tmp = static_cast<unsigned char>(tolower(*s));
+	uint32_t result = tmp << 24;
+	if (*s == '\0') return result;
+	tmp = static_cast<unsigned char>(tolower(*++s));
+	result += tmp << 16;
+	if (*s == '\0') return result;
+	tmp = static_cast<unsigned char>(tolower(*++s));
+	result += tmp << 8;
+	if (*s == '\0') return result;
+	result += static_cast<unsigned char>(tolower(*++s));
 	return result;
 }
 
 char * strDuplicate (const char * str);
-int    strCompareRound (const char * sleft, const char * sright);
 
 void   strCopyExclude (char * target, const char * original,
                        const char * excludeChars);
@@ -251,8 +257,6 @@ bool   strIsUnknownName (const char * str);
 bool   strIsSurnameOnly (const char * name);
 
 bool   strGetBoolean (const char * str);
-int    strGetInteger (const char * str);
-uint   strGetUnsigned (const char * str);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strGetInteger():
@@ -269,15 +273,42 @@ strGetInteger(const char * str)
 //    Extracts an unsigned base-10 value from a string.
 //    Defaults to zero (as strtoul does) for non-numeric strings.
 //
-inline uint
-strGetUnsigned(const char * str)
-{
-	return std::strtoul(str, NULL, 10);
+inline uint32_t strGetUnsigned(const char* str) {
+	ASSERT(str != NULL);
+	return static_cast<uint32_t>(std::strtoul(str, NULL, 10));
+}
+
+inline int strCaseCompare(const char* str1, const char* str2) {
+	ASSERT(str1 != NULL && str2 != NULL);
+	const unsigned char* s1 = reinterpret_cast<const unsigned char*>(str1);
+	const unsigned char* s2 = reinterpret_cast<const unsigned char*>(str2);
+	int c1, c2;
+	do {
+		c1 = tolower(*s1++);
+		c2 = tolower(*s2++);
+		if (c1 == '\0')
+			break;
+	} while (c1 == c2);
+
+	return c1 - c2;
+}
+
+inline int strCompareRound(const char* str1, const char* str2) {
+	ASSERT(str1 != NULL && str2 != NULL);
+	uint32_t a = strGetUnsigned(str1);
+	uint32_t b = strGetUnsigned(str2);
+	if (a == b)
+		return strCaseCompare(str1, str2);
+	return (a < b) ? -1 : 1;
+}
+
+inline bool strEqual(const char* str1, const char* str2) {
+	ASSERT(str1 != NULL && str2 != NULL);
+	return (std::strcmp(str1, str2) == 0);
 }
 
 void   strGetIntegers (const char * str, int * results, uint nResults);
 void   strGetUnsigneds (const char * str, uint * results, uint nResults);
-void   strGetBooleans (const char * str, bool * results, uint nResults);
 resultT strGetResult (const char * str);
 
 typedef uint flagT;
@@ -339,22 +370,6 @@ inline int strCompare(const char* s1, const char* s2)
         s1++; s2++;
     }
     return 0;
-}
-
-inline int strCaseCompare(const char* s1, const char* s2)
-{
-    typedef unsigned char U;
-    ASSERT (s1 != NULL  &&  s2 != NULL);
-    while (1) {
-        int d = tolower(U(*s1)) - tolower(U(*s2));
-        if (d != 0 || *s1 == 0) return d;
-        s1++; s2++;
-    }
-    return 0;
-}
-
-inline int strEqual(const char* s1, const char* s2) {
-    return (strCompare(s1, s2) == 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

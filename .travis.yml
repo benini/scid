@@ -22,6 +22,7 @@ matrix:
           - llvm-toolchain-trusty-4.0
         packages:
           - clang-4.0
+          - clang-tidy-4.0
           - libstdc++-6-dev
           - tcl
           - tcl-dev
@@ -56,11 +57,20 @@ script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
   - cd $TRAVIS_BUILD_DIR
-  - if [ "${CXX}" == "clang++-4.0" ]; then mkdir Analyzer && cd Analyzer && scan-build-4.0 cmake .. && scan-build-4.0 make scid; fi
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && make
+  - if [ "${CXX}" == "clang++-4.0" ]; then run-clang-tidy-4.0.py -header-filter=.* -checks=clang-* ../src; fi
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON && make
-  - cd $TRAVIS_BUILD_DIR
-  - mkdir Testing && cd Testing && cmake ../gtest && make && ./runAll
+  - mkdir Testing && cd Testing
+  - if [ "${CXX}" == "clang++-4.0" ]; then
+      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined,integer";
+    else
+      if [ "${CXX}" == "g++-6" ]; then
+        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined -fuse-ld=gold";
+      else
+        cmake ../gtest;
+      fi
+    fi
+  - make VERBOSE=1 && ./runAll
   - cd $TRAVIS_BUILD_DIR
   - mkdir Release && cd Release && cmake .. && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR

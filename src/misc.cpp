@@ -232,50 +232,6 @@ strAppend (char * target, const char * extra)
     return target;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strCompareRound():
-//    String comparison function for round names. Sorts by the integer
-//    number at the start of each string first.
-int
-strCompareRound (const char * sleft, const char * sright)
-{
-    int ileft = strGetInteger (sleft);
-    int iright = strGetInteger (sright);
-    int diff = ileft - iright;
-    if (diff != 0) { return diff; }
-
-    // Now check if both strings are equal up to the first dot.
-    // If so, do an integer comparison after the ".":
-
-    bool equalUpToDot = false;
-    const char * templeft = sleft;
-    const char * tempright = sright;
-
-    while (true) {
-        char leftc = *templeft;
-        char rightc = *tempright;
-        if (leftc == 0  ||  rightc == 0) { break; }
-        if (leftc != rightc) { break; }
-        if (leftc == '.'  &&  rightc == '.') { equalUpToDot = true; break; }
-        templeft++;
-        tempright++;
-    }
-
-    if (equalUpToDot) {
-        templeft++;
-        tempright++;
-        // Now templeft and tempright point to the first character
-        // after each dot.
-        ileft = strGetInteger (templeft);
-        iright = strGetInteger(tempright);
-        diff = ileft - iright;
-        if (diff != 0) { return diff; }
-    }
-    
-    // Give up on integer comparisons and do a regular string comparison:
-    return strCompare (sleft, sright);
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strDuplicate(): Duplicates a string using new[] operator.
 //
@@ -678,20 +634,6 @@ strGetUnsigneds (const char * str, uint * results, uint nResults)
     for (uint i=0; i < nResults; i++) {
         while (*str != 0  &&  isspace(*str)) { str++; }
         results[i] = strGetUnsigned (str);
-        while (*str != 0  &&  !isspace(*str)) { str++; }
-    }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strGetBooleans:
-//    Extracts the specified number of boolean values
-//    from a whitespace-separated string.
-void
-strGetBooleans (const char * str, bool * results, uint nResults)
-{
-    for (uint i=0; i < nResults; i++) {
-        while (*str != 0  &&  isspace(*str)) { str++; }
-        results[i] = strGetBoolean (str);
         while (*str != 0  &&  !isspace(*str)) { str++; }
     }
 }

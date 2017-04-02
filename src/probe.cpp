@@ -343,19 +343,19 @@ scid_TB_CacheSize (void)
 { return 0; }
 
 void
-scid_TB_SetCacheSize (uint cachesize)
+scid_TB_SetCacheSize (uint)
 { return; }
 
 uint
-scid_TB_Init (const char * egtb_path)
+scid_TB_Init (const char *)
 { return 0; }
 
 bool
-scid_TB_Available (matSigT matsig)
+scid_TB_Available (matSigT)
 { return false; }
 
 errorT
-scid_TB_Probe (Position * pos, int * score)
+scid_TB_Probe (Position *, int *)
 { return ERROR_NotFound; }
 
 #endif

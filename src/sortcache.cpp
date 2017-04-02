@@ -554,7 +554,7 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 			case SORTING_country:
 			{
 				const char *scountry = ie->GetSiteName (nbase);
-				uint slen = strLength (scountry);
+				size_t slen = std::strlen(scountry);
 				if (slen > 3) 
 					scountry += slen - 3;
 				cacheValue = strStartHash(scountry);
@@ -589,8 +589,8 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 				bytesUsed = 2;
 				break;
 			case SORTING_round:
-				cacheValue = ie->GetRound();
-				bytesUsed = 1;
+				cacheValue = strGetUnsigned(ie->GetRoundName(nbase));
+				partialHashing = true;
 				break;
 			case SORTING_result:
 				cacheValue = RESULT_SORT[ie->GetResult()];

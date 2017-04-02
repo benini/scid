@@ -846,7 +846,7 @@ void Game::MoveTo (const std::vector<int>& v)
 {
     if (v.size() == 0) return;
     MoveToPly(v.back());
-    for (uint i = v.size() -1; i > 0; i--) {
+    for (size_t i = v.size() - 1; i > 0; i--) {
         if ((i % 2) == 1) {
             for (int j=0; j < v[i -1]; j++) MoveForward();
         } else {
@@ -2302,7 +2302,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             //tb->PrintWord (m->san);
             tb->PrintWord (tempTrans);
         }
-        colWidth -= strLength (m->san);
+        colWidth -= (int) std::strlen(m->san);
         if (IsColorFormat()) {
             tb->PrintString ("</m>");
         }
@@ -2334,7 +2334,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                     printDiagramHere = true;
                 }
                 tb->PrintWord (temp);
-                colWidth -= strLength(temp);
+                colWidth -= (int) std::strlen(temp);
 
             }
             if (IsColorFormat()  &&  m->nagCount > 0) {

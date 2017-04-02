@@ -5938,10 +5938,11 @@ sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Restrict the list of legal moves to contain only those that
     // move to or from the specified square:
-    mlist.erase(std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq)),
-                mlist.end());
+    mlist.resize(std::distance(mlist.begin(),
+                 std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq))
+    ));
 
-     // If no matching legal moves, return -1:
+    // If no matching legal moves, return -1:
     if (mlist.Size() == 0) {
         return setResult (ti, "-1");
     }

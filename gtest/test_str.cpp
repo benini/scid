@@ -24,23 +24,22 @@ namespace v4_6_2 {
 }
 
 
-class Test_StrTrimRight : public ::testing::Test {
-	// strTrimRight testing
-	virtual void SetUp() {
-		char* s = buf;
-		for (auto& e : data_) {
-			auto sz = strlen(e.static_input) + 1;
-
-			e.input1 = s;
-			strcpy(e.input1, e.static_input);
-			s += sz;
-
-			e.input2 = s;
-			strcpy(e.input2, e.static_input);
-			s += sz;
+static std::vector<std::string> strings_;
+static std::vector<std::string> createRandom(int maxLen, int nLines) {
+	std::mt19937 re(std::random_device{}());
+	std::uniform_int_distribution<> lineLenght(0, maxLen - 1);
+	std::uniform_int_distribution<> randomChar(1, 255);
+	std::vector<std::string> res;
+	for (int i = 0; i < nLines; i++) {
+		res.emplace_back();
+		for (int j = 0, len = lineLenght(re); j < len; j++) {
+			res.back().append(1, randomChar(re));
 		}
 	}
+	return res;
+}
 
+class Test_StrLib : public ::testing::Test {
 protected:
 	char buf[1024];
 	struct Data {
@@ -50,7 +49,6 @@ protected:
 		const char* expected;
 		uint nTrimmed;
 	};
-
 	std::vector<Data> data_ = {
 		{ ""    , nullptr, nullptr, ""   , 0 } ,
 		{ " "   , nullptr, nullptr, ""   , 1 } ,
@@ -67,29 +65,30 @@ protected:
 		{ u8"utf8 κόσμε\t\r ♚♛♜ \n ", nullptr, nullptr, u8"utf8 κόσμε\t\r ♚♛♜" , 3 }
 	};
 
-	size_t createRandom(char*& buf1, char*& buf2, size_t maxLineLenght) {
-		std::default_random_engine re(std::random_device{}());
-		std::uniform_int_distribution<> lineLenght(1, maxLineLenght - 1);
-		std::uniform_int_distribution<> randomChar(1, 227);
-		size_t nLines = std::uniform_int_distribution<>{2000, 4000}(re);
-		buf1 = new char[maxLineLenght * nLines];
-		buf2 = new char[maxLineLenght * nLines];
-		for (size_t i = 0; i < nLines; i++) {
-			size_t len = lineLenght(re);
-			for (size_t j = 0; j < len; j++) {
-				auto ch = randomChar(re);
-				if (ch > 127) ch = WHITESPACE[ch % 4];
-				buf1[maxLineLenght * i + j] = ch;
-				buf2[maxLineLenght * i + j] = ch;
-			}
-			buf1[maxLineLenght * i + len] = 0;
-			buf2[maxLineLenght * i + len] = 0;
+protected:
+	static void SetUpTestCase() {
+		strings_ = createRandom(300, 3000);
+	}
+
+	// strTrimRight testing
+	virtual void SetUp() {
+		char* s = buf;
+		for (auto& e : data_) {
+			auto sz = strlen(e.static_input) + 1;
+
+			e.input1 = s;
+			strcpy(e.input1, e.static_input);
+			s += sz;
+
+			e.input2 = s;
+			strcpy(e.input2, e.static_input);
+			s += sz;
 		}
-		return nLines;
 	}
 };
 
-TEST_F(Test_StrTrimRight, correctness) {
+
+TEST_F(Test_StrLib, strTrimRight_correctness) {
 	for (auto& e : data_) {
 		auto n = strTrimRight(e.input1);
 		EXPECT_EQ(e.nTrimmed, n);
@@ -97,40 +96,13 @@ TEST_F(Test_StrTrimRight, correctness) {
 	}
 }
 
-TEST_F(Test_StrTrimRight, consistency) {
+TEST_F(Test_StrLib, strTrimRight_consistency) {
 	for (auto& e : data_) {
 		auto n = strTrimRight(e.input1);
 		auto n_old = v4_6_2::strTrimRight(e.input2, WHITESPACE);
 		EXPECT_EQ(n_old, n);
 		EXPECT_STREQ(e.input2, e.input1);
 	}
-}
-
-TEST_F(Test_StrTrimRight, performance) {
-	const size_t lineLen = 130;
-	char* buf1;
-	char* buf2;
-	size_t nLines = createRandom(buf1, buf2, lineLen);
-
-	Timer t1;
-	for (size_t i = 0; i < nLines; i++) {
-		strTrimRight(buf1 + lineLen * i);
-	}
-	auto tNew = t1.MilliSecs();
-
-	Timer t2;
-	for (size_t i = 0; i < nLines; i++) {
-		v4_6_2::strTrimRight(buf2 + lineLen * i, WHITESPACE);
-	}
-	auto tOld = t2.MilliSecs();
-
-	EXPECT_LE(tNew, tOld);
-	for (size_t i = 0; i < nLines; i++) {
-		ASSERT_STREQ(buf2 + lineLen * i, buf1 + lineLen * i);
-	}
-
-	delete[] buf1;
-	delete[] buf2;
 }
 
 namespace v4_6_2 {
@@ -158,5 +130,46 @@ namespace v4_6_2 {
 			*target = 0;
 		}
 		return trimCount;
+	}
+}
+
+TEST_F(Test_StrLib, strCaseCompare) {
+	auto v = strings_;
+	for (auto& s : v) {
+		unsigned char* it = (unsigned char*)s.data();
+		std::transform(it, it + s.size(), it, ::tolower);
+	}
+
+	for (size_t i = 0, n = v.size(); i < n; i++) {
+		for (size_t j = 0; j < n; j++) {
+			int a = v[i].compare(v[j]);
+			int b = strCaseCompare(strings_[i].c_str(), strings_[j].c_str());
+			EXPECT_EQ(a < 0, b < 0);
+			EXPECT_EQ(a > 0, b > 0);
+			EXPECT_EQ(a == 0, b == 0);
+		}
+	}
+}
+
+TEST_F(Test_StrLib, strStartHash) {
+	for (const auto& s1 : strings_) {
+		for (const auto& s2 : strings_) {
+			auto hash1 = strStartHash(s1.c_str());
+			auto hash2 = strStartHash(s2.c_str());
+			int cmp = strCaseCompare(s1.c_str(), s2.c_str());
+			if (hash1 < hash2) {
+				EXPECT_LT(cmp, 0);
+			} else if (hash1 > hash2) {
+				EXPECT_GT(cmp, 0);
+			} else {
+				if (cmp != 0) {
+					ASSERT_GE(s1.size(), 4);
+					ASSERT_GE(s2.size(), 4);
+					auto s1_tmp = s1.substr(0, 4);
+					auto s2_tmp = s2.substr(0, 4);
+					ASSERT_EQ(0, strCaseCompare(s1_tmp.c_str(), s2_tmp.c_str()));
+				}
+			}
+		}
 	}
 }

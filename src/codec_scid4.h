@@ -110,7 +110,7 @@ protected:
 
 	std::pair<errorT, uint32_t> dyn_addGameData(const byte* src,
 	                                            size_t length) override {
-		ASSERT(length <= std::numeric_limits<std::streamsize>::max());
+		ASSERT(src != 0);
 		const char* data = reinterpret_cast<const char*>(src);
 
 		// The Scid4 format uses 32-bits to store games' offset.

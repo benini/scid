@@ -20,7 +20,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
   set(CMAKE_BUILD_TYPE "Debug")
-  set(CMAKE_CXX_FLAGS "-O3")
+  set(CMAKE_CXX_FLAGS "-O3 -Wall")
+endif()
+if(MSVC)
+  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
 endif()
 
 find_package(Threads REQUIRED)
@@ -46,12 +49,11 @@ set(GTEST_EXTRA
 
 add_executable(unit-testing ${GTEST_SRC} ${GTEST_EXTRA})
 set_target_properties(unit-testing PROPERTIES OUTPUT_NAME "runAll")
-target_compile_options(unit-testing PRIVATE -Wall)
 target_link_libraries(unit-testing gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
 set_target_properties(coverage PROPERTIES OUTPUT_NAME "runAll")
-target_compile_options(coverage PRIVATE -Wall PRIVATE -coverage)
+target_compile_options(coverage PRIVATE -coverage)
 set_property(TARGET coverage APPEND PROPERTY LINK_FLAGS -coverage)
 target_link_libraries(coverage gtest_main ${CMAKE_THREAD_LIBS_INIT})
 add_custom_command(TARGET coverage POST_BUILD

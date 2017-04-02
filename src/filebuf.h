@@ -107,13 +107,13 @@ public:
 	 * Reads a 8-bit unsigned integer.
 	 * This function do not check for errors or EOF.
 	 */
-	byte ReadOneByte() { return byte(sbumpc()); }
+	byte ReadOneByte() { return static_cast<byte>(sbumpc()); }
 
 	/**
 	 * Reads a 16-bit unsigned integer.
 	 * This function do not check for errors or EOF.
 	 */
-	uint16_t ReadTwoBytes() { return read<2>(); }
+	uint16_t ReadTwoBytes() { return static_cast<uint16_t>(read<2>()); }
 
 	/**
 	 * Reads a 24-bit unsigned integer.
@@ -132,26 +132,37 @@ public:
 	 * @returns the number of characters successfully written.
 	 */
 	int WriteOneByte(byte value) {
-		return (sputc(value) == value) ? 1 : 0;
+		int_type ch = sputc(static_cast<char_type>(value));
+		return (ch != traits_type::eof()) ? 1 : 0;
 	}
 
 	/**
 	 * Writes a 16-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	int WriteTwoBytes(uint32_t value) { return write<2>(value); }
-
+	int WriteTwoBytes(uint32_t value) {
+		return WriteOneByte(static_cast<byte>(value >> 8)) +
+		       WriteOneByte(static_cast<byte>(value));
+	}
 	/**
 	 * Writes a 24-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	int WriteThreeBytes(uint32_t value) { return write<3>(value); }
-
+	int WriteThreeBytes(uint32_t value) {
+		return WriteOneByte(static_cast<byte>(value >> 16)) +
+		       WriteOneByte(static_cast<byte>(value >> 8)) +
+		       WriteOneByte(static_cast<byte>(value));
+	}
 	/**
 	 * Writes a 32-bit unsigned integer.
 	 * @returns the number of characters successfully written.
 	 */
-	int WriteFourBytes(uint32_t value) { return write<4>(value); }
+	int WriteFourBytes(uint32_t value) {
+		return WriteOneByte(static_cast<byte>(value >> 24)) +
+		       WriteOneByte(static_cast<byte>(value >> 16)) +
+		       WriteOneByte(static_cast<byte>(value >> 8)) +
+		       WriteOneByte(static_cast<byte>(value));
+	}
 
 private:
 	template <int nBytes> uint32_t read() {
@@ -163,17 +174,6 @@ private:
 		if (nBytes > 1)
 			res += ReadOneByte() << 8;
 		return res + ReadOneByte();
-	}
-
-	template <int nBytes> uint32_t write(uint32_t v) {
-		int res = 0;
-		if (nBytes > 3)
-			res += WriteOneByte((v >> 24) & 255);
-		if (nBytes > 2)
-			res += WriteOneByte((v >> 16) & 255);
-		if (nBytes > 1)
-			res += WriteOneByte((v >> 8) & 255);
-		return res + WriteOneByte(v & 255);
 	}
 };
 

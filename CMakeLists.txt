@@ -22,17 +22,11 @@ set(
 )
 include(CPack)
 
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
-  set(CMAKE_BUILD_TYPE "Release")
-endif()
-
-
 # scid
 file(GLOB SCID_SRC src/*.cpp)
 file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
 add_executable(scid ${SCID_SRC} ${POLYGLOT_SRC})
 target_compile_options(scid PRIVATE -std=c++11)
-target_compile_options(scid PRIVATE -Wall)
 
 option(SCID_USE_TB "Enable Nalimov tablebases" OFF)
 if(SCID_USE_TB)
@@ -80,3 +74,17 @@ set(SCIDLET_EXTRA
 )
 add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
 install(TARGETS scidlet DESTINATION bin)
+
+
+if(NOT CMAKE_CXX_FLAGS)
+  if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+  endif(NOT CMAKE_BUILD_TYPE)
+
+  target_compile_options(scid PRIVATE -Wall PRIVATE -Wextra PRIVATE -pedantic)
+endif()
+
+if(MSVC)
+  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
+endif()
+

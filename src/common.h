@@ -35,24 +35,6 @@ typedef __int32  int32_t;
 
 #include "error.h"
 
-#ifdef ZLIB
-	#include <zlib.h>
-	inline bool gzable() { return true; }
-#else
-	// If the zlib compression library is NOT used, create dummy inline
-	// functions to replace those used in zlib, which saves wrapping every
-	// zlib function call with #ifndef conditions.
-	inline bool gzable() { return false; }
-	typedef void * gzFile;
-	inline gzFile gzopen (const char * name, const char * mode) { return 0; }
-	inline int gzputc (gzFile fp, int c) { return c; }
-	inline int gzgetc (gzFile fp) { return -1; }
-	inline int gzread (gzFile fp, unsigned char* buffer, int length) { return 0; }
-	inline int gzeof (gzFile fp) { return 1; }
-	inline int gzseek (gzFile fp, int offset, int where) { return 0; }
-	inline int gzclose (gzFile fp) { return 0; }
-#endif
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 

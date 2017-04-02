@@ -69,7 +69,7 @@ public:
 		                 : file_.Create(filename, FMODE_Both);
 
 		if (res == OK) {
-			if (FMODE_Create) {
+			if (fmode == FMODE_Create) {
 				fileSize_ = 0;
 			} else {
 				fileSize_ = fileSize(filename, "");

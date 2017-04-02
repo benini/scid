@@ -496,7 +496,7 @@ private:
 	}
 
 	struct Dummy {
-		void reset(colorT, pieceT, squareT, squareT to, pieceT = 0) {}
+		void reset(colorT, pieceT, squareT, squareT, pieceT = 0) {}
 		void resetCastle(colorT, squareT, squareT) {}
 		void setCapture(pieceT, bool) {}
 		bool operator()(colorT, pieceT, uint8_t, uint8_t) const { return true; }

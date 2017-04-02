@@ -398,8 +398,8 @@ public:
         IDX_FLAG_CUSTOM5    = 20,   // Custom flag.
         IDX_FLAG_CUSTOM6    = 21,   // Custom flag.
         IDX_NUM_FLAGS       = 22,
-        IDX_MASK_ALLFLAGS   = 0xFFFFFFFF
     };
+    static const uint32_t IDX_MASK_ALLFLAGS = 0xFFFFFFFF;
 
 private:
     static uint EncodeCount (uint x) {

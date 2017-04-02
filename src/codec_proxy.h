@@ -59,13 +59,13 @@ protected:
 	 * Reads the next game.
 	 * A derived class implements this function to sequentially read the games
 	 * contained into the database.
-	 * @param g: valid pointer to the Game object where the data will be stored.
+	 * @param Game*: valid pointer to the Game object where the data will be stored.
 	 * @returns
 	 * - OK on success.
 	 * - ERROR_NotFound if there are no more games to be read.
 	 * - ERROR code if the game cannot be read and was skipped.
 	 */
-	errorT parseNext(Game* g) {
+	errorT parseNext(Game*) {
 		return ERROR_NotFound;
 	}
 
@@ -87,20 +87,20 @@ protected:
 
 	/**
 	 * Adds a game into the database.
-	 * @param game: valid pointer to a Game object with the new data.
+	 * @param Game*: valid pointer to a Game object with the new data.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT dyn_addGame(Game* game) {
+	errorT dyn_addGame(Game*) {
 		return ERROR_CodecUnsupFeat;
 	}
 
 	/**
 	 * Replaces a game in the database.
-	 * @param game: valid pointer to a Game object with the new data.
-	 * @replaced:   valid gamenumT of the game to be replaced.
+	 * @param Game*:    valid pointer to a Game object with the new data.
+	 * @param gamenumT: valid gamenumT of the game to be replaced.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT dyn_saveGame(Game* game, gamenumT replaced) {
+	errorT dyn_saveGame(Game*, gamenumT) {
 		return ERROR_CodecUnsupFeat;
 	}
 

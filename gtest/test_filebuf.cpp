@@ -235,6 +235,88 @@ TEST_F(Test_Filebuf, readAll) {
 	}
 }
 
+TEST_F(Test_Filebuf, Filebuf_open) {
+	static const char* fname = "tmp_filebuf_open";
+	struct Cleanup {
+		~Cleanup() { std::remove(fname); }
+	} cleanup;
+
+	{
+		Filebuf file;
+		ASSERT_NE(OK, file.Open(fname, FMODE_None));
+	}
+	{
+		Filebuf file;
+		ASSERT_NE(OK, file.Open(fname, FMODE_Memory));
+	}
+	{
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fname, FMODE_Create));
+		ASSERT_EQ(1, file.WriteOneByte(0x01));
+		ASSERT_EQ(2, file.WriteTwoBytes(0x0202));
+		ASSERT_EQ(3, file.WriteThreeBytes(0x030303));
+		ASSERT_EQ(4, file.WriteFourBytes(0x04040404));
+		file.pubseekpos(0);
+		ASSERT_EQ(0x01, file.ReadOneByte());
+		ASSERT_EQ(0x0202, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+	}
+	{
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fname, FMODE_ReadOnly));
+		ASSERT_EQ(0x01, file.ReadOneByte());
+		ASSERT_EQ(0x0202, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+		file.pubseekpos(0);
+		ASSERT_EQ(0, file.WriteOneByte(0x01));
+		/* libc++ bug
+		ASSERT_EQ(0, file.WriteTwoBytes(0x0202));
+		ASSERT_EQ(0, file.WriteThreeBytes(0x030303));
+		ASSERT_EQ(0, file.WriteFourBytes(0x04040404));
+		*/
+		file.pubseekpos(0);
+		ASSERT_EQ(0x01, file.ReadOneByte());
+		ASSERT_EQ(0x0202, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+	}
+	{
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fname, FMODE_WriteOnly));
+		ASSERT_EQ(4, file.WriteFourBytes(0x04040404));
+		ASSERT_EQ(3, file.WriteThreeBytes(0x030303));
+		ASSERT_EQ(2, file.WriteTwoBytes(0x0202));
+		ASSERT_EQ(1, file.WriteOneByte(0x01));
+		file.pubseekpos(0);
+		ASSERT_EQ(static_cast<byte>(EOF), file.ReadOneByte());
+		ASSERT_EQ(static_cast<uint16_t>(EOF), file.ReadTwoBytes());
+		ASSERT_EQ(static_cast<uint16_t>(EOF) + (static_cast<byte>(EOF) << 16),
+		          file.ReadThreeBytes());
+		ASSERT_EQ(static_cast<uint32_t>(EOF), file.ReadFourBytes());
+	}
+	{
+		Filebuf file;
+		ASSERT_EQ(OK, file.Open(fname, FMODE_Both));
+		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+		ASSERT_EQ(0x030303, file.ReadThreeBytes());
+		ASSERT_EQ(0x0202, file.ReadTwoBytes());
+		ASSERT_EQ(0x01, file.ReadOneByte());
+		file.pubseekoff(0, std::ios::end);
+		ASSERT_EQ(1, file.WriteOneByte(0xF1));
+		ASSERT_EQ(2, file.WriteTwoBytes(0xF2F2));
+		ASSERT_EQ(3, file.WriteThreeBytes(0xF3F3F3F3));
+		ASSERT_EQ(4, file.WriteFourBytes(0xF4F4F4F4));
+		file.pubseekpos(10);
+		ASSERT_EQ(0xF1, file.ReadOneByte());
+		ASSERT_EQ(0xF2F2, file.ReadTwoBytes());
+		ASSERT_EQ(0xF3F3F3, file.ReadThreeBytes());
+		ASSERT_EQ(0xF4F4F4F4, file.ReadFourBytes());
+	}
+}
+
+
 using lines = std::vector<std::pair<std::streamsize, std::string> >;
 
 lines getlineSTL(size_t bufSize) {
