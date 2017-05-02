@@ -512,7 +512,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         Game * g = scratchGame;
         for (gamenumT i=0, n=db->numGames(); i < n; i++) {
             if (db->dbFilter->Get(i)) { // Export this game:
-                if (numSeen++ % 100) {  // Update the percentage done bar:
+                if (++numSeen % 1024 == 0) {  // Update the percentage done bar:
                     if (!progress.report(numSeen, numToExport)) break;
                 }
 
