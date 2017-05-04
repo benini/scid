@@ -168,15 +168,16 @@ proc ::windows::gamelist::FilterExport {{w}} {
 	progressWindow "Scid" "Exporting games..." $::tr(Cancel)
 	if {$::gamelistExport == "LaTeX"} {
         if {[file extension $fName] == ""} { append fName ".tex" }
-		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
-		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport \
-		                 $::exportStartFile(LaTeX) $::exportEndFile(LaTeX)
+		set err [catch {sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
+		                    $::glistSortStr($w.games.glist) $fName $::gamelistExport \
+		                    $::exportStartFile(LaTeX) $::exportEndFile(LaTeX) }]
 	} else {
         if {[file extension $fName] == ""} { append fName ".pgn" }
-		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
-		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport
+		set err [catch {sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
+		                    $::glistSortStr($w.games.glist) $fName $::gamelistExport }]
 	}
 	closeProgressWindow
+	if {$err && $::errorCode != $::ERROR::UserCancel} { ERROR::MessageBox }
 }
 
 # Returns text describing state of filter for specified

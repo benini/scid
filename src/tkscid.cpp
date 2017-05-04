@@ -1818,33 +1818,33 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
             if (argc > 7) fprintf(exportFile, "%s", argv[7]);
             Progress progress = UI_CreateProgress(ti);
-            const int count = 100;
-            uint idxList[count];
-            bool end = false;
-            for (uint start = 0; !end; start += count) {
-                const NameBase* nb = dbase->getNameBase();
-                dbase->GetRange(argv[4], start, count, filter, idxList);
-                for (int i = 0; i < count; ++i) {
-                    if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
+            const NameBase* nb = dbase->getNameBase();
+            const size_t count = filter->size();
+            gamenumT* idxList = new gamenumT[count];
+            errorT err = dbase->GetRange(argv[4], 0, count, filter, idxList);
+            if (err == OK) {
+                for (size_t i = 0; i < count; ++i) {
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
                     if (dbase->getGame(ie, dbase->bbuf) != OK) continue;
                     if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
                     g.LoadStandardTags (ie, nb);
                     std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
-                    //size_t nWrited =
-                    fwrite(pgn.first, 1, pgn.second, exportFile);
-                    //TODO:
-                    //if (nWrited != db->tbuf->GetByteCount()) error
-                }
-                if (!end) {
-                    end = ! progress.report(start, filter->size());
+                    if (pgn.second != fwrite(pgn.first, 1, pgn.second, exportFile)) {
+                        err = ERROR_FileWrite;
+                        break;
+                    }
+                    if ((i % 1024 == 0) && !progress.report(i, count)) {
+                        err = ERROR_UserCancel;
+                        break;
+                    }
                 }
             }
-            if (argc > 8) fprintf(exportFile, "%s", argv[8]);
+            if (err == OK && argc > 8)
+                fprintf(exportFile, "%s", argv[8]);
             fclose (exportFile);
-            progress.report(1,1);
-            return TCL_OK;
+            delete[] idxList;
+            return UI_Result(ti, err);
         }
         return errorResult (ti, "Usage: sc_filter export baseId filterName sortCrit filename <PGN|LaTeX> [header] [footer]");
 
