@@ -70,7 +70,7 @@ script:
         cmake ../gtest;
       fi
     fi
-  - make VERBOSE=1 && ./runAll
+  - make VERBOSE=1 && ./scid_tests
   - cd $TRAVIS_BUILD_DIR
   - mkdir Release && cd Release && cmake .. && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR

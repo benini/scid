@@ -199,7 +199,7 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 	}
 }
 
-static const char* filename = "../gtest/utf8.txt";
+static const char* filename = SCID_TESTDIR "res_utf8.txt";
 
 TEST_F(Test_Filebuf, readAll) {
 	std::streamsize fileSize = -1;

@@ -16,6 +16,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(scid_gtest)
 
+find_package(Threads REQUIRED)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
@@ -26,16 +27,16 @@ if(MSVC)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-find_package(Threads REQUIRED)
-
-find_package(Git)
-execute_process(COMMAND ${GIT_EXECUTABLE} clone https://github.com/google/googletest.git)
-
+# googletest
+if(NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/googletest")
+  find_package(Git)
+  execute_process(COMMAND ${GIT_EXECUTABLE} clone https://github.com/google/googletest.git)
+endif()
 set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest ${CMAKE_BINARY_DIR}/googletest/Build)
 include_directories("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 
-
+# scid_tests
 include_directories(../src)
 file(GLOB GTEST_SRC *.cpp)
 set(GTEST_EXTRA
@@ -46,18 +47,17 @@ set(GTEST_EXTRA
   ../src/pgnparse.cpp ../src/misc.cpp ../src/mfile.cpp
   ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/stored.cpp
 )
-
-add_executable(unit-testing ${GTEST_SRC} ${GTEST_EXTRA})
-set_target_properties(unit-testing PROPERTIES OUTPUT_NAME "runAll")
-target_link_libraries(unit-testing gtest_main ${CMAKE_THREAD_LIBS_INIT})
-
+add_executable(scid_tests ${GTEST_SRC} ${GTEST_EXTRA})
 add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
-set_target_properties(coverage PROPERTIES OUTPUT_NAME "runAll")
+set_property(TARGET scid_tests coverage APPEND PROPERTY COMPILE_DEFINITIONS
+    SCID_TESTDIR=\"${CMAKE_CURRENT_LIST_DIR}/\")
+target_link_libraries(coverage gtest_main ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(scid_tests gtest_main ${CMAKE_THREAD_LIBS_INIT})
+
+# coverage
 target_compile_options(coverage PRIVATE -coverage)
 set_property(TARGET coverage APPEND PROPERTY LINK_FLAGS -coverage)
-target_link_libraries(coverage gtest_main ${CMAKE_THREAD_LIBS_INIT})
 add_custom_command(TARGET coverage POST_BUILD
-	COMMAND ./runAll
+	COMMAND ./coverage
 	COMMAND lcov ARGS -c -d . -o test_coverage.info
 	COMMAND genhtml ARGS test_coverage.info -o gcov)
-
