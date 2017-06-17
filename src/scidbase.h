@@ -134,7 +134,17 @@ struct scidBaseT {
 	template <class T, class P>
 	errorT importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg);
 
-	errorT saveGame(Game* game, bool clearCache, gamenumT idx = IDX_NOT_FOUND);
+	/**
+	 * Add or replace a game into the database.
+	 * @param game: valid pointer to a Game object with the data of the game.
+	 * @param replacedgameId: id of the game to replace.
+	 *                        If >= numGames(), a new game will be added.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT saveGame(Game* game, gamenumT replacedGameId = IDX_NOT_FOUND);
+	// TODO: private:
+	errorT saveGameHelper(Game* game, gamenumT gameId);
+
 
 	bool getFlag(uint flag, uint gNum) const {
 		return idx->GetEntry(gNum)->GetFlag (flag);
@@ -277,7 +287,7 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImporte
 	while ((res = codec.parseNext(&g)) != ERROR_NotFound) {
 		if (res != OK) continue;
 
-		res = saveGame(&g, false);
+		res = saveGameHelper(&g, IDX_NOT_FOUND);
 		if (res != OK) break;
 
 		if ((++nImported % 200) == 0) {

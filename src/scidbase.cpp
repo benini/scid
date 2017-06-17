@@ -317,20 +317,22 @@ errorT scidBaseT::getGame(const IndexEntry* ie, std::vector<GamePos>& dest) {
 	return err;
 }
 
-errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
-	if (isReadOnly()) return ERROR_FileReadOnly;
+errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
+	errorT err1 = saveGameHelper(game, replacedGameId);
+	errorT err2 = clearCaches(replacedGameId);
+	return (err1 != OK) ? err1 : err2;
+}
 
-	errorT err = OK;
-	if (gnum < numGames()) {
-		err = codec_->saveGame(game, gnum);
-	} else {
-		gnum = numGames();
-		err = codec_->addGame(game);
-		if (err == OK) extendFilters();
-	}
+errorT scidBaseT::saveGameHelper(Game* game, gamenumT gameId) {
+	if (isReadOnly())
+		return ERROR_FileReadOnly;
 
-	if (err == OK && clearCache) err = clearCaches(gnum);
+	if (gameId < numGames())
+		return codec_->saveGame(game, gameId);
 
+	errorT err = codec_->addGame(game);
+	if (err == OK)
+		extendFilters();
 	return err;
 }
 

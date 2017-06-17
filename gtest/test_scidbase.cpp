@@ -289,7 +289,7 @@ TEST_F(Test_Scidbase, getGamePos1) {
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
-	ASSERT_EQ(OK, dbase.saveGame(&game, true));
+	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
@@ -316,7 +316,7 @@ TEST_F(Test_Scidbase, getGamePos2) {
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
-	ASSERT_EQ(OK, dbase.saveGame(&game, true));
+	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
@@ -332,7 +332,7 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	pgnParser.ParseMoves(&game);
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
-	ASSERT_EQ(OK, dbase.saveGame(&game, true));
+	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
@@ -356,7 +356,7 @@ TEST_F(Test_Scidbase, saveGame) {
 	EXPECT_EQ(0, dbfilter->size());
 
 	{
-		ASSERT_EQ(OK, dbase.saveGame(&game0, true));
+		ASSERT_EQ(OK, dbase.saveGame(&game0));
 		EXPECT_EQ(1, dbase.numGames());
 		EXPECT_EQ(1, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
@@ -369,7 +369,7 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
 	}
 	{
-		ASSERT_EQ(OK, dbase.saveGame(&game1, true));
+		ASSERT_EQ(OK, dbase.saveGame(&game1));
 		EXPECT_EQ(2, dbase.numGames());
 		EXPECT_EQ(2, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
@@ -380,6 +380,22 @@ TEST_F(Test_Scidbase, saveGame) {
 		std::vector<scidBaseT::GamePos> gamepos;
 		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
+		gamepos.clear();
+		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
+	}
+	{
+		ASSERT_EQ(OK, dbase.saveGame(&game1, 0));
+		EXPECT_EQ(2, dbase.numGames());
+		EXPECT_EQ(2, dbfilter->size());
+		auto ie0 = dbase.getIndexEntry_bounds(0);
+		auto ie1 = dbase.getIndexEntry_bounds(1);
+		EXPECT_NE(nullptr, ie0);
+		EXPECT_NE(nullptr, ie1);
+		EXPECT_NE(ie0, ie1);
+		std::vector<scidBaseT::GamePos> gamepos;
+		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 		gamepos.clear();
 		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
@@ -397,9 +413,9 @@ TEST_F(Test_Scidbase, importGames) {
 
 	scidBaseT srcBase;
 	ASSERT_EQ(OK, srcBase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
-	ASSERT_EQ(OK, srcBase.saveGame(&game0, true));
-	ASSERT_EQ(OK, srcBase.saveGame(&game1, true));
-	ASSERT_EQ(OK, srcBase.saveGame(&game1, true));
+	ASSERT_EQ(OK, srcBase.saveGame(&game0));
+	ASSERT_EQ(OK, srcBase.saveGame(&game1));
+	ASSERT_EQ(OK, srcBase.saveGame(&game1));
 	ASSERT_EQ(3, srcBase.numGames());
 	HFilter srcFilter = srcBase.getFilter("dbfilter");
 	srcFilter->erase(1);

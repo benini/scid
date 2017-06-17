@@ -1133,7 +1133,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 // The tag was found and stripped. Re-save the game,
                 // remembering to load its standard tags first:
                 g->LoadStandardTags (ie, db->getNameBase());
-                errorT res = db->saveGame(g, false, gnum);
+                errorT res = db->saveGameHelper(g, gnum);
                 if (res != OK) return UI_Result(ti, res);
                 nEditedGames++;
             }
@@ -4161,7 +4161,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         currGame->SetScidFlags(buf);
     }
     currGame->SaveState();
-    errorT res = dbase->saveGame(currGame, true, gnum);
+    errorT res = dbase->saveGame(currGame, gnum);
     currGame->RestoreState ();
     if (res == OK) {
         if (gnum == IDX_NOT_FOUND && db == dbase) {
