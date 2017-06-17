@@ -75,7 +75,14 @@ public:
 		if (err != OK) return err;
 
 		err = idx_->flush();
-		if (err == OK) err = nb_->flush(idx_);
+		if (err == OK) {
+			// *** Compatibility ***
+			// Even if name's frequency is no longer used, it's necessary to
+			// keep the compatibility with older Scid versions, forcing a
+			// recalculation.
+			nb_->hackedNameFreq();
+			err = nb_->flush(idx_);
+		}
 		errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 
 		return (err == OK) ? errGfile : err;

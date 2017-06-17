@@ -216,14 +216,25 @@ struct scidBaseT {
 		return (duplicates_ == NULL) ? 0 : duplicates_[gNum];
 	}
 
-	//TODO: private:
-	/* clearCaches:
-	    After changing one or more games this function MUST be called
-	    (to update all the caches and write the namebase file and index header)
-	    - gNum: id of the game changed (IDX_NOT_FOUND update all the games)
-	*/
-	errorT clearCaches(gamenumT gNum = IDX_NOT_FOUND, bool writeFiles = true);
+	// TODO: private:
+	/**
+	 * This function must be called before modifying the games of the database.
+	 * Currently this function do not guarantees that the database is not altered
+	 * in case of errors.
+	 */
+	void beginTransaction();
 
+	// TODO: private:
+	/**
+	 * Update caches and flush the database's files.
+	 * This function must be called after changing one or more games.
+	 * @param gameId: id of the modified game
+	 *                IDX_NOT_FOUND to update all games.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT endTransaction(gamenumT gameId = IDX_NOT_FOUND);
+
+public:
 	Index* idx;       // the Index file in memory for this base.
 	NameBase* nb;      // the NameBase file in memory.
 	bool inUse;       // true if the database is open (in use).
@@ -281,6 +292,7 @@ inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
 
 template <class T, class P>
 inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg) {
+	beginTransaction();
 	errorT res;
 	Game g;
 	nImported = 0;
@@ -300,7 +312,7 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImporte
 	}
 
 	errorMsg = codec.parseErrors();
-	clearCaches();
+	endTransaction();
 	progress.report(1,1);
 
 	if (res == ERROR_NotFound) res = OK;

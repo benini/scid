@@ -943,6 +943,8 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
     if (setFilterToDups) { dbase->dbFilter->Fill (0); }
     Progress progress = UI_CreateProgress(ti);
 
+    dbase->beginTransaction();
+
     // Now check same-hash games for duplicates:
     for (size_t i=0; i < n_hash; i++) {
         if ((i % 1024) == 0) {
@@ -1040,7 +1042,7 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
         }
     }
 
-    dbase->clearCaches();
+    dbase->endTransaction();
     dbase->setDuplicates(duplicates);
     progress.report(1,1);
 
@@ -1097,9 +1099,11 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, usage);
     };
 
-    // If stripping a tag, make sure we have a writable database:
-    if (cmd == TAG_STRIP  &&  db->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly);
+    if (cmd == TAG_STRIP) {
+        // If stripping a tag, make sure we have a writable database:
+        if (db->isReadOnly())
+            return errorResult(ti, ERROR_FileReadOnly);
+        db->beginTransaction();
     }
 
     // If setting filter, clear it now:
@@ -1163,7 +1167,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If necessary, update index and name files:
     if (cmd == TAG_STRIP) {
-        if (nEditedGames > 0) db->clearCaches();
+        db->endTransaction();
         setUintResult (ti, nEditedGames);
     }
 
@@ -1357,6 +1361,8 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         option = ECO_ALL; break;
     }
 
+    db->beginTransaction();
+
     bool extendedCodes = strGetBoolean(argv[3]);
     Game * g = scratchGame;
     IndexEntry * ie;
@@ -1437,7 +1443,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     progress.report(1,1);
 
     // Update the index file header:
-    err = db->clearCaches();
+    err = db->endTransaction();
     if (err != OK) return errorResult(ti, err);
 
     int centisecs = timer.CentiSecs();
@@ -5021,16 +5027,15 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
 
     // Write changes to the index file:
-    if (updateMode) {
+    if (updateMode && (updated1 || updated2)) {
+        db->beginTransaction();
         if (updated1) {
             db->idx->WriteEntry (&ie1, gn1 - 1);
         }
         if (updated2) {
             db->idx->WriteEntry (&ie2, gn2 - 1);
         }
-        if (updated1  ||  updated2) {
-             db->clearCaches();
-        }
+        db->endTransaction();
     }
     return TCL_OK;
 }
@@ -6529,6 +6534,9 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti,
                 "Usage: sc_name correct p|e|s|r <corrections>");
     }
+
+    db->beginTransaction();
+
     NameBase * nb = db->nb;
     const char * str = argv[3];
     char oldName [512];
@@ -6679,7 +6687,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     delete[] startDate;
     delete[] endDate;
 
-    errorT err = db->clearCaches();
+    errorT err = db->endTransaction();
     if (err != OK) return UI_Result(ti, ERROR_FileWrite);
 
     UI_List res(4);
@@ -6785,6 +6793,8 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         eventDate = g->GetEventDate();
     }
 
+    db->beginTransaction();
+
     // Add the new name to the namebase:
     idNumberT newID = 0;
     if (option != OPT_RATING  &&  option != OPT_DATE  &&  option != OPT_EVENTDATE) {
@@ -6885,7 +6895,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    errorT err = db->clearCaches();
+    errorT err = db->endTransaction();
     if (err != OK) return errorResult (ti, "Error writing database files.");
 
     char temp[500];
@@ -7837,6 +7847,7 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
     std::vector<const PlayerElo*> vElo(nb->GetNumNames(NAME_PLAYER), NULL);
     const HFilter filter = dbase.getFilter("dbfilter");
 
+    dbase.beginTransaction();
     Progress progress = UI_CreateProgress(ti);
     for (uint gnum=0, n = dbase.numGames(); gnum < n; gnum++) {
         if ((gnum % 1000) == 0) {  // Update the percentage done bar:
@@ -7881,13 +7892,13 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
                     newIE.SetBlackRatingType (RATING_Elo);
                 }
                 if (dbase.idx->WriteEntry (&newIE, gnum) != OK) {
-                    dbase.clearCaches();
+                    dbase.endTransaction();
                     return UI_Result(ti, ERROR_FileWrite, "Error writing index file.");
                 }
             }
         }
     }
-    if (numChangedGames > 0) dbase.clearCaches();
+    if (numChangedGames > 0) dbase.endTransaction();
 
     UI_List res(2);
     res.push_back(numChangedRatings);

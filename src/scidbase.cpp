@@ -154,15 +154,13 @@ void scidBaseT::clear() {
 	}
 }
 
-errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
-	errorT res = OK;
+void scidBaseT::beginTransaction() {
+}
+
+errorT scidBaseT::endTransaction(gamenumT gNum) {
 	clear();
-	if (writeFiles) {
-		// Force writing of Namebase because some old code do have direct
-		// access to the Index, and the names frequency may have been changed.
-		nb->hackedNameFreq();
-		res = codec_->flush();
-	}
+	errorT res = codec_->flush();
+
 	idx->IndexUpdated(gNum);
 	return res;
 }
@@ -318,8 +316,9 @@ errorT scidBaseT::getGame(const IndexEntry* ie, std::vector<GamePos>& dest) {
 }
 
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
+	beginTransaction();
 	errorT err1 = saveGameHelper(game, replacedGameId);
-	errorT err2 = clearCaches(replacedGameId);
+	errorT err2 = endTransaction(replacedGameId);
 	return (err1 != OK) ? err1 : err2;
 }
 
@@ -341,10 +340,10 @@ errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
 	if (isReadOnly()) return ERROR_FileReadOnly;
 	if (gNum >= srcBase->numGames()) return ERROR_BadArg;
 
+	beginTransaction();
 	errorT err = importGameHelper(srcBase, gNum);
-	if (err != OK) return err;
-	ASSERT(numGames() > 0);
-	return clearCaches(numGames() -1);
+	errorT errClear = endTransaction();
+	return (err == OK) ? errClear : err;
 }
 
 errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress) {
@@ -353,6 +352,7 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 	if (srcBase == this) return ERROR_BadArg;
 	if (isReadOnly()) return ERROR_FileReadOnly;
 
+	beginTransaction();
 	errorT err = OK;
 	uint iProgress = 0;
 	uint totGames = filter->size();
@@ -364,7 +364,7 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 			if (!progress.report(iProgress, totGames)) break;
 		}
 	}
-	errorT errClear = clearCaches();
+	errorT errClear = endTransaction();
 	return (err == OK) ? errClear : err;
 }
 
@@ -691,7 +691,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	if (err_Create != OK) return err_Create;
 
 	//2) Copy the Index Header
-	idx->FreeSortCache(0);
+	tmp.beginTransaction();
 	tmp.idx->copyHeaderInfo(*idx);
 	gamenumT autoloadOld = idx->GetAutoLoad();
 	gamenumT autoloadNew = 1;
@@ -736,7 +736,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	//5) Finalize the new database
 	tmp.idx->SetAutoLoad(autoloadNew);
 	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
-	errorT err_NbWrite = tmp.clearCaches();
+	errorT err_NbWrite = tmp.endTransaction();
 	errorT err_Close = tmp.Close();
 	if (err_Close == OK) err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
