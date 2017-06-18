@@ -1493,9 +1493,9 @@ sc_eco_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             setUintResult (ti, ply);
         } else {
             ecoT ecoCode = eco_FromString (ecoStr.Data());
-            ecoStringT ecoStr;
-            eco_ToExtendedString (ecoCode, ecoStr);
-            Tcl_AppendResult (ti, ecoStr, NULL);
+            ecoStringT extEco;
+            eco_ToExtendedString(ecoCode, extEco);
+            Tcl_AppendResult(ti, extEco, NULL);
         }
     }
     db->game->RestoreState ();
@@ -6601,15 +6601,11 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (correctionCount != 0) {
 
-    Progress progress = UI_CreateProgress(ti);
-    // Scroll bar threshold (about 200 steps)
-    uint threshold = (db->numGames() / 200) + 1;
     // Now go through the index making each necessary change:
-    const IndexEntry* ie;
-    IndexEntry newIE;
-    for (uint i=0, n = db->numGames(); i < n; i++) {
-        ie = db->getIndexEntry(i);
-        newIE = *ie;
+    Progress progress = UI_CreateProgress(ti);
+    for (gamenumT gameId = 0, n = db->numGames(); gameId < n; ++gameId) {
+        const IndexEntry* ie = db->getIndexEntry(gameId);
+        IndexEntry newIE = *ie;
         bool corrected = false;
         idNumberT oldID, newID;
 
@@ -6666,7 +6662,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Write the new index entry if it has changed:
         if (corrected) {
             instanceCount++;
-            if (db->idx->WriteEntry (&newIE, i) != OK) {
+            if (db->idx->WriteEntry (&newIE, gameId) != OK) {
               delete[] newIDs;
               delete[] startDate;
               delete[] endDate;
@@ -6676,7 +6672,8 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         
         // Update the scroll bar
         //
-        if ((i % threshold) == 0 ) progress.report(i,n);
+        if ((gameId % 1024 == 0) && !progress.report(gameId, n))
+            break;
     }
 
     // Ensure the scroll bar is complete at this point
@@ -10121,7 +10118,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
 					match = false;
 		            uint numtags = scratchGame->GetNumExtraTags();
 					tagT *tag = scratchGame->GetExtraTags();
-					for(uint i=0; i<numtags; i++, tag++){
+					for (uint ii = 0; ii < numtags; ii++, tag++) {
 						// Returning all games where the search string matches with the prefix 
 						// of the annotator string
 						if( !strcmp(tag->tag, "Annotator")){

@@ -227,7 +227,7 @@ void board_start(board_t * board) {
 
    ASSERT(board!=NULL);
 
-   if (!board_from_fen(board,StartFen)) ASSERT(false);
+   if (!board_from_fen(board,StartFen)) { ASSERT(false); }
 }
 
 // board_copy()

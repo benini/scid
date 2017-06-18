@@ -354,8 +354,8 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 
 	beginTransaction();
 	errorT err = OK;
-	uint iProgress = 0;
-	uint totGames = filter->size();
+	size_t iProgress = 0;
+	size_t totGames = filter->size();
 	for (gamenumT gNum = 0, n = srcBase->numGames(); gNum < n; gNum++) {
 		if (filter.get(gNum) == 0) continue;
 		err = importGameHelper(srcBase, gNum);

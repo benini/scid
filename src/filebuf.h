@@ -24,6 +24,7 @@
 #define FILEBUF_H
 
 #include "common.h"
+#include <climits>
 #include <fstream>
 
 /**
@@ -255,7 +256,8 @@ public:
 		if (filePos_ != pos) {
 			const std::streamsize avail = egptr() - gptr();
 			if (avail >= pos - filePos_) {
-				gbump(pos - filePos_);
+				ASSERT(pos - filePos_ <= INT_MAX);
+				gbump(static_cast<int>(pos - filePos_));
 				filePos_ = pos;
 			} else {
 				filePos_ = seekpos(pos);

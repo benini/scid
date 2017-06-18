@@ -34,7 +34,7 @@ namespace {
 * filterId is the unique ID of the filter to work on
 * Games are numbered starting from "1"
 *
-* Every database have a default filter with id "dbfilter".
+* Every database has a default filter with id "dbfilter".
 */
 
 /**

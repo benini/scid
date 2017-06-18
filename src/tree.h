@@ -147,10 +147,10 @@ public:
         NumInUse = 0;
         counter_ = 0;
     }
-    uint Size() {
+    size_t Size() {
         return CacheSize;
     }
-    uint UsedSize() {
+    size_t UsedSize() {
         return NumInUse;
     }
     void CacheResize(size_t max_size) {

@@ -1253,7 +1253,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
         uint nSameMoves = 0;
         if (row > 0) { nSameMoves = Row[row]->CommonLength(Row[row-1]); }
         for (uint j=0; j < 2*OPTABLE_COLUMNS; j++) {
-            uint width = 0;
+            size_t width = 0;
             dtemp->Clear();
             if (j < nSameMoves) {
                 dtemp->Append ("...");
@@ -1271,7 +1271,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
                     }
                     dtemp->Append ("}>");
                 }
-                uint oldwidth = dtemp->Length();
+                size_t oldwidth = dtemp->Length();
                 OpLine::PrintMove (dtemp, Row[row]->Move[j], OPTABLE_Compact);
                 width += dtemp->Length() - oldwidth;
                 if (ctext  &&  j >= nSameMoves) {
@@ -1285,7 +1285,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
                     dtemp->Append ("<red><go n", NumNotes, ">");
                     dtemp->Append ("<N", NumNotes, ">");
                 }
-                uint oldwidth = dtemp->Length();
+                size_t oldwidth = dtemp->Length();
                 dtemp->Append ("[", NumNotes, "]");
                 width += dtemp->Length() - oldwidth;
                 if (ctext) { dtemp->Append ("</N", NumNotes, "></go></red>"); }

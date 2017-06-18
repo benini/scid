@@ -158,7 +158,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
             if (!progress.report(gNum, Header.numGames)) return ERROR_UserCancel;
         }
 
-        IndexEntry* ie = FetchEntry(gNum);
+        IndexEntry* ie = &(entries_[gNum]);
         errorT err = ie->Read(FilePtr, Header.version);
         if (err != OK) return err;
 
@@ -206,14 +206,14 @@ Index::WriteHeader ()
     if (FilePtr->pubseekpos(0) != std::streampos(0)) return ERROR_FileWrite;
 
     seqWrite_ = 0;
-    uint n = 0;
+    size_t n = 0;
     n += FilePtr->sputn(Header.magic, 8);
     n += FilePtr->WriteTwoBytes (Header.version);
     n += FilePtr->WriteFourBytes (Header.baseType);
     n += FilePtr->WriteThreeBytes (Header.numGames);
     n += FilePtr->WriteThreeBytes (Header.autoLoad);
     n += FilePtr->sputn(Header.description, SCID_DESC_LENGTH + 1);
-    for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
+    for (size_t i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
         n += FilePtr->sputn(Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
     }
     if (n != INDEX_HEADER_SIZE || FilePtr->pubsync() == -1) return ERROR_FileWrite;
@@ -236,7 +236,7 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
         Header.numGames++;
         Header.dirty_ = true;
     } else {
-        IndexEntry* copyToMemory = FetchEntry(idx);
+        IndexEntry* copyToMemory = &(entries_[idx]);
         *copyToMemory = *ie;
     }
     if (FilePtr == NULL) return OK;

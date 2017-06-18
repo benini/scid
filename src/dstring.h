@@ -27,7 +27,7 @@ public:
 
 	const char* Data() { return s_.c_str(); }
 
-	uint Length(void) { return s_.size(); }
+	size_t Length(void) { return s_.size(); }
 
 	void AddChar(char ch) { s_.append(1, ch); }
 

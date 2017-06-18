@@ -127,7 +127,7 @@ inline Progress CreateProgressPosMask(UI_handle_t data) {
 
 class List {
 	Tcl_Obj** list_;
-	int i_;
+	mutable int i_;
 	Tcl_Obj* stackBuf_[6];
 
 	friend Tcl_Obj* ObjMaker(const List&);
@@ -191,7 +191,7 @@ inline Tcl_Obj* ObjMaker(const std::string& s) {
 }
 inline Tcl_Obj* ObjMaker(const List& v) {
 	Tcl_Obj* res = Tcl_NewListObj(v.i_, v.list_);
-	const_cast<List&>(v).i_ = 0;
+	v.i_ = 0;
 	return res;
 }
 

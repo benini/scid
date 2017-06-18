@@ -79,8 +79,7 @@ static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
 /**
  * sc_base_close() - close a database
  */
-UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int argc,
-                       const char** argv) {
+UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int, const char**) {
 	if (dbase->getFileName() == "<clipbase>") {
 		return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
 	}
@@ -209,8 +208,8 @@ UI_res_t sc_base_extra(scidBaseT* dbase, UI_handle_t ti, int argc, const char** 
  *   the full path filename without the .si4 extension for native Scid databases
  *   <clipbase> for the clipbase
  */
-UI_res_t sc_base_filename(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_filename(scidBaseT* dbase, UI_handle_t ti, int argc,
+                          const char**) {
 	const char* usage = "Usage: sc_base filename baseId";
 	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
 
@@ -505,8 +504,7 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 /**
  * sc_base_list() - return a baseId list of opened databases
  */
-UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_list(UI_handle_t ti, int argc, const char**) {
 	const char* usage = "Usage: sc_base list";
 	if (argc != 2) return UI_Result(ti, ERROR_BadArg, usage);
 
@@ -520,8 +518,8 @@ UI_res_t sc_base_list(UI_handle_t ti, int argc, const char** argv)
 /**
  * sc_base_numGames() - return the number of games in the database
  */
-UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc,
+                          const char**) {
 	const char* usage = "Usage: sc_base numGames baseId";
 	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
 

@@ -58,14 +58,14 @@ script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
   - cd $TRAVIS_BUILD_DIR
   - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && make
-  - if [ "${CXX}" == "clang++-4.0" ]; then run-clang-tidy-4.0.py -header-filter=.* -checks=clang-* ../src; fi
+  - if [ "${CXX}" == "clang++-4.0" ]; then run-clang-tidy-4.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src; fi
   - cd $TRAVIS_BUILD_DIR
   - mkdir Testing && cd Testing
   - if [ "${CXX}" == "clang++-4.0" ]; then
       cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined,integer";
     else
       if [ "${CXX}" == "g++-6" ]; then
-        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined -fuse-ld=gold";
+        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=thread,undefined -fuse-ld=gold";
       else
         cmake ../gtest;
       fi

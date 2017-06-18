@@ -196,7 +196,7 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 		// Set eco maximum to be the largest subcode, for example,
 		// "B07" -> "B07z4" to make sure subcodes are included in the range:
-		max_ = eco_LastSubCode(max_);
+		max_ = eco_LastSubCode(static_cast<ecoT>(max_));
 	}
 };
 
@@ -353,9 +353,7 @@ std::vector<SearchParam> parseParams(int argc, const char ** argv, filterOpT& fi
  *         @filter is reset to include all games
  *         @filterOp is changed to FILTEROP_AND
  */
-std::vector<gamenumT> collectGames(const scidBaseT* base, HFilter& filter,
-                                   filterOpT& filterOp) {
-	ASSERT(base != 0);
+std::vector<gamenumT> collectGames(HFilter& filter, filterOpT& filterOp) {
 	ASSERT(filter != 0);
 
 	std::vector<gamenumT> res;
@@ -503,7 +501,7 @@ errorT search_index(const scidBaseT* base, HFilter& filter, int argc,
 
 	filterOpT filterOp = FILTEROP_RESET;
 	std::vector<SearchParam> params = parseParams(argc, argv, filterOp);
-	std::vector<gamenumT> glist = collectGames(base, filter, filterOp);
+	std::vector<gamenumT> glist = collectGames(filter, filterOp);
 
 	// Partition glist so that the range [glist.begin(), it_res)
 	// contains the matching games
