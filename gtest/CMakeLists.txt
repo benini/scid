@@ -17,7 +17,8 @@ cmake_minimum_required(VERSION 3.1)
 project(scid_gtest)
 
 find_package(Threads REQUIRED)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
+
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
   set(CMAKE_BUILD_TYPE "Debug")
