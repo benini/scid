@@ -29,6 +29,11 @@
 #include "undoredo.h"
 #include <vector>
 
+class SortCache;
+
+
+const gamenumT INVALID_GAMEID = 0xffffffff;
+
 struct scidBaseT {
 	struct Stats {
 		uint flagCount[IndexEntry::IDX_NUM_FLAGS]; // Num of games with each flag set.
@@ -77,7 +82,7 @@ struct scidBaseT {
 		static double expVect_[1600];
 	};
 
-	scidBaseT() { Init(); }
+	scidBaseT();
 	~scidBaseT();
 
 	errorT Open(ICodecDatabase::Codec dbtype,
@@ -141,7 +146,7 @@ struct scidBaseT {
 	 *                        If >= numGames(), a new game will be added.
 	 * @returns OK if successful or an error code.
 	 */
-	errorT saveGame(Game* game, gamenumT replacedGameId = IDX_NOT_FOUND);
+	errorT saveGame(Game* game, gamenumT replacedGameId = INVALID_GAMEID);
 	// TODO: private:
 	errorT saveGameHelper(Game* game, gamenumT gameId);
 
@@ -189,24 +194,61 @@ struct scidBaseT {
 	                      uint* n_badNameId);
 	errorT compact(const Progress& progress);
 
-	SortCache* CreateSortCache(const char* criteria) const {
-		return idx->CreateSortCache(nb, criteria);
-	}
-	void FreeSortCache(const char* criteria) const {
-		return idx->FreeSortCache(criteria);
-	}
-	errorT GetRange(const char* criteria, uint idx, uint count,
-	                const HFilter& filter, uint* result) const {
-		return this->idx->GetRange(nb, criteria, idx, count, filter, result);
-	}
-	uint GetRangeLocation(const char* criteria, const HFilter& filter,
-	                      uint gnumber) const {
-		return idx->GetRangeLocation(nb, criteria, filter, gnumber);
-	}
-	uint GetRangeLocation(const char* criteria, const HFilter& filter,
-	                      const char* text, uint start, bool forward) const {
-		return idx->GetRangeLocation(nb, criteria, filter, text, start, forward);
-	}
+
+	/**
+	 * Increment the reference count of a SortCache object matching @e criteria.
+	 * @param criteria: the list of fields by which games will be ordered.
+	 *                  Each field should be followed by '+' to indicate an
+	 *                  ascending order or by '-' for a descending order.
+	 * @returns a pointer to a SortCache object in case of success, NULL
+	 * otherwise.
+	 */
+	SortCache* createSortCache(const char* criteria);
+
+	/**
+	 * Decrement the reference count of the SortCache object matching @e
+	 * criteria. Cached objects with refCount <= 0 are destroyed independently
+	 * from the value of @e criteria.
+	 * @param criteria: the list of fields by which games will be ordered.
+	 *                  Each field should be followed by '+' to indicate an
+	 *                  ascending order or by '-' for a descending order.
+	 */
+	void releaseSortCache(const char* criteria);
+
+	/**
+	 * Retrieve a list of ordered game indexes sorted by @e criteria.
+	 * This function will be much faster if a SortCache object matching @e
+	 * criteria already exists (previously created with @e createSortCache).
+	 * @param criteria: the list of fields by which games will be ordered.
+	 *                  Each field should be followed by '+' to indicate an
+	 *                  ascending order or by '-' for a descending order.
+	 * @param start:    the offset of the first row to return.
+	 *                  The offset of the initial row is 0.
+	 * @param count:    maximum number of rows to return.
+	 * @param filter:   a reference to a valid (!= NULL) HFilter object.
+	 *                  Games not included into the filter will be ignored.
+	 * @param[out] destCont: valid pointer to an array where the sorted list of
+	 *                       games will be stored (should be able to contain at
+	 *                       least @e count elements).
+	 * @returns the number of games' ids stored into @e destCont.
+	 */
+	size_t listGames(const char* criteria, size_t start, size_t count,
+	                 const HFilter& filter, gamenumT* destCont);
+
+	/**
+	 * Get the sorted position of a game.
+	 * This function will be much faster if a SortCache object matching @e
+	 * criteria already exists (previously created with @e createSortCache).
+	 * @param criteria: the list of fields by which games will be ordered.
+	 *                  Each field should be followed by '+' to indicate an
+	 *                  ascending order or by '-' for a descending order.
+	 * @param filter:   a reference to a valid (!= NULL) HFilter object.
+	 *                  Games not included into the filter will be ignored.
+	 * @param gameId:   the id of the game.
+	 * @returns the sorted position of @e gameId.
+	 */
+	size_t sortedPosition(const char* criteria, const HFilter& filter,
+	                      gamenumT gameId);
 
 	void setDuplicates(uint* duplicates) {
 		if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
@@ -229,10 +271,10 @@ struct scidBaseT {
 	 * Update caches and flush the database's files.
 	 * This function must be called after changing one or more games.
 	 * @param gameId: id of the modified game
-	 *                IDX_NOT_FOUND to update all games.
+	 *                INVALID_GAMEID to update all games.
 	 * @returns OK if successful or an error code.
 	 */
-	errorT endTransaction(gamenumT gameId = IDX_NOT_FOUND);
+	errorT endTransaction(gamenumT gameId = INVALID_GAMEID);
 
 public:
 	Index* idx;       // the Index file in memory for this base.
@@ -259,10 +301,11 @@ private:
 	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
 	uint* duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
+	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
 
+private:
 	scidBaseT(const scidBaseT&);
 	scidBaseT& operator=(const scidBaseT&);
-	void Init();
 	void clear();
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
@@ -271,6 +314,7 @@ private:
 	Filter* fetchFilter(const std::string& filterId) const;
 	HFilter getFilterHelper(const std::string& filterId,
 	                        bool unmasked = false) const;
+	SortCache* getSortCache(const char* criteria);
 };
 
 inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
@@ -299,7 +343,7 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImporte
 	while ((res = codec.parseNext(&g)) != ERROR_NotFound) {
 		if (res != OK) continue;
 
-		res = saveGameHelper(&g, IDX_NOT_FOUND);
+		res = saveGameHelper(&g, INVALID_GAMEID);
 		if (res != OK) break;
 
 		if ((++nImported % 200) == 0) {

@@ -31,7 +31,6 @@
 #include <cstring>
 
 class NameBase;
-class SortCache;
 
 //////////////////////////////////////////////////////////////////////
 //  Index:  Constants
@@ -56,13 +55,6 @@ const uint  CUSTOM_FLAG_MAX = 6;
 const uint  INDEX_HEADER_SIZE = 8 + 2 + 3 + 4 + 3 + SCID_DESC_LENGTH + 1 + (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
 const uint  OLD_INDEX_HEADER_SIZE = INDEX_HEADER_SIZE - (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
 
-// INDEX_MaxSortCriteria is the maximum number of fields allowed in
-// a sorting criteria list.
-const uint SORTING_CACHE_MAX = 8;
-const uint INDEX_MaxSortingCriteria = 16;
-const uint IDX_NOT_FOUND = 0xffffffff;
-
-
 //////////////////////////////////////////////////////////////////////
 //  Index:  Class Definition
 
@@ -74,7 +66,6 @@ private:
     // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
     VectorBig<IndexEntry, 16> entries_; // A two-level array of the entire index.
-    mutable SortCache* sortingCaches[SORTING_CACHE_MAX];
     Filebuf*     FilePtr;       // filehandle for opened index file.
     fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
     int nInvalidNameId_;
@@ -251,58 +242,6 @@ public:
         errorT errSync = (FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
         return (errHeader == OK) ? errSync : errHeader;
     }
-
-    /* CreateSortingCache
-     * Create a SortCache that requires 4 byte for each game
-     * A SortCache will greatly speedup the GetRange* functions that use the same criteria
-     * nbase:    pointer to the NameBase where to get data from.
-     * criteria: string that identify the sort order, composed by a letter (see sortcache.cpp for a list of valid values)
-     *           and + (ascending) or - (descending).
-     *           For example: "i-d-" means sort by rating desc, date desc
-     * Return:   a pointer to the newly created SortCache
-     *           0 in case of error
-     */
-    SortCache* CreateSortCache (const NameBase* nbase, const char* criteria) const;
-
-    /* FreeCache
-     * Release the memory of a SortCache (previously created by CreateSortingCache)
-     * criteria: string that identify the sort order.
-     *           If criteria==0 release all the SortCaches
-     */
-    void FreeSortCache(const char* criteria) const;
-
-    /* GetRange
-     * Get a list of ordered game indexes sorted by criteria
-     * nbase:    pointer to the NameBase where to get data from.
-     * criteria: string that identify the sort order
-     * idx:      get result after position idx (0 to get the first games)
-     * count:    number of results wanted
-     * filter:   include only the game where filter->Get() > 0
-     * result:   pointer to an array of uint where the sorted list will be stored
-     *           *result* array must have size >= count
-     *           if there aren't enough result to reach count: result[last_result + 1] = IDX_NOT_FOUND
-     */
-    errorT GetRange(const NameBase* nbase, const char* criteria, uint idx,
-                    uint count, const HFilter& filter, uint* result) const;
-
-    /* GetRangeLocation
-     * Find the location of a game into a sorted Range.
-     * The result of the functions and param gnumber are index by base 1.
-     * I.E. if GetRangeLocation(... gnumber=10 ...) = 40 then GetRange (... idx=39 ...) will return result[0] = 9;
-     * gnumber: index of the game to search
-     * text:    search any game that contains *text* into white name or black name or site name or event name (case insensitive)
-     * start:   start the search after position *start* if forward =true, else search games before *start*
-     * Return:  the position of the searched game (first game = 1)
-     *          0 if not found
-     */
-    uint GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter, uint gnumber) const;
-    uint GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter,
-                           const char* text, uint start, bool forward) const;
-    /* IndexUpdated
-     * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.
-     * if gnum == IDX_NOT_FOUND the sortcache will be completely rebuild (faster for a large number of updates)
-     */
-    errorT IndexUpdated(uint gnum) const;
 
 private:
     void Init ();

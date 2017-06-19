@@ -77,6 +77,5 @@ script:
   - ./configure && make && size tkscid
   - make clean
   - ./configure THREADS="-std=c++98" && make && size tkscid
-  - make clean
-  - ./configure DEBUG="-g -DSPELLCHKVALIDATE" && make && size tkscid
-
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir ThreadOFF && cd ThreadOFF && cmake .. -DSCID_MULTITHREADING=OFF && make VERBOSE=1 && size scid

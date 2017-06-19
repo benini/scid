@@ -73,8 +73,8 @@ UI_res_t sc_filter_compose(UI_handle_t ti, const scidBaseT& dbase, int argc,
  * @-: also remove games before @gnumber
  * @sortCrit: criteria used to determine before/after
  */
-UI_res_t sc_filter_remove(UI_handle_t ti, const scidBaseT& dbase,
-                          HFilter& filter, int argc, const char** argv) {
+UI_res_t sc_filter_remove(UI_handle_t ti, scidBaseT& dbase, HFilter& filter,
+                          int argc, const char** argv) {
 	const char* usage = "Usage: sc_filter remove baseId filterId gnumber [<+|-> sortCrit]";
 	if (argc != 5 && argc != 7) return UI_Result(ti, ERROR_BadArg, usage);
 
@@ -86,11 +86,11 @@ UI_res_t sc_filter_remove(UI_handle_t ti, const scidBaseT& dbase,
 		filter.erase(gNum - 1);
 	} else {
 		const char* crit = argv[6];
-		uint start = dbase.GetRangeLocation(crit, filter, gNum);
-		if (start == IDX_NOT_FOUND)
+		size_t start = dbase.sortedPosition(crit, filter, gNum - 1);
+		if (start == INVALID_GAMEID)
 			return UI_Result(ti, ERROR_BadArg, usage);
 
-		uint count;
+		size_t count;
 		switch (argv[5][0]) {
 		case '+':
 			count = filter->size() - start;
@@ -103,10 +103,9 @@ UI_res_t sc_filter_remove(UI_handle_t ti, const scidBaseT& dbase,
 			return UI_Result(ti, ERROR_BadArg, usage);
 		}
 
-		uint* idxList = new uint[count];
-		dbase.GetRange(crit, start, count, filter, idxList);
-		for (uint i = 0; i < count; ++i) {
-			if (idxList[i] == IDX_NOT_FOUND) break;
+		gamenumT* idxList = new gamenumT[count];
+		count = dbase.listGames(crit, start, count, filter, idxList);
+		for (size_t i = 0; i < count; ++i) {
 			filter.erase(idxList[i]);
 		}
 		delete[] idxList;

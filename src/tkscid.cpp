@@ -1825,10 +1825,10 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (argc > 7) fprintf(exportFile, "%s", argv[7]);
             Progress progress = UI_CreateProgress(ti);
             const NameBase* nb = dbase->getNameBase();
-            const size_t count = filter->size();
+            size_t count = filter->size();
             gamenumT* idxList = new gamenumT[count];
-            errorT err = dbase->GetRange(argv[4], 0, count, filter, idxList);
-            if (err == OK) {
+            count = dbase->listGames(argv[4], 0, count, filter, idxList);
+            errorT err = OK;
                 for (size_t i = 0; i < count; ++i) {
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
@@ -1845,7 +1845,6 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                         break;
                     }
                 }
-            }
             if (err == OK && argc > 8)
                 fprintf(exportFile, "%s", argv[8]);
             fclose (exportFile);
@@ -4155,7 +4154,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     gamenumT gnum = strGetUnsigned(argv[2]);
     if (gnum == 0) {
-        gnum = IDX_NOT_FOUND;
+        gnum = INVALID_GAMEID;
     } else {
         gnum -= 1;
         const IndexEntry* ieOld = dbase->getIndexEntry_bounds(gnum);
@@ -4170,7 +4169,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     errorT res = dbase->saveGame(currGame, gnum);
     currGame->RestoreState ();
     if (res == OK) {
-        if (gnum == IDX_NOT_FOUND && db == dbase) {
+        if (gnum == INVALID_GAMEID && db == dbase) {
             // Saved new game, so set gameNumber to the saved game number:
             db->gameNumber = db->numGames() - 1;
         }

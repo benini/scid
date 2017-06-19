@@ -20,7 +20,6 @@
 
 #include "index.h"
 #include "namebase.h"
-#include "sortcache.h"
 #include <cstring>
 
 void Index::Init ()
@@ -35,7 +34,6 @@ void Index::Init ()
     Header.dirty_ = false;
     FilePtr = NULL;
     fileMode_ = FMODE_Memory;
-    for(uint i=0; i < SORTING_CACHE_MAX; i++) sortingCaches[i] = NULL;
     nInvalidNameId_ = 0;
     seqWrite_ = 0;
     entries_.resize(0);
@@ -45,7 +43,6 @@ errorT Index::Clear ()
 {
     errorT res = flush();
     delete FilePtr;
-    for(uint i=0; i<SORTING_CACHE_MAX; i++) delete sortingCaches[i];
     Init();
     return res;
 }
@@ -227,10 +224,6 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
     if (idx >= MAX_GAMES) return ERROR_IndexFull;
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
 
-    for (uint i=0; i<SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i] != NULL) sortingCaches[i]->PrepareForChanges(idx);
-    }
-
     if (idx == Header.numGames) {
         entries_.push_back(*ie);
         Header.numGames++;
@@ -251,168 +244,6 @@ errorT Index::write (const IndexEntry* ie, gamenumT idx)
     errorT res = ie->Write (FilePtr, Header.version);
     seqWrite_ = (res == OK) ? idx : 0;
     return res;
-}
-
-
-/************* Interface to SortCache *******************/
-SortCache* Index::CreateSortCache (const NameBase *nbase, const char *criteria) const
-{
-    // If there is another client using a matching cache, use that one
-    for(uint i=0; i < SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i] == NULL) continue;
-        if (sortingCaches[i]->MatchCriteria(criteria) ) {
-            sortingCaches[i]->AddCount();
-            return sortingCaches[i];
-        }
-    }
-
-    for (uint idx =0; idx < SORTING_CACHE_MAX; idx++) {
-        if (sortingCaches[idx] == NULL) {
-            sortingCaches[idx] = SortCache::Create (this, nbase, criteria);
-            return sortingCaches[idx];
-        }
-    }
-    return 0;
-}
-
-// Search and free a matching cache
-void Index::FreeSortCache(const char* criteria) const
-{
-    for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
-        if (criteria == 0) {
-            delete sortingCaches[i];
-            sortingCaches[i] = NULL;
-            continue;
-        }
-        if (sortingCaches[i] != NULL && sortingCaches[i]->MatchCriteria(criteria)) {
-            if (0 == sortingCaches[i]->ReleaseCount()) {
-                delete sortingCaches[i];
-                sortingCaches[i] = NULL;
-                break;
-            }
-        }
-    }
-}
-
-errorT Index::GetRange(const NameBase* nbase, const char* criteria, uint idx,
-                       uint count, const HFilter& filter, uint* result) const {
-    ASSERT(criteria != 0 && *criteria != 0);
-    ASSERT(filter != 0);
-    ASSERT(result != 0);
-    if (criteria[0] == 'N') {
-        uint i=0;
-        if (criteria[1] == '+') {
-            for(gamenumT gnum=0; gnum < GetNumGames() && i < count; gnum++) {
-                if (filter->get(gnum) == 0) continue;
-                if (idx == 0) result[i++] = gnum;
-                else idx--;
-            }
-        } else {
-            for(gamenumT gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
-                if (filter->get(gnum -1) == 0) continue;
-                if (idx == 0) result[i++] = gnum -1;
-                else idx--;
-            }
-        }
-        if (i != count) result[i] = IDX_NOT_FOUND;
-        return OK;
-    }
-
-    // Use existing caches if possible
-    for(uint i=0; i < SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i] == NULL) continue;
-        if (sortingCaches[i]->MatchCriteria(criteria) ) {
-            sortingCaches[i]->GetRange(idx, count, filter, result);
-            return OK;
-        }
-    }
-
-    SortCache* sc = SortCache::Create (this, nbase, criteria, false);
-    if (sc == 0) return ERROR;
-    sc->GetRange(idx, count, filter, result);
-    delete sc;
-    return OK;
-}
-
-uint Index::GetRangeLocation(const NameBase* nbase, const char* criteria,
-                             const HFilter& filter, uint gnumber) const {
-    ASSERT(nbase != 0);
-    ASSERT(criteria != 0 && *criteria != 0);
-    ASSERT(filter != 0);
-    for (uint i = 0; i < SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i] == NULL) continue;
-        if (sortingCaches[i]->MatchCriteria(criteria) ) {
-            return sortingCaches[i]->IndexToFilteredCount (gnumber, filter);
-        }
-    }
-
-    SortCache* sc = SortCache::Create (this, nbase, criteria, false);
-    uint r = sc->IndexToFilteredCount (gnumber, filter);
-    delete sc;
-    return r;
-}
-
-uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter,
-                              const char* text, uint start, bool forward) const
-{
-    uint i = 0;
-    for(; i < SORTING_CACHE_MAX; i++) {
-        if (sortingCaches[i] == NULL) continue;
-        if (sortingCaches[i]->MatchCriteria(criteria) ) break;
-    }
-    SortCache* sc = 0;
-    if (i != SORTING_CACHE_MAX) sc = sortingCaches[i];
-    else sc = SortCache::Create (this, nbase, criteria, false);
-
-    uint res = start;
-    uint result [100];
-    for (;;) {
-        if (!forward) {
-            if (res == 0) {
-                res = IDX_NOT_FOUND;
-                break;
-            }
-            sc->GetRange(--res, 1, filter, result);
-            ASSERT (result[0] != IDX_NOT_FOUND);
-            const IndexEntry* ie = GetEntry (result[0]);
-            if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
-                (strAlphaContains (ie->GetBlackName (nbase), text))  ||
-                (strAlphaContains (ie->GetEventName (nbase), text))  ||
-                (strAlphaContains (ie->GetSiteName (nbase), text))) {
-                break;
-            }
-        } else {
-            sc->GetRange(res, 100, filter, result);
-            bool stop = false;
-            for (int j =0; j < 100; ++j, ++res) {
-                if (result[j] == IDX_NOT_FOUND) {
-                    res = IDX_NOT_FOUND;
-                    stop = true;
-                    break;
-                }
-                const IndexEntry* ie = GetEntry (result[j]);
-                if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
-                    (strAlphaContains (ie->GetBlackName (nbase), text))  ||
-                    (strAlphaContains (ie->GetEventName (nbase), text))  ||
-                    (strAlphaContains (ie->GetSiteName (nbase), text))) {
-                    stop = true;
-                    break;
-                }
-            }
-            if (stop) break;
-        }
-    }
-
-    if (i == SORTING_CACHE_MAX) delete sc;
-    return res;
-}
-
-errorT Index::IndexUpdated( uint gnum) const
-{
-    for(uint i=0; i<SORTING_CACHE_MAX; i++)
-        if( sortingCaches[i] != NULL)
-            sortingCaches[i]->CheckForChanges(gnum);
-    return OK;
 }
 
 //////////////////////////////////////////////////////////////////////

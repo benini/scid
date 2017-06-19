@@ -21,6 +21,7 @@
 #include "codec_pgn.h"
 #include "codec_scid4.h"
 #include "common.h"
+#include "sortcache.h"
 #include "stored.h"
 #include <algorithm>
 #include <math.h>
@@ -54,7 +55,7 @@ ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
 	return res;
 }
 
-void scidBaseT::Init() {
+scidBaseT::scidBaseT() {
 	idx = new Index;
 	nb = new NameBase;
 	game = new Game;
@@ -72,18 +73,17 @@ void scidBaseT::Init() {
 }
 
 scidBaseT::~scidBaseT() {
-	delete codec_;
-	if (duplicates_ != NULL) delete[] duplicates_;
-	if (idx != NULL) delete idx;
-	if (nb != NULL) delete nb;
-	if (game != NULL) delete game;
-	if (bbuf != NULL) delete bbuf;
-	if (stats_ != NULL) delete stats_;
-	if (dbFilter != NULL) delete dbFilter;
-	if (treeFilter != NULL) delete treeFilter;
-	for (uint i=0; i < filters_.size(); i++) {
-		if (filters_[i].second != NULL) delete filters_[i].second;
-	}
+	if (inUse)
+		Close();
+
+	delete[] duplicates_;
+	delete idx;
+	delete nb;
+	delete game;
+	delete bbuf;
+	delete stats_;
+	delete dbFilter;
+	delete treeFilter;
 }
 
 errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
@@ -122,17 +122,21 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 }
 
 errorT scidBaseT::Close () {
+	ASSERT(inUse);
+
+	for (size_t i = 0, n = sortCaches_.size(); i < n; i++) {
+		delete sortCaches_[i].second;
+	}
+	sortCaches_.resize(0);
+
 	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
 	nb->Clear();
-	//TODO:
-	//if (errIdx != OK || errGFile != OK) do not close the database:
-	//maybe the user can try something to avoid the data loss
 	delete codec_;
-	codec_ = 0;
+
+	codec_ = NULL;
 	clear();
 	game->Clear();
-	inUse = false;
 	fileMode_ = FMODE_None;
 	fileName_ = "<empty>";
 	gameNumber = -1;
@@ -141,6 +145,8 @@ errorT scidBaseT::Close () {
 	treeFilter->Init(0);
 	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
 	filters_.clear();
+	inUse = false;
+
 	return (errIdx != OK) ? errIdx : errGFile;
 }
 
@@ -155,13 +161,19 @@ void scidBaseT::clear() {
 }
 
 void scidBaseT::beginTransaction() {
+	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
+		sortCaches_[i].second->prepareForChanges();
+	}
 }
 
 errorT scidBaseT::endTransaction(gamenumT gNum) {
 	clear();
 	errorT res = codec_->flush();
 
-	idx->IndexUpdated(gNum);
+	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
+		sortCaches_[i].second->checkForChanges(gNum);
+	}
+
 	return res;
 }
 
@@ -745,29 +757,128 @@ errorT scidBaseT::compact(const Progress& progress) {
 		for (size_t i = 0, n = tmp_filenames.size(); i < n; i++) {
 			std::remove(tmp_filenames[i].c_str());
 		}
-		if (err_UserCancel) return ERROR_UserCancel;
-		return (err_Close != OK) ? err_Close : ((err_NbWrite != OK) ? err_NbWrite : err_AddGame);
+		if (err_AddGame != OK)
+			return err_AddGame;
+		if (err_UserCancel)
+			return ERROR_UserCancel;
+		if (err_NbWrite != OK)
+			return err_NbWrite;
+		ASSERT(err_Close != OK);
+		return err_Close;
 	}
 
-	//7) Remember the active filters and remove the old database
+	//7) Remember the active filters and SortCaches
 	std::vector<std::string> filters(filters_.size());
 	for (size_t i = 0, n = filters_.size(); i < n; i++) {
 		filters[i] = filters_[i].first;
 	}
+	std::vector< std::pair<std::string, int> > oldSC;
+	for (size_t i = 0, n = sortCaches_.size(); i < n; i++) {
+		int refCount = sortCaches_[i].second->incrRef(0);
+		if (refCount >= 0)
+			oldSC.push_back(std::make_pair(sortCaches_[i].first, refCount));
+	}
+
+	//8) Remove the old database
 	if (Close() != OK) return ERROR_FileInUse;
 	for (size_t i = 0, n = filenames.size(); i < n; i++) {
 		if (std::remove(filenames[i].c_str()) != 0) return ERROR_CompactRemove;
 	}
 
-	//8) Success: rename the files and open the new database
+	//9) Success: rename the files and open the new database
 	for (size_t i = 0, n = filenames.size(); i < n; i++) {
 		const char* s1 = tmp_filenames[i].c_str();
 		const char* s2 = filenames[i].c_str();
 		std::rename(s1, s2);
 	}
 	errorT res = Open(dbtype, FMODE_Both, filename.c_str());
-	for (size_t i = 0, n = filters.size(); i < n; i++) {
-		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
+
+	//10) Re-create filters and SortCaches
+	if (res == OK || res == ERROR_NameDataLoss) {
+		for (size_t i = 0, n = filters.size(); i < n; i++) {
+			filters_.push_back(
+			    std::make_pair(filters[i], new Filter(numGames())));
+		}
+		for (size_t i = 0, n = oldSC.size(); i < n; i++) {
+			const std::string& criteria = oldSC[i].first;
+			SortCache* sc = SortCache::create(idx, nb, criteria.c_str());
+			if (sc != NULL) {
+				sc->incrRef(oldSC[i].second);
+				sortCaches_.push_back(std::make_pair(criteria, sc));
+			}
+		}
 	}
+
 	return res;
+}
+
+/**
+ * Retrieve a SortCache object matching the supplied @e criteria.
+ * A new SortCache with refCount equal to 0 is created if a suitable object is
+ * not found in @e sortCaches_. Objects with refCount <= 0 are destroyed by the
+ * @e releaseSortCache function independently from the provided @e criteria
+ * argument (implementing a rudimentary garbage collector).
+ * @param criteria: the list of fields by which games will be ordered.
+ *                  Each field should be followed by '+' to indicate an
+ *                  ascending order or by '-' for a descending order.
+ * @returns a pointer to a SortCache object in case of success, NULL otherwise.
+ */
+SortCache* scidBaseT::getSortCache(const char* criteria) {
+	ASSERT(criteria != NULL);
+
+	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
+		if (std::strcmp(criteria, sortCaches_[i].first.c_str()) == 0)
+			return sortCaches_[i].second;
+	}
+
+	SortCache* sc = SortCache::create(idx, nb, criteria);
+	if (sc != NULL)
+		sortCaches_.push_back(std::pair<std::string, SortCache*>(criteria, sc));
+
+	return sc;
+}
+
+void scidBaseT::releaseSortCache(const char* criteria) {
+	size_t i = 0;
+	while (i < sortCaches_.size()) {
+		const char* tmp = sortCaches_[i].first.c_str();
+		int decr = std::strcmp(criteria, tmp) ? 0 : -1;
+		if (sortCaches_[i].second->incrRef(decr) <= 0) {
+			delete sortCaches_[i].second;
+			sortCaches_.erase(sortCaches_.begin() + i);
+			continue; //do not increment i
+		}
+		i += 1;
+	}
+}
+
+SortCache* scidBaseT::createSortCache(const char* criteria) {
+	SortCache* sc = getSortCache(criteria);
+	if (sc != NULL)
+		sc->incrRef(1);
+
+	return sc;
+}
+
+size_t scidBaseT::listGames(const char* criteria, size_t start, size_t count,
+                            const HFilter& filter, gamenumT* destCont) {
+	const SortCache* sc = getSortCache(criteria);
+	if (sc == NULL)
+		return 0;
+
+	return sc->select(start, count, filter, destCont);
+}
+
+size_t scidBaseT::sortedPosition(const char* criteria, const HFilter& filter,
+                                 gamenumT gameId) {
+	ASSERT(filter != NULL && filter->size() <= numGames());
+
+	if (gameId >= numGames() || filter->get(gameId) == 0)
+		return INVALID_GAMEID;
+
+	SortCache* sc = getSortCache(criteria);
+	if (sc == NULL)
+		return INVALID_GAMEID;
+
+	return sc->sortedPosition(gameId, filter);
 }

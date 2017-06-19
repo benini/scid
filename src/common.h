@@ -188,7 +188,6 @@ const resultT
     RESULT_Draw  = 3;
 
 const uint RESULT_SCORE[4] = { 1, 2, 0, 1 };
-const uint RESULT_SORT[4] = { 1, 3, 0, 2 };
 const char RESULT_CHAR [4]       = { '*',  '1',    '0',    '='       };
 const char RESULT_STR [4][4]     = { "*",  "1-0",  "0-1",  "=-="     };
 const char RESULT_LONGSTR [4][8] = { "*",  "1-0",  "0-1",  "1/2-1/2" };

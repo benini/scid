@@ -1,403 +1,350 @@
 /*
-* Copyright (C) 2011  Gerd Lorscheid
-* Copyright (C) 2011-2015  Fulvio Benini
+ * Copyright (C) 2011  Gerd Lorscheid
+ * Copyright (C) 2011-2017  Fulvio Benini
+ *
+ * This file is part of Scid (Shane's Chess Information Database).
+ *
+ * Scid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * Scid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-* This file is part of Scid (Shane's Chess Information Database).
-*
-* Scid is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation.
-*
-* Scid is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/** @file
+ * Implements the SortCache class, which sorts the games of an @e Index.
+ */
 
 #include "sortcache.h"
-#include <vector>
+#include "hfilter.h"
+#include "index.h"
+#include "misc.h"
 #include <algorithm>
+#include <climits>
+#include <cstring>
+#include <numeric>
 
-#if CPP11_SUPPORT
+#ifndef MULTITHREADING_OFF
 #include <thread>
 
-bool SortCache::Sort_thread::start() {
-	interrupt();
-	if (!sc_->sorted_) {
-		sc_->numGames = sc_->index->GetNumGames();
-		sc_->GetSpace(sc_->numGames);
-		for (uint i=0; i < sc_->numGames; i++) sc_->fullMap[i] = i;
-		th_ = (void*) new std::thread (&SortCache::Sort_thread::sort, this, sc_->numGames);
-	}
-	return true;
-}
-
-void SortCache::Sort_thread::interrupt() {
-	if (th_ != 0) {
-		interrupt_ = true;
-		join();
-		interrupt_ = false;
+/**
+ * Blocks the current thread until the thread @e th_ finishes its execution.
+ */
+void SortCache::th_join() {
+	if (th_ != nullptr) {
+		static_cast<std::thread*>(th_)->join();
+		delete static_cast<std::thread*>(th_);
+		th_ = nullptr;
 	}
 }
 
-void SortCache::Sort_thread::join() {
-	if (th_ != 0) {
-		static_cast<std::thread*> (th_)->join();
-		delete static_cast<std::thread*> (th_);
-		th_ = 0;
-	}
-}
+/**
+ * Populate @e fullMap_ with the sorted ids of all the games contained into @e
+ * index_. This function can run in a worker thread and can be interrupted.
+ * It is necessary to invoke th_interrupt() or th_join() before modifying the
+ * SortCache object, or the associated Index and NameBase objects.
+ */
+void SortCache::th_sort() {
+	size_t nGames = this->nGames_;
+	gamenumT* v = this->fullMap_;
+	gamenumT* begin = v;
+	gamenumT* end = v + nGames;
+	auto comp = SortCache::CmpLess(this);
 
-void SortCache::Sort_thread::sort(uint numGames){
-	auto downheap = [this](int v, int n) {
-		int w=2*v+1;
-		while (w<n)
-		{
-			if (w+1<n)
-				if (sc_->Compare(sc_->fullMap[w+1],sc_->fullMap[w]) > 0)
-					w++;
-			if (sc_->Compare(sc_->fullMap[v],sc_->fullMap[w]) >= 0)
-				return;
+	std::iota(begin, end, 0);
 
-			std::swap(sc_->fullMap[v], sc_->fullMap[w]);
-			v=w;
-			w=2*v+1;
+	// An interruptible implementation of:
+	// std::make_heap(v.begin(), v.end(), comp);
+	ASSERT(nGames < size_t(INT_MAX / 2));
+	const int lastNode = static_cast<int>(nGames) - 1;
+	const auto lastRoot = (lastNode - 1) / 2;
+	for (auto node = lastRoot; node >= 0; --node) {
+		if (this->th_interrupt_)
+			return;
+		// Sift down @e node
+		for (auto toSift = node;;) {
+			const auto leftChild = 2 * toSift + 1;
+			const auto rightChild = 2 * toSift + 2;
+			if (leftChild > lastNode)
+				break;
+			int maxChild = (rightChild <= lastNode && comp(v[leftChild], v[rightChild]))
+			                   ? rightChild
+			                   : leftChild;
+			if (!comp(v[toSift], v[maxChild]))
+				break;
+			std::swap(v[toSift], v[maxChild]);
+			toSift = maxChild;
 		}
-	};
-
-
-	for (int v=numGames/2-1; v>=0; v--)	{
-		if (interrupt_) return;
-		downheap(v, numGames);
 	}
-	for (uint n = numGames; n > 1; )
-	{
-		if (interrupt_) return;
-		n--;
-		std::swap(sc_->fullMap[0], sc_->fullMap[n]);
-		downheap(0, n);
-    }
-	sc_->sorted_ = true;
+	ASSERT(std::is_heap(begin, end, comp));
+
+	// An interruptible implementation of:
+	// std::sort_heap(v.begin(), v.end(), comp);
+	for (auto it = end; it != begin; --it) {
+		if (this->th_interrupt_)
+			return;
+		std::pop_heap(begin, it, comp);
+	}
+	ASSERT(std::is_sorted(begin, end, comp));
+
+	this->valid_fullMap_ = true;
 }
 
 #else
-bool SortCache::Sort_thread::start() { return false; }
-void SortCache::Sort_thread::join() {}
-void SortCache::Sort_thread::interrupt() {}
-void SortCache::Sort_thread::sort(uint numGames){}
+void SortCache::th_join() {}
+void SortCache::th_sort() {}
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
 
-enum {
-    SORTING_date, SORTING_year, SORTING_event, SORTING_site, SORTING_round,
-    SORTING_white, SORTING_black, SORTING_eco, SORTING_result, SORTING_moveCount,
-    SORTING_avgElo, SORTING_country, SORTING_month,
-    SORTING_deleted, SORTING_eventdate, 
-	SORTING_whiteelo, SORTING_blackelo,
-	SORTING_commentcount, SORTING_varcount, SORTING_nagcount,
-	SORTING_resultwin, SORTING_resultdraw, SORTING_resultloss,
-	SORTING_rating, SORTING_number,
-//	TODO:
-//	SORTING_flags, SORTING_endmaterial, SORTING_start, SORTING_nextmove,
-	SORTING_sentinel
-};
+SortCache::SortCache(const Index* idx, const NameBase* nbase)
+    : nGames_(0), valid_fullMap_(false), th_interrupt_(false),
+      partialHash_(false), fullMap_(NULL), th_(NULL), hash_(NULL), index_(idx),
+      nbase_(nbase), refCount_(0) {}
 
-static const char shortCriteriaNames[][2] = 
-{
-	{'d', (char) SORTING_date},
-	{'y', (char) SORTING_year},
-	{'e', (char) SORTING_event},
-	{'s', (char) SORTING_site},
-	{'n', (char) SORTING_round},
-	{'w', (char) SORTING_white},
-	{'b', (char) SORTING_black},
-	{'o', (char) SORTING_eco},
-	{'r', (char) SORTING_result},
-	{'m', (char) SORTING_moveCount},
-	{'R', (char) SORTING_avgElo},
-	{'c', (char) SORTING_country},
-	{'D', (char) SORTING_deleted},
-	{'E', (char) SORTING_eventdate},
-	{'W', (char) SORTING_whiteelo},
-	{'B', (char) SORTING_blackelo},
-	{'C', (char) SORTING_commentcount},
-	{'V', (char) SORTING_varcount},
-	{'A', (char) SORTING_nagcount},
-	{'1', (char) SORTING_resultwin},
-	{'5', (char) SORTING_resultdraw},
-	{'0', (char) SORTING_resultloss},
-	{'i', (char) SORTING_rating},
-	{'N', (char) SORTING_number},
-//	TODO:
-//	{'f', (char) SORTING_flags},
-//	{'M', (char) SORTING_endmaterial},
-//	{'S', (char) SORTING_start},
-//	{'x', (char) SORTING_nextmove},
-	{ 0, 0}
-};
-
-SortCache* SortCache::Create(const Index* idx, const NameBase* nb, const char* criterium, bool multithread)
-{
-	SortCache* s = new SortCache();
-	if (OK == s->Init(idx, nb, criterium)) {
-		if (multithread) s->t_.start();
-		return s;
-	}
-	delete s;
-	return 0;
+SortCache::~SortCache() {
+	th_interrupt();
+	delete[] hash_;
+	delete[] fullMap_;
 }
 
-SortCache::SortCache()
-: t_(this)
-{
-	partialHashing = false;
-	fullMap = NULL;
-	mapSize = 0;
-	hashValues = NULL;
-	refCount = 1;
-	sorted_ = false;
-}
+SortCache* SortCache::create(const Index* idx, const NameBase* nb,
+                             const char* criteria) {
+	ASSERT(idx != NULL && nb != NULL && criteria != NULL);
 
-SortCache::~SortCache()
-{
-    t_.interrupt();
+	static const char fields[] = {
+	    SORTING_date,       SORTING_year,         SORTING_event,
+	    SORTING_site,       SORTING_round,        SORTING_white,
+	    SORTING_black,      SORTING_eco,          SORTING_result,
+	    SORTING_moveCount,  SORTING_avgElo,       SORTING_country,
+	    SORTING_deleted,    SORTING_eventdate,    SORTING_whiteelo,
+	    SORTING_blackelo,   SORTING_commentcount, SORTING_varcount,
+	    SORTING_nagcount,   SORTING_resultwin,    SORTING_resultdraw,
+	    SORTING_resultloss, SORTING_rating,       SORTING_number,
+	    SORTING_sentinel};
+	static const char* fields_end = fields + sizeof(fields);
 
-    if (fullMap != NULL)
-		delete[] fullMap;
+	if (*criteria == '\0') // Invalid empty criteria.
+		return NULL;
 
-    if (hashValues != NULL)
-		delete[] hashValues;
-}
+	SortCache* sc = new SortCache(idx, nb);
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// SortCache::Init():
-// criterium: a list of names converted into a corresponding array of
-//      integers denoting sorting criteria.
-//      e.g.: "-Sdate,event,white" --> { SORTING_date, SORTING_event, SORTING_white }
-//      The final element is set to SORTING_sentinel.
-errorT SortCache::Init(const Index* idx, const NameBase* nb, const char* criterium)
-{
-	ASSERT(idx != 0 && nb != 0 && criterium != 0);
-	index = idx;
-	nbase = nb;
-	criteria = criterium;
-	numGames = index->GetNumGames();
-
-	size_t numOFArgs = strlen( criterium) / 2;
-	if (numOFArgs >= (INDEX_MaxSortingCriteria - 1))
-	{
-		SortCriteria[numOFArgs] = SORTING_sentinel;
-		return ERROR_Full;
-	}
-
-	for(size_t i=0; i<numOFArgs; i++)
-	{
-		char key = criterium[2*i];
-		SortCriteria[i] = SORTING_sentinel;
-		for( int j=0; shortCriteriaNames[j][0] != 0; j++)
+	// Parse the sorting criteria.
+	size_t i = 0;
+	for (const char *it = criteria; *it != 0; ++it) {
+		bool valid = std::find(fields, fields_end, *it) != fields_end;
+		sc->criteria_[i++] = *it++;
+		bool reverse = (*it != '+');
+		sc->criteria_[i++] = reverse ? 1 : 0;
+		if (!valid                         // Unknown field
+		    || (reverse && *it != '-')     // Invalid asc/desc param
+		    || i >= sizeof(sc->criteria_)) // No space left for SORTING_sentinel
 		{
-			if( key == shortCriteriaNames[j][0])
-			{
-				SortCriteria[i] = shortCriteriaNames[j][1];
-				SortReverse[i] = criterium[2*i+1] == '-';
-				break;
-			}
-		}
-		if( SortCriteria[i] == SORTING_sentinel)
-		{
-			return ERROR;
+			delete sc;
+			return NULL;
 		}
 	}
-	SortCriteria[numOFArgs] = SORTING_sentinel;
+	sc->criteria_[i] = SORTING_sentinel;
 
-	hashValues = new uint[numGames];
-	for(uint i=0; i<numGames; i++)
-		hashValues[i] = CalcHash(index->GetEntry(i));
+	sc->generateHashCache();
+	sc->sortAsynchronously();
 
-	return OK;
+	return sc;
 }
 
-errorT SortCache::GetRange( uint start, uint count, const HFilter& filter, uint *result)
-{
-	if (count == 0) return OK;
-	if (start >= numGames) { *result = IDX_NOT_FOUND; return OK; }
-	bool use_filter = (filter != 0 && filter->size() != numGames);
+size_t SortCache::select(size_t row_offset, size_t row_count,
+                         const HFilter& filter, gamenumT* result) const {
+	ASSERT(filter != NULL && filter->size() <= nGames_);
+	ASSERT(result != NULL);
 
-	if (!sorted_) { // Not fully sorted
-		std::vector<gamenumT> v;
-		if (use_filter) {
-			v.resize(filter->size());
-			std::copy(filter->begin(), filter->end(), v.begin());
-		} else {
-			v.resize(numGames);
-			for (gamenumT i = 0; i < numGames; ++i) {
+	size_t maxResults = filter->size();
+	if (row_count == 0 || row_offset >= maxResults)
+		return 0;
+
+	size_t row_end = std::min(row_offset + row_count, maxResults);
+
+	if (!valid_fullMap_) {
+		gamenumT* v = new gamenumT[maxResults];
+		gamenumT* v_end = v + maxResults;
+		if (maxResults == nGames_) {
+			// std::iota(v, v_end, 0);
+			for (gamenumT i = 0; i < maxResults; ++i) {
 				v[i] = i;
 			}
-		}
-
-		if (start >= v.size()) {
-			if (count > 0) *result = IDX_NOT_FOUND;
-			return OK;
-		}
-		uint last = start + count;
-		if (last > v.size()) {
-			last = v.size();
-			result[last - start] = IDX_NOT_FOUND;
-		}
-		uint skip = 0;
-		if (start > 1000) {
-			skip = start;
-			std::nth_element(v.begin(), v.begin() + start, v.end(), Compare_std(this));
-		}
-		std::partial_sort(v.begin() + skip, v.begin() + last, v.end(), Compare_std(this));
-		std::copy(v.begin() + start, v.begin() + last, result);
-
-	} else { //Fully sorted cache
-
-		if (hashValues)
-		{
-			delete[] hashValues;
-			hashValues = NULL;
-		}
-
-		uint i = 0, j = 0;
-		if (!use_filter) {
-			//Speedup unfiltered search
-			for (i = start; i < numGames && j < count; i++) result[j++] = fullMap[i];
 		} else {
-			uint filterCount = 0;
+			std::copy(filter->begin(), filter->end(), v);
+		}
 
-			// Pick up the specified range, ignore those not matching the filter
-			for(; i < numGames && j < count; i++)
-			{
-				if( filter.get( fullMap[i]) == 0) continue;
-				if( filterCount >= start) result[j++] = fullMap[i];
-				filterCount++;
+		size_t skip = 0;
+		if (row_offset > 1000) {
+			skip = row_offset;
+			std::nth_element(v, v + row_offset, v_end, CmpLess(this));
+		}
+		std::partial_sort(v + skip, v + row_end, v_end, CmpLess(this));
+		std::copy(v + row_offset, v + row_end, result);
+		delete[] v;
+	} else {
+		if (maxResults == nGames_) {
+			std::copy(fullMap_ + row_offset, fullMap_ + row_end, result);
+		} else {
+			size_t filterCount = 0;
+			size_t i = 0;
+			for (; filterCount < row_offset; i++) {
+				if (filter->get(fullMap_[i]) != 0)
+					filterCount++;
+			}
+			for (; filterCount != row_end; i++) {
+				if (filter->get(fullMap_[i]) != 0) {
+					*result++ = fullMap_[i];
+					filterCount++;
+				}
 			}
 		}
-		if (j < count) result[j] = IDX_NOT_FOUND;
 	}
-	return OK;
+
+	return row_end - row_offset;
 }
 
-/*IndexToFilteredCount
-Given a game number find its position in the sorted list
-gnumber: game number (first game has value 1)
-filter: restrict search to filtered games
-return: IDX_NOT_FOUND if gnumber is not found
-        the position into the sorted list (first position has value 0)
-*/
-uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
-{
-	ASSERT(filter != 0);
-	if (gnumber == 0 || gnumber > numGames) return IDX_NOT_FOUND;
-	if (filter->get(--gnumber) == 0) return IDX_NOT_FOUND;
-	uint res = 0;
-	if (!sorted_) {
-		for (uint i=0; i < numGames; i++) {
-			if (filter->get(i) == 0) continue;
-			if (Compare(i, gnumber) <0) ++res;
-		}
-		return res;
-	} else {
-		for(uint i=0; i < numGames; i++) {
-			if (filter->get(fullMap[i]) == 0) continue;
-			if (fullMap[i] == gnumber) return res;
+size_t SortCache::sortedPosition(gamenumT gameId, const HFilter& filter) const {
+	ASSERT(filter != 0 && filter->size() <= nGames_);
+	ASSERT(gameId < nGames_ && filter->get(gameId) != 0);
+
+	size_t res = 0;
+	if (valid_fullMap_) {
+		for (gamenumT i = 0; i < nGames_; i++) {
+			if (filter->get(fullMap_[i]) == 0)
+				continue;
+			if (fullMap_[i] == gameId)
+				break;
 			res++;
 		}
-	}
-	return IDX_NOT_FOUND;
-}
-
-errorT SortCache::CheckForChanges (uint id)
-{
-	if (id <= numGames)
-	{
-		t_.join();
-		if (id == numGames) return AddEntry();
-
-		if( hashValues)
-			hashValues[id] = CalcHash( index->GetEntry( id));
-
-		if (sorted_) {
-			for(uint i=0; i<numGames; i++)
-				if( fullMap[i] == id)
-				{
-					for(; i<numGames - 1; i++) fullMap[i] = fullMap[i + 1];
-					Insert( id, numGames - 1);
-					break;
-				}
+	} else {
+		CmpLess comp(this);
+		for (gamenumT i = 0; i < nGames_; i++) {
+			if (filter->get(i) == 0)
+				continue;
+			if (comp(i, gameId))
+				++res;
 		}
 	}
-	else
-	{
-		t_.interrupt();
-		numGames = index->GetNumGames();
-		if (hashValues != NULL) delete[] hashValues;
-		hashValues = new uint[numGames];
-		for(uint i=0; i<numGames; i++)
-			hashValues[i] = CalcHash( index->GetEntry( i));
-		sorted_ = false;
-		t_.start();
-	}
-
-	return OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// SortCache::Compare():
-//      Compare two index entries according to sort criteria.
-//      The parameter criteria is an array of integers denoting
-//      sorting criteria (SORTING_date, SORTING_white, etc), terminated by
-//      the value SORTING_sentinel.
-//
-inline int
-SortCache::Compare (uint left, uint right)
-{
-	int res = 0;
-	if (hashValues)
-	{
-		if (hashValues[left] == hashValues[right] && partialHashing) {
-			res = FullCompare( left, right);
-		} else {
-			res = hashValues[left] - hashValues[right];
-		}
-	}
-	else
-	{
-		res = FullCompare( left, right);
-	}
-	if (res == 0) res = left - right;
 	return res;
 }
 
-inline bool
-SortCache::Compare_std::operator() (uint i1, uint i2) const {
-	int c = sc_->Compare(i1, i2);
-	return c < 0;
+void SortCache::checkForChanges(gamenumT id) {
+	th_interrupt();
+	if (id >= nGames_) {
+		generateHashCache();
+		sortAsynchronously();
+	} else {
+		hash_[id] = calcHash(id);
+		if (valid_fullMap_) {
+			gamenumT* begin = fullMap_;
+			gamenumT* end = fullMap_ + nGames_;
+			gamenumT* it = std::find(begin, end, id);
+			ASSERT(it != end);
+			// Reposition the game if necessary:
+			// - to the left if it compares less than the previous element;
+			// - to the right if the next element is lower.
+			CmpLess comp(this);
+			if (it != begin && comp(*it, *(it - 1))) {
+				std::rotate(
+					std::upper_bound(begin, it, *it, comp),
+					it, it + 1);
+			} else if (it + 1 != end && comp(*(it + 1), *it)) {
+				std::rotate(
+					it, it + 1,
+					std::lower_bound(it + 1, end, *it, comp));
+			}
+			ASSERT(std::is_sorted(begin, end, comp));
+		} else {
+			sortAsynchronously();
+		}
+	}
 }
 
-int
-SortCache::FullCompare (uint left, uint right)
-{
-	int res, rOne, rTwo;
-	byte *fields = SortCriteria;
-	bool *reverse = SortReverse;
+/*
+ * Calculate the hashes of all games and store them into @e hash_.
+ */
+void SortCache::generateHashCache() {
+	ASSERT(th_ == nullptr);
 
-	const IndexEntry *ie1 = index->GetEntry(left);
-	const IndexEntry *ie2 = index->GetEntry(right);
+	valid_fullMap_ = false;
+	nGames_ = index_->GetNumGames();
 
-	while (1) {
-		switch (*fields) {
-		case SORTING_sentinel:  // End of sort criteria array reached.
-			return 0;
-			break;
+	// Generate the hash table.
+	delete[] hash_;
+	hash_ = new uint32_t[nGames_];
+	for (gamenumT i = 0; i < nGames_; i++) {
+		hash_[i] = calcHash(i);
+	}
+}
 
+/*
+ * Start a background thread that will sort the gameIds and will populate @e
+ * fullMap_.
+ */
+void SortCache::sortAsynchronously() {
+	ASSERT(th_ == nullptr);
+
+#ifndef MULTITHREADING_OFF
+	delete[] fullMap_;
+	fullMap_ = new gamenumT[nGames_];
+	th_ = new std::thread(&SortCache::th_sort, this);
+#endif
+}
+
+/*
+ * Compare two games according to @e criteria_.
+ * The @e index_ is accessed only if the games' hashes are equal.
+ * @param g1: the id of the first game.
+ * @param g2: the id of the second game.
+ * @returns true if @e g1 is ordered before @e g2.
+ */
+bool SortCache::CmpLess::operator()(gamenumT g1, gamenumT g2) const {
+	ASSERT(g1 < sc_->nGames_ && g2 < sc_->nGames_);
+
+	if (sc_->hash_[g1] != sc_->hash_[g2])
+		return sc_->hash_[g1] < sc_->hash_[g2];
+	if (!sc_->partialHash_)
+		return g1 < g2;
+
+	int cmp = sc_->fullCompare(g1, g2);
+	if (cmp != 0)
+		return cmp < 0;
+
+	return g1 < g2;
+}
+
+static const int RESULT_SORT[] = { 0, 3, 1, 2 };
+static int nameComp(const NameBase* nbase, nameT nt, idNumberT id1,
+                    idNumberT id2) {
+	ASSERT(nbase != NULL);
+	return (id1 == id2) ? 0
+	                    : strCaseCompare(nbase->GetName(nt, id1),
+	                                     nbase->GetName(nt, id2));
+}
+
+/*
+ * Compare two games according to @e criteria_.
+ * @param left: the id of the first game.
+ * @param right: the id of the second game.
+ * @returns
+ * - <0 if @e left is ordered before @e right.
+ * - >0 if @e right is ordered before @e left.
+ * - 0 otherwise.
+ */
+int SortCache::fullCompare(gamenumT left, gamenumT right) const {
+	const IndexEntry *ie1 = index_->GetEntry(left);
+	const IndexEntry *ie2 = index_->GetEntry(right);
+
+	for (const char* field = criteria_; *field != SORTING_sentinel; field += 2) {
+		int res;
+		switch (*field) {
 		case SORTING_date:
 			res = (int)ie1->GetDate() - (int)ie2->GetDate();
 			break;
@@ -415,24 +362,30 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_white:
-			res = strCaseCompare (ie1->GetWhiteName (nbase), ie2->GetWhiteName (nbase));
+			res = nameComp(nbase_, NAME_PLAYER, ie1->GetWhite(), ie2->GetWhite());
 			break;
 
 		case SORTING_black:
-			res = strCaseCompare (ie1->GetBlackName (nbase), ie2->GetBlackName (nbase));
+			res = nameComp(nbase_, NAME_PLAYER, ie1->GetBlack(), ie2->GetBlack());
 			break;
 
 		case SORTING_event:
-			res = strCaseCompare (ie1->GetEventName (nbase), ie2->GetEventName (nbase));
+			res = nameComp(nbase_, NAME_EVENT, ie1->GetEvent(), ie2->GetEvent());
 			break;
 
 		case SORTING_site:
-			res = strCaseCompare (ie1->GetSiteName (nbase), ie2->GetSiteName (nbase));
+			res = nameComp(nbase_, NAME_SITE, ie1->GetSite(), ie2->GetSite());
 			break;
 
-		case SORTING_round:
-			res = strCompareRound (ie1->GetRoundName (nbase), ie2->GetRoundName (nbase));
+		case SORTING_round: {
+			idNumberT id1 = ie1->GetRound();
+			idNumberT id2 = ie2->GetRound();
+			res = (id1 == id2)
+			          ? 0
+			          : strCompareRound(nbase_->GetName(NAME_ROUND, id1),
+			                            nbase_->GetName(NAME_ROUND, id2));
 			break;
+		}
 
 		case SORTING_resultwin:
 			res = (ie1->GetResult() == RESULT_White ? 1 : 0) - (ie2->GetResult() == RESULT_White ? 1 : 0);
@@ -451,25 +404,23 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_avgElo:  // Average Elo rating:
-			rOne = ie1->GetWhiteElo(nbase) + ie1->GetBlackElo(nbase);
-			rTwo = ie2->GetWhiteElo(nbase) + ie2->GetBlackElo(nbase);
-			res = rOne - rTwo;
+			{
+				int r1 = ie1->GetWhiteElo(nbase_) + ie1->GetBlackElo(nbase_);
+				int r2 = ie2->GetWhiteElo(nbase_) + ie2->GetBlackElo(nbase_);
+				res = r1 - r2;
+			}
 			break;
 
 		case SORTING_country:  // Last 3 characters of site field:
 			{
-				const char * sOne = ie1->GetSiteName (nbase);
-				const char * sTwo = ie2->GetSiteName (nbase);
-				uint slenOne = strLength (sOne);
-				uint slenTwo = strLength (sTwo);
+				const char* sOne = ie1->GetSiteName(nbase_);
+				const char* sTwo = ie2->GetSiteName(nbase_);
+				size_t slenOne = std::strlen(sOne);
+				size_t slenTwo = std::strlen(sTwo);
 				if (slenOne > 3) { sOne += slenOne - 3; }
 				if (slenTwo > 3) { sTwo += slenTwo - 3; }
 				res = strCaseCompare (sOne, sTwo);
 			}
-			break;
-
-		case SORTING_month:
-			res = (int)ie1->GetMonth() - (int)ie2->GetMonth();
 			break;
 
 		case SORTING_deleted:
@@ -481,11 +432,11 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_whiteelo:
-			res = (int) ie1->GetWhiteElo(nbase) - (int) ie2->GetWhiteElo(nbase);
+			res = (int)ie1->GetWhiteElo(nbase_) - (int)ie2->GetWhiteElo(nbase_);
 			break;
 
 		case SORTING_blackelo:
-			res = (int) ie1->GetBlackElo(nbase) - (int) ie2->GetBlackElo(nbase);
+			res = (int)ie1->GetBlackElo(nbase_) - (int)ie2->GetBlackElo(nbase_);
 			break;
 
 		case SORTING_commentcount:
@@ -501,7 +452,7 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_rating:
-			res = (int)ie1->GetRating(nbase) - (int)ie2->GetRating(nbase);
+			res = (int)ie1->GetRating(nbase_) - (int)ie2->GetRating(nbase_);
 			break;
 
 		case SORTING_number:
@@ -513,217 +464,168 @@ SortCache::FullCompare (uint left, uint right)
 			return 0;
 		}
 
-		if (res != 0) return (*reverse) ? -res : res;
-		fields++; 
-		reverse++;
+		if (res != 0)
+			return *(field + 1) ? -res : res;
 	}
 
-	// Unreachable:
-    ASSERT (0);
     return 0;
 }
 
-uint SortCache::CalcHash (const IndexEntry* ie)
-{
-	uint retValue = 0;
-	int i = 0;
-	byte totalBytesUsed = 0;
+/*
+ * Calculate an order-preserving hash corresponding to the current criteria.
+ * @param gameId: the id of the game whose hash should be calculated.
+ * @returns the hash value.
+ */
+uint32_t SortCache::calcHash(gamenumT gameId) {
+	uint64_t retValue = 0;
+	const size_t nHashBits = 32;
+	size_t totalBitsUsed = 0;
+	const IndexEntry* ie = index_->GetEntry(gameId);
 
-	while( SortCriteria[i] != SORTING_sentinel && totalBytesUsed < 4)
-	{
-		uint cacheValue = 0;
-		byte bytesUsed = 4;
-		switch( SortCriteria[i])
-		{
+	for (const char* field = criteria_; *field != SORTING_sentinel; ++field) {
+		uint32_t value;
+		size_t bitsUsed;
+		switch (*field) {
 			case SORTING_white:
-				cacheValue = strStartHash(ie->GetWhiteName(nbase));
-				partialHashing = true;
+				value = strStartHash(ie->GetWhiteName(nbase_));
+				bitsUsed = nHashBits;
+				partialHash_ = true;
 				break;
 			case SORTING_black:
-				cacheValue = strStartHash(ie->GetBlackName(nbase));
-				partialHashing = true;
+				value = strStartHash(ie->GetBlackName(nbase_));
+				bitsUsed = nHashBits;
+				partialHash_ = true;
 				break;
 			case SORTING_site:
-				cacheValue = strStartHash(ie->GetSiteName(nbase));
-				partialHashing = true;
+				value = strStartHash(ie->GetSiteName(nbase_));
+				bitsUsed = nHashBits;
+				partialHash_ = true;
 				break;
 			case SORTING_event:
-				cacheValue = strStartHash(ie->GetEventName(nbase));
-				partialHashing = true;
+				value = strStartHash(ie->GetEventName(nbase_));
+				bitsUsed = nHashBits;
+				partialHash_ = true;
+				break;
+			case SORTING_round:
+				value = strGetUnsigned(ie->GetRoundName(nbase_));
+				bitsUsed = nHashBits;
+				partialHash_ = true;
 				break;
 			case SORTING_country:
 			{
-				const char *scountry = ie->GetSiteName (nbase);
+				const char *scountry = ie->GetSiteName (nbase_);
 				size_t slen = std::strlen(scountry);
 				if (slen > 3) 
 					scountry += slen - 3;
-				cacheValue = strStartHash(scountry);
-				partialHashing = true;
+				value = strStartHash(scountry);
+				bitsUsed = nHashBits;
+				partialHash_ = true;
 				break;
 			}
 			case SORTING_date:
-				cacheValue = ie->GetDate();
-				bytesUsed = 3;
+				value = ie->GetDate();
+				bitsUsed = 24;
 				break;
 			case SORTING_eventdate:
-				cacheValue = ie->GetEventDate();
+				value = ie->GetEventDate();
+				bitsUsed = 32;
 				break;
 			case SORTING_year:
-				cacheValue = ie->GetYear();
-				bytesUsed = 2;
-				break;
-			case SORTING_month:
-				cacheValue = ie->GetMonth();
-				bytesUsed = 1;
+				value = ie->GetYear();
+				bitsUsed = 16;
 				break;
 			case SORTING_whiteelo:
-				cacheValue = ie->GetWhiteElo(nbase);
-				bytesUsed = 2;
+				value = ie->GetWhiteElo(nbase_);
+				bitsUsed = 16;
 				break;
 			case SORTING_blackelo:
-				cacheValue = ie->GetBlackElo(nbase);
-				bytesUsed = 2;
+				value = ie->GetBlackElo(nbase_);
+				bitsUsed = 16;
 				break;
 			case SORTING_avgElo:
-				cacheValue = ie->GetWhiteElo(nbase) + ie->GetBlackElo(nbase);
-				bytesUsed = 2;
-				break;
-			case SORTING_round:
-				cacheValue = strGetUnsigned(ie->GetRoundName(nbase));
-				partialHashing = true;
+				value = ie->GetWhiteElo(nbase_) + ie->GetBlackElo(nbase_);
+				bitsUsed = 16;
 				break;
 			case SORTING_result:
-				cacheValue = RESULT_SORT[ie->GetResult()];
-				bytesUsed = 1;
+				value = RESULT_SORT[ie->GetResult()];
+				bitsUsed = 8;
 				break;
 			case SORTING_resultwin:
-				cacheValue = ie->GetResult() == RESULT_White ? 1 : 0;
-				bytesUsed = 1;
+				value = ie->GetResult() == RESULT_White ? 1 : 0;
+				bitsUsed = 8;
 				break;
 			case SORTING_resultdraw:
-				cacheValue = ie->GetResult() == RESULT_Draw ? 1 : 0;
-				bytesUsed = 1;
+				value = ie->GetResult() == RESULT_Draw ? 1 : 0;
+				bitsUsed = 8;
 				break;
 			case SORTING_resultloss:
-				cacheValue = ie->GetResult() == RESULT_Black ? 1 : 0;
-				bytesUsed = 1;
+				value = ie->GetResult() == RESULT_Black ? 1 : 0;
+				bitsUsed = 8;
 				break;
 			case SORTING_moveCount:
-				cacheValue = ie->GetNumHalfMoves();
-				bytesUsed = 2;
+				value = ie->GetNumHalfMoves();
+				bitsUsed = 16;
 				break;
 			case SORTING_eco:
-				cacheValue = ie->GetEcoCode();
-				bytesUsed = 2;
+				value = ie->GetEcoCode();
+				bitsUsed = 16;
 				break;
 			case SORTING_commentcount:
-				cacheValue = ie->GetCommentCount();
-				bytesUsed = 2;
+				value = ie->GetCommentCount();
+				bitsUsed = 16;
 				break;
 			case SORTING_varcount:
-				cacheValue = ie->GetVariationCount();
-				bytesUsed = 2;
+				value = ie->GetVariationCount();
+				bitsUsed = 16;
 				break;
 			case SORTING_nagcount:
-				cacheValue = ie->GetNagCount();
-				bytesUsed = 2;
+				value = ie->GetNagCount();
+				bitsUsed = 16;
 				break;
 			case SORTING_deleted:
-				cacheValue = (ie->GetDeleteFlag() ? 1 : 0);
-				bytesUsed = 1;
+				value = (ie->GetDeleteFlag() ? 1 : 0);
+				bitsUsed = 8;
 				break;
 			case SORTING_rating:
-				cacheValue = ie->GetRating(nbase);
-				bytesUsed = 1;
+				value = ie->GetRating(nbase_);
+				bitsUsed = 8;
 				break;
 			case SORTING_number:
-				//TODO: Hash the game number
-				partialHashing = true;
-				cacheValue = 0;
+				value = gameId;
+				bitsUsed = 32;
 				break;
+			default:    // Should never happen:
+				ASSERT(0);
+				partialHash_ = true;
+				return 0;
 		}
 
-		// If reverse search, just reverse the cache value
-		if( SortReverse[i])
-		{
-			switch (bytesUsed)
-			{
-				case 1:
-					cacheValue = 0xff - cacheValue;
-					break;
-				case 2:
-					cacheValue = 0xffff - cacheValue;
-					break;
-				case 3:
-					cacheValue = 0xffffff - cacheValue;
-					break;
-				case 4:
-					cacheValue = 0xffffffff - cacheValue;
-					break;
+		// If reverse order, just negate the cache value
+		if (*++field) {
+			value = ~value;
+			if (sizeof(value) * 8 > bitsUsed) {
+				// Clear the unused top bits
+				value <<= sizeof(value) * 8 - bitsUsed;
+				value >>= sizeof(value) * 8 - bitsUsed;
 			}
 		}
-		// If there is not enough space in the cache, use only the highest bytes
-		for( int j=0; j < bytesUsed - 4 + totalBytesUsed; j++)
-			cacheValue /= 256;
-		// Shift the old cache value to the left
-		int used = 4 - totalBytesUsed < bytesUsed ? 4 - totalBytesUsed : bytesUsed;
-		for( int j=0; j < used; j++)
-			retValue *= 256;
-		retValue += cacheValue;
-		// Update the available cache
-		totalBytesUsed += bytesUsed;
-		i++;
+		// Combine with previous hash value
+		retValue <<= bitsUsed;
+		retValue |= value;
+		totalBitsUsed += bitsUsed;
+
+		// If not all search attributes fit, then it is a partial hash
+		if (totalBitsUsed > nHashBits) {
+			retValue >>= totalBitsUsed - nHashBits;
+			partialHash_ = true;
+			break;
+		}
+		if (totalBitsUsed == nHashBits) {
+			if (*(field + 1) != SORTING_sentinel)
+				partialHash_ = true;
+			break;
+		}
 	}
-	// If not all search attributes fit, then it is a partial hash
-	if( totalBytesUsed > 4 ||  SortCriteria[i] != SORTING_sentinel)
-		partialHashing = true;
 
-	return retValue;
+	return static_cast<uint32_t>(retValue);
 }
-
-// Function that change fullMap or hashValues need MT sync
-// t_.join() or t_.interrupt() must be called before using one of the following functions
-void SortCache::GetSpace( uint size)
-{
-	if(mapSize > size)
-		return;
-
-	if (fullMap != NULL) {
-		uint *oldMap = fullMap;
-		fullMap = new uint[size];
-		memcpy( fullMap, oldMap, mapSize * 4);
-		delete[] oldMap;
-	}
-	else
-		fullMap = new uint[size];
-	mapSize = size;
-}
-
-uint SortCache::Insert( uint gnum, uint done)
-{
-	uint insert = std::lower_bound(fullMap, fullMap + done, gnum, Compare_std(this)) - fullMap;
-
-	for( uint tmp=done; tmp>insert; tmp--)
-		fullMap[tmp] = fullMap[tmp-1];
-	fullMap[insert] = gnum;
-	return insert;
-}
-
-errorT SortCache::AddEntry()
-{
-    if (hashValues != NULL) {
-		uint *oldMap = hashValues;
-		hashValues = new uint[numGames + 1];
-		memcpy( hashValues, oldMap, numGames * 4);
-		delete[] oldMap;
-		hashValues[numGames] = CalcHash( index->GetEntry( numGames));
-	}
-	if (sorted_)
-	{
-		GetSpace( numGames + 1);
-		Insert( numGames, numGames);
-	}
-	numGames++;
-	return OK;
-}
-

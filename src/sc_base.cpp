@@ -271,8 +271,10 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
  * @gnumber:       the number of the game to search for
  * @text:          if (@gnumber == 0) search the first game that contains @text in
  *                 white name or black name or event name or site name
- * @start_pos:     used only with @text, start searching from a certain position
- * @forward_dir:   <true|false>, used only with @start_pos, search after|before that position
+ * @start_pos:     used only with @text, start searching from a zero-based position.
+ * @forward_dir:   <true|false>, used only with @start_pos.
+ *                 if @e true search in the range [start_pos, numGames)
+ *                 if @e false search in the range [0, start_pos)
  *
  * Return: the position (0 == first) of the first match or "none" if not found
  */
@@ -285,18 +287,42 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 	if (filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const char* sort = argv[4];
-	uint gnumber = strGetUnsigned (argv[5]);
-	uint location = 0;
+	gamenumT gnumber = strGetUnsigned(argv[5]);
+	size_t location = INVALID_GAMEID;
 	if (gnumber == 0) {
-		if (argc != 9) return UI_Result(ti, ERROR_BadArg, usage);
-		const char* txt = argv[6];
-		uint st = strGetUnsigned (argv[7]);
-		bool fw = strGetBoolean (argv[8]);
-		location = dbase->GetRangeLocation (sort, filter, txt, st, fw);
+		if (argc != 9)
+			return UI_Result(ti, ERROR_BadArg, usage);
+		const char* text = argv[6];
+		size_t start = strGetUnsigned(argv[7]);
+		const NameBase* nb = dbase->getNameBase();
+#if CPP11_SUPPORT
+		auto contains = [dbase, nb, text](gamenumT g) {
+			const IndexEntry* ie = dbase->getIndexEntry(g);
+			return strAlphaContains(ie->GetWhiteName(nb), text) ||
+			       strAlphaContains(ie->GetBlackName(nb), text) ||
+			       strAlphaContains(ie->GetEventName(nb), text) ||
+			       strAlphaContains(ie->GetSiteName(nb), text);
+		};
+		if (strGetBoolean(argv[8])) {
+			std::vector<gamenumT> buf(filter->size() - start);
+			buf.resize(
+			    dbase->listGames(sort, start, buf.size(), filter, buf.data()));
+			auto it = std::find_if(buf.begin(), buf.end(), contains);
+			if (it != buf.end())
+				location = start + std::distance(buf.begin(), it);
+		} else {
+			std::vector<gamenumT> buf(start);
+			buf.resize(dbase->listGames(sort, 0, start, filter, buf.data()));
+			auto it = std::find_if(buf.rbegin(), buf.rend(), contains);
+			if (it != buf.rend())
+				location = std::distance(it, buf.rend()) - 1;
+		}
+#endif
 	} else {
-		location = dbase->GetRangeLocation (sort, filter, gnumber);
+		location = dbase->sortedPosition(sort, filter, gnumber - 1);
 	}
-	if (location == IDX_NOT_FOUND) return UI_Result(ti, OK, "none"); //Not found
+	if (location == INVALID_GAMEID)
+		return UI_Result(ti, OK, "none"); // Not found
 	return UI_Result(ti, OK, location);
 }
 
@@ -310,24 +336,19 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	const char* usage = "Usage: sc_base gameslist baseId start count filterName sortCrit";
 	if (argc != 7) return UI_Result(ti, ERROR_BadArg, usage);
 
-	uint start = strGetUnsigned (argv[3]);
-	uint count = strGetUnsigned (argv[4]);
+	size_t start = strGetUnsigned(argv[3]);
+	size_t count = strGetUnsigned(argv[4]);
 	const HFilter filter = dbase->getFilter(argv[5]);
-	if (filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
-	const char* sort = argv[6];
-	uint* idxList = new uint[count];
-	errorT err = dbase->GetRange(sort, start, count, filter, idxList);
-	if (err != OK) {
-		delete [] idxList;
-		return UI_Result(ti, err);
-	}
+	if (filter == NULL)
+		return UI_Result(ti, ERROR_BadArg, usage);
+	gamenumT* idxList = new gamenumT[count];
+	count = dbase->listGames(argv[6], start, count, filter, idxList);
 
 	UI_List res (count * 3);
 	UI_List ginfo(24);
 	const NameBase* nb = dbase->getNameBase();
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
-		if (idx == IDX_NOT_FOUND) break;
 
 		ASSERT(filter->get(idx) != 0);
 		uint ply = filter->get(idx) -1;
@@ -587,9 +608,10 @@ UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
 	if (std::strcmp("create", argv[3]) == 0) {
-		dbase->CreateSortCache(argv[4]);
+		if (dbase->createSortCache(argv[4]) == NULL)
+			return UI_Result(ti, ERROR);
 	} else {
-		dbase->FreeSortCache(argv[4]);
+		dbase->releaseSortCache(argv[4]);
 	}
 	return UI_Result(ti, OK);
 }
