@@ -290,7 +290,7 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
 //    needing the standard slower [string match] or [string range]
 //    routines.
 int
-str_is_prefix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+str_is_prefix (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: strIsPrefix <shortStr> <longStr>");
@@ -304,7 +304,7 @@ str_is_prefix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Tcl command that returns the length of the common text at the start
 //    of two strings.
 int
-str_prefix_len (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+str_prefix_len (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: strPrefixLen <str> <str>");
@@ -317,7 +317,7 @@ str_prefix_len (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_base_inUse
 //  Returns 1 if the database slot is in use; 0 otherwise.
 int
-sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_inUse (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const scidBaseT* basePtr = db;
     if (argc > 2) {
@@ -365,7 +365,7 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
 //    Exports the current game or all filter games in the database
 //    to a PGN, HTML or LaTeX file.
 int
-sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_export (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     FILE * exportFile = NULL;
     bool exportFilter = false;
@@ -542,7 +542,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    returns a list of 64 integers indicating how frequently
 //    the specified piece moves to each square.
 int
-sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_base piecetrack [-g|-t] <minMoves> <maxMoves> <startSquare ...>";
@@ -1066,7 +1066,7 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
 //      strip <tag>: Remove all occurrences of the
 //                   specified tag from the database.
 int
-sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_tag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_base tag [filter <tagname> | list | strip <tagname>]";
     const char * options[] = {
@@ -1197,7 +1197,7 @@ int sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const cha
 //    Game clipbase functions.
 //    Copies a game to, or pastes from, the clipbase database.
 int
-sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_clipbase (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     scidBaseT* clipbase = DBasePool::getBase(DBasePool::getClipBase());
 
@@ -1232,7 +1232,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_clipbase_paste:
 //    Paste the active clipbase game, replacing the current game state.
 int
-sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const char ** argv)
+sc_clipbase_paste(scidBaseT* clipbase, Tcl_Interp * ti, int, const char**)
 {
     // Cannot paste the clipbase game when already in the clipbase:
     if (db == clipbase) { return TCL_OK; }
@@ -1337,7 +1337,7 @@ sc_eco (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    If the database is read-only, games can still be classified but
 //    the results will not be stored to the database file.
 int
-sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_eco base <bool:all_games> <bool:extensions>");
@@ -1460,7 +1460,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    parameter <ply> is passed, it returns the ply depth of the
 //    deepest match instead of the ECO code.
 int
-sc_eco_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int found = 0;
     uint ply = 0;
@@ -1507,7 +1507,7 @@ sc_eco_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Reads a book file for ECO classification.
 //    Returns the book size (number of positions).
 int
-sc_eco_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_eco_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc < 3) { return TCL_OK; }
     if (ecoBook) { delete ecoBook; }
@@ -1536,7 +1536,7 @@ sc_eco_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Returns a listing of positions for the specified ECO prefix,
 //    in plain text or color (Scid hypertext) format.
 int
-sc_eco_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_eco_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool color = true;
     if (argc != 3  &&  argc != 4) {
@@ -1592,7 +1592,7 @@ sc_eco_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_eco_translate:
 //    Adds a new ECO openings phrase translation.
 int
-sc_eco_translate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_eco_translate (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 5) {
         return errorResult (ti, "Usage: sc_eco translate <lang> <from> <to>");
@@ -1991,7 +1991,7 @@ sc_filter_freq (scidBaseT* dbase, const HFilter& filter, Tcl_Interp * ti, int ar
 //    Returns the game number of the first game in the filter,
 //    or 0 if the filter is empty.
 int
-sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_first(ClientData, Tcl_Interp * ti, int, const char**)
 {
 	for (uint gnum=0; gnum < db->numGames(); gnum++) {
 		if (db->dbFilter->Get(gnum) == 0) continue;
@@ -2005,7 +2005,7 @@ sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Returns the game number of the last game in the filter,
 //    or 0 if the filter is empty.
 int
-sc_filter_last (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_last(ClientData, Tcl_Interp * ti, int, const char**)
 {
 	long gnum = db->numGames();
 	for (gnum--; gnum >= 0; gnum--) {
@@ -2019,7 +2019,7 @@ sc_filter_last (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_filter_next:
 //    Returns number of next game in the filter.
 int
-sc_filter_next (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_next(ClientData, Tcl_Interp * ti, int, const char**)
 {
     if (db->inUse) {
         uint nextNumber = db->gameNumber + 1;
@@ -2037,7 +2037,7 @@ sc_filter_next (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_filter_prev:
 //    Returns number of previous game in the filter.
 int
-sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_prev(ClientData, Tcl_Interp * ti, int, const char**)
 {
     if (db->inUse) {
         int prevNumber = db->gameNumber - 1;
@@ -2057,7 +2057,7 @@ sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_filter_stats:
 //    Returns statistics about the filter.
 int
-sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     enum {STATS_ALL, STATS_ELO, STATS_YEAR};
 
@@ -2355,7 +2355,7 @@ isCrosstableGame (const IndexEntry* ie, idNumberT siteID, idNumberT eventID,
 // sc_game_crosstable:
 //    Returns the crosstable for the current game.
 int
-sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 #ifndef WINCE
     static const char * options [] = {
@@ -2663,7 +2663,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 //    a database where the number may be inaccurate due to database
 //    sorting or compaction.
 int
-sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_find (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 9) {
         return errorResult (ti, "sc_game_find: Incorrect parameters");
@@ -2732,7 +2732,7 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    get the first few moves of the specified game as  a text line.
 //    E.g., "sc_game firstMoves 4" might return "1.e4 e5 2.Nf3 Nf6"
 int
-sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_firstMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_game firstMoves <numMoves>");
@@ -2752,7 +2752,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 }
 
 int
-sc_game_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_import (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_game import <pgn-text>");
@@ -3124,7 +3124,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 //    Return the Game Info string for the active game.
 //    The returned text includes color codes.
 int
-sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool hideNextMove = false;
     bool showMaterialValue = false;
@@ -3597,7 +3597,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_game_load:
 //    Takes a game number and loads the game
 int
-sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
@@ -3645,7 +3645,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Merge the specified game into a variation from the current
 //    game position.
 int
-sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_game merge <baseNum> <gameNum> [<endPly>]";
     if (argc < 4  ||  argc > 5) { return errorResult (ti, usage); }
@@ -3784,7 +3784,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    "nomoves" for standard algebraic without move numbers.
 //    Default output is standard algebraic with move numbers.
 int
-sc_game_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool sanFormat = true;
     bool printMoves = true;
@@ -3869,7 +3869,7 @@ sc_game_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_game_new:
 //    Clears the current game.
 int
-sc_game_new (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_new(ClientData, Tcl_Interp*, int, const char**)
 {
     db->game->Clear();
     db->gameNumber = -1;
@@ -3884,7 +3884,7 @@ sc_game_new (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    found in the selected database. It then moves to that point
 //    in the game and returns a text string of the move.
 int
-sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_game novelty [-older] base";
@@ -3967,7 +3967,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //        active game.
 //      -unicode (0|1): use unicocde characters (e.g. U+2654 for king). Default=0.
 int
-sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "-column", "-comments", "-base", "-gameNumber", "-format",
@@ -4098,7 +4098,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_game_pop:
 //    Restores the last game saved with sc_game_push.
 int
-sc_game_pop (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_pop(ClientData, Tcl_Interp*, int, const char**)
 {
     if (db->game->GetNextGame() != NULL) {
         Game * g = db->game->GetNextGame();
@@ -4116,7 +4116,7 @@ sc_game_pop (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    If the optional argument "copy" is present, the new game will be
 //    a copy of the current game.
 int
-sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_push (ClientData, Tcl_Interp*, int argc, const char ** argv)
 {
     bool copy = false;
     
@@ -4141,7 +4141,7 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Saves the current game. If the parameter is 0, a NEW
 //    game is added; otherwise, that game number is REPLACED.
 int
-sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_save (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     scidBaseT * dbase = db;
     Game* currGame = db->game;
@@ -4243,7 +4243,7 @@ addScoreToList (Tcl_Interp * ti, int moveCounter, const char * comment,
 //    first move, etc) and the second is the value found.
 //
 int
-sc_game_scores (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_scores (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int moveCounter = 0;
     float max = 10.0;
@@ -4296,7 +4296,7 @@ sc_game_scores (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    returned indicating whether the current game starts with
 //    a setup position.
 int
-sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_startBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc == 2) {
         return UI_Result(ti, OK, db->game->HasNonStandardStart());
@@ -4341,7 +4341,7 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 // sc_game_strip:
 //    Strips all comments, variations or annotations from a game.
 int
-sc_game_strip (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_strip (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_game strip [comments|variations]";
@@ -4396,7 +4396,7 @@ sc_game_strip (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    its players, site, etc; or its moves; or all its boards
 //    positions.
 int
-sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_game summary [-base <baseNum>] [-gameNumber <gameNum>] header|boards|moves";
 
@@ -4570,7 +4570,7 @@ sc_game_tags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    For "Extra", the function returns all the extra tags as one long
 //    string, in PGN format, one tag per line.
 int
-sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 
     static const char * options [] = {
@@ -4725,7 +4725,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Last arg is the non-standard tags, a string of lines in the format:
 //        [TagName "TagValue"]
 int
-sc_game_tags_set (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * options[] = {
         "-event", "-site", "-date", "-round", "-white", "-black", "-result",
@@ -4815,7 +4815,7 @@ sc_game_tags_set (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Useful when a name that may occur in the current game has been
 //    edited.
 int
-sc_game_tags_reload (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_tags_reload(ClientData, Tcl_Interp*, int, const char**)
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
     const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
@@ -4839,7 +4839,7 @@ sc_game_tags_reload (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 //    and the new value. If the parameter is "update", the changes
 //    will be made and the empty string is returned.
 int
-sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_game tags share [check|update] <gameNumber1> <gameNumber2>";
@@ -5155,7 +5155,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    To distinguish estimates from correct sizes, an estimate is
 //    returned as a negative number.
 int
-sc_info_fsize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_info_fsize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_info fsize <filename>");
@@ -5255,7 +5255,7 @@ sc_info_fsize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_info limit:
 //    Limits that Scid imposes.
 int
-sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "elo", "games", "nags", "year", "bases", NULL
@@ -5301,7 +5301,7 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Returns a Scid file suffix for a database file type.
 //    The suffix is returned with the leading dot.
 int
-sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_info_suffix (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "index", NULL
@@ -5329,7 +5329,7 @@ sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //   Set up a tablebase directory, or check if a certain
 //   tablebase is available.
 int
-sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_info_tb (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_info tb [<directory>|available <material>|cache <size-kb>]";
@@ -5451,7 +5451,7 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_move_add: takes a move specified by three parameters
 //      (square square promo) and adds it to the game.
 int
-sc_move_add (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 
     if (argc != 5) {
@@ -5494,7 +5494,7 @@ sc_move_add (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    list elements, or a mixture of both. Move numbers are ignored
 //    but variations/comments/annotations are parsed and added.
 int
-sc_move_addSan (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_move_addSan (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char ** argPtr = &(argv[2]);
     int argsLeft = argc - 2;
@@ -5526,7 +5526,7 @@ sc_move_addSan (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    to the game. The result is translated.
 //    In case of an error, return the moves that could be converted.
 int
-sc_move_addUCI (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) 
+sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     char s[8], tmp[10];
     if (argc < 3) { return TCL_OK; }
@@ -5575,7 +5575,7 @@ sc_move_addUCI (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_move_back:
 //    Moves back a specified number of moves (default = 1 move).
 int
-sc_move_back (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_move_back (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int numMovesTakenBack = 0;
     int count = 1;
@@ -5597,7 +5597,7 @@ sc_move_back (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_move_forward:
 //    Moves forward a specified number of moves (default = 1 move).
 int
-sc_move_forward (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_move_forward (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int numMovesMade = 0;
     int count = 1;
@@ -5622,7 +5622,7 @@ sc_move_forward (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    the specified place in the PGN output (given as a byte count
 //    from the start of the output).
 int
-sc_move_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_move_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_move pgn <offset>");
@@ -5800,7 +5800,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_pos_addNag:
 //    Adds a NAG (annotation symbol) for the current move.
 int
-sc_pos_addNag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_addNag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_pos addNag <nagvalue>");
@@ -5830,7 +5830,7 @@ sc_pos_addNag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    (from the perspective of the side to move) and the best move.
 //    If there are no legal moves, the second element is the empty string.
 int
-sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_analyze (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_pos analyze [<option> <value> ...]";
 
@@ -5918,7 +5918,7 @@ public:
 //    a move. Used for smart move completion.
 //    Returns -1 if no legal moves go to or from the square.
 int
-sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_pos bestSquare <square>");
@@ -6012,7 +6012,7 @@ sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_pos_getNags:
 //    Get the NAGs for the current move.
 int
-sc_pos_getNags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_getNags(ClientData, Tcl_Interp* ti, int, const char**)
 {
     byte * nag = db->game->GetNags();
     if (nag[0] == 0) {
@@ -6032,7 +6032,7 @@ sc_pos_getNags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_pos_hash:
 //   Returns the 32-bit hash value of the current position.
 int
-sc_pos_hash (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_hash (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_pos hash [full|pawn]";
     bool pawnHashOnly = false;
@@ -6061,7 +6061,7 @@ sc_pos_hash (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    a "bitmaps2" directory.
 //    The directory can be overridden with the "-path" command.
 int
-sc_pos_html (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_html (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_pos html [-flip <boolean>] [-path <path>] [<style:0|1>]";
     uint style = htmlDiagStyle;
@@ -6096,7 +6096,7 @@ sc_pos_html (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //   Valid arguments are: start, end, vstart and vend (or unique
 //   abbreviations thereof).
 int
-sc_pos_isAt (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_isAt (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "start", "end", "vstart", "vend", NULL
@@ -6131,7 +6131,7 @@ sc_pos_isAt (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Takes two squares (from and to, in either order) and
 //    returns true if they represent a pawn promotion move.
 int
-sc_pos_isPromo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_isPromo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_move isPromo <square> <square>");
@@ -6152,7 +6152,7 @@ sc_pos_isPromo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_pos_isLegal: returns true if the move between the two provided
 //    squares (either could be the from square) is legal.
 int
-sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_isLegal (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_pos isLegal <square> <square>");
@@ -6183,7 +6183,7 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //     castling respectively, so that no move is a prefix of
 //     any other move.
 int
-sc_pos_matchMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_matchMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3  &&  argc != 4) {
         return errorResult (ti, "Usage: sc_pos matchMoves <movetext-prefix>");
@@ -6254,7 +6254,7 @@ sc_pos_matchMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_pos_moves: Return the list of legal moves in SAN notation
 //
 int
-sc_pos_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
 {
     if (argc != 2) {
         return errorResult (ti, "Usage: sc_pos moves");
@@ -6276,7 +6276,7 @@ sc_pos_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    returns the board position corresponding to the
 //    last position reached in the game.
 int
-sc_pos_pgnBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_pgnBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_pos pgnBoard <pgn-text>");
@@ -6369,7 +6369,7 @@ sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Probes tablebases for the current position with one piece
 //    (specified by its square) relocated to each empty board square.
 int
-sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_probe_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_pos probe board <square>";
 
@@ -6418,7 +6418,7 @@ sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 // sc_pos_setComment:
 //    Set the comment for the current move.
 int
-sc_pos_setComment (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_pos_setComment (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_pos setComment <comment-text>");
@@ -6524,7 +6524,7 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_name_correct:
 //    Corrects specified names in the database.
 int
-sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     nameT nt = NAME_INVALID;
     if (argc == 4) { nt = NameBase::NameTypeFromString (argv[2]); }
@@ -6705,7 +6705,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    3rd arg: name to edit.
 //    4th arg: new name -- it might already exist in the namebase.
 int
-sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_edit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_name edit <type> <oldName> <newName>";
     const char * options[] = {
@@ -6924,7 +6924,7 @@ UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc,
 //    success rate with white and black, common openings by ECO code,
 //    and Elo rating history.
 int
-sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static char * lastPlayerName = NULL;
     const char * usageStr = "Usage: sc_name info [-ratings|-htext] <player>";
@@ -7574,7 +7574,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    3rd arg: maximum number of matches to return.
 //    Example: sc_nameMatch player "Speel" 10
 int
-sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_match (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = \
         "Usage: sc_name match [-elo] <nameType> <prefix> <maxMatches>";
@@ -7674,7 +7674,7 @@ public:
 };
 
 int
-sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_plist (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_name plist [-<option> <value> ...]";
 
@@ -7910,7 +7910,7 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
 //   If there is no filename argument, sc_name_read just returns the same
 //   list for the current spellchecker status without reading a new file.
 int
-sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_name_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc > 5) {
         return UI_Result(ti, ERROR_BadArg, "Usage: sc_name read <spellcheck-file>");
@@ -8360,7 +8360,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    the Tcl code that calls this need to ensure that
 //    is done first.
 int
-sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_report_create (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     uint maxThemeMoveNumber = 20;
     uint maxExtraMoves = 1;
@@ -8447,7 +8447,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    in the opening report matching the specified
 //    opening/endgame theme or note number.
 int
-sc_report_select (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_report_select (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * usage =
         "Usage: sc_report opening|player select <op|eg|note> <number>";
@@ -8534,7 +8534,7 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    It can also be "random" to request a random move selected
 //    according to the frequency of each move in the tree.
 int
-sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_tree_move (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_tree move <baseNum> <lineNum>");
@@ -8632,7 +8632,7 @@ sortTreeMoves (treeT * tree, int sortMethod, colorT toMove)
 // sc_tree_search:
 //    Returns the tree for the current position
 int
-sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * usageStr =
       "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score]";
@@ -9074,7 +9074,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_tree_cachesize:
 //    set cache size
 int
-sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_tree_cachesize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
   if (argc != 4) {
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
@@ -9087,7 +9087,7 @@ sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_tree_cacheinfo:
 //    returns a list of 2 values : used slots and max cache size
 int
-sc_tree_cacheinfo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_tree_cacheinfo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
   if (argc != 3) {
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
@@ -9150,7 +9150,7 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    if <base> is present, search for current position in base <base>,
 //    and sets <base> filter accordingly
 int
-sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_search_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usageStr =
         "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip> [<base>]";
@@ -9500,7 +9500,7 @@ parsePattern (const char * str, patternT * patt)
 // sc_search_material:
 //    Searches by material and/or pattern.
 int
-sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (! db->inUse) {
         return errorResult (ti, "Not an open database.");
@@ -9909,7 +9909,7 @@ parseTitles (const char * str)
 // sc_search_header:
 //    Searches by header information.
 int
-sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filter, int argc, const char ** argv)
+sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter, int argc, const char ** argv)
 {
     ASSERT(argc >= 2);
     Progress progress = UI_CreateProgress(ti);
@@ -10244,7 +10244,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_var_delete:
 //    Deletes a specified variation and free moves
 int
-sc_var_delete_free (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_var_delete_free (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 
     if (argc != 3) {
@@ -10264,7 +10264,7 @@ sc_var_delete_free (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 // sc_var_delete:
 //    Deletes a specified variation.
 int
-sc_var_delete (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_var_delete (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 
     if (argc != 3) {
@@ -10284,7 +10284,7 @@ sc_var_delete (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Promotes the specified variation of the current to be the
 //    first in the list.
 int
-sc_var_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_var_first (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_var first <number>");
@@ -10303,7 +10303,7 @@ sc_var_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_var_list:
 //    Returns a Tcl list of the variations for the current move.
 int
-sc_var_list (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_var_list (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool uci = (argc > 2) && ! strCompare("UCI", argv[2]);
     uint varCount = db->game->GetNumVariations();
@@ -10323,7 +10323,7 @@ sc_var_list (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_var_enter:
 //    Moves into a specified variation.
 int
-sc_var_enter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_var_enter (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_var enter <number>");
@@ -10390,7 +10390,7 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_book_load:
 //    Opens and loads a .bin book (fruit format)
 int
-sc_book_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_book load bookfile slot");
@@ -10419,7 +10419,7 @@ sc_book_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_book_close:
 //    Closes the previously loaded book
 int
-sc_book_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_close (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_book close slot");
@@ -10434,7 +10434,7 @@ sc_book_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_book_moves:
 //    returns a list of all moves contained in opened book and their probability in a TCL list
 int
-sc_book_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 		char moves[200] = "";
 		char boardStr[100];
@@ -10451,7 +10451,7 @@ sc_book_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_positions:
 //    returns a TCL list of moves to a position in the book
 int
-sc_book_positions (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_positions (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
 		char moves[200] = "";
 		char boardStr[100];
@@ -10468,7 +10468,7 @@ sc_book_positions (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_book_update:
 //    updates the opened book with probability values
 int
-sc_book_update (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_update (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_book update <probs> slot");
@@ -10481,7 +10481,7 @@ sc_book_update (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_book_movesupdate:
 //    updates the opened book with moves and probability values
 int
-sc_book_movesupdate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_movesupdate (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 6) {
         return errorResult (ti, "Usage: sc_book movesupdate <moves> <probs> slot tempfile");
