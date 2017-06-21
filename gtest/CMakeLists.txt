@@ -60,5 +60,5 @@ target_compile_options(coverage PRIVATE -coverage)
 set_property(TARGET coverage APPEND PROPERTY LINK_FLAGS -coverage)
 add_custom_command(TARGET coverage POST_BUILD
 	COMMAND ./coverage
-	COMMAND lcov ARGS -c -d . -o test_coverage.info
+	COMMAND lcov ARGS -c -b "${CMAKE_CURRENT_LIST_DIR}/../src" -d CMakeFiles -no-external -o test_coverage.info
 	COMMAND genhtml ARGS test_coverage.info -o gcov)

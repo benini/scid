@@ -74,12 +74,15 @@ void scid_Exit(void*) {
 	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Main procedure
-//
-int
-main(int argc, char * argv[])
-{
+/*! \mainpage
+ * Scid is an open source software released under the GPL licence.
+ * The core database library is written in c++ and the GUI uses
+ * <a href="http://core.tcl.tk"> the tcl/tk framework</a>.
+ *
+ * \section Tests
+ * Link to <a href="../gcov/index.html">code coverage</a>
+ */
+int main(int argc, char* argv[]) {
 	srand(time(NULL));
 
 	scratchGame = new Game;
