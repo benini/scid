@@ -69,7 +69,13 @@ public:
 		squareT to = getTo();
 		squareT from = getFrom();
 		if (to == 0 && from == 0) return "--";
-		if (isCastle()) return (to > from) ? "O-O" : "O-O-O";
+		if (isCastle()) {
+			res = (to > from) ? "O-O" : "O-O-O";
+			bool check = (m_ >> 30) & 1;
+			if (check)
+				res += "+";
+			return res;
+		}
 		bool fromFyle = (m_ >> 28) & 1;
 		bool fromRank = (m_ >> 29) & 1;
 		bool check    = (m_ >> 30) & 1;
@@ -103,7 +109,8 @@ public:
 
 	void reset(colorT c, pieceT p, squareT from, squareT to, pieceT promo = 0) {
 		m_ = to | (from << 6) | (p << 24) | (c << 27);
-		if (promo > 2) m_ |= ((promo -2) << 12) | (1 << 14);
+		if (promo >= 2)
+			m_ |= ((promo - 2) << 12) | (1 << 14);
 	}
 	void resetCastle(colorT c, squareT kingSq, squareT rookSq) {
 		//Encoding as king to rook allow undoing of chess360 moves
@@ -113,13 +120,12 @@ public:
 		m_ |= ((piece & 0x07) << 21);
 		if (enPassant) m_ |= (2 << 14);
 	}
-	void setAmbiguous(const FullMove& move2) {
-		if ((m_ & 0x700003F) == (move2.m_ & 0x700003F)) {
-			int from = getFrom();
-			int from2 = move2.getFrom();
-			if ((from % 8) != (from2 % 8)) m_ |= (1 << 28);
-			else m_ |= (1 << 29);
-		}
+	void setAmbiguity(bool fyle, bool rank) {
+		m_ &= ~(3 << 28);
+		if (fyle)
+			m_ |= (1 << 28);
+		if (rank)
+			m_ |= (1 << 29);
 	}
 	void setCheck() { m_ |= (1 << 30); }
 };

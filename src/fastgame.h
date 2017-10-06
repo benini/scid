@@ -21,19 +21,23 @@
 
 #include "common.h"
 #include "fullmove.h"
+#include "movegen.h"
 #include "position.h"
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <string>
 
 class FastBoard {
-	byte board_[64];
+	uint8_t board_[64];
 	uint8_t nPieces_[2][8];
 	struct P_LIST {
 		squareT sq;
 		pieceT piece;
 	} list[2][16];
+
+	enum { KING_IDX_ = 0, EMPTY_SQ_ = 0xFF };
 
 public:
 	FastBoard() {}
@@ -46,27 +50,39 @@ public:
 	}
 
 	void Init(Position& pos) {
-		std::memset(nPieces_, 0, sizeof(nPieces_));
-		std::memset(board_, 0, sizeof(board_));
-		for (byte c=0; c<2; c++) {
-			nPieces_[c][0] = pos.GetCount(c);
-			for (uint i=0, n = nPieces_[c][0]; i < n; ++i) {
-				squareT sq = pos.GetList(c)[i];
-				pieceT piece = piece_Type(pos.GetBoard()[sq]);
-				list[c][i].sq = sq;
-				list[c][i].piece = piece;
-				board_[sq] = i;
-				nPieces_[c][piece] += 1;
-			}
+		std::fill_n(board_, 64, EMPTY_SQ_);
+		std::fill_n(nPieces_[WHITE], 8, 0);
+		std::fill_n(nPieces_[BLACK], 8, 0);
+
+		nPieces_[WHITE][0] = pos.GetCount(WHITE);
+		for (uint8_t i = 0, n = nPieces_[WHITE][0]; i < n; ++i) {
+			squareT sq = pos.GetList(WHITE)[i];
+			pieceT piece = piece_Type(pos.GetBoard()[sq]);
+			ASSERT(piece != KING || i == KING_IDX_);
+			list[WHITE][i].sq = sq;
+			list[WHITE][i].piece = piece;
+			board_[sq] = i;
+			nPieces_[WHITE][piece] += 1;
+		}
+
+		nPieces_[BLACK][0] = pos.GetCount(BLACK);
+		for (uint8_t i = 0, n = nPieces_[BLACK][0]; i < n; ++i) {
+			squareT sq = pos.GetList(BLACK)[i];
+			pieceT piece = piece_Type(pos.GetBoard()[sq]);
+			ASSERT(piece != KING || i == KING_IDX_);
+			list[BLACK][i].sq = sq;
+			list[BLACK][i].piece = piece;
+			board_[sq] = i;
+			nPieces_[BLACK][piece] += 1;
 		}
 	}
 
-	bool isEqual(const pieceT* board, const byte* nPiecesW, const byte* nPiecesB) const {
-		const uint64_t* w = reinterpret_cast<const uint64_t*>(nPieces_[WHITE]);
-		const uint64_t* b = reinterpret_cast<const uint64_t*>(nPieces_[BLACK]);
-		const uint64_t* Sw = reinterpret_cast<const uint64_t*>(nPiecesW);
-		const uint64_t* Sb = reinterpret_cast<const uint64_t*>(nPiecesB);
-		if (*w != *Sw || *b != *Sb) return false;
+	bool isEqual(const pieceT* board, const uint8_t* nPiecesW, const uint8_t* nPiecesB) const {
+		if (!std::equal(nPiecesW, nPiecesW + 8, nPieces_[WHITE]))
+			return false;
+		if (!std::equal(nPiecesB, nPiecesB + 8, nPieces_[BLACK]))
+			return false;
+
 		for (int i=0, n = nPieces_[WHITE][0]; i < n; i++) {
 			const P_LIST* p = & list[WHITE][i];
 			if (board[p->sq] != piece_Make(WHITE, p->piece)) return false;
@@ -79,12 +95,12 @@ public:
 	}
 
 	template <colorT color>
-	squareT getSquare(byte idx) const {
+	squareT getSquare(uint8_t idx) const {
 		return list[color][idx].sq;
 	}
 
 	template <colorT color>
-	pieceT getPiece(byte idx) const {
+	pieceT getPiece(uint8_t idx) const {
 		return list[color][idx].piece;
 	}
 
@@ -96,144 +112,159 @@ public:
 
 	template <colorT color>
 	void castle(squareT king_to, squareT rook_from, squareT rook_to) {
-		const byte king_idx = 0;
-		const byte rook_idx = board_[rook_from];
+		const uint8_t rook_idx = board_[rook_from];
+		const squareT king_from = list[color][KING_IDX_].sq;
 		list[color][rook_idx].sq = rook_to;
-		list[color][king_idx].sq = king_to;
+		list[color][KING_IDX_].sq = king_to;
 		board_[rook_to] = rook_idx;
-		board_[rook_from] = 0;
-		board_[king_to] = king_idx;
-		// board_[king_from] = 0; //Is not necessary because King_idx == 0
+		board_[king_to] = KING_IDX_;
+		board_[rook_from] = EMPTY_SQ_;
+		board_[king_from] = EMPTY_SQ_;
 	}
 
 	template <colorT color>
-	pieceT move(byte idx, squareT to, pieceT promo) {
-		if (promo != 0) {
+	pieceT move(uint8_t idx, squareT to, pieceT promo) {
+		if (promo != INVALID_PIECE) {
 			list[color][idx].piece = promo;
 			nPieces_[color][PAWN] -= 1;
 			nPieces_[color][promo] += 1;
 		}
-		board_[ list[color][idx].sq ] = 0;
+		board_[list[color][idx].sq] = EMPTY_SQ_;
 		list[color][idx].sq = to;
-		return remove< 1 - color >(to, idx);
+		return remove<1 - color>(to, idx);
 	}
 
 	template <colorT color>
-	pieceT remove (squareT sq, byte newIdx = 0) {
-		const byte oldIdx = board_[sq];
+	pieceT remove(squareT sq, uint8_t newIdx = EMPTY_SQ_) {
+		const uint8_t oldIdx = board_[sq];
 		board_[sq] = newIdx;
-		if (oldIdx == 0) return 0;
+		if (oldIdx == EMPTY_SQ_)
+			return INVALID_PIECE;
 
 		pieceT res = list[color][oldIdx].piece;
 		nPieces_[color][res] -= 1;
 		nPieces_[color][0] -= 1;
 		if (oldIdx != nPieces_[color][0]) {
-			list[color][oldIdx] = list[color][ nPieces_[color][0] ];
+			list[color][oldIdx] = list[color][nPieces_[color][0]];
 			ASSERT(list[color][oldIdx].sq != sq);
-			board_[ list[color][oldIdx].sq ] = oldIdx;
+			board_[list[color][oldIdx].sq] = oldIdx;
 		}
 		return res;
 	}
 
-	void fillSANInfo(FullMove& lastmove) const {
-		pieceT piece = lastmove.getPiece();
-		colorT col = lastmove.getColor();
-		if (isCheck(col)) lastmove.setCheck();
-		if (piece == PAWN || nPieces_[col][piece] <= 1) return;
-		squareT to = lastmove.getTo();
-		for (size_t i=1, n = nPieces_[col][0]; i < n; i++) { //i=1 because King_idx == 0
-			if (list[col][i].piece == piece) {
-				squareT from = list[col][i].sq;
-				if (from != to && !FastBoard::invalidMove(piece, list[col][i].sq, to)) {
-					FullMove tmp;
-					tmp.reset(col, piece, from, to);
-					/*TODO:
-					- Check for obstacles (including lastmove.getFrom() square);
-					- Check for pinned piece (do not leave the king in check)
-					*/
-					lastmove.setAmbiguous(tmp);
-				}
-			}
+	/**
+	 * Given the actual board position, find if the last move needs to be made
+	 * unambiguous and if it gives check (or <TODO> mate), and then sets the
+	 * appropriate bits in @e lastmove.
+	 * @param lastmove: the last move played.
+	 */
+	void fillSANInfo(FullMove& lastmove) {
+		squareT lastFrom = lastmove.getFrom();
+		squareT lastTo = lastmove.getTo();
+		colorT lastCol = lastmove.getColor();
+		pieceT lastPt = lastmove.getPiece();
+
+		if (lastPt == PAWN) {
+			if (lastmove.isPromo())
+				lastPt = lastmove.getPromo();
+		} else if (nPieces_[lastCol][lastPt] > 1) {
+			int ambiguity = ambiguousMove(lastFrom, lastTo, lastCol, lastPt);
+			if (ambiguity)
+				lastmove.setAmbiguity(ambiguity != 5, ambiguity >= 5);
+		}
+
+		// Look for checks
+		ASSERT(nPieces_[WHITE][0] >= 1 && nPieces_[BLACK][0] >= 1);
+
+		squareT enemyKingSq = list[color_Flip(lastCol)][0].sq;
+		const P_LIST* piecesEnd = list[lastCol] + nPieces_[lastCol][0];
+		bool direct_check = lastPt != KING && movegen::attack<uint8_t>(
+		                                          lastTo, enemyKingSq, lastCol,
+		                                          lastPt, board_, EMPTY_SQ_);
+		if (direct_check || // Look for a discovered check
+		    find_attacker_slider(enemyKingSq, list[lastCol] + 1, piecesEnd) !=
+		        piecesEnd) {
+			lastmove.setCheck();
+
+			// TODO: Find if it's mate:
+			// - it's not mate if the king can move to a safe square
+			// - it's mate if it's double check or the attacker cannot be
+			//   captured or blocked.
 		}
 	}
 
 private:
-	template <bool once>
-	inline pieceT getNeighbor(int col, int row, int col_off, int row_off) const {
-		ASSERT(col_off != 0 || row_off !=0);
-		do {
-			col += col_off;
-			row += row_off;
-			if (row < 0 || row > 7 || col < 0 || col > 7) break;
-			uint8_t sq = col + row*8;
-			uint8_t idx = board_[sq];
-			if (idx != 0) {
-				if (idx < nPieces_[WHITE][0] && list[WHITE][idx].sq == sq) 
-					return piece_Make(WHITE, list[WHITE][idx].piece);
+	int ambiguousMove(squareT lastFrom, squareT lastTo, colorT lastCol,
+	                  pieceT lastPt) {
+		int ambiguity = 0;
 
-				return piece_Make(BLACK, list[BLACK][idx].piece);
+		squareT kingSq = list[lastCol][0].sq;
+		colorT enemyCol = color_Flip(lastCol);
+		for (size_t i = 1, n = nPieces_[lastCol][0]; i < n; i++) {
+			if (list[lastCol][i].piece != lastPt)
+				continue; // Skip: different type
+
+			squareT sq = list[lastCol][i].sq;
+			if (sq == lastTo)
+				continue; // Skip: this is the analyzed piece
+
+			board_[lastFrom] = board_[sq];
+			board_[sq] = EMPTY_SQ_;
+
+			bool pseudoLegal = movegen::pseudo<uint8_t>(
+			    sq, lastTo, lastCol, lastPt, board_, EMPTY_SQ_);
+
+			std::pair<pieceT, squareT> pin;
+			if (pseudoLegal)
+				pin = movegen::opens_ray<uint8_t>(sq, lastTo, kingSq, board_,
+				                                  EMPTY_SQ_);
+			board_[sq] = board_[lastFrom];
+			board_[lastFrom] = EMPTY_SQ_;
+
+			if (!pseudoLegal)
+				continue; // Skip: illegal move
+
+			if (pin.first != INVALID_PIECE) {
+				uint8_t idx = board_[pin.second];
+				if (idx != EMPTY_SQ_ && idx < nPieces_[enemyCol][0] &&
+				    list[enemyCol][idx].sq == pin.second) {
+					pieceT pt = list[enemyCol][idx].piece;
+					if (pt == QUEEN || pt == pin.first)
+						continue; // Skip: pinned piece
+				}
 			}
-		} while (!once);
 
-		return END_OF_BOARD;
+			// Ambiguity:
+			// 1 (0001) --> need from-file (preferred) or from-rank
+			// 3 (0011) --> need from-file
+			// 5 (0101) --> need from-rank
+			// 7 (0111) --> need both from-file and from-rank
+			ambiguity |= 1;
+			if (square_Rank(lastFrom) == square_Rank(sq)) {
+				ambiguity |= 2; // 0b0010
+			} else if (square_Fyle(lastFrom) == square_Fyle(sq)) {
+				ambiguity |= 4; // 0b0100
+			}
+		}
+
+		return ambiguity;
 	}
 
-	bool isCheck(colorT enemy) const {
-		const int kingSq = list[1- enemy][0].sq;
-		const int kingCol = kingSq % 8;
-		const int kingRow = kingSq / 8;
+	const P_LIST* find_attacker_slider(squareT destSq, const P_LIST* pieces,
+	                                   const P_LIST* piecesEnd) {
+		for (; pieces != piecesEnd; ++pieces) {
+			pieceT pt = (*pieces).piece;
+			if (pt != QUEEN && pt != ROOK && pt != BISHOP)
+				continue;
 
-		const pieceT pQ = piece_Make(enemy, QUEEN);
-		const pieceT pB = piece_Make(enemy, BISHOP);
-		static const int bishop[] = { +1, +1,  +1, -1,  -1, -1,  -1, +1 };
-		for (size_t i=0, n = sizeof(bishop)/sizeof(int); i < n; i+= 2) {
-			const pieceT p = getNeighbor<false>(kingCol, kingRow, bishop[i], bishop[i+1]);
-			if (p == pB || p == pQ) return true;
+			if (movegen::attack_slider<uint8_t>((*pieces).sq, destSq, pt,
+			                                    board_, EMPTY_SQ_)) {
+				break;
+			}
 		}
-
-		const pieceT pR = piece_Make(enemy, ROOK);
-		static const int rook[] = { +1, 0,  -1, 0,  0, +1,  0, -1 };
-		for (size_t i=0, n = sizeof(rook)/sizeof(int); i < n; i+= 2) {
-			const pieceT p = getNeighbor<false>(kingCol, kingRow, rook[i], rook[i+1]);
-			if (p == pR || p == pQ) return true;
-		}
-
-		const pieceT pN = piece_Make(enemy, KNIGHT);
-		static const int knight[] = { +1, +2,  +1, -2,  -1, +2,  -1, -2,  +2, +1,  +2, -1,  -2, +1,  -2, -1 };
-		for (size_t i=0, n = sizeof(knight)/sizeof(int); i < n; i+= 2) {
-			const pieceT p = getNeighbor<true>(kingCol, kingRow, knight[i], knight[i+1]);
-			if (p == pN) return true;
-		}
-
-		const pieceT pP = piece_Make(enemy, PAWN);
-		const int p_row = (enemy == BLACK) ? 1 : -1;
-		if (pP == getNeighbor<true>(kingCol, kingRow, +1, p_row)) return true;
-		if (pP == getNeighbor<true>(kingCol, kingRow, -1, p_row)) return true;
-
-		return false;
+		return pieces;
 	}
-
-	static bool invalidMove(pieceT p, squareT from, squareT to) {
-		const int fromCol = from % 8;
-		const int fromRow = from / 8;
-		const int toCol = to % 8;
-		const int toRow = to / 8;
-		const int dCol = std::abs(fromCol - toCol);
-		const int dRow = std::abs(fromRow - toRow);
-
-		if (dCol == dRow) { //Diagonal
-			if (dCol != 0 && (p == BISHOP || p == QUEEN)) return false;
-		} else if (dCol == 0 || dRow == 0) { //Linear
-			if (p == ROOK || p == QUEEN) return false;
-		} else if (p == KNIGHT) {
-			if ((dCol == 1 || dCol == 2) && (dRow == 1 || dRow == 2)) return false;
-		}
-		return true;
-	}
-
 };
-
-
 
 class FastGame {
 	FastBoard board_;
@@ -378,7 +409,7 @@ private:
 		pieceT moving_piece = board_.getPiece<toMove>(idx_piece_moving);
 		squareT from = board_.getSquare<toMove>(idx_piece_moving);
 		squareT to;
-		pieceT promo = 0;
+		pieceT promo = INVALID_PIECE;
 		bool enPassant = false;
 		switch (moving_piece) {
 			case PAWN: 	 to = decodePawn<toMove>(from, move, promo, enPassant); break;
@@ -419,7 +450,7 @@ private:
 		lastMove.reset(toMove, moving_piece, from, to, promo);
 		const colorT enemy = 1 - toMove;
 		pieceT captured = board_.move<toMove> (idx_piece_moving, to, promo);
-		if (captured == 0) {
+		if (captured == INVALID_PIECE) {
 			if (!enPassant) return true;
 			captured = PAWN;
 			squareT sq = (toMove == WHITE) ? to - 8 : to + 8;

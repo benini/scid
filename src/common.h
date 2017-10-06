@@ -218,6 +218,7 @@ const castleDirT  QSIDE = 0,  KSIDE = 1;
 // PIECE TYPES (without color; same value as a white piece)
 
 const pieceT
+    INVALID_PIECE = 0,
     KING = 1,
     QUEEN = 2,
     ROOK = 3,
