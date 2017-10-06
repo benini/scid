@@ -2201,7 +2201,10 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         }
 
         if (m->san[0] == 0) {
-            CurrentPos->MakeSANString (&(m->moveData), m->san, SAN_MATETEST);
+            // If there is a next move we can skip the SAN_MATETEST
+            CurrentPos->MakeSANString(
+                &(m->moveData), m->san,
+                (m->next->marker != END_MARKER) ? SAN_CHECKTEST : SAN_MATETEST);
         }
 
         bool printThisMove = true;

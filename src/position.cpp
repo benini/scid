@@ -21,6 +21,7 @@
 #include "hash.h"
 #include "sqmove.h"
 #include "dstring.h"
+#include "movegen.h"
 #include <algorithm>
 
 static uint hashVal [16][64];
@@ -2117,10 +2118,11 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 
     // Make sure m->pieceNum is updated:
     m->pieceNum = ListPos[m->from];
-    pieceT  p    = piece_Type (Board[List[ToMove][m->pieceNum]]);
     squareT from = List[ToMove][m->pieceNum];
     squareT to   = m->to;
     char * c     = s;
+    pieceT piece = Board[from];
+    pieceT p = piece_Type(piece);
 
     if (p == PAWN) {
         if (square_Fyle(from) != square_Fyle(to)) {  // pawn capture
@@ -2132,23 +2134,35 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         if ((square_Rank(to)==RANK_1) || (square_Rank(to)==RANK_8)) {
             *c++ = '=';
             *c++ = piece_Char(m->promote);
+            p = piece_Type(m->promote);
         }
 
     } else if (p == KING) {
         if (m->isNullMove()) {
             //*c++ = 'n'; *c++ = 'u'; *c++ = 'l'; *c++ = 'l';
             *c++ = '-'; *c++ = '-';
-        } else
-        if ((square_Fyle(from)==E_FYLE) && (square_Fyle(to)==G_FYLE)) {
-            *c++ = 'O'; *c++ = '-'; *c++ = 'O';
-        } else
-        if ((square_Fyle(from)==E_FYLE) && (square_Fyle(to)==C_FYLE)) {
-            *c++ = 'O'; *c++ = '-'; *c++ = 'O'; *c++ = '-'; *c++ = 'O';
-        } else {  // regular King move
-            *c++ = 'K';
-            if (Board[to] != EMPTY)  *c++ = 'x';
-            *c++ = square_FyleChar(to);
-            *c++ = square_RankChar(to);
+        } else {
+            switch (m->isCastle()) {
+            case 0:
+                *c++ = 'K';
+                if (Board[to] != EMPTY)
+                    *c++ = 'x';
+                *c++ = square_FyleChar(to);
+                *c++ = square_RankChar(to);
+                break;
+            case 1:
+                *c++ = 'O';
+                *c++ = '-';
+                *c++ = 'O';
+                break;
+            case 2:
+                *c++ = 'O';
+                *c++ = '-';
+                *c++ = 'O';
+                *c++ = '-';
+                *c++ = 'O';
+                break;
+            }
         }
 
     } else {    // Queen/Rook/Bishop/Knight
@@ -2156,54 +2170,80 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 
         // We only need to calculate legal moves to disambiguate if there
         // are more than one of this type of piece.
+        if (Material[piece] > 1) {
+            int ambiguity = 0;
+            for (uint i = 1, n = Count[ToMove]; i < n; i++) {
+                squareT sq = List[ToMove][i];
+                if (sq == from || Board[sq] != piece)
+                    continue;
 
-        if (Material[Board[m->from]] < 2) {
-            if (Board[to] != EMPTY)  { *c++ = 'x'; }
-            *c++ = square_FyleChar(to);
-            *c++ = square_RankChar(to);
+                if (!movegen::pseudo(sq, to, ToMove, p, Board, EMPTY))
+                    continue; // Skip illegal move
 
-        } else {
-            // disambiguate moves here:
-            // SHOULD handle 3-way ambiguity!  Looks like it does ok.
-            bool unique_fyle = true;
-            bool unique_rank = true;
-            bool ambiguity = false;
-            char f = square_FyleChar(from);
-            char r = square_RankChar(from);
-            MoveList mlist;
-            MatchLegalMove (&mlist, p, to);
+                std::pair<pieceT, squareT> pin =
+                    movegen::opens_ray(sq, to, GetKingSquare(), Board, EMPTY);
+                if (pin.first != INVALID_PIECE &&
+                    piece_Color_NotEmpty(Board[pin.second]) != ToMove) {
+                    pieceT pt = piece_Type(Board[pin.second]);
+                    if (pt == QUEEN || pt == pin.first)
+                        continue; // Skip pinned piece
+                }
 
-            for (uint i=0; i < mlist.Size(); i++) {
-                simpleMoveT * m2 = mlist.Get(i);
-                squareT from2 = m2->from;
-                pieceT p2 = piece_Type(Board[from2]);
-                if ((to == m2->to) && (from != from2) && (p2 == p)) {
-                    ambiguity = true;
-                    if (f == square_FyleChar(from2)) {
-                        unique_fyle = false;
-                    }
-                    if (r == square_RankChar(from2)) {
-                        unique_rank = false;
-                    }
+                // Ambiguity:
+                // 1 (0001) --> need from-file (preferred) or from-rank
+                // 3 (0011) --> need from-file
+                // 5 (0101) --> need from-rank
+                // 7 (0111) --> need both from-file and from-rank
+                ambiguity |= 1;
+                if (square_Rank(from) == square_Rank(sq)) {
+                    ambiguity |= 2; // 0b0010
+                } else if (square_Fyle(from) == square_Fyle(sq)) {
+                    ambiguity |= 4; // 0b0100
                 }
             }
             if (ambiguity) {
-                if (!unique_rank || unique_fyle)
-                    { *c++ = f; }  // print from-fyle
-                if (!unique_fyle)
-                    { *c++ = r; }  // print from-rank
+                if (ambiguity != 5)
+                    *c++ = square_FyleChar(from); // print from-fyle
+                if (ambiguity >= 5)
+                    *c++ = square_RankChar(from); // print from-rank
             }
-            if (Board[to] != EMPTY) { *c++ = 'x'; }
-            *c++ = square_FyleChar (to);
-            *c++ = square_RankChar (to);
         }
+        if (Board[to] != EMPTY)
+            *c++ = 'x';
+        *c++ = square_FyleChar(to);
+        *c++ = square_RankChar(to);
+    }
+
+    bool check;
+    if (flag != SAN_NO_CHECKTEST) {
+        squareT oldTo = Board[to];
+        Board[to] = Board[from];
+        Board[from] = EMPTY;
+        squareT enemyKingSq = GetEnemyKingSquare();
+        check = (p != KING) &&
+                movegen::attack(to, enemyKingSq, ToMove, p, Board, EMPTY);
+        if (!check) {
+            bool enpassant = (p == PAWN && oldTo == EMPTY &&
+                              square_Fyle(from) != square_Fyle(to));
+            if (!enpassant && (p != KING || !m->isCastle()) &&
+                !movegen::attack_slider(from, enemyKingSq, QUEEN, Board,
+                                        EMPTY)) {
+                flag = SAN_NO_CHECKTEST;
+            }
+
+        } else if (flag != SAN_MATETEST) {
+            *c++ = '+';
+            flag = SAN_NO_CHECKTEST;
+        }
+        Board[from] = Board[to];
+        Board[to] = oldTo;
     }
 
     // Now do the check or mate symbol:
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
         DoSimpleMove (m);
-        if (CalcNumChecks (GetKingSquare()) > 0) {
+        if (check || CalcNumChecks(GetKingSquare()) > 0) {
             char ch = '+';
             if (flag == SAN_MATETEST) {
                 MoveList mlist;

@@ -116,8 +116,7 @@ typedef byte markerT;
 const markerT
     NO_MARKER = 0,
     START_MARKER = 1,
-    END_MARKER = 2,
-    END_GAME = 3;
+    END_MARKER = 2;
 
 
 // patternT structure: a pattern filter for material searches.
