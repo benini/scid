@@ -275,50 +275,6 @@ NameBase::WriteNameFile(const Index* idx)
     return OK;
 }
 
-/**
- * NameBase::AddName() - Returns the idNumberT corresponding to @str
- * @nt: a valid name type
- * @str: the name to lookup/add
- * @idPtr: valid pointer to the idNumberT object where the result will be stored
- *
- * This function ensure that a name is stored inside the NameBase object and return
- * the corresponding idNumberT in @idPtr.
- * Names are not duplicated inside a NameBase object, multiple calls to AddName()
- * with equal @nt and @str will result in the same idNumberT.
- * Return OK if successful.
- */
-errorT
-NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
-{
-    ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
-
-    if (FindExactName(nt, str, idPtr) != OK) {
-        static const uint NAME_MAX_ID [NUM_NAME_TYPES] = {
-            1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
-             524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
-             524287, /* Site names:   Maximum of 2^19 -1 =   524,287 */
-             262143  /* Round names:  Maximum of 2^18 -1 =   262,143 */
-        };
-        if (names_[nt].size() >= NAME_MAX_ID[nt]) return ERROR_Full; // Too many names already.
-
-        const size_t strLen = strlen(str);
-        if (strLen > 255) return ERROR_NameTooLong;
-
-        char* name = new char[strLen +1];
-        strcpy(name, str);
-        *idPtr = names_[nt].size();
-        if (!idx_[nt].insert(std::make_pair(name, *idPtr)).second) {
-            delete[] name;
-            return ERROR;
-        }
-        names_[nt].push_back(name);
-        if (nt == NAME_PLAYER) eloV_.push_back(0);
-
-        modified_ = true;
-    }
-    return OK;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::FindExactName():
 //      Finds an exact full, case-sensitive name.

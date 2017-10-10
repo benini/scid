@@ -15,84 +15,62 @@
 */
 
 #include "namebase.h"
+#include <algorithm>
+#include <gtest/gtest.h>
+#include <map>
+#include <random>
 #include <string>
 #include <vector>
-#include <map>
-#include <gtest/gtest.h>
 
-class Test_Namebase : public ::testing::Test {
-};
+TEST(Test_Namebase, id_limits) {
+	const size_t MAX_LEN = 255;                 // Max 255 chars;
+	const idNumberT MAX_ID[] = {(1 << 20) - 1,  // MAX_PLAYER_ID
+	                            (1 << 19) - 1,  // MAX_EVENT_ID
+	                            (1 << 19) - 1,  // MAX_SIDE_ID
+	                            (1 << 18) - 1}; // MAX_ROUND_ID
 
-TEST_F(Test_Namebase, id_limits) {
-	NameBase nb;
-	long nLimit[NUM_NAME_TYPES] = { 0 };
-	bool finished = false;
-	for (unsigned long count = 0; !finished; count++) {
-		finished = true;
-		std::string name = std::to_string(count);
-		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-			idNumberT id = 0;
-			if (OK == nb.AddName(nt, name.c_str(), &id)) {
-				EXPECT_EQ(id, nLimit[nt]++);
-				finished = false;
-			}
+	std::vector<std::pair<nameT, idNumberT> > v;
+	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+		for (idNumberT i = 0; i < MAX_ID[nt]; i++) {
+			v.emplace_back(nt, i);
+			v.emplace_back(nt, i);
 		}
 	}
+	std::shuffle(v.begin(), v.end(), std::mt19937(std::random_device()()));
 
-	EXPECT_EQ(nLimit[NAME_PLAYER], (1 << 20) - 1);
-	EXPECT_EQ(nLimit[NAME_EVENT], (1 << 19) - 1);
-	EXPECT_EQ(nLimit[NAME_SITE], (1 << 19) - 1);
-	EXPECT_EQ(nLimit[NAME_ROUND], (1 << 18) - 1);
-}
-
-TEST_F(Test_Namebase, max_chars) {
-	// .pgn and .sn4 files cannot store names longer than 255 bytes
 	NameBase nb;
-	long maxCh[NUM_NAME_TYPES] = { 0 };
-	long maxChUtf8[NUM_NAME_TYPES] = { 0 };
-	long maxChMixed1[NUM_NAME_TYPES] = { 0 };
-	long maxChMixed2[NUM_NAME_TYPES] = { 0 };
-	std::string ch, chUtf8, chMixed1;
-	std::string chMixed2 = " ";
-	bool mixed = true;
-	bool finished = false;
-	while (!finished) {
-		ch += "A";
-		chUtf8 += "Ü";
-		chMixed1 += (mixed) ? "A" : "Ü";
-		chMixed2 += (mixed) ? "A" : "Ü";
-		mixed = !mixed;
-		finished = true;
-		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-			idNumberT id;
-			if (OK == nb.AddName(nt, ch.c_str(), &id)) {
-				maxCh[nt]++;
-				finished = false;
-			}
-			if (OK == nb.AddName(nt, chUtf8.c_str(), &id)) {
-				maxChUtf8[nt]++;
-				finished = false;
-			}
-			if (OK == nb.AddName(nt, chMixed1.c_str(), &id)) {
-				maxChMixed1[nt]++;
-				finished = false;
-			}
-			if (OK == nb.AddName(nt, chMixed2.c_str(), &id)) {
-				maxChMixed2[nt]++;
-				finished = false;
-			}
-		}
+	for (auto e : v) {
+		EXPECT_EQ(OK, nb.getID(e.first, std::to_string(e.second).c_str(),
+		                       MAX_LEN, MAX_ID[e.first])
+		                  .first);
 	}
 
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-		EXPECT_EQ(maxCh[nt], 255);
-		EXPECT_EQ(maxChUtf8[nt], 127);
-		EXPECT_EQ(maxChMixed1[nt], 170);
-		EXPECT_EQ(maxChMixed2[nt], 169);
+		EXPECT_NE(OK, nb.getID(nt, "full", MAX_LEN, MAX_ID[nt]).first);
 	}
 }
 
-TEST_F(Test_Namebase, FindExactName) {
+TEST(Test_Namebase, max_chars) {
+	// .pgn and .sn4 files cannot store names longer than 255 bytes
+	const size_t MAX_LEN = 255; // Max 255 chars;
+	std::string s = u8"utf8 κόσμε\t\r ♚♛♜ \n ";
+	s = s + s + s + s + s + s + s + s + s + s + s;
+	ASSERT_TRUE(s.size() > MAX_LEN);
+
+	NameBase nb;
+	for (size_t i = 0; i < s.size(); i++) {
+		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+			auto test = nb.getID(nt, s.substr(0, i).c_str(), MAX_LEN, 1000);
+			if (i <= MAX_LEN)
+				EXPECT_EQ(OK, test.first);
+			else
+				EXPECT_NE(OK, test.first);
+		}
+	}
+}
+
+TEST(Test_Namebase, FindExactName) {
+	// clang-format off
 	std::vector<const char*> test_names = {
 		"Empty", "",
 		"Spaces", " ", " Spaces", "Spaces ", " Spaces ",
@@ -102,13 +80,15 @@ TEST_F(Test_Namebase, FindExactName) {
 		"Kanji:", "てすと", "(te-su-to)",
 		"Hankaku:", "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃ"
 	};
+	// clang-format on
+
 	NameBase nb;
 	std::map<idNumberT, const char*> ids[NUM_NAME_TYPES];
 	for (const char* name : test_names) {
 		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-			idNumberT id = 0;
-			EXPECT_EQ(OK, nb.AddName(nt, name, &id));
-			EXPECT_TRUE(ids[nt].emplace(id, name).second);
+			auto id = nb.getID(nt, name, 255, 1000);
+			EXPECT_EQ(OK, id.first);
+			EXPECT_TRUE(ids[nt].emplace(id.second, name).second);
 		}
 	}
 
@@ -121,7 +101,7 @@ TEST_F(Test_Namebase, FindExactName) {
 	}
 }
 
-TEST_F(Test_Namebase, sort_order) {
+TEST(Test_Namebase, sort_order) {
 	// Older Scid versions (< 4.6) used a class StrTree that
 	// implemented an hybrid hash map/sorted binary tree.
 	// The code was written in 1999 and have at least 2 known issues
@@ -136,12 +116,11 @@ TEST_F(Test_Namebase, sort_order) {
 	// keep using that sorting criteria.
 	NameBase nb;
 	nameT nt = NAME_PLAYER;
-	idNumberT id;
-	EXPECT_EQ(OK, nb.AddName(nt, "AA", &id));
-	EXPECT_EQ(OK, nb.AddName(nt, "AÜ", &id));
-	EXPECT_EQ(OK, nb.AddName(nt, "ÜA", &id));
-	EXPECT_EQ(OK, nb.AddName(nt, "ÜÜ", &id));
-	idNumberT names[4] = { 0 };
+	EXPECT_EQ(OK, nb.getID(nt, "AA", 255, 1000).first);
+	EXPECT_EQ(OK, nb.getID(nt, "AÜ", 255, 1000).first);
+	EXPECT_EQ(OK, nb.getID(nt, "ÜA", 255, 1000).first);
+	EXPECT_EQ(OK, nb.getID(nt, "ÜÜ", 255, 1000).first);
+	idNumberT names[4] = {0};
 	nb.GetFirstMatches(nt, "", 4, names);
 	EXPECT_STREQ(nb.GetName(nt, names[0]), "AÜ");
 	EXPECT_STREQ(nb.GetName(nt, names[1]), "AA");
