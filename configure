@@ -25,7 +25,6 @@ set var(SHAREDIR) /usr/local/share/scid
 set var(TB) {-DSCID_USE_TB -DT41_INCLUDE}
 set var(TCL_VERSION) $tcl_version
 set var(WARNINGS) -Wall
-set var(ZLIB) {}
 set var(MAKEFILE) Makefile.conf
 set var(INSTALL) {install_scid install_engines}
 
@@ -208,66 +207,6 @@ proc findTclTkPaths {} {
     return $success
 }
 
-
-# testzlib_sh:
-#    Script used to test if the system has zlib installed.
-#
-set testzlib {#!/bin/sh
-cat <<EOF > testzlib.c
-#include <zlib.h>
-int main()
-{
-    z_streamp z;
-    deflateInit(z, 0);
-    return 0;
-}
-EOF
-
-$::var(COMPILE) -o testzlib testzlib.c -lz
-if [ -f testzlib ]; then
-    exit 0
-else
-    exit 1
-fi
-}
-
-
-# systemHasZlib:
-#    Determines if the system has zlib installed.
-#
-proc systemHasZlib {} {
-    set systemHasZlib 0
-    flush stdout
-    if {[catch {open testzlib.sh w} f]} { return 0 }
-    puts $f [subst -nocommands -nobackslash $::testzlib]
-    close $f
-    set result 0
-    if {! [catch {exec sh testzlib.sh} err]} { set result 1 }
-    catch {file delete -force testzlib.sh}
-    catch {file delete -force testzlib.c}
-    catch {file delete -force testzlib}
-    return $result
-}
-
-
-# checkZlib:
-#    Checks whether the system has the zlib compression library installed,
-#    if necessary. 
-#
-proc checkZlib {} {
-    global var
-    puts -nonewline "    Checking if your system already has zlib installed: "
-    flush stdout
-    if {[systemHasZlib]} {
-        puts "yes."
-        append var(SCIDFLAGS) " -DZLIB"
-        set var(ZLIB) {-lz}
-    } else {
-        puts "no."
-        set var(ZLIB) {}
-    }
-}
-
 # writeMakefile:
 #    Creates the Makefile using Makefile.conf and the configured
 #    settings.
@@ -276,8 +215,6 @@ proc checkZlib {} {
 proc writeMakefile {{type ""}} {
     global var
     set success [findTclTkPaths]
-
-    checkZlib
 
     if {[catch {set from [open $var(MAKEFILE) r]}]} {
        puts "Error opening file for reading: $var(MAKEFILE)"

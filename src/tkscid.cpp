@@ -5052,12 +5052,12 @@ int
 sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "decimal", "fsize", "gzip",
+        "clipbase", "decimal", "fsize",
         "html", "limit", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
-        INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
+        INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE,
         INFO_HTML, INFO_LIMIT, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
@@ -5079,10 +5079,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_FSIZE:
         return sc_info_fsize (cd, ti, argc, argv);
-
-    case INFO_GZIP:
-        // Return true if gzip files can be decoded by Scid.
-        return UI_Result(ti, OK, gzable());
 
     case INFO_HTML:
         if (argc >= 3) {
@@ -5166,15 +5162,11 @@ sc_info_fsize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     const char * fname = argv[2];
     const char * lastSuffix = strFileSuffix (fname);
     uint fsize = 0;
-    bool isGzipFile = false;
     bool isEpdFile = false;
     bool isRepFile = false;
 
     if (strAlphaContains (fname, ".epd")) { isEpdFile =  true; }
     if (strAlphaContains (fname, ".sor")) { isRepFile =  true; }
-    if (lastSuffix != NULL  &&  strEqual (lastSuffix, GZIP_SUFFIX)) {
-        isGzipFile = true;
-    }
 
     if (lastSuffix != NULL  &&  strEqual (lastSuffix, OLD_INDEX_SUFFIX)) {
         fsize = rawFileSize (fname);
@@ -5191,12 +5183,7 @@ sc_info_fsize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Estimate size for PGN files, by reading the first 64 kb
     // of the file and counting the number of games seen:
-
-    if (isGzipFile) {
-        fsize = gzipFileSize (fname);
-    } else {
         fsize = rawFileSize (fname);
-    }
 
     MFile pgnFile;
     if (pgnFile.Open (fname, FMODE_ReadOnly) != OK) {

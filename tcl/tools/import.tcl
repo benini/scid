@@ -146,11 +146,7 @@ proc importMoveListTrans {line} {
 ### Import file of Pgn games:
 proc importPgnFile {{base} {fnames ""}} {
   if {$fnames == ""} {
-    if {[sc_info gzip]} {
-      set ftypes { { "Portable Game Notation files" {".pgn" ".PGN" ".pgn.gz"} } }
-    } else {
       set ftypes { { "Portable Game Notation files" {".pgn" ".PGN"} } }
-    }
     lappend ftypes { "Text files" {".txt" ".TXT"} }
     lappend ftypes { "All files" {"*"} }
 

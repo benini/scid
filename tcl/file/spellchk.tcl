@@ -28,7 +28,7 @@ set spellstate idle
 #
 proc readSpellCheckFile {{message 1}} {
   global spellCheckFile
-  set ftype { { "Scid Spellcheck files" {".ssp" ".ssp.gz"} } }
+  set ftype { { "Scid Spellcheck files" {".ssp"} } }
   set fullname [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Open Spellcheck file"]
   if {![string compare $fullname ""]} { return 0 }
 

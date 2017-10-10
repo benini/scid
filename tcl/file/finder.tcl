@@ -464,10 +464,6 @@ proc ::file::finder::GetFiles {dir {len -1}} {
         set showFile 1
       } elseif {$ext == ".pgn"} {
         set showFile 1
-      } elseif {$ext == ".gz"} {
-        set rootname [file rootname $rootname]
-        if {[regexp {\.epd\.gz} $f]} { set showFile 1; set type EPD }
-        if {[regexp {\.pgn\.gz} $f]} { set showFile 1 }
       }
       if {$showFile  &&  [info exists data($type)]  &&  $data($type)} {
         set path [string range $f $len end]

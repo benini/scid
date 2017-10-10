@@ -106,15 +106,6 @@ proc ::file::openBaseAsTree { { fName "" } } {
 
 proc ::file::Open_ {{fName ""} } {
   if {$fName == ""} {
-    if {[sc_info gzip]} {
-      set ftype {
-        { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz"} }
-        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
-        { "Scid databases" {".si4" ".si3"} }
-        { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
-        { "EPD files" {".epd" ".EPD" ".epd.gz"} }
-      }
-    } else {
       set ftype {
         { "All Scid files" {".si4" ".si3" ".pgn" ".epd"} }
         { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
@@ -122,7 +113,6 @@ proc ::file::Open_ {{fName ""} } {
         { "PGN files" {".pgn" ".PGN"} }
         { "EPD files" {".epd" ".EPD"} }
       }
-    }
   
     set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
     if {$fName == ""} { return 2}
@@ -150,8 +140,8 @@ proc ::file::Open_ {{fName ""} } {
       set ::initialDir(base) [file dirname "$fName"]
       ::recentFiles::add "$fName"
     }
-  } elseif {"$ext" == ".epd" || "$ext" == ".gz"} {
-    # PNG.gz or EPD file:
+  } elseif {"$ext" == ".epd"} {
+    # EPD file:
     set err [catch {sc_base create MEMORY "$fName"} ::file::lastOpened]
     if {$err} {
       ERROR::MessageBox "$fName\n"

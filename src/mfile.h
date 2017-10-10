@@ -26,10 +26,7 @@
 #include "common.h"
 #include <stdio.h>
 
-#ifdef ZLIB
-	#include <zlib.h>
-	inline bool gzable() { return true; }
-#else
+#if true
 	// If the zlib compression library is NOT used, create dummy inline
 	// functions to replace those used in zlib, which saves wrapping every
 	// zlib function call with #ifndef conditions.
@@ -68,11 +65,9 @@ class MFile
     // simply does a (relatively slow) gzread() for each gzgetc().
     byte *      GzBuffer;
     int         GzBuffer_Avail;
-    byte *      GzBuffer_Current;
 
     void Init();
     void Extend();
-    int  FillGzBuffer();
 
   public:
     MFile() { Init(); }
@@ -155,15 +150,6 @@ MFile::ReadOneByte ()
         return (int) value;
     }
     Location++;
-    if (Type == MFILE_GZIP) {
-        if (GzBuffer_Avail <= 0) {
-            return FillGzBuffer();
-        }
-        GzBuffer_Avail--;
-        int retval = *GzBuffer_Current;
-        GzBuffer_Current++;
-        return retval;
-    }
     return  getc(Handle);
 }
 

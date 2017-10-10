@@ -766,10 +766,6 @@ fileSize (const char * name, const char * suffix)
     fileNameT fname;
     strCopy (fname, name);
     strAppend (fname, suffix);
-    const char * lastSuffix = strFileSuffix (fname);
-    if (lastSuffix != NULL  &&  strEqual (lastSuffix, GZIP_SUFFIX)) {
-        return gzipFileSize (fname);
-    }
     return rawFileSize (fname);
 }
 
@@ -785,33 +781,6 @@ rawFileSize (const char * name)
         return 0;
     }
     return (uint) statBuf.st_size;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// gzipFileSize():
-//    Returns the UNCOMPRESSED size of a .gz file.
-//    This is stored the final 4 bytes, in little endian format.
-//    Returns 0 if any error occurs.
-uint
-gzipFileSize (const char * name)
-{
-    FILE * fp;
-    fp = fopen (name, "rb");
-    if (fp == NULL) { return 0; }
-    // Seek to 4 bytes from the end:
-    if (fseek (fp, -4L, SEEK_END) != 0) {
-        fclose (fp);
-        return 0;
-    }
-    // Read the 4-byte number in little-endian format:
-    uint size = 0;
-    uint b0 = (uint) getc(fp);
-    uint b1 = (uint) getc(fp);
-    uint b2 = (uint) getc(fp);
-    uint b3 = (uint) getc(fp);
-    size = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
-    fclose (fp);
-    return size;
 }
 
 //////////////////////////////////////////////////////////////////////

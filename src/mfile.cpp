@@ -16,9 +16,6 @@
 #include "mfile.h"
 #include "misc.h"
 
-// GZ_BUFFER_SIZE: number of bytes read from a Gzip file at a time.
-const uint GZ_BUFFER_SIZE = 1024;
-
 void
 MFile::Init ()
 {
@@ -103,19 +100,7 @@ MFile::Open (const char * name, fileModeT fmode)
         default:               return ERROR_FileMode;
     }
 
-    const char * suffix = strFileSuffix (name);
-    if (suffix != NULL  &&  strEqual (suffix, GZIP_SUFFIX)) {
-        // We can only open GZip files read-only for now:
-        if (fmode != FMODE_ReadOnly) {
-            return ERROR_FileOpen;
-        }
-        GzHandle = gzopen (name, "rb");
-        if (GzHandle == NULL) { return ERROR_FileOpen; }
-        Type = MFILE_GZIP;
-        GzBuffer = new byte [GZ_BUFFER_SIZE];
-        GzBuffer_Current = GzBuffer;
-        GzBuffer_Avail = 0;
-    } else {
+    {
         Handle = fopen (name, modeStr);
         if (Handle == NULL) { return ERROR_FileOpen; }
         Type = MFILE_SEQREAD;
@@ -265,18 +250,6 @@ MFile::ReadFourBytes ()
     result <<= 8;
     result += ReadOneByte();
     return result;
-}
-
-int
-MFile::FillGzBuffer ()
-{
-    ASSERT (Type == MFILE_GZIP  &&  GzBuffer != NULL  &&  GzBuffer_Avail <= 0);
-    int bytesread = gzread (GzHandle, GzBuffer, GZ_BUFFER_SIZE);
-    if (bytesread <= 0) { return EOF; }
-    GzBuffer_Avail = bytesread - 1;
-    GzBuffer_Current = &(GzBuffer[1]);
-    return GzBuffer[0];
-    
 }
 
 //////////////////////////////////////////////////////////////////////
