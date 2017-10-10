@@ -387,24 +387,9 @@ errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
 	    sourceBase->codec_->getGameData(srcIe->GetOffset(), gameDataLen);
 	if (gameData == 0) return ERROR_FileRead;
 
-	IndexEntry ie = *srcIe;
-	errorT err;
-	err = ie.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb));
-	if (err != OK) return err;
-	err = ie.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb));
-	if (err != OK) return err;
-	err = ie.SetEventName(nb, srcIe->GetEventName(sourceBase->nb));
-	if (err != OK) return err;
-	err = ie.SetSiteName(nb, srcIe->GetSiteName(sourceBase->nb));
-	if (err != OK) return err;
-	err = ie.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb));
-	if (err != OK) return err;
-
-	nb->AddElo(ie.GetWhite(), ie.GetWhiteElo());
-	nb->AddElo(ie.GetBlack(), ie.GetBlackElo());
-
-	err = codec_->addGame(&ie, gameData, gameDataLen);
-	if (err == OK) extendFilters();
+	errorT err = codec_->addGame(srcIe, sourceBase->nb, gameData, gameDataLen);
+	if (err == OK)
+		extendFilters();
 	return err;
 }
 

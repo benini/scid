@@ -53,7 +53,6 @@ std::vector<std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
 
 	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_None) },
 	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_Memory) },
-	{ ICodecDatabase::PGN, "saveGame_native" },
 	{ ICodecDatabase::PGN, "saveGame_game" },
 	{ ICodecDatabase::PGN, "empty_filename" }
 };
@@ -238,7 +237,7 @@ TEST_P(Test_Codec, addGame_native) {
 			ie.SetEventName(&nb, "Dummy Event");
 			ie.SetSiteName(&nb, "Dummy Site");
 			ie.SetRoundName(&nb, "Dummy Round");
-			ASSERT_EQ(OK, codec->addGame(&ie, game.data(), game.size()));
+			ASSERT_EQ(OK, codec->addGame(&ie, &nb, game.data(), game.size()));
 		}
 	});
 }
@@ -258,33 +257,6 @@ TEST_P(Test_Codec, saveGame_game) {
 		for (auto idx : randIdx) {
 			ASSERT_EQ(OK, codec->saveGame(games[idx].get(), idx));
 		}
-	});
-}
-
-TEST_P(Test_Codec, saveGame_native) {
-	makeDatabase(GetParam(), "saveGame_native",
-	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
-		 const auto& games = gameGenerator.get();
-		 for (size_t i = 0, n = games.size(); i < n; ++i) {
-			 ASSERT_EQ(OK, codec->addGame(games[0].get()));
-		 }
-		 codec->flush();
-
-		 std::vector<int> randIdx(games.size());
-		 std::iota(randIdx.begin(), randIdx.end(), 0);
-		 std::shuffle(randIdx.begin(), randIdx.end(), std::mt19937());
-		 const auto& nativeGames = gameGenerator.getNative();
-		 for (auto idx : randIdx) {
-			 IndexEntry ie;
-			 ie.Init();
-			 ie.SetWhiteName(&nb, "Dummy White");
-			 ie.SetBlackName(&nb, "Dummy Black");
-			 ie.SetEventName(&nb, "Dummy Event");
-			 ie.SetSiteName(&nb, "Dummy Site");
-			 ie.SetRoundName(&nb, "Dummy Round");
-			 const auto& game = nativeGames[idx];
-			 ASSERT_EQ(OK, codec->saveGame(&ie, game.data(), game.size(), idx));
-		 }
 	});
 }
 

@@ -120,27 +120,20 @@ private:
 		return CodecMemory::saveGame(game, replaced);
 	}
 
-	errorT addGame(IndexEntry* ie, const byte* src, size_t length) override {
+	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
+	               const byte* srcData, size_t dataLen) override {
+		ByteBuffer buf(0);
+		buf.ProvideExternal(const_cast<byte*>(srcData), dataLen);
 		Game game;
-		errorT err = decodeGame(ie, src, length, game);
+		errorT err = game.Decode(&buf, GAME_DECODE_ALL);
+		if (err == OK)
+			err = game.LoadStandardTags(srcIe, srcNb);
 		if (err != OK) return err;
 
 		err = getDerived()->dyn_addGame(&game);
 		if (err != OK) return err;
 
-		return CodecMemory::addGame(ie, src, length);
-	}
-
-	errorT saveGame(IndexEntry* ie, const byte* src, size_t length,
-	                gamenumT replaced) override {
-		Game game;
-		errorT err = decodeGame(ie, src, length, game);
-		if (err != OK) return err;
-
-		err = getDerived()->dyn_saveGame(&game, replaced);
-		if (err != OK) return err;
-
-		return CodecMemory::saveGame(ie, src, length, replaced);
+		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
 
 	/*
@@ -179,24 +172,6 @@ private:
 		progress(1, 1, getDerived()->parseErrors());
 
 		return (err == ERROR_NotFound) ? OK : err;
-	}
-
-	/**
-	 * Decodes a Game object from native format.
-	 * @param srcIe:        valid pointer to the header data.
-	 * @param src:          valid pointer to a buffer containing the game data
-	 *                      (encoded in native format).
-	 * @param length:       length of the game data (in bytes).
-	 * @param[out] resGame: the Game object where the data will be decoded.
-	 * @returns OK in case of success, an @p errorT code otherwise.
-	 */
-	errorT decodeGame(const IndexEntry* srcIe, const byte* src, size_t length,
-	                  Game& resGame) {
-		ByteBuffer buf(0);
-		buf.ProvideExternal(const_cast<byte*>(src), length);
-		errorT err = resGame.Decode(&buf, GAME_DECODE_ALL);
-		if (err == OK) err = resGame.LoadStandardTags(srcIe, nb_);
-		return err;
 	}
 
 	/**

@@ -25,9 +25,9 @@
 #ifndef CODEC_SCID4_H
 #define CODEC_SCID4_H
 
-#include "codec_memory.h"
-#include "common.h"
+#include "codec_native.h"
 #include "filebuf.h"
+#include <limits>
 
 #if !CPP11_SUPPORT
 #define override
@@ -36,12 +36,12 @@
 /**
  * This class manages databases encoded in Scid format v4.
  */
-class CodecScid4 : public CodecMemory {
+class CodecScid4 : public CodecNative<CodecScid4>  {
 	std::string filename_;
 	FilebufAppend gfile_;
 	char gamecache_[128*1024];
 
-public:
+public: // ICodecDatabase interface
 	Codec getType() override { return ICodecDatabase::SCID4; }
 
 	/**
@@ -71,10 +71,7 @@ public:
 	}
 
 	errorT flush() override {
-		errorT err = CodecMemory::flush();
-		if (err != OK) return err;
-
-		err = idx_->flush();
+		errorT err = idx_->flush();
 		if (err == OK) {
 			// *** Compatibility ***
 			// Even if name's frequency is no longer used, it's necessary to
@@ -88,19 +85,17 @@ public:
 		return (err == OK) ? errGfile : err;
 	}
 
-protected:
 	errorT dyn_open(fileModeT fMode, const char* filename,
 	                const Progress& progress, Index* idx,
 	                NameBase* nb) override {
 		if (filename == 0 || idx == 0 || nb == 0) return ERROR;
 
-		errorT err = CodecMemory::dyn_open(FMODE_Memory, 0, progress, idx, nb);
-		if (err != OK) return err;
-
+		idx_ = idx;
+		nb_ = nb;
 		filename_ = filename;
 		if (filename_.empty()) return ERROR_FileOpen;
 
-		err = gfile_.open(filename_ + ".sg4", fMode);
+		errorT err = gfile_.open(filename_ + ".sg4", fMode);
 		if (err != OK) return err;
 
 		if (fMode == FMODE_Create) {
@@ -115,8 +110,19 @@ protected:
 		return err;
 	}
 
+public: // CodecNative interface
+	/**
+	 * Stores the data into the .sg4 file.
+	 * @param src:    valid pointer to a buffer that contains the game data
+	 *                (encoded in native format).
+	 * @param length: the length of the buffer @p src (in bytes).
+	 * @returns
+	 * - on success, a @e std::pair containing OK and the offset of the stored
+	 * data (usable to retrieve the data with getGameData()).
+	 * - on failure, a @e std::pair containing an error code and 0.
+	 */
 	std::pair<errorT, uint32_t> dyn_addGameData(const byte* src,
-	                                            size_t length) override {
+	                                            size_t length) {
 		ASSERT(src != 0);
 		const char* data = reinterpret_cast<const char*>(src);
 
@@ -142,6 +148,27 @@ protected:
 
 		errorT err = gfile_.append(data, length);
 		return std::make_pair(err, uint32_t(offset));
+	}
+
+	/**
+	 * Given a name (string), retrieve the corresponding ID.
+	 * The name is added to @e nb_ if do not already exists in the NameBase.
+	 * @param nt:   nameT type of the name to retrieve.
+	 * @param name: the name to retrieve.
+	 * @returns
+	 * - on success, a @e std::pair containing OK and the ID.
+	 * - on failure, a @e std::pair containing an error code and 0.
+	 */
+	std::pair<errorT, idNumberT> dyn_getNameID(nameT nt, const char* name) {
+		const size_t MAX_LEN = 255; // Max 255 chars;
+		const idNumberT MAX_ID[] = {
+		    1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
+		    524287,  /* Event names:  Maximum of 2^19 -1 =   524,287 */
+		    524287,  /* Site names:   Maximum of 2^19 -1 =   524,287 */
+		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
+		};
+		ASSERT(nt < sizeof(MAX_ID) / sizeof(idNumberT));
+		return nb_->getID(nt, name, MAX_LEN, MAX_ID[nt]);
 	}
 };
 

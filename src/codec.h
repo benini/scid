@@ -87,14 +87,15 @@ public:
 
 	/**
 	 * Add a game to the database.
-	 * @param srcIe:  valid pointer to the header data.
-	 * @param src:    valid pointer to a buffer containing the game data
-	 *                (encoded in native format).
-	 * @param length: length of the game data (in bytes).
+	 * @param srcIe:   valid pointer to the header data.
+	 * @param srcNb:   valid pointer to the NameBase containing srcIe's names.
+	 * @param srcData: valid pointer to a buffer containing the game data
+	 *                 (encoded in native format).
+	 * @param dataLen: length of the game data (in bytes).
 	 * @returns OK if successful or an error code.
 	 */
-	virtual errorT addGame(IndexEntry* srcIe, const byte* src,
-	                       size_t length) = 0;
+	virtual errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
+	                       const byte* srcData, size_t dataLen) = 0;
 
 	/**
 	 * Add a game to the database.
@@ -103,17 +104,6 @@ public:
 	 */
 	virtual errorT addGame(Game* game) = 0;
 
-	/**
-	 * Replaces a game in the database.
-	 * @param srcIe:    valid pointer to the new header data.
-	 * @param src:      valid pointer to a buffer containing the new game data
-	 *                  (encoded in native format).
-	 * @param length:   length of the new game data (in bytes).
-	 * @param replaced: valid gamenumT of the game to be replaced.
-	 * @returns OK if successful or an error code.
-	 */
-	virtual errorT saveGame(IndexEntry* srcIe, const byte* src, size_t length,
-	                        gamenumT replaced) = 0;
 	/**
 	 * Replaces a game in the database.
 	 * @param game:     valid pointer to a Game object with the new data.
