@@ -75,7 +75,5 @@ script:
   - mkdir Release && cd Release && cmake .. && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR
   - ./configure && make && size tkscid
-  - make clean
-  - ./configure THREADS="-std=c++98" && make && size tkscid
   - cd $TRAVIS_BUILD_DIR
   - mkdir ThreadOFF && cd ThreadOFF && cmake .. -DSCID_MULTITHREADING=OFF && make VERBOSE=1 && size scid

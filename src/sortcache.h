@@ -26,10 +26,6 @@
 
 #include "common.h"
 
-#if !CPP11_SUPPORT
-#define MULTITHREADING_OFF
-#endif
-
 #ifndef MULTITHREADING_OFF
 #include <atomic>
 using std::atomic_bool;
