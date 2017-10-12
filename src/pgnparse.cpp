@@ -1,27 +1,34 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       pgnparse.cpp
-//              PgnParser class methods
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.5
-//
 //  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
-//              Copyright (C) 2015 Fulvio Benini
+//              Copyright (C) 2015-2017  Fulvio Benini
+//
+//  This file is part of Scid (Shane's Chess Information Database).
+//
+//  Scid is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation.
+//
+//  Scid is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 //
 //////////////////////////////////////////////////////////////////////
 
 
 #include "pgnparse.h"
 #include "game.h"
-#include <stdio.h>
+#include "misc.h"
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     #define snprintf _snprintf
 #endif
 
 namespace {
-
 const uint MAX_COMMENT_SIZE = 16000;
 
 // ADDCHAR() macro: Adds one character to a buffer and increments the
@@ -79,112 +86,6 @@ bool pgnLatin1_to_UTF8(std::string& s) {
 
 } // end of anonymous namespace.
 
-void
-PgnParser::Reset()
-{
-    UnGetCount = 0;
-    NumErrors = 0;
-    BytesSeen = 0;
-    LineCounter = 0;
-    GameCounter = 0;
-    StorePreGameText = true;
-    EndOfInputWarnings = true;
-    ResultWarnings = true;
-    NumIgnoredTags = 0;
-}
-
-void
-PgnParser::Reset (MFile * infile)
-{
-    Reset();
-    InFile = infile;
-    InBuffer = InCurrent = NULL;
-    EndChar = EOF;
-}
-
-void
-PgnParser::Init (const char * inbuffer)
-{
-    Reset();
-    InFile = NULL;
-    InBuffer = InCurrent = inbuffer;
-    EndChar = 0;
-}
-
-void
-PgnParser::Reset (const char * inbuffer)
-{
-    Reset();
-    InFile = NULL;
-    InBuffer = InCurrent = inbuffer;
-    EndChar = 0;
-}
-
-int
-PgnParser::GetChar ()
-{
-    int ch = 0;
-    BytesSeen++;
-    if (UnGetCount > 0) {
-        UnGetCount--;
-        ch = UnGetCh[UnGetCount];
-    } else if (InFile != NULL) {
-        ch =  InFile->ReadOneByte();
-    } else {
-        ch = *InCurrent;
-        if (ch != 0) { InCurrent++; }
-    }
-    if (ch == '\n') { LineCounter++; }
-    return ch;
-}
-
-void
-PgnParser::UnGetChar (int ch)
-{
-    if (UnGetCount == MAX_UNGETCHARS) { return; }
-    UnGetCh[UnGetCount] = ch;
-    UnGetCount++;
-    BytesSeen--;
-    if (ch == '\n') { LineCounter--; }
-}
-
-void
-PgnParser::AddIgnoredTag (const char * tag)
-{
-    if (NumIgnoredTags >= MAX_IGNORED_TAGS) { return; }
-    if (tag == NULL  ||  tag[0] == 0) { return; }
-    IgnoredTags [NumIgnoredTags] = strDuplicate (tag);
-    NumIgnoredTags++;
-}
-
-void
-PgnParser::ClearIgnoredTags ()
-{
-    for (uint i = 0; i < NumIgnoredTags; i++) {
-        delete[] IgnoredTags[i];
-    }
-    NumIgnoredTags = 0;
-}
-
-bool
-PgnParser::IsIgnoredTag (const char * tag)
-{
-    for (uint i = 0; i < NumIgnoredTags; i++) {
-        if (strEqual (tag, IgnoredTags[i])) { return true; }
-    }
-    return false;
-}
-
-void
-PgnParser::LogError (const char * errMessage, const char * text)
-{
-    NumErrors++;
-    ErrorBuffer += "(game " + to_string(GameCounter);
-    ErrorBuffer += ", line " + to_string(LineCounter) + ") ";
-    ErrorBuffer += errMessage;
-    ErrorBuffer += text;;
-    ErrorBuffer += "\n";
-}
 
 void
 PgnParser::GetLine (char * buffer, uint bufSize)
@@ -478,21 +379,11 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             }
         }
 
-        if (! isRatingType  &&  ! IsIgnoredTag (tag)) {
+        if (! isRatingType) {
             game->AddPgnTag (tag, value);
         }
     }
     return OK;
-}
-
-bool
-PgnParser::EndOfInput()
-{
-    if (InFile != NULL) { return InFile->EndOfFile(); }
-    int ch = GetChar();
-    if (ch == EndChar) { return true; }
-    UnGetChar (ch);
-    return false;
 }
 
 // Modifies the parameter string in-place, trimming all
@@ -519,9 +410,7 @@ std::string PgnParser::GetComment()
     }
 
     if (ch == EndChar) {
-        char tempStr[80];
-        sprintf (tempStr, "started on line %u\n", LineCounter);
-        LogError ("Error: Open Comment at end of input", tempStr);
+        LogError ("Error: Open Comment at end of input", "");
     }
 
     return res;
@@ -990,12 +879,14 @@ PgnParser::GetNextToken (char * buffer, uint bufSize)
         }
 
         if ((ch == '%')||(ch ==';')) {
-            GetLine (buf, bufSize-(buf-buffer));
+            ASSERT(buf >= buffer && size_t(buf - buffer) <= size_t(bufSize));
+            GetLine(buf, bufSize - static_cast<uint>(buf - buffer));
             return TOKEN_LineComment;
         }
 
         if (ch == '[') {
-            GetLine (buf, bufSize-(buf-buffer));
+            ASSERT(buf >= buffer && size_t(buf - buffer) <= size_t(bufSize));
+            GetLine(buf, bufSize - static_cast<uint>(buf - buffer));
             return TOKEN_Tag;
         }
 
@@ -1023,16 +914,12 @@ PgnParser::GetNextToken (char * buffer, uint bufSize)
     return GetGameToken (buffer, bufSize);
 }
 
+errorT PgnParser::ParseMoves(Game* game) {
+    if (buffer_ == NULL)
+        buffer_ = new char[MAX_COMMENT_SIZE * 2];
 
-errorT
-PgnParser::ParseMoves (Game * game)
-{
-    char * buffer = new char [MAX_COMMENT_SIZE];
-    errorT err = ParseMoves (game, buffer, MAX_COMMENT_SIZE);
-    delete[] buffer;
-    return err;
+    return ParseMoves(game, buffer_, MAX_COMMENT_SIZE);
 }
-   
 
 errorT
 PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
@@ -1212,14 +1099,16 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
 //               or some other appropriate error code upon error.
 //
 errorT
-PgnParser::ParseGame (Game * game)
+PgnParser::ParseGame(Game* game, bool StorePreGameText)
 {
-    char * buffer = new char [MAX_COMMENT_SIZE];
+    if (buffer_ == NULL)
+        buffer_ = new char[MAX_COMMENT_SIZE * 2];
+
+    char* buffer = buffer_;
+    char* preGameTextBuffer = buffer_ + MAX_COMMENT_SIZE;
     uint preGameTextLength = 0;
 
-    char * preGameTextBuffer = new char [MAX_COMMENT_SIZE];
-
-    GameCounter++;
+    incrGameCounter();
     errorT err = ERROR_NotFound;
     ParseMode = PARSE_Searching;
     tokenT token = GetNextToken (buffer, MAX_COMMENT_SIZE);
@@ -1290,8 +1179,6 @@ PgnParser::ParseGame (Game * game)
 
         token = GetNextToken (buffer, MAX_COMMENT_SIZE);
     }
-    delete[] buffer;
-    delete[] preGameTextBuffer;
 
     if (ParseMode == PARSE_Header) {
         if (EndOfInputWarnings) {

@@ -2232,8 +2232,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case GAME_SANTOUCI:
         if (argc == 3) {
             Game* g = db->game->clone();
-            PgnParser parser;
-            parser.Reset (argv[2]);
+            PgnParser parser(argv[2]);
             parser.SetEndOfInputWarnings (false);
             parser.SetResultWarnings (false);
             char buf [1000];
@@ -4374,8 +4373,7 @@ sc_game_strip (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     int old_lang = language;
     language = 0;
     std::pair<const char*, unsigned> pgnBuf = db->game->WriteToPGN();
-    PgnParser parser;
-    parser.Reset (pgnBuf.first);
+    PgnParser parser(pgnBuf.first);
     scratchGame->Clear();
     if (parser.ParseGame (scratchGame)) {
         return errorResult (ti, "Error: unable to strip this game.");
@@ -5491,10 +5489,9 @@ sc_move_addSan (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (argc < 3) { return TCL_OK; }
 
-    PgnParser parser;
     char buf [1000];
     while (argsLeft > 0) {
-        parser.Reset (*argPtr);
+        PgnParser parser(*argPtr);
         parser.SetEndOfInputWarnings (false);
         parser.SetResultWarnings (false);
         errorT err = parser.ParseMoves (db->game, buf, 1000);

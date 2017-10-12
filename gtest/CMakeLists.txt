@@ -45,7 +45,7 @@ set(GTEST_EXTRA
   ../src/namebase.cpp
   ../src/scidbase.cpp
   ../src/sortcache.cpp
-  ../src/pgnparse.cpp ../src/misc.cpp ../src/mfile.cpp
+  ../src/pgnparse.cpp ../src/misc.cpp
   ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/stored.cpp
 )
 add_executable(scid_tests ${GTEST_SRC} ${GTEST_EXTRA})

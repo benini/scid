@@ -1,69 +1,169 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       pgnparse.h
-//              PgnParser class
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.5
-//
 //  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
+//              Copyright (C) 2015-2017  Fulvio Benini
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
+//  This file is part of Scid (Shane's Chess Information Database).
+//
+//  Scid is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation.
+//
+//  Scid is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+//
 //////////////////////////////////////////////////////////////////////
 
-//
-// PgnParser:
-//    This class implements a PGN-format Parser which can read PGN text
-//    from an open file or from a zero-terminated string, and convert
-//    it into a Scid Game object.
-//
+/** @file
+ *    Implements a PGN-format Parser which can read PGN text
+ *    from an open file or from a zero-terminated string, and convert
+ *    it into a Scid Game object.
+ */
 
 #ifndef SCID_PGNPARSE_H
 #define SCID_PGNPARSE_H
 
 #include "common.h"
 #include "tokens.h"
-#include "mfile.h"
+#include <streambuf>
 #include <string>
 
 class Game;
 
-#define MAX_UNGETCHARS 16
-static const uint MAX_IGNORED_TAGS = 16;
+/**
+ * A simple alternative to the deprecated std::strstreambuf.
+ */
+class PgnParserBuffer {
+	std::streambuf* stlBuf_;
+	const char* charBuf_;
+	const char* charPos_;
 
-class PgnParser
+public:
+	explicit PgnParserBuffer(std::streambuf* inbuffer)
+	    : stlBuf_(inbuffer), charBuf_(NULL), charPos_(NULL) {
+		ASSERT(inbuffer != NULL);
+	}
+	explicit PgnParserBuffer(const char* inbuffer)
+	    : stlBuf_(NULL), charBuf_(inbuffer), charPos_(inbuffer) {
+		ASSERT(inbuffer != NULL);
+	}
+
+	int sbumpc() {
+		if (stlBuf_ != NULL)
+			return stlBuf_->sbumpc();
+
+		return (*charPos_ != '\0') ? static_cast<unsigned char>(*charPos_++)
+		                           : EOF;
+	}
+
+	int sgetc() {
+		if (stlBuf_ != NULL)
+			return stlBuf_->sgetc();
+
+		return (*charPos_ != '\0') ? static_cast<unsigned char>(*charPos_)
+		                           : EOF;
+	}
+
+	void sungetc() {
+		if (stlBuf_ != NULL)
+			stlBuf_->sungetc();
+		else if (charPos_ != charBuf_)
+			--charPos_;
+	}
+};
+
+/**
+ * This class connects a PgnParser object to a input buffer and a output logger.
+ */
+class PgnParserProxy {
+	PgnParserBuffer inBuf_;
+	std::string ErrorBuffer;
+	size_t BytesSeen;
+	uint NumErrors;
+	uint LineCounter;
+	uint GameCounter;
+
+public:
+	template <typename T>
+	explicit PgnParserProxy(T* inbuffer)
+	    : inBuf_(inbuffer), BytesSeen(0), NumErrors(0), LineCounter(0),
+	      GameCounter(0) {}
+
+	void Reset(const char* inbuffer) {
+		inBuf_ = PgnParserBuffer(inbuffer);
+		ErrorBuffer.clear();
+		BytesSeen = 0;
+		NumErrors = 0;
+		LineCounter = 0;
+		GameCounter = 0;
+	}
+
+	size_t BytesUsed() { return BytesSeen; }
+
+	uint ErrorCount() { return NumErrors; }
+
+	const char* ErrorMessages() { return ErrorBuffer.c_str(); }
+
+protected:
+	enum { EndChar = EOF };
+
+	int GetChar() {
+		BytesSeen++;
+		int ch = inBuf_.sbumpc();
+		if (ch == '\n') {
+			LineCounter++;
+		}
+		return ch;
+	}
+
+	void UnGetChar(int ch) {
+		BytesSeen--;
+		if (ch != EndChar) {
+			inBuf_.sungetc();
+			if (ch == '\n')
+				LineCounter--;
+		}
+		ASSERT(inBuf_.sgetc() == ch);
+	}
+
+	bool EndOfInput() { return inBuf_.sgetc() == EndChar; }
+
+	void LogError(const char* errMessage, const char* text) {
+		NumErrors++;
+		ErrorBuffer += "(game ";
+		ErrorBuffer += std::to_string(GameCounter);
+		ErrorBuffer += ", line ";
+		ErrorBuffer += std::to_string(LineCounter);
+		ErrorBuffer += ") ";
+		ErrorBuffer += errMessage;
+		ErrorBuffer += text;
+		ErrorBuffer += "\n";
+	}
+
+	void incrGameCounter() { ++GameCounter; }
+};
+
+/**
+ * This class implements a PGN-format Parser which reads PGN text and convert it
+ * into a Scid Game object.
+ */
+class PgnParser : public PgnParserProxy
 {
-  private:
-
-    MFile * InFile;
-    const char * InBuffer;
-    const char * InCurrent;
-    uint   LineCounter;
-    uint   GameCounter;
-    int    EndChar;
-    uint   BytesSeen;
-    std::string ErrorBuffer;
-    uint   NumErrors;
-
     enum { PARSE_Searching, PARSE_Header, PARSE_Game } ParseMode;
 
-    bool   StorePreGameText;
+    char* buffer_;
+
     bool   EndOfInputWarnings;
     bool   ResultWarnings;
 
-    uint   NumIgnoredTags;
-    char * IgnoredTags [MAX_IGNORED_TAGS];
-
-    uint   UnGetCount;
-    int    UnGetCh [MAX_UNGETCHARS];
-
-    inline int    GetChar();
-    inline void   UnGetChar (int ch);
-
-    void   Init (const char * inbuffer);
-    void   Reset();
-    void   LogError (const char * errMessage, const char * text);
+private:
     void   GetLine (char * buffer, uint bufSize);
     std::string GetComment();
     void   GetRestOfSuffix (char * buffer, char firstChar);
@@ -72,41 +172,25 @@ class PgnParser
     void   GetRestOfWord_Letters (char * buffer);
     errorT ExtractPgnTag (const char * buffer, Game * game);
 
-    bool   EndOfInput();
     tokenT GetRestOfCastling (char * buffer);
     tokenT GetRestOfMove (char * buffer);
     tokenT GetRestOfPawnMove (char * buffer);
     tokenT GetGameToken (char * buffer, uint bufSize);
+    tokenT GetNextToken (char * buffer, uint bufSize);
 
-  public:
-    // Constructors: PgnParser is initialised with a file pointer or
-    //    a pointer to a buffer, or it defaults to an empty buffer.
-    PgnParser (void) { Init ((const char *) ""); }
-    PgnParser (const char * inbuffer) { Init (inbuffer); }
-    ~PgnParser() { ClearIgnoredTags(); }
+public:
+    template <typename T>
+    explicit PgnParser(T* inbuffer)
+        : PgnParserProxy(inbuffer), buffer_(NULL), EndOfInputWarnings(true),
+          ResultWarnings(true) {}
+    ~PgnParser() { delete[] buffer_; }
 
-    void   Reset (MFile * infile);
-    void   Reset (const char * inbuffer);
-
-    uint   BytesUsed (void) { return BytesSeen; }
-    uint   ErrorCount() { return NumErrors; }
-    const char* ErrorMessages() { return ErrorBuffer.c_str(); }
-    void   KeepPreGameText() { StorePreGameText = true; }
-    void   IgnorePreGameText() { StorePreGameText = false; }
-    void   SetPreGameText (bool b) { StorePreGameText = b; }
     void   SetEndOfInputWarnings (bool b) { EndOfInputWarnings = b; }
     void   SetResultWarnings (bool b) { ResultWarnings = b; }
 
-    void   AddIgnoredTag (const char * tag);
-    void   ClearIgnoredTags ();
-    bool   IsIgnoredTag (const char * tag);
-
-    tokenT GetNextToken (char * buffer, uint bufSize);
-
-    errorT ParseGame (Game * game);
+    errorT ParseGame(Game* game, bool StorePreGameText = true);
     errorT ParseMoves (Game * game);
     errorT ParseMoves (Game * game, char * buffer, uint bufSize);
-
 };
 
 #endif // idndef SCID_PGNPARSE_H

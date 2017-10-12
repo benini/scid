@@ -27,7 +27,7 @@
 
 #include "codec_proxy.h"
 #include "common.h"
-#include "mfile.h"
+#include "filebuf.h"
 #include "pgnparse.h"
 
 #if !CPP11_SUPPORT
@@ -35,12 +35,14 @@
 #endif
 
 class CodecPgn : public CodecProxy<CodecPgn> {
-	PgnParser parser_;
 	std::string filename_;
-	size_t fileSize_;
-	MFile file_;
+	std::streamsize fileSize_;
+	Filebuf file_;
+	PgnParser parser_;
 
 public:
+	CodecPgn() : parser_(&file_) {}
+
 	Codec getType() override { return ICodecDatabase::PGN; }
 
 	std::vector<std::string> getFilenames() override {
@@ -48,8 +50,9 @@ public:
 	};
 
 	errorT flush() override {
-		file_.Flush();
-		return CodecProxy<CodecPgn>::flush();
+		errorT errFile = (file_.pubsync() == 0) ? OK : ERROR_FileWrite;
+		errorT errProxy = CodecProxy<CodecPgn>::flush();
+		return (errFile != OK) ? errFile : errProxy;
 	}
 
 	/**
@@ -64,20 +67,14 @@ public:
 		filename_ = filename;
 		if (filename_.empty()) return ERROR_FileOpen;
 
-		errorT res = (fmode != FMODE_Create)
-		                 ? file_.Open(filename, fmode)
-		                 : file_.Create(filename, FMODE_Both);
-
+		errorT res = file_.Open(filename, fmode);
 		if (res == OK) {
-			if (fmode == FMODE_Create) {
-				fileSize_ = 0;
-			} else {
-				fileSize_ = fileSize(filename, "");
-				if (fileSize_ == 0 && !file_.EndOfFile())
-					return ERROR_FileOpen;
-			}
-			parser_.Reset(&file_);
-			parser_.IgnorePreGameText();
+			fileSize_ = file_.pubseekoff(0, std::ios::end);
+			res = (fileSize_ >= 0) ? OK : ERROR_FileSeek;
+			file_.pubseekpos(0);
+		}
+		if (res == OK) {
+			parser_ = PgnParser(&file_);
 		}
 
 		return res;
@@ -92,7 +89,7 @@ public:
 	 * - ERROR code if the game cannot be read and was skipped.
 	 */
 	errorT parseNext(Game* g) {
-		return parser_.ParseGame(g);
+		return parser_.ParseGame(g, false);
 	}
 
 	/**
@@ -101,7 +98,7 @@ public:
 	 * data parsed and second one is the total amount of data of the database.
 	 */
 	std::pair<size_t, size_t> parseProgress() {
-		return std::make_pair(size_t(parser_.BytesUsed()) / 1024, fileSize_ / 1024);
+		return std::make_pair(parser_.BytesUsed() / 1024, fileSize_ / 1024);
 	}
 
 	/**
@@ -124,10 +121,12 @@ public:
 		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
 		std::pair<const char*, unsigned> pgn = game->WriteToPGN(75, true);
 
-		file_.Seek(fileSize_);
-		errorT err = file_.WriteNBytes(pgn.first, pgn.second);
-		if (err == OK) fileSize_ += pgn.second;
-		return err;
+		file_.pubseekpos(fileSize_);
+		if (file_.sputn(pgn.first, pgn.second) == pgn.second) {
+			fileSize_ += pgn.second;
+			return OK;
+		}
+		return ERROR_FileWrite;
 	}
 };
 
