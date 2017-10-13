@@ -29,13 +29,25 @@ matrix:
           - cloc
 
   - os: linux
-    env: CXX=g++-6 CC=gcc-6
+    env: CXX=g++-7 CC=gcc-7
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-6
+          - g++-7
+          - tcl
+          - tcl-dev
+          - cloc
+
+  - os: linux
+    env: CXX=g++-7 CC=gcc-7 SCID_TH="-DSCID_MULTITHREADING=OFF"
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-7
           - tcl
           - tcl-dev
           - cloc
@@ -57,23 +69,25 @@ script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && make
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON $SCID_TH && make
   - if [ "${CXX}" == "clang++-4.0" ]; then run-clang-tidy-4.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src; fi
   - cd $TRAVIS_BUILD_DIR
   - mkdir Testing && cd Testing
   - if [ "${CXX}" == "clang++-4.0" ]; then
-      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined,integer";
+      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined,integer" $SCID_TH;
     else
-      if [ "${CXX}" == "g++-6" ]; then
-        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=thread,undefined -fuse-ld=gold";
+      if [ "${CXX}" == "g++-7" ]; then
+        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=thread,undefined -fuse-ld=gold" $SCID_TH;
       else
         cmake ../gtest;
       fi
     fi
   - make VERBOSE=1 && ./scid_tests
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Release && cd Release && cmake .. && make VERBOSE=1 && size scid
+  - mkdir Release && cd Release && cmake .. $SCID_TH && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR
-  - ./configure && make && size tkscid
-  - cd $TRAVIS_BUILD_DIR
-  - mkdir ThreadOFF && cd ThreadOFF && cmake .. -DSCID_MULTITHREADING=OFF && make VERBOSE=1 && size scid
+  - if [ "${SCID_TH}" != "-DSCID_MULTITHREADING=OFF" ]; then
+      ./configure && make && size tkscid;
+    else
+      ./configure THREADS="-DMULTITHREADING_OFF" && make && size tkscid;
+    fi

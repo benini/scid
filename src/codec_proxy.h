@@ -30,8 +30,9 @@
 #include "common.h"
 #include "game.h"
 
-#if !CPP11_SUPPORT
-#define override
+#ifndef MULTITHREADING_OFF
+#include <atomic>
+#include <thread>
 #endif
 
 /**
@@ -153,6 +154,69 @@ private:
 		err = getDerived()->open(filename, fMode);
 		if (err != OK) return err;
 
+#ifndef MULTITHREADING_OFF
+		Game game[4];
+		std::atomic<int8_t> sync[4] = {};
+		enum {sy_free, sy_used, sy_stop};
+
+		auto work = getDerived()->parseProgress();
+		std::atomic<size_t> workDone(work.first);
+
+		std::thread producer([this, &game, &sync, &workDone]() {
+			uint64_t slot;
+			for (uint64_t nProduced = 0; true;) {
+				slot = nProduced % 4;
+				int sy;
+				do { // spinlock if the slot is in use
+					sy = sync[slot].load(std::memory_order_acquire);
+				} while (sy == sy_used);
+				if (sy == sy_stop) break;
+
+				errorT err = getDerived()->parseNext(&game[slot]);
+				if (err == ERROR_NotFound) break;
+
+				workDone.store(getDerived()->parseProgress().first,
+				               std::memory_order_release);
+
+				if (err == OK) { // Process only the games with no errors
+					sync[slot].store(sy_used, std::memory_order_release);
+					++nProduced;
+				}
+			}
+			sync[slot].store(sy_stop, std::memory_order_release);
+		});
+
+		// Consumer
+		uint64_t slot;
+		for (uint64_t nImported = 0; true; ++nImported) {
+			slot = nImported % 4;
+			int sy;
+			do { // spinlock if the slot is empty
+				sy = sync[slot].load(std::memory_order_acquire);
+			} while (sy == sy_free);
+			if (sy == sy_stop) break;
+
+			if (nImported % 1024 == 0) {
+				if (!progress.report(workDone.load(std::memory_order_acquire),
+				                     work.second)) {
+					err = ERROR_UserCancel;
+					break;
+				}
+			}
+
+			err = CodecMemory::addGame(&game[slot]);
+			if (err != OK) break;
+
+			game[slot].Clear();
+			sync[slot].store(sy_free, std::memory_order_release);
+		}
+		sync[slot].store(sy_stop, std::memory_order_release);
+
+		producer.join();
+		progress(1, 1, getDerived()->parseErrors());
+		return err;
+
+#else
 		Game g;
 		uint nImported = 0;
 		while ((err = getDerived()->parseNext(&g)) != ERROR_NotFound) {
@@ -172,6 +236,7 @@ private:
 		progress(1, 1, getDerived()->parseErrors());
 
 		return (err == ERROR_NotFound) ? OK : err;
+#endif
 	}
 
 	/**
@@ -179,9 +244,5 @@ private:
 	 */
 	Derived* getDerived() { return static_cast<Derived*>(this); }
 };
-
-#if !CPP11_SUPPORT
-#undef override
-#endif
 
 #endif

@@ -16,7 +16,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(scid_gtest)
 
-find_package(Threads REQUIRED)
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
 
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -38,7 +37,6 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest ${CMAKE_BINARY_DIR}/googletest/B
 include_directories("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 
 # scid_tests
-include_directories(../src)
 file(GLOB GTEST_SRC *.cpp)
 set(GTEST_EXTRA
   ../src/index.cpp
@@ -50,10 +48,23 @@ set(GTEST_EXTRA
 )
 add_executable(scid_tests ${GTEST_SRC} ${GTEST_EXTRA})
 add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
+target_include_directories(scid_tests PRIVATE ../src)
+target_include_directories(coverage PRIVATE ../src)
 set_property(TARGET scid_tests coverage APPEND PROPERTY COMPILE_DEFINITIONS
     SCID_TESTDIR=\"${CMAKE_CURRENT_LIST_DIR}/\")
-target_link_libraries(coverage gtest_main ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(scid_tests gtest_main ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(coverage PRIVATE gtest_main)
+target_link_libraries(scid_tests PRIVATE gtest_main)
+
+option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
+if(SCID_MULTITHREADING)
+  find_package(Threads REQUIRED)
+  target_link_libraries(coverage PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(scid_tests PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+else()
+  target_compile_definitions(scid_tests PRIVATE -DMULTITHREADING_OFF)
+endif()
+
+
 
 # coverage
 target_compile_options(coverage PRIVATE -coverage)

@@ -22,11 +22,20 @@ set(
 )
 include(CPack)
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
+
+if(MSVC)
+  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
+endif()
+
+# polyglot
+file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
+add_library(polyglot ${POLYGLOT_SRC})
+
 # scid
 file(GLOB SCID_SRC src/*.cpp)
-file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
-add_executable(scid ${SCID_SRC} ${POLYGLOT_SRC})
-target_compile_options(scid PRIVATE -std=c++11)
+add_executable(scid ${SCID_SRC})
 
 option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
 if(SCID_MULTITHREADING)
@@ -47,8 +56,8 @@ if(SPELLCHKVALIDATE)
 endif()
 
 find_package(TCL)
-include_directories(${TCL_INCLUDE_PATH})
-target_link_libraries(scid ${TCL_LIBRARY})
+target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
+target_link_libraries(scid polyglot ${TCL_LIBRARY})
 
 install(TARGETS scid DESTINATION scid)
 install(PROGRAMS shell_scid DESTINATION bin RENAME scid)
@@ -88,8 +97,3 @@ if(NOT CMAKE_CXX_FLAGS)
 
   target_compile_options(scid PRIVATE -Wall PRIVATE -Wextra PRIVATE -pedantic)
 endif()
-
-if(MSVC)
-  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
-endif()
-
