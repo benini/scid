@@ -1147,7 +1147,7 @@ sc_base_tag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             ASSERT (cmd == TAG_LIST);
             uint numtags = g->GetNumExtraTags();
-            tagT * taglist = g->GetExtraTags();
+            const tagT* taglist = g->GetExtraTags();
             // Increment frequency for each extra tag:
             while (numtags > 0) {
                 bool found = false;
@@ -4700,7 +4700,7 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     case T_Extra:
         {
             uint numTags = g->GetNumExtraTags();
-            tagT * ptagList = g->GetExtraTags();
+            const tagT* ptagList = g->GetExtraTags();
             while (numTags > 0) {
                 Tcl_AppendResult (ti, ptagList->tag, " \"", ptagList->value,
                                   "\"\n", NULL);
@@ -10103,7 +10103,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 				{
 					match = false;
 		            uint numtags = scratchGame->GetNumExtraTags();
-					tagT *tag = scratchGame->GetExtraTags();
+					const tagT* tag = scratchGame->GetExtraTags();
 					for (uint ii = 0; ii < numtags; ii++, tag++) {
 						// Returning all games where the search string matches with the prefix 
 						// of the annotator string

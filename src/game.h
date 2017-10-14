@@ -107,9 +107,6 @@ const byte
 // MAX_NAGS: Maximum id of NAG codes
 const byte MAX_NAGS_ARRAY = 215;
     
-// MAX_TAGS: Maximum number of additional non-standard tags.
-const uint MAX_TAGS =  40;
-
 const uint MAX_TAG_LEN = 240;
 
 typedef byte markerT;
@@ -223,39 +220,50 @@ uint strGetRatingType (const char * name);
 
 static Position staticPosition;
 
+
 class Game
 {
 private:
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //  Game:  Data structures
+    std::vector<tagT> TagList;
+    Game *      NextGame;     // For keeping a linked list of games.
+    moveChunkT* MoveChunk;
+    moveT *     FreeList;
+    std::string EventStr;
+    std::string SiteStr;
+    std::string WhiteStr;
+    std::string BlackStr;
+    std::string RoundStr;
+    Position *  StartPos;
+    Position *  CurrentPos;
+    moveT *     FirstMove;
+    moveT *     CurrentMove;
+    Position *  SavedPos;
+    moveT *     SavedMove;
+    matSigT     FinalMatSig;
+    dateT       Date;
+    dateT       EventDate;
+    uint        VarDepth;     // Current variation depth.
+    uint        SavedVarDepth;
+    uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
+    uint        StopLocation;    // Used in recursive WriteMoveList method.
+    uint        PgnStyle;        // see PGN_STYLE macros above.
+    gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
+    uint        HtmlStyle;       // HTML diagram style, see DumpHtmlBoard method in position.cpp.
+    uint        PgnLastMovePos;
 
     bool        NonStandardStart;      // 1 if non-standard start.
     colorT      ToMove;         // side to move in starting position
     ushort      NumHalfMoves;
     ushort      CurrentPlyCount;
     ushort      StartPlyCount;
+
     bool        KeepDecodedMoves;
-
-    Game *      NextGame;     // For keeping a linked list of games.
     bool        Altered;
-
-    matSigT     FinalMatSig;
 
     bool        PromotionsFlag;   // True if game has a promotion.
     bool        UnderPromosFlag;  // True if game has a promotion to R/B/N.
     char        ScidFlags [20];
 
-    moveChunkT * MoveChunk;
-    moveT *     FreeList;
-
-    std::string EventStr;
-    std::string SiteStr;
-    std::string WhiteStr;
-    std::string BlackStr;
-    std::string RoundStr;
-    dateT       Date;
-    dateT       EventDate;
-    resultT     Result;
     ecoT        EcoCode;
     eloT        WhiteElo;
     eloT        BlackElo;
@@ -264,32 +272,9 @@ private:
     eloT        WhiteEstimateElo;
     eloT        BlackEstimateElo;
 
-    Position *  StartPos;
-    Position *  CurrentPos;
+    resultT     Result;
+    ushort      SavedPlyCount; // For saving and restoring game state:
 
-    moveT *     FirstMove;
-    moveT *     CurrentMove;
-    uint        VarDepth;     // Current variation depth.
-
-    // For saving and restoring game state:
-    Position *  SavedPos;
-    moveT *     SavedMove;
-    ushort      SavedPlyCount;
-    uint        SavedVarDepth;
-
-    const NameBase* NBase;      // needed for referencing id numbers.
-
-    tagT        TagList [	MAX_TAGS];
-    uint        NumTags;
-
-    uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
-    uint        StopLocation;    // Used in recursive WriteMoveList method.
-
-    uint        PgnStyle;        // see PGN_STYLE macros above.
-    gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
-    uint        HtmlStyle;       // HTML diagram style, see
-                                 //   DumpHtmlBoard method in position.cpp.
-    uint        PgnLastMovePos;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Private Functions
@@ -460,8 +445,8 @@ public:
     void     AddPgnTag (const char * tag, const char * value);
     bool     RemoveExtraTag (const char * tag);
     const char * FindExtraTag (const char * tag);
-    uint     GetNumExtraTags ()      { return NumTags; }
-    tagT *   GetExtraTags ()         { return TagList; }
+    uint     GetNumExtraTags ()      { return (uint) TagList.size(); }
+    const tagT* GetExtraTags ()      { return TagList.data(); }
     void     ClearExtraTags ();
 
     void     MakeHomePawnList (byte * pbPawnList);
