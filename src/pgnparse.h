@@ -165,7 +165,7 @@ class PgnParser : public PgnParserProxy
 
 private:
     void   GetLine (char * buffer, uint bufSize);
-    std::string GetComment();
+    char*  GetComment(char* d_begin, char* d_end);
     void   GetRestOfSuffix (char * buffer, char firstChar);
     void   GetRestOfWord_NoDots (char * buffer);
     void   GetRestOfWord_WithDots (char * buffer);

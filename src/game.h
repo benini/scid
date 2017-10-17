@@ -362,7 +362,6 @@ public:
     void     SetMoveData (moveT * m, simpleMoveT * sm);
     errorT   AddMove (simpleMoveT * sm, char * san);
     errorT   AddVariation ();
-    errorT   DeleteSubVariation (moveT * m);
     errorT   DeleteVariation (uint varNumber);
     errorT   DeleteVariationAndFree (uint varNumber);
     errorT   FirstVariation (uint varNumber);
@@ -370,6 +369,11 @@ public:
     uint     GetVarNumber();
 
     void     SetMoveComment (const char * comment);
+    void     SetMoveComment(const char* begin, const char* end) {
+        ASSERT(begin != NULL && end != NULL);
+        ASSERT(CurrentMove != NULL && CurrentMove->prev != NULL);
+        CurrentMove->prev->comment.append(begin, end);
+    }
     const char* GetMoveComment () { return CurrentMove->prev->comment.c_str(); }
     /**
      * Game::GetPreviousMoveComment()

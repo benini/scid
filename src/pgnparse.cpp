@@ -42,7 +42,7 @@ const uint MAX_COMMENT_SIZE = 16000;
  * Return false for non-breaking spaces (ASCII-160 or A0 hex) because
  * they can be part of a multi-byte utf-8 character.
  */
-bool charIsSpace (unsigned char c) {
+bool charIsSpace (int c) {
     return (c == ' '    ||
             c == '\t'   ||
             c == '\n'   ||
@@ -52,7 +52,6 @@ bool charIsSpace (unsigned char c) {
 }
 
 /**
- * Convert a string form ISO 8859/1 (Latin1) to UTF-8.
  * The PGN standard use a subset of ISO 8859/1 (Latin 1):
  * Code value from 0 to 126 are the standard ASCII character set
  * Code value from 127 to 191 are not used for PGN data representation.
@@ -60,28 +59,61 @@ bool charIsSpace (unsigned char c) {
  * various diacritical marks; their use is encouraged for those languages
  * that require such characters.
  * Latin1 chars must be converted because the Tcl/tk framework uses UTF-8.
- * @param s: the string to be converted.
- * @returns @e true is the string was modified.
  */
-bool pgnLatin1_to_UTF8(std::string& s) {
-	bool res = false;
-	for (std::string::iterator it = s.begin(); it != s.end(); ++it) {
-		unsigned char v = *it;
-		if (v >= 192) {
-			std::string::iterator next = it + 1;
-			if (next != s.end()) {
-				unsigned char nextCh = *next;
-				if ((nextCh >> 6) == 0x02)
-					continue;
-			}
-			// Not a valid UTF-8 sequence: assume it's a Latin1 char and
-			// convert it.
-			res = true;
-			it = s.insert(it, char(0xC3));
-			*++it = v & 0xBF;
-		}
+
+/**
+ * Test if two chars are not a valid UTF-8 sequence.
+ * @param ch1: the first char of the sequence
+ * @param ch2: the next char of the sequence
+ * @returns
+ * - TRUE if the sequence is not valid
+ * - FALSE if the sequence *may be* valid
+ */
+bool invalidUTF8(int ch1, int ch2) {
+	if (static_cast<unsigned char>(ch1) <= 0xBF)
+		return false;
+
+	unsigned char c = static_cast<unsigned char>(ch2);
+	return c < 0x80 || c > 0xBF;
+}
+
+/**
+ * Converts a Latin1 char in the range [0xC0, 0xFF] to UTF-8.
+ * @param ch:   the char to convert
+ * @param dest: pointer to the output buffer
+ * @returns the pointer to the output buffer, one past the last element.
+ */
+char* pgnLatin1_to_UTF8(int ch, char* dest) {
+	ASSERT(static_cast<unsigned char>(ch) > 0xBF);
+	*dest++ = static_cast<unsigned char>(0xC3);
+	*dest++ = static_cast<unsigned char>(ch) & 0XBF;
+	return dest;
+}
+
+/**
+ * Converts a string of mixed Latin1/UTF-8 chars to UTF-8.
+ * If the source range do not include any Latin1 char, and it is not necessary
+ * to covert it, nothing is written to @e dest.
+ * @param [begin,end): the range of chars to be converted.
+ *                     It is necessary to include the '\0' char if the converted
+ *                     string should be null terminated.
+ * @param dest: pointer to the output buffer
+ * @returns the pointer to the output buffer, one past the last element.
+ */
+char* pgnLatin1_to_UTF8(const char* begin, const char* end, char* dest) {
+	auto it = std::adjacent_find(begin, end, invalidUTF8);
+	if (it == end)
+		return dest;
+
+	dest = std::copy(begin, it, dest);
+	for (auto it_next = it + 1; it_next != end; ++it, ++it_next) {
+		if (invalidUTF8(*it, *it_next))
+			dest = pgnLatin1_to_UTF8(*it, dest);
+		else
+			*dest++ = *it;
 	}
-	return res;
+	*dest = *it;
+	return dest;
 }
 
 } // end of anonymous namespace.
@@ -206,7 +238,9 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
 {
     const uint maxTagLength = 255;
     char tag [255];
-    char value [512];
+    char bufValue[512];
+    char bufUTF8[sizeof(bufValue) * 2];
+    char* value = bufValue;
 
     // Skip any initial whitespace:
     while (charIsSpace(*buffer)  &&  *buffer != 0) { buffer++; }
@@ -247,12 +281,9 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
     if (! seenEndQuote) { return ERROR_PGNTag; }
     value[lastQuoteIndex] = 0;
 
-    std::string tmpUTF8(value, value + lastQuoteIndex);
-    if (pgnLatin1_to_UTF8(tmpUTF8)) {
-        ASSERT(tmpUTF8.length() < sizeof(value));
-        std::copy(tmpUTF8.begin(), tmpUTF8.end(), value);
-        value[tmpUTF8.length()] = 0;
-    }
+    char* one_past_the_null_char = value + lastQuoteIndex + 1;
+    if (pgnLatin1_to_UTF8(value, one_past_the_null_char, bufUTF8) != bufUTF8)
+        value = bufUTF8;
 
     // Now decide what to add to the game based on this tag:
     if (strEqual (tag, "White")) {
@@ -392,28 +423,40 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
 //
 // Example: "\t\n   A  \t\n   B   C  "  (where \t and \n are tabs
 // and newlines) becomes "A B C".
-std::string PgnParser::GetComment()
-{
-    std::string res;
+char* PgnParser::GetComment(char* d_begin, char* d_end) {
+	int chPrev = '\0';
+	for (int ch = GetChar(); ch != '}'; ch = GetChar()) {
+		if (ch == EndChar) {
+			LogError("Error: Open Comment at end of input", "");
+			break;
+		}
 
-    int ch = GetChar();
-    for (; ch != EndChar  &&  ch != '}'; ch = GetChar()) {
-        if (charIsSpace(ch)) {
-            if (res.length() == 0) continue;
-            if (*(res.rbegin()) == ' ') continue;
-            ch = ' ';
-        }
-        res += ch;
-    }
-    if (res.length() != 0 && *(res.rbegin()) == ' ') {
-        res.resize(res.length() -1);
-    }
+		if (d_begin == d_end)
+			continue; // Ignore the remaining part of the comment
 
-    if (ch == EndChar) {
-        LogError ("Error: Open Comment at end of input", "");
-    }
+		if (charIsSpace(ch)) {
+			if (chPrev == ' ' || chPrev == '\0')
+				continue; // Trim the whitespace
+			ch = ' ';
+		}
 
-    return res;
+		if (invalidUTF8(chPrev, ch)) {
+			d_begin = pgnLatin1_to_UTF8(chPrev, --d_begin);
+			if (d_begin == d_end)
+				continue;
+		}
+
+		*d_begin++ = static_cast<char>(ch);
+		chPrev = ch;
+	}
+	if (chPrev == ' ') {
+		--d_begin; // Remove whitespace at the end
+	} else if (invalidUTF8(chPrev, '\0')) {
+		if (d_begin != d_end)
+			d_begin = pgnLatin1_to_UTF8(chPrev, --d_begin);
+	}
+
+	return d_begin;
 }
 
 void
@@ -589,7 +632,7 @@ PgnParser::GetRestOfPawnMove (char * buffer)
         // Check for "ep" or "e.p." after a digit:
         if (seenDigit) {
             if (ch == 'e') {
-                char nextCh = GetChar ();
+                int nextCh = GetChar ();
                 UnGetChar (nextCh);
                 if (nextCh == 'p'  ||  nextCh == 'p') { continue; }
             }
@@ -786,7 +829,7 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
     if (ch == '+'  ||  ch == '#') {   // Check or mate or invalid
         tokenT t = (ch == '+' ? TOKEN_Check : TOKEN_Mate);
         // Can be followed by: space, !, ? or $.  So peek at next input char
-        char nextc = GetChar();
+        int nextc = GetChar();
         // If "+" is followed by another "+", treat it as a double-check:
         if (ch == '+'  &&  nextc == '+') { return t; }
         UnGetChar (nextc);
@@ -1029,11 +1072,10 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
             game->MoveForward();
             break;
 
-        case TOKEN_Comment: {
-            std::string comment = GetComment();
-            pgnLatin1_to_UTF8(comment);
-            game->SetMoveComment(comment.c_str());
-            } break;
+        case TOKEN_Comment:
+            game->SetMoveComment(buffer,
+                                 GetComment(buffer, buffer + MAX_COMMENT_SIZE));
+            break;
 
         case TOKEN_LineComment:
             break;  // Line comments inside a game are just ignored.
@@ -1165,7 +1207,7 @@ PgnParser::ParseGame(Game* game, bool StorePreGameText)
 
         } else if (token == TOKEN_Comment) {
             // Get, but ignore, this comment:
-            GetComment();
+            GetComment(NULL, NULL);
 
         } else if (token == TOKEN_TagEnd) {
             // A blank line after the PGN header tags:
