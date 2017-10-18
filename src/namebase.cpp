@@ -107,11 +107,11 @@ errorT NameBase::Create(const char* filename)
  * Return OK if successful.
  */
 errorT
-NameBase::ReadEntireFile (const char* filename)
+NameBase::ReadEntireFile (const char* filename, fileModeT fmode)
 {
     if (!setFileName(filename)) return ERROR_FileInUse;
     Filebuf file;
-    if (file.Open(filename_.c_str(), FMODE_ReadOnly) != OK) return ERROR_FileOpen;
+    if (file.Open(filename_.c_str(), fmode) != OK) return ERROR_FileOpen;
 
     char Header_magic[9] = {0}; // magic identifier must be "Scid.sn"
     file.sgetn(Header_magic, 8);

@@ -103,7 +103,7 @@ public: // ICodecDatabase interface
 			if (err == OK) err = nb->Create(filename);
 		} else {
 			err = idx->Open(filename, fMode);
-			if (err == OK) err = nb->ReadEntireFile(filename);
+			if (err == OK) err = nb->ReadEntireFile(filename, fMode);
 			if (err == OK) err = idx->ReadEntireFile(nb, progress);
 		}
 
@@ -130,14 +130,14 @@ public: // CodecNative interface
 		size_t offset = gfile_.size();
 		static const uint32_t MAXSZ = std::numeric_limits<uint32_t>::max();
 		if (offset >= MAXSZ || length >= MAXSZ - offset)
-			return std::make_pair(ERROR_Full, 0);
+			return std::make_pair(ERROR_OffsetLimit, 0);
 
 		// The Scid4 format stores games into blocks of 128KB.
 		// If the current block does not have enough space, we fill it with
 		// random data and use the next one.
 		static const size_t GF_BLOCK = 128 * 1024;
 		if (length > GF_BLOCK)
-			return std::make_pair(ERROR_Full, 0);
+			return std::make_pair(ERROR_GameLengthLimit, 0);
 		size_t blockSpace = GF_BLOCK - (offset % GF_BLOCK);
 		if (blockSpace < length) {
 			errorT err = gfile_.append(data, blockSpace);

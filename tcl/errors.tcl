@@ -55,6 +55,9 @@ namespace eval ERROR {
   set NoMatchFound     205
   set NameDataLoss     206
   set NameTooLong      207
+  set NameLimit        208
+  set OffsetLimit      209
+  set GameLengthLimit  210
   set IndexFull        251
   set InvalidFEN       301
   set InvalidMove      302
@@ -116,6 +119,12 @@ after idle {
     "Some names (player, event, site or round) are missing and have been replaced by \"?\"\nCompact the database to make the changes permanent."
   set ::ERROR::msg($::ERROR::NameTooLong) \
     "The entered values are too long"
+	set ::ERROR::msg($::ERROR::NameLimit) \
+    "The maximum number of different names allowed by this database type has been reached"
+	set ::ERROR::msg($::ERROR::OffsetLimit) \
+    "The maximum space for games allowed by this database type has been reached"
+	set ::ERROR::msg($::ERROR::GameLengthLimit) \
+    "The maximum length for a game allowed by this database type has been reached"
 
   set ::ERROR::msg($::ERROR::CodecUnsupFeat) \
     "The requested function is not supported by this type of database."

@@ -85,7 +85,7 @@ public:
     void Clear();
 
     errorT    Create (const char* filename);
-    errorT    ReadEntireFile (const char* filename);
+    errorT    ReadEntireFile (const char* filename, fileModeT fmode);
     errorT flush(const Index* idx) {
         errorT err = OK;
         if (modified_ && !filename_.empty()) err = WriteNameFile(idx);
@@ -141,7 +141,7 @@ public:
 			return std::make_pair(ERROR_NameTooLong, 0);
 
 		if (names_[nt].size() >= MAX_ID)
-			return std::make_pair(ERROR_Full, 0);
+			return std::make_pair(ERROR_NameLimit, 0);
 
 		char* buf = new char[nameLen + 1];
 		std::copy_n(name, nameLen + 1, buf);

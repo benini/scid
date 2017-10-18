@@ -85,7 +85,7 @@ public: // CodecNative CRTP
 		ASSERT(src != 0);
 
 		if (v_.size() >= std::numeric_limits<uint32_t>::max())
-			return std::make_pair(ERROR_Full, 0);
+			return std::make_pair(ERROR_OffsetLimit, 0);
 
 		uint32_t offset = v_.size();
 		v_.insert(v_.end(), src, src + length);

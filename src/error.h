@@ -53,6 +53,9 @@ const errorT
     ERROR_NoMatchFound   = 205,
     ERROR_NameDataLoss   = 206,
     ERROR_NameTooLong    = 207,
+    ERROR_NameLimit      = 208,
+    ERROR_OffsetLimit    = 209,
+    ERROR_GameLengthLimit= 210,
 
     ERROR_IndexFull      = 251,
 
