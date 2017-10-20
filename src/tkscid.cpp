@@ -2293,17 +2293,15 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
             return UI_Result(ti, OK, (uint) db->gameAlterations.undoSize());
         }
-        db->gameAlterations.undo(db->game);
-        break;
+        db->game = db->gameAlterations.undo(db->game);
+        return UI_Result(ti, OK);
 
     case GAME_UNDO_ALL:
-        if (! db->gameAlterations.undoAll(db->game)) {
-            db->gameAltered = false;
-            db->gameAlterations.clear();
-            if (db->gameNumber < 0) {
-                db->game->Clear();
-                return UI_Result(ti, OK);
-            }
+        db->gameAltered = false;
+        db->gameAlterations.clear();
+        if (db->gameNumber < 0) {
+            db->game->Clear();
+        } else {
             const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
             errorT err = db->getGame(ie, db->bbuf);
             if (err != OK) return UI_Result(ti, err);
@@ -2311,9 +2309,8 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (err != OK) return UI_Result(ti, err);
             db->game->LoadStandardTags (ie, db->getNameBase());
             db->game->MoveToPly(0);
-            return UI_Result(ti, OK);
         }
-        break;
+        return UI_Result(ti, OK);
 
     case GAME_UNDO_POINT:
         db->gameAlterations.store(db->game);
@@ -2323,8 +2320,8 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
             return UI_Result(ti, OK, (uint) db->gameAlterations.redoSize());
         }
-        db->gameAlterations.redo(db->game);
-        break;
+        db->game = db->gameAlterations.redo(db->game);
+        return UI_Result(ti, OK);
 
     default:
         return InvalidCommand (ti, "sc_game", options);

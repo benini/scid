@@ -21,12 +21,12 @@
 
 #include "bytebuf.h"
 #include "codec.h"
+#include "containers.h"
 #include "fastgame.h"
 #include "game.h"
 #include "index.h"
 #include "namebase.h"
 #include "tree.h"
-#include "undoredo.h"
 #include <vector>
 
 class SortCache;
