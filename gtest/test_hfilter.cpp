@@ -196,7 +196,7 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 		ASSERT_FALSE(filter == 0);
 
 		filter->clear();
-		EXPECT_EQ(0, filter->size());
+		EXPECT_EQ(0U, filter->size());
 		for (auto& gnum : *filter) {
 			// filter is empty and should not enter into this loop
 			EXPECT_NE(gnum, gnum);

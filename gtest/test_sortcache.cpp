@@ -29,7 +29,7 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 	scidBaseT dbase;
 	static const char* database = SCID_TESTDIR "res_database";
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::SCID4, FMODE_ReadOnly, database));
-	ASSERT_NE(0, dbase.numGames());
+	ASSERT_NE(0U, dbase.numGames());
 	const NameBase* nb = dbase.getNameBase();
 	std::uniform_int_distribution<> rndID(0, dbase.numGames() - 1);
 	std::vector<gamenumT> buf(dbase.numGames());

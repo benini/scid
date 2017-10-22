@@ -56,16 +56,16 @@ TEST_F(Test_Filebuf, FilebufAppend) {
 			buf += v.size() / 2;
 			size_t nLeft = v.size() - v.size() / 2;
 			while (nLeft > 0) {
-				auto nCh = std::uniform_int_distribution<>(1, nLeft)(gen);
+				auto nCh = std::uniform_int_distribution<size_t>(1, nLeft)(gen);
 				file.append(buf, nCh);
 				buf += nCh;
 				nLeft -= nCh;
 				EXPECT_EQ(file.size(), v.size() - nLeft);
 
-				auto pos =
-				    std::uniform_int_distribution<>(0, file.size() - 1)(gen);
-				auto nRead =
-				    std::uniform_int_distribution<>(1, file.size() - pos)(gen);
+				auto pos = std::uniform_int_distribution<size_t>(
+				    0, file.size() - 1)(gen);
+				auto nRead = std::uniform_int_distribution<size_t>(
+				    1, file.size() - pos)(gen);
 				file.pubseekpos(pos);
 				file.sgetn(buf2, nRead);
 				EXPECT_TRUE(std::equal(v2.begin(), v2.begin() + nRead,
@@ -95,7 +95,7 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<uint32_t> dis24(0, (1 << 24) - 1);
-	std::uniform_int_distribution<uint32_t> dis32(0, (uint64_t(1) << 32) - 1);
+	std::uniform_int_distribution<uint32_t> dis32;
 
 	// Build a vector for each type of unsigned int.
 	std::vector<uint32_t> v8(1 << 8);
@@ -159,16 +159,16 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 
 		for (int i = 0; i < 2; ++i) {
 			for (auto& e : v8)
-				EXPECT_EQ(e, file.ReadOneByte());
+				EXPECT_EQ(e, (size_t)file.ReadOneByte());
 
 			for (auto& e : v16)
-				EXPECT_EQ(e, file.ReadTwoBytes());
+				EXPECT_EQ(e, (size_t)file.ReadTwoBytes());
 
 			for (auto& e : v24)
-				EXPECT_EQ(e, file.ReadThreeBytes());
+				EXPECT_EQ(e, (size_t)file.ReadThreeBytes());
 
 			for (auto& e : v32)
-				EXPECT_EQ(e, file.ReadFourBytes());
+				EXPECT_EQ(e, (size_t)file.ReadFourBytes());
 
 			// Read past the end, no error should occur.
 			file.ReadFourBytes();
@@ -184,17 +184,17 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 			int pos = rpos(gen);
 
 			file.pubseekpos(pos / 4);
-			EXPECT_EQ(v8[pos / 4], file.ReadOneByte());
+			EXPECT_EQ(v8[pos / 4], (size_t)file.ReadOneByte());
 
 			file.pubseekpos(v8.size() + pos * 2);
-			EXPECT_EQ(v16[pos], file.ReadTwoBytes());
+			EXPECT_EQ(v16[pos], (size_t)file.ReadTwoBytes());
 
 			file.pubseekpos(v8.size() + v16.size() * 2 + pos * 3);
-			EXPECT_EQ(v24[pos], file.ReadThreeBytes());
+			EXPECT_EQ(v24[pos], (size_t)file.ReadThreeBytes());
 
 			file.pubseekpos(v8.size() + v16.size() * 2 + v24.size() * 3 +
 			                pos * 4);
-			EXPECT_EQ(v32[pos], file.ReadFourBytes());
+			EXPECT_EQ(v32[pos], (size_t)file.ReadFourBytes());
 		}
 	}
 }
@@ -257,18 +257,18 @@ TEST_F(Test_Filebuf, Filebuf_open) {
 		ASSERT_EQ(3, file.WriteThreeBytes(0x030303));
 		ASSERT_EQ(4, file.WriteFourBytes(0x04040404));
 		file.pubseekpos(0);
-		ASSERT_EQ(0x01, file.ReadOneByte());
-		ASSERT_EQ(0x0202, file.ReadTwoBytes());
-		ASSERT_EQ(0x030303, file.ReadThreeBytes());
-		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+		ASSERT_EQ(0x01U, file.ReadOneByte());
+		ASSERT_EQ(0x0202U, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303U, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404U, file.ReadFourBytes());
 	}
 	{
 		Filebuf file;
 		ASSERT_EQ(OK, file.Open(fname, FMODE_ReadOnly));
-		ASSERT_EQ(0x01, file.ReadOneByte());
-		ASSERT_EQ(0x0202, file.ReadTwoBytes());
-		ASSERT_EQ(0x030303, file.ReadThreeBytes());
-		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+		ASSERT_EQ(0x01U, file.ReadOneByte());
+		ASSERT_EQ(0x0202U, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303U, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404U, file.ReadFourBytes());
 		file.pubseekpos(0);
 		ASSERT_EQ(0, file.WriteOneByte(0x01));
 		/* libc++ bug
@@ -277,10 +277,10 @@ TEST_F(Test_Filebuf, Filebuf_open) {
 		ASSERT_EQ(0, file.WriteFourBytes(0x04040404));
 		*/
 		file.pubseekpos(0);
-		ASSERT_EQ(0x01, file.ReadOneByte());
-		ASSERT_EQ(0x0202, file.ReadTwoBytes());
-		ASSERT_EQ(0x030303, file.ReadThreeBytes());
-		ASSERT_EQ(0x04040404, file.ReadFourBytes());
+		ASSERT_EQ(0x01U, file.ReadOneByte());
+		ASSERT_EQ(0x0202U, file.ReadTwoBytes());
+		ASSERT_EQ(0x030303U, file.ReadThreeBytes());
+		ASSERT_EQ(0x04040404U, file.ReadFourBytes());
 	}
 	{
 		Filebuf file;
@@ -292,27 +292,25 @@ TEST_F(Test_Filebuf, Filebuf_open) {
 		file.pubseekpos(0);
 		ASSERT_EQ(static_cast<byte>(EOF), file.ReadOneByte());
 		ASSERT_EQ(static_cast<uint16_t>(EOF), file.ReadTwoBytes());
-		ASSERT_EQ(static_cast<uint16_t>(EOF) + (static_cast<byte>(EOF) << 16),
-		          file.ReadThreeBytes());
 		ASSERT_EQ(static_cast<uint32_t>(EOF), file.ReadFourBytes());
 	}
 	{
 		Filebuf file;
 		ASSERT_EQ(OK, file.Open(fname, FMODE_Both));
-		ASSERT_EQ(0x04040404, file.ReadFourBytes());
-		ASSERT_EQ(0x030303, file.ReadThreeBytes());
-		ASSERT_EQ(0x0202, file.ReadTwoBytes());
-		ASSERT_EQ(0x01, file.ReadOneByte());
+		ASSERT_EQ(0x04040404U, file.ReadFourBytes());
+		ASSERT_EQ(0x030303U, file.ReadThreeBytes());
+		ASSERT_EQ(0x0202U, file.ReadTwoBytes());
+		ASSERT_EQ(0x01U, file.ReadOneByte());
 		file.pubseekoff(0, std::ios::end);
 		ASSERT_EQ(1, file.WriteOneByte(0xF1));
 		ASSERT_EQ(2, file.WriteTwoBytes(0xF2F2));
 		ASSERT_EQ(3, file.WriteThreeBytes(0xF3F3F3F3));
 		ASSERT_EQ(4, file.WriteFourBytes(0xF4F4F4F4));
 		file.pubseekpos(10);
-		ASSERT_EQ(0xF1, file.ReadOneByte());
-		ASSERT_EQ(0xF2F2, file.ReadTwoBytes());
-		ASSERT_EQ(0xF3F3F3, file.ReadThreeBytes());
-		ASSERT_EQ(0xF4F4F4F4, file.ReadFourBytes());
+		ASSERT_EQ(0xF1U, file.ReadOneByte());
+		ASSERT_EQ(0xF2F2U, file.ReadTwoBytes());
+		ASSERT_EQ(0xF3F3F3U, file.ReadThreeBytes());
+		ASSERT_EQ(0xF4F4F4F4U, file.ReadFourBytes());
 	}
 }
 

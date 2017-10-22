@@ -151,15 +151,15 @@ TEST_F(Test_Index, file_io) {
 		Index index_in;
 		ASSERT_EQ(OK, index_in.Open("test_index1", FMODE_ReadOnly));
 		EXPECT_EQ(OK, index_in.ReadEntireFile(&nb_dummy, Progress()));
-		ASSERT_EQ(2, index_in.GetNumGames());
-		EXPECT_EQ(5, index_in.GetType());
+		ASSERT_EQ(2U, index_in.GetNumGames());
+		EXPECT_EQ(5U, index_in.GetType());
 		EXPECT_STREQ("unit test", index_in.GetDescription());
 		byte begin = IndexEntry::IDX_FLAG_CUSTOM1;
 		for (auto flag = begin; flag < begin + CUSTOM_FLAG_MAX; flag++) {
 			EXPECT_STREQ((std::to_string(flag) + " desc").c_str(),
 				index_in.GetCustomFlagDesc(flag));
 		}
-		EXPECT_EQ(2, index_in.GetAutoLoad());
+		EXPECT_EQ(2U, index_in.GetAutoLoad());
 
 		size_t j7 = 1;
 		size_t j16 = 1;
@@ -169,7 +169,7 @@ TEST_F(Test_Index, file_io) {
 			EXPECT_EQ(j++, ie->GetWhite());
 			EXPECT_EQ(j++, ie->GetBlack());
 			if (idx == 0) {
-				EXPECT_EQ(19, ie->GetEvent());
+				EXPECT_EQ(19U, ie->GetEvent());
 				j++;
 			}
 			else {
@@ -246,7 +246,7 @@ TEST_F(Test_Index, IndexEntry_SetFlag) {
 		for (size_t i = 0, n = v.size(); i < n; i++) {
 			EXPECT_EQ(v[i], ie.GetFlag(1 << i));
 		}
-		EXPECT_EQ(0, ie.GetLength());
+		EXPECT_EQ(0U, ie.GetLength());
 	};
 
 	std::vector<bool> flags(IndexEntry::IDX_NUM_FLAGS, false);
@@ -287,7 +287,7 @@ TEST_F(Test_Index, Index_calcNameFreq) {
 	idNumberT id;
 	for (auto& nt : types) {
 		EXPECT_EQ(OK, nb.AddName(nt, "?", &id));
-		EXPECT_EQ(id, 0);
+		EXPECT_EQ(id, 0U);
 		expected[nt].push_back(1);
 	}
 	expected[NAME_PLAYER][0] += 1;

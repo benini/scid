@@ -47,7 +47,7 @@ TEST(Test_Containers, VectorChunked) {
 	// Test push_back
 	for (size_t i = 0; i < 30; ++i) {
 		EXPECT_EQ(i, v.size());
-		EXPECT_TRUE(v.capacity() == nObjects);
+		EXPECT_EQ(size_t(nObjects), v.capacity());
 		size_t expCapacity = (i == 0) ? 0 : 8 + 8 * (i / 8);
 		EXPECT_EQ(v.capacity(), expCapacity);
 		RefCounted tmp;
@@ -69,7 +69,7 @@ TEST(Test_Containers, VectorChunked) {
 	// Test validity of pointers after grow
 	v.resize(55);
 	EXPECT_EQ(55U, v.size());
-	EXPECT_TRUE(v.capacity() == nObjects);
+	EXPECT_EQ(size_t(nObjects), v.capacity());
 	EXPECT_EQ(56U, v.capacity());
 	for (size_t i = 0; i < 30; ++i) {
 		EXPECT_EQ(ref[i], &v[i]);
@@ -81,7 +81,7 @@ TEST(Test_Containers, VectorChunked) {
 		auto contiguous = v.contiguous(i);
 		RefCounted* it = &v[i];
 		for (size_t j = 0; j < contiguous; j++) {
-			(*it++).ch[0] = i;
+			(*it++).ch[0] = (char) i;
 			++i;
 		}
 	}
@@ -94,19 +94,19 @@ TEST(Test_Containers, VectorChunked) {
 	// Test memory release
 	v.resize(16);
 	EXPECT_EQ(16U, v.size());
-	EXPECT_TRUE(v.capacity() == nObjects);
+	EXPECT_EQ(size_t(nObjects), v.capacity());
 	EXPECT_EQ(24U, v.capacity());
 	EXPECT_EQ(15, v[15].ch[0]);
 
 	v.resize(15);
 	EXPECT_EQ(15U, v.size());
-	EXPECT_TRUE(v.capacity() == nObjects);
+	EXPECT_EQ(size_t(nObjects), v.capacity());
 	EXPECT_EQ(16U, v.capacity());
 	EXPECT_EQ(14, v[14].ch[0]);
 
 	v.resize(0);
 	EXPECT_EQ(0U, v.size());
-	EXPECT_TRUE(v.capacity() == nObjects);
+	EXPECT_EQ(size_t(nObjects), v.capacity());
 	EXPECT_EQ(0U, v.capacity());
 }
 

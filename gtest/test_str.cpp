@@ -163,8 +163,8 @@ TEST_F(Test_StrLib, strStartHash) {
 				EXPECT_GT(cmp, 0);
 			} else {
 				if (cmp != 0) {
-					ASSERT_GE(s1.size(), 4);
-					ASSERT_GE(s2.size(), 4);
+					ASSERT_TRUE(s1.size() >= 4);
+					ASSERT_TRUE(s2.size() >= 4);
 					auto s1_tmp = s1.substr(0, 4);
 					auto s2_tmp = s2.substr(0, 4);
 					ASSERT_EQ(0, strCaseCompare(s1_tmp.c_str(), s2_tmp.c_str()));
