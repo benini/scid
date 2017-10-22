@@ -643,14 +643,14 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 		nbFreq[n].resize(nb->GetNumNames(n), 0);
 	}
 
-	uint last_offset = 0;
+	uint64_t last_offset = 0;
 	*n_sparse = 0;
 	*n_deleted = 0;
 	for (gamenumT i=0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { *n_deleted += 1; continue; }
 
-		uint offset = ie->GetOffset();
+		auto offset = ie->GetOffset();
 		if (offset < last_offset) *n_sparse += 1;
 		last_offset = offset;
 

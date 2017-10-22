@@ -25,7 +25,6 @@
 #define CODEC_MEMORY_H
 
 #include "codec_native.h"
-#include <limits>
 
 #if !CPP11_SUPPORT
 #define override
@@ -37,7 +36,14 @@
  * this requirement non-native codecs should be derived from this class.
  */
 class CodecMemory : public CodecNative<CodecMemory> {
-	std::vector<byte> v_;
+	VectorChunked<byte, 24> v_;
+
+	enum : uint64_t {
+		LIMIT_GAMEOFFSET = 1ULL << 32,
+		LIMIT_GAMELEN = 1ULL << 17,
+		LIMIT_UNIQUENAMES = 1ULL << 19,
+		LIMIT_NAMELEN = 255
+	};
 
 public: // ICodecDatabase interface
 	Codec getType() override { return ICodecDatabase::MEMORY; }
@@ -46,14 +52,11 @@ public: // ICodecDatabase interface
 		return std::vector<std::string>();
 	}
 
-	const byte* getGameData(uint32_t offset, uint32_t length) override {
+	const byte* getGameData(uint64_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);
-		#if !CPP11_SUPPORT
-		return &v_.front() + offset;
-		#else
-		return v_.data() + offset;
-		#endif
+		ASSERT(v_.contiguous(offset) >= length);
+		return &v_[offset];
 	}
 
 	errorT flush() override {
@@ -80,15 +83,23 @@ public: // CodecNative CRTP
 	 * data (usable to retrieve the data with getGameData()).
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
-	std::pair<errorT, uint32_t> dyn_addGameData(const byte* src,
+	std::pair<errorT, uint64_t> dyn_addGameData(const byte* src,
 	                                            size_t length) {
 		ASSERT(src != 0);
 
-		if (v_.size() >= std::numeric_limits<uint32_t>::max())
+		if (length >= LIMIT_GAMELEN)
+			return std::make_pair(ERROR_GameLengthLimit, 0);
+
+		uint64_t offset = v_.size();
+		auto capacity = v_.capacity();
+		if (capacity - offset < length) // Do not fit in the current chunk
+			offset = capacity;
+		if (offset >= LIMIT_GAMEOFFSET)
 			return std::make_pair(ERROR_OffsetLimit, 0);
 
-		uint32_t offset = v_.size();
-		v_.insert(v_.end(), src, src + length);
+		v_.resize(offset + length);
+		ASSERT(v_.contiguous(offset) >= length);
+		std::copy_n(src, length, &v_[offset]);
 		return std::make_pair(OK, offset);
 	}
 
@@ -109,7 +120,7 @@ public: // CodecNative CRTP
 			return nb_->getID(nt, name, MAX_LEN, 262143); // Maximum of 2^18 -1
 
 		ASSERT(nt == NAME_EVENT || nt == NAME_SITE);
-		return nb_->getID(nt, name, MAX_LEN, 524287); // Maximum of 2^19 -1
+		return nb_->getID(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
 	}
 };
 

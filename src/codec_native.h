@@ -130,8 +130,7 @@ private:
 			return id.first;
 		ie->SetRound(id.second);
 
-		std::pair<errorT, uint32_t> offset =
-		    derived()->dyn_addGameData(srcData, dataLen);
+		auto offset = derived()->dyn_addGameData(srcData, dataLen);
 		if (offset.first == OK) {
 			ie->SetOffset(offset.second);
 			ie->SetLength(dataLen);

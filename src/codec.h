@@ -83,7 +83,7 @@ public:
 	 * - a pointer to the game data.
 	 * - 0 (nullptr) on error.
 	 */
-	virtual const byte* getGameData(uint32_t offset, uint32_t length) = 0;
+	virtual const byte* getGameData(uint64_t offset, uint32_t length) = 0;
 
 	/**
 	 * Add a game to the database.
