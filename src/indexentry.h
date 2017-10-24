@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 1999-2002  Shane Hudson
 * Copyright (c) 2006-2009  Pascal Georges
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2017  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -22,6 +22,7 @@
 #define SCID_INDEXENTRY_H
 
 #include "common.h"
+#include "date.h"
 #include "matsig.h"
 #include "namebase.h"
 
@@ -33,7 +34,7 @@
 // in the array, and the next 8 bytes contain up to 16 half-byte entries.
 const uint HPSIG_SIZE = 9;
 
-const uint MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
+const eloT MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
 
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
@@ -49,136 +50,183 @@ const uint  OLD_INDEX_ENTRY_SIZE = 46;
 //    data file.  For fast searching, it also store some other important
 //    values: players, event, site, date, result, eco, gamelength.
 //
-//    It takes 48 bytes, assuming sizeof(uint) == 4 and sizeof(ushort) == 2.
+//    It takes 56 bytes.
+class IndexEntry {
+    uint64_t offset_         : 46; // Start of gamefile record for this game.
+    uint64_t gameDataSize_   : 18; // Length of gamefile record for this game.
 
-class IndexEntry
-{
-    uint32_t  Offset;            // Start of gamefile record for this game.
-    uint16_t  Length_Low;        // Length of gamefile record for this game. 17 bits are used so the max
-                                 // length is 128 ko (131071). So 7 bits are usable for custom flags or other.
-    byte      Length_High;       // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
-    // Name ID values are packed into 12 bytes, saving 8 bytes over the
-    // simpler method of just storing each as a 4-byte idNumberT.
-    byte      WhiteBlack_High;   // High bits of White, Black.
-    uint16_t  WhiteID_Low;       // Lower 16 bits of White ID.
-    uint16_t  BlackID_Low;       // Lower 16 bits of Black ID.
-    uint16_t  EventID_Low;       // Lower 16 bits of Site.
-    uint16_t  SiteID_Low;        // Lower 16 bits of Site ID.
-    uint16_t  RoundID_Low;       // Lower 16 bits of Round ID.
-    uint16_t  Flags;
-    uint16_t  VarCounts;         // Counters for comments, variations, etc.
-                                 // VarCounts also stores the result.
-    ecoT      EcoCode;           // ECO code
-    dateT     Dates;             // Date and EventDate fields.
-    eloT      WhiteElo;
-    eloT      BlackElo;
-    matSigT   FinalMatSig;       // material of the final position in the game,
-                                 // and the StoredLineCode in the top 8 bits.
-    uint16_t  NumHalfMoves;
-    byte      HomePawnData [HPSIG_SIZE];  // homePawnSig data.
-    byte      EventSiteRnd_High; // High bits of Event, Site, Round.
-    
+    uint64_t storedLineCode_ :  8;
+    uint64_t whiteID_        : 28;
+    uint64_t blackID_        : 28;
+
+    uint32_t eventID_        : 28;
+    uint32_t whiteEloType_   :  4;
+
+    uint32_t siteID_         : 28;
+    uint32_t blackEloType_   :  4;
+
+    uint32_t roundID_        : 28;
+    uint32_t result_         :  4;
+
+    uint32_t whiteElo_       : 12;
+    uint32_t date_           : 20;
+
+    uint32_t blackElo_       : 12;
+    uint32_t eventDate_      : 20;
+
+    uint32_t numHalfMoves_   : 10;
+    uint32_t flags_          : 22;
+
+    uint32_t finalMatSig_    : 24; // material of the final position in the game
+    uint32_t nVariations_    :  4;
+    uint32_t nComments_      :  4;
+
+    uint16_t ECOcode_;
+
+    uint8_t  nNags_          :  4;
+
+    byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
+
 public:
-    void Init();
-    template <class T> errorT Read (T* file, versionT version);
+    void Init() { std::memset(this, 0, sizeof(IndexEntry)); }
+
     template <class T> errorT Write (T* file, versionT version) const;
 
+    // get functions
+    uint64_t  GetOffset() const { return offset_; }
+    uint32_t  GetLength() const { return gameDataSize_; }
+    idNumberT GetWhite() const { return whiteID_; }
+    eloT      GetWhiteElo() const { return whiteElo_; }
+    byte      GetWhiteRatingType() const { return whiteEloType_; }
+    idNumberT GetBlack() const { return blackID_; }
+    eloT      GetBlackElo() const { return blackElo_; }
+    byte      GetBlackRatingType() const { return blackEloType_; }
+    idNumberT GetEvent() const { return eventID_; }
+    idNumberT GetSite() const { return siteID_; }
+    idNumberT GetRound() const { return roundID_; }
+    dateT     GetDate() const { return date_; }
+    dateT     GetEventDate() const { return eventDate_; }
+    resultT   GetResult() const { return result_; }
+    uint      GetVariationCount() const { return DecodeCount(nVariations_); }
+    uint      GetCommentCount() const { return DecodeCount(nComments_); }
+    uint      GetNagCount() const { return DecodeCount(nNags_); }
+    uint16_t  GetNumHalfMoves() const { return numHalfMoves_; }
+    matSigT   GetFinalMatSig() const { return finalMatSig_; }
+    byte      GetStoredLineCode() const { return storedLineCode_; }
+    ecoT      GetEcoCode() const { return ECOcode_; }
+    bool      GetFlag(uint32_t mask) const { return (flags_ & mask) == mask; }
+    const byte* GetHomePawnData() const { return HomePawnData; }
+    byte* GetHomePawnData() { return HomePawnData; }
 
-    uint32_t GetOffset () const { return Offset; }
-    void SetOffset (uint32_t offset) { Offset = offset; }
-    uint32_t GetLength() const {
-        return Length_Low + (uint32_t(Length_High & 0x80) << 9);
+    // set functions, assert that the value is not truncated.
+    void SetOffset(uint64_t offset) {
+        offset_ = offset;
+        ASSERT(GetOffset() == offset);
     }
-    void SetLength (size_t length) {
-        ASSERT(length < MAX_GAME_LENGTH);
-        Length_Low = static_cast<uint16_t>(length & 0xFFFF);
-        // preserve the last 7 bits
-        Length_High = ( Length_High & 0x7F ) | static_cast<byte>( (length >> 16) << 7 );
+    void SetLength(size_t length) {
+        gameDataSize_ = length;
+        ASSERT(GetLength() == length);
+    }
+    void SetWhite(idNumberT id) {
+        whiteID_ = id;
+        ASSERT(GetWhite() == id);
+    }
+    void SetWhiteElo(eloT elo) {
+        whiteElo_ = elo;
+        ASSERT(GetWhiteElo() == elo);
+    }
+    void SetWhiteRatingType(byte b) {
+        whiteEloType_ = b;
+        ASSERT(GetWhiteRatingType() == b);
+    }
+    void SetBlack(idNumberT id) {
+        blackID_ = id;
+        ASSERT(GetBlack() == id);
+    }
+    void SetBlackElo(eloT elo) {
+        blackElo_ = elo;
+        ASSERT(GetBlackElo() == elo);
+    }
+    void SetBlackRatingType(byte b) {
+        blackEloType_ = b;
+        ASSERT(GetBlackRatingType() == b);
+    }
+    void SetEvent(idNumberT id) {
+        eventID_ = id;
+        ASSERT(GetEvent() == id);
+    }
+    void SetSite(idNumberT id) {
+        siteID_ = id;
+        ASSERT(GetSite() == id);
+    }
+    void SetRound(idNumberT id) {
+        roundID_ = id;
+        ASSERT(GetRound() == id);
+    }
+    void SetDate(dateT date) {
+        date_ = date;
+        ASSERT(GetDate() == date);
+    }
+    void SetEventDate(dateT edate) {
+        eventDate_ = edate;
+        ASSERT(GetEventDate() == edate);
+    }
+    void SetResult(resultT res) {
+        result_ = res;
+        ASSERT(GetResult() == res);
+    }
+    void SetVariationCount(unsigned x) { nVariations_ = EncodeCount(x); }
+    void SetCommentCount(unsigned x) { nComments_ = EncodeCount(x); }
+    void SetNagCount(unsigned x) { nNags_ = EncodeCount(x); }
+    void SetRawVariationCount(unsigned x) {
+        nVariations_ = x;
+        ASSERT(x == nVariations_);
+    }
+    void SetRawCommentCount(unsigned x) {
+        nComments_ = x;
+        ASSERT(x == nComments_);
+    }
+    void SetRawNagCount(unsigned x) {
+        nNags_ = x;
+        ASSERT(x == nNags_);
+    }
+    void SetNumHalfMoves(ushort b) {
+        numHalfMoves_ = b;
+        ASSERT(GetNumHalfMoves() == b);
+    }
+    void SetFinalMatSig(matSigT ms) {
+        finalMatSig_ = ms;
+        ASSERT(GetFinalMatSig() == ms);
+    }
+    void SetStoredLineCode(byte b) {
+        storedLineCode_ = b;
+        ASSERT(GetStoredLineCode() == b);
+    }
+    void SetEcoCode(ecoT eco) {
+        ECOcode_ = eco;
+        ASSERT(GetEcoCode() == eco);
+    }
+    void SetFlag(uint32_t flagMask, bool set) {
+        if (set)
+            flags_ |= flagMask;
+        else
+            flags_ &= ~flagMask;
     }
 
-
-    // Name Get and Set routines:
-    //   WhiteID and BlackID are 20-bit values, EventID and SiteID are
-    //   19-bit values, and RoundID is an 18-bit value.
-    //
-    //   WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
-    //   BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
-    //   EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
-    //   SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
-    //   RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
-    idNumberT GetWhite () const {
-        idNumberT id = (idNumberT) WhiteBlack_High;
-        id = id >> 4;  // High 4 bits = bits 4-7 of WhiteBlack_High.
-        id <<= 16;
-        id |= (idNumberT) WhiteID_Low;
-        return id;
-    }
-    idNumberT GetBlack () const {
-        idNumberT id = (idNumberT) WhiteBlack_High;
-        id = id & 0xF;   // High 4 bits = bits 0-3 of WhiteBlack_High.
-        id <<= 16;
-        id |= (idNumberT) BlackID_Low;
-        return id;
-    }
+    // Handy functions that do not directly access member vars.
     idNumberT GetPlayer(colorT col) const {
-        if (col == BLACK) return GetBlack();
-        return GetWhite();
+        return (col == BLACK) ? GetBlack() : GetWhite();
     }
-    idNumberT GetEvent () const {
-        uint id = (idNumberT) EventSiteRnd_High;
-        id >>= 5;  // High 3 bits = bits 5-7 of EventSiteRnd_High.
-        id <<= 16;
-        id |= (idNumberT) EventID_Low;
-        return id;
+    eloT GetElo(colorT col) const {
+        return (col == BLACK) ? GetBlackElo() : GetWhiteElo();
     }
-    idNumberT GetSite () const {
-        uint id = (idNumberT) EventSiteRnd_High;
-        id = (id >> 2) & 7;  // High 3 bits = bits 2-5 of EventSiteRnd_High.
-        id <<= 16;
-        id |= (idNumberT) SiteID_Low;
-        return id;
-    }
-    idNumberT GetRound () const {
-        uint id = (idNumberT) EventSiteRnd_High;
-        id &= 3;   // High 2 bits = bits 0-1 of EventSiteRnd_High.
-        id <<= 16;
-        id |= (idNumberT) RoundID_Low;
-        return id;
-    }
+    uint  GetYear () const { return date_GetYear (GetDate()); }
+    uint  GetMonth() const { return date_GetMonth (GetDate()); }
+    uint  GetDay ()  const { return date_GetDay (GetDate()); }
 
-    void SetWhite (idNumberT id) {
-        WhiteID_Low = id & 0xFFFF;
-        WhiteBlack_High = WhiteBlack_High & 0x0F;   // Clear bits 4-7.
-        WhiteBlack_High |= ((id >> 16) << 4);       // Set bits 4-7.
+    void SetPlayer(colorT col, idNumberT id) {
+        return (col == BLACK) ? SetBlack(id) : SetWhite(id);
     }
-    void SetBlack (idNumberT id) {
-        BlackID_Low = id & 0xFFFF;
-        WhiteBlack_High = WhiteBlack_High & 0xF0;   // Clear bits 0-3.
-        WhiteBlack_High |= (id >> 16);              // Set bits 0-3.
-    }
-    void SetPlayer (colorT col, idNumberT id) {
-        if (col == BLACK) return SetBlack(id);
-        return SetWhite(id);
-    }
-    void SetEvent (idNumberT id) {
-        EventID_Low = id & 0xFFFF;
-        // Clear bits 2-4 of EventSiteRnd_high: 31 = 00011111 binary.
-        EventSiteRnd_High = EventSiteRnd_High & 31;
-        EventSiteRnd_High |= ((id >> 16) << 5);
-    }
-    void SetSite (idNumberT id) {
-        SiteID_Low = id & 0xFFFF;
-        // Clear bits 2-4 of EventSiteRnd_high: 227 = 11100011 binary.
-        EventSiteRnd_High = EventSiteRnd_High & 227;
-        EventSiteRnd_High |= ((id >> 16) << 2);
-    }
-    void SetRound (idNumberT id) {
-        RoundID_Low = id & 0xFFFF;
-        // Clear bits 0-1 of EventSiteRnd_high: 252 = 11111100 binary.
-        EventSiteRnd_High = EventSiteRnd_High & 252;
-        EventSiteRnd_High |= (id >> 16);
-    }
-
 
     const char* GetWhiteName (const NameBase* nb) const {
         return nb->GetName (NAME_PLAYER, GetWhite()); 
@@ -195,183 +243,36 @@ public:
     const char* GetRoundName (const NameBase* nb) const {
         return nb->GetName (NAME_ROUND, GetRound());
     }
-
-    errorT SetWhiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) SetWhite (id);
-        return res;
-    }
-    errorT SetBlackName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) SetBlack (id);
-        return res;
-    }
-    errorT SetEventName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
-        if (res == OK) SetEvent (id);
-        return res;
-    }
-    errorT SetSiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
-        if (res == OK) SetSite (id);
-        return res;
-    }
-    errorT SetRoundName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
-        if (res == OK) SetRound (id);
-        return res;
-    }
-
-
-    dateT GetDate () const { return u32_low_20(Dates); }
-    uint  GetYear () const { return date_GetYear (GetDate()); }
-    uint  GetMonth() const { return date_GetMonth (GetDate()); }
-    uint  GetDay ()  const { return date_GetDay (GetDate()); }
-    dateT GetEventDate () const {
-        uint dyear = date_GetYear (GetDate());
-        dateT edate = u32_high_12 (Dates);
-        uint month = date_GetMonth (edate);
-        uint day = date_GetDay (edate);
-        uint year = date_GetYear(edate) & 7;
-        if (year == 0) { return ZERO_DATE; }
-        year = dyear + year - 4;
-        return DATE_MAKE (year, month, day);
-    }
-    resultT GetResult () const { return (VarCounts >> 12); }
-    eloT GetWhiteElo () const { return u16_low_12(WhiteElo); }
     eloT GetWhiteElo (const NameBase* nb)  const {
         eloT r = GetWhiteElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
         return r;
     }
-    eloT GetBlackElo () const { return u16_low_12(BlackElo); }
     eloT GetBlackElo (const NameBase* nb) const {
         eloT r = GetBlackElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
         return r;
     }
-    eloT GetElo(colorT col) const {
-        if (col == BLACK) return GetBlackElo();
-        return GetWhiteElo();
-    }
-    byte   GetWhiteRatingType () const { return u16_high_4 (WhiteElo); }
-    byte   GetBlackRatingType () const { return u16_high_4 (BlackElo); }
-    ecoT   GetEcoCode () const { return EcoCode; }
-    ushort GetNumHalfMoves () const { return NumHalfMoves; }
     byte   GetRating(const NameBase* nb) const;
 
-    void SetDate  (dateT date)   {
-        Dates = u32_set_low_20 (Dates, date);
-    }
-    void SetEventDate (dateT edate) {
-        uint codedDate = date_GetMonth(edate) << 5;
-        codedDate |= date_GetDay (edate);
-        uint eyear = date_GetYear (edate);
-        uint dyear = date_GetYear (GetDate());
-        // Due to a compact encoding format, the EventDate
-        // must be within a few years of the Date.
-        if ((eyear + 3) < dyear  ||  eyear > (dyear + 3)) {
-            codedDate = 0; 
-        } else {
-            codedDate |= (((eyear + 4 - dyear) & 7) << 9);
-        }
-        Dates = u32_set_high_12 (Dates, codedDate);
-    }
-    void SetResult (resultT res) {
-        VarCounts = (VarCounts & 0x0FFF) | (((ushort)res) << 12);
-    }
-    void SetWhiteElo (eloT elo)  {
-        WhiteElo = u16_set_low_12(WhiteElo, elo);
-    }
-    void SetBlackElo (eloT elo)  {
-        BlackElo = u16_set_low_12 (BlackElo, elo);
-    }
-    void SetWhiteRatingType (byte b) {
-        WhiteElo = u16_set_high_4 (WhiteElo, b);
-    }
-    void SetBlackRatingType (byte b) {
-        BlackElo = u16_set_high_4 (BlackElo, b);
-    }
-    void SetEcoCode (ecoT eco)   { EcoCode = eco; }
-    void SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
-
-
-    bool GetFlag (uint32_t mask) const {
-        uint32_t tmp = Flags;
-        if ((mask & 0xFFFF0000) != 0) {
-            // The if is not necessary but should be faster
-            tmp |= (Length_High & 0x3F) << 16;
-        }
-        return (tmp & mask) == mask;
-    }
-    bool GetStartFlag () const      { return (Flags & (1 << IDX_FLAG_START)) != 0; }
-    bool GetPromotionsFlag () const { return (Flags & (1 << IDX_FLAG_PROMO)) != 0; }
-    bool GetUnderPromoFlag() const  { return (Flags & (1 << IDX_FLAG_UPROMO)) != 0; }
+    bool GetStartFlag () const      { return GetFlag(1 << IDX_FLAG_START); }
+    bool GetPromotionsFlag () const { return GetFlag(1 << IDX_FLAG_PROMO); }
+    bool GetUnderPromoFlag() const  { return GetFlag(1 << IDX_FLAG_UPROMO); }
     bool GetCommentsFlag () const   { return (GetCommentCount() > 0); }
     bool GetVariationsFlag () const { return (GetVariationCount() > 0); }
     bool GetNagsFlag () const       { return (GetNagCount() > 0); }
-    bool GetDeleteFlag () const     { return (Flags & (1 << IDX_FLAG_DELETE)) != 0; }
+    bool GetDeleteFlag () const     { return GetFlag(1 << IDX_FLAG_DELETE); }
 
     static uint CharToFlag (char ch);
     static uint32_t CharToFlagMask (char flag);
     static uint32_t StrToFlagMask (const char* flags);
     uint GetFlagStr(char* dest, const char* flags) const;
 
-    uint GetVariationCount () const { return DecodeCount(VarCounts & 15); }
-    uint GetCommentCount () const   { return DecodeCount((VarCounts >> 4) & 15); }
-    uint GetNagCount () const       { return DecodeCount((VarCounts >> 8) & 15); }
-
-    matSigT GetFinalMatSig () const { return u32_low_24 (FinalMatSig); }
-    byte GetStoredLineCode () const { return u32_high_8 (FinalMatSig); }
-    const byte* GetHomePawnData () const { return HomePawnData; }
-    byte* GetHomePawnData () { return HomePawnData; }
-
-    void SetFlag (uint32_t flagMask, bool b) {
-        uint16_t flagLow = flagMask & 0xFFFF;
-        if (flagLow != 0) {
-            if (b) { 
-                Flags |= flagLow;
-            } else {
-                Flags &= ~flagLow;
-            }
-        }
-
-        byte flagHigh = (flagMask >> 16) & 0x3F;
-        if (flagHigh != 0) {
-            if (b) {
-                Length_High |= flagHigh;
-            } else {
-                Length_High &= ~flagHigh;
-            }
-        }
-    }
     void SetStartFlag (bool b)      { SetFlag(1 << IDX_FLAG_START, b); }
     void SetPromotionsFlag (bool b) { SetFlag(1 << IDX_FLAG_PROMO, b); }
     void SetUnderPromoFlag (bool b) { SetFlag(1 << IDX_FLAG_UPROMO, b); }
     void SetDeleteFlag (bool b)     { SetFlag(1 << IDX_FLAG_DELETE, b); }
     void clearFlags() { return SetFlag(IDX_MASK_ALLFLAGS, false); }
-
-    void SetVariationCount (uint x) {
-        VarCounts = (VarCounts & 0xFFF0U) | EncodeCount(x);
-    }
-    void SetCommentCount (uint x) {
-        VarCounts = (VarCounts & 0xFF0FU) | (EncodeCount(x) << 4);
-    }
-    void SetNagCount (uint x) {
-        VarCounts = (VarCounts & 0xF0FFU) | (EncodeCount(x) << 8);
-    }
-
-    void SetFinalMatSig (matSigT ms) {
-        FinalMatSig = u32_set_low_24 (FinalMatSig, ms);
-    }
-    void SetStoredLineCode (byte b)    {
-        FinalMatSig = u32_set_high_8 (FinalMatSig, b);
-    }
 
     enum {
         // IndexEntry Flag types:
@@ -415,220 +316,122 @@ private:
         static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
         return countCodes[x & 15];
     }
-
-// Bitmask functions for index entry decoding:
-    static byte u32_high_8( uint x )
-    {
-        return (byte)(x >> 24);
-    }
-
-    static uint u32_low_24( uint x )
-    {
-        return x & 0x00FFFFFF;
-    }
-
-    static uint u32_high_12( uint x )
-    {
-        return x >> 20;
-    }
-
-    static uint u32_low_20( uint x )
-    {
-        return x & 0x000FFFFF;
-    }
-
-    static byte u16_high_4( ushort x )
-    {
-        return (byte)(x >> 12);
-    }
-
-    static ushort u16_low_12( ushort x )
-    {
-        return x & 0x0FFF;
-    }
-
-    static uint u32_set_high_8( uint u, byte x )
-    {
-        return u32_low_24(u) | ((uint)x << 24);
-    }
-
-    static uint u32_set_low_24( uint u, uint x )
-    {
-        return (u & 0xFF000000) | (x & 0x00FFFFFF);
-    }
-
-    static uint u32_set_high_12( uint u, uint x )
-    {
-        return u32_low_20(u) | (x << 20);
-    }
-
-    static uint u32_set_low_20( uint u, uint x )
-    {
-        return (u & 0xFFF00000) | (x & 0x000FFFFF);
-    }
-
-    static ushort u16_set_high_4( ushort u, byte x )
-    {
-        return u16_low_12(u) | ((ushort)x << 12);
-    }
-
-    static ushort u16_set_low_12( ushort u, ushort x )
-    {
-        return (u & 0xF000) | (x & 0x0FFF);
-    }
 };
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::Init():
-//        Initialise a single index entry.
-//
-inline void
-IndexEntry::Init ()
-{
-    NumHalfMoves = 0;
-    WhiteID_Low = 0;
-    BlackID_Low = 0;
-    EventID_Low = 0;
-    SiteID_Low = 0;
-    RoundID_Low = 0;
-    WhiteBlack_High = 0;
-    EventSiteRnd_High = 0;
-    EcoCode = 0;
-    Dates = 0;
-    WhiteElo = 0;
-    BlackElo = 0;
-    FinalMatSig = 0;
-    Flags = 0;
-    VarCounts = 0;
-    Offset = 0;
-    Length_Low = 0;
-    Length_High = 0;
-    SetDate (ZERO_DATE);
-    SetEventDate (ZERO_DATE);
-    SetResult (RESULT_None);
-    SetEcoCode (ECO_None);
-    SetFinalMatSig (MATSIG_Empty);
-    for (uint i=0; i < HPSIG_SIZE; i++) {
-        HomePawnData[i] = 0;
-    }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::Read():
-//      Reads a single entry's values from an open index file.
-//
-template <class T> errorT
-IndexEntry::Read (T* file, versionT version)
-{
-    // Length of each gamefile record and its offset.
-    Offset = file->ReadFourBytes ();
-    Length_Low = file->ReadTwoBytes ();
-    Length_High = (version < 400) ? 0 : file->ReadOneByte();
-    Flags = file->ReadTwoBytes (); 
-
-    // White and Black player names:
-    WhiteBlack_High = file->ReadOneByte ();
-    WhiteID_Low = file->ReadTwoBytes ();
-    BlackID_Low = file->ReadTwoBytes ();
-
-    // Event, Site and Round names:
-    EventSiteRnd_High = file->ReadOneByte ();
-    EventID_Low = file->ReadTwoBytes ();
-    SiteID_Low = file->ReadTwoBytes ();
-    RoundID_Low = file->ReadTwoBytes ();
-
-    VarCounts = file->ReadTwoBytes();
-    EcoCode = file->ReadTwoBytes ();
-
-    // Date and EventDate are stored in four bytes.
-    Dates = file->ReadFourBytes();
-
-    // The two ELO ratings and rating types take 2 bytes each.
-    WhiteElo = file->ReadTwoBytes ();
-    BlackElo = file->ReadTwoBytes ();
-    if (GetWhiteElo() > MAX_ELO) { SetWhiteElo(MAX_ELO); }
-    if (GetBlackElo() > MAX_ELO) { SetBlackElo(MAX_ELO); }
-
-    FinalMatSig = file->ReadFourBytes ();
-    NumHalfMoves = file->ReadOneByte ();
-
-    // Read the 9-byte homePawnData array:
-    byte * pb = HomePawnData;
-    // The first byte of HomePawnData has high bits of the NumHalfMoves
-    // counter in its top two bits:
-    uint pb0 = file->ReadOneByte();
-    *pb = (pb0 & 63);
-    pb++;
-    NumHalfMoves = NumHalfMoves | ((pb0 >> 6) << 8);
-    for (uint i2 = 1; i2 < HPSIG_SIZE; i2++) {
-        *pb = file->ReadOneByte ();
-        pb++;
-    }
-
-    // Top 2 bits of HomePawnData[0] are for NumHalfMoves:
-    uint numMoves_High = HomePawnData[0];
-    HomePawnData[0] = HomePawnData[0] & 63;
-    numMoves_High >>= 6;
-    numMoves_High <<= 8;
-    NumHalfMoves = NumHalfMoves | numMoves_High;
-
-    return OK;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // IndexEntry::Write():
 //      Writes a single index entry to an open index file.
 //      INDEX_ENTRY_SIZE must be updated
-template <class T> errorT
-IndexEntry::Write (T* file, versionT version) const
-{
-    // Cannot write old-version index files:
-    if (version < 400) { return ERROR_FileVersion; }
+template <class T> errorT IndexEntry::Write(T* file, versionT version) const {
+	if (version < 400) // Cannot write old-version index files:
+		return ERROR_FileVersion;
 
-    version = 0;  // We don't have any version-specific code.
-    
-    file->WriteFourBytes (Offset);
-    
-    file->WriteTwoBytes (Length_Low);
-    file->WriteOneByte (Length_High);
-    file->WriteTwoBytes (Flags);
+	char buf[INDEX_ENTRY_SIZE];
+	char* buf_it = buf;
+	auto WriteOneByte = [&buf_it](uint8_t v) { *buf_it++ = v; };
+	auto WriteTwoBytes = [&WriteOneByte](uint16_t v) {
+		WriteOneByte(static_cast<uint8_t>(v >> 8));
+		WriteOneByte(static_cast<uint8_t>(v));
+	};
+	auto WriteFourBytes = [&WriteTwoBytes](uint32_t v) {
+		WriteTwoBytes(static_cast<uint16_t>(v >> 16));
+		WriteTwoBytes(static_cast<uint16_t>(v));
+	};
 
-    file->WriteOneByte (WhiteBlack_High);
-    file->WriteTwoBytes (WhiteID_Low);
-    file->WriteTwoBytes (BlackID_Low);
+	const IndexEntry* ie = this;
 
-    file->WriteOneByte (EventSiteRnd_High);
-    file->WriteTwoBytes (EventID_Low);
-    file->WriteTwoBytes (SiteID_Low);
-    file->WriteTwoBytes (RoundID_Low);
+	ASSERT(ie->GetOffset() < (1ULL << 32));
+	WriteFourBytes(static_cast<uint32_t>(ie->GetOffset()));
 
-    file->WriteTwoBytes (VarCounts);
-    file->WriteTwoBytes (EcoCode);
-    file->WriteFourBytes (Dates);
+	ASSERT(ie->GetLength() < (1ULL << 17));
+	WriteTwoBytes(static_cast<uint16_t>(ie->GetLength()));
+	uint8_t len_flags = static_cast<uint8_t>(ie->GetLength() >> 9) & 0x80;
+	len_flags |= static_cast<uint8_t>(ie->flags_ >> 16) & 0x3F;
+	WriteOneByte(len_flags);
+	WriteTwoBytes(static_cast<uint16_t>(ie->flags_));
 
-    // Elo ratings and rating types: 2 bytes each.
-    file->WriteTwoBytes (WhiteElo);
-    file->WriteTwoBytes (BlackElo);
+	// WhiteID and BlackID are 20-bit values, EventID and SiteID are
+	// 19-bit values, and RoundID is an 18-bit value.
+	// WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
+	// BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
+	// EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
+	// SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
+	// RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
+	ASSERT(std::max(ie->GetWhite(), ie->GetBlack()) < (1ULL << 20));
+	uint32_t WhiteID_Low = ie->GetWhite();
+	uint32_t BlackID_Low = ie->GetBlack();
+	uint32_t WhiteBlack_High = (WhiteID_Low & 0x0F0000) >> 12;
+	WhiteBlack_High |= (BlackID_Low & 0x0F0000) >> 16;
+	WriteOneByte(static_cast<uint8_t>(WhiteBlack_High));
+	WriteTwoBytes(static_cast<uint16_t>(WhiteID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(BlackID_Low));
 
-    file->WriteFourBytes (FinalMatSig);
-    file->WriteOneByte (NumHalfMoves & 255); 
+	ASSERT(std::max(ie->GetEvent(), ie->GetSite()) < (1ULL << 19));
+	ASSERT(ie->GetRound() < (1ULL << 18));
+	uint32_t EventID_Low = ie->GetEvent();
+	uint32_t SiteID_Low = ie->GetSite();
+	uint32_t RoundID_Low = ie->GetRound();
+	uint32_t EventSiteRnd_High = (EventID_Low & 0x070000) >> 11;
+	EventSiteRnd_High |= (SiteID_Low & 0x070000) >> 14;
+	EventSiteRnd_High |= (RoundID_Low & 0x030000) >> 16;
+	WriteOneByte(static_cast<uint8_t>(EventSiteRnd_High));
+	WriteTwoBytes(static_cast<uint16_t>(EventID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(SiteID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(RoundID_Low));
 
-    // Write the 9-byte homePawnData array:
-    const byte* pb = HomePawnData;
-    // The first byte of HomePawnData has high bits of the NumHalfMoves
-    // counter in its top two bits:
-    byte pb0 = *pb;
-    pb0 = pb0 | ((NumHalfMoves >> 8) << 6);
-    file->WriteOneByte (pb0);
-    pb++;
-    // write 8 bytes
-    for (uint i2 = 1; i2 < HPSIG_SIZE; i2++) {
-        file->WriteOneByte (*pb);
-        pb++;
-    }
+	uint16_t varCounts = ie->nVariations_ & 0x0F;
+	varCounts |= static_cast<uint16_t>(ie->nComments_ & 0x0F) << 4;
+	varCounts |= static_cast<uint16_t>(ie->nNags_ & 0x0F) << 8;
+	varCounts |= static_cast<uint16_t>(ie->GetResult() & 0x0F) << 12;
+	WriteTwoBytes(varCounts);
 
-    return OK;
+	WriteTwoBytes(ie->GetEcoCode());
+
+	// Due to a compact encoding format, the EventDate
+	// must be within a few years of the Date.
+	uint32_t date = ie->GetDate() & 0xFFFFF;
+	uint32_t edate = ie->GetEventDate();
+	uint32_t eyear = date_GetYear(edate);
+	uint32_t dyear = date_GetYear(date);
+	if ((eyear + 3) < dyear || eyear > (dyear + 3)) {
+		edate = ZERO_DATE;
+	} else {
+		eyear = (eyear + 4 - dyear) & 7;
+		edate = (eyear << 9) | (date_GetMonth(edate) << 5) | date_GetDay(edate);
+	}
+	WriteFourBytes((edate << 20) | date);
+
+	// Elo ratings and rating types: 2 bytes each.
+	uint16_t wElo = std::min(MAX_ELO, ie->GetWhiteElo());
+	wElo |= static_cast<uint16_t>(ie->GetWhiteRatingType()) << 12;
+	uint16_t bElo = std::min(MAX_ELO, ie->GetBlackElo());
+	bElo |= static_cast<uint16_t>(ie->GetBlackRatingType()) << 12;
+	WriteTwoBytes(wElo);
+	WriteTwoBytes(bElo);
+
+	ASSERT(ie->GetFinalMatSig() < (1ULL << 24));
+	ASSERT(ie->GetStoredLineCode() < (1ULL << 8));
+	uint32_t FinalMatSig = ie->GetFinalMatSig();
+	FinalMatSig |= static_cast<uint32_t>(ie->GetStoredLineCode()) << 24;
+	WriteFourBytes(FinalMatSig);
+
+	// The first byte of HomePawnData has high bits of the NumHalfMoves
+	// counter in its top two bits:
+	uint16_t nMoves = ie->GetNumHalfMoves();
+	ASSERT(nMoves < (1ULL << 10));
+	WriteOneByte(static_cast<uint8_t>(nMoves));
+	uint8_t pawnData0 = static_cast<uint8_t>(nMoves >> 8) << 6;
+
+	// Write the 9-byte homePawnData array:
+	const byte* pb = ie->GetHomePawnData();
+	pawnData0 |= *pb & 0x3F;
+	WriteOneByte(pawnData0);
+	std::copy(pb + 1, pb + HPSIG_SIZE, buf_it);
+
+	return file->sputn(buf, INDEX_ENTRY_SIZE) == INDEX_ENTRY_SIZE
+	           ? OK
+	           : ERROR_FileWrite;
 }
 
 inline byte IndexEntry::GetRating(const NameBase* nb) const {

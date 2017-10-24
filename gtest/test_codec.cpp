@@ -230,13 +230,22 @@ TEST_P(Test_Codec, addGame_native) {
 	makeDatabase(GetParam(), "addGame_native",
 	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
 		for (const auto& game : gameGenerator.getNative()) {
+			std::pair<errorT, idNumberT> names[] = {
+			    nb.getID(NAME_PLAYER, "Dummy White", 255, 1000),
+			    nb.getID(NAME_PLAYER, "Dummy Black", 255, 1000),
+			    nb.getID(NAME_EVENT, "Dummy Event", 255, 1000),
+			    nb.getID(NAME_SITE, "Dummy Site", 255, 1000),
+			    nb.getID(NAME_ROUND, "Dummy Round", 255, 1000)};
+			for (auto& e : names)
+				ASSERT_EQ(OK, e.first);
+
 			IndexEntry ie;
-			ie.Init();
-			ie.SetWhiteName(&nb, "Dummy White");
-			ie.SetBlackName(&nb, "Dummy Black");
-			ie.SetEventName(&nb, "Dummy Event");
-			ie.SetSiteName(&nb, "Dummy Site");
-			ie.SetRoundName(&nb, "Dummy Round");
+			std::memset(&ie, 0, sizeof(IndexEntry));
+			ie.SetWhite(names[0].second);
+			ie.SetBlack(names[1].second);
+			ie.SetEvent(names[2].second);
+			ie.SetSite(names[3].second);
+			ie.SetRound(names[4].second);
 			ASSERT_EQ(OK, codec->addGame(&ie, &nb, game.data(), game.size()));
 		}
 	});

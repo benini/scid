@@ -85,6 +85,8 @@ private:
         bool        dirty_;      // If true, Header needs rewriting to disk.
     } Header;
 
+    friend class CodecSCID4;
+
 public:
     Index()  { Init(); }
     Index(const Index&);
@@ -92,7 +94,6 @@ public:
     ~Index() { Clear(); }
 
     errorT Open(const char* filename, fileModeT fmode);
-    errorT ReadEntireFile (NameBase* nb, const Progress& progress);
     errorT Create(const char* filename);
     errorT Close() { return Clear(); }
 

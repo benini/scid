@@ -39,9 +39,9 @@ class CodecMemory : public CodecNative<CodecMemory> {
 	VectorChunked<byte, 24> v_;
 
 	enum : uint64_t {
-		LIMIT_GAMEOFFSET = 1ULL << 32,
-		LIMIT_GAMELEN = 1ULL << 17,
-		LIMIT_UNIQUENAMES = 1ULL << 19,
+		LIMIT_GAMEOFFSET = 1ULL << 46,
+		LIMIT_GAMELEN = 1ULL << 18,
+		LIMIT_UNIQUENAMES = 1ULL << 28,
 		LIMIT_NAMELEN = 255
 	};
 
@@ -113,13 +113,6 @@ public: // CodecNative CRTP
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_getNameID(nameT nt, const char* name) {
-		const size_t MAX_LEN = 255; // Max 255 chars;
-		if (nt == NAME_PLAYER)
-			return nb_->getID(nt, name, MAX_LEN, 1048575); // Maximum of 2^20 -1
-		if (nt == NAME_ROUND)
-			return nb_->getID(nt, name, MAX_LEN, 262143); // Maximum of 2^18 -1
-
-		ASSERT(nt == NAME_EVENT || nt == NAME_SITE);
 		return nb_->getID(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
 	}
 };

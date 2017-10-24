@@ -14,6 +14,7 @@
  * along with Scid. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "codec_scid4.h"
 #include "date.h"
 #include "indexentry.h"
 #include <algorithm>
@@ -205,9 +206,8 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		Buffer ie_buf;
 		{ // Build the current IndexEntry and serialize it to ie_buf
 			IndexEntry ie;
-			ie.Init();
 			setEntry(ie, v.cbegin());
-			chkEntry(ie, v.cbegin());
+			chkEntry(ie, v.cbegin(), true);
 			ie.Write(&ie_buf, 400);
 			ie_buf.ToStart();
 		}
@@ -226,16 +226,14 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 
 		{ // Read a current IndexEntry from ie_buf and check it
 			IndexEntry ie;
-			ie.Read(&ie_buf, 400);
+			CodecSCID4::decodeIndexEntry(ie_buf.getBuffer(), 400, &ie);
 			chkEntry(ie, v.cbegin());
-			ie_buf.ToStart();
 		}
 
 		{ // Read a current IndexEntry from ie_buf_v4_6 and check it
 			IndexEntry ie;
-			ie.Read(&ie_buf_v4_6, 400);
+			CodecSCID4::decodeIndexEntry(ie_buf_v4_6.getBuffer(), 400, &ie);
 			chkEntry(ie, v.cbegin());
-			ie_buf_v4_6.ToStart();
 		}
 
 		{ // Read a v4_6::IndexEntry from ie_buf and check it

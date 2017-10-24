@@ -18,7 +18,7 @@
  */
 
 /** @file
- * Implements the CodecScid4 class, which manages the databases encoded
+ * Implements the CodecSCID4 class, which manages the databases encoded
  * in Scid format version 4.
  */
 
@@ -29,17 +29,19 @@
 #include "filebuf.h"
 #include <limits>
 
-#if !CPP11_SUPPORT
-#define override
-#endif
-
 /**
- * This class manages databases encoded in Scid format v4.
+ * This class manages databases encoded in SCID format v4.
  */
-class CodecScid4 : public CodecNative<CodecScid4>  {
+class CodecSCID4 : public CodecNative<CodecSCID4>  {
 	std::string filename_;
 	FilebufAppend gfile_;
-	char gamecache_[128*1024];
+	char gamecache_[1ULL << 17];
+
+	enum : uint64_t {
+		LIMIT_GAMEOFFSET = 1ULL << 32,
+		LIMIT_GAMELEN = 1ULL << 17,
+		LIMIT_NAMELEN = 255
+	};
 
 public: // ICodecDatabase interface
 	Codec getType() override { return ICodecDatabase::SCID4; }
@@ -59,7 +61,7 @@ public: // ICodecDatabase interface
 	const byte* getGameData(uint64_t offset, uint32_t length) override {
 		if (offset >= gfile_.size())
 			return NULL;
-		if (length > sizeof(gamecache_))
+		if (length >= LIMIT_GAMELEN)
 			return NULL;
 
 		if (gfile_.pubseekpos(offset) == -1)
@@ -104,7 +106,7 @@ public: // ICodecDatabase interface
 		} else {
 			err = idx->Open(filename, fMode);
 			if (err == OK) err = nb->ReadEntireFile(filename, fMode);
-			if (err == OK) err = idx->ReadEntireFile(nb, progress);
+			if (err == OK) err = readIndex(progress);
 		}
 
 		return err;
@@ -126,19 +128,18 @@ public: // CodecNative interface
 		ASSERT(src != 0);
 		const char* data = reinterpret_cast<const char*>(src);
 
+		if (length >= LIMIT_GAMELEN)
+			return std::make_pair(ERROR_GameLengthLimit, 0);
+
 		// The Scid4 format uses 32-bits to store games' offset.
 		uint64_t offset = gfile_.size();
-		static const uint32_t MAXSZ = std::numeric_limits<uint32_t>::max();
-		if (offset >= MAXSZ || length >= MAXSZ - offset)
+		if (offset >= LIMIT_GAMEOFFSET - length)
 			return std::make_pair(ERROR_OffsetLimit, 0);
 
 		// The Scid4 format stores games into blocks of 128KB.
 		// If the current block does not have enough space, we fill it with
 		// random data and use the next one.
-		static const size_t GF_BLOCK = 128 * 1024;
-		if (length > GF_BLOCK)
-			return std::make_pair(ERROR_GameLengthLimit, 0);
-		size_t blockSpace = GF_BLOCK - (offset % GF_BLOCK);
+		uint64_t blockSpace = LIMIT_GAMELEN - (offset % LIMIT_GAMELEN);
 		if (blockSpace < length) {
 			errorT err = gfile_.append(data, blockSpace);
 			if (err != OK)
@@ -160,20 +161,220 @@ public: // CodecNative interface
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_getNameID(nameT nt, const char* name) {
-		const size_t MAX_LEN = 255; // Max 255 chars;
 		const idNumberT MAX_ID[] = {
 		    1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
 		    524287,  /* Event names:  Maximum of 2^19 -1 =   524,287 */
 		    524287,  /* Site names:   Maximum of 2^19 -1 =   524,287 */
 		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
 		};
-		ASSERT(nt < sizeof(MAX_ID) / sizeof(idNumberT));
-		return nb_->getID(nt, name, MAX_LEN, MAX_ID[nt]);
+		return nb_->getID(nt, name, LIMIT_NAMELEN, MAX_ID[nt]);
 	}
+
+	/**
+	 * Decode SCID4 (or SCID3) data into an IndexEntry object.
+	 * @param buf_it:  pointer to the buffer containing the data
+	 *                 (should contain INDEX_ENTRY_SIZE chars)
+	 * @param version: 400 for SCID4 or 300 for SCID3.
+	 * @param ie:      pointer to the IndexEntry object where the data will be
+	 *                 stored.
+	 */
+	static void decodeIndexEntry(const char* buf_it, versionT version,
+	                             IndexEntry* ie);
+
+private:
+	errorT readIndex(const Progress& progress);
 };
 
-#if !CPP11_SUPPORT
-#undef override
-#endif
+/**
+ * Reads the entire index file into memory.
+ * Invalid name IDs are replaced with "?" if possible.
+ * @param progress: a Progress object used for GUI communications.
+ * @returns OK if successful or an error code.
+ */
+inline errorT CodecSCID4::readIndex(const Progress& progress) {
+	gamenumT nUnknowIDs = 0;
+	idNumberT maxID[NUM_NAME_TYPES];
+	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+		maxID[nt] = nb_->GetNumNames(nt);
+	}
+	auto validateNameIDs = [&](IndexEntry* ie) {
+		if (ie->GetWhite() >= maxID[NAME_PLAYER]) {
+			auto unknown = dyn_getNameID(NAME_PLAYER, "?");
+			if (unknown.first != OK)
+				return false;
+			ie->SetWhite(unknown.second);
+			++nUnknowIDs;
+		}
+		if (ie->GetBlack() >= maxID[NAME_PLAYER]) {
+			auto unknown = dyn_getNameID(NAME_PLAYER, "?");
+			if (unknown.first != OK)
+				return false;
+			ie->SetBlack(unknown.second);
+			++nUnknowIDs;
+		}
+		if (ie->GetEvent() >= maxID[NAME_EVENT]) {
+			auto unknown = dyn_getNameID(NAME_EVENT, "?");
+			if (unknown.first != OK)
+				return false;
+			ie->SetEvent(unknown.second);
+			++nUnknowIDs;
+		}
+		if (ie->GetSite() >= maxID[NAME_SITE]) {
+			auto unknown = dyn_getNameID(NAME_SITE, "?");
+			if (unknown.first != OK)
+				return false;
+			ie->SetSite(unknown.second);
+			++nUnknowIDs;
+		}
+		if (ie->GetRound() >= maxID[NAME_ROUND]) {
+			auto unknown = dyn_getNameID(NAME_ROUND, "?");
+			if (unknown.first != OK)
+				return false;
+			ie->SetRound(unknown.second);
+			++nUnknowIDs;
+		}
+		return true;
+	};
+
+	auto idxFile = idx_->FilePtr;
+	auto version = idx_->Header.version;
+	auto nGames = idx_->GetNumGames();
+	idx_->entries_.resize(nGames);
+
+	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
+	for (gamenumT gNum = 0; idxFile->sgetc() != EOF; ++gNum) {
+		if (gNum == nGames)
+			return ERROR_CorruptData;
+
+		if ((gNum % 8192) == 0) {
+			if (!progress.report(gNum, nGames))
+				return ERROR_UserCancel;
+		}
+
+		char buf[INDEX_ENTRY_SIZE];
+		if (idxFile->sgetn(buf, nBytes) != nBytes)
+			return ERROR_FileRead;
+
+		IndexEntry* ie = idx_->FetchEntry(gNum);
+		decodeIndexEntry(buf, version, ie);
+
+		if (!validateNameIDs(ie))
+			return ERROR_CorruptData;
+
+		nb_->AddElo(ie->GetWhite(), ie->GetWhiteElo());
+		nb_->AddElo(ie->GetBlack(), ie->GetBlackElo());
+	}
+	progress.report(1, 1);
+
+	if (nGames != idx_->GetNumGames())
+		return ERROR_FileRead;
+
+	idx_->nInvalidNameId_ = nUnknowIDs;
+	return (nUnknowIDs == 0) ? OK : ERROR_NameDataLoss;
+}
+
+inline void CodecSCID4::decodeIndexEntry(const char* buf_it, versionT version,
+                                         IndexEntry* ie) {
+	auto ReadOneByte = [&buf_it]() {
+		uint8_t res = *buf_it++;
+		return res;
+	};
+	auto ReadTwoBytes = [&ReadOneByte]() {
+		uint16_t high = ReadOneByte();
+		uint16_t res = (high << 8) | ReadOneByte();
+		return res;
+	};
+	auto ReadFourBytes = [&ReadTwoBytes]() {
+		uint32_t high = ReadTwoBytes();
+		uint32_t res = (high << 16) | ReadTwoBytes();
+		return res;
+	};
+
+	// Offset of the gamefile record (32 bits).
+	ie->SetOffset(ReadFourBytes());
+
+	// Length of gamefile record for this game: 17 bits are used so the max
+	// length is 128 ko (131071).
+	// Lower bits of the extra byte are used for custom flags: LxFFFFFF ( L =
+	// length for long games, x = spare, F = custom flags)
+	uint32_t len_Low = ReadTwoBytes();
+	uint32_t len_flags = (version < 400) ? 0 : ReadOneByte();
+	ie->SetLength(((len_flags & 0x80) << 9) | len_Low);
+	uint32_t Flags = ReadTwoBytes();
+	ie->clearFlags();
+	ie->SetFlag(((len_flags & 0x3F) << 16) | Flags, true);
+
+	// WhiteID and BlackID are 20-bit values, EventID and SiteID are
+	// 19-bit values, and RoundID is an 18-bit value.
+	// WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
+	// BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
+	// EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
+	// SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
+	// RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
+	uint32_t WhiteBlack_High = ReadOneByte();
+	uint32_t WhiteID_Low = ReadTwoBytes();
+	ie->SetWhite(((WhiteBlack_High & 0xF0) << 12) | WhiteID_Low);
+	uint32_t BlackID_Low = ReadTwoBytes();
+	ie->SetBlack(((WhiteBlack_High & 0x0F) << 16) | BlackID_Low);
+	uint32_t EventSiteRnd_High = ReadOneByte();
+	uint32_t EventID_Low = ReadTwoBytes();
+	ie->SetEvent(((EventSiteRnd_High & 0xE0) << 11) | EventID_Low);
+	uint32_t SiteID_Low = ReadTwoBytes();
+	ie->SetSite(((EventSiteRnd_High & 0x1C) << 14) | SiteID_Low);
+	uint32_t RoundID_Low = ReadTwoBytes();
+	ie->SetRound(((EventSiteRnd_High & 0x03) << 16) | RoundID_Low);
+
+	// Counters for comments, variations, etc. (4 bits each)
+	// VarCounts also stores the result (4 bits).
+	uint32_t varCounts = ReadTwoBytes();
+	ie->SetRawVariationCount(varCounts & 0x0F);
+	ie->SetRawCommentCount((varCounts >> 4) & 0x0F);
+	ie->SetRawNagCount((varCounts >> 8) & 0x0F);
+	ie->SetResult((varCounts >> 12) & 0x0F);
+
+	// ECO code (16 bits)
+	ie->SetEcoCode(ReadTwoBytes());
+
+	// Date and EventDate are stored in four bytes.
+	// Due to a compact encoding format, the EventDate
+	// must be within a few years of the Date.
+	uint32_t date_edate = ReadFourBytes();
+	uint32_t date = date_edate & 0xFFFFF;
+	ie->SetDate(date);
+	uint32_t edate = date_edate >> 20;
+	uint32_t eyear = date_GetYear(edate) & 0x07;
+	if (eyear == 0) {
+		edate = ZERO_DATE;
+	} else {
+		eyear += date_GetYear(date);
+		eyear = (eyear < 4) ? 0 : eyear - 4;
+		edate = DATE_MAKE(eyear, date_GetMonth(edate), date_GetDay(edate));
+	}
+	ie->SetEventDate(edate);
+
+	// The two ELO ratings and rating types take 2 bytes each.
+	uint16_t whiteElo = ReadTwoBytes();
+	ie->SetWhiteElo(whiteElo & 0xFFF);
+	ie->SetWhiteRatingType(whiteElo >> 12);
+	uint16_t blackElo = ReadTwoBytes();
+	ie->SetBlackElo(blackElo & 0xFFF);
+	ie->SetBlackRatingType(blackElo >> 12);
+
+	// material of the final position in the game,
+	// and the StoredLineCode in the top 8 bits.
+	uint32_t finalMatSig = ReadFourBytes();
+	ie->SetFinalMatSig(finalMatSig & 0xFFFFFF);
+	ie->SetStoredLineCode(finalMatSig >> 24);
+
+	// Read the 9-byte homePawnData array:
+	// The first byte of HomePawnData has high bits of the NumHalfMoves
+	// counter in its top two bits:
+	uint16_t NumHalfMoves = ReadOneByte();
+	uint16_t pawnData0 = ReadOneByte();
+	ie->SetNumHalfMoves(((pawnData0 & 0xC0) << 2) | NumHalfMoves);
+	byte* pb = ie->GetHomePawnData();
+	*pb++ = pawnData0 & 0x3F;
+	std::copy_n(buf_it, HPSIG_SIZE - 1, pb);
+}
 
 #endif

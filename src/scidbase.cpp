@@ -37,7 +37,7 @@ ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
 		res = new CodecMemory();
 		break;
 	case ICodecDatabase::SCID4:
-		res = new CodecScid4();
+		res = new CodecSCID4();
 		break;
 	case ICodecDatabase::PGN:
 		res = new CodecPgn();
