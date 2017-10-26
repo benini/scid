@@ -404,6 +404,7 @@ namespace eval ::notify {
     ::windows::stats::Refresh
     set ::treeWin [winfo exists .treeWin$::curr_db]
     menuUpdateBases
+    if {[winfo exists .ecograph]} { ::windows::eco::update }
   }
 
   # To be called after modifying data in a database
@@ -411,5 +412,6 @@ namespace eval ::notify {
     ::windows::gamelist::DatabaseModified $dbase $filter
     ::windows::switcher::Refresh
     ::windows::stats::Refresh
+    if {[winfo exists .ecograph]} { ::windows::eco::update }
   }
 }

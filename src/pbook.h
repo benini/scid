@@ -1,123 +1,98 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  FILE:       pbook.h
-//              PBook (Position Book) class
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.3
-//
-//  Notice:     Copyright (c) 1999-2000  Shane Hudson.  All rights reserved.
-//
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-//
-//////////////////////////////////////////////////////////////////////
+/*
+ * Copyright (C) 1999-2000  Shane Hudson
+ * Copyright (C) 2017  Fulvio Benini
+
+ * This file is part of Scid (Shane's Chess Information Database).
+ *
+ * Scid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ *
+ * Scid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 #ifndef SCID_PBOOK_H
 #define SCID_PBOOK_H
 
 #include "common.h"
-#include "position.h"
-#include "strtree.h"
-#include <stdio.h>
+#include "misc.h"
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+class Position;
 
-class DString;
+/**
+ * A PBook is a collection of chess positions, each with the corresponding ECO
+ * code, a mnemonic name, and the list of moves to reach the position.
+ */
+class PBook {
+	struct bookDataT {
+		std::unique_ptr<char[]> compactStr;
+		std::unique_ptr<char[]> comment;
 
-#define PBOOK_SUFFIX ".epd"
-#define PBOOK_MAX_MATERIAL 32
+		bookDataT(char* compact, char* comm)
+		    : compactStr(compact), comment(comm) {}
+	};
+	std::unordered_multimap<unsigned, bookDataT> pos_;
+	std::vector<const char*> comments_;
+	unsigned LineCount = 0;
+	unsigned LeastMaterial = 32; // The smallest amount of material in any
+	                             // position in the book. In the range 0..32.
+public:
+	/**
+	 * Read a file with a list of ECO codes and creates a PBook object.
+	 * The file is composed of lines like this:
+	 * C50a "Italian Game"  1.e4 e5 2.Nf3 Nc6 3.Bc4 *
+	 * @param FileName: the name of the file to be read.
+	 * @returns
+	 * - on success, a @e std::pair containing OK and the pointer to the newly
+	 *   created object.
+	 * - on failure, a @e std::pair containing an error code and nullptr.
+	 */
+	static std::pair<errorT, std::unique_ptr<PBook> >
+	ReadEcoFile(const char* FileName);
 
-struct bookDataT {
-    uint    id;
-    char *  comment;
-    squareT enpassant;   // Original en passant square.
-};
+	/**
+	 * Retrieve an ECO string containing the ECO code and the mnemonic name.
+	 * @param pos: the position to search for.
+	 * @returns
+	 * - if the position is found, a @e std::pair with the range iterators for
+	 *   the string (string_view).
+	 * - a @e std::pair containing nullptr otherwise.
+	 */
+	std::pair<const char*, const char*> findECOstr(Position* pos) const;
 
-typedef nodeT<bookDataT>  bookNodeT;
+	/**
+	 * Retrieve the ECO code of a position.
+	 * @param pos: the position to search for.
+	 * @returns the corresponding ECO code or ECO_None if not found.
+	 */
+	ecoT findECO(Position* pos) const {
+		auto it = findECOstr(pos);
+		if (!it.first)
+			return ECO_None;
 
-typedef bookNodeT * bookNodePtrT;
+		char buf[7] = {0};
+		std::copy_n(it.first,
+		            std::min(ptrdiff_t(6), std::distance(it.first, it.second)),
+		            buf);
+		return eco_FromString(buf);
+	}
 
-class PBook
-{
-  private:
+	std::string EcoSummary(const char* ecoPrefix) const;
 
-    // We store 33 Trees, one for each possible total material count.
-    // This way, the average number of position comparisons is greatly
-    // reduced.
-    StrTree<bookDataT> * Tree [PBOOK_MAX_MATERIAL + 1];
-
-    bool    Altered;   // True if book is altered since loading or saving.
-    bool    ReadOnly;
-    char *  FileName;
-    uint    LineCount;
-    bookNodeT ** NodeList;
-    uint    NodeListCapacity;
-    uint    NodeListCount;
-    uint    NextIndex;   // For jumping to next pbook position.
-    uint SkipCount;      // Number of searches saved by LeastMaterial
-                         // comparison.
-    uint LeastMaterial;  // The smallest amount of material in any
-                         // position in the book. In the range 0..32.
-                         // It is a lower bound, and may be lower than
-                         // the actual value if nodes are deleted.
-
-    byte * HashFlags;
-
-    uint Stats_PositionBytes;  // Bytes in .epd file used for positions.
-    uint Stats_CommentBytes;   // Bytes in .epd file used for comments.
-
-    uint Stats_Lookups [PBOOK_MAX_MATERIAL + 1];
-    uint Stats_TotalLookups;
-    uint Stats_Inserts [PBOOK_MAX_MATERIAL + 1];
-    uint Stats_TotalInserts;
-
-    void SetHashFlag (Position * pos);
-    bool GetHashFlag (Position * pos);
-
-    void AddNodeToList (bookNodeT * node);
-
-  public:
-    void    Init();
-
-    PBook()   { Init(); }
-    ~PBook();
-
-    const char *  GetFileName () { return (FileName == NULL ? "" : FileName); }
-    void    SetFileName (const char * filename);
-    bool    IsAltered() { return Altered; }
-    bool    IsReadOnly() { return ReadOnly; }
-
-    uint    GetLineNumber (void) { return LineCount; }
-
-    uint    Size () {
-        uint total = 0;
-        for (uint i=0; i <= PBOOK_MAX_MATERIAL; i++) {
-            total += Tree[i]->Size();
-        }
-        return total;
-    }
-    uint    FewestPieces () { return LeastMaterial; }
-    uint    NumSkippedSearches() { return SkipCount; }
-
-    errorT  ReadFile();
-    errorT  WriteFile();
-    errorT  ReadEcoFile ();
-
-    errorT  Find (Position * pos, const char ** ptrComment);
-    errorT  FindNext (Position * pos, bool forwards);
-    errorT  Insert (Position * pos, const char * comment);
-    errorT  Delete (Position * pos);
-    errorT  FindOpcode (Position * pos, const char * opcode, DString * target);
-    errorT  FindSummary (Position * pos, DString * target);
-    uint    StripOpcode (const char * opcode);
-    void    EcoSummary (const char * ecoPrefix, DString * dstr);
-    void    DumpStats (FILE * fp);
-    uint    NumPositionBytes () { return Stats_PositionBytes; }
-    uint    NumCommentBytes ()  { return Stats_CommentBytes; }
-
+	unsigned GetLineNumber() const { return LineCount; }
+	unsigned FewestPieces() const { return LeastMaterial; }
+	size_t Size() const { return pos_.size(); }
 };
 
 #endif // SCID_PBOOK_H
-
-//////////////////////////////////////////////////////////////////////
-//  EOF: pbook.h
-//////////////////////////////////////////////////////////////////////
-

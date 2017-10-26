@@ -103,6 +103,14 @@ proc ::windows::eco::Refresh {{code "x"}} {
     ::createToplevelFinalize $w
   }
 
+  ::windows::eco::update
+}
+
+proc ::windows::eco::update {} {
+  set w .ecograph
+  set graph $w.pane.graph
+  set text $w.pane.text
+
   set height [expr {[winfo height $graph.c] - 50} ]
   set width [expr {[winfo width $graph.c] - 60} ]
 

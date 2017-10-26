@@ -19,7 +19,8 @@
 #include "namebase.h"
 #include "index.h"
 #include "game.h"
-#include "pbook.h"
+#include <string>
+class PBook;
 
 const uint OPTABLE_COLUMNS = 8;
 const uint OPTABLE_MIN_ROWS = 5;
@@ -146,7 +147,7 @@ class OpTable
     uint        Results [NUM_RESULT_TYPES];
     uint        TheoryResults [NUM_RESULT_TYPES];
     uint        TheoryCount;
-    char *      EcoStr;
+    std::string ECOstr_;
     sanStringT  ExcludeMove;
     char        DecimalChar;
 
@@ -194,7 +195,7 @@ class OpTable
         strStrip (ExcludeMove, '-');
         strStrip (ExcludeMove, '=');
     }
-    const char * GetEco (void) { return (EcoStr != NULL ? EcoStr : ""); }
+    const char* GetEco() const { return ECOstr_.c_str(); }
     void   SetNumRows (uint nrows) { TargetRows = nrows; }
     void   GuessNumRows (void);
     void   SetMaxTableLines (uint nlines) {

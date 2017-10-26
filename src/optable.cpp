@@ -15,6 +15,7 @@
 #include "optable.h"
 #include "crosstab.h"
 #include "dstring.h"
+#include "pbook.h"
 
 uint
 endgameTheme (matSigT msig)
@@ -477,7 +478,6 @@ OpTable::Init (const char * type, Game * g, PBook * ebook)
     Results[RESULT_Draw] = Results[RESULT_None] = 0;
     TheoryResults[RESULT_White] = TheoryResults[RESULT_Black] = 0;
     TheoryResults[RESULT_Draw] = TheoryResults[RESULT_None] = 0;
-    EcoStr = NULL;
     ExcludeMove[0] = 0;
 
     uint i;
@@ -494,11 +494,10 @@ OpTable::Init (const char * type, Game * g, PBook * ebook)
             g->MoveExitVariation();
             continue;
         }
-        if (ebook != NULL  &&  EcoStr == NULL) {
-            DString dstr;
-            if (ebook->FindOpcode (g->GetCurrentPos(), "eco", &dstr) == OK) {
-                EcoStr = strDuplicate (dstr.Data());
-            }
+        if (ebook != NULL && ECOstr_.empty()) {
+            auto eco = ebook->findECOstr(g->GetCurrentPos());
+            if (eco.first)
+                ECOstr_.append(eco.first, eco.second);
         }
         g->MoveBackup();
         simpleMoveT * sm = g->GetCurrentMove();
@@ -534,14 +533,6 @@ OpTable::Clear (void)
     Results[RESULT_Draw] = Results[RESULT_None] = 0;
     TheoryResults[RESULT_White] = TheoryResults[RESULT_Black] = 0;
     TheoryResults[RESULT_Draw] = TheoryResults[RESULT_None] = 0;
-    if (EcoStr != NULL) {
-#ifdef WINCE
-        my_Tcl_Free((char*) EcoStr);
-#else
-        delete[] EcoStr;
-#endif
-        EcoStr =  NULL;
-    }
     ExcludeMove[0] = 0;
 }
 

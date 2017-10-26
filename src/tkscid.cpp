@@ -60,14 +60,13 @@ const int MAX_BASES = 9;
 
 
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
-static PBook * ecoBook = NULL;         // eco classification pbook.
+static std::unique_ptr<PBook> ecoBook; // eco classification pbook.
 static SpellChecker* spellChk;         // Name correction.
 static OpTable * reports[2] = {NULL, NULL};
 
 void scid_Exit(void*) {
 	DBasePool::closeAll();
 	if (scratchGame != NULL) delete scratchGame;
-	if (ecoBook != NULL) delete ecoBook;
 	if (spellChk != NULL) delete spellChk;
 	for (size_t i = 0, n = sizeof(reports) / sizeof(reports[0]); i < n; i++) {
 		if (reports[i] != NULL) delete reports[i];
@@ -1305,7 +1304,7 @@ sc_eco (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_eco_read (cd, ti, argc, argv);
 
     case ECO_RESET:
-        if (ecoBook) { delete ecoBook; ecoBook = NULL; }
+        if (ecoBook) { ecoBook = NULL; }
         break;
 
     case ECO_SIZE:
@@ -1421,13 +1420,10 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         // match in the ECO book. Stop at the first match found since it
         // is the deepest.
 
-        DString commentStr;
         ecoT ecoCode = ECO_None;
-
         do {
-            if (ecoBook->FindOpcode (g->GetCurrentPos(), "eco",
-                                     &commentStr) == OK) {
-                ecoCode = eco_FromString (commentStr.Data());
+            ecoCode = ecoBook->findECO(g->GetCurrentPos());
+            if (ecoCode != ECO_None) {
                 if (! extendedCodes) {
                     ecoCode = eco_BasicCode (ecoCode);
                 }
@@ -1465,8 +1461,6 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    int found = 0;
-    uint ply = 0;
     uint returnPly = 0;
     if (argc > 2) {
         if (argc == 3  &&  strIsPrefix (argv[2], "ply")) {
@@ -1479,30 +1473,25 @@ sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     db->game->SaveState();
     db->game->MoveToPly (0);
-    DString ecoStr;
 
     do {} while (db->game->MoveForward() == OK);
+    ecoT ecoCode = ECO_None;
     do {
-        if (ecoBook->FindOpcode (db->game->GetCurrentPos(), "eco",
-                                 &ecoStr) == OK) {
-            found = 1;
-            ply = db->game->GetCurrentPly();
-            break;
-        }
-    } while (db->game->MoveBackup() == OK);
+        ecoCode = ecoBook->findECO(db->game->GetCurrentPos());
+    } while (ecoCode == ECO_None && db->game->MoveBackup() == OK);
 
-    if (found) {
-        if (returnPly) {
-            setUintResult (ti, ply);
-        } else {
-            ecoT ecoCode = eco_FromString (ecoStr.Data());
-            ecoStringT extEco;
-            eco_ToExtendedString(ecoCode, extEco);
-            Tcl_AppendResult(ti, extEco, NULL);
-        }
-    }
-    db->game->RestoreState ();
-    return TCL_OK;
+    auto ply = db->game->GetCurrentPly();
+    db->game->RestoreState();
+
+    if (ecoCode == ECO_None)
+        return UI_Result(ti, OK);
+
+    if (returnPly)
+        return UI_Result(ti, OK, ply);
+
+    ecoStringT extEco;
+    eco_ToExtendedString(ecoCode, extEco);
+    return UI_Result(ti, OK, extEco);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1513,12 +1502,10 @@ int
 sc_eco_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc < 3) { return TCL_OK; }
-    if (ecoBook) { delete ecoBook; }
-    ecoBook = new PBook;
-    ecoBook->SetFileName (argv[2]);
-    errorT err = ecoBook->ReadEcoFile();
-    if (err != OK) {
-        if (err == ERROR_FileOpen) {
+    ecoBook = nullptr;
+    auto book = PBook::ReadEcoFile(argv[2]);
+    if (book.first != OK) {
+        if (book.first == ERROR_FileOpen) {
             Tcl_AppendResult (ti, "Unable to open the ECO file:\n",
                               argv[2], NULL);
         } else {
@@ -1527,10 +1514,9 @@ sc_eco_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             Tcl_AppendResult (ti, "\n\nError at line ", NULL);
             appendUintResult (ti, ecoBook->GetLineNumber());
         }
-        delete ecoBook;
-        ecoBook = NULL;
-        return TCL_ERROR;
+        return book.first;
     }
+    ecoBook = std::move(book.second);
     return setUintResult (ti, ecoBook->Size());
 }
 
@@ -1550,9 +1536,7 @@ sc_eco_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     DString * dstr = new DString;
     DString * temp = new DString;
     bool inMoveList = false;
-    ecoBook->EcoSummary (argv[2], temp);
-    translateECO (ti, temp->Data(), dstr);
-    temp->Clear();
+    translateECO(ti, ecoBook->EcoSummary(argv[2]).c_str(), dstr);
     if (color) {
         DString * oldstr = dstr;
         dstr = new DString;
@@ -3240,6 +3224,14 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         } else if (strIsPrefix (argv[arg], "duplicate")) {
             uint dupGameNum = db->getDuplicates(db->gameNumber);
             return setUintResult (ti, dupGameNum);
+        } else if (strIsPrefix(argv[arg], "ECO")) {
+            std::string str;
+            if (ecoBook) {
+                auto ecoStr = ecoBook->findECOstr(db->game->GetCurrentPos());
+                if (ecoStr.first)
+                    str.append(ecoStr.first, ecoStr.second);
+            }
+            return UI_Result(ti, OK, str);
         }
         arg++;
     }
@@ -3568,20 +3560,19 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Now check ECO book for the current position:
     if (ecoBook) {
-        DString ecoComment;
-        if (ecoBook->FindOpcode (db->game->GetCurrentPos(), "eco",
-                                 &ecoComment) == OK) {
-            ecoT eco = eco_FromString (ecoComment.Data());
+        auto ecoStr = ecoBook->findECOstr(db->game->GetCurrentPos());
+        if (ecoStr.first) {
+            std::string ecoComment(ecoStr.first, ecoStr.second);
+            ecoT eco = eco_FromString(ecoComment.c_str());
             ecoStringT estr;
             eco_ToExtendedString (eco, estr);
             uint len = strLength (estr);
             if (len >= 4) { estr[3] = 0; }
-            DString * tempDStr = new DString;
-            translateECO (ti, ecoComment.Data(), tempDStr);
+            DString tempDStr;
+            translateECO (ti, ecoComment.c_str(), &tempDStr);
             Tcl_AppendResult (ti, "<br>ECO:  <blue><run ::windows::eco::Refresh ",
-                              estr, ">", tempDStr->Data(),
+                              estr, ">", tempDStr.Data(),
                               "</run></blue>", NULL);
-            delete tempDStr;
         }
     }
     if (showFEN) {
@@ -3906,8 +3897,7 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Game* g = base->game;
     if (ecoBook) {
         while (g->MoveForward() == OK) {}
-        DString ecoStr;
-        while (ecoBook->FindOpcode (g->GetCurrentPos(), "eco", &ecoStr) != OK) {
+        while (!ecoBook->findECOstr(g->GetCurrentPos()).first) {
             if (g->MoveBackup() != OK) break;
         }
     }
@@ -5946,14 +5936,9 @@ sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT bestEco = ECO_None;
         ecoT secondBestEco = ECO_None;
         if (ecoBook != NULL) {
-            DString ecoStr;
             for (uint i=0; i < mlist.Size(); i++) {
-                ecoT eco = ECO_None;
                 pos->DoSimpleMove (mlist.Get(i));
-                ecoStr.Clear();
-                if (ecoBook->FindOpcode (pos, "eco", &ecoStr) == OK) {
-                    eco = eco_FromString (ecoStr.Data());
-                }
+                ecoT eco = ecoBook->findECO(pos);
                 pos->UndoSimpleMove (mlist.Get(i));
                 if (eco >= bestEco) {
                     secondBestEco = bestEco;
@@ -8381,7 +8366,7 @@ sc_report_create (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (reports[reportType] != NULL) {
         delete reports[reportType];
     }
-    OpTable * report = new OpTable (reportTypeName[reportType], db->game, ecoBook);
+    OpTable* report = new OpTable(reportTypeName[reportType], db->game, ecoBook.get());
     reports[reportType] = report;
     report->SetMaxTableLines (maxLines);
     report->SetExcludeMove (excludeMove);
@@ -8836,10 +8821,8 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     	} // end: for
     }
 
-    DString dstr;
     treeT* tree = &(base->tree);
     treeNodeT* node = tree->node;
-
     if (!foundInCache) {
         // Now we generate the score of each move: it is the expected score per
         // 1000 games. Also generate the ECO code of each move.
@@ -8855,10 +8838,9 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 if (node->sm.from != NULL_SQUARE) {
                     tmpPos.DoSimpleMove (&(node->sm));
                 }
-                dstr.Clear();
-                if (ecoBook->FindOpcode (&tmpPos, "eco", &dstr) == OK) {
-                    node->ecoCode = eco_FromString (dstr.Data());
-                }
+                ecoT eco = ecoBook->findECO(&tmpPos);
+                if (eco != ECO_None)
+                    node->ecoCode = eco;
             }
         }
 

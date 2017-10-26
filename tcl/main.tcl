@@ -221,9 +221,15 @@ proc updateStatusBar {} {
       append statusBar ": $number.$move\n"
     }
 
-    set result [sc_game info result]
-    if {$result == "=-="} { set result "\u00BD-\u00BD" }
-    append statusBar "[sc_game info date] - [sc_game info event] ($result)"
+    set eco "[sc_game info ECO]"
+    append statusBar "$eco"
+
+    if {$move == "" || $eco == ""} {
+      set result [sc_game info result]
+      if {$result == "=-="} { set result "\u00BD-\u00BD" }
+      if {$eco != ""} { append statusBar "\n" }
+      append statusBar "[sc_game info date] - [sc_game info event] ($result)"
+    }
     ::board::setInfo .main.board "$statusBar"
 }
 
