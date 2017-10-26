@@ -90,17 +90,15 @@ protected:
 
 TEST_F(Test_StrLib, strTrimRight_correctness) {
 	for (auto& e : data_) {
-		auto n = strTrimRight(e.input1);
-		EXPECT_EQ(e.nTrimmed, n);
+		strTrimRight(e.input1);
 		EXPECT_STREQ(e.expected, e.input1);
 	}
 }
 
 TEST_F(Test_StrLib, strTrimRight_consistency) {
 	for (auto& e : data_) {
-		auto n = strTrimRight(e.input1);
-		auto n_old = v4_6_2::strTrimRight(e.input2, WHITESPACE);
-		EXPECT_EQ(n_old, n);
+		strTrimRight(e.input1);
+		::v4_6_2::strTrimRight(e.input2, " \t\r\n");
 		EXPECT_STREQ(e.input2, e.input1);
 	}
 }

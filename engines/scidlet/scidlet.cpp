@@ -644,7 +644,7 @@ readInput (Engine * engine)
     // Get the next command, checking if there is an unfinished one.
     if (unfinishedCommand[0] == 0) {
         fgets (newCommand, 512, stdin);
-        strTrimRight (newCommand, "\n");
+        strTrimRight (newCommand, "\n", 1);
         if (isLogging()) {
             fprintf (logFile, "scidlet> %s\n", newCommand);
         }

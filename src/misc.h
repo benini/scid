@@ -19,6 +19,7 @@
 #define SCID_MISC_H
 
 #include "common.h"
+#include <algorithm>
 #include <string>
 #include <cstring>
 #include <stdio.h>
@@ -163,14 +164,9 @@ const char * strFirstChar (const char * target, char matchChar);
 const char * strLastChar (const char * target, char matchChar);
 void   strStrip (char * str, char ch);
 
-static const char WHITESPACE[6] = " \t\r\n";
 const char * strTrimLeft (const char * target, const char * trimChars);
 inline const char * strTrimLeft (const char * target) {
-    return strTrimLeft (target, WHITESPACE);
-}
-uint   strTrimRight (char * target, const char * trimChars);
-inline uint strTrimRight (char * target) {
-    return strTrimRight (target, WHITESPACE);
+    return strTrimLeft (target, " \t\r\n");
 }
 uint   strTrimSuffix (char * target, char suffixChar);
 void   strTrimDate (char * str);
@@ -443,19 +439,19 @@ strLength (const char * str)
 //      end characters that match the trimChars.
 //      Returns the number of characters trimmed.
 //      E.g., strTrimRight("abcyzyz", "yz") would leave the string
-//      as "abc" and return 4.
-inline uint strTrimRight (char* target, const char* trimChars)
-{
-	int oldSz = strlen(target);
-	int sz = oldSz;
-	while (--sz >= 0) {
-		if (std::strchr(trimChars, target[sz]) == 0) break;
+//      as "abc".
+inline void strTrimRight(char* target, const char* trimChars, size_t nTrimCh) {
+	const char* endTrim = trimChars + nTrimCh;
+	size_t iCh = strlen(target);
+	for (; iCh > 0; --iCh) {
+		if (std::find(trimChars, endTrim, target[iCh - 1]) == endTrim)
+			break;
 	}
-	if (++sz == oldSz) return 0;
-	target[sz] = 0;
-	return oldSz - sz;
+	target[iCh] = '\0';
 }
-
+inline void strTrimRight(char* target) {
+	return strTrimRight(target, " \t\r\n", 4);
+}
 
 //////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
