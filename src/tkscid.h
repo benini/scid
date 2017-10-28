@@ -62,7 +62,6 @@ int sc_game_tags_set  (TCL_ARGS);
 int sc_game_tags_reload (TCL_ARGS);
 int sc_game_tags_share (TCL_ARGS);
 
-int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
 int sc_info_suffix    (TCL_ARGS);
 int sc_info_tb        (TCL_ARGS);

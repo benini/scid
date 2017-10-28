@@ -29,7 +29,6 @@
 #include "dstring.h"
 #include "engine.h"
 #include "game.h"
-#include "mfile.h"
 #include "optable.h"
 #include "pbook.h"
 #include "pgnparse.h"
@@ -5037,12 +5036,12 @@ int
 sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "decimal", "fsize",
+        "clipbase", "decimal",
         "html", "limit", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
-        INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE,
+        INFO_CLIPBASE, INFO_DECIMAL,
         INFO_HTML, INFO_LIMIT, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
@@ -5061,9 +5060,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return UI_Result(ti, OK, std::string(1, decimalPointChar));
         }
         break;
-
-    case INFO_FSIZE:
-        return sc_info_fsize (cd, ti, argc, argv);
 
     case INFO_HTML:
         if (argc >= 3) {
@@ -5129,101 +5125,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     };
 
     return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_info_fsize:
-//    Given the name of a .si3, .si, .pgn or .pgn.gz file, this command
-//    returns the number of games in that file. For large PGN files,
-//    the value returned is only an estimate.
-//    To distinguish estimates from correct sizes, an estimate is
-//    returned as a negative number.
-int
-sc_info_fsize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_info fsize <filename>");
-    }
-    const char * fname = argv[2];
-    const char * lastSuffix = strFileSuffix (fname);
-    uint fsize = 0;
-    bool isEpdFile = false;
-    bool isRepFile = false;
-
-    if (strAlphaContains (fname, ".epd")) { isEpdFile =  true; }
-    if (strAlphaContains (fname, ".sor")) { isRepFile =  true; }
-
-    if (lastSuffix != NULL  &&  strEqual (lastSuffix, OLD_INDEX_SUFFIX)) {
-        fsize = rawFileSize (fname);
-        fsize -= OLD_INDEX_HEADER_SIZE;
-        fsize = fsize / OLD_INDEX_ENTRY_SIZE;
-        return setUintResult (ti, fsize);
-    }
-    if (lastSuffix != NULL  &&  strEqual (lastSuffix, INDEX_SUFFIX)) {
-        fsize = rawFileSize (fname);
-        fsize -= INDEX_HEADER_SIZE;
-        fsize = fsize / INDEX_ENTRY_SIZE;
-        return setUintResult (ti, fsize);
-    }
-
-    // Estimate size for PGN files, by reading the first 64 kb
-    // of the file and counting the number of games seen:
-        fsize = rawFileSize (fname);
-
-    MFile pgnFile;
-    if (pgnFile.Open (fname, FMODE_ReadOnly) != OK) {
-        return errorResult (ti, "Error opening file");
-    }
-
-    const uint maxBytes = 65536;
-    char * buffer =  new char [maxBytes];
-    uint bytes = maxBytes - 1;
-    if (bytes > fsize) { bytes = fsize; }
-    if (pgnFile.ReadNBytes (buffer, bytes) != OK) {
-        delete[] buffer;
-        return errorResult (ti, "Error reading file");
-    }
-
-    buffer [bytes] = 0;
-    const char * s = buffer;
-    int ngames = 0;
-
-    for (uint i=0; i < bytes; i++) {
-        if (isEpdFile) {
-            // EPD file: count positions, one per line.
-            if (*s == '\n') { ngames++; }
-        } else if (isRepFile) {
-            // Repertoire file: count include (+) and exclude (-) lines.
-            if (*s == ' '  ||  *s == '\n') {
-                if (s[1] == '+'  &&  s[2] == ' ') { ngames++; }
-                if (s[1] == '-'  &&  s[2] == ' ') { ngames++; }
-            }
-        } else {
-            // PGN file: count Result tags.
-            if (*s == '['  &&  strIsPrefix ("Result ", s+1)) { ngames++; }
-        }
-        s++;
-    }
-
-    // If the file is larger than maxBytes, this was only a sample
-    // so return an estimate to the nearest 10 or 100 or 1000 games:
-    if (fsize > bytes) {
-        ngames = (uint) ((double)ngames * (double)fsize / (double)bytes);
-        if (ngames > 10000) {
-            ngames = ((ngames + 500) / 1000) * 1000;
-        } else if (ngames > 1000) {
-            ngames = ((ngames + 50) / 100) * 100;
-        } else {
-            ngames = ((ngames + 5) / 10) * 10;
-        }
-        ngames = -ngames;
-    }
-#ifdef WINCE
-        my_Tcl_Free((char*) buffer);
-#else
-        delete[] buffer;
-#endif
-    return setIntResult (ti, ngames);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -17,7 +17,6 @@
 #include "sqmove.h"
 #include <stdio.h>
 #include <ctype.h>     // For isspace() function.
-#include <sys/stat.h>  // Needed for fileSize() function.
 #include <cmath>
 
 // Table of direction between any two chessboard squares
@@ -749,38 +748,6 @@ strUniqueExactMatch (const char * keyStr, const char ** strTable, bool exact)
     }
     // Otherwise, return the match found:
     return index;
-}
-
-
-//////////////////////////////////////////////////////////////////////
-//   FILE I/O Routines
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// fileSize():
-//    Computes the plain (uncompressed) size of the named file,
-//    using one of the other FileSize functions here.
-uint
-fileSize (const char * name, const char * suffix)
-{
-    fileNameT fname;
-    strCopy (fname, name);
-    strAppend (fname, suffix);
-    return rawFileSize (fname);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// rawFileSize():
-//    Uses the stat() system call to get the size of the file.
-//    Returns 0 if any error occurs.
-uint
-rawFileSize (const char * name)
-{
-    struct stat statBuf;    // Defined in <sys/stat.h>
-    if (stat (name, &statBuf) != 0) {
-        return 0;
-    }
-    return (uint) statBuf.st_size;
 }
 
 //////////////////////////////////////////////////////////////////////

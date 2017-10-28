@@ -453,14 +453,6 @@ inline void strTrimRight(char* target) {
 	return strTrimRight(target, " \t\r\n", 4);
 }
 
-//////////////////////////////////////////////////////////////////////
-//   FILE I/O Routines.
-// TODO: remove this functions
-
-uint    fileSize (const char * name, const char * suffix);
-uint    rawFileSize (const char * name);
-uint    gzipFileSize (const char * name);
-
 #endif  // #ifdef SCID_MISC_H
 
 //////////////////////////////////////////////////////////////////////
