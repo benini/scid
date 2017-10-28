@@ -1197,7 +1197,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     MakeRows();
     NumNotes = 0;
     const uint cellBytes = 9;
-    char cell [16];
+    char cell [18];
     const char * hrule = "-------------------------------------------------------------------------------\n";
     DString * dtemp = new DString;
 

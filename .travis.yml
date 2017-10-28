@@ -69,15 +69,15 @@ script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
   - cd $TRAVIS_BUILD_DIR
-  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON $SCID_TH && make
+  - mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON $SCID_TH && make
   - if [ "${CXX}" == "clang++-4.0" ]; then run-clang-tidy-4.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src; fi
   - cd $TRAVIS_BUILD_DIR
   - mkdir Testing && cd Testing
   - if [ "${CXX}" == "clang++-4.0" ]; then
-      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=address,undefined,integer" $SCID_TH;
+      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=address,undefined,integer" $SCID_TH;
     else
       if [ "${CXX}" == "g++-7" ]; then
-        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -fsanitize=thread,undefined -fuse-ld=gold" $SCID_TH;
+        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=thread,undefined -fuse-ld=gold" $SCID_TH;
       else
         cmake ../gtest;
       fi

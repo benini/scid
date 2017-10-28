@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.2)
 project(scid)
 set(CPACK_PACKAGE_VERSION 4.6.5)
 set(
@@ -24,6 +24,7 @@ include(CPack)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(MSVC)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
@@ -93,7 +94,7 @@ install(TARGETS scidlet DESTINATION bin)
 if(NOT CMAKE_CXX_FLAGS)
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
+  else(NOT CMAKE_BUILD_TYPE)
+    target_compile_options(scid PRIVATE -Wall PRIVATE -Wextra PRIVATE -pedantic PRIVATE -Werror)
   endif(NOT CMAKE_BUILD_TYPE)
-
-  target_compile_options(scid PRIVATE -Wall PRIVATE -Wextra PRIVATE -pedantic)
 endif()

@@ -110,7 +110,7 @@ public:
 		ASSERT(ListSize < MAX_LEGAL_MOVES);
 		Moves[ListSize++] = sm;
 	}
-	simpleMoveT* Get(uint index) {
+	simpleMoveT* Get(size_t index) {
 		ASSERT(index < ListSize);
 		return &(Moves[index]);
 	}

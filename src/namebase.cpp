@@ -172,10 +172,14 @@ errorT NameBase::WriteNameFile(const char* filename, const Index* idx) {
     file.WriteFourBytes(0);
     // ***
 
-    file.WriteThreeBytes(names_[NAME_PLAYER].size());
-    file.WriteThreeBytes(names_[NAME_EVENT].size());
-    file.WriteThreeBytes(names_[NAME_SITE].size());
-    file.WriteThreeBytes(names_[NAME_ROUND].size());
+    ASSERT(1ULL << 24 > names_[NAME_PLAYER].size());
+    ASSERT(1ULL << 24 > names_[NAME_EVENT].size());
+    ASSERT(1ULL << 24 > names_[NAME_SITE].size());
+    ASSERT(1ULL << 24 > names_[NAME_ROUND].size());
+    file.WriteThreeBytes( (uint32_t) names_[NAME_PLAYER].size());
+    file.WriteThreeBytes( (uint32_t) names_[NAME_EVENT].size());
+    file.WriteThreeBytes( (uint32_t) names_[NAME_SITE].size());
+    file.WriteThreeBytes( (uint32_t) names_[NAME_ROUND].size());
 
     // *** Compatibility ***
     // even if maxFrequency is no longer used we still need to write these bytes
@@ -215,7 +219,7 @@ errorT NameBase::WriteNameFile(const char* filename, const Index* idx) {
             // ***
 
             ASSERT(strlen(name) < 256);
-            byte length = strlen(name);
+            byte length = static_cast<byte>(strlen(name));
             file.WriteOneByte(length);
             byte prefix = 0;
             if (first_name) {

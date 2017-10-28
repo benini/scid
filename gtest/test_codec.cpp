@@ -219,7 +219,7 @@ class Test_Codec : public ::testing::TestWithParam<ICodecDatabase::Codec> {};
 
 TEST_P(Test_Codec, addGame_game) {
 	makeDatabase(GetParam(), "addGame_game",
-	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+	             [](ICodecDatabase* codec, Index&, NameBase&) {
 		for (auto& game : gameGenerator.get()) {
 			ASSERT_EQ(OK, codec->addGame(game.get()));
 		}
@@ -228,7 +228,7 @@ TEST_P(Test_Codec, addGame_game) {
 
 TEST_P(Test_Codec, addGame_native) {
 	makeDatabase(GetParam(), "addGame_native",
-	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+	             [](ICodecDatabase* codec, Index&, NameBase& nb) {
 		for (const auto& game : gameGenerator.getNative()) {
 			std::pair<errorT, idNumberT> names[] = {
 			    nb.getID(NAME_PLAYER, "Dummy White", 255, 1000),
@@ -253,7 +253,7 @@ TEST_P(Test_Codec, addGame_native) {
 
 TEST_P(Test_Codec, saveGame_game) {
 	makeDatabase(GetParam(), "saveGame_game",
-	             [](ICodecDatabase* codec, Index& idx, NameBase& nb) {
+	             [](ICodecDatabase* codec, Index&, NameBase&) {
 		const auto& games = gameGenerator.get();
 		for (size_t i = 0, n = games.size(); i < n; ++i) {
 			ASSERT_EQ(OK, codec->addGame(games[0].get()));

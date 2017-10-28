@@ -361,6 +361,7 @@ std::vector<gamenumT> collectGames(HFilter& filter, filterOpT& filterOp) {
 	case FILTEROP_RESET:
 		filter->includeAll();
 		filterOp = FILTEROP_AND;
+		/* FALLTHRU */
 	case FILTEROP_AND:
 		res.resize(filter->size());
 		std::copy(filter->begin(), filter->end(), res.begin());

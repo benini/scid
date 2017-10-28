@@ -190,7 +190,7 @@ private:
 				if (nt_ == NAME_PLAYER) {
 					sp_.pInfo_.push_back(data.extra);
 				}
-				// go in SPELL_ALIAS:
+				/* FALLTHRU */
 			case SPELL_ALIAS:
 				if (nameIdx_ == -1) {
 					return ERROR_CorruptData;
