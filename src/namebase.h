@@ -49,9 +49,7 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
 class NameBase
 {
     static const char* NAMEBASE_MAGIC;
-    static const char* NAMEBASE_SUFFIX;
 
-    std::string filename_;
     std::vector<const char*> names_[NUM_NAME_TYPES];
     std::vector<eloT> eloV_;
     struct idxCmp {
@@ -73,26 +71,19 @@ class NameBase
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
-    bool modified_;
 
 public:
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
-    static const char* Suffix() { return NAMEBASE_SUFFIX; }
 
-    NameBase() : modified_(false) {}
+    NameBase() = default;
+    NameBase(const NameBase&) = delete;
+    NameBase& operator=(const NameBase&) = delete;
     ~NameBase() { Clear(); }
     void Clear();
 
-    errorT    Create (const char* filename);
     errorT    ReadEntireFile (const char* filename, fileModeT fmode);
-    errorT flush(const Index* idx) {
-        errorT err = OK;
-        if (modified_ && !filename_.empty()) err = WriteNameFile(idx);
-        if (err == OK) modified_ = false;
-        return err;
-    }
-    void hackedNameFreq() { modified_ = true; }
+    errorT WriteNameFile(const char* filename, const Index* idx);
 
     const char* GetName (nameT nt, idNumberT id) const { return names_[nt][id]; }
     eloT GetElo (idNumberT id) const { return eloV_[id]; }
@@ -152,7 +143,6 @@ public:
 		if (nt == NAME_PLAYER)
 			eloV_.push_back(0);
 
-		modified_ = true;
 		return std::make_pair(OK, newID);
 	}
 
@@ -175,11 +165,6 @@ public:
 
 private:
     typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
-
-    NameBase(const NameBase&);
-    NameBase& operator=(const NameBase&);
-    bool setFileName(const char* filename);
-    errorT WriteNameFile(const Index* idx);
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H

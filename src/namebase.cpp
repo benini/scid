@@ -26,10 +26,6 @@
 // NameBase file signature, used to identify the file format
 const char* NameBase::NAMEBASE_MAGIC = "Scid.sn";
 
-// NameBase file extension
-const char* NameBase::NAMEBASE_SUFFIX = ".sn4";
-
-
 /**
 * NameBase::clear() - clears file associations and frees memory
 *
@@ -37,53 +33,12 @@ const char* NameBase::NAMEBASE_SUFFIX = ".sn4";
 */
 void NameBase::Clear()
 {
-    if (modified_) {
-        ASSERT(filename_.empty());
-        flush(0);
-    }
-
-    filename_.clear();
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
         for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
         names_[n].resize(0);
         idx_[n].clear();
     }
     eloV_.resize(0);
-}
-
-/**
- * NameBase::setFileName() - Sets the name of the associated file
- * @filename: the filename (without extension)
- *
- * Sets the name of the file associated with the NameBase object.
- * The object must be empty and not associated with another file.
- * Return true if successful.
- */
-bool NameBase::setFileName(const char* filename)
-{
-    ASSERT(filename != 0);
-
-    if (!filename_.empty()) return false;
-    for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-        if (names_[n].size() != 0 || idx_[n].size() != 0) return false;
-    }
-
-    filename_ = filename;
-    filename_ += NAMEBASE_SUFFIX;
-    return true;
-}
-
-/**
- * NameBase::Create() - Create an empty NameBase file
- * @filename: the filename (without extension)
- *
- * Create a NameBase file that contains only the header and no names.
- * Return OK if successful.
- */
-errorT NameBase::Create(const char* filename)
-{
-    if (!setFileName(filename)) return ERROR_FileInUse;
-    return WriteNameFile(0);
 }
 
 /**
@@ -109,9 +64,8 @@ errorT NameBase::Create(const char* filename)
 errorT
 NameBase::ReadEntireFile (const char* filename, fileModeT fmode)
 {
-    if (!setFileName(filename)) return ERROR_FileInUse;
     Filebuf file;
-    if (file.Open(filename_.c_str(), fmode) != OK) return ERROR_FileOpen;
+    if (file.Open(filename, fmode) != OK) return ERROR_FileOpen;
 
     char Header_magic[9] = {0}; // magic identifier must be "Scid.sn"
     file.sgetn(Header_magic, 8);
@@ -199,9 +153,7 @@ NameBase::ReadEntireFile (const char* filename, fileModeT fmode)
 //      For each nametype, names are written in alphabetical order and
 //      the strings are front-coded to save space.
 //
-errorT
-NameBase::WriteNameFile(const Index* idx)
-{
+errorT NameBase::WriteNameFile(const char* filename, const Index* idx) {
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         if (idx_[nt].size() != names_[nt].size()) return ERROR_Corrupt;
     }
@@ -210,7 +162,8 @@ NameBase::WriteNameFile(const Index* idx)
     if (idx != 0) idx->calcNameFreq(*this, freq);
 
     Filebuf file;
-    if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
+    if (file.Open(filename, FMODE_WriteOnly) != OK)
+        return ERROR_FileOpen;
 
     file.sputn(NAMEBASE_MAGIC, 8);
 

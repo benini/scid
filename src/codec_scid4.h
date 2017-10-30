@@ -33,7 +33,7 @@
  * This class manages databases encoded in SCID format v4.
  */
 class CodecSCID4 : public CodecNative<CodecSCID4>  {
-	std::string filename_;
+	std::vector<std::string> filenames_;
 	FilebufAppend gfile_;
 	char gamecache_[1ULL << 17];
 
@@ -51,11 +51,7 @@ public: // ICodecDatabase interface
 	 * used by the database.
 	 */
 	std::vector<std::string> getFilenames() override {
-		std::vector<std::string> res;
-		res.push_back(filename_ + INDEX_SUFFIX);
-		res.push_back(filename_ + NameBase::Suffix());
-		res.push_back(filename_ + ".sg4");
-		return res;
+		return filenames_;
 	};
 
 	const byte* getGameData(uint64_t offset, uint32_t length) override {
@@ -79,8 +75,7 @@ public: // ICodecDatabase interface
 			// Even if name's frequency is no longer used, it's necessary to
 			// keep the compatibility with older Scid versions, forcing a
 			// recalculation.
-			nb_->hackedNameFreq();
-			err = nb_->flush(idx_);
+			err = nb_->WriteNameFile(filenames_[1].c_str(), idx_);
 		}
 		errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 
@@ -91,21 +86,24 @@ public: // ICodecDatabase interface
 	                const Progress& progress, Index* idx,
 	                NameBase* nb) override {
 		if (filename == 0 || idx == 0 || nb == 0) return ERROR;
+		if (*filename == '\0') return ERROR_FileOpen;
 
 		idx_ = idx;
 		nb_ = nb;
-		filename_ = filename;
-		if (filename_.empty()) return ERROR_FileOpen;
+		filenames_.resize(3);
+		filenames_[0] = std::string(filename) + ".si4";
+		filenames_[1] = std::string(filename) + ".sn4";
+		filenames_[2] = std::string(filename) + ".sg4";
 
-		errorT err = gfile_.open(filename_ + ".sg4", fMode);
+		errorT err = gfile_.open(filenames_[2], fMode);
 		if (err != OK) return err;
 
 		if (fMode == FMODE_Create) {
 			err = idx->Create(filename);
-			if (err == OK) err = nb->Create(filename);
+			if (err == OK) err = nb->WriteNameFile(filenames_[1].c_str(), nullptr);
 		} else {
 			err = idx->Open(filename, fMode);
-			if (err == OK) err = nb->ReadEntireFile(filename, fMode);
+			if (err == OK) err = nb->ReadEntireFile(filenames_[1].c_str(), fMode);
 			if (err == OK) err = readIndex(progress);
 		}
 
