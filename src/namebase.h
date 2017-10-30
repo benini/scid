@@ -162,9 +162,6 @@ public:
 			*idPtr = res.second;
 		return res.first;
 	}
-
-private:
-    typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H

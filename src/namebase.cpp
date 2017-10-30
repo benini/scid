@@ -191,9 +191,10 @@ errorT NameBase::WriteNameFile(const char* filename, const Index* idx) {
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         char prevName[1024] = {0};
         size_t numNames = idx_[nt].size();
-        for (iterator it = idx_[nt].begin(); it != idx_[nt].end(); it++) {
-            const char* name = (*it).first;
-            idNumberT id = (*it).second;
+        bool first_name = true;
+        for (const auto& it : idx_[nt]) {
+            const char* name = it.first;
+            idNumberT id = it.second;
 
             // write idNumber in 2 bytes if possible, otherwise 3.
             if (numNames >= 65536) {
@@ -217,7 +218,9 @@ errorT NameBase::WriteNameFile(const char* filename, const Index* idx) {
             byte length = strlen(name);
             file.WriteOneByte(length);
             byte prefix = 0;
-            if (it != idx_[nt].begin()) {
+            if (first_name) {
+                first_name = false;
+            } else {
                 prefix = (byte) strPrefix (name, prevName);
                 file.WriteOneByte(prefix);
             }
@@ -238,7 +241,7 @@ NameBase::FindExactName (nameT nt, const char* str, idNumberT* idPtr) const
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
 
-    iterator it = idx_[nt].find(str);
+    auto it = idx_[nt].find(str);
     if (it != idx_[nt].end()) {
         *idPtr = (*it).second;
         return OK;
@@ -260,7 +263,7 @@ NameBase::GetFirstMatches (nameT nt, const char * str, uint maxMatches,
 
     size_t len = strlen(str);
     uint matches = 0;
-    iterator it = idx_[nt].lower_bound(str);
+    auto it = idx_[nt].lower_bound(str);
     for (; matches < maxMatches && it != idx_[nt].end(); matches++) {
         const char* s = (*it).first;
         if (strlen(s) < len || strncmp(s, str, len) != 0) break;
