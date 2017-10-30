@@ -112,7 +112,7 @@ public: // CodecNative CRTP
 	 * - on success, a @e std::pair containing OK and the ID.
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
-	std::pair<errorT, idNumberT> dyn_getNameID(nameT nt, const char* name) {
+	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
 		return nb_->getID(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
 	}
 };

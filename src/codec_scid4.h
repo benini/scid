@@ -158,7 +158,7 @@ public: // CodecNative interface
 	 * - on success, a @e std::pair containing OK and the ID.
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
-	std::pair<errorT, idNumberT> dyn_getNameID(nameT nt, const char* name) {
+	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
 		const idNumberT MAX_ID[] = {
 		    1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
 		    524287,  /* Event names:  Maximum of 2^19 -1 =   524,287 */
@@ -197,35 +197,35 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 	}
 	auto validateNameIDs = [&](IndexEntry* ie) {
 		if (ie->GetWhite() >= maxID[NAME_PLAYER]) {
-			auto unknown = dyn_getNameID(NAME_PLAYER, "?");
+			auto unknown = dyn_addName(NAME_PLAYER, "?");
 			if (unknown.first != OK)
 				return false;
 			ie->SetWhite(unknown.second);
 			++nUnknowIDs;
 		}
 		if (ie->GetBlack() >= maxID[NAME_PLAYER]) {
-			auto unknown = dyn_getNameID(NAME_PLAYER, "?");
+			auto unknown = dyn_addName(NAME_PLAYER, "?");
 			if (unknown.first != OK)
 				return false;
 			ie->SetBlack(unknown.second);
 			++nUnknowIDs;
 		}
 		if (ie->GetEvent() >= maxID[NAME_EVENT]) {
-			auto unknown = dyn_getNameID(NAME_EVENT, "?");
+			auto unknown = dyn_addName(NAME_EVENT, "?");
 			if (unknown.first != OK)
 				return false;
 			ie->SetEvent(unknown.second);
 			++nUnknowIDs;
 		}
 		if (ie->GetSite() >= maxID[NAME_SITE]) {
-			auto unknown = dyn_getNameID(NAME_SITE, "?");
+			auto unknown = dyn_addName(NAME_SITE, "?");
 			if (unknown.first != OK)
 				return false;
 			ie->SetSite(unknown.second);
 			++nUnknowIDs;
 		}
 		if (ie->GetRound() >= maxID[NAME_ROUND]) {
-			auto unknown = dyn_getNameID(NAME_ROUND, "?");
+			auto unknown = dyn_addName(NAME_ROUND, "?");
 			if (unknown.first != OK)
 				return false;
 			ie->SetRound(unknown.second);

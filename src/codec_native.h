@@ -35,7 +35,7 @@
  * by a native codec. It also implements the addGame() and saveGame() functions
  * of the ICodecDatabase interface, splitting them into 2 function calls to a
  * derived class (CRTP technique):
- * - dyn_getNameID() should return the ID corresponding to a name, eventually
+ * - dyn_addName() should return the ID corresponding to a name, eventually
  *   adding the name to the @e nb_ if necessary;
  * - dyn_addGameData() should stores the data of the game, encoded in native
  *   format, and returns the offset that can be used to retrieve the data.
@@ -103,29 +103,29 @@ private:
 	                     const char* event, const char* site,
 	                     const char* round) {
 		std::pair<errorT, idNumberT> id =
-		    derived()->dyn_getNameID(NAME_PLAYER, white);
+		    derived()->dyn_addName(NAME_PLAYER, white);
 		if (id.first != OK)
 			return id.first;
 		ie->SetWhite(id.second);
 		nb_->AddElo(id.second, ie->GetWhiteElo());
 
-		id = derived()->dyn_getNameID(NAME_PLAYER, black);
+		id = derived()->dyn_addName(NAME_PLAYER, black);
 		if (id.first != OK)
 			return id.first;
 		ie->SetBlack(id.second);
 		nb_->AddElo(id.second, ie->GetBlackElo());
 
-		id = derived()->dyn_getNameID(NAME_EVENT, event);
+		id = derived()->dyn_addName(NAME_EVENT, event);
 		if (id.first != OK)
 			return id.first;
 		ie->SetEvent(id.second);
 
-		id = derived()->dyn_getNameID(NAME_SITE, site);
+		id = derived()->dyn_addName(NAME_SITE, site);
 		if (id.first != OK)
 			return id.first;
 		ie->SetSite(id.second);
 
-		id = derived()->dyn_getNameID(NAME_ROUND, round);
+		id = derived()->dyn_addName(NAME_ROUND, round);
 		if (id.first != OK)
 			return id.first;
 		ie->SetRound(id.second);
