@@ -56,8 +56,7 @@ const errorT
     ERROR_NameLimit      = 208,
     ERROR_OffsetLimit    = 209,
     ERROR_GameLengthLimit= 210,
-
-    ERROR_IndexFull      = 251,
+    ERROR_NumGamesLimit  = 211,
 
     // Position errors
     ERROR_InvalidFEN     = 301,

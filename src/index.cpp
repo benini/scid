@@ -158,7 +158,6 @@ Index::WriteHeader ()
 errorT Index::write (const IndexEntry* ie, gamenumT idx)
 {
     if (idx > Header.numGames) return ERROR_BadArg;
-    if (idx >= MAX_GAMES) return ERROR_IndexFull;
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
 
     if (idx == Header.numGames) {

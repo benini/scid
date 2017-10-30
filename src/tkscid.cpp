@@ -5134,10 +5134,10 @@ int
 sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "elo", "games", "nags", "year", "bases", NULL
+        "elo", "year", "bases", NULL
     };
     enum {
-        LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR, LIM_BASES
+        LIM_ELO, LIM_YEAR, LIM_BASES
     };
     int index = -1;
     int result = 0;
@@ -5149,14 +5149,6 @@ sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         result = MAX_ELO;
         break;
 
-    case LIM_GAMES:
-        result = MAX_GAMES;
-        break;
-
-    case LIM_NAGS:
-        result = MAX_NAGS;
-        break;
-
     case LIM_YEAR:
         result = YEAR_MAX;
         break;
@@ -5166,7 +5158,7 @@ sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     default:
-        return UI_Result(ti, ERROR_BadArg, "Usage: sc_info limit <elo|games|nags|year|bases>");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_info limit <elo|year|bases>");
     }
 
     return UI_Result(ti, OK, result);

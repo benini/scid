@@ -39,10 +39,6 @@ class NameBase;
 const char         INDEX_SUFFIX[]     = ".si4";
 const char         OLD_INDEX_SUFFIX[] = ".si3";
 const char         INDEX_MAGIC[8]     = "Scid.si";
-// max. number of games is 2^(3*8)-1-1,
-// The "2^(3*8)-1" as si4 only uses three bytes to store this integer,
-// The second "-1" because GetAutoLoad uses 0 to mean "no autoload"
-const gamenumT     MAX_GAMES          = 16777214;
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
@@ -220,19 +216,6 @@ public:
         errorT res = write(ie, idx);
         if (flush && res == OK) res = this->flush();
         return res;
-    }
-
-    /**
-     * AddGame() - add a game to the Index
-     * @ie: valid pointer to the IndexEntry object with data for the new game.
-     *
-     * For performance reasons this function can cache the changes and they are
-     * automatically written to file when the object is destroyed or closed.
-     * However, for maximum security against power loss, crash, etc, it is
-     * recommended to call the function flush() after using this function.
-     */
-    errorT AddGame (const IndexEntry* ie) {
-        return WriteEntry(ie, GetNumGames(), false);
     }
 
     /**

@@ -62,7 +62,7 @@ public: // ICodecDatabase interface
 		if (err != OK)
 			return err;
 
-		return idx_->AddGame(&ie);
+		return derived()->dyn_addIndexEntry(ie);
 	}
 
 	errorT addGame(Game* game) override {
@@ -70,7 +70,7 @@ public: // ICodecDatabase interface
 		if (ie.first != OK)
 			return ie.first;
 
-		return idx_->AddGame(&ie.second);
+		return derived()->dyn_addIndexEntry(ie.second);
 	}
 
 	errorT saveGame(Game* game, gamenumT replaced) override {

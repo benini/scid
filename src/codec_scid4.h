@@ -40,6 +40,8 @@ class CodecSCID4 : public CodecNative<CodecSCID4>  {
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 32,
 		LIMIT_GAMELEN = 1ULL << 17,
+		LIMIT_NUMGAMES = 16777214ULL, // Three bytes -1 because GetAutoLoad uses
+		                              // 0 to mean "no autoload"
 		LIMIT_NAMELEN = 255
 	};
 
@@ -147,6 +149,19 @@ public: // CodecNative interface
 
 		errorT err = gfile_.append(data, length);
 		return std::make_pair(err, offset);
+	}
+
+	/**
+	 * Add an IndexEntry to @e idx_.
+	 * @param ie: the IndexEntry object to add.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT dyn_addIndexEntry(const IndexEntry& ie) {
+		auto nGames = idx_->GetNumGames();
+		if (nGames >= LIMIT_NUMGAMES)
+			return ERROR_NumGamesLimit;
+
+		return idx_->WriteEntry(&ie, nGames, false);
 	}
 
 	/**

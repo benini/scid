@@ -26,10 +26,6 @@
 
 #include "codec_native.h"
 
-#if !CPP11_SUPPORT
-#define override
-#endif
-
 /**
  * Manages memory databases that do not have associated files.
  * Every open database should have a native representation in memory: to satisfy
@@ -41,6 +37,7 @@ class CodecMemory : public CodecNative<CodecMemory> {
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 46,
 		LIMIT_GAMELEN = 1ULL << 18,
+		LIMIT_NUMGAMES = (1ULL << 32) - 2,
 		LIMIT_UNIQUENAMES = 1ULL << 28,
 		LIMIT_NAMELEN = 255
 	};
@@ -104,6 +101,19 @@ public: // CodecNative CRTP
 	}
 
 	/**
+	 * Add an IndexEntry to @e idx_.
+	 * @param ie: the IndexEntry object to add.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT dyn_addIndexEntry(const IndexEntry& ie) {
+		auto nGames = idx_->GetNumGames();
+		if (nGames >= LIMIT_NUMGAMES)
+			return ERROR_NumGamesLimit;
+
+		return idx_->WriteEntry(&ie, nGames, false);
+	}
+
+	/**
 	 * Given a name (string), retrieve the corresponding ID.
 	 * The name is added to @e nb_ if do not already exists in the NameBase.
 	 * @param nt:   nameT type of the name to retrieve.
@@ -116,9 +126,5 @@ public: // CodecNative CRTP
 		return nb_->getID(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
 	}
 };
-
-#if !CPP11_SUPPORT
-#undef override
-#endif
 
 #endif

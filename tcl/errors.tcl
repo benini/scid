@@ -58,7 +58,7 @@ namespace eval ERROR {
   set NameLimit        208
   set OffsetLimit      209
   set GameLengthLimit  210
-  set IndexFull        251
+  set NumGamesLimit    211
   set InvalidFEN       301
   set InvalidMove      302
   set PieceCount       303
@@ -125,6 +125,8 @@ after idle {
     "The maximum space for games allowed by this database type has been reached"
 	set ::ERROR::msg($::ERROR::GameLengthLimit) \
     "The maximum length for a game allowed by this database type has been reached"
+	set ::ERROR::msg($::ERROR::NumGamesLimit) \
+    "The maximum number of games allowed by this database type has been reached"
 
   set ::ERROR::msg($::ERROR::CodecUnsupFeat) \
     "The requested function is not supported by this type of database."
