@@ -779,7 +779,7 @@ proc nameEditor {} {
     if {$err} {
       ERROR::MessageBox
     } else {
-      .nedit.status configure -text $result
+      .nedit.status configure -text "Modified $result games."
     }
     sc_game tags reload
     updateBoard -pgn

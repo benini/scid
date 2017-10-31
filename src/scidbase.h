@@ -258,6 +258,48 @@ struct scidBaseT {
 		return (duplicates_ == NULL) ? 0 : duplicates_[gNum];
 	}
 
+	/**
+	 * Apply a transform operator to games' IndexEntry included in @e hfilter.
+	 * The @entry_op must accept a IndexEntry& parameter and return true when
+	 * the IndexEntry was modified.
+	 * @param hfilter:  HFilter containing the games to be transformed.
+	 * @param progress: a Progress object used for GUI communications.
+	 * @param entry_op: operator that will be applied to games' IndexEntry.
+	 * @returns a std::pair containing OK (or an error code) and the number of
+	 * games modified.
+	 */
+	template <typename TOper>
+	std::pair<errorT, size_t>
+	transformIndex(HFilter hfilter, const Progress& progress, TOper entry_op) {
+		beginTransaction();
+		auto res = transformIndex_(hfilter, progress, entry_op);
+		auto err = endTransaction();
+		res.first = (res.first == OK) ? err : res.first;
+		return res;
+	}
+
+	/**
+	 * Transform the names of the games included in @e hfilter.
+	 * The function @e getID maps all the old idNumberT to the new idNumberT.
+	 * It's invoked for each game and must accept as parameters a idNumberT and
+	 * a const IndexEntry&; must return the (eventually different) idNumberT.
+	 * @param nt:       type of the names to be modified.
+	 * @param hfilter:  HFilter containing the games to be transformed.
+	 * @param progress: a Progress object used for GUI communications.
+	 * @param newNames: optional vector of names to be added to the database.
+	 * @param fnInit:   function that is invoked before beginning the
+	 *                  transformation; must accept a vector that contains the
+	 *                  idNumberTs of the names in @newNames.
+	 * @param getID:    function that maps the old idNumberTs to the new ones.
+	 * @returns a std::pair containing OK (or an error code) and the number of
+	 * games modified.
+	 */
+	template <typename TInitFunc, typename TMapFunc>
+	std::pair<errorT, size_t>
+	transformNames(nameT nt, HFilter hfilter, const Progress& progress,
+	               const std::vector<std::string>& newNames, TInitFunc fnInit,
+	               TMapFunc getID);
+
 	// TODO: private:
 	/**
 	 * This function must be called before modifying the games of the database.
@@ -315,6 +357,39 @@ private:
 	HFilter getFilterHelper(const std::string& filterId,
 	                        bool unmasked = false) const;
 	SortCache* getSortCache(const char* criteria);
+
+	/**
+	 * Apply a transform operator to games' IndexEntry included in @e hfilter.
+	 * The @entry_op should accept a IndexEntry& parameter and return true when
+	 * the IndexEntry was modified.
+	 * @param hfilter:  HFilter containing the games to be transformed.
+	 * @param progress: a Progress object used for GUI communications.
+	 * @param entry_op: operator that will be applied to games' IndexEntry.
+	 * @returns a std::pair containing OK (or an error code) and the number of
+	 * games modified.
+	 */
+	template <typename TOper>
+	std::pair<errorT, size_t>
+	transformIndex_(HFilter hfilter, const Progress& progress, TOper entry_op) {
+		size_t nCorrections = 0;
+		size_t iProg = 0;
+		size_t totProg = hfilter->size();
+		for (auto& gnum : hfilter) {
+			if ((++iProg % 8192 == 0) && !progress.report(iProg, totProg))
+				return std::make_pair(ERROR_UserCancel, nCorrections);
+
+			IndexEntry newIE = *getIndexEntry(gnum);
+			if (!entry_op(newIE))
+				continue;
+
+			auto err = idx->WriteEntry(&newIE, gnum);
+			if (err != OK)
+				return std::make_pair(err, nCorrections);
+
+			++nCorrections;
+		}
+		return std::make_pair(OK, nCorrections);
+	}
 };
 
 inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
@@ -335,7 +410,8 @@ inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
 }
 
 template <class T, class P>
-inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg) {
+inline errorT scidBaseT::importGames(T& codec, const P& progress,
+                                     uint& nImported, std::string& errorMsg) {
 	beginTransaction();
 	errorT res;
 	Game g;
@@ -354,13 +430,10 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress, uint& nImporte
 			}
 		}
 	}
-
 	errorMsg = codec.parseErrors();
-	endTransaction();
+	auto err = endTransaction();
 	progress.report(1,1);
-
-	if (res == ERROR_NotFound) res = OK;
-	return res;
+	return (res == ERROR_NotFound) ? err : res;
 }
 
 inline errorT scidBaseT::invertFlag(uint flag, uint gNum) {
@@ -399,6 +472,68 @@ inline errorT scidBaseT::setFlag(bool value, uint flag, const HFilter& filter) {
 }
 
 
+template <typename TInitFunc, typename TMapFunc>
+std::pair<errorT, size_t>
+scidBaseT::transformNames(nameT nt, HFilter hfilter, const Progress& progress,
+                          const std::vector<std::string>& newNames,
+                          TInitFunc initFunc, TMapFunc getID) {
+	beginTransaction();
+
+	std::vector<idNumberT> nameIDs(newNames.size());
+	auto it = nameIDs.begin();
+	for (auto& name : newNames) {
+		auto err = nb->AddName(nt, name.c_str(), &*it++);
+		if (err != OK) {
+			endTransaction();
+			return std::make_pair(err, size_t(0));
+		}
+	}
+
+	initFunc(nameIDs);
+
+	auto fnGet = [](nameT nt, const IndexEntry& ie) {
+		switch (nt) { // clang-format off
+		case NAME_PLAYER: return ie.GetWhite();
+		case NAME_EVENT:  return ie.GetEvent();
+		case NAME_SITE:   return ie.GetSite();
+		} // clang-format on
+		ASSERT(nt == NAME_ROUND);
+		return ie.GetRound();
+	};
+	auto fnSet = [](nameT nt, IndexEntry& ie, idNumberT newID) {
+		switch (nt) { // clang-format off
+		case NAME_PLAYER: return ie.SetWhite(newID);
+		case NAME_EVENT:  return ie.SetEvent(newID);
+		case NAME_SITE:   return ie.SetSite(newID);
+		} // clang-format on
+		ASSERT(nt == NAME_ROUND);
+		return ie.SetRound(newID);
+	};
+	auto res = transformIndex_(hfilter, progress, [&](IndexEntry& ie) {
+		const IndexEntry& ie_const = ie;
+		auto oldID = fnGet(nt, ie);
+		auto newID = getID(oldID, ie_const);
+		bool b1 = (oldID != newID);
+		idNumberT newBlack = 0;
+		bool b2 = (nt == NAME_PLAYER);
+		if (b2) {
+			auto oldBlack = ie.GetBlack();
+			newBlack = getID(oldBlack, ie_const);
+			b2 = (oldBlack != newBlack);
+		}
+		if (!b1 && !b2)
+			return false;
+
+		if (b1)
+			fnSet(nt, ie, newID);
+		if (b2)
+			ie.SetBlack(newBlack);
+		return true;
+	});
+
+	auto err = endTransaction();
+	res.first = (res.first == OK) ? err : res.first;
+	return res;
+}
 
 #endif
-

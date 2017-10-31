@@ -43,10 +43,9 @@
 #include "tree.h"
 #include "dbasepool.h"
 #include "ui.h"
-#include <time.h>
-#include <sys/stat.h>
-#include <set>
 #include <algorithm>
+#include <numeric>
+#include <set>
 
 //TODO: delete
 #include "tkscid.h"
@@ -6396,9 +6395,6 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 "Usage: sc_name correct p|e|s|r <corrections>");
     }
 
-    db->beginTransaction();
-
-    NameBase * nb = db->nb;
     const char * str = argv[3];
     char oldName [512];
     char newName [512];
@@ -6407,19 +6403,14 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     char line [512];
     uint errorCount = 0;
     uint correctionCount = 0;
-    uint instanceCount = 0;
     uint badDateCount = 0;
-    uint nameCount = nb->GetNumNames(nt);
-    idNumberT * newIDs = new idNumberT [nameCount];
-    dateT * startDate = new dateT [nameCount];
-    dateT * endDate = new dateT [nameCount];
 
-    for (idNumberT id=0; id < nameCount; id++) {
-        newIDs[id] = id;
-        startDate[id] = ZERO_DATE;
-        endDate[id] = ZERO_DATE;
-    }
-
+    scidBaseT* dbase = db;
+    const NameBase* nb = dbase->getNameBase();
+    std::vector<idNumberT> oldIDs;
+    std::vector<std::string> newNames;
+    std::vector<std::pair<dateT, dateT> > dates(nb->GetNumNames(nt),
+                                                {ZERO_DATE, ZERO_DATE});
     while (*str != 0) {
         uint length = 0;
         while (*str != 0  &&  *str != '\n') {
@@ -6449,111 +6440,52 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             continue;
         }
 
-        // Try to add the mapping for this correction:
-        idNumberT newIdNumber = 0;
-        if (nb->AddName (nt, newName, &newIdNumber) == OK) {
-            newIDs [oldID] = newIdNumber;
-            startDate[oldID] = date_EncodeFromString (birth);
-            endDate[oldID] = date_EncodeFromString (death);
-        } else {
-            errorCount++;
-        }
+        oldIDs.emplace_back(oldID);
+        newNames.emplace_back(newName);
+        dates[oldID] = {date_EncodeFromString(birth),
+                        date_EncodeFromString(death)};
     }
 
-    if (correctionCount != 0) {
+    std::vector<idNumberT> newIDs;
+    auto initNewIDs = [&](const std::vector<idNumberT>& v_ids) {
+        newIDs.resize(nb->GetNumNames(nt));
+        std::iota(newIDs.begin(), newIDs.end(), idNumberT(0));
+        auto it = v_ids.begin();
+        for (auto& id : oldIDs) {
+            newIDs[id] = *it++;
+        }
+        dates.resize(newIDs.size(), {ZERO_DATE, ZERO_DATE});
+    };
 
-    // Now go through the index making each necessary change:
+    auto entry_op = [&](idNumberT oldID, const IndexEntry& ie) {
+        auto newID = newIDs[oldID];
+        if (oldID == newID)
+            return oldID;
+
+        dateT date = ie.GetDate();
+        if (date != ZERO_DATE) {
+            auto range = dates[oldID];
+            if (date < range.first ||
+                (range.second != ZERO_DATE && date > range.second)) {
+                ++badDateCount;
+                return oldID;
+            }
+        }
+        return newID;
+    };
+
     Progress progress = UI_CreateProgress(ti);
-    for (gamenumT gameId = 0, n = db->numGames(); gameId < n; ++gameId) {
-        const IndexEntry* ie = db->getIndexEntry(gameId);
-        IndexEntry newIE = *ie;
-        bool corrected = false;
-        idNumberT oldID, newID;
-
-        switch (nt) {
-        case NAME_PLAYER:
-            for (colorT i = WHITE; i < NUM_COLOR_TYPES; i++) {
-                oldID = ie->GetPlayer(i);
-                newID = newIDs [oldID];
-                if (oldID != newID) {
-                    dateT date = ie->GetDate();
-                    if (date == ZERO_DATE  || (
-                        (startDate[oldID] == ZERO_DATE  ||   date >= startDate[oldID])
-                        &&  (endDate[oldID] == ZERO_DATE  ||   date <= endDate[oldID]))) {
-                            newIE.SetPlayer(i, newID);
-                            corrected = true;
-                    } else {
-                        badDateCount++;
-                    }
-                }
-            }
-            break;
-
-        case NAME_EVENT:
-            oldID = ie->GetEvent();
-            newID = newIDs [oldID];
-            if (oldID != newID) {
-                newIE.SetEvent (newID);
-                corrected = true;
-            }
-            break;
-
-        case NAME_SITE:
-            oldID = ie->GetSite();
-            newID = newIDs [oldID];
-            if (oldID != newID) {
-                newIE.SetSite (newID);
-                corrected = true;
-            }
-            break;
-
-        case NAME_ROUND:
-            oldID = ie->GetRound();
-            newID = newIDs [oldID];
-            if (oldID != newID) {
-                newIE.SetRound (newID);
-                corrected = true;
-            }
-            break;
-
-        default:  // Should never happen!
-            ASSERT(0);
-        }
-
-        // Write the new index entry if it has changed:
-        if (corrected) {
-            instanceCount++;
-            if (db->idx->WriteEntry (&newIE, gameId) != OK) {
-              delete[] newIDs;
-              delete[] startDate;
-              delete[] endDate;
-              return UI_Result(ti, ERROR_FileWrite);
-            }
-        }
-        
-        // Update the scroll bar
-        //
-        if ((gameId % 1024 == 0) && !progress.report(gameId, n))
-            break;
-    }
-
-    // Ensure the scroll bar is complete at this point
-    progress.report(1,1);
-    }
-
-    delete[] newIDs;
-    delete[] startDate;
-    delete[] endDate;
-
-    errorT err = db->endTransaction();
-    if (err != OK) return UI_Result(ti, ERROR_FileWrite);
+    auto filter = dbase->newFilter();
+    auto changes = dbase->transformNames(nt, dbase->getFilter(filter), progress,
+                                         newNames, initNewIDs, entry_op);
+    dbase->deleteFilter(filter.c_str());
 
     UI_List res(4);
     res.push_back(correctionCount);
     res.push_back(errorCount);
-    res.push_back(instanceCount);
+    res.push_back(changes.second);
     res.push_back(badDateCount);
-    return UI_Result(ti, OK, res);
+    return UI_Result(ti, changes.first, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6579,6 +6511,7 @@ sc_name_edit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         OPT_DATE, OPT_EVENTDATE
     };
 
+    scidBaseT* dbase = db;
     int option = -1;
     if (argc > 2) { option = strUniqueMatch (argv[2], options); }
 
@@ -6627,145 +6560,91 @@ sc_name_edit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Find the existing name in the namebase:
+    idNumberT newID = 0;
     idNumberT oldID = 0;
     if (option != OPT_DATE  &&  option != OPT_EVENTDATE) {
-        if (db->getNameBase()->FindExactName (nt, oldName, &oldID) != OK) {
-            Tcl_AppendResult (ti, "Sorry, the ", NAME_TYPE_STRING[nt],
-                              " name \"", oldName, "\" does not exist.", NULL);
-            return TCL_ERROR;
-        }
+        if (dbase->getNameBase()->FindExactName (nt, oldName, &oldID) != OK)
+            return UI_Result(ti, OK, 0);
     }
 
     // Set up crosstable game criteria if necessary:
     idNumberT eventId = 0, siteId = 0;
     dateT eventDate = 0;
     if (editSelection == EDIT_CTABLE) {
-        Game * g = db->game;
-        if (db->getNameBase()->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
-            return errorResult (ti, "There are no crosstable games.");
-        }
-        if (db->getNameBase()->FindExactName (NAME_SITE, g->GetSiteStr(), &siteId) != OK) {
-            return errorResult (ti, "There are no crosstable games.");
-        }
-
+        Game* g = dbase->game;
+        auto nb = dbase->getNameBase();
+        if (nb->FindExactName(NAME_EVENT, g->GetEventStr(), &eventId) != OK)
+            return UI_Result(ti, OK, 0);
+        if (nb->FindExactName(NAME_SITE, g->GetSiteStr(), &siteId) != OK)
+            return UI_Result(ti, OK, 0);
         eventDate = g->GetEventDate();
     }
+    auto inCTable = [&](const IndexEntry& ie) {
+        if (editSelection != EDIT_CTABLE)
+            return true;
+        return isCrosstableGame(&ie, siteId, eventId, eventDate);
+    };
 
-    db->beginTransaction();
+    std::string filter =
+        (editSelection == EDIT_FILTER) ? "dbfilter" : dbase->newFilter();
+    auto hf = dbase->getFilter(filter);
+    auto prg = UI_CreateProgress(ti);
+    std::pair<errorT, size_t> changes;
+    switch (option) {
+    case OPT_DATE:
+        changes = dbase->transformIndex(hf, prg, [&](IndexEntry& ie) {
+            if (ie.GetDate() == oldDate && inCTable(ie)) {
+                ie.SetDate(newDate);
+                return true;
+            }
+            return false;
+        });
+        break;
+    case OPT_EVENTDATE:
+        changes = dbase->transformIndex(hf, prg, [&](IndexEntry& ie) {
+            if (ie.GetEventDate() == oldDate && inCTable(ie)) {
+                ie.SetEventDate(newDate);
+                return true;
+            }
+            return false;
+        });
+        break;
 
-    // Add the new name to the namebase:
-    idNumberT newID = 0;
-    if (option != OPT_RATING  &&  option != OPT_DATE  &&  option != OPT_EVENTDATE) {
-        errorT errAddName = db->nb->AddName (nt, newName, &newID);
-        if (errAddName != OK) return errorResult (ti, errAddName);
+    case OPT_RATING:
+        changes = dbase->transformIndex(hf, prg, [&](IndexEntry& ie) {
+            bool bTB = inCTable(ie);
+            bool bWH = (ie.GetWhite() == oldID);
+            bool bBK = (ie.GetBlack() == oldID);
+            if (bTB && (bWH || bBK)) {
+                if (bWH) {
+                    ie.SetWhiteElo(newRating);
+                    ie.SetWhiteRatingType(newRatingType);
+                }
+                if (bBK) {
+                    ie.SetBlackElo(newRating);
+                    ie.SetBlackRatingType(newRatingType);
+                }
+                return true;
+            }
+            return false;
+        });
+        break;
+
+    default:
+        changes = dbase->transformNames(
+            nt, hf, prg, std::vector<std::string>(1, newName),
+            [&](const std::vector<idNumberT>& v) {
+                newID = v.front(); // store the newID
+            },
+            [&](idNumberT id, const IndexEntry& ie) {
+                return (id == oldID && inCTable(ie)) ? newID : id;
+            });
     }
 
-    // Now iterate through the index file making any necessary changes:
-    const IndexEntry* ie;
-    IndexEntry newIE;
-    uint numChanges = 0;
+    if (editSelection != EDIT_FILTER)
+        dbase->deleteFilter(filter.c_str());
 
-    for (uint i=0, n = db->numGames(); i < n; i++) {
-        // Check if this game is a candidate for editing:
-        if (editSelection == EDIT_FILTER  &&  db->dbFilter->Get (i) == 0) {
-            continue;
-        }
-        ie = db->getIndexEntry(i);
-        if (editSelection == EDIT_CTABLE
-            && !isCrosstableGame (ie, siteId, eventId, eventDate)) {
-            continue;
-        }
-
-        // Fetch the index entry and see if any editing is required:
-        newIE = *ie;
-        int edits = 0;
-
-        switch (option) {
-        case OPT_PLAYER:
-            if (ie->GetWhite() == oldID) {
-                newIE.SetWhite (newID);
-                edits++;
-            }
-            if (ie->GetBlack() == oldID) {
-                newIE.SetBlack (newID);
-                edits++;
-            }
-            break;
-
-        case OPT_EVENT:
-            if (ie->GetEvent() == oldID) {
-                newIE.SetEvent (newID);
-                edits++;
-            }
-            break;
-
-        case OPT_SITE:
-            if (ie->GetSite() == oldID) {
-                newIE.SetSite (newID);
-                edits++;
-            }
-            break;
-
-        case OPT_ROUND:
-            if (ie->GetRound() == oldID) {
-                newIE.SetRound (newID);
-                edits++;
-            }
-            break;
-
-        case OPT_DATE:
-            if (ie->GetDate() == oldDate) {
-                newIE.SetDate (newDate);
-                edits++;
-            }
-            break;
-
-        case OPT_EVENTDATE:
-            if (ie->GetEventDate() == oldDate) {
-                newIE.SetEventDate (newDate);
-                edits++;
-            }
-            break;
-
-        case OPT_RATING:
-            if (ie->GetWhite() == oldID) {
-                newIE.SetWhiteElo (newRating);
-                newIE.SetWhiteRatingType (newRatingType);
-                edits++;
-            }
-            if (ie->GetBlack() == oldID) {
-                newIE.SetBlackElo (newRating);
-                newIE.SetBlackRatingType (newRatingType);
-                edits++;
-            }
-            break;
-
-        default:   // Unreachable:
-            ASSERT (0);
-        }
-
-        // Write this entry if any edits were made:
-        if (edits != 0) {
-            if (db->idx->WriteEntry (&newIE, i) != OK) {
-                return errorResult (ti, "Error writing index file.");
-            }
-            numChanges += edits;
-        }
-    }
-
-    errorT err = db->endTransaction();
-    if (err != OK) return errorResult (ti, "Error writing database files.");
-
-    char temp[500];
-    if (option == OPT_RATING) {
-        sprintf (temp, "Edited rating for %u games of \"%s\".",
-                 numChanges, oldName);
-    } else {
-        sprintf (temp, "Changed %u of \"%s\" to \"%s\".",
-                 numChanges, oldName, newName);
-    }
-    Tcl_AppendResult (ti, temp, NULL);
-    return TCL_OK;
+    return UI_Result(ti, changes.first, changes.second);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_retrievename:
