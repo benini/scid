@@ -39,6 +39,7 @@ include_directories("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 # scid_tests
 file(GLOB GTEST_SRC *.cpp)
 set(GTEST_EXTRA
+  ../src/codec_scid4.cpp
   ../src/index.cpp
   ../src/namebase.cpp
   ../src/scidbase.cpp

@@ -27,6 +27,7 @@
 #include "indexentry.h"
 #include "filebuf.h"
 #include "hfilter.h"
+#include <array>
 #include <string>
 #include <vector>
 #include <cstring>
@@ -117,12 +118,12 @@ public:
      * This functions counts how many times every names contained in @nb
      * is used and store the result into a corresponding record in @resVec
      */
-    void calcNameFreq(const NameBase& nb, std::vector<int>(&resVec)[NUM_NAME_TYPES]) const {
+    std::array<std::vector<int>, NUM_NAME_TYPES>
+    calcNameFreq(const NameBase& nb) const {
+        std::array<std::vector<int>, NUM_NAME_TYPES> resVec;
         for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-            resVec[n].clear();
             resVec[n].resize(nb.GetNumNames(n), 0);
         }
-
         for (gamenumT i = 0, n = GetNumGames(); i < n; i++) {
             const IndexEntry* ie = GetEntry(i);
             resVec[NAME_PLAYER][ie->GetWhite()] += 1;
@@ -131,6 +132,7 @@ public:
             resVec[NAME_SITE][ie->GetSite()] += 1;
             resVec[NAME_ROUND][ie->GetRound()] += 1;
         }
+        return resVec;
     }
 
     /**

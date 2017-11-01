@@ -27,6 +27,7 @@
 #include "index.h"
 #include "namebase.h"
 #include "tree.h"
+#include <array>
 #include <vector>
 
 class SortCache;
@@ -185,7 +186,7 @@ struct scidBaseT {
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0)
-			idx->calcNameFreq(*getNameBase(), nameFreq_);
+			nameFreq_ = idx->calcNameFreq(*getNameBase());
 		return nameFreq_[nt][id];
 	}
 
@@ -342,7 +343,7 @@ private:
 	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
 	mutable Stats* stats_;
-	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
+	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
 	uint* duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
 	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
 

@@ -22,11 +22,10 @@
 
 #include "common.h"
 #include "misc.h"
-#include <vector>
-#include <map>
 #include <algorithm>
-
-class Index;
+#include <functional>
+#include <map>
+#include <vector>
 
 const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "player",
@@ -38,8 +37,6 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
 
 class NameBase
 {
-    static const char* NAMEBASE_MAGIC;
-
     std::vector<const char*> names_[NUM_NAME_TYPES];
     std::vector<eloT> eloV_;
     struct idxCmp {
@@ -71,9 +68,6 @@ public:
     NameBase& operator=(const NameBase&) = delete;
     ~NameBase() { Clear(); }
     void Clear();
-
-    errorT    ReadEntireFile (const char* filename, fileModeT fmode);
-    errorT WriteNameFile(const char* filename, const Index* idx);
 
     const char* GetName (nameT nt, idNumberT id) const { return names_[nt][id]; }
     eloT GetElo (idNumberT id) const { return eloV_[id]; }
@@ -135,6 +129,17 @@ public:
 
 		return std::make_pair(OK, newID);
 	}
+
+	/**
+	 * Used only by codecs to read/write data from files.
+	 * @returns references to the containers storing the names.
+	 */
+	std::tuple<decltype(idx_) &, decltype(names_) &, decltype(eloV_) &>
+	getData() {
+		return std::make_tuple(std::ref(idx_), std::ref(names_),
+		                       std::ref(eloV_));
+	}
+	const decltype(idx_) & getNames() const { return std::ref(idx_); }
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H
