@@ -1342,7 +1342,7 @@ proc doCleaner {} {
     incr count
     catch {sc_eco base $::classifyOption(AllGames) \
           $::classifyOption(ExtendedCodes)} result
-    $t insert end "   $result\n"
+    $t insert end "   ECO classified $result games\n"
     $t see end
   }
   

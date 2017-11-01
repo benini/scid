@@ -1361,41 +1361,32 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         option = ECO_ALL; break;
     }
 
-    db->beginTransaction();
-
     bool extendedCodes = strGetBoolean(argv[3]);
-    Game * g = scratchGame;
-    IndexEntry * ie;
-    errorT err = OK;
-    uint countClassified = 0;  // Count of games classified.
     dateT startDate = ZERO_DATE;
     if (option == ECO_DATE) {
         startDate = date_EncodeFromString (&(argv[2][5]));
     }
-    Progress progress = UI_CreateProgress(ti);
-    Timer timer;  // Time the classification operation.
 
-    // Read each game:
-    for (uint i=0, n = db->numGames(); i < n; i++) {
-        if ((i % 1000) == 0) {  // Update the percentage done bar:
-            if (!progress.report(i, n)) break;
-        }
-        ie = db->idx->FetchEntry (i);
-        if (ie->GetLength() == 0) { continue; }
-
-        // Ignore games not in current filter if directed:
-        if (option == ECO_FILTER  &&  db->dbFilter->Get(i) == 0) { continue; }
+    scidBaseT& dbase = *db;
+    auto entry_op = [&](IndexEntry& ie) {
+        if (ie.GetLength() == 0)
+            return false;
 
         // Ignore games with existing ECO code if directed:
-        if (option == ECO_NOCODE  &&  ie->GetEcoCode() != 0) { continue; }
+        if (option == ECO_NOCODE  &&  ie.GetEcoCode() != 0)
+            return false;
 
         // Ignore games before starting date if directed:
-        if (option == ECO_DATE  &&  ie->GetDate() < startDate) { continue; }
+        if (option == ECO_DATE  &&  ie.GetDate() < startDate)
+            return false;
 
-        if (db->getGame(ie, db->bbuf) != OK) { continue; }
+        if (dbase.getGame(&ie, dbase.bbuf) != OK)
+            return false;
         db->bbuf->BackToStart();
+        Game* g = scratchGame;
         g->Clear();
-        if (g->DecodeStart (db->bbuf) != OK) { continue; }
+        if (g->DecodeStart(dbase.bbuf) != OK)
+            return false;
 
         // First, read in the game -- with a limit of 30 moves per
         // side, since an ECO match after move 31 is very unlikely and
@@ -1408,6 +1399,7 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         uint leastMaterial = ecoBook->FewestPieces();
         uint material;
 
+        errorT err = OK;
         do {
             err = g->DecodeNextMove (db->bbuf, NULL);
             maxPly--;
@@ -1430,25 +1422,21 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             err = g->MoveBackup();
         } while (err == OK);
 
-        if (ie->GetEcoCode() != ecoCode) {
-            ie->SetEcoCode (ecoCode);
-            err = db->idx->WriteEntry (ie, i);
-            if (err != OK) return errorResult(ti, err);
-            countClassified++;
+        if (ie.GetEcoCode() != ecoCode) {
+            ie.SetEcoCode(ecoCode);
+            return true;
         }
-    }
-    progress.report(1,1);
+        return false;
+    };
 
-    // Update the index file header:
-    err = db->endTransaction();
-    if (err != OK) return errorResult(ti, err);
+    std::string filter =
+        (option == ECO_FILTER) ? "dbfilter" : dbase.newFilter();
+    auto hf = dbase.getFilter(filter);
+    auto changes = dbase.transformIndex(hf, UI_CreateProgress(ti), entry_op);
+    if (option == ECO_FILTER)
+        dbase.deleteFilter(filter.c_str());
 
-    int centisecs = timer.CentiSecs();
-    char tempStr [100];
-    sprintf (tempStr, "Classified %d game%s in %d%c%02d seconds",
-             countClassified, strPlural (countClassified),
-             centisecs / 100, decimalPointChar, centisecs % 100);
-    return UI_Result(ti, OK, tempStr);
+    return UI_Result(ti, changes.first, changes.second);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
