@@ -84,6 +84,10 @@ public: // ICodecDatabase interface
 		return idx_->WriteEntry(&ie.second, replaced, false);
 	}
 
+	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) override {
+		return derived()->dyn_addName(nt, name);
+	}
+
 private:
 	std::pair<errorT, IndexEntry> addGameHelper(Game* game) {
 		std::pair<errorT, IndexEntry> res;

@@ -197,38 +197,6 @@ public:
         return nb->GetName (NAME_ROUND, GetRound());
     }
 
-    errorT SetWhiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) SetWhite (id);
-        return res;
-    }
-    errorT SetBlackName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) SetBlack (id);
-        return res;
-    }
-    errorT SetEventName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
-        if (res == OK) SetEvent (id);
-        return res;
-    }
-    errorT SetSiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
-        if (res == OK) SetSite (id);
-        return res;
-    }
-    errorT SetRoundName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
-        if (res == OK) SetRound (id);
-        return res;
-    }
-
-
     dateT GetDate () const { return u32_low_20(Dates); }
     uint  GetYear () const { return date_GetYear (GetDate()); }
     uint  GetMonth() const { return date_GetMonth (GetDate()); }

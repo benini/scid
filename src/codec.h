@@ -113,6 +113,17 @@ public:
 	virtual errorT saveGame(Game* game, gamenumT replaced) = 0;
 
 	/**
+	 * Adds a name (player, event, site or round) to the database.
+	 * @param nt:   nameT type of the name to add.
+	 * @param name: the name to add.
+	 * @returns
+	 * - on success, a @e std::pair containing OK and the corresponding ID.
+	 * - on failure, a @e std::pair containing an error code and 0.
+	 */
+	virtual std::pair<errorT, idNumberT> addName(nameT nt,
+	                                             const char* name) = 0;
+
+	/**
 	 * Writes all pending output to the files.
 	 * @returns OK if successful or an error code.
 	 */

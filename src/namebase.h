@@ -28,16 +28,6 @@
 
 class Index;
 
-// There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
-typedef uint nameT;
-enum {
-    NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND,
-    NUM_NAME_TYPES,
-    NAME_INVALID = 99
-};
-
-typedef uint32_t idNumberT;
-
 const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "player",
     "event",
@@ -144,23 +134,6 @@ public:
 			eloV_.push_back(0);
 
 		return std::make_pair(OK, newID);
-	}
-
-	// TODO: Remove
-	errorT AddName(nameT nt, const char* str, idNumberT* idPtr) {
-		ASSERT(IsValidNameType(nt) && str != NULL && idPtr != NULL);
-
-		const size_t MAX_LEN = 255; // Max 255 chars;
-		const idNumberT MAX_ID[] = {
-		    1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
-		    524287,  /* Event names:  Maximum of 2^19 -1 =   524,287 */
-		    524287,  /* Site names:   Maximum of 2^19 -1 =   524,287 */
-		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
-		};
-		std::pair<errorT, idNumberT> res = getID(nt, str, MAX_LEN, MAX_ID[nt]);
-		if (res.first == OK)
-			*idPtr = res.second;
-		return res.first;
 	}
 };
 

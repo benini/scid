@@ -482,11 +482,12 @@ scidBaseT::transformNames(nameT nt, HFilter hfilter, const Progress& progress,
 	std::vector<idNumberT> nameIDs(newNames.size());
 	auto it = nameIDs.begin();
 	for (auto& name : newNames) {
-		auto err = nb->AddName(nt, name.c_str(), &*it++);
-		if (err != OK) {
+		auto id = codec_->addName(nt, name.c_str());
+		if (id.first != OK) {
 			endTransaction();
-			return std::make_pair(err, size_t(0));
+			return std::make_pair(id.first, size_t(0));
 		}
+		*it++ = id.second;
 	}
 
 	initFunc(nameIDs);

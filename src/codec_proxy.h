@@ -137,6 +137,10 @@ private:
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
 
+	std::pair<errorT, idNumberT> addName(nameT, const char*) override {
+		return std::pair<errorT, idNumberT>(ERROR_CodecUnsupFeat, 0);
+	}
+
 	/*
 	 * Creates a memory database and invokes the function open(), which will
 	 * open the non-native database @p filename. Subsequently, the function
