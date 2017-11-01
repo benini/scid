@@ -455,7 +455,7 @@ inline errorT scidBaseT::setFlag(bool value, uint flag, uint gNum){
 	ASSERT(gNum < idx->GetNumGames());
 	IndexEntry* ie = idx->FetchEntry (gNum);
 	ie->SetFlag (flag, value);
-	errorT res = idx->WriteEntry (ie, gNum, false);
+	errorT res = idx->WriteEntry(ie, gNum);
 	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
 	// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
 	// idx->IndexUpdated(gNum);

@@ -81,7 +81,7 @@ public: // ICodecDatabase interface
 		if (ie.first != OK)
 			return ie.first;
 
-		return idx_->WriteEntry(&ie.second, replaced, false);
+		return idx_->WriteEntry(&ie.second, replaced);
 	}
 
 	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) override {

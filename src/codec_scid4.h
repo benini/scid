@@ -161,7 +161,7 @@ public: // CodecNative interface
 		if (nGames >= LIMIT_NUMGAMES)
 			return ERROR_NumGamesLimit;
 
-		return idx_->WriteEntry(&ie, nGames, false);
+		return idx_->WriteEntry(&ie, nGames);
 	}
 
 	/**

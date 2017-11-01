@@ -212,11 +212,7 @@ public:
     /**
      * WriteEntry() - modify a game in the Index
      */
-    errorT WriteEntry (const IndexEntry* ie, gamenumT idx, bool flush = true) {
-        errorT res = write(ie, idx);
-        if (flush && res == OK) res = this->flush();
-        return res;
-    }
+    errorT WriteEntry(const IndexEntry* ie, gamenumT idx);
 
     /**
      * flush() - writes all cached data to the file
@@ -231,7 +227,6 @@ public:
 private:
     void Init ();
     errorT Clear ();
-    errorT write (const IndexEntry* ie, gamenumT idx);
     errorT WriteHeader ();
 };
 

@@ -155,7 +155,7 @@ Index::WriteHeader ()
     return OK;
 }
 
-errorT Index::write (const IndexEntry* ie, gamenumT idx)
+errorT Index::WriteEntry(const IndexEntry* ie, gamenumT idx)
 {
     if (idx > Header.numGames) return ERROR_BadArg;
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
