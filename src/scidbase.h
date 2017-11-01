@@ -106,7 +106,7 @@ struct scidBaseT {
 		return 0;
 	}
 	const NameBase* getNameBase() const {
-		return nb;
+		return nb_;
 	}
 	FastGame getGame(const IndexEntry* ie) const {
 		uint length = ie->GetLength();
@@ -184,7 +184,8 @@ struct scidBaseT {
 	const Stats& getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
-		if (nameFreq_[nt].size() == 0) idx->calcNameFreq(*nb, nameFreq_);
+		if (nameFreq_[nt].size() == 0)
+			idx->calcNameFreq(*getNameBase(), nameFreq_);
 		return nameFreq_[nt][id];
 	}
 
@@ -320,7 +321,6 @@ struct scidBaseT {
 
 public:
 	Index* idx;       // the Index file in memory for this base.
-	NameBase* nb;      // the NameBase file in memory.
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
 	TreeCache treeCache;
@@ -337,6 +337,7 @@ public:
 
 private:
 	ICodecDatabase* codec_;
+	NameBase* nb_;
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;

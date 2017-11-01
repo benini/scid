@@ -57,7 +57,7 @@ ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
 
 scidBaseT::scidBaseT() {
 	idx = new Index;
-	nb = new NameBase;
+	nb_ = new NameBase;
 	game = new Game;
 	gameNumber = -1;
 	gameAltered = false;
@@ -78,7 +78,7 @@ scidBaseT::~scidBaseT() {
 
 	delete[] duplicates_;
 	delete idx;
-	delete nb;
+	delete nb_;
 	delete game;
 	delete bbuf;
 	delete stats_;
@@ -95,10 +95,10 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 
 	delete codec_;
 	errorT err = OK;
-	codec_ = ICodecDatabase::make(dbtype, &err, fMode, filename, progress, idx, nb);
+	codec_ = ICodecDatabase::make(dbtype, &err, fMode, filename, progress, idx, nb_);
 	if (codec_ == 0) {
 		idx->Close();
-		nb->Clear();
+		nb_->Clear();
 		inUse = false;
 		return err;
 	}
@@ -131,7 +131,7 @@ errorT scidBaseT::Close () {
 
 	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
-	nb->Clear();
+	nb_->Clear();
 	delete codec_;
 
 	codec_ = NULL;
@@ -387,7 +387,8 @@ errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
 	    sourceBase->codec_->getGameData(srcIe->GetOffset(), gameDataLen);
 	if (gameData == 0) return ERROR_FileRead;
 
-	errorT err = codec_->addGame(srcIe, sourceBase->nb, gameData, gameDataLen);
+	errorT err = codec_->addGame(srcIe, sourceBase->getNameBase(), gameData,
+	                             gameDataLen);
 	if (err == OK)
 		extendFilters();
 	return err;
@@ -606,6 +607,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 
 	std::vector<scidBaseT::TreeStat> res;
 	std::vector<FullMove> v;
+	auto nb = getNameBase();
 	for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
 		uint ply = filter.get(gnum);
 		if (ply == 0) continue;
@@ -640,7 +642,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
                                  uint* n_badNameId) {
 	std::vector<uint> nbFreq[NUM_NAME_TYPES];
 	for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-		nbFreq[n].resize(nb->GetNumNames(n), 0);
+		nbFreq[n].resize(getNameBase()->GetNumNames(n), 0);
 	}
 
 	uint64_t last_offset = 0;
@@ -786,7 +788,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 		}
 		for (size_t i = 0, n = oldSC.size(); i < n; i++) {
 			const std::string& criteria = oldSC[i].first;
-			SortCache* sc = SortCache::create(idx, nb, criteria.c_str());
+			SortCache* sc = SortCache::create(idx, nb_, criteria.c_str());
 			if (sc != NULL) {
 				sc->incrRef(oldSC[i].second);
 				sortCaches_.push_back(std::make_pair(criteria, sc));
@@ -816,7 +818,7 @@ SortCache* scidBaseT::getSortCache(const char* criteria) {
 			return sortCaches_[i].second;
 	}
 
-	SortCache* sc = SortCache::create(idx, nb, criteria);
+	SortCache* sc = SortCache::create(idx, getNameBase(), criteria);
 	if (sc != NULL)
 		sortCaches_.push_back(std::pair<std::string, SortCache*>(criteria, sc));
 
