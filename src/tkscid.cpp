@@ -7527,14 +7527,12 @@ sc_name_plist (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv)
 {
     const char * options[] = {
-        "-nomonth", "-update", "-debug", "-test", "-change", "-filter" };
+        "-update", "-test", "-change", "-filter" };
     enum {
-        OPT_NOMONTH, OPT_UPDATE, OPT_DEBUG, OPT_TEST, OPT_CHANGE, OPT_FILTER
+        OPT_UPDATE, OPT_TEST, OPT_CHANGE, OPT_FILTER
     };
 
-    bool doGamesWithNoMonth = true;
     bool updateIndexFile = true;
-    bool printEachChange = false;
     bool testOnly = false;
     bool overwrite = false;
     bool filterOnly = false;
@@ -7544,9 +7542,7 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
         int option = strUniqueMatch (argv[arg], options);
         bool value = strGetBoolean (argv[arg+1]);
         switch (option) {
-            case OPT_NOMONTH:   doGamesWithNoMonth = value; break;
             case OPT_UPDATE:    updateIndexFile = value;    break;
-            case OPT_DEBUG:     printEachChange = value;    break;
             case OPT_TEST:      testOnly = value;           break;
             case OPT_CHANGE:    overwrite = value;          break;
             case OPT_FILTER:    filterOnly = value;         break;
@@ -7570,65 +7566,53 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
     const NameBase* nb = dbase.getNameBase();
     std::vector<bool> cached(nb->GetNumNames(NAME_PLAYER), false);
     std::vector<const PlayerElo*> vElo(nb->GetNumNames(NAME_PLAYER), NULL);
-    const HFilter filter = dbase.getFilter("dbfilter");
 
-    dbase.beginTransaction();
-    Progress progress = UI_CreateProgress(ti);
-    for (uint gnum=0, n = dbase.numGames(); gnum < n; gnum++) {
-        if ((gnum % 1000) == 0) {  // Update the percentage done bar:
-            if (!progress.report(gnum, n)) break;
+    auto getElo = [&](idNumberT id, dateT date) {
+        if (!cached[id]) {
+            cached[id] = true;
+            vElo[id] = sp.getPlayerElo(nb->GetName(NAME_PLAYER, id));
         }
-        if (filterOnly && filter.get(gnum) == 0) continue;
+        return (vElo[id]) ? vElo[id]->getElo(date) : 0;
+    };
 
-        const IndexEntry* ie = dbase.getIndexEntry(gnum);
-        dateT date = ie->GetDate();
-        if (date_GetMonth(date) == 0  &&  !doGamesWithNoMonth) { continue; }
-
-        eloT newElo[NOCOLOR] = {0};
-        for (colorT col = WHITE; col < NOCOLOR; col++) {
-            if (!overwrite && ie->GetElo(col) != 0) continue;
-
-            idNumberT id = ie->GetPlayer(col);
-            if (! cached[id]) {
-                cached[id] = true;
-                vElo[id] = sp.getPlayerElo(nb->GetName(NAME_PLAYER, id));
-            }
-            newElo[col] = (vElo[id]) ? vElo[id]->getElo(date) : 0;
-            if (newElo[col] != 0) {
-                numChangedRatings++;
-                if (printEachChange) {
-                    printf ("%4u  %4u.%02u  %s\n", newElo[col],
-                            date_GetYear(date), date_GetMonth(date),
-                            nb->GetName(NAME_PLAYER, id));
-                }
-            }
-        }
-
-        if (newElo[WHITE] != 0 || newElo[BLACK] != 0) {
+    auto entry_op = [&](IndexEntry& ie) {
+        dateT date = ie.GetDate();
+        eloT eloWhite = (!overwrite && ie.GetWhiteElo() != 0)
+                            ? 0
+                            : getElo(ie.GetWhite(), date);
+        eloT eloBlack = (!overwrite && ie.GetBlackElo() != 0)
+                            ? 0
+                            : getElo(ie.GetBlack(), date);
+        unsigned nChanges = (eloWhite != 0) ? 1 : 0;
+        nChanges += (eloBlack != 0) ? 1 : 0;
+        if (nChanges) {
+            numChangedRatings += nChanges;
             numChangedGames++;
             if (updateIndexFile) {
-                IndexEntry newIE = *ie;
-                if (newElo[WHITE] != 0) {
-                    newIE.SetWhiteElo (newElo[WHITE]);
-                    newIE.SetWhiteRatingType (RATING_Elo);
+                if (eloWhite != 0) {
+                    ie.SetWhiteElo(eloWhite);
+                    ie.SetWhiteRatingType(RATING_Elo);
                 }
-                if (newElo[BLACK] != 0) {
-                    newIE.SetBlackElo (newElo[BLACK]);
-                    newIE.SetBlackRatingType (RATING_Elo);
+                if (eloBlack != 0) {
+                    ie.SetBlackElo(eloBlack);
+                    ie.SetBlackRatingType(RATING_Elo);
                 }
-                if (dbase.idx->WriteEntry (&newIE, gnum) != OK) {
-                    dbase.endTransaction();
-                    return UI_Result(ti, ERROR_FileWrite, "Error writing index file.");
-                }
+                return true;
             }
         }
-    }
-    if (numChangedGames > 0) dbase.endTransaction();
+        return false;
+    };
+
+    std::string filter = (filterOnly) ? "dbfilter" : dbase.newFilter();
+    auto hf = dbase.getFilter(filter);
+    auto changes = dbase.transformIndex(hf, UI_CreateProgress(ti), entry_op);
+    if (!filterOnly)
+        dbase.deleteFilter(filter.c_str());
 
     UI_List res(2);
     res.push_back(numChangedRatings);
     res.push_back(numChangedGames);
-    return UI_Result(ti, OK, res);
+    return UI_Result(ti, changes.first, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

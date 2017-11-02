@@ -158,9 +158,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 	auto chkEntry = [](auto& entry, auto it, bool fullEDate = false) {
 		ASSERT_EQ(*it++, entry.GetOffset());
 		ASSERT_EQ(*it++, entry.GetLength());
-		ASSERT_EQ(*it, entry.GetPlayer(WHITE));
 		ASSERT_EQ(*it++, entry.GetWhite());
-		ASSERT_EQ(*it, entry.GetPlayer(BLACK));
 		ASSERT_EQ(*it++, entry.GetBlack());
 		ASSERT_EQ(*it++, entry.GetEvent());
 		ASSERT_EQ(*it++, entry.GetSite());
@@ -174,9 +172,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 			eventDate = 0;
 		ASSERT_EQ(eventDate, entry.GetEventDate());
 		ASSERT_EQ(*it++, entry.GetResult());
-		ASSERT_EQ(*it, entry.GetElo(WHITE));
 		ASSERT_EQ(*it++, entry.GetWhiteElo());
-		ASSERT_EQ(*it, entry.GetElo(BLACK));
 		ASSERT_EQ(*it++, entry.GetBlackElo());
 		ASSERT_EQ(*it++, entry.GetWhiteRatingType());
 		ASSERT_EQ(*it++, entry.GetBlackRatingType());

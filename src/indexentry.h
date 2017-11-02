@@ -214,12 +214,6 @@ public:
     }
 
     // Handy functions that do not directly access member vars.
-    idNumberT GetPlayer(colorT col) const {
-        return (col == BLACK) ? GetBlack() : GetWhite();
-    }
-    eloT GetElo(colorT col) const {
-        return (col == BLACK) ? GetBlackElo() : GetWhiteElo();
-    }
     uint  GetYear () const { return date_GetYear (GetDate()); }
     uint  GetMonth() const { return date_GetMonth (GetDate()); }
     uint  GetDay ()  const { return date_GetDay (GetDate()); }

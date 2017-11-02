@@ -148,11 +148,14 @@ public:
 
 	eloT getElo (dateT date) const {
 		uint year = date_GetYear (date);
-		std::vector< std::pair<uint16_t, eloT> >::const_iterator itBegin = elo_.begin();
-		while (itBegin != elo_.end() && itBegin->first != year) itBegin++;
-		std::vector< std::pair<uint16_t, eloT> >::const_iterator itEnd = itBegin;
-		while (itEnd != elo_.end() && itEnd->first == year) itEnd++;
-
+		auto itBegin = std::find_if(elo_.begin(), elo_.end(),
+		                            [&](const std::pair<uint16_t, eloT>& e) {
+			                            return e.first == year;
+		                            });
+		auto itEnd = std::find_if(itBegin, elo_.end(),
+		                          [&](const std::pair<uint16_t, eloT>& e) {
+			                          return e.first != year;
+		                          });
 
 		size_t n = std::distance(itBegin, itEnd);
 		if (n == 0) return 0; // No data for that year
