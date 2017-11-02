@@ -303,7 +303,7 @@ readConfigFile (configT * config) {
     uint lineNum = 0;
     while (true) {
         char line[512];
-        fgets (line, 512, fp);
+        if (fgets (line, 512, fp)){}
         if (feof(fp)) { break; }
         lineNum++;
         const char * s = strTrimLeft(line);
@@ -467,7 +467,7 @@ makeBook (const char * infile)
 
     while (true) {
         char line [512];
-        fgets (line, 512, in);
+        if (fgets (line, 512, in)){}
         lineNumber++;
         if (feof(in)) { break; }
         pos->StdStart();
@@ -643,7 +643,7 @@ readInput (Engine * engine)
 
     // Get the next command, checking if there is an unfinished one.
     if (unfinishedCommand[0] == 0) {
-        fgets (newCommand, 512, stdin);
+        if (fgets (newCommand, 512, stdin)){}
         strTrimRight (newCommand, "\n", 1);
         if (isLogging()) {
             fprintf (logFile, "scidlet> %s\n", newCommand);
@@ -895,7 +895,7 @@ readInput (Engine * engine)
 //   for user input. Returns true if the search should
 //   terminate early.
 bool
-callback (Engine * engine, void * data)
+callback (Engine * engine, void *)
 {
     if (! inputReady()) { return false; }
     return readInput (engine);
