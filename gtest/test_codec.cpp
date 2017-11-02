@@ -231,11 +231,11 @@ TEST_P(Test_Codec, addGame_native) {
 	             [](ICodecDatabase* codec, Index&, NameBase& nb) {
 		for (const auto& game : gameGenerator.getNative()) {
 			std::pair<errorT, idNumberT> names[] = {
-			    nb.getID(NAME_PLAYER, "Dummy White", 255, 1000),
-			    nb.getID(NAME_PLAYER, "Dummy Black", 255, 1000),
-			    nb.getID(NAME_EVENT, "Dummy Event", 255, 1000),
-			    nb.getID(NAME_SITE, "Dummy Site", 255, 1000),
-			    nb.getID(NAME_ROUND, "Dummy Round", 255, 1000)};
+			    nb.addName(NAME_PLAYER, "Dummy White", 255, 1000),
+			    nb.addName(NAME_PLAYER, "Dummy Black", 255, 1000),
+			    nb.addName(NAME_EVENT, "Dummy Event", 255, 1000),
+			    nb.addName(NAME_SITE, "Dummy Site", 255, 1000),
+			    nb.addName(NAME_ROUND, "Dummy Round", 255, 1000)};
 			for (auto& e : names)
 				ASSERT_EQ(OK, e.first);
 

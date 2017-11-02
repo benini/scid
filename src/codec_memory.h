@@ -123,7 +123,7 @@ public: // CodecNative CRTP
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
-		return nb_->getID(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
+		return nb_->addName(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
 	}
 };
 

@@ -132,7 +132,7 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 			prevName = name;
 
 			if (id < Header_numNames[nt] && names[nt][id] == 0) {
-				names[nt][id] = name;
+				names[nt][id] = std::unique_ptr<const char[]>(name);
 				map[nt].insert(map[nt].end(), std::make_pair(name, id));
 			} else {
 				delete[] name;

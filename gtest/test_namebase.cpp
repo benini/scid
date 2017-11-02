@@ -40,13 +40,13 @@ TEST(Test_Namebase, id_limits) {
 
 	NameBase nb;
 	for (auto e : v) {
-		EXPECT_EQ(OK, nb.getID(e.first, std::to_string(e.second).c_str(),
+		EXPECT_EQ(OK, nb.addName(e.first, std::to_string(e.second).c_str(),
 		                       MAX_LEN, MAX_ID[e.first])
 		                  .first);
 	}
 
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-		EXPECT_NE(OK, nb.getID(nt, "full", MAX_LEN, MAX_ID[nt]).first);
+		EXPECT_NE(OK, nb.addName(nt, "full", MAX_LEN, MAX_ID[nt]).first);
 	}
 }
 
@@ -60,7 +60,7 @@ TEST(Test_Namebase, max_chars) {
 	NameBase nb;
 	for (size_t i = 0; i < s.size(); i++) {
 		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-			auto test = nb.getID(nt, s.substr(0, i).c_str(), MAX_LEN, 1000);
+			auto test = nb.addName(nt, s.substr(0, i).c_str(), MAX_LEN, 1000);
 			if (i <= MAX_LEN)
 				EXPECT_EQ(OK, test.first);
 			else
@@ -86,7 +86,7 @@ TEST(Test_Namebase, FindExactName) {
 	std::map<idNumberT, const char*> ids[NUM_NAME_TYPES];
 	for (const char* name : test_names) {
 		for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-			auto id = nb.getID(nt, name, 255, 1000);
+			auto id = nb.addName(nt, name, 255, 1000);
 			EXPECT_EQ(OK, id.first);
 			EXPECT_TRUE(ids[nt].emplace(id.second, name).second);
 		}
@@ -116,12 +116,11 @@ TEST(Test_Namebase, sort_order) {
 	// keep using that sorting criteria.
 	NameBase nb;
 	nameT nt = NAME_PLAYER;
-	EXPECT_EQ(OK, nb.getID(nt, "AA", 255, 1000).first);
-	EXPECT_EQ(OK, nb.getID(nt, "AÜ", 255, 1000).first);
-	EXPECT_EQ(OK, nb.getID(nt, "ÜA", 255, 1000).first);
-	EXPECT_EQ(OK, nb.getID(nt, "ÜÜ", 255, 1000).first);
-	idNumberT names[4] = {0};
-	nb.GetFirstMatches(nt, "", 4, names);
+	EXPECT_EQ(OK, nb.addName(nt, "AA", 255, 1000).first);
+	EXPECT_EQ(OK, nb.addName(nt, "AÜ", 255, 1000).first);
+	EXPECT_EQ(OK, nb.addName(nt, "ÜA", 255, 1000).first);
+	EXPECT_EQ(OK, nb.addName(nt, "ÜÜ", 255, 1000).first);
+	auto names = nb.getFirstMatches(nt, "", 4);
 	EXPECT_STREQ(nb.GetName(nt, names[0]), "AÜ");
 	EXPECT_STREQ(nb.GetName(nt, names[1]), "AA");
 	EXPECT_STREQ(nb.GetName(nt, names[2]), "ÜÜ");

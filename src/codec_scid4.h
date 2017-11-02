@@ -143,7 +143,7 @@ public: // CodecNative interface
 		    524287,  /* Site names:   Maximum of 2^19 -1 =   524,287 */
 		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
 		};
-		return nb_->getID(nt, name, LIMIT_NAMELEN, MAX_ID[nt]);
+		return nb_->addName(nt, name, LIMIT_NAMELEN, MAX_ID[nt]);
 	}
 
 	/**

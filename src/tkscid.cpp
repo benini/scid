@@ -7329,18 +7329,16 @@ sc_name_match (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     const char * prefix = argv[arg++];
     uint maxMatches = strGetUnsigned (argv[arg++]);
     if (maxMatches == 0) { return TCL_OK; }
-    idNumberT * array = new idNumberT [maxMatches];
-    uint matches = db->getNameBase()->GetFirstMatches (nt, prefix, maxMatches, array);
-    for (uint i=0; i < matches; i++) {
-        uint freq = db->getNameFreq(nt, array[i]);
-        const char * str = db->getNameBase()->GetName (nt, array[i]);
+    auto matches = db->getNameBase()->getFirstMatches(nt, prefix, maxMatches);
+    for (auto nameID : matches) {
+        uint freq = db->getNameFreq(nt, nameID);
+        const char * str = db->getNameBase()->GetName (nt, nameID);
         appendUintElement (ti, freq);
         Tcl_AppendElement (ti, str);
         if (nt == NAME_PLAYER  &&  eloMode) {
-            appendUintElement (ti, db->getNameBase()->GetElo (array[i]));
+            appendUintElement (ti, db->getNameBase()->GetElo (nameID));
         }
     }
-    delete[] array;
 
     return TCL_OK;
 }
@@ -7789,6 +7787,7 @@ UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecke
     progress.report(1,1);
 
     // Now generate the return message:
+    static const char* NAME_TYPE_STRING[] = {"player", "event", "site", "round"};
     sprintf (tempStr, "Scid found %u %s name correction%s.\n",
              correctionCount, NAME_TYPE_STRING[nt],
              strPlural (correctionCount));

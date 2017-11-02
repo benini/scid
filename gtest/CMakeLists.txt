@@ -41,7 +41,6 @@ file(GLOB GTEST_SRC *.cpp)
 set(GTEST_EXTRA
   ../src/codec_scid4.cpp
   ../src/index.cpp
-  ../src/namebase.cpp
   ../src/scidbase.cpp
   ../src/sortcache.cpp
   ../src/pgnparse.cpp ../src/misc.cpp
