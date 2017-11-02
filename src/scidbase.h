@@ -384,7 +384,7 @@ private:
 			if (!entry_op(newIE))
 				continue;
 
-			auto err = idx->WriteEntry(&newIE, gnum);
+			auto err = codec_->saveIndexEntry(newIE, gnum);
 			if (err != OK)
 				return std::make_pair(err, nCorrections);
 

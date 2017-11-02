@@ -137,6 +137,10 @@ private:
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
 
+	errorT saveIndexEntry(const IndexEntry&, gamenumT) override {
+		return ERROR_CodecUnsupFeat;
+	}
+
 	std::pair<errorT, idNumberT> addName(nameT, const char*) override {
 		return std::pair<errorT, idNumberT>(ERROR_CodecUnsupFeat, 0);
 	}

@@ -113,6 +113,14 @@ public:
 	virtual errorT saveGame(Game* game, gamenumT replaced) = 0;
 
 	/**
+	 * Replaces a game's IndexEntry (which contains the header data of a game).
+	 * @param ie:       reference to the IndexEntry with the new data.
+	 * @param replaced: valid gamenumT of the game to be replaced
+	 * @returns OK if successful or an error code.
+	 */
+	virtual errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) = 0;
+
+	/**
 	 * Adds a name (player, event, site or round) to the database.
 	 * @param nt:   nameT type of the name to add.
 	 * @param name: the name to add.

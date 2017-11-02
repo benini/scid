@@ -115,19 +115,6 @@ public: // CodecNative interface
 	}
 
 	/**
-	 * Add an IndexEntry to @e idx_.
-	 * @param ie: the IndexEntry object to add.
-	 * @returns OK if successful or an error code.
-	 */
-	errorT dyn_addIndexEntry(const IndexEntry& ie) {
-		auto nGames = idx_->GetNumGames();
-		if (nGames >= LIMIT_NUMGAMES)
-			return ERROR_NumGamesLimit;
-
-		return idx_->WriteEntry(&ie, nGames);
-	}
-
-	/**
 	 * Given a name (string), retrieve the corresponding ID.
 	 * The name is added to @e nb_ if do not already exists in the NameBase.
 	 * @param nt:   nameT type of the name to retrieve.
@@ -144,6 +131,29 @@ public: // CodecNative interface
 		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
 		};
 		return nb_->addName(nt, name, LIMIT_NAMELEN, MAX_ID[nt]);
+	}
+
+	/**
+	 * Add an IndexEntry to @e idx_.
+	 * @param ie: the IndexEntry object to add.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT dyn_addIndexEntry(const IndexEntry& ie) {
+		auto nGames = idx_->GetNumGames();
+		if (nGames >= LIMIT_NUMGAMES)
+			return ERROR_NumGamesLimit;
+
+		return idx_->WriteEntry(&ie, nGames);
+	}
+
+	/**
+	 * Replace an IndexEntry.
+	 * @param ie:       the IndexEntry with the new data.
+	 * @param replaced: valid gamenumT of the game to be replaced.
+	 * @returns OK if successful or an error code.
+	 */
+	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
+		return idx_->WriteEntry(&ie, replaced);
 	}
 
 	/**

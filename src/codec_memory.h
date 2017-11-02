@@ -101,6 +101,19 @@ public: // CodecNative CRTP
 	}
 
 	/**
+	 * Given a name (string), retrieve the corresponding ID.
+	 * The name is added to @e nb_ if do not already exists in the NameBase.
+	 * @param nt:   nameT type of the name to retrieve.
+	 * @param name: the name to retrieve.
+	 * @returns
+	 * - on success, a @e std::pair containing OK and the ID.
+	 * - on failure, a @e std::pair containing an error code and 0.
+	 */
+	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
+		return nb_->addName(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
+	}
+
+	/**
 	 * Add an IndexEntry to @e idx_.
 	 * @param ie: the IndexEntry object to add.
 	 * @returns OK if successful or an error code.
@@ -114,16 +127,13 @@ public: // CodecNative CRTP
 	}
 
 	/**
-	 * Given a name (string), retrieve the corresponding ID.
-	 * The name is added to @e nb_ if do not already exists in the NameBase.
-	 * @param nt:   nameT type of the name to retrieve.
-	 * @param name: the name to retrieve.
-	 * @returns
-	 * - on success, a @e std::pair containing OK and the ID.
-	 * - on failure, a @e std::pair containing an error code and 0.
+	 * Replace an IndexEntry.
+	 * @param ie:       the IndexEntry with the new data.
+	 * @param replaced: valid gamenumT of the game to be replaced.
+	 * @returns OK if successful or an error code.
 	 */
-	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
-		return nb_->addName(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
+	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
+		return idx_->WriteEntry(&ie, replaced);
 	}
 };
 

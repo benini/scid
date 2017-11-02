@@ -81,7 +81,11 @@ public: // ICodecDatabase interface
 		if (ie.first != OK)
 			return ie.first;
 
-		return idx_->WriteEntry(&ie.second, replaced);
+		return derived()->dyn_saveIndexEntry(ie.second, replaced);
+	}
+
+	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) override {
+		return derived()->dyn_saveIndexEntry(ie, replaced);
 	}
 
 	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) override {
