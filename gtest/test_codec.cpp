@@ -128,7 +128,7 @@ private:
 			res->GetCurrentPos()->GenerateMoves(&mlist, EMPTY, GEN_ALL_MOVES, true);
 			if (mlist.Size() == 0)
 				break;
-			res->AddMove(mlist.Get(rand(0, mlist.Size() - 1)), NULL);
+			res->AddMove(mlist.Get(rand(0, mlist.Size() - 1)));
 
 			if (rand(0, 6) == 0)
 				res->SetMoveComment(rand_comment().c_str());

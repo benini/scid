@@ -80,7 +80,6 @@ Game::~Game() {
     delete CurrentPos;
     if (SavedPos) { delete SavedPos; }
     if (StartPos) { delete StartPos; }
-    ClearExtraTags();
 }
 
 // =================================================
@@ -526,18 +525,6 @@ Game::ClearStandardTags ()
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::ClearExtraTags(): clear any nonstandard tags.
-void
-Game::ClearExtraTags ()
-{
-	for (auto& e : TagList) {
-		delete[] e.tag;
-		delete[] e.value;
-	}
-	TagList.clear();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::ClearMoves(): clear all moves.
 void
 Game::ClearMoves ()
@@ -691,36 +678,25 @@ Game::SetStartFen (const char * fenStr)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::AddPgnTag(): Add a PGN Tag.
 //
-void
-Game::AddPgnTag (const char * tag, const char * value)
-{
+void Game::AddPgnTag(const char* tag, const char* value) {
     // First, try to replace an existing tag:
-    for (auto& e : TagList) {
-        if (strEqual(tag, e.tag)) {
-            delete[] e.value;
-            e.value = strDuplicate (value);
+    for (auto& e : extraTags_) {
+        if (e.first == tag) {
+            e.second.assign(value);
             return;
         }
     }
-    // It does not already exist, so add a new tag:
-    tagT e;
-    e.tag = strDuplicate(tag);
-    e.value = strDuplicate(value);
-    if (strlen(e.tag) > MAX_TAG_LEN) {
-        e.tag[MAX_TAG_LEN] = '\0';
-    }
-    TagList.push_back(e);
+    extraTags_.emplace_back(tag, value);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::FindExtraTag():
 //   Finds and returns an extra PGN tag if it
 //   exists, or NULL if it does not exist.
-const char *
-Game::FindExtraTag (const char * tag)
-{
-    for (auto& e : TagList) {
-        if (strEqual(tag, e.tag)) return e.value;
+const char* Game::FindExtraTag(const char* tag) const {
+    for (auto& e : extraTags_) {
+        if (e.first == tag)
+            return e.second.c_str();
     }
     return NULL;
 }
@@ -728,17 +704,16 @@ Game::FindExtraTag (const char * tag)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::RemoveExtraTag():
 //   Remove an extra PGN tag if it exists.
-bool
-Game::RemoveExtraTag (const char * tag)
-{
-	auto it = std::remove_if(TagList.begin(), TagList.end(), [&](tagT& e) {
-		return strEqual(tag, e.tag);
-	});
-	if (it != TagList.end()) {
-		TagList.erase(it, TagList.end());
-		return true;
-	}
-	return false;
+bool Game::RemoveExtraTag(const char* tag) {
+    auto it = std::remove_if(extraTags_.begin(), extraTags_.end(),
+                             [&](const std::pair<std::string, std::string>& e) {
+                                 return e.first == tag;
+                             });
+    if (it != extraTags_.end()) {
+        extraTags_.erase(it, extraTags_.end());
+        return true;
+    }
+    return false;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -904,7 +879,7 @@ Game::MoveExitVariation (void)
 //      with the move to speed up PGN printing.
 //
 errorT
-Game::AddMove (simpleMoveT * sm, char * san)
+Game::AddMove (simpleMoveT * sm)
 {
     ASSERT (CurrentMove != NULL  &&  sm != NULL);
     // We must be at the end of a game/variation to add a move:
@@ -929,7 +904,6 @@ Game::AddMove (simpleMoveT * sm, char * san)
             UnderPromosFlag = true;
         }
     }
-    if (san != NULL) { strcpy (newMove->san, san); }
     CurrentPos->DoSimpleMove (&(newMove->moveData));
 
     CurrentPlyCount++;
@@ -2719,12 +2693,10 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
             eco_ToExtendedString (EcoCode, ecoStr);
             tb->PrintString (ecoStr);
         }
-        for (auto& elem : TagList) {
-            if( !strcmp(elem.tag, "Annotator"))
-            {
-                sprintf (temp, " (%s)", elem.value);
-                tb->PrintString (temp);
-            }
+        auto annotator = FindExtraTag("Annotator");
+        if (annotator != NULL) {
+            sprintf(temp, " (%s)", annotator);
+            tb->PrintString(temp);
         }
 
         tb->PrintString (newline);
@@ -2803,10 +2775,10 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
             }
 
             // Now print other tags
-            for (auto& elem : TagList) {
-                sprintf (temp, "[%s \"%s\"]%s",
-                         elem.tag, elem.value, newline);
-                tb->PrintString (temp);
+            for (auto& e : extraTags_) {
+                sprintf(temp, "[%s \"%s\"]%s", e.first.c_str(),
+                        e.second.c_str(), newline);
+                tb->PrintString(temp);
             }
         }
         // Finally, write the FEN tag if necessary:
@@ -2953,20 +2925,6 @@ Game::GetAverageElo ()
     if (white == 0) { white = WhiteEstimateElo; }
     if (black == 0) { black = BlackEstimateElo; }
     return (white + black) / 2;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::WriteExtraTags():
-//      Print the nonstandard tags in PGN notation to a file.
-//
-errorT
-Game::WriteExtraTags (FILE * fp)
-{
-    for (auto& e : TagList) {
-        fprintf (fp, "[%s \"%s\"]\n",
-                 e.tag, e.value);
-    }
-    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3476,7 +3434,7 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
         default:  // It is a regular move
             err = decodeMove (buf, &sm, b, CurrentPos);
             if (err != OK)  { return err; }
-            AddMove (&sm, NULL);
+            AddMove(&sm);
         }
 
         b = buf->GetByte ();
@@ -3520,16 +3478,13 @@ commonTags [255 - MAX_TAG_LEN] =
 // encodeTags():
 //      Encodes the non-standard tags.
 //
-static errorT
-encodeTags(ByteBuffer* buf, const tagT* tagList, uint numTags)
-{
-    uint length;
-    for (uint i=0; i < numTags; i++) {
-        char * tag = tagList[i].tag;
+template <typename TCont>
+errorT encodeTags(ByteBuffer* buf, const TCont& tagList) {
+    for (auto& tag : tagList) {
         uint tagnum = 1;
         const char ** common = commonTags;
         while (*common != NULL) {
-            if (strEqual (tag, *common)) {
+            if (tag.first == *common) {
                 buf->PutByte ((byte) MAX_TAG_LEN + tagnum);
                 break;
             } else {
@@ -3538,14 +3493,14 @@ encodeTags(ByteBuffer* buf, const tagT* tagList, uint numTags)
             }
         }
         if (*common == NULL) {   // This is not a common tag.
-            length = strLength (tag);
+            auto length = tag.first.length();
             buf->PutByte ((byte) length);
-            buf->PutFixedString (tag, length);
+            buf->PutFixedString(tag.first.c_str(), length);
         }
 
-        length = strLength (tagList[i].value);
+        auto length = tag.second.length();
         buf->PutByte ((byte) length);
-        buf->PutFixedString (tagList[i].value, length);
+        buf->PutFixedString(tag.second.c_str(), length);
     }
     buf->PutByte (0);
     return buf->Status();
@@ -3703,7 +3658,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     buf->Empty();
     // First, encode info not already stored in the index
     // This will be the non-STR (non-"seven tag roster") PGN tags.
-    err = encodeTags(buf, GetExtraTags(), GetNumExtraTags());
+    err = encodeTags(buf, GetExtraTags());
     if (err != OK) { return err; }
     // Now the game flags:
     byte flags = 0;
@@ -3854,7 +3809,7 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
             err = decodeMove (buf, sm, b, CurrentPos);
             if (err != OK)  { return err; }
             if (KeepDecodedMoves) {
-                AddMove (sm, NULL);
+                AddMove(sm);
             } else {
                 CurrentPos->DoSimpleMove (sm);
                 CurrentPlyCount++;

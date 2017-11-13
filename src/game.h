@@ -139,13 +139,13 @@ struct patternT
 class moveT
 {
     friend class Game;
-    simpleMoveT  moveData;      // piece moving, target square etc
-    char         san[10];           // SAN representation of move
     std::string  comment;
     moveT      * prev;
     moveT      * next;
     moveT      * varChild;
     moveT      * varParent;
+    simpleMoveT  moveData;      // piece moving, target square etc
+    char         san[10];           // SAN representation of move
     markerT      marker;  // can be NO_MARKER, START_MARKER or END_MARKER
     byte         numVariations;
     byte         nagCount;
@@ -153,8 +153,6 @@ class moveT
 
     bool isNull () const { return moveData.isNullMove(); }
 };
-
-
 
 // Since we want allocation and freeing of moves to be FAST, we allocate
 // in chunks, and keep a linked list of the chunks allocated.
@@ -166,12 +164,6 @@ struct moveChunkT {
     moveT moves [MOVE_CHUNKSIZE];
     uint numFree;
     moveChunkT * next;
-};
-
-struct tagT
-{
-    char * tag;
-    char * value;
 };
 
 
@@ -224,7 +216,7 @@ static Position staticPosition;
 class Game
 {
 private:
-    std::vector<tagT> TagList;
+    std::vector<std::pair<std::string, std::string> > extraTags_;
     Game *      NextGame;     // For keeping a linked list of games.
     moveChunkT* MoveChunk;
     moveT *     FreeList;
@@ -345,7 +337,7 @@ public:
     errorT   RestoreState();
 
     void     SetMoveData (moveT * m, simpleMoveT * sm);
-    errorT   AddMove (simpleMoveT * sm, char * san);
+    errorT   AddMove(simpleMoveT* sm);
     errorT   AddVariation ();
     errorT   DeleteVariation (uint varNumber);
     errorT   DeleteVariationAndFree (uint varNumber);
@@ -444,15 +436,11 @@ public:
     // Adding/Removing Extra  tags:
     void     AddPgnTag (const char * tag, const char * value);
     bool     RemoveExtraTag (const char * tag);
-    const char * FindExtraTag (const char * tag);
-    uint     GetNumExtraTags ()      { return (uint) TagList.size(); }
-    const tagT* GetExtraTags ()      { return TagList.data(); }
-    void     ClearExtraTags ();
+    const char* FindExtraTag (const char* tag) const;
+    const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
+    void ClearExtraTags() { extraTags_.clear(); }
 
     void     MakeHomePawnList (byte * pbPawnList);
-
-    // Searching
-    compareT CompareCurrentPos (Position * p);
 
     void      CopyStandardTags (Game * fromGame);
     errorT    LoadStandardTags (const IndexEntry* ie, const NameBase* nb);
@@ -475,7 +463,6 @@ public:
                                                  bool NewLineAtEnd = false,
                                                  bool newLineToSpaces = true);
     errorT    MoveToLocationInPGN (uint stopLocation);
-    errorT    WriteExtraTags (FILE * fp);
 
     uint      GetPgnOffset () {
                   PgnLastMovePos = 0;

@@ -1019,7 +1019,7 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
             }
 
             if (err == OK  &&  moveErrorCount == 0) {
-                err = game->AddMove (&sm, NULL);
+                err = game->AddMove(&sm);
             }
 
              // Report an error if the move could not be added:

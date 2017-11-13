@@ -1143,23 +1143,19 @@ sc_base_tag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             }
         } else {
             ASSERT (cmd == TAG_LIST);
-            uint numtags = g->GetNumExtraTags();
-            const tagT* taglist = g->GetExtraTags();
             // Increment frequency for each extra tag:
-            while (numtags > 0) {
+            for (auto& tag : g->GetExtraTags()) {
                 bool found = false;
                 for (uint i=0; i < tag_freq.size(); i++) {
-                    if (tag_freq[i].first == taglist->tag) {
+                    if (tag_freq[i].first == tag.first) {
                         tag_freq[i].second++;
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    tag_freq.push_back(std::make_pair(taglist->tag, 1));
+                    tag_freq.emplace_back(tag.first, 1);
                 }
-                numtags--;
-                taglist++;
             }
         }
     }
@@ -1785,7 +1781,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_EXPORT:
         if (argc >= 7 && argc <=9) {
-            FILE* exportFile = fopen (argv[5], "w");
+            FILE* exportFile = fopen(argv[5], "wb");
             if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
             Game g;
             if (strCompare("LaTeX", argv[6]) == 0) {
@@ -3716,7 +3712,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     db->gameAltered = true;
     if (atLastMove) {
         // We need to replicate the last move of the current game.
-        db->game->AddMove (sm, NULL);
+        db->game->AddMove(sm);
     }
     merge->MoveToPly (mergePly);
     ply = mergePly;
@@ -3724,7 +3720,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         simpleMoveT * mergeMove = merge->GetCurrentMove();
         if (merge->MoveForward() != OK) { break; }
         if (mergeMove == NULL) { break; }
-        if (db->game->AddMove (mergeMove, NULL) != OK) { break; }
+        if (db->game->AddMove(mergeMove) != OK) { break; }
         ply++;
     }
 
@@ -4671,15 +4667,8 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return setUintWidthResult (ti, date_GetDay (g->GetEventDate()), 2);
 
     case T_Extra:
-        {
-            uint numTags = g->GetNumExtraTags();
-            const tagT* ptagList = g->GetExtraTags();
-            while (numTags > 0) {
-                Tcl_AppendResult (ti, ptagList->tag, " \"", ptagList->value,
-                                  "\"\n", NULL);
-                numTags--;
-                ptagList++;
-            }
+        for (auto& tag : g->GetExtraTags()) {
+            Tcl_AppendResult(ti, tag.first.c_str(), " \"", tag.second.c_str(), "\"\n", NULL);
         }
         break;
 
@@ -5333,7 +5322,7 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Position * pos = db->game->GetCurrentPos();
     errorT err = pos->ReadCoordMove (&sm, s, true);
     if (err == OK) {
-        err = db->game->AddMove (&sm, NULL);
+        err = db->game->AddMove(&sm);
         if (err == OK) {
             db->gameAltered = true;
             return TCL_OK;
@@ -5406,7 +5395,7 @@ sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
       Position * pos = db->game->GetCurrentPos();
       errorT err = pos->ReadCoordMove (&sm, s, true);
       if (err == OK) {
-        err = db->game->AddMove (&sm, NULL);
+        err = db->game->AddMove(&sm);
         if (err == OK) {
             db->gameAltered = true;
             db->game->GetPrevSAN (tmp);
@@ -9816,24 +9805,13 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
                 match = false;
             }
 
-			if(sAnnotator != NULL && *sAnnotator != 0)
-			{
+			if (sAnnotator != NULL && *sAnnotator != 0) {
 				// Need the annotator flag, so decode the flags
-				if (match  &&  scratchGame->DecodeTags (base->bbuf, true) != OK)
+				if (match && scratchGame->DecodeTags(base->bbuf, true) != OK)
 					match = false;
-				if(match)
-				{
-					match = false;
-		            uint numtags = scratchGame->GetNumExtraTags();
-					const tagT* tag = scratchGame->GetExtraTags();
-					for (uint ii = 0; ii < numtags; ii++, tag++) {
-						// Returning all games where the search string matches with the prefix 
-						// of the annotator string
-						if( !strcmp(tag->tag, "Annotator")){
-							match = strAlphaContains(tag->value, sAnnotator);
-							break;
-						}
-					}
+				if (match) {
+					auto ann = scratchGame->FindExtraTag("Annotator");
+					match = (ann != NULL) && strAlphaContains(ann, sAnnotator);
 				}
 				scratchGame->Clear();
 			}
