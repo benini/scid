@@ -331,7 +331,7 @@ piece_IsSlider(pieceT p) { return PIECE_IS_SLIDER[piece_Type(p)]; }
 piece_Char(pieceT p)  { return PIECE_CHAR[piece_Type(p)]; }
 
   inline pieceT
-piece_FromChar(char x)
+piece_FromChar(int x)
 {
     switch (x) {
     case 'K': return KING;

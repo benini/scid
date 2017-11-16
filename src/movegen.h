@@ -108,7 +108,7 @@ bool attack_slider(squareT sqFrom, squareT sqTo, pieceT pieceType,
 	if (sqFrom > sqTo)
 		sqStep = -sqStep;
 
-	for (squareT sq = sqFrom + sqStep; sq != sqTo; sq += sqStep) {
+	for (int sq = sqFrom + sqStep; sq != sqTo; sq += sqStep) {
 		if (board[sq] != EMPTY_SQUARE)
 			return false;
 	}
@@ -218,21 +218,17 @@ inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
 		fyleEdge = NSQUARES - 1 - fyleEdge;
 	}
 
-	for (squareT sq = sqFrom + sqStep; sq != sqRay; sq += sqStep) {
+	for (int sq = sqFrom + sqStep; sq != sqRay; sq += sqStep) {
 		if (sq == sqTo || board[sq] != EMPTY_SQUARE)
 			return std::pair<pieceT, squareT>(INVALID_PIECE, 0);
 	}
 
-#if CPP11_SUPPORT
-	static_assert(squareT(-NSQUARES) > NSQUARES * NSQUARES,
-	              "squareT type is signed or too small");
-#endif
-	for (squareT sq = sqFrom - sqStep; sq < NSQUARES * NSQUARES; sq -= sqStep) {
-		if (sq == sqTo)
+	for (int sq = sqFrom - sqStep; sq < NSQUARES * NSQUARES; sq -= sqStep) {
+		if (sq < 0 || sq == sqTo)
 			break;
 
 		if (board[sq] != EMPTY_SQUARE)
-			return std::pair<pieceT, squareT>(pt, sq);
+			return std::make_pair(pt, static_cast<squareT>(sq));
 
 		if ((sq % NSQUARES) == fyleEdge)
 			break;

@@ -1132,6 +1132,18 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
     return OK;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strIsAllWhitespace():
+//    Returns true if the string contains only whitespace characters.
+static bool strIsAllWhitespace(const char* str) {
+    while (*str != 0) {
+        if (!isspace(static_cast<unsigned char>(*str))) {
+            return false;
+        }
+        str++;
+    }
+    return true;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PgnParser::ParseGame():

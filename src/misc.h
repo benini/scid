@@ -172,8 +172,6 @@ uint   strTrimSuffix (char * target, char suffixChar);
 void   strTrimDate (char * str);
 void   strTrimMarkCodes (char * str);
 void   strTrimMarkup (char * str);
-void   strTrimSurname (char * str, uint initials);
-inline void strTrimSurname (char * str) { strTrimSurname (str, 0); }
 const char * strFirstWord (const char * str);
 const char * strNextWord (const char * str);
 
@@ -184,7 +182,6 @@ strPlural (uint x) {
     return (x == 1 ? "" : "s");
 }
 
-bool   strIsAllWhitespace (const char * str);
 bool   strIsUnknownName (const char * str);
 
 // strIsSurnameOnly: returns true if a string appears to only

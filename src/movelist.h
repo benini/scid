@@ -81,12 +81,10 @@ inline bool operator==(const simpleMoveT& a, const cmpMove& b) {
 
 // typedef std::vector<simpleMoveT> MoveList;
 class MoveList {
-	uint ListSize;
+	uint ListSize = 0;
 	simpleMoveT Moves[MAX_LEGAL_MOVES];
 
 public:
-	MoveList() : ListSize(0) {}
-
 	typedef simpleMoveT* iterator;
 	iterator begin() { return Moves; };
 	iterator end() { return Moves + ListSize; }

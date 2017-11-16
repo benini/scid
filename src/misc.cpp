@@ -463,38 +463,6 @@ strTrimMarkup (char * str)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strTrimSurname():
-//    Trims a person name string to contain only the
-//    surname, or only the surname and a maximum number
-//    of initials.
-void
-strTrimSurname (char * str, uint initials)
-{
-    char * in = str;
-    char * out = str;
-    bool seenComma = false;
-
-    while (*in != 0) {
-        char ch = *in;
-        if (seenComma) {
-            if (isupper(ch)) {
-                *out++ = ch;
-                initials--;
-                if (initials == 0) { break; }
-            }
-        } else {
-            if (ch == ',') {
-                seenComma = true;
-                if (initials == 0) { break; }
-            }
-            *out++ = ch;
-        }
-        in++;
-    }
-    *out = 0;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strFirstWord:
 //    Skips over all whitespace at the start of the
 //    string to reach the first word.
@@ -502,7 +470,7 @@ const char *
 strFirstWord (const char * str)
 {
     ASSERT (str != NULL);
-    while (*str != 0  &&  isspace(*str)) { str++; }
+    while (*str != 0  &&  isspace(static_cast<unsigned char>(*str))) { str++; }
     return str;
 }
 
@@ -515,24 +483,10 @@ const char *
 strNextWord (const char * str)
 {
     ASSERT (str != NULL);
-    while (*str != 0  &&  !isspace(*str)) { str++; }
-    while (*str != 0  &&  isspace(*str)) { str++; }
+    while (*str != 0  &&  !isspace(static_cast<unsigned char>(*str))) { str++; }
+    while (*str != 0  &&  isspace(static_cast<unsigned char>(*str))) { str++; }
     return str;
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strIsAllWhitespace():
-//    Returns true if the string contains only whitespace characters.
-bool
-strIsAllWhitespace (const char * str)
-{
-    while (*str != 0) {
-        if (! isspace(*str)) { return false; }
-        str++;
-    }
-    return true;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strIsUnknownName():
@@ -617,9 +571,9 @@ void
 strGetIntegers (const char * str, int * results, uint nResults)
 {
     for (uint i=0; i < nResults; i++) {
-        while (*str != 0  &&  isspace(*str)) { str++; }
+        while (*str != 0  &&  isspace(static_cast<unsigned char>(*str))) { str++; }
         results[i] = strGetInteger (str);
-        while (*str != 0  &&  !isspace(*str)) { str++; }
+        while (*str != 0  &&  !isspace(static_cast<unsigned char>(*str))) { str++; }
     }
 }
 
@@ -631,9 +585,9 @@ void
 strGetUnsigneds (const char * str, uint * results, uint nResults)
 {
     for (uint i=0; i < nResults; i++) {
-        while (*str != 0  &&  isspace(*str)) { str++; }
+        while (*str != 0  &&  isspace(static_cast<unsigned char>(*str))) { str++; }
         results[i] = strGetUnsigned (str);
-        while (*str != 0  &&  !isspace(*str)) { str++; }
+        while (*str != 0  &&  !isspace(static_cast<unsigned char>(*str))) { str++; }
     }
 }
 
