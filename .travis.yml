@@ -86,8 +86,11 @@ script:
   - cd $TRAVIS_BUILD_DIR
   - mkdir Release && cd Release && cmake .. $SCID_TH && make VERBOSE=1 && size scid
   - cd $TRAVIS_BUILD_DIR
-  - if [ "${SCID_TH}" != "-DSCID_MULTITHREADING=OFF" ]; then
-      ./configure && make && size tkscid;
+  - if [ "${SCID_TH}" == "-DSCID_MULTITHREADING=OFF" ]; then
+      ./configure COMPILE="${CXX}" THREADS="-DMULTITHREADING_OFF" && make && size tkscid;
+    fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      ./configure COMPILE="${CXX}" && make && size tkscid;
     else
-      ./configure THREADS="-DMULTITHREADING_OFF" && make && size tkscid;
+      ./configure && make && size tkscid;
     fi
