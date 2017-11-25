@@ -335,6 +335,7 @@ public:
 	int gameNumber;   // game number of active game.
 	bool gameAltered; // true if game is modified
 	UndoRedo<Game, 100> gameAlterations;
+	std::pair<Game*, bool> deprecated_push_pop;
 
 private:
 	ICodecDatabase* codec_;

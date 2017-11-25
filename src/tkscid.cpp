@@ -4065,22 +4065,24 @@ sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~ DEPRECATED ~~~~~~
 // sc_game_pop:
 //    Restores the last game saved with sc_game_push.
 int
 sc_game_pop(ClientData, Tcl_Interp*, int, const char**)
 {
-    if (db->game->GetNextGame() != NULL) {
-        Game * g = db->game->GetNextGame();
+    if (db->deprecated_push_pop.first) {
         delete db->game;
-        db->gameAltered = g->GetAltered();
-        db->game = g;
+        db->game = db->deprecated_push_pop.first;
+        db->gameAltered = db->deprecated_push_pop.second;
+        db->deprecated_push_pop.first = nullptr;
+    } else {
+        ASSERT(0);
     }
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~ DEPRECATED ~~~~~~
 // sc_game_push:
 //    Saves the current game and pushes a new empty game onto
 //    the game state stack.
@@ -4099,8 +4101,11 @@ sc_game_push (ClientData, Tcl_Interp*, int argc, const char ** argv)
     }
 
     Game* g = (copy) ? db->game->clone() : new Game;
-    g->SetNextGame (db->game);
-    db->game->SetAltered (db->gameAltered);
+    if (db->deprecated_push_pop.first) {
+        ASSERT(0);
+        delete db->deprecated_push_pop.first;
+    }
+    db->deprecated_push_pop = {db->game, db->gameAltered};
     db->game = g;
     db->gameAltered = false;
 

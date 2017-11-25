@@ -28,7 +28,6 @@ namespace eval reviewgame {
   set scoreEngine 0.0
   
   set sequence 0
-  set pushedgame 0
   
   array set analysisEngine {}
   
@@ -167,10 +166,6 @@ proc ::reviewgame::showSolution {} {
 ################################################################################
 proc ::reviewgame::endTraining {} {
   set w $::reviewgame::window
-  
-  if {$::reviewgame::pushedgame} {
-    sc_game pop
-  }
   
   after cancel ::reviewgame::mainLoop
   set ::reviewgame::bailout 1
@@ -491,16 +486,14 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   # UCI code can correctly format the variations
   if {$move != ""} {
     sc_game push copyfast
-    set ::reviewgame::pushedgame 1
-    # ::uci::sc_move_add $move
     sc_move addSan $move
     set ::analysis(fen$engineSlot) [sc_pos fen]
+    sc_game pop
   } else  {
-    set ::analysis(fen$engineSlot) ""
-    set ::reviewgame::pushedgame 0
+    set ::analysis(fen$engineSlot) [sc_pos fen]
   }
   
-  ::reviewgame::sendToEngine "position fen [sc_pos fen] $move"
+  ::reviewgame::sendToEngine "position fen $::analysis(fen$engineSlot) $move"
   ::reviewgame::sendToEngine "go infinite"
   after [expr 1000 * $analysisTime] "::reviewgame::stopAnalyze $move"
 }
@@ -526,10 +519,6 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   
   set analysisEngine(analyzeMode) 0
   ::reviewgame::sendToEngine  "stop"
-  
-  if {$move != ""} {
-    sc_game pop
-  }
 }
 ################################################################################
 #
