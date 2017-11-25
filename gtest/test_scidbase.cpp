@@ -41,7 +41,7 @@ std::string encodePgn(const std::vector<scidBaseT::GamePos>& game)
 	// 4.3: Lines with 80 or more printing characters are strongly discouraged
 	// 8.2.1: Neither the first or the last character on an export format PGN line is a	space.
 	const size_t lineLen = 80;
-	auto formatLine = [&token, &lineLen](std::string& src, std::string& dest) {
+	auto formatLine = [&](std::string& src, std::string& dest) {
 		size_t skip_start = src.find_first_not_of(token.sep);
 		src.erase(0, skip_start);
 		while (src.size() > lineLen) {
@@ -77,7 +77,7 @@ std::string encodePgn(const std::vector<scidBaseT::GamePos>& game)
 	};
 
 	std::vector<uint> RAVid = { 0 };
-	auto handleRAV = [&token, &RAVid](uint RAVdepth, const uint& RAVnum) {
+	auto handleRAV = [&](uint RAVdepth, const uint& RAVnum) {
 		std::pair<uint, uint> res = { 0,0 };
 		if (++RAVdepth > RAVid.size()) {
 			RAVid.push_back(RAVnum);
