@@ -94,7 +94,6 @@ int sc_pos_isLegal    (TCL_ARGS);
 int sc_pos_isPromo    (TCL_ARGS);
 int sc_pos_matchMoves (TCL_ARGS);
 int sc_pos_moves      (TCL_ARGS);
-int sc_pos_pgnBoard   (TCL_ARGS);
 int sc_pos_probe      (TCL_ARGS);
 int sc_pos_probe_board (TCL_ARGS);
 int sc_pos_setComment (TCL_ARGS);

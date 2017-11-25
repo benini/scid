@@ -131,37 +131,6 @@ initHashValues (void)
 //  PRIVATE FUNCTIONS -- small ones are inline for speed
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::AssertPos():
-//      Does a slow, thorough check of the integrity of the
-//      data structures, ensuring everything is valid.
-//
-errorT
-Position::AssertPos ()
-{
-    byte mat[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    for (colorT c = WHITE; c <= BLACK; c++) {
-        for (uint i=0; i < Count[c]; i++) {
-            if (ListPos[List[c][i]] != i
-                  ||  piece_Color(Board[List[c][i]]) != c) {
-                DumpBoard (stderr);
-                DumpLists (stderr);
-                return ERROR;
-            }
-            mat[Board[List[c][i]]]++;
-        }
-    }
-    for (uint i=WK; i < BP; i++) {
-        if (mat[i] != Material[i]) {
-            DumpBoard (stderr);
-            DumpLists (stderr);
-            return ERROR;
-        }
-    }
-    return OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::CalcPinsDir():
 //      Look for a pinned piece in the direction 'dir' relative to
 //      the position of the king to move.
@@ -1921,14 +1890,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
     }
 
     ToMove = enemy;
-
-#ifndef NDEBUG
-    // Do a SLOW, careful check for corruption:
-    if (AssertPos() != OK) {
-        abort();
-    }
-#endif
-
     return;
 }
 
@@ -2008,13 +1969,6 @@ Position::UndoSimpleMove (simpleMoveT * m)
         RemoveFromBoard (rook, rookto);
         AddToBoard (rook, rookfrom);
     }
-
-#ifndef NDEBUG
-    if (AssertPos() != OK) {
-        abort();
-    }
-#endif
-
     return;
 }
 
@@ -2299,22 +2253,20 @@ Position::MakeUCIString (simpleMoveT * m, char * s)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ReadCoordMove():
-//      Given a non-promotion move in coordinate notation,
+//      Given a move in coordinate notation,
 //      e.g. "e2e4" or "g1f3", generates the legal move it represents.
 //      Returns: OK or ERROR_InvalidMove.
 //      If "reverse" is true, coordinates in reverse order are acceptable,
 //      e.g. "f3g1" for 1.Nf3.
 //
-errorT
-Position::ReadCoordMove (simpleMoveT * m, const char * str, bool reverse)
-{
+errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, int slen,
+                               bool reverse) {
     ASSERT (m != NULL  &&  str != NULL);
     fyleT fromFyle, toFyle;
     rankT fromRank, toRank;
     squareT from, to;
     pieceT promo = EMPTY;
 
-    uint slen = strLength(str);
     if (slen == 5) {
         promo = piece_FromChar(toupper(str[4]));
     } else if (slen != 4) { return ERROR_InvalidMove; }
@@ -2347,296 +2299,290 @@ Position::ReadCoordMove (simpleMoveT * m, const char * str, bool reverse)
     return ERROR_InvalidMove;
 }
 
+static int trimCheck(const char* str, int slen) {
+	while (slen > 0) { // trim mate '#' or check '+'
+		--slen;
+		if (str[slen] != '#' && str[slen] != '+') {
+			++slen;
+			break;
+		}
+	}
+	return slen;
+}
+
+errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
+                              fyleT frFyle) {
+	ASSERT(sm != NULL && str != NULL && frFyle <= H_FYLE);
+
+	slen = trimCheck(str, slen);
+	if (slen < 2)
+		return ERROR_InvalidMove;
+
+	auto is_digit = [](char ch) {
+		return isdigit(static_cast<unsigned char>(ch));
+	};
+	auto is_lower = [](char ch) {
+		return islower(static_cast<unsigned char>(ch));
+	};
+
+	if (slen >= 4 && // Check if it is a coordinates-style move ("e2e4")
+	    is_digit(str[1]) && is_lower(str[2]) && is_digit(str[3])) {
+		return ReadCoordMove(sm, str, slen, false);
+	}
+
+	MoveList mlist;
+	pieceT promo = EMPTY;
+	auto last_ch = static_cast<unsigned char>(str[slen - 1]);
+	if (!is_digit(last_ch)) {
+		// Promotion, last char must be Q/R/B/N.
+		promo = piece_FromChar(toupper(last_ch));
+		if (promo != QUEEN && promo != ROOK && promo != KNIGHT &&
+		    promo != BISHOP) {
+			return ERROR_InvalidMove;
+		}
+		slen--;
+		// Accept the move even if it is of the form "a8Q" not "a8=Q":
+		if (str[slen - 1] == '=') {
+			slen--;
+		}
+	}
+	if (slen < 2)
+		return ERROR_InvalidMove;
+
+	// Check for the compact form of capture with no rank,
+	// e.g. "ed" or "de=Q":
+	if (slen == 2 && (str[1] >= 'a' && str[1] <= 'h')) {
+		auto toFyle = fyle_FromChar(str[1]);
+		// Check each rank in turn, looking for the capture:
+		for (rankT r = RANK_1; r <= RANK_8; r++) {
+			auto to = square_Make(toFyle, r);
+			if (MatchPawnMove(&mlist, frFyle, to, promo) == OK) {
+				*sm = *(mlist.Get(0));
+				return OK;
+			}
+		}
+		// It is NOT a valid capture with no rank:
+		return ERROR_InvalidMove;
+	}
+
+	auto toFyle = fyle_FromChar(str[slen - 2]);
+	auto toRank = rank_FromChar(str[slen - 1]);
+	if (toRank == NO_RANK || toFyle == NO_FYLE)
+		return ERROR_InvalidMove;
+
+	auto to = square_Make(toFyle, toRank);
+	if (MatchPawnMove(&mlist, frFyle, to, promo) != OK)
+		return ERROR_InvalidMove;
+
+	*sm = *(mlist.Get(0));
+	return OK;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ReadMove():
 //      Given a move in (possibly sloppy) PGN notation,
 //      generates the legal move it corresponds to.
 //      Returns: OK or ERROR_InvalidMove.
 //
-errorT
-Position::ReadMove (simpleMoveT * m, const char * str, tokenT token)
-{
-    ASSERT (m != NULL  &&  str != NULL);
-    const char * s = str;
-    char mStr [255];
-    pieceT p;
-    squareT from = NS;
-    squareT to = NS;
-    rankT frRank, toRank;
-    fyleT frFyle, toFyle;
+errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
+                          pieceT piece) {
+	ASSERT(sm != NULL && str != NULL);
+	ASSERT(piece == KING || piece == QUEEN || piece == ROOK ||
+	       piece == BISHOP || piece == KNIGHT);
 
-    MoveList mlist;
-    mlist.Clear();
+	slen = trimCheck(str, slen);
+	if (slen < 3 || slen > 5)
+		return ERROR_InvalidMove;
 
-    // Check for a null move:
-    if (token == TOKEN_Move_Null) {
-        m->pieceNum = 0;
-        m->from = GetKingSquare (ToMove);
-        m->to = m->from;
-        m->movingPiece = Board[m->from];
-        m->promote = EMPTY;
-        return OK;
-    }
+	auto toRank = rank_FromChar(str[slen - 1]);
+	auto toFyle = fyle_FromChar(str[slen - 2]);
+	if (toRank == NO_RANK || toFyle == NO_FYLE)
+		return ERROR_InvalidMove;
+	auto to = square_Make(toFyle, toRank);
 
-    // Strip out 'x', '-', etc leaving just pieces, files and ranks:
-    char * s2 = mStr;
-    uint slen = 0;
-    while (!isspace(*s)  &&  *s != '\0') {
-        if ((isalpha(*s)  && (*s != 'x'))  ||  isdigit(*s)  ||  *s == '=') {
-            *s2 = *s;  s2++;  slen++;
-        }
-        s++;
-    }
+	auto frRank = NO_RANK;
+	auto frFyle = NO_FYLE;
+	if (slen > 3) { // There is some ambiguity information in the input string.
+		for (int i = 1; i < slen - 2; i++) { // For each extra char:
+			if (isdigit(static_cast<unsigned char>(str[i]))) {
+				frRank = rank_FromChar(str[i]);
+			} else if (str[i] >= 'a' && str[i] <= 'h') {
+				frFyle = fyle_FromChar(str[i]);
+			}
+		}
+	}
 
-    if (slen < 2) return ERROR_InvalidMove;
-    
-    *s2 = '\0';
-    s = mStr;
+	// Calculate the matching legal move(s):
+	MoveList mlist;
+	if (piece == KING) {
+		if (MatchKingMove(&mlist, to) != OK)
+			return ERROR_InvalidMove;
 
-    // Pawn moves:
-    if (token == TOKEN_Move_Pawn  ||  token == TOKEN_Move_Promote) {
+		*sm = *(mlist.Get(0));
+		return OK;
+	}
 
-        pieceT promo = EMPTY;
-        if (token == TOKEN_Move_Promote) {
-            // Last char must be Q/R/B/N.
-            // Accept the move even if it is of the form "a8Q" not "a8=Q":
-            // if (s[slen-2] != '=') { return ERROR_InvalidMove; }
-            promo = piece_FromChar(toupper(s[slen-1]));
-            if (promo != QUEEN  &&  promo != ROOK  &&  promo != KNIGHT
-                && promo != BISHOP) {
-                return ERROR_InvalidMove;
-            }
-            slen--;
-            if (s[slen-1] == '=') { slen--; }
-
-            // in case of malformed moves
-	    if (slen < 2) return ERROR_InvalidMove;
-        } else {
-            // Check if it is a coordinates-style move, in which case it
-            // could be any piece:
-            if (slen >= 4  &&
-                islower(s[0])  &&  isdigit(s[1])  &&
-                islower(s[slen-2])  &&  isdigit(s[slen-1])) {
-                return ReadCoordMove (m, str, false);
-            }
-        }
-        // First char MUST be a fyle:
-        if (*s < 'a'  ||  *s > 'h')  {  return ERROR_InvalidMove; }
-        frFyle = fyle_FromChar (s[0]);
-
-        // Check for the compact form of capture with no rank,
-        // e.g. "ed" or "de=Q":
-        if (slen == 2  &&  (s[1] >= 'a'  &&  s[1] <= 'h')) {
-            toFyle = fyle_FromChar (s[1]);
-            // Check each rank in turn, looking for the capture:
-            for (rankT r = RANK_1; r <= RANK_8; r++) {
-                to = square_Make (toFyle, r);
-                if (MatchPawnMove (&mlist, frFyle, to, promo) == OK) {
-                    *m = *(mlist.Get(0));
-                    return OK;
-                }
-            }
-            // It is NOT a valid capture with no rank:
-            return ERROR_InvalidMove;
-        }
-
-        toFyle = fyle_FromChar (s[slen-2]);
-        toRank = rank_FromChar (s[slen-1]);
-        to = square_Make (toFyle, toRank);
-        if (to == NS) { return ERROR_InvalidMove; }
-
-        if (MatchPawnMove (&mlist, frFyle, to, promo) != OK) {
-            return ERROR_InvalidMove;
-        } else {
-            *m = *(mlist.Get(0));
-            return OK;
-        }
-    }
-
-    // Here we handle piece moves, including castling
-    if (token != TOKEN_Move_Piece) {  // Must be castling move
-        ASSERT (token == TOKEN_Move_Castle_King  ||  token == TOKEN_Move_Castle_Queen);
-        from = (ToMove == WHITE ? E1 : E8);
-        if (GetKingSquare(ToMove) != from) { return ERROR_InvalidMove; }
-        to = (token == TOKEN_Move_Castle_King ? (from + 2) : (from - 2));
-        if (MatchKingMove (&mlist, to) != OK) {
-            return ERROR_InvalidMove;
-        } else {
-            *m = *(mlist.Get(0));
-            return OK;
-        }
-    }
-
-    // If we reach here, it is a (non-castling, non-pawn) piece move.
-
-    ASSERT (token == TOKEN_Move_Piece);
-    p = piece_FromChar(*s);
-    if (p == EMPTY) { return ERROR_InvalidMove; }
-    if (slen < 3  ||  slen > 5) { return ERROR_InvalidMove; }
-    toRank = rank_FromChar(s[slen-1]);
-    toFyle = fyle_FromChar(s[slen-2]);
-    to = square_Make(toFyle, toRank);
-    if (to == NS) { return ERROR_InvalidMove; }
-    frRank = NO_RANK;
-    frFyle = NO_FYLE;
-    if (slen > 3) {
-        // There is some ambiguity information in the input string.
-
-        for (uint i=1; i < slen-2; i++) {  // For each extra char:
-            if (isdigit(s[i])) {
-                frRank = rank_FromChar(s[i]);
-            } else if (s[i] >= 'a'  &&  s[i] <= 'h') {
-                frFyle = fyle_FromChar(s[i]);
-            }
-        }
-    }
-
-    // Calculate the matching legal move(s):
-    if (p == KING) {
-        if (MatchKingMove(&mlist, to) != OK) {
-            return ERROR_InvalidMove;
-        } else {
-            *m = *(mlist.Get(0));
-            return OK;
-        }
-    } else {  // A Queen/Rook/Bishop/Knight move
-        MatchLegalMove (&mlist, p, to);
-    }
-
-    uint i;
-    uint matchCount = 0;
-    for (i=0; i < mlist.Size(); i++) {
-        // We need to check: (a) that to-square matches, and
-        //    (b), that from-square matches any ambiguity indicator.
-
-        simpleMoveT * thisMove = mlist.Get(i);
-        if (to == thisMove->to
-              && (frFyle==NO_FYLE || frFyle == square_Fyle(thisMove->from))
-              && (frRank==NO_RANK || frRank == square_Rank(thisMove->from))) {
-            // We have a match!!
-            *m = *thisMove;
-            matchCount++;
-        }
-    }
-    if (matchCount == 1) { return OK; }
-    // No match, or too many (ambiguous) moves match:
-    return ERROR_InvalidMove;
+	// A Queen/Rook/Bishop/Knight move
+	MatchLegalMove(&mlist, piece, to);
+	uint matchCount = 0;
+	for (uint i = 0, n = mlist.Size(); i < n; i++) {
+		// We need to check any ambiguity indicator.
+		simpleMoveT* thisMove = mlist.Get(i);
+		if ((frFyle == NO_FYLE || frFyle == square_Fyle(thisMove->from)) &&
+		    (frRank == NO_RANK || frRank == square_Rank(thisMove->from))) {
+			// We have a match!!
+			*sm = *thisMove;
+			matchCount++;
+		}
+	}
+	return (matchCount == 1) ? OK                 // ok.
+	                         : ERROR_InvalidMove; // No match, or too many
+	                                              // (ambiguous) moves match.
 }
 
+errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
+	slen = trimCheck(str, slen);
+
+	auto str_equal = [&](const char* const_str, const int len) {
+		return slen == len && std::equal(str, str + len, const_str);
+	};
+
+	// short castle
+	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
+		squareT kingSq = GetKingSquare(ToMove);
+		if (kingSq != (ToMove == WHITE ? E1 : E8))
+			return ERROR_InvalidMove;
+		// if (StrictCastling  &&  ! GetCastling (ToMove, KSIDE))
+		//    return ERROR_InvalidMove;
+		if (Board[kingSq + 1] != EMPTY || Board[kingSq + 2] != EMPTY ||
+		    CalcNumChecks(kingSq) > 0 || CalcNumChecks(kingSq + 1) > 0 ||
+		    CalcNumChecks(kingSq + 2) > 0) {
+			return ERROR_InvalidMove;
+		}
+		sm->from = kingSq;
+		sm->to = kingSq + 2;
+		sm->promote = EMPTY;
+		sm->movingPiece = KING;
+		sm->capturedPiece = EMPTY;
+		return OK;
+	}
+	// long castle
+	if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
+		squareT kingSq = GetKingSquare(ToMove);
+		if (kingSq != (ToMove == WHITE ? E1 : E8))
+			return ERROR_InvalidMove;
+		// if (StrictCastling  &&  ! GetCastling (ToMove, QSIDE))
+		//    return ERROR_InvalidMove;
+		if (Board[kingSq - 1] != EMPTY || Board[kingSq - 2] != EMPTY ||
+		    Board[kingSq - 3] != EMPTY || CalcNumChecks(kingSq) > 0 ||
+		    CalcNumChecks(kingSq - 1) > 0 || CalcNumChecks(kingSq - 2) > 0) {
+			return ERROR_InvalidMove;
+		}
+		sm->from = kingSq;
+		sm->to = kingSq - 2;
+		sm->promote = EMPTY;
+		sm->movingPiece = KING;
+		sm->capturedPiece = EMPTY;
+		return OK;
+	}
+	return ERROR_InvalidMove;
+}
+
+errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
+	while (!isalpha(static_cast<unsigned char>(*str)) && *str != '\0') {
+		str++; // trim left
+	}
+	const char* begin = str;
+	while (!isspace(static_cast<unsigned char>(*str)) && *str != '\0') {
+		str++; // trim right
+	}
+	return ParseMove(sm, begin, str);
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ParseMove():
 //      Parse a single move from SAN-style notation.
 //
-errorT
-Position::ParseMove (simpleMoveT * sm, const char * line)
-{
-    const char * s;
-    char * s2;
-    char mStr [255];
-    uint length = 0;
-    tokenT token = TOKEN_Invalid;
-    errorT err = OK;
+errorT Position::ParseMove(simpleMoveT* sm, const char* str,
+                           const char* strEnd) {
+	ASSERT(str != NULL);
 
-    s = line;
-    ASSERT (line != NULL);
+	int length = static_cast<int>(std::distance(str, strEnd));
+	if (length < 2 || length > 9)
+		return ERROR_InvalidMove;
 
-    // First, strip the move string down to its raw form with no
-    // 'x' (capture symbols), etc:
+	switch (str[0]) {
+	case 'a':
+		return ReadMovePawn(sm, str, length, A_FYLE);
+	case 'b':
+		return ReadMovePawn(sm, str, length, B_FYLE);
+	case 'c':
+		return ReadMovePawn(sm, str, length, C_FYLE);
+	case 'd':
+		return ReadMovePawn(sm, str, length, D_FYLE);
+	case 'e':
+		return ReadMovePawn(sm, str, length, E_FYLE);
+	case 'f':
+		return ReadMovePawn(sm, str, length, F_FYLE);
+	case 'g':
+		return ReadMovePawn(sm, str, length, G_FYLE);
+	case 'h':
+		return ReadMovePawn(sm, str, length, H_FYLE);
+	case 'K':
+		return ReadMove(sm, str, length, KING);
+	case 'Q':
+		return ReadMove(sm, str, length, QUEEN);
+	case 'R':
+		return ReadMove(sm, str, length, ROOK);
+	case 'B':
+		return ReadMove(sm, str, length, BISHOP);
+	case 'N':
+		return ReadMove(sm, str, length, KNIGHT);
+	case 'O':
+		return ReadMoveCastle(sm, str, length);
+	}
 
-    while (*s != 0  &&  !isalpha(*s)) { s++; }
-    if (*s == '\0') { return ERROR_InvalidMove; }
-    s2 = mStr; length = 0;
-    while (!isspace(*s)  &&  *s != '\0') {
-        if ((isalpha(*s)  && (*s != 'x'))  ||  isdigit(*s)  ||  *s == '=') {
-            *s2 = *s;  s2++;  length++;
-            if (length >= 10) { return ERROR_InvalidMove; }
-        }
-        s++;
-    }
-    if (length == 0 ||  length > 10) { return ERROR_InvalidMove; }
-    *s2 = '\0';
-    if (mStr[0] == 'O') {
-        if (mStr[1] == 'O'  &&  mStr[2] == 'O' && mStr[3] == 0) {
-            token = TOKEN_Move_Castle_Queen;
-        } else if (mStr[1] == 'O'  &&  mStr[2] == 0) {
-            token = TOKEN_Move_Castle_King;
-        } else { return ERROR_InvalidMove; }
-    } else if (mStr[0] == 'K'  ||  mStr[0] == 'Q'  ||  mStr[0] == 'R'  ||
-               mStr[0] == 'B'  ||  mStr[0] == 'N'  ||  mStr[0] == 'r'  ||
-               mStr[0] == 'k'  ||  mStr[0] == 'q'  ||  mStr[0] == 'n') {
-        mStr[0] = toupper(mStr[0]);
-        token = TOKEN_Move_Piece;
-    } else if (mStr[0] >= 'a'  &&  mStr[0] <= 'h') {
-        token = TOKEN_Move_Pawn;
-        if (!isdigit (mStr[length - 1])) {
-            token = TOKEN_Move_Promote;
-        }
-    } else { return ERROR_InvalidMove; }
-    err = ReadMove (sm, mStr, token);
-    // If not successful, and the move started with a lower case letter,
-    // try treating it as a piece move instead. This only affects Bishop
-    // moves where a lower-case 'b' is used instead of 'B'.
-    if (err != OK  &&  token == TOKEN_Move_Pawn) {
-        mStr[0] = toupper(mStr[0]);
-        token = TOKEN_Move_Piece;
-         err = ReadMove (sm, mStr, token);
-    }
-    if (err != OK) { return ERROR_InvalidMove; }
-    return err;
+	// Check for a null move:
+	if ((length == 2 && std::equal(str, str + 2, "--")) ||
+	    (length == 2 && std::equal(str, str + 2, "Z0")) ||
+	    (length == 4 && std::equal(str, str + 4, "null"))) {
+		sm->pieceNum = 0;
+		sm->from = GetKingSquare(ToMove);
+		sm->to = sm->from;
+		sm->movingPiece = Board[sm->from];
+		sm->promote = EMPTY;
+		return OK;
+	}
+
+	// Invalid move, check for a misspelled first char:
+	switch (str[0]) {
+	case 'A':
+		return ReadMovePawn(sm, str, length, A_FYLE);
+	case 'C':
+		return ReadMovePawn(sm, str, length, C_FYLE);
+	case 'D':
+		return ReadMovePawn(sm, str, length, D_FYLE);
+	case 'E':
+		return ReadMovePawn(sm, str, length, E_FYLE);
+	case 'F':
+		return ReadMovePawn(sm, str, length, F_FYLE);
+	case 'G':
+		return ReadMovePawn(sm, str, length, G_FYLE);
+	case 'H':
+		return ReadMovePawn(sm, str, length, H_FYLE);
+	case 'P':
+		return ParseMove(sm, str + 1, strEnd);
+	case 'k':
+		return ReadMove(sm, str, length, KING);
+	case 'q':
+		return ReadMove(sm, str, length, QUEEN);
+	case 'r':
+		return ReadMove(sm, str, length, ROOK);
+	case 'n':
+		return ReadMove(sm, str, length, KNIGHT);
+	}
+	return ERROR_InvalidMove;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ReadLine():
-//      Parse a sequence of moves separated by whitespace and
-//      move numbers, e.g. "1.e4 e5 2.Nf3" or "e4 e5 Nf3".
-//
-errorT
-Position::ReadLine (const char * line)
-{
-    const char * s = line;
-    char mStr[255];
-    char * s2;
-    uint length = 0;
-    simpleMoveT sm;
-    tokenT token = TOKEN_Invalid;
-    errorT err;
-
-    while (1) {
-        while (*s != 0  &&  !isalpha(*s)) { s++; }
-        if (*s == '\0') { return OK; }
-        s2 = mStr; length = 0;
-        while (!isspace(*s)  &&  *s != '\0') {
-            if (isalpha(*s)  ||  isdigit(*s)  ||  *s == '=') {
-                *s2 = *s;  s2++;  length++;
-            }
-            s++;
-        }
-        *s2 = '\0';
-        if (*mStr == 'O') {
-            if (mStr[1] == 'O'  &&  mStr[2] == 'O' && mStr[3] == 0) {
-                token = TOKEN_Move_Castle_Queen;
-            } else if (mStr[1] == 'O'  &&  mStr[2] == 0) {
-                token = TOKEN_Move_Castle_King;
-            }
-        } else if (*mStr == 'K'  ||  *mStr == 'Q'  ||  *mStr == 'R'  ||
-                   *mStr == 'B'  ||  *mStr == 'N'  ||  *mStr == 'r'  ||
-                   *mStr == 'k'  ||  *mStr == 'q'  ||  *mStr == 'n') {
-            *mStr = toupper(*mStr);
-            token = TOKEN_Move_Piece;
-        } else if (*mStr >= 'a'  &&  *mStr <= 'h') {
-            token = TOKEN_Move_Pawn;
-            if (!isdigit (mStr[length - 1])) {
-                token = TOKEN_Move_Promote;
-            }
-        } else { return ERROR_InvalidMove; }
-        err = ReadMove (&sm, mStr, token);
-        if (err != OK) { return err; }
-        DoSimpleMove (&sm);
-    }
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::CalcSANStrings():
@@ -2705,48 +2651,6 @@ Position::MakeLongStr (char * str)
     *s++ = ' ';
     *s++ = (ToMove == WHITE ? 'w' : 'b');
     *s = 0;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::DumpBoard():
-//      Dump the board to an open file.
-//
-void
-Position::DumpBoard (FILE * fp)
-{
-    ASSERT (fp != NULL);
-    squareT s;
-    for (int i=7; i>=0; i--) {
-        fputs ("   ", fp);
-        for (int j=0; j<8; j++) {
-            s = (i*8) + j;
-            putc (PIECE_CHAR[Board[s]], fp);
-            putc (' ', fp);
-        }
-        putc ('\n', fp);
-    }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::DumpLists():
-//      Dump the piece lists to an open file.
-//
-void
-Position::DumpLists (FILE * fp)
-{
-    ASSERT (fp != NULL);
-    uint i;
-    for (colorT c = WHITE; c <= BLACK; c++) {
-        for (i=0; i < Count[c]; i++) {
-            pieceT p = Board[List[c][i]];
-            fprintf (fp, "%2d:", ListPos[List[c][i]]);
-            putc (PIECE_CHAR[p], fp);
-            putc (square_FyleChar (List[c][i]), fp);
-            putc (square_RankChar (List[c][i]), fp);
-            putc (' ', fp);
-        }
-        putc ('\n', fp);
-    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2851,6 +2755,10 @@ Position::PrintCompactStrFlipped (char * cboard)
 errorT
 Position::ReadFromFEN (const char * str)
 {
+    auto is_space = [](char ch) {
+        return isspace(static_cast<unsigned char>(ch));
+    };
+
     // pieceFromByte[] converts a character to its piece, e.g. 'k' -> BK.
     static pieceT pieceFromByte [256];
 
@@ -2907,7 +2815,7 @@ Position::ReadFromFEN (const char * str)
     if (Material[WK] != 1  ||  Material[BK] != 1) { return ERROR_InvalidFEN; }
 
     // Now the side to move:
-    while (isspace(*s)) { s++; }
+    while (is_space(*s)) { s++; }
     switch (*s) {
     case 'w':
         SetToMove (WHITE);
@@ -2923,7 +2831,7 @@ Position::ReadFromFEN (const char * str)
     if (! IsLegal()) { return ERROR_InvalidFEN; }
 
     // Now the castling flags:
-    while (isspace(*s)) { s++; }
+    while (is_space(*s)) { s++; }
     if (*s == '-') {
         s++;  // do nothing
     } else if (*s == 0) {
@@ -2939,7 +2847,7 @@ Position::ReadFromFEN (const char * str)
             if (Board[H8] == BR) { SetCastling (BLACK, KSIDE, true); }
         }
     } else {
-        while (!isspace(*s)  &&  *s != 0) {
+        while (!is_space(*s)  &&  *s != 0) {
             switch (*s) {
             case 'Q':
                 SetCastling (WHITE, QSIDE, true);
@@ -2961,7 +2869,7 @@ Position::ReadFromFEN (const char * str)
     }
 
     // Now the EP target:
-    while (isspace(*s)) { s++; }
+    while (is_space(*s)) { s++; }
     if (*s == 0) {
         // do nothing
     } else if (*s == '-') {
@@ -2980,14 +2888,14 @@ Position::ReadFromFEN (const char * str)
     }
 
     // Now the capture/pawn halfmove clock:
-    while (isspace(*s)) { s++; }
+    while (is_space(*s)) { s++; }
     if (*s) {
         HalfMoveClock = (ushort) atoi(s);
     }
-    while (!isspace(*s)  && *s != 0) { s++; }
+    while (!is_space(*s)  && *s != 0) { s++; }
 
     // Finally, the fullmove counter:
-    while (isspace(*s)) { s++; }
+    while (is_space(*s)) { s++; }
     if (*s) {
         int i = atoi(s);
         if (i >= 1) {
@@ -3011,9 +2919,7 @@ Position::ReadFromFEN (const char * str)
 //      If flags == FEN_ALL_FIELDS, all fields are printed including
 //              the halfmove clock and ply counter.
 //
-void
-Position::PrintFEN (char * str, uint flags)
-{
+void Position::PrintFEN(char* str, uint flags) const {
     ASSERT (str != NULL);
     uint emptyRun, iRank, iFyle;
     for (iRank = 0; iRank < 8; iRank++) {

@@ -987,11 +987,11 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
         case TOKEN_Move_Castle_King:
         case TOKEN_Move_Castle_Queen:
         case TOKEN_Move_Null:
-            err = game->GetCurrentPos()->ReadMove (&sm, buffer, token);
+            err = game->GetCurrentPos()->ParseMove(&sm, buffer);
 
             // If king castling failed, maybe it's OO meaning castle queen-side
             if (err != OK  &&  token == TOKEN_Move_Castle_King) {
-                err = game->GetCurrentPos()->ReadMove (&sm, buffer, TOKEN_Move_Castle_Queen);
+                err = game->GetCurrentPos()->ParseMove(&sm, buffer);
             }
 
             // The most common type of "illegal" move in standard
@@ -1004,7 +1004,7 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
                                 token == TOKEN_Move_Castle_Queen)) {
                 bool prevFlag = game->GetCurrentPos()->GetStrictCastling();
                 game->GetCurrentPos()->SetStrictCastling (false);
-                err = game->GetCurrentPos()->ReadMove (&sm, buffer, token);
+                err = game->GetCurrentPos()->ParseMove(&sm, buffer);
                 game->GetCurrentPos()->SetStrictCastling (prevFlag);
 
                 // If no longer an error, castling without strict checking

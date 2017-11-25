@@ -439,6 +439,33 @@ readString (FILE * fp, char * str, uint length)
     return OK;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::ReadLine():
+//      Parse a sequence of moves separated by whitespace and
+//      move numbers, e.g. "1.e4 e5 2.Nf3" or "e4 e5 Nf3".
+//
+errorT ReadLine(Position& pos, const char* s) {
+	while (true) {
+		while (!isalpha(static_cast<unsigned char>(*s)) && *s != 0) {
+			s++;
+		}
+		if (*s == '\0')
+			return OK;
+
+		const char* begin = s;
+		while (!isspace(static_cast<unsigned char>(*s)) && *s != '\0') {
+			s++;
+		}
+
+		simpleMoveT sm;
+		errorT err = pos.ParseMove(&sm, begin, s);
+		if (err != OK)
+			return err;
+
+		pos.DoSimpleMove(&sm);
+	}
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // makeBook
 //   Creates Scidlet opening book (SBK) file from a text file.
@@ -476,7 +503,7 @@ makeBook (const char * infile)
         uint freq = strGetUnsigned(str);
         if (freq < 1) { continue; }
         while (isdigit(*str)) { str++; }
-        if (pos->ReadLine (str) != OK) {
+        if (ReadLine(*pos, str) != OK) {
             output ("# Error parsing line %u: %s\n", lineNumber, line);
             continue;
         }
@@ -801,8 +828,6 @@ readInput (Engine * engine)
         mode.force = false;
     } else if (strEqual (command, "post")) {
         engine->SetPostMode(true);
-    } else if (strEqual (command, "printboard")) {
-         engine->GetPosition()->DumpBoard (stdout);
     } else if (strEqual (command, "protover")) {
         output ("feature myname=\"Scidlet %s\"\n", SCID_VERSION_STRING);
         output ("feature san=1 analyze=0 time=1 draw=1\n");

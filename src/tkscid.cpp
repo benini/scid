@@ -2121,7 +2121,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
         "scores",     "startBoard", "strip",      "summary",
-        "tags",       "truncate",   "truncatefree",
+        "tags",       "truncate",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
     enum {
@@ -2131,7 +2131,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
         GAME_SCORES,     GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
-        GAME_TAGS,       GAME_TRUNCATE,   GAME_TRUNCATEANDFREE,
+        GAME_TAGS,       GAME_TRUNCATE,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
@@ -2197,21 +2197,15 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_SANTOUCI:
         if (argc == 3) {
-            Game* g = db->game->clone();
-            PgnParser parser(argv[2]);
-            parser.SetEndOfInputWarnings (false);
-            parser.SetResultWarnings (false);
-            char buf [1000];
-            errorT err = parser.ParseMoves (g, buf, 1000);
-            if (parser.ErrorCount() > 0) err = ERROR_InvalidMove;
-            if (err != OK) {
-                delete g;
-                return errorResult(ti, err);
-            }
-            buf[0] = 0;
-            g->GetPrevMoveUCI(buf);
-            delete g;
-            return UI_Result(ti, OK, std::string(buf));
+            auto pos = db->game->GetCurrentPos();
+            simpleMoveT sm;
+            errorT err = pos->ParseMove(&sm, argv[2]);
+            if (err != OK)
+                return UI_Result(ti, err);
+
+            char buf[16];
+            pos->MakeUCIString(&sm, buf);
+            return UI_Result(ti, OK, buf);
         }
         return errorResult(ti, "usage sc_game SANtoUCI move");
 
@@ -2246,14 +2240,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         db->gameAltered = true;
         language = old_language;
-        break;
-    case GAME_TRUNCATEANDFREE:
-            old_language = language;
-            language = 0;
-           // Truncate from the current position to the end of the game
-           // and free moves memory (to FreeList
-            db->game->TruncateAndFree();
-            language = old_language;
         break;
     case GAME_UNDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
@@ -5325,7 +5311,7 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     simpleMoveT sm;
     Position * pos = db->game->GetCurrentPos();
-    errorT err = pos->ReadCoordMove (&sm, s, true);
+    errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
     if (err == OK) {
         err = db->game->AddMove(&sm);
         if (err == OK) {
@@ -5398,7 +5384,7 @@ sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
       }
       simpleMoveT sm;
       Position * pos = db->game->GetCurrentPos();
-      errorT err = pos->ReadCoordMove (&sm, s, true);
+      errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
       if (err == OK) {
         err = db->game->AddMove(&sm);
         if (err == OK) {
@@ -5493,7 +5479,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isCheck", "isLegal", "isPromotion",
-        "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
+        "matchMoves", "moveNumber", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location",
         "attacks", "getPrevComment", NULL
     };
@@ -5501,7 +5487,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
-        POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
+        POS_MATCHMOVES, POS_MOVENUM, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
         POS_ATTACKS, POS_GETPREVCOMMENT
     };
@@ -5580,9 +5566,6 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // start positions. The correct value to return is:
         //     db->game->GetCurrentPos()->GetFullMoveCount()
         return setUintResult (ti, db->game->GetCurrentPos()->GetFullMoveCount());
-
-    case POS_PGNBOARD:
-        return sc_pos_pgnBoard (cd, ti, argc, argv);
 
     case POS_PGNOFFSET:
         setUintResult (ti, db->game->GetPgnOffset());
@@ -6111,53 +6094,6 @@ sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
     }
     return TCL_OK;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_pos_pgnBoard:
-//    Given a string representing part of a PGN game,
-//    returns the board position corresponding to the
-//    last position reached in the game.
-int
-sc_pos_pgnBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_pos pgnBoard <pgn-text>");
-    }
-
-    Game * g = scratchGame;
-
-    g->Clear();
-
-    PgnParser parser (argv[2]);
-
-    if ( parser.ParseGame(g) == ERROR_NotFound) {
-        // No PGN header tags were found, so try just parsing moves:
-        g->Clear();
-#ifdef WINCE
-        char * buf = my_Tcl_Alloc(sizeof( char [8000]));
-#else
-        char * buf = new char [8000];
-#endif
-        parser.Reset (argv[2]);
-        parser.SetEndOfInputWarnings (false);
-        parser.SetResultWarnings (false);
-        parser.ParseMoves (g, buf, 8000);
-#ifdef WINCE
-        my_Tcl_Free((char*) buf);
-#else
-        delete[] buf;
-#endif
-    }
-
-    char boardStr [200];
-    g->GetCurrentPos()->MakeLongStr (boardStr);
-
-    Tcl_AppendResult (ti, boardStr, NULL);
-
-    return TCL_OK;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_probe:
@@ -9870,11 +9806,11 @@ int
 sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "count", "number", "create", "delete", "deletefree", "enter", "exit", "first",
+        "count", "number", "create", "delete", "enter", "exit", "first",
         "level", "list", "moveInto", "promote", NULL
     };
     enum {
-        VAR_COUNT, VAR_NUMBER, VAR_CREATE, VAR_DELETE, VAR_DELETEFREE, VAR_ENTER, VAR_EXIT, VAR_FIRST,
+        VAR_COUNT, VAR_NUMBER, VAR_CREATE, VAR_DELETE, VAR_ENTER, VAR_EXIT, VAR_FIRST,
         VAR_LEVEL, VAR_LIST, VAR_MOVEINTO, VAR_PROMOTE
     };
     int index = -1;
@@ -9898,9 +9834,6 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case VAR_DELETE:
         return sc_var_delete (cd, ti, argc, argv);
-
-    case VAR_DELETEFREE:
-        return sc_var_delete_free (cd, ti, argc, argv);
 
     case VAR_ENTER:
         return sc_var_enter (cd, ti, argc, argv);
@@ -9929,26 +9862,6 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return InvalidCommand (ti, "sc_var", options);
     }
 
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_var_delete:
-//    Deletes a specified variation and free moves
-int
-sc_var_delete_free (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_var deletefree <number>");
-    }
-
-    uint varNumber = strGetUnsigned (argv[2]);
-    if (varNumber >= db->game->GetNumVariations()) {
-        return errorResult (ti, "No such variation!");
-    }
-    db->game->DeleteVariationAndFree (varNumber);
-    db->gameAltered = true;
     return TCL_OK;
 }
 

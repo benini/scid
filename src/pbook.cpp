@@ -43,6 +43,36 @@ epd_findOpcode (const char * epdStr, const char * opcode)
     return NULL;
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::ReadLine():
+//      Parse a sequence of moves separated by whitespace and
+//      move numbers, e.g. "1.e4 e5 2.Nf3" or "e4 e5 Nf3".
+//
+errorT ReadLine(Position& pos, const char* s) {
+	while (true) {
+		while (!isalpha(static_cast<unsigned char>(*s)) && *s != 0) {
+			s++;
+		}
+		if (*s == '\0')
+			return OK;
+
+		const char* begin = s;
+		while (!isspace(static_cast<unsigned char>(*s)) && *s != '\0') {
+			s++;
+		}
+
+		simpleMoveT sm;
+		errorT err = pos.ParseMove(&sm, begin, s);
+		if (err != OK)
+			return err;
+
+		pos.DoSimpleMove(&sm);
+	}
+}
+
+
+
 } // namespace
 
 std::pair<const char*, const char*> PBook::findECOstr(Position* pos) const {
@@ -191,7 +221,7 @@ PBook::ReadEcoFile(const char* FileName) {
             prev = ch;
         }
         Position pos (std_start);
-        err = pos.ReadLine (moves.c_str());
+        err = ReadLine(pos, moves.c_str());
         if (err != OK) { goto corrupt; }
         text.append("moves ");
         text.append(strTrimLeft(moves.c_str()));

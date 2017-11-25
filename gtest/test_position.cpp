@@ -113,12 +113,13 @@ TEST(Test_movegen, UCItoSAN) {
 	char buf[64];
 	auto it = std::begin(positions);
 	for (; it != std::end(positions); ++it) {
-		if (std::strlen(*it) > 5) {
+		auto slen = std::strlen(*it);
+		if (slen > 5) {
 			ASSERT_EQ(OK, pos.ReadFromFEN(*it));
 			continue;
 		}
 		simpleMoveT sm;
-		ASSERT_EQ(OK, pos.ReadCoordMove(&sm, *it++, false));
+		ASSERT_EQ(OK, pos.ReadCoordMove(&sm, *it++, int(slen), false));
 		pos.MakeSANString(&sm, buf, SAN_MATETEST);
 		EXPECT_STREQ(*it, buf);
 
