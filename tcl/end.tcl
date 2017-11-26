@@ -1079,11 +1079,12 @@ proc gsave { gnum } {
     ::notify::DatabaseModified [sc_base current]
     ::notify::GameChanged
   } else {
-    set ply [sc_pos location]
+    set ply [sc_pos pgnOffset]
     if { [catch {sc_game save $gnum $::gameSave_toBase}] } { return 0 }
     ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
-    ::game::Load [sc_base numGames $::gameSave_toBase] $ply
+    ::game::Load [sc_base numGames $::gameSave_toBase]
+    ::move::PGNOffset $ply
   }
   return 1
 }

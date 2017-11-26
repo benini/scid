@@ -19,11 +19,14 @@
 #include "common.h"
 #include "date.h"
 #include "indexentry.h"
-#include "position.h"
-#include "namebase.h"
 #include "matsig.h"
-#include <vector>
+#include "movetree.h"
+#include "namebase.h"
+#include "position.h"
+#include <forward_list>
+#include <memory>
 #include <string>
+#include <vector>
 class ByteBuffer;
 class TextBuffer;
 
@@ -109,12 +112,6 @@ const byte MAX_NAGS_ARRAY = 215;
     
 const uint MAX_TAG_LEN = 240;
 
-typedef byte markerT;
-const markerT
-    NO_MARKER = 0,
-    START_MARKER = 1,
-    END_MARKER = 2;
-
 
 // patternT structure: a pattern filter for material searches.
 //    It can specify, for example, a white Pawn on the f-fyle, or
@@ -127,45 +124,6 @@ struct patternT
     byte       flag;        // 0 means this pattern must NOT occur.
     patternT * next;
 };
-
-// MAX_NAGS is the maximum number of NAGs (annotation symbols) a single
-// move can have:
-
-#define MAX_NAGS 8
-
-
-// The moveT structure stores all necessary information for one move:
-//
-class moveT
-{
-    friend class Game;
-    std::string  comment;
-    moveT      * prev;
-    moveT      * next;
-    moveT      * varChild;
-    moveT      * varParent;
-    simpleMoveT  moveData;      // piece moving, target square etc
-    char         san[10];           // SAN representation of move
-    markerT      marker;  // can be NO_MARKER, START_MARKER or END_MARKER
-    byte         numVariations;
-    byte         nagCount;
-    byte         nags[MAX_NAGS];
-
-    bool isNull () const { return moveData.isNullMove(); }
-};
-
-// Since we want allocation and freeing of moves to be FAST, we allocate
-// in chunks, and keep a linked list of the chunks allocated.
-// Freed moves can be added to the FreeList, but it is not essential to
-// do so, since all space for moves is deleted when the game is cleared.
-#define MOVE_CHUNKSIZE 100    // Allocate space for 100 moves at a time.
-
-struct moveChunkT {
-    moveT moves [MOVE_CHUNKSIZE];
-    uint numFree;
-    moveChunkT * next;
-};
-
 
 #define GAME_DECODE_NONE 0
 #define GAME_DECODE_TAGS 1
@@ -206,200 +164,218 @@ byte  game_parseNag (const char * str);
 
 uint strGetRatingType (const char * name);
 
-
 //////////////////////////////////////////////////////////////////////
 //  Game:  Class Definition
 
 static Position staticPosition;
 
-
-class Game
-{
-private:
+class Game {
+    // Header data: tag pairs
     std::vector<std::pair<std::string, std::string> > extraTags_;
-    Game *      NextGame;     // For keeping a linked list of games.
-    moveChunkT* MoveChunk;
-    moveT *     FreeList;
-    std::string EventStr;
-    std::string SiteStr;
     std::string WhiteStr;
     std::string BlackStr;
+    std::string EventStr;
+    std::string SiteStr;
     std::string RoundStr;
-    Position *  StartPos;
-    Position *  CurrentPos;
-    moveT *     FirstMove;
-    moveT *     CurrentMove;
-    Position *  SavedPos;
-    moveT *     SavedMove;
-    matSigT     FinalMatSig;
     dateT       Date;
     dateT       EventDate;
-    uint        VarDepth;     // Current variation depth.
-    uint        SavedVarDepth;
-    uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
-    uint        StopLocation;    // Used in recursive WriteMoveList method.
-    uint        PgnStyle;        // see PGN_STYLE macros above.
-    gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
-    uint        HtmlStyle;       // HTML diagram style, see DumpHtmlBoard method in position.cpp.
-    uint        PgnLastMovePos;
-
-    bool        NonStandardStart;      // 1 if non-standard start.
-    colorT      ToMove;         // side to move in starting position
-    ushort      NumHalfMoves;
-    ushort      CurrentPlyCount;
-    ushort      StartPlyCount;
-
-    bool        KeepDecodedMoves;
-    bool        Altered;
-
-    bool        PromotionsFlag;   // True if game has a promotion.
-    bool        UnderPromosFlag;  // True if game has a promotion to R/B/N.
-    char        ScidFlags [20];
-
     ecoT        EcoCode;
     eloT        WhiteElo;
     eloT        BlackElo;
     byte        WhiteRatingType;
     byte        BlackRatingType;
+    resultT     Result;
+    char        ScidFlags[22];
+
+    // Position and moves
+    byte        moveChunkUsed_;
+    std::forward_list<std::unique_ptr<moveT[]> > moveChunks_;
+    std::unique_ptr<Position> StartPos;
+    std::unique_ptr<Position> CurrentPos{new Position};
+    moveT*      FirstMove;
+    moveT*      CurrentMove;
+    uint        VarDepth;     // Current variation depth.
+    ushort      NumHalfMoves; // Total half moves in the main line.
+
+    // TODO: The following variables should not be part of this class.
+    bool        PromotionsFlag;   // Used by MaterialMatch
+    bool        KeepDecodedMoves; // Used by MaterialMatch end ExactMatch
+
     eloT        WhiteEstimateElo;
     eloT        BlackEstimateElo;
 
-    resultT     Result;
-    ushort      SavedPlyCount; // For saving and restoring game state:
+    uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
+    uint        PgnStyle;        // see PGN_STYLE macros above.
+    gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
+    uint        HtmlStyle;       // HTML diagram style, see DumpHtmlBoard method in position.cpp.
 
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //  Game:  Private Functions
+private:
     Game(const Game&);
-    Game& operator=(const Game&);
+    moveT* allocMove();
+    moveT* NewMove(markerT marker);
+    void ClearMoves();
+    bool MakeHomePawnList(byte* pbPawnList);
+    errorT DecodeVariation(ByteBuffer* buf, byte flags, uint level);
+    errorT WritePGN(TextBuffer* tb);
 
-    void       AllocateMoreMoves ();
-    inline moveT *    NewMove();
-    inline void       FreeMove (moveT * move);
-
-    errorT     DecodeVariation (ByteBuffer * buf, byte flags, uint level);
-    bool       calcAbsPlyNumber_ (moveT *m, moveT *s);
-
-    static void encodeMove (ByteBuffer * buf, moveT * m);
-    static errorT encodeVariation (ByteBuffer * buf, moveT * m, 
-                                   uint * subVarCount, uint * nagCount, uint depth);
-    static errorT encodeComments (ByteBuffer * buf, moveT * m, uint * commentCounter);
-    static errorT decodeComments (ByteBuffer * buf, moveT * m);
+    /**
+     * Contains the information of the current position in the game, so that
+     * after an operation that alters the location, it can be restored.
+     */
+    struct GameSavedPos {
+        Position pos;
+        moveT* move;
+        uint varDepth;
+    };
 
 public:
-    Game()      { Init(); }
-    ~Game();
+    Game() { Clear(); }
+    void Clear();
+    void strip(bool variations, bool comments, bool NAGs);
 
-    void        Clear();
-    void        ClearMoves();
+    bool HasNonStandardStart() const { return StartPos != nullptr; }
 
-    void        Init();
-
-    // Set and Get attributes -- one-line (inline) methods
-    void        SetNumHalfMoves (ushort x)  { NumHalfMoves = x; }
-    ushort      GetNumHalfMoves ()          { return NumHalfMoves; }
-    ushort      GetCurrentPly()             { return CurrentPlyCount; }
-
-    void        SetNextGame (Game * g)      { NextGame = g; }
-    Game *      GetNextGame ()              { return NextGame; }
-    void        SetAltered (bool b)         { Altered = b; }
-    bool        GetAltered (void)           { return Altered; }
-    
-    bool        HasNonStandardStart ()      { return NonStandardStart; }
-//    byte        GetNagsFlag ()              { return NagsFlag; }
-//    byte        GetVarsFlag ()              { return VarsFlag; }
-//    byte        GetCommentsFlag ()          { return CommentsFlag; }
-    bool        HasPromotions ()            { return PromotionsFlag; }
-    bool        HasUnderPromotions ()       { return UnderPromosFlag; }
-
-    void        SetStartPos (Position * pos);
-    errorT      SetStartFen (const char * fenStr);
+    void SetStartPos(Position* pos);
+    errorT SetStartFen(const char* fenStr);
 
     void SetScidFlags(const char* s) {
         strncpy(ScidFlags, s, sizeof(ScidFlags) - 1);
         ScidFlags[sizeof(ScidFlags) - 1] = 0;
     }
 
-    Position *  GetStartPos ()              { return StartPos; }
-    Position *  GetCurrentPos ()            { return CurrentPos; }
+    ushort GetNumHalfMoves() { return NumHalfMoves; }
 
-    simpleMoveT * GetCurrentMove () {
-        moveT * m = CurrentMove;
-        if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
-            return NULL;
-        }
-        return &(m->moveData);
+    //////////////////////////////////////////////////////////////
+    // Functions to add or delete moves:
+    //
+    errorT AddMove(const simpleMoveT* sm);
+    errorT AddVariation();
+    errorT DeleteVariation();
+    errorT FirstVariation();
+    errorT MainVariation();
+    void Truncate();
+    void TruncateStart();
+
+    //////////////////////////////////////////////////////////////
+    // Functions that move the current location (only CurrentPos,
+    // CurrentMove and VarDepth are modified by these functions):
+    //
+    errorT MoveForward();
+    errorT MoveBackup();
+    errorT MoveIntoVariation(uint varNumber);
+    errorT MoveExitVariation();
+    errorT MoveForwardInPGN();
+    errorT MoveToLocationInPGN(unsigned stopLocation);
+    void MoveToStart();
+    void MoveToPly(int hmNumber) { // Move to a specified
+        MoveToStart();             // mainline ply in the game.
+        for (int i = 0; i < hmNumber; ++i)
+            MoveForward();
+    }
+    GameSavedPos currentLocation() const {
+        return GameSavedPos{*CurrentPos, CurrentMove, VarDepth};
+    }
+    void restoreLocation(const GameSavedPos& savedPos) {
+        *CurrentPos = savedPos.pos;
+        CurrentMove = savedPos.move;
+        VarDepth = savedPos.varDepth;
     }
 
-    inline void InitMove (moveT * m);
+    //////////////////////////////////////////////////////////////
+    // Functions that get information about the current location.
+    //
+    const Position* currentPos() const { return CurrentPos.get(); }
+    Position* GetCurrentPos() { // Deprecated, use the const version
+        return CurrentPos.get();
+    }
+    simpleMoveT* GetCurrentMove() { // Deprecated
+        return CurrentMove->endMarker() ? nullptr : &CurrentMove->moveData;
+    }
+    ushort GetCurrentPly() const {
+        auto ply = CurrentPos->GetPlyCounter();
+        return StartPos ? ply - StartPos->GetPlyCounter() : ply;
+    }
+    uint GetNumVariations() const { return CurrentMove->numVariations; }
 
-    void     SaveState ();
-    errorT   RestoreState();
+    // Each variation has a "level" and a "number".
+    // - "level" is the number of times that is necessary to call
+    //   MoveExitVariation() to reach the main line.
+    // - "number" is the ordered position in the list of variations for the
+    // current root position (first variation is number 0).
+    // The main line is 0,0.
+    uint GetVarLevel() const { return VarDepth; }
+    uint GetVarNumber() const {
+        if (VarDepth != 0) {
+            uint varNumber = 0;
+            auto moves = CurrentMove->getParent();
+            for (auto parent = moves.first; parent; varNumber++) {
+                parent = parent->varChild;
+                if (parent == moves.second)
+                    return varNumber;
+            }
+        }
+        return 0; // returns 0 if in main line
+    }
 
-    void     SetMoveData (moveT * m, simpleMoveT * sm);
-    errorT   AddMove(simpleMoveT* sm);
-    errorT   AddVariation ();
-    errorT   DeleteVariation (uint varNumber);
-    errorT   DeleteVariationAndFree (uint varNumber);
-    errorT   FirstVariation (uint varNumber);
-    errorT   MainVariation ();
-    uint     GetVarNumber();
+    unsigned GetLocationInPGN() const;
+    unsigned GetPgnOffset() const;
 
-    void     SetMoveComment (const char * comment);
-    void     SetMoveComment(const char* begin, const char* end) {
+    bool AtVarStart() const { return CurrentMove->prev->startMarker(); }
+    bool AtVarEnd() const { return CurrentMove->endMarker(); }
+    bool AtStart() const { return (VarDepth == 0 && AtVarStart()); }
+    bool AtEnd() const { return (VarDepth == 0 && AtVarEnd()); }
+
+    //////////////////////////////////////////////////////////////
+    // Functions that get/set information about the last/next move.
+    // Notice: when location is at the start of the game or a variation,
+    // infomation are stored into the START_MARKER.
+    //
+    errorT AddNag(byte nag);
+    errorT RemoveNag(bool isMoveNag);
+    void ClearNags() {
+        CurrentMove->prev->nagCount = 0;
+        CurrentMove->prev->nags[0] = 0;
+    }
+    byte* GetNags() const { return CurrentMove->prev->nags; }
+    byte* GetNextNags() const { return CurrentMove->nags; }
+
+    /**
+     * Return the comment on the move previously played by CurrentPos->ToMove
+     * If there are no previous moves, return an empty comment.
+     */
+    const char* GetPreviousMoveComment() const {
+        const moveT* move = CurrentMove->getPrevMove();
+        if (move)
+            move = move->getPrevMove();
+
+        return (move) ? move->comment.c_str() : "";
+    }
+    const char* GetMoveComment() const {
+        return CurrentMove->prev->comment.c_str();
+    }
+    void SetMoveComment(const char* comment);
+    void SetMoveComment(const char* begin, const char* end) {
         ASSERT(begin != NULL && end != NULL);
         ASSERT(CurrentMove != NULL && CurrentMove->prev != NULL);
         CurrentMove->prev->comment.append(begin, end);
     }
-    const char* GetMoveComment () { return CurrentMove->prev->comment.c_str(); }
-    /**
-     * Game::GetPreviousMoveComment()
-     * Return the comment on the move previously played by CurrentPos->ToMove
-     * If there are no previous moves, return an empty comment.
-     */
-    const char* GetPreviousMoveComment() {
-        ASSERT(CurrentMove != NULL);
-        moveT* m = CurrentMove->prev;
-        if (m == NULL || m->prev == NULL) return "";
-        moveT* mp = m->prev->varParent;
-        if (mp != NULL && mp->prev != NULL) m = mp;
-        return m->prev->comment.c_str();
-    }
 
-    inline errorT AddNag (byte nag);
-    inline errorT RemoveNag (bool isMoveNag);
-    byte *   GetNags () { return CurrentMove->prev->nags; }
-    byte *   GetNextNags () { return CurrentMove->nags; }
-    void     ClearNags () {
-        CurrentMove->prev->nagCount = 0;
-        CurrentMove->prev->nags[0] = 0;
-    }
+    const char* GetNextSAN();
+    void GetSAN(char* str);
+    void GetPrevSAN(char* str);
+    void GetPrevMoveUCI(char* str) const;
+    void GetNextMoveUCI(char* str);
 
-    void     MoveTo (const std::vector<int>& v);
-    void     MoveToPly (ushort hmNumber);
-    errorT   MoveForward ();
-    errorT   MoveBackup ();
-    errorT   MoveIntoVariation (uint varNumber);
-    errorT   MoveExitVariation ();
+    //////////////////////////////////////////////////////////////
+    // Functions that get/set the tag pairs:
+    //
+    void AddPgnTag(const char* tag, const char* value);
+    bool RemoveExtraTag(const char* tag);
+    const char* FindExtraTag(const char* tag) const;
+    const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
+    void ClearExtraTags() { extraTags_.clear(); }
 
-    bool     AtStart ()
-                 { return (CurrentMove->prev->marker == START_MARKER  &&
-                           VarDepth == 0); }
-    bool     AtEnd ()
-                 { return (CurrentMove->marker == END_MARKER  &&
-                           VarDepth == 0); }
-    bool     AtVarStart ()
-                 { return (CurrentMove->prev->marker == START_MARKER); }
-    bool     AtVarEnd ()
-                 { return (CurrentMove->marker == END_MARKER); }
-    uint     GetVarLevel () { return VarDepth; }
-    uint      GetNumVariations ()
-                 { return (uint) CurrentMove->numVariations; }
-
-    void     Truncate ();
-    void     TruncateAndFree ();
-
-    void     TruncateStart ();
+    errorT LoadStandardTags(const IndexEntry* ie, const NameBase* nb);
 
     void     SetEventStr (const char * str) { EventStr = str; }
     void     SetSiteStr  (const char * str) { SiteStr  = str; }
@@ -411,8 +387,6 @@ public:
     void     SetResult (resultT res) { Result = res; }
     void     SetWhiteElo (eloT elo)  { WhiteElo = elo; }
     void     SetBlackElo (eloT elo)  { BlackElo = elo; }
-    void     SetWhiteEstimateElo (eloT elo)  { WhiteEstimateElo = elo; }
-    void     SetBlackEstimateElo (eloT elo)  { BlackEstimateElo = elo; }
     void     SetWhiteRatingType (byte b) { WhiteRatingType = b; }
     void     SetBlackRatingType (byte b) { BlackRatingType = b; }
     void     SetEco (ecoT eco)       { EcoCode = eco; }
@@ -433,47 +407,15 @@ public:
     ecoT     GetEco ()               { return EcoCode; }
     eloT     GetAverageElo ();
 
-    // Adding/Removing Extra  tags:
-    void     AddPgnTag (const char * tag, const char * value);
-    bool     RemoveExtraTag (const char * tag);
-    const char* FindExtraTag (const char* tag) const;
-    const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
-    void ClearExtraTags() { extraTags_.clear(); }
-
-    void     MakeHomePawnList (byte * pbPawnList);
-
-    void      CopyStandardTags (Game * fromGame);
-    errorT    LoadStandardTags (const IndexEntry* ie, const NameBase* nb);
-    void      ClearStandardTags ();
-
     // PGN conversion
-    void      GetSAN (char * str);
-    void      GetPrevSAN (char * str);
-    void      GetPrevMoveUCI (char * str);
-    void      GetNextMoveUCI (char * str);
-
     bool      CommentEmpty ( const char * comment);
     void      WriteComment (TextBuffer * tb, const char * preStr,
                             const char * comment, const char * postStr);
-    errorT    WriteMoveList (TextBuffer * tb, uint plyCount,
-                             moveT * oldCurrentMove,
-                             bool printMoveNum, bool inComment);
-    errorT    WritePGN (TextBuffer * tb, uint stopLocation);
+    errorT    WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
+                            bool printMoveNum, bool inComment);
     std::pair<const char*, unsigned> WriteToPGN (uint lineWidth = 0,
                                                  bool NewLineAtEnd = false,
                                                  bool newLineToSpaces = true);
-    errorT    MoveToLocationInPGN (uint stopLocation);
-
-    uint      GetPgnOffset () {
-                  PgnLastMovePos = 0;
-                  moveT* lastMove = CurrentMove->prev;
-                  if (AtVarStart()) {
-                      lastMove = lastMove->varParent;
-                      if (lastMove != 0) lastMove = lastMove->prev;
-                  }
-                  if (!calcAbsPlyNumber_(FirstMove, lastMove)) return 1;
-                  return PgnLastMovePos;
-              }
 
     void      ResetPgnStyle (void) { PgnStyle = 0; }
     void      ResetPgnStyle (uint flag) { PgnStyle = flag; }
@@ -497,10 +439,6 @@ public:
     uint      GetHtmlStyle () { return HtmlStyle; }
 
     errorT    GetPartialMoveList (DString * str, uint plyCount);
-    bool      MoveMatch (int m_argc, char ** m_argv, uint plyCount, bool wToMove, bool bToMove, int checkTest);
-
-    errorT    Encode (ByteBuffer * buf, IndexEntry * ie);
-    void      EncodeTags (ByteBuffer * buf);
 
     bool      MaterialMatch (ByteBuffer * buf, byte * min, byte * max,
                              patternT * pattern, int minPly, int maxPly,
@@ -519,93 +457,14 @@ public:
                             gameExactMatchT searchType)
       { return ExactMatch (pos, buf, sm, searchType, NULL); }
 
-    errorT    DecodeStart (ByteBuffer * buf);
+    errorT    Encode (ByteBuffer * buf, IndexEntry * ie);
+    errorT    DecodeStart(ByteBuffer* buf, bool decodeTags = false);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode (ByteBuffer * buf, byte flags);
     errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
 
-    std::vector<int> GetCurrentLocation();
     Game* clone();
 };
-
-
-inline void
-Game::InitMove (moveT * m)
-{
-    ASSERT(m != NULL);
-    m->prev = m->next = m->varParent = m->varChild = NULL;
-    m->numVariations = 0;
-    //m->varLevel = 0;
-    m->comment.clear();
-    m->nagCount = 0;
-    m->nags[0] = 0;
-    m->marker = NO_MARKER;
-    m->san[0] = 0;
-}
-
-inline errorT
-Game::AddNag (byte nag)
-{
-    moveT * m = CurrentMove->prev;
-    if (m->nagCount + 1 >= MAX_NAGS) { return ERROR_GameFull; }
-    if (nag == 0) { /* Nags cannot be zero! */ return OK; }
-	// If it is a move nag replace an existing
-	if( nag >= 1 && nag <= 6)
-		for( int i=0; i<m->nagCount; i++)
-			if( m->nags[i] >= 1 && m->nags[i] <= 6)
-			{
-				m->nags[i] = nag;
-				return OK;
-			}
-	// If it is a position nag replace an existing
-	if( nag >= 10 && nag <= 21)
-		for( int i=0; i<m->nagCount; i++)
-			if( m->nags[i] >= 10 && m->nags[i] <= 21)
-			{
-				m->nags[i] = nag;
-				return OK;
-			}
-	if( nag >= 1 && nag <= 6)
-	{
-		// Put Move Nags at the beginning
-		for( int i=m->nagCount; i>0; i--)  m->nags[i] =  m->nags[i-1];
-		m->nags[0] = nag;
-	}
-	else
-		m->nags[m->nagCount] = nag;
-	m->nagCount += 1;
-	m->nags[m->nagCount] = 0;
-    return OK;
-}
-
-inline errorT
-Game::RemoveNag (bool isMoveNag)
-{
-    moveT * m = CurrentMove->prev;
-	if( isMoveNag)
-	{
-		for( int i=0; i<m->nagCount; i++)
-			if( m->nags[i] >= 1 && m->nags[i] <= 6)
-			{
-				m->nagCount -= 1;
-				for( int j=i; j<m->nagCount; j++)  m->nags[j] =  m->nags[j+1];
-				m->nags[m->nagCount] = 0;
-				return OK;
-			}
-	}
-	else
-	{
-		for( int i=0; i<m->nagCount; i++)
-			if( m->nags[i] >= 10 && m->nags[i] <= 21)
-			{
-				m->nagCount -= 1;
-				for( int j=i; j<m->nagCount; j++)  m->nags[j] =  m->nags[j+1];
-				m->nags[m->nagCount] = 0;
-				return OK;
-			}
-	}
-    return OK;
-}
 
 #endif  // #ifndef SCID_GAME_H
 

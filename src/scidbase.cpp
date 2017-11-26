@@ -213,40 +213,8 @@ errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value
 }
 
 /**
-* scidBaseT::makeGamePos() - constructs a GamePos object
-* @game: a Game object with a valid current position
-* @ravNum: current variation number
-*
-* This function extracts informations from the current position of Game @game
-* and create a GamePos object with the corresponding informations:
-* RAVdepth: current variation depth.
-* RAVnum: current variation num.
-* FEN: "Forsyth-Edwards Notation" describing the current position.
-* NAGS: "Numeric Annotation Glyph" is a non-negative integer from 0 to 255
-*       used to indicate a simple annotation in a language independent manner.
-* comment: text annotation of the current position.
-* lastMoveSAN: the last move that was played to reach the current position.
-*              The move is indicated using English "Standard Algebraic Notation".
-*/
-scidBaseT::GamePos scidBaseT::makeGamePos(Game& game, unsigned int ravNum) {
-	GamePos res;
-	res.RAVdepth = game.GetVarLevel();
-	res.RAVnum = ravNum;
-	char strBuf[256];
-	game.GetCurrentPos()->PrintFEN(strBuf, FEN_ALL_FIELDS);
-	res.FEN = strBuf;
-	for (byte* nag = game.GetNags(); *nag; nag++) {
-		res.NAGs.push_back(*nag);
-	}
-	res.comment = game.GetMoveComment();
-	game.GetPrevSAN(strBuf);
-	res.lastMoveSAN = strBuf;
-	return res;
-}
-
-/**
 * scidBaseT::getGame() - returns all the positions of a game
-* @ie: a valid pointer to the IndexEntry of the desired game
+* @ie: reference to the IndexEntry of the desired game
 * @dest: a container of GamePos objects where the positions will be stored.
 *
 * This function iterate all the positions of the game pointed by @ie and
@@ -267,64 +235,36 @@ scidBaseT::GamePos scidBaseT::makeGamePos(Game& game, unsigned int ravNum) {
 *
 * Return OK if successful.
 */
-errorT scidBaseT::getGame(const IndexEntry* ie, std::vector<GamePos>& dest) {
-	ASSERT(ie != 0);
-
-	// Create the Game object
+errorT scidBaseT::getGame(const IndexEntry& ie, std::vector<GamePos>& dest) {
 	ByteBuffer buf(BBUF_SIZE);
-	if (getGame(ie, &buf) != OK) {
+	if (getGame(&ie, &buf) != OK) {
 		return ERROR_Decode;
 	}
 	Game game;
 	if (game.Decode(&buf, GAME_DECODE_ALL) != OK) {
 		return ERROR_Decode;
 	}
-	std::vector<int> endPos = game.GetCurrentLocation();
-	game.MoveToPly(0);
+	game.MoveToStart();
+	do {
+		if (game.AtVarStart() && !game.AtStart())
+			continue;
 
-	// Add start FEN
-	dest.push_back(makeGamePos(game, 0));
-
-	// Iterate all the positions of the game
-	std::vector< std::pair<uint, uint> > rav;
-	rav.push_back(std::make_pair(0, 0));
-	errorT err = OK;
-	while (err == OK) {
-		uint nVariations = game.GetNumVariations();
-		err = game.MoveForward();
-		if (err == OK) {
-			dest.push_back(makeGamePos(game, rav.back().first));
+		dest.emplace_back();
+		auto& gamepos = dest.back();
+		gamepos.RAVdepth = game.GetVarLevel();
+		gamepos.RAVnum = game.GetVarNumber();
+		char strBuf[256];
+		game.currentPos()->PrintFEN(strBuf, FEN_ALL_FIELDS);
+		gamepos.FEN = strBuf;
+		for (byte* nag = game.GetNags(); *nag; nag++) {
+			gamepos.NAGs.push_back(*nag);
 		}
+		gamepos.comment = game.GetMoveComment();
+		game.GetPrevSAN(strBuf);
+		gamepos.lastMoveSAN = strBuf;
 
-		if (nVariations != 0) {
-			if (err == OK) {
-				// Go back in order to process variations
-				err = game.MoveBackup();
-				if (err != OK) break;
-			}
-			// Enter the first variation
-			err = game.MoveIntoVariation(0);
-			rav.push_back(std::make_pair(0, nVariations));
-		} else {
-			if (err == ERROR_EndOfMoveList) {
-				// Leave the current variation
-				err = game.MoveExitVariation();
-				if (err != OK) break;
-
-				if (++rav.back().first < rav.back().second) {
-					// Enter the next variation
-					err = game.MoveIntoVariation(rav.back().first);
-				} else {
-					// All the sub-variation has been processed
-					rav.pop_back();
-					// Skip the main move of the parent variation
-					err = game.MoveForward();
-				}
-			}
-		}
-	}
-	if (rav.size() == 1 && game.GetCurrentLocation() == endPos) return OK;
-	return err;
+	} while (game.MoveForwardInPGN() == OK);
+	return OK;
 }
 
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {

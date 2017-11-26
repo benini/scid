@@ -152,15 +152,16 @@ public:
     byte        PieceCount (pieceT p)    { return Material[p]; }
     byte *      GetMaterial ()           { return Material; }
     void        SetEPTarget (squareT s)  { EPTarget = s; }
-    squareT     GetEPTarget ()           { return EPTarget; }
+    squareT     GetEPTarget () const     { return EPTarget; }
     void        SetToMove (colorT c)     { ToMove = c; }
-    colorT      GetToMove ()             { return ToMove; }
+    colorT      GetToMove () const       { return ToMove; }
     void        SetPlyCounter (ushort x) { PlyCounter = x; }
-    ushort      GetPlyCounter ()         { return PlyCounter; }
-    ushort      GetFullMoveCount ()      { return PlyCounter / 2 + 1; }
+    ushort      GetPlyCounter () const   { return PlyCounter; }
+    ushort      GetFullMoveCount() const { return PlyCounter / 2 + 1; }
 
     // Methods to get the Board or piece lists -- used in game.cpp to
     // decode moves:
+    const squareT* GetList(colorT c) const { return List[c]; }
     squareT *   GetList (colorT c)    { return List[c]; }
     uint        GetCount (colorT c)   { return Count[c]; }
     uint        TotalMaterial ()      { return Count[WHITE] + Count[BLACK]; }

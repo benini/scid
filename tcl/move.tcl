@@ -100,14 +100,14 @@ proc ::move::Back {{count 1}} {
 
 	sc_move back $count
 
+	if {[sc_pos isAt vstart]} { sc_var exit }
+
 	if {$count == 1} {
 		updateBoard -animate
 		::utils::sound::AnnounceBack
 	} else {
 		updateBoard
 	}
-
-	if {[sc_pos isAt vstart]} { sc_var exit }
 
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
 }
@@ -165,3 +165,8 @@ proc ::move::Follow {{moveUCI}} {
 	return 0
 }
 
+proc ::move::PGNOffset { location } {
+	sc_move pgn $location
+	updateBoard
+	if {[::move::drawVarArrows]} { ::move::showVarArrows }
+}

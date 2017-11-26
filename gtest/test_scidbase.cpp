@@ -292,7 +292,7 @@ TEST_F(Test_Scidbase, getGamePos1) {
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), gamepos));
+	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
 	EXPECT_EQ(test_GamePos.size(), gamepos.size());
 	size_t n = std::min(test_GamePos.size(), gamepos.size());
 	for (size_t i = 0; i < n; i++) {
@@ -318,7 +318,7 @@ TEST_F(Test_Scidbase, getGamePos2) {
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), gamepos));
+	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
 	EXPECT_EQ(test_pgn, encodePgn(gamepos));
 }
 
@@ -333,7 +333,7 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), gamepos));
+	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
 	EXPECT_EQ(test_pgn, encodePgn(gamepos));
 }
 
@@ -361,7 +361,7 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_EQ(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
 		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
 	}
 	{
@@ -374,10 +374,10 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_NE(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
 		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
 		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 	{
@@ -390,10 +390,10 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_NE(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
 		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }
@@ -436,7 +436,7 @@ TEST_F(Test_Scidbase, importGames) {
 		EXPECT_EQ(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
 		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 	{
@@ -452,13 +452,13 @@ TEST_F(Test_Scidbase, importGames) {
 		EXPECT_NE(ie0, ie1);
 		EXPECT_NE(ie0, ie2);
 		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(ie0, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(ie1, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
 		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(ie2, gamepos));
+		EXPECT_EQ(OK, dbase.getGame(*ie2, gamepos));
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }

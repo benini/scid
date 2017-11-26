@@ -1184,10 +1184,6 @@ sc_base_tag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
 //////////////////////////////////////////////////////////////////////
 /// CLIPBASE functions
-
-int sc_clipbase_paste (scidBaseT* clipbase, Tcl_Interp * ti, int argc, const char ** argv);
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_clipbase:
 //    Game clipbase functions.
@@ -1212,49 +1208,23 @@ sc_clipbase (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         clipbase->Close();
         clipbase->Open(ICodecDatabase::MEMORY, FMODE_Memory, "<clipbase>");
         clipbase->setExtraInfo("type", "2");
-        return TCL_OK;
+        break;
 
-    case CLIP_PASTE:
-        return sc_clipbase_paste (clipbase, ti, argc, argv);
+    case CLIP_PASTE: // Paste the active clipbase game
+        if (db != clipbase) {
+            delete db->game;
+            db->game = clipbase->game->clone();
+            db->gameNumber = -1;
+            db->gameAltered = true;
+        }
+        break;
 
     default:
-        return InvalidCommand (ti, "sc_clipbase", options);
+        return InvalidCommand(ti, "sc_clipbase", options);
     }
 
-    return TCL_OK;
+    return UI_Result(ti, OK);
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_clipbase_paste:
-//    Paste the active clipbase game, replacing the current game state.
-int
-sc_clipbase_paste(scidBaseT* clipbase, Tcl_Interp * ti, int, const char**)
-{
-    // Cannot paste the clipbase game when already in the clipbase:
-    if (db == clipbase) { return TCL_OK; }
-
-    uint location = clipbase->game->GetPgnOffset ();
-    if (clipbase->game->Encode (db->bbuf, NULL) != OK) {
-        return errorResult (ti, "Error encoding game.");
-    }
-    db->bbuf->BackToStart();
-    db->game->Clear();
-    db->gameNumber = -1;
-    db->gameAltered = true;
-
-    if (db->game->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
-        return errorResult (ti, "Error decoding game.");
-    }
-
-    // Copy the standard tag values from the clipbase game:
-    db->game->CopyStandardTags (clipbase->game);
-
-    // Move to the current position in the clipbase game:
-    db->game->MoveToLocationInPGN (location);
-
-    return TCL_OK;
-}
-
 
 //////////////////////////////////////////////////////////////////////
 /// ECO Classification functions
@@ -1453,7 +1423,7 @@ sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     if (!ecoBook) { return TCL_OK; }
 
-    db->game->SaveState();
+    auto location = db->game->currentLocation();
     db->game->MoveToPly (0);
 
     do {} while (db->game->MoveForward() == OK);
@@ -1463,7 +1433,7 @@ sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     } while (ecoCode == ECO_None && db->game->MoveBackup() == OK);
 
     auto ply = db->game->GetCurrentPly();
-    db->game->RestoreState();
+    db->game->restoreLocation(location);
 
     if (ecoCode == ECO_None)
         return UI_Result(ti, OK);
@@ -3748,11 +3718,7 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     bool printMoves = true;
     bool listFormat = false;
     const uint MAXMOVES = 500;
-#ifdef WINCE
-    sanStringT * moveStrings = (sanStringT * ) my_Tcl_Alloc(sizeof( sanStringT [MAXMOVES]));
-#else
     sanStringT * moveStrings = new sanStringT [MAXMOVES];
-#endif
     uint plyCount = 0;
     Game * g = db->game;
     for (int arg = 2; arg < argc; arg++) {
@@ -3761,7 +3727,7 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (argv[arg][0] == 'l') { printMoves = false; }
     }
 
-    g->SaveState();
+    auto location = g->currentLocation();
     while (! g->AtStart()) {
         if (g->AtVarStart()) {
             g->MoveExitVariation();
@@ -3786,17 +3752,12 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         plyCount++;
         if (plyCount == MAXMOVES) {
             // Too many moves, just give up:
-            g->RestoreState();
-#ifdef WINCE
-            my_Tcl_Free((char*) moveStrings);
-#else
+            g->restoreLocation(location);
             delete[] moveStrings;
-#endif
-
             return TCL_OK;
         }
     }
-    g->RestoreState();
+    g->restoreLocation(location);
     uint count = 0;
     for (uint i = plyCount; i > 0; i--, count++) {
         char move [20];
@@ -3815,11 +3776,7 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             Tcl_AppendResult (ti, (count == 0 ? "" : " "), move, NULL);
         }
     }
-#ifdef WINCE
-    my_Tcl_Free((char*) moveStrings);
-#else
     delete[] moveStrings;
-#endif
     return TCL_OK;
 }
 
@@ -4127,9 +4084,9 @@ sc_game_save (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ieOld->GetFlagStr(buf, "WBMENPTKQ!?U123456");
         currGame->SetScidFlags(buf);
     }
-    currGame->SaveState();
+    auto location = currGame->currentLocation();
     errorT res = dbase->saveGame(currGame, gnum);
-    currGame->RestoreState ();
+    currGame->restoreLocation(location);
     if (res == OK) {
         if (gnum == INVALID_GAMEID && db == dbase) {
             // Saved new game, so set gameNumber to the saved game number:
@@ -4224,7 +4181,7 @@ sc_game_scores (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     Game * g = db->game;
-    g->SaveState ();
+    auto location = g->currentLocation();
     g->MoveToPly (0);
     while (g->MoveForward() == OK) {
         moveCounter++;
@@ -4247,7 +4204,7 @@ sc_game_scores (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             g->MoveExitVariation();
         }
     }
-    db->game->RestoreState ();
+    db->game->restoreLocation(location);
     return TCL_OK;
 }
 
@@ -4302,53 +4259,16 @@ sc_game_startBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_strip:
 //    Strips all comments, variations or annotations from a game.
-int
-sc_game_strip (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage =
-        "Usage: sc_game strip [comments|variations]";
-
-    const char * options[] = { "comments", "variations", NULL };
-    enum { OPT_COMS, OPT_VARS };
-
-    // we need to switch off short header style or PGN parsing will not work
-    uint  old_style = db->game->GetPgnStyle ();
-    if (old_style & PGN_STYLE_SHORT_HEADER)
-      db->game->SetPgnStyle (PGN_STYLE_SHORT_HEADER, false);
-    
-    db->game->AddPgnStyle (PGN_STYLE_TAGS);
-    db->game->AddPgnStyle (PGN_STYLE_COMMENTS);
-    db->game->AddPgnStyle (PGN_STYLE_VARS);
-    db->game->SetPgnFormat (PGN_FORMAT_Plain);
-
-    int index = -1;
-    if (argc == 3) { index = strUniqueMatch (argv[2], options); }
-
-    switch (index) {
-        case OPT_COMS: db->game->RemovePgnStyle (PGN_STYLE_COMMENTS); break;
-        case OPT_VARS: db->game->RemovePgnStyle (PGN_STYLE_VARS); break;
-        default: return errorResult (ti, usage);
-    }
-
-    int old_lang = language;
-    language = 0;
-    std::pair<const char*, unsigned> pgnBuf = db->game->WriteToPGN();
-    PgnParser parser(pgnBuf.first);
-    scratchGame->Clear();
-    if (parser.ParseGame (scratchGame)) {
-        return errorResult (ti, "Error: unable to strip this game.");
-    }
-    parser.Reset (pgnBuf.first);
-    db->game->Clear();
-    parser.ParseGame (db->game);
-
-    // Restore PGN style (Short header)
-    if (old_style & PGN_STYLE_SHORT_HEADER) 
-      db->game->SetPgnStyle (PGN_STYLE_SHORT_HEADER, true);
-    
-    db->gameAltered = true;
-    language = old_lang;
-    return TCL_OK;
+int sc_game_strip(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
+	if (argc == 3 && !strcmp("variations", argv[2])) {
+		db->game->strip(true, false, false);
+	} else if (argc == 3 && !strcmp("comments", argv[2])) {
+		db->game->strip(false, true, true);
+	} else {
+		return errorResult(ti, "Usage: sc_game strip [comments|variations]");
+	}
+	db->gameAltered = true;
+	return UI_Result(ti, OK);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4452,7 +4372,7 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Here, a list of the boards or moves is requested:
-    g->SaveState();
+    auto location = g->currentLocation();
     g->MoveToPly (0);
     while (1) {
         if (mode == MODE_BOARDS) {
@@ -4492,7 +4412,7 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (g->MoveForward() != OK) { break; }
     }
 
-    g->RestoreState();
+    g->restoreLocation(location);
     return TCL_OK;
 }
 
@@ -5261,13 +5181,9 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_move_pgn (cd, ti, argc, argv);
 
     case MOVE_PLY:
-        if (argc >= 3) {
-            std::vector<int> v;
-            for(int i=2; i < argc; i++) {
-                v.push_back(strGetInteger(argv[i]));
-            }
-            db->game->MoveTo(v);
-            return TCL_OK;
+        if (argc == 3) {
+            db->game->MoveToPly(strGetUnsigned(argv[2]));
+            return UI_Result(ti, OK);
         }
         return errorResult (ti, "Usage: sc_move ply <plynumber>");
 
@@ -5593,12 +5509,8 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
-    case LOCATION: {
-        std::vector<int> v = db->game->GetCurrentLocation();
-        UI_List res(v.size());
-        for (size_t i=0, n=v.size(); i < n; i++) res.push_back(v[i]);
-        return UI_Result(ti, OK, res);
-    }
+    case LOCATION:
+        return UI_Result(ti, OK, db->game->GetCurrentPly());
 
     case POS_ATTACKS:
         {
@@ -9868,40 +9780,21 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_var_delete:
 //    Deletes a specified variation.
-int
-sc_var_delete (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_var delete <number>");
-    }
-
-    uint varNumber = strGetUnsigned (argv[2]);
-    if (varNumber >= db->game->GetNumVariations()) {
-        return errorResult (ti, "No such variation!");
-    }
-    db->game->DeleteVariation (varNumber);
-    db->gameAltered = true;
-    return TCL_OK;
+int sc_var_delete(ClientData, Tcl_Interp* ti, int, const char**) {
+	auto err = db->game->DeleteVariation();
+	if (err != ERROR_NoVariation)
+		db->gameAltered = true;
+	return UI_Result(ti, err);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_var_first:
 //    Promotes the specified variation of the current to be the
 //    first in the list.
-int
-sc_var_first (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_var first <number>");
-    }
-
-    uint varNumber = strGetUnsigned (argv[2]);
-    if (varNumber >= db->game->GetNumVariations()) {
-        return errorResult (ti, "No such variation!");
-    }
-    db->game->FirstVariation (varNumber);
-    db->gameAltered = true;
-    return TCL_OK;
+int sc_var_first(ClientData, Tcl_Interp* ti, int, const char**) {
+	auto err = db->game->FirstVariation();
+	if (err != ERROR_NoVariation)
+		db->gameAltered = true;
+	return UI_Result(ti, err);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

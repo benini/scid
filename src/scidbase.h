@@ -128,12 +128,12 @@ struct scidBaseT {
 	struct GamePos {
 		unsigned int RAVdepth;
 		unsigned int RAVnum;
-		std::string FEN;
-		std::vector<int> NAGs;
-		std::string comment;
-		std::string lastMoveSAN;
+		std::string FEN; // "Forsyth-Edwards Notation" describing the position.
+		std::vector<int> NAGs;   // "Numeric Annotation Glyph"
+		std::string comment;     // text annotation of the position.
+		std::string lastMoveSAN; // move that was played to reach the position.
 	};
-	errorT getGame(const IndexEntry* ie, std::vector<GamePos>& dest);
+	errorT getGame(const IndexEntry& ie, std::vector<GamePos>& dest);
 
 	errorT importGame(const scidBaseT* srcBase, uint gNum);
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress);

@@ -244,8 +244,8 @@ namespace eval pgn {
     $mctxt.evals2 add command -label "N" -command {::addNag N}
     $mctxt.evals2 add command -label "D" -command {::addNag D}
 	
-    $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar [sc_var number]"
-    $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar [sc_var number]"
+    $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar"
+    $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar"
     $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar"
     $mctxt add separator
     $mctxt add command -label "[tr EditStrip]:[tr EditStripBegin]" -command {::game::TruncateBegin}
@@ -262,16 +262,15 @@ namespace eval pgn {
     
   }
 
-  proc deleteVar { var } {
+  proc deleteVar {} {
     undoFeature save
-    sc_var exit
-    sc_var delete $var
+    sc_var delete
     updateBoard -pgn
   }
   
-  proc firstVar { var } {
-    sc_var exit
-    sc_var first $var
+  proc firstVar {} {
+    undoFeature save
+    sc_var first
     updateBoard -pgn
   }
   

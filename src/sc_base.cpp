@@ -456,7 +456,7 @@ UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc, const char*
 	if (ie == 0) return UI_Result(ti, ERROR_BadArg, usage);
 
 	std::vector<scidBaseT::GamePos> gamepos;
-	errorT err = dbase->getGame(ie, gamepos);
+	errorT err = dbase->getGame(*ie, gamepos);
 	if (err != OK) return UI_Result(ti, err);
 
 	size_t n = gamepos.size();

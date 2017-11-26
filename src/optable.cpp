@@ -126,7 +126,7 @@ OpLine::Init (Game * g, const IndexEntry * ie, gamenumT gameNum,
     AvgElo = g->GetAverageElo();
     Length = 0;
     StartPly = g->GetCurrentPly();
-    g->SaveState();
+    auto location = g->currentLocation();
     if (g->GetCurrentPos()->GetToMove() == BLACK) {
         g->MoveBackup();
     }
@@ -180,7 +180,7 @@ OpLine::Init (Game * g, const IndexEntry * ie, gamenumT gameNum,
         SetPositionalThemes (g->GetCurrentPos());
     }
 
-    g->RestoreState();
+    g->restoreLocation(location);
 }
 
 
@@ -488,7 +488,7 @@ OpTable::Init (const char * type, Game * g, PBook * ebook)
     }
 
     // Generate the text for each move up to the current position:
-    g->SaveState();
+    auto location = g->currentLocation();
     while (! g->AtStart()) {
         if (g->AtVarStart()) {
             g->MoveExitVariation();
@@ -507,7 +507,7 @@ OpTable::Init (const char * type, Game * g, PBook * ebook)
         StartLength++;
         if (StartLength >= OPTABLE_MAX_STARTLINE) { break; }
     }
-    g->RestoreState();
+    g->restoreLocation(location);
     // Now the moves are in the StartLine[] array, in reverse order.
 }
 
