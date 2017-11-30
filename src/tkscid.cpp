@@ -44,6 +44,7 @@
 #include "dbasepool.h"
 #include "ui.h"
 #include <algorithm>
+#include <cstring>
 #include <numeric>
 #include <set>
 
@@ -1464,8 +1465,6 @@ sc_eco_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             Tcl_AppendResult (ti, "Unable to load the ECO file:\n",
                               argv[2], NULL);
-            Tcl_AppendResult (ti, "\n\nError at line ", NULL);
-            appendUintResult (ti, ecoBook->GetLineNumber());
         }
         return book.first;
     }
@@ -2673,33 +2672,24 @@ sc_game_firstMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return UI_Result(ti, OK, std::string(dstr.Data()));
 }
 
-int
-sc_game_import (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_game import <pgn-text>");
-    }
-    PgnParser parser (argv[2]);
-    errorT err = parser.ParseGame (db->game);
-    if (err == ERROR_NotFound) {
-        // No PGN header tags were found, so try just parsing moves:
-        db->game->Clear();
-        parser.Reset (argv[2]);
-        parser.SetEndOfInputWarnings (false);
-        parser.SetResultWarnings (false);
-        err = parser.ParseMoves (db->game);
-    }
-    db->gameAltered = true;
-    if (err == OK  &&  parser.ErrorCount() == 0) {
-        return setResult (ti, "PGN text imported with no errors or warnings.");
-    }
-    Tcl_AppendResult (ti, "Errors/warnings importing PGN text:\n\n",
-                          parser.ErrorMessages(), NULL);
-    if (err == ERROR_NotFound) {
-        Tcl_AppendResult (ti, "ERROR: No PGN header tag (e.g. ",
-                          "[Result \"1-0\"]) found.", NULL);
-    }
-    return (err == OK ? TCL_OK : TCL_ERROR);
+int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
+	if (argc != 3)
+		return errorResult(ti, "Usage: sc_game import <pgn-text>");
+
+	db->game->Clear();
+	db->gameAltered = true;
+
+	PgnParseLog pgn;
+	if (!pgnParseGame(argv[2], std::strlen(argv[2]), *db->game, pgn) &&
+	    pgn.log.empty())
+		return UI_Result(ti, OK, "No PGN text found.");
+
+	if (pgn.log.empty())
+		return UI_Result(ti, OK,
+		                 "PGN text imported with no errors or warnings.");
+
+	return UI_Result(ti, OK,
+	                 "Errors/warnings importing PGN text:\n\n" + pgn.log);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5243,32 +5233,16 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 //    to the game. The moves can be in one large string, separate
 //    list elements, or a mixture of both. Move numbers are ignored
 //    but variations/comments/annotations are parsed and added.
-int
-sc_move_addSan (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char ** argPtr = &(argv[2]);
-    int argsLeft = argc - 2;
-
-    if (argc < 3) { return TCL_OK; }
-
-    char buf [1000];
-    while (argsLeft > 0) {
-        PgnParser parser(*argPtr);
-        parser.SetEndOfInputWarnings (false);
-        parser.SetResultWarnings (false);
-        errorT err = parser.ParseMoves (db->game, buf, 1000);
-        if (err != OK  ||  parser.ErrorCount() > 0) {
-            Tcl_AppendResult (ti, "Error reading move(s): ", *argPtr, NULL);
-            return TCL_ERROR;
-        }
-        db->gameAltered = true;
-        argPtr++;
-        argsLeft--;
-    }
-
-    // If we reach here, all moves were successfully added:
-    return TCL_OK;
+int sc_move_addSan(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
+	PgnParseLog parser;
+	for (int i = 2; i < argc; ++i) {
+		db->gameAltered = true;
+		if (!pgnParseGame(argv[i], std::strlen(argv[i]), *db->game, parser))
+			return UI_Result(ti, ERROR_InvalidMove, argv[i]);
+	}
+	return UI_Result(ti, OK);
 }
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_move_addUCI:
 //    Takes moves in engine UCI format (e.g. "g1f3") and adds them
@@ -5554,7 +5528,7 @@ sc_pos_addNag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 		db->game->RemoveNag( false);
 	else
 	{
-		byte nag = game_parseNag (nagStr);
+		byte nag = game_parseNag({nagStr, nagStr + std::strlen(nagStr)});
 		if (nag != 0) {
 			db->game->AddNag ((byte) nag);
 		}

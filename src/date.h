@@ -17,6 +17,7 @@
 #define SCID_DATE_H
 
 #include "common.h"
+#include <algorithm>
 #include <cstdlib>
 
 // DATE STORAGE FORMAT:
@@ -155,6 +156,46 @@ date_EncodeFromString (const char * str)
     date |= (day << DAY_SHIFT);
 
     return date;
+}
+
+/**
+ * Creates a dateT object from a PGN tag value string.
+ * "The Date tag value field always uses a standard ten character format:
+ * "YYYY.MM.DD". If the any of the digit fields are not known, then question
+ * marks are used in place of the digits."
+ * @param str: pointer to the memory containing the tag value.
+ * @param len: length of the tag value.
+ * @returns the dateT object corresponding to @e str.
+ */
+inline dateT date_parsePGNTag(const char* str, size_t len) {
+	char tmp[10] = {0};
+	std::transform(str, str + std::min<size_t>(len, 10), tmp, [](char ch) {
+		return (ch >= '0' && ch <= '9') ? ch - '0' : 0;
+	});
+
+	uint32_t year = tmp[0] * 1000 + tmp[1] * 100 + tmp[2] * 10 + tmp[3];
+	uint32_t month = tmp[5] * 10 + tmp[6];
+	uint32_t day = tmp[8] * 10 + tmp[9];
+
+	if (year > YEAR_MAX)
+		year = 0;
+
+	if (month > 12)
+		month = 0;
+
+	constexpr unsigned char days[] = {31, 31, 28, 31, 30, 31, 30,
+	                                  31, 31, 30, 31, 30, 31};
+	if (day > days[month]) {
+		if (day != 29 || year % 4 || !(year % 100)) {
+			day = 0;
+		}
+	}
+
+	return (year << YEAR_SHIFT) | (month << MONTH_SHIFT) | (day << DAY_SHIFT);
+}
+
+inline dateT date_parsePGNTag(std::pair<const char*, const char*> str) {
+	return date_parsePGNTag(str.first, std::distance(str.first, str.second));
 }
 
 #endif   // #ifndef SCID_DATE_H

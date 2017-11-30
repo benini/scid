@@ -419,7 +419,7 @@ inline errorT scidBaseT::importGames(T& codec, const P& progress,
 	errorT res;
 	Game g;
 	nImported = 0;
-	while ((res = codec.parseNext(&g)) != ERROR_NotFound) {
+	while ((res = codec.parseNext(g)) != ERROR_NotFound) {
 		if (res != OK) continue;
 
 		res = saveGameHelper(&g, INVALID_GAMEID);

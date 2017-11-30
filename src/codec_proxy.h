@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017  Fulvio Benini
+ * Copyright (C) 2016-2018  Fulvio Benini
 
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -60,13 +60,12 @@ protected:
 	 * Reads the next game.
 	 * A derived class implements this function to sequentially read the games
 	 * contained into the database.
-	 * @param Game*: valid pointer to the Game object where the data will be stored.
+	 * @param Game&: the Game object where the data will be stored.
 	 * @returns
-	 * - OK on success.
 	 * - ERROR_NotFound if there are no more games to be read.
-	 * - ERROR code if the game cannot be read and was skipped.
+	 * - OK otherwise.
 	 */
-	errorT parseNext(Game*) {
+	errorT parseNext(Game&) {
 		return ERROR_NotFound;
 	}
 
@@ -175,21 +174,26 @@ private:
 			for (uint64_t nProduced = 0; true;) {
 				slot = nProduced % 4;
 				int sy;
-				do { // spinlock if the slot is in use
+				while (true) { // spinlock if the slot is in use
 					sy = sync[slot].load(std::memory_order_acquire);
-				} while (sy == sy_used);
-				if (sy == sy_stop) break;
+					if (sy == sy_used)
+						std::this_thread::yield();
+					else
+						break;
+				};
+				if (sy == sy_stop)
+					break;
 
-				errorT err = getDerived()->parseNext(&game[slot]);
-				if (err == ERROR_NotFound) break;
+				if (getDerived()->parseNext(game[slot]) == ERROR_NotFound)
+					break;
 
-				workDone.store(getDerived()->parseProgress().first,
-				               std::memory_order_release);
-
-				if (err == OK) { // Process only the games with no errors
-					sync[slot].store(sy_used, std::memory_order_release);
-					++nProduced;
+				if (nProduced % 1024 == 0) {
+					workDone.store(getDerived()->parseProgress().first,
+					               std::memory_order_release);
 				}
+
+				sync[slot].store(sy_used, std::memory_order_release);
+				++nProduced;
 			}
 			sync[slot].store(sy_stop, std::memory_order_release);
 		});
@@ -199,10 +203,15 @@ private:
 		for (uint64_t nImported = 0; true; ++nImported) {
 			slot = nImported % 4;
 			int sy;
-			do { // spinlock if the slot is empty
+			while (true) { // spinlock if the slot is empty
 				sy = sync[slot].load(std::memory_order_acquire);
-			} while (sy == sy_free);
-			if (sy == sy_stop) break;
+				if (sy == sy_free)
+					std::this_thread::yield();
+				else
+					break;
+			};
+			if (sy == sy_stop)
+				break;
 
 			if (nImported % 1024 == 0) {
 				if (!progress.report(workDone.load(std::memory_order_acquire),
@@ -215,7 +224,6 @@ private:
 			err = CodecMemory::addGame(&game[slot]);
 			if (err != OK) break;
 
-			game[slot].Clear();
 			sync[slot].store(sy_free, std::memory_order_release);
 		}
 		sync[slot].store(sy_stop, std::memory_order_release);
@@ -227,9 +235,7 @@ private:
 #else
 		Game g;
 		uint nImported = 0;
-		while ((err = getDerived()->parseNext(&g)) != ERROR_NotFound) {
-			if (err != OK) continue;
-
+		while (getDerived()->parseNext(g) != ERROR_NotFound) {
 			err = CodecMemory::addGame(&g);
 			if (err != OK) break;
 
@@ -242,8 +248,7 @@ private:
 			}
 		}
 		progress(1, 1, getDerived()->parseErrors());
-
-		return (err == ERROR_NotFound) ? OK : err;
+		return err;
 #endif
 	}
 

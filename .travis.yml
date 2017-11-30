@@ -74,6 +74,7 @@ matrix:
       - cloc tcl --exclude-dir=lang
 
   - os: linux
+    sudo: true
     env: GTEST_ADDRESS=_ CXX=clang++-5.0 CC=clang-5.0
     addons:
       apt:

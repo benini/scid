@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017  Fulvio Benini
+ * Copyright (C) 2016-2018  Fulvio Benini
 
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -29,20 +29,19 @@
 #include "common.h"
 #include "filebuf.h"
 #include "pgnparse.h"
-
-#if !CPP11_SUPPORT
-#define override
-#endif
+#include <algorithm>
+#include <vector>
 
 class CodecPgn : public CodecProxy<CodecPgn> {
 	std::string filename_;
-	std::streamsize fileSize_;
+	std::streamsize fileSize_ = 0;
 	Filebuf file_;
-	PgnParser parser_;
+	std::vector<char> buf_;
+	size_t nParsed_ = 0;
+	size_t nRead_ = 0;
+	PgnParseLog parseLog_;
 
 public:
-	CodecPgn() : parser_(&file_) {}
-
 	Codec getType() override { return ICodecDatabase::PGN; }
 
 	std::vector<std::string> getFilenames() override {
@@ -64,32 +63,68 @@ public:
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
 	errorT open(const char* filename, fileModeT fmode) {
+		ASSERT(filename && !file_.is_open());
 		filename_ = filename;
-		if (filename_.empty()) return ERROR_FileOpen;
+		if (filename_.empty())
+			return ERROR_FileOpen;
 
 		errorT res = file_.Open(filename, fmode);
-		if (res == OK) {
-			fileSize_ = file_.pubseekoff(0, std::ios::end);
-			res = (fileSize_ >= 0) ? OK : ERROR_FileSeek;
-			file_.pubseekpos(0);
-		}
-		if (res == OK) {
-			parser_ = PgnParser(&file_);
-		}
+		if (res != OK)
+			return res;
 
-		return res;
+		buf_.resize(128 * 1024);
+		nRead_ = nParsed_ = buf_.size();
+		file_.pubsetbuf(nullptr, nRead_); // Optimization
+
+		fileSize_ = file_.pubseekoff(0, std::ios::end);
+		file_.pubseekpos(0);
+
+		return (fileSize_ < 0) ? ERROR_FileSeek : OK;
 	}
 
 	/**
 	 * Reads the next game.
-	 * @param g: valid pointer to the Game object where the data will be stored.
+	 * @param game: the Game object where the data will be stored.
 	 * @returns
-	 * - OK on success.
 	 * - ERROR_NotFound if there are no more games to be read.
-	 * - ERROR code if the game cannot be read and was skipped.
+	 * - OK otherwise.
 	 */
-	errorT parseNext(Game* g) {
-		return parser_.ParseGame(g, false);
+	errorT parseNext(Game& game) {
+		const auto verge = 3 * (nRead_ / 4);
+		if (nParsed_ > verge && nRead_ == buf_.size()) {
+			nParsed_ -= verge;
+			nRead_ -= verge;
+			std::copy_n(buf_.data() + verge, nRead_, buf_.data());
+			nRead_ += file_.sgetn(buf_.data() + nRead_, verge);
+		}
+		while (true) {
+			game.Clear();
+			PgnVisitor visitor(game);
+			auto parse = pgn::parse_game(
+			    {buf_.data() + nParsed_, buf_.data() + nRead_}, visitor);
+
+			bool eof = (nRead_ - nParsed_ == parse.first);
+			if (eof && nRead_ == buf_.size()) {
+				// Reached the end of input, but the file contains more bytes.
+				if (nRead_ <= 128 * 1024 * 1024) {
+					// Double the buffer size and retry.
+					buf_.resize(nRead_ * 2);
+					nRead_ += file_.sgetn(buf_.data() + nRead_, nRead_);
+				} else {
+					// Give up
+					nRead_ = nParsed_ = 0;
+					parseLog_.log.append("PGN parsing aborted.\n");
+					return ERROR_NotFound;
+				}
+			} else {
+				nParsed_ += parse.first;
+				parseLog_.logGame(parse.first, visitor);
+				if (eof && !parse.second && *game.GetMoveComment() == '\0')
+					return ERROR_NotFound;
+
+				return OK;
+			}
+		}
 	}
 
 	/**
@@ -98,15 +133,13 @@ public:
 	 * data parsed and second one is the total amount of data of the database.
 	 */
 	std::pair<size_t, size_t> parseProgress() {
-		return std::make_pair(parser_.BytesUsed() / 1024, fileSize_ / 1024);
+		return std::make_pair(parseLog_.n_bytes / 1024, fileSize_ / 1024);
 	}
 
 	/**
 	 * Returns the list of errors produced by parseNext() calls.
 	 */
-	const char* parseErrors() {
-		return parser_.ErrorMessages();
-	}
+	const char* parseErrors() { return parseLog_.log.c_str(); }
 
 public:
 	/**
@@ -129,9 +162,5 @@ public:
 		return ERROR_FileWrite;
 	}
 };
-
-#if !CPP11_SUPPORT
-#undef override
-#endif
 
 #endif

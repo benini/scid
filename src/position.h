@@ -102,8 +102,6 @@ private:
                                     // or pawn move.
     ushort          PlyCounter;
     byte            Castling;       // castling flags
-    bool            StrictCastling; // If false, allow castling after moving
-                                        // the King or Rook.
 
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
@@ -133,9 +131,16 @@ private:
     void  GenPawnMoves (MoveList * mlist, squareT from, directionT dir,
                         SquareSet * sqset, genMovesT genType);
 
+    void GenCheckEvasions(MoveList* mlist, pieceT mask, genMovesT genType,
+                          SquareList* checkSquares);
+    errorT MatchPawnMove(MoveList* mlist, fyleT fromFyle, squareT to,
+                         pieceT promote);
+
     errorT ReadMove(simpleMoveT* sm, const char* str, int slen, pieceT p);
     errorT ReadMoveCastle(simpleMoveT* sm, const char* str, int slen);
     errorT ReadMovePawn(simpleMoveT* sm, const char* str, int slen, fyleT from);
+    errorT ReadMoveKing(simpleMoveT* sm, const char* str, int slen);
+
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -212,9 +217,6 @@ public:
     byte        GetCastlingFlags () { return Castling; }
     void        SetCastlingFlags (byte b) { Castling = b; }
 
-    void        SetStrictCastling (bool b) { StrictCastling = b; }
-    bool        GetStrictCastling (void) { return StrictCastling; }
-
     // Hashing
     inline uint HashValue (void) { return Hash; }
     inline uint PawnHashValue (void) { return PawnHash; }
@@ -231,11 +233,6 @@ public:
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);
-
-    void        GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType, SquareList * checkSquares);
-    void        MatchLegalMove (MoveList * mlist, pieceT mask, squareT target);
-    errorT      MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote);
-    errorT      MatchKingMove (MoveList * mlist, squareT target);
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares);
     int         TreeCalcAttacks (colorT toMove, squareT target);

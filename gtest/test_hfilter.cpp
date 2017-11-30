@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2016 Fulvio Benini
+* Copyright (C) 2016-2018 Fulvio Benini
 
 * Scid is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -83,14 +83,12 @@ protected:
 		}
 	}
 
-	template <typename T>
-	std::unique_ptr<Filter> makeFilter(const T* data) {
+	template <typename T> std::unique_ptr<Filter> makeFilter(const T* data) {
 		std::unique_ptr<Filter> res = nullptr;
 		if (data != nullptr) {
-			res = std::make_unique<Filter>(data->size());
-			gamenumT gnum = 0;
+			res = std::make_unique<Filter>(0);
 			for (auto& val : *data)
-				res->Set(gnum++, val);
+				res->Append(val);
 		}
 		return res;
 	}

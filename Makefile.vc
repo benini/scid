@@ -169,14 +169,12 @@ SCID_EXECS = \
 #
 SCID_OBJS = \
 	$(TMP_DIR)\bytebuf.obj \
+	$(TMP_DIR)\codec_scid4.obj \
 	$(TMP_DIR)\date.obj \
 	$(TMP_DIR)\game.obj \
 	$(TMP_DIR)\index.obj \
 	$(TMP_DIR)\matsig.obj \
-	$(TMP_DIR)\mfile.obj \
 	$(TMP_DIR)\misc.obj \
-	$(TMP_DIR)\namebase.obj \
-	$(TMP_DIR)\pgnparse.obj \
 	$(TMP_DIR)\position.obj \
 	$(TMP_DIR)\stored.obj \
 	$(TMP_DIR)\textbuf.obj \

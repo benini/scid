@@ -136,10 +136,15 @@ game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
 //      Accepts numeric format ($51) or symbols such as
 //      !, ?, +=, -/+, N, etc.
 //
-byte
-game_parseNag (const char * str)
-{
-    ASSERT (str != NULL);
+byte game_parseNag(std::pair<const char*, const char*> strview) {
+    auto slen = std::distance(strview.first, strview.second);
+    if (slen == 0 || slen > 7)
+        return 0;
+
+    char strbuf[8] = {0};
+    std::copy_n(strview.first, slen, strbuf);
+    const char* str = strbuf;
+
     if (*str == '$') {
         str++;
         return (byte) strGetUnsigned(str);
@@ -680,6 +685,30 @@ bool Game::RemoveExtraTag(const char* tag) {
     return false;
 }
 
+std::string& Game::accessTagValue(const char* tag, size_t tagLen) {
+	if (tagLen == 5) {
+		if (std::equal(tag, tag + 5, "Event"))
+			return EventStr;
+		if (std::equal(tag, tag + 5, "Round"))
+			return RoundStr;
+		if (std::equal(tag, tag + 5, "White"))
+			return WhiteStr;
+		if (std::equal(tag, tag + 5, "Black"))
+			return BlackStr;
+	} else if (tagLen == 4) {
+		if (std::equal(tag, tag + 4, "Site"))
+			return SiteStr;
+	}
+
+	for (auto& elem : extraTags_) {
+		if (std::equal(tag, tag + tagLen, elem.first.begin(), elem.first.end()))
+			return elem.second;
+	}
+	extraTags_.emplace_back();
+	extraTags_.back().first.assign(tag, tagLen);
+	return extraTags_.back().second;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::SetMoveComment():
 //      Sets the comment for a move. A comment before the game itself
@@ -696,6 +725,34 @@ Game::SetMoveComment (const char * comment)
         m->comment = comment;
         // CommentsFlag = 1;
     }
+}
+
+int Game::setRating(colorT col, const char* ratingType, size_t ratingTypeLen,
+                    std::pair<const char*, const char*> rating) {
+	auto begin = ratingTypeNames;
+	const size_t ratingSz = 7;
+	auto it = std::find_if(begin, begin + ratingSz, [&](auto rType) {
+		return std::equal(ratingType, ratingType + ratingTypeLen, rType,
+		                  rType + std::strlen(rType));
+	});
+	byte rType = static_cast<byte>(std::distance(begin, it));
+	if (rType >= ratingSz)
+		return -1;
+
+	int res = 1;
+	auto elo = strGetUnsigned(std::string{rating.first, rating.second}.c_str());
+	if (elo > MAX_ELO) {
+		elo = 0;
+		res = 0;
+	}
+	if (col == WHITE) {
+		SetWhiteElo(static_cast<eloT>(elo));
+		SetWhiteRatingType(rType);
+	} else {
+		SetBlackElo(static_cast<eloT>(elo));
+		SetBlackRatingType(rType);
+	}
+	return res;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -938,7 +995,7 @@ errorT Game::MainVariation() {
 	// Now, the information about the material at the end of the
 	// game, pawn promotions, will be wrong if the variation was
 	// promoted to an actual game move, so call MakeHomePawnList()
-	// so go through the game moves and ensure it is correct.
+	// to go through the game moves and ensure it is correct.
 	auto location = currentLocation();
 	byte tempPawnList[9];
 	MakeHomePawnList(tempPawnList);
@@ -3100,6 +3157,8 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
 //       This means that the maximum length of a non-common tag is 240
 //       bytes, and the maximum number of common tags is 15.
 //
+constexpr size_t MAX_TAG_LEN = 240;
+
 static const char* commonTags[255 - MAX_TAG_LEN] = {
     // 241, 242: Country
     "WhiteCountry", "BlackCountry",
@@ -3139,14 +3198,14 @@ errorT encodeTags(ByteBuffer* buf, const TCont& tagList) {
             }
         }
         if (*common == NULL) {   // This is not a common tag.
-            auto length = tag.first.length();
+            auto length = std::min(tag.first.length(), MAX_TAG_LEN);
             buf->PutByte ((byte) length);
             buf->PutFixedString(tag.first.c_str(), length);
         }
 
-        auto length = tag.second.length();
-        buf->PutByte ((byte) length);
-        buf->PutFixedString(tag.second.c_str(), length);
+        auto valueLen = std::min<size_t>(tag.second.length(), 255);
+        buf->PutByte ((byte) valueLen);
+        buf->PutFixedString(tag.second.c_str(), valueLen);
     }
     buf->PutByte (0);
     return buf->Status();

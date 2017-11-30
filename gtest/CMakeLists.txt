@@ -30,8 +30,8 @@ set(SCID_BASE
   ../src/index.cpp
   ../src/scidbase.cpp
   ../src/sortcache.cpp
-  ../src/pgnparse.cpp ../src/misc.cpp
-  ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/stored.cpp
+  ../src/stored.cpp
+  ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/misc.cpp
 )
 add_library(scid_base ${SCID_BASE})
 target_include_directories(scid_base PUBLIC ../src)

@@ -72,9 +72,7 @@ const errorT
     ERROR_VariationLimit = 405,
     ERROR_Decode = 406,
     ERROR_GameFull = 407,
-
-    // Scan Errors
-    ERROR_PGNTag = 501,
+    ERROR_CastlingAvailability = 408,
 
     // Buffer errors
     ERROR_BufferFull = 601,

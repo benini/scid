@@ -145,7 +145,7 @@ bool attack(squareT sqFrom, squareT sqTo, pieceT pieceCol, pieceT pieceType,
 }
 
 template <typename TBoard>
-bool pseudo(squareT sqFrom, squareT sqTo, pieceT /*pieceCol*/, pieceT pieceType,
+bool pseudo(squareT sqFrom, squareT sqTo, colorT /*pieceCol*/, pieceT pieceType,
             const TBoard* board, const TBoard EMPTY_SQUARE) {
 	// TODO: pawn and king moves
 	ASSERT(pieceType != PAWN && pieceType != KING);

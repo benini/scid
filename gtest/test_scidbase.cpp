@@ -283,9 +283,11 @@ protected:
 
 TEST_F(Test_Scidbase, getGamePos1) {
 	Game game;
-	const char* test_pgn = test_pgnShort.c_str();
-	PgnParser pgnParser(test_pgn);
-	pgnParser.ParseMoves(&game);
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(test_pgnShort.c_str(), test_pgnShort.size(), game,
+	                         parseLog));
+	ASSERT_STREQ(parseLog.log.c_str(), "");
+
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
@@ -309,9 +311,11 @@ TEST_F(Test_Scidbase, getGamePos1) {
 
 TEST_F(Test_Scidbase, getGamePos2) {
 	Game game;
-	const char* test_pgn = test_pgnShort.c_str();
-	PgnParser pgnParser(test_pgn);
-	pgnParser.ParseMoves(&game);
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(test_pgnShort.c_str(), test_pgnShort.size(), game,
+	                         parseLog));
+	ASSERT_STREQ(parseLog.log.c_str(), "");
+
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
@@ -319,14 +323,16 @@ TEST_F(Test_Scidbase, getGamePos2) {
 
 	std::vector<scidBaseT::GamePos> gamepos;
 	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
-	EXPECT_EQ(test_pgn, encodePgn(gamepos));
+	EXPECT_EQ(test_pgnShort.c_str(), encodePgn(gamepos));
 }
 
 TEST_F(Test_Scidbase, getGamePos3) {
 	Game game;
-	const char* test_pgn = test_pgnLong.c_str();
-	PgnParser pgnParser(test_pgn);
-	pgnParser.ParseMoves(&game);
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(test_pgnLong.c_str(), test_pgnLong.size(), game,
+	                         parseLog));
+	ASSERT_STREQ(parseLog.log.c_str(), "");
+
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
@@ -334,16 +340,18 @@ TEST_F(Test_Scidbase, getGamePos3) {
 
 	std::vector<scidBaseT::GamePos> gamepos;
 	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
-	EXPECT_EQ(test_pgn, encodePgn(gamepos));
+	EXPECT_EQ(test_pgnLong.c_str(), encodePgn(gamepos));
 }
 
 TEST_F(Test_Scidbase, saveGame) {
-	PgnParser pgnParser(test_pgnShort.c_str());
 	Game game0;
-	pgnParser.ParseMoves(&game0);
-	pgnParser.Reset(test_pgnLong.c_str());
 	Game game1;
-	pgnParser.ParseMoves(&game1);
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(test_pgnShort.c_str(), test_pgnShort.size(), game0,
+	                         parseLog));
+	ASSERT_TRUE(pgnParseGame(test_pgnLong.c_str(), test_pgnLong.size(), game1,
+	                         parseLog));
+	ASSERT_STREQ(parseLog.log.c_str(), "");
 
 	scidBaseT dbase;
 	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
@@ -399,12 +407,15 @@ TEST_F(Test_Scidbase, saveGame) {
 }
 
 TEST_F(Test_Scidbase, importGames) {
-	PgnParser pgnParser(test_pgnShort.c_str());
 	Game game0;
-	pgnParser.ParseMoves(&game0);
-	pgnParser.Reset(test_pgnLong.c_str());
 	Game game1;
-	pgnParser.ParseMoves(&game1);
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(test_pgnShort.c_str(), test_pgnShort.size(), game0,
+	                         parseLog));
+	ASSERT_TRUE(pgnParseGame(test_pgnLong.c_str(), test_pgnLong.size(), game1,
+	                         parseLog));
+	ASSERT_STREQ(parseLog.log.c_str(), "");
+
 
 	scidBaseT srcBase;
 	ASSERT_EQ(OK, srcBase.Open(ICodecDatabase::MEMORY, FMODE_Memory));

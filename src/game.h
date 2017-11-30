@@ -109,9 +109,6 @@ const byte
 
 // MAX_NAGS: Maximum id of NAG codes
 const byte MAX_NAGS_ARRAY = 215;
-    
-const uint MAX_TAG_LEN = 240;
-
 
 // patternT structure: a pattern filter for material searches.
 //    It can specify, for example, a white Pawn on the f-fyle, or
@@ -160,7 +157,7 @@ enum gameFormatT {
 
 
 void  game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format);
-byte  game_parseNag (const char * str);
+byte game_parseNag(std::pair<const char*, const char*> strview);
 
 uint strGetRatingType (const char * name);
 
@@ -238,10 +235,12 @@ public:
     void SetStartPos(Position* pos);
     errorT SetStartFen(const char* fenStr);
 
-    void SetScidFlags(const char* s) {
-        strncpy(ScidFlags, s, sizeof(ScidFlags) - 1);
-        ScidFlags[sizeof(ScidFlags) - 1] = 0;
+    void SetScidFlags(const char* s, size_t len) {
+        constexpr size_t size = sizeof(ScidFlags) / sizeof(*ScidFlags);
+        std::fill_n(ScidFlags, size, 0);
+        std::copy_n(s, std::min(size - 1, len), ScidFlags);
     }
+    void SetScidFlags(const char* s) { SetScidFlags(s, std::strlen(s)); }
 
     ushort GetNumHalfMoves() { return NumHalfMoves; }
 
@@ -353,12 +352,8 @@ public:
     const char* GetMoveComment() const {
         return CurrentMove->prev->comment.c_str();
     }
+    std::string& accessMoveComment() { return CurrentMove->prev->comment; }
     void SetMoveComment(const char* comment);
-    void SetMoveComment(const char* begin, const char* end) {
-        ASSERT(begin != NULL && end != NULL);
-        ASSERT(CurrentMove != NULL && CurrentMove->prev != NULL);
-        CurrentMove->prev->comment.append(begin, end);
-    }
 
     const char* GetNextSAN();
     void GetSAN(char* str);
@@ -372,6 +367,7 @@ public:
     void AddPgnTag(const char* tag, const char* value);
     bool RemoveExtraTag(const char* tag);
     const char* FindExtraTag(const char* tag) const;
+    std::string& accessTagValue(const char* tag, size_t tagLen);
     const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
     void ClearExtraTags() { extraTags_.clear(); }
 
@@ -389,6 +385,8 @@ public:
     void     SetBlackElo (eloT elo)  { BlackElo = elo; }
     void     SetWhiteRatingType (byte b) { WhiteRatingType = b; }
     void     SetBlackRatingType (byte b) { BlackRatingType = b; }
+    int setRating(colorT col, const char* ratingType, size_t ratingTypeLen,
+                  std::pair<const char*, const char*> rating);
     void     SetEco (ecoT eco)       { EcoCode = eco; }
     const char* GetEventStr ()       { return EventStr.c_str(); }
     const char* GetSiteStr ()        { return SiteStr.c_str();  }
