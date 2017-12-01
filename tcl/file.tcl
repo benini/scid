@@ -238,8 +238,6 @@ proc ::file::Close {{base -1}} {
   # If base to close was the current one, reset to clipbase
   if { $current == $base } { set current 9 }
 
-  ::gameHistory::removeDB $base
-
   if {[catch {sc_base close $base}]} {
     ERROR::MessageBox
   }
@@ -251,16 +249,10 @@ proc ::file::Close {{base -1}} {
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
-  if {$saveHistory == 1} {
-    ::gameHistory::updatePos $::curr_db [sc_game number] [sc_pos location]
-  }
   if {![catch {sc_base switch $b} res]} {
     set ::curr_db $res
     # Close email window when a base is switched:
     if {[winfo exists .emailWin]} { destroy .emailWin }
-    if {$saveHistory == 1} {
-      ::gameHistory::pushBack $::curr_db [sc_game number] [sc_pos location]
-    }
   }
   ::notify::GameChanged
   ::notify::DatabaseChanged

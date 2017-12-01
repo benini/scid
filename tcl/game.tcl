@@ -189,8 +189,6 @@ proc ::game::mergeInBase { srcBase destBase gnum } {
 #   Loads a specified game from the active database.
 #
 proc ::game::Load { selection {ply ""} } {
-  ::gameHistory::updatePos $::curr_db [sc_game number] [sc_pos location]
-
   set confirm [::game::ConfirmDiscard]
   if {$confirm == 0} { return 0}
   if {$confirm == 1} { ::notify::DatabaseModified $::curr_db }
@@ -202,8 +200,6 @@ proc ::game::Load { selection {ply ""} } {
   }
 
   if {$ply != ""} { eval "sc_move ply $ply" }
-
-  ::gameHistory::pushBack $::curr_db [sc_game number] [sc_pos location]
 
   set extraTags [sc_game tag get Extra]
   regexp {FlipB "([01])"\n} $extraTags -> flipB
@@ -265,7 +261,6 @@ proc ::game::ConfirmDiscard {} {
       ERROR::MessageBox
       set ::game::answer 0
     } else {
-      ::gameHistory::updatePos $::curr_db $gnum [sc_pos location]
       set ::game::answer 1
 	}
     destroy .confirmDiscard
@@ -278,7 +273,6 @@ proc ::game::ConfirmDiscard {} {
       set ::game::answer 0
     } else {
 	  set gnum [sc_base numGames $::clipbase_db]
-      ::gameHistory::pushBack $::clipbase_db $gnum [sc_pos location]
       set ::game::answer 2
     }
     destroy .confirmDiscard
@@ -306,41 +300,6 @@ proc ::game::ConfirmDiscard {} {
   tkwait window $w
   return $::game::answer
 }
-
-
-namespace eval ::gameHistory {
-  set list_ {}
-
-  proc updatePos {db game pos} {
-    global gameHistory::list_
-
-    set idx [lsearch -index 0 $list_ "$db $game"]
-    if {$idx < 0} { return }
-
-    set elem [list "$db $game" "$pos"]
-    set list_ [lreplace $list_ $idx $idx $elem]
-  }
-
-  proc pushBack {db game pos} {
-    global gameHistory::list_
-    if {$game == 0} { return }
-
-    set list_ [lsearch -index 0 -all -inline -not $list_ "$db $game"]
-    if {[llength $list_] > 20} {
-      set list_ [lrange $list_ end-19 end]
-    }
-
-    set elem [list "$db $game" "$pos"]
-    lappend list_ $elem
-  }
-
-  proc removeDB {db} {
-    global gameHistory::list_
-    set list_ [lsearch -index 0 -all -inline -not $list_ "$db *"]
-  }
-
-}
-
 
 # Grouping intercommunication between windows
 # When complete this should be moved to a new notify.tcl file
