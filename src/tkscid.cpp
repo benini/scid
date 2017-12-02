@@ -1192,6 +1192,7 @@ int
 sc_clipbase (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     scidBaseT* clipbase = DBasePool::getBase(DBasePool::getClipBase());
+    ASSERT(clipbase);
 
     static const char * options [] = {
         "clear", "paste", NULL
@@ -3055,7 +3056,6 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     bool fullComment = false;
     uint showTB = 2;  // 0 = no TB output, 1 = score only, 2 = best moves.
     char temp[1024];
-    char tempTrans[10];
 
     int arg = 2;
     while (arg < argc) {
@@ -3129,9 +3129,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return setResult (ti, RESULT_STR[db->game->GetResult()]);
         } else if (strIsPrefix (argv[arg], "nextMove")) {
             db->game->GetSAN (temp);
-            strcpy(tempTrans, temp);
-            transPieces(tempTrans);
-            Tcl_AppendResult (ti, tempTrans, NULL);
+            transPieces(temp);
+            Tcl_AppendResult (ti, temp, NULL);
             return TCL_OK;
 // nextMoveNT is the same as nextMove, except that the move is not translated
         } else if (strIsPrefix (argv[arg], "nextMoveNT")) {
@@ -3145,9 +3144,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
           return TCL_OK;
         } else if (strIsPrefix (argv[arg], "previousMove")) {
             db->game->GetPrevSAN (temp);
-            strcpy(tempTrans, temp);
-            transPieces(tempTrans);
-            Tcl_AppendResult (ti, tempTrans, NULL);
+            transPieces(temp);
+            Tcl_AppendResult (ti, temp, NULL);
             return TCL_OK;
 // previousMoveNT is the same as previousMove, except that the move is not translated
         } else if (strIsPrefix (argv[arg], "previousMoveNT")) {
@@ -3311,6 +3309,7 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
 
     char san [20];
+    char tempTrans[20];
     byte * nags;
     colorT toMove = db->game->GetCurrentPos()->GetToMove();
     uint moveCount = db->game->GetCurrentPos()->GetFullMoveCount();
@@ -9387,36 +9386,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// matchGameHeader():
-//    Called by sc_search_header to test a particular game against the
-//    header search criteria.
-bool
-matchGameHeader (const IndexEntry* ie,
-                 bool * mWhite, bool * mBlack,
-                 bool wToMove, bool bToMove, bool bAnnotaded)
-{
-    uint halfmoves = ie->GetNumHalfMoves();
-    if ((halfmoves % 2) == 0) {
-        // This game ends with White to move:
-        if (! wToMove) { return false; }
-    } else {
-        // This game ends with Black to move:
-        if (! bToMove) { return false; }
-    }
-    
-    // Last, we check the players
-    if (mWhite != NULL  &&  !mWhite[ie->GetWhite()]) { return false; }
-    if (mBlack != NULL  &&  !mBlack[ie->GetBlack()]) { return false; }
-
-	if (bAnnotaded && !(ie->GetCommentsFlag() || ie->GetVariationsFlag() || ie->GetNagsFlag()))
-		return false;
-
-    // If we reach here, this game matches all criteria.
-    return true;
-}
-
-
 const uint NUM_TITLES = 8;
 enum {
     TITLE_GM, TITLE_IM, TITLE_FM,
@@ -9470,10 +9439,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     //TODO: the old options that follows do not work with FILTEROP_OR
     //      at the moment there is no tcl code that use them with FILTEROP_OR
 
-	char * sAnnotator = NULL;
-
-    bool * mWhite = NULL;
-    bool * mBlack = NULL;
+	std::string sAnnotator;
 
 	bool bAnnotated = false;
 
@@ -9509,7 +9475,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 
         switch (index) {
 		case OPT_ANNOTATOR:
-			sAnnotator = strDuplicate(value);
+			sAnnotator = value;
 			break;
 
 		case OPT_ANNOTATED:
@@ -9517,10 +9483,12 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			break;
 
         case OPT_WTITLES:
+            delete[] wTitles;
             wTitles = parseTitles (value);
             break;
 
         case OPT_BTITLES:
+            delete[] bTitles;
             bTitles = parseTitles (value);
             break;
 
@@ -9538,6 +9506,8 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         case OPT_PGN:
             if (Tcl_SplitList (ti, (char *)value, &pgnTextCount,
                                (CONST84 char ***) &sPgnText) != TCL_OK) {
+                delete[] wTitles;
+                delete[] bTitles;
                 return TCL_ERROR;
             }
             break;
@@ -9546,6 +9516,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     }
 
     // Set up White name matches array:
+    std::vector<bool> mWhite;
     if (wTitles != NULL  &&  spellChk != NULL) {
         bool allTitlesOn = true;
         for (uint t=0; t < NUM_TITLES; t++) {
@@ -9554,12 +9525,8 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         if (! allTitlesOn) {
             idNumberT i;
             idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
-            if (mWhite == NULL) {
-                mWhite = new bool [numNames];
-                for (i=0; i < numNames; i++) { mWhite[i] = true; }
-            }
+            mWhite.resize(numNames, true);
             for (i=0; i < numNames; i++) {
-                if (! mWhite[i]) { continue; }
                 const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
                 const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
                 const char * title = (pInfo) ? pInfo->getTitle() : "";
@@ -9581,6 +9548,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     }
 
     // Set up Black name matches array:
+    std::vector<bool> mBlack;
     if (bTitles != NULL  &&  spellChk != NULL) {
         bool allTitlesOn = true;
         for (uint t=0; t < NUM_TITLES; t++) {
@@ -9589,12 +9557,8 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         if (! allTitlesOn) {
             idNumberT i;
             idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
-            if (mBlack == NULL) {
-                mBlack = new bool [numNames];
-                for (i=0; i < numNames; i++) { mBlack[i] = true; }
-            }
+            mBlack.resize(numNames, true);
             for (i=0; i < numNames; i++) {
-                if (! mBlack[i]) { continue; }
                 const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
                 const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
                 const char * title = (pInfo) ? pInfo->getTitle() : "";
@@ -9616,61 +9580,84 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     }
 
     bool skipSearch = false;
-    if ((sAnnotator == NULL || *sAnnotator == 0) &&
-        (mWhite == NULL && mBlack == NULL) &&
-        (bAnnotated == false) &&
-        (wToMove == true && bToMove == true) &&
-        (pgnTextCount == 0)) {
+    if (sAnnotator.empty() && mWhite.empty() && mBlack.empty() &&
+        bAnnotated == false && wToMove == true && bToMove == true &&
+        pgnTextCount == 0) {
         skipSearch = true;
     }
 
     // Here is the loop that searches on each game:
+    errorT result = OK;
     if (!skipSearch)
     for (uint i=0, n = base->numGames(); i < n; i++) {
         if ((i % 5000) == 0) {  // Update the percentage done bar:
-            if (!progress.report(i,n)) return UI_Result(ti, ERROR_UserCancel);
+            if (!progress.report(i,n)) {
+                result = ERROR_UserCancel;
+                break;
+            }
         }
         // Skip any games not in the filter:
         if (filter.get(i) == 0) continue;
 
-
         const IndexEntry* ie = base->getIndexEntry(i);
-        bool match = false;
-            if (matchGameHeader (ie, mWhite, mBlack,
-                                 wToMove, bToMove, bAnnotated)) {
-                match = true;
-            }
 
+		auto matchGameHeader = [&]() {
+			uint halfmoves = ie->GetNumHalfMoves();
+			if ((halfmoves % 2) == 0) { // This game ends with White to move
+				if (!wToMove) {
+					return false;
+				}
+			} else { // This game ends with Black to move
+				if (!bToMove) {
+					return false;
+				}
+			}
 
-		// Without annotations the search for annotator can be skipped
-		// This eliminates 90% of the effort, if an annotator is queried
-		if( sAnnotator != NULL && *sAnnotator != 0 && !ie->GetCommentsFlag() && !ie->GetVariationsFlag())
-			match = false;
+			// Last, we check the players
+			if (!mWhite.empty() && !mWhite[ie->GetWhite()]) {
+				return false;
+			}
+			if (!mBlack.empty() && !mBlack[ie->GetBlack()]) {
+				return false;
+			}
+
+			if (bAnnotated && !(ie->GetCommentsFlag() ||
+				                ie->GetVariationsFlag() || ie->GetNagsFlag()))
+				return false;
+
+			if (!sAnnotator.empty() && !ie->GetCommentsFlag() &&
+				!ie->GetVariationsFlag())
+				return false;
+
+			// If we reach here, this game matches all criteria.
+			return true;
+		};
+		bool match = matchGameHeader();
 
         // Now try to match the comment text if applicable:
         // Note that it is not worth using a faster staring search
         // algorithm like Boyer-Moore or Knuth-Morris-Pratt since
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
-
-        if (match  &&  (pgnTextCount > 0 || (sAnnotator != NULL && *sAnnotator != 0))) {
+        if (match  &&  (pgnTextCount > 0 || !sAnnotator.empty())) {
             if (match  &&  (base->getGame(ie, base->bbuf) != OK)) {
                 match = false;
             }
 
-			if (sAnnotator != NULL && *sAnnotator != 0) {
+			if (!sAnnotator.empty()) {
 				// Need the annotator flag, so decode the flags
+				scratchGame->Clear();
 				if (match && scratchGame->DecodeTags(base->bbuf, true) != OK)
 					match = false;
 				if (match) {
 					auto ann = scratchGame->FindExtraTag("Annotator");
-					match = (ann != NULL) && strAlphaContains(ann, sAnnotator);
+					match = (ann != NULL) && strAlphaContains(ann, sAnnotator.c_str());
 				}
-				scratchGame->Clear();
 			}
 
 			if(pgnTextCount > 0)
 			{
+				scratchGame->Clear();
 				if (match  &&  scratchGame->Decode (base->bbuf, GAME_DECODE_ALL) != OK) {
 					match = false;
 				}
@@ -9697,17 +9684,13 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
             filter.set (i, 0);
         }
     }
-	if (sAnnotator != NULL) { delete[] sAnnotator; }
-    if (mWhite != NULL) { delete[] mWhite; }
-    if (mBlack != NULL) { delete[] mBlack; }
     if (wTitles != NULL) { delete[] wTitles; }
     if (bTitles != NULL) { delete[] bTitles; }
-
     Tcl_Free ((char *) sPgnText);
 
     progress.report(1,1);
 
-    return UI_Result(ti, OK);;
+    return UI_Result(ti, result);;
 }
 
 

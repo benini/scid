@@ -170,13 +170,16 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	if (strUniqueMatch(argv[1], options) == - 1)
 		return sc_filter_old(cd, ti, argc, argv);
 
-	scidBaseT* dbase = 0;
-	HFilter filter(0);
-	if (argc > 3) {
-		dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
-		filter = dbase->getFilter(argv[3]);
-	}
-	if (dbase == 0 || filter == 0) return UI_Result(ti, ERROR_BadArg, usage);
+	if (argc < 3)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+	if (!dbase)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	HFilter filter = dbase->getFilter(argv[3]);
+	if (filter == nullptr)
+		return UI_Result(ti, ERROR_BadArg, usage);
 
 	const char* cmd = argv[1];
 	if (strcmp("compose", cmd) == 0)

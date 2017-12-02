@@ -92,16 +92,16 @@ int move_to(int move) {
 
 int move_promote_hack(int move) {
 
-   int code;
+   unsigned int code;
 
    ASSERT(move_is_ok(move));
 
    ASSERT(move_is_promote(move));
 
-   code = move >> 12;
+   code = (unsigned int) move >> 12;
    ASSERT(code>=1&&code<=4);
 
-   return PromotePiece[code];
+   return PromotePiece[(code > 4) ? 0 : code];
 }
 
 // move_is_capture()

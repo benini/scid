@@ -210,7 +210,7 @@ public:
 		// so -1 = last game, -2 = second to last, etc.
 		if (min_ < 0) min_ += base->numGames();
 		else min_ -=1;
-		if (max_ < 0) min_ += base->numGames();
+		if (max_ < 0) max_ += base->numGames();
 		else max_ -=1;
 		if (min_ > max_) std::swap(min_, max_);
 	}

@@ -1199,7 +1199,6 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     const uint cellBytes = 9;
     char cell [18];
     const char * hrule = "-------------------------------------------------------------------------------\n";
-    DString * dtemp = new DString;
 
     dstr->Append (title, "\n");
     if (ctext) { dstr->Append ("<tt>"); }
@@ -1229,8 +1228,10 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     }
     dstr->Append ("\n", hrule);
 
-    DString * wstr = new DString;
-    DString * bstr = new DString;
+    DString wStr, bStr, dTemp;
+    DString* wstr = &wStr;
+    DString* bstr = &bStr;
+    DString* dtemp = &dTemp;
 
     // Print each row:
     for (uint row=0; row < NumRows; row++) {
@@ -1310,7 +1311,6 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     dstr->Append (hrule);
     if (! strEqual (comment, "")) { dstr->Append (comment, "\n"); }
     dstr->Append ("\n");
-    delete dtemp;
     if (ctext) { dstr->Append ("</tt>"); }
     PrintNotes (dstr, ctext ? OPTABLE_CText : OPTABLE_Text);
 }

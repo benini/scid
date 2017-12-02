@@ -96,7 +96,8 @@ void scid_book_update(char * probs, const int BookNumber) {
 
     for (i=0; i< prob_count; i++)
       prob_sum += prob[i];
-    double coef = double(sum)/double(prob_sum);
+
+    double coef = (prob_sum) ? double(sum)/double(prob_sum) : 0;
 
 	 i = 0;
    for (pos = first_pos; pos < BookSize[BookNumber] && i < prob_count; pos++) {
@@ -129,11 +130,7 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     int probs_written;
     int write_count;
     int i;
-#ifdef WINCE
-  Tcl_Channel f;
-#else
     FILE *f;
-#endif
     char *probs_copy, *moves_copy;
     //	printf("Updating book: moves=%s; probs=%s; tempfile=%s; key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
         /* parse probs and fill prob array */
@@ -145,6 +142,7 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
         prob_count++;
         while ( (s = strtok(NULL, " ")) != NULL) {
             if(prob_count>=MAX_MOVES){
+                free(probs_copy);
                 return -1; // fail
             }
             sscanf( s, "%d", &(prob[prob_count]) );
@@ -170,6 +168,7 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
         move_count++;
         while ( (s = strtok(NULL, " ")) != NULL) {
             if(move_count>=MAX_MOVES){
+                free(moves_copy);
                 return -1; // fail
             }
             move[move_count]=move_from_san(s,scid_board[BookNumber]);
@@ -185,21 +184,13 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
 	// return 0; // nothing to do
     }
 
-#ifdef WINCE
-  if ((f = my_Tcl_OpenFileChannel(NULL, tempfile, "w+", 0666) ) == NULL) {
-#else
     if(!(f=fopen(tempfile,"wb+"))){
-#endif
         return -1;  //fail
     }
     probs_written=0;
     write_count=0;
 
-#ifdef WINCE
-    my_Tcl_Seek(BookFile[BookNumber],0,SEEK_SET);
-#else
     fseek(BookFile[BookNumber],0,SEEK_SET);
-#endif
 
     for(pos=0; pos<BookSize[BookNumber];pos++){
         read_entry_file(BookFile[BookNumber],entry);
@@ -246,22 +237,13 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
       probs_written=1;
     }
     ASSERT(probs_written);
-#ifdef WINCE
-    my_Tcl_Seek(BookFile[BookNumber],0,SEEK_SET);
-    my_Tcl_Seek(f,0,SEEK_SET);
-#else
     fseek(BookFile[BookNumber],0,SEEK_SET);
     fseek(f,0,SEEK_SET);
-#endif
     for(pos=0; pos<write_count ;pos++){
         read_entry_file(f,entry);
         write_entry_file(BookFile[BookNumber],entry);
     }
-#ifdef WINCE   
-    my_Tcl_Close(NULL, f);
-#else
     fclose(f);
-#endif
     BookSize[BookNumber]=write_count;
     book_flush(BookNumber); // commit changes to disk
     return 0; // success
@@ -356,7 +338,6 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
    int move;
    int score;
    char move_string[256];
-	 char tmp[256];
 	 
 	 // keep board in memory to ease book update	 
 	 memcpy(scid_board[BookNumber], board, sizeof(board_t));
@@ -385,10 +366,11 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
       score = entry->count;
 
       if (score > 0 && move != MoveNone && move_is_legal(move,board)) {
+         char tmp[256];
          move_to_san(move,board,move_string,256);
          sprintf(tmp, " %s %.0f%%",move_string,(double(score)/double(sum))*100.0);
+         strcat(s, tmp);
       }
-      strcat(s, tmp);
    }
 
 	return 0;

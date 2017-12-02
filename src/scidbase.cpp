@@ -113,8 +113,6 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	treeFilter->Init(numGames());
 	ASSERT(filters_.empty());
 
-	// Ensure an old treefile is not still around:
-	std::remove((fileName_ + ".stc").c_str());
 	// Default treeCache size: 250
 	treeCache.CacheResize(250);
 
