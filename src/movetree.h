@@ -58,12 +58,12 @@ enum markerT : byte { NO_MARKER = 0, START_MARKER = 1, END_MARKER = 2 };
 // - when represented as a PGN string, the moves creates a sequence that can be
 //   counted (each new variation is counted as an additional move). This is used
 //   to specify a location in the game.
+//
 struct moveT {
 	simpleMoveT moveData; // piece moving, target square etc
 	moveT* prev;
 	moveT* next;
 	moveT* varChild;
-	moveT* varParent;
 	char san[10];   // SAN representation of move
 	markerT marker; // can be NO_MARKER, START_MARKER or END_MARKER
 	byte numVariations;
@@ -76,7 +76,6 @@ struct moveT {
 		prev = nullptr;
 		next = nullptr;
 		varChild = nullptr;
-		varParent = nullptr;
 		std::fill_n(san, sizeof(san), '\0');
 		marker = NO_MARKER;
 		numVariations = 0;
@@ -96,8 +95,10 @@ struct moveT {
 		*top = *orig;
 		top->prev = parent;
 		parent = top;
-		if (orig->varChild)
-			parent->varChild = orig->varChild->cloneLine(parent, newMove);
+		if (orig->varChild) {
+			auto root = parent->startMarker() ? parent->prev : parent;
+			parent->varChild = orig->varChild->cloneLine(root, newMove);
+		}
 
 		while (orig->next) {
 			orig = orig->next;
@@ -105,28 +106,12 @@ struct moveT {
 			*copy = *orig;
 			parent->setNext(copy);
 			parent = copy;
-			if (orig->varChild)
-				parent->varChild = orig->varChild->cloneLine(parent, newMove);
+			if (orig->varChild) {
+				auto root = parent->startMarker() ? parent->prev : parent;
+				parent->varChild = orig->varChild->cloneLine(root, newMove);
+			}
 		}
 		return top;
-	}
-
-	template <typename TNew>
-	moveT* cloneLine(moveT* prev, moveT* parent, TNew newMove) const {
-		ASSERT(prev == nullptr || varParent == nullptr);
-
-		moveT* copy = newMove();
-		*copy = *this;
-		copy->prev = prev;
-		copy->varParent = parent;
-		if (next) {
-			copy->next = next->cloneLine(copy, nullptr, newMove);
-		}
-		if (varChild) {
-			auto root = parent ? parent : copy;
-			copy->varChild = varChild->cloneLine(nullptr, root, newMove);
-		}
-		return copy;
 	}
 
 	void swapLine(moveT& move) {
@@ -151,7 +136,7 @@ struct moveT {
 		while (!varStart->startMarker()) {
 			varStart = varStart->prev;
 		}
-		return {varStart->varParent, varStart};
+		return {varStart->prev, varStart};
 	}
 
 	std::pair<moveT*, moveT*> getParent() {
@@ -159,7 +144,7 @@ struct moveT {
 		while (!varStart->startMarker()) {
 			varStart = varStart->prev;
 		}
-		return {varStart->varParent, varStart};
+		return {varStart->prev, varStart};
 	}
 
 	const moveT* nextMoveInPGN() const {
@@ -188,7 +173,7 @@ struct moveT {
 		varStart->varChild = varStart;
 		std::swap(parent->varChild, varStart->varChild);
 
-		varStart->varParent = this;
+		varStart->prev = this;
 		++numVariations;
 	}
 

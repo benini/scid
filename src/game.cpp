@@ -475,7 +475,7 @@ Game::Game(const Game& obj) {
 	HtmlStyle = obj.HtmlStyle;
 
 	moveChunkUsed_ = MOVE_CHUNKSIZE;
-	FirstMove = obj.FirstMove->cloneLine(nullptr, nullptr,
+	FirstMove = obj.FirstMove->cloneLine(nullptr,
 	                                     [this]() { return allocMove(); });
 
 	MoveToLocationInPGN(obj.GetLocationInPGN());
@@ -494,7 +494,6 @@ void Game::strip(bool variations, bool comments, bool NAGs) {
             if (variations) {
                 move->numVariations = 0;
                 move->varChild = nullptr;
-                move->varParent = nullptr;
             }
             if (comments)
                 move->comment.clear();
