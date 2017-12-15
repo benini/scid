@@ -93,7 +93,7 @@ protected:
 				res->Set(gnum++, val);
 		}
 		return res;
-	};
+	}
 
 	template <typename T>
 	bool equal(const T& map, const HFilter& filter) {

@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Fulvio Benini
+# Copyright (C) 2016-2017  Fulvio Benini
 # This file is part of Scid (Shane's Chess Information Database).
 #
 # Scid is free software: you can redistribute it and/or modify
@@ -13,19 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
-project(scid_gtest)
-
+cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
-
-set(CMAKE_CXX_EXTENSIONS OFF)
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
-  set(CMAKE_BUILD_TYPE "Debug")
-  set(CMAKE_CXX_FLAGS "-O3 -Wall")
-endif()
-if(MSVC)
-  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
-endif()
 
 # googletest
 if(NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/googletest")
@@ -33,12 +22,10 @@ if(NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/googletest")
   execute_process(COMMAND ${GIT_EXECUTABLE} clone https://github.com/google/googletest.git)
 endif()
 set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest ${CMAKE_BINARY_DIR}/googletest/Build)
-include_directories("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
+add_subdirectory(${CMAKE_BINARY_DIR}/googletest ${CMAKE_BINARY_DIR}/googletest/Build EXCLUDE_FROM_ALL)
 
-# scid_tests
-file(GLOB GTEST_SRC *.cpp)
-set(GTEST_EXTRA
+# scid_sources
+set(SCID_BASE
   ../src/codec_scid4.cpp
   ../src/index.cpp
   ../src/scidbase.cpp
@@ -46,30 +33,17 @@ set(GTEST_EXTRA
   ../src/pgnparse.cpp ../src/misc.cpp
   ../src/game.cpp ../src/position.cpp ../src/bytebuf.cpp ../src/textbuf.cpp ../src/stored.cpp
 )
-add_executable(scid_tests ${GTEST_SRC} ${GTEST_EXTRA})
-add_executable(coverage EXCLUDE_FROM_ALL ${GTEST_SRC} ${GTEST_EXTRA})
-target_include_directories(scid_tests PRIVATE ../src)
-target_include_directories(coverage PRIVATE ../src)
-set_property(TARGET scid_tests coverage APPEND PROPERTY COMPILE_DEFINITIONS
-    SCID_TESTDIR=\"${CMAKE_CURRENT_LIST_DIR}/\")
-target_link_libraries(coverage PRIVATE gtest_main)
-target_link_libraries(scid_tests PRIVATE gtest_main)
-
-option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
+add_library(scid_base ${SCID_BASE})
+target_include_directories(scid_base PUBLIC ../src)
 if(SCID_MULTITHREADING)
   find_package(Threads REQUIRED)
-  target_link_libraries(coverage PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-  target_link_libraries(scid_tests PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(scid_base PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 else()
-  target_compile_definitions(scid_tests PRIVATE -DMULTITHREADING_OFF)
+  target_compile_definitions(scid_base PUBLIC -DMULTITHREADING_OFF)
 endif()
 
-
-
-# coverage
-target_compile_options(coverage PRIVATE -coverage)
-set_property(TARGET coverage APPEND PROPERTY LINK_FLAGS -coverage)
-add_custom_command(TARGET coverage POST_BUILD
-	COMMAND ./coverage
-	COMMAND lcov ARGS -c -b "${CMAKE_CURRENT_LIST_DIR}/../src" -d CMakeFiles -no-external -o test_coverage.info
-	COMMAND genhtml ARGS test_coverage.info -o gcov)
+# scid_tests
+file(GLOB GTEST_SRC *.cpp)
+add_executable(scid_tests ${GTEST_SRC})
+target_compile_definitions(scid_tests PRIVATE -DSCID_TESTDIR=\"${CMAKE_CURRENT_LIST_DIR}/\")
+target_link_libraries(scid_tests PRIVATE scid_base gtest_main)

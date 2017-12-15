@@ -1,17 +1,49 @@
-dist: trusty
-sudo: false
+language: generic
 
-os:
-  - linux
-  - osx
+env:
+  global:
+    - BUILD_DEBUG="mkdir Debug && cd Debug && cmake .. -DCMAKE_CXX_FLAGS=\"-g -Wall -Wextra -Werror -pedantic\" -DSPELLCHKVALIDATE=ON && make VERBOSE=1"
+    - BUILD_RELEASE="mkdir Release && cd Release && cmake .. && make VERBOSE=1"
+    - BUILD_FULL="mkdir Full && cd Full && cmake .. -DGTEST=ON && make VERBOSE=1 && gtest/scid_tests"
+
 
 matrix:
-  exclude:
-  - os: linux
-  - os: osx
   include:
   - os: osx
-    env: CXX=c++
+    script:
+      - cmake --version
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
+      - cd $TRAVIS_BUILD_DIR && ./configure && make && size tkscid
+
+  - os: linux
+    env: CXX=g++-4.9 CC=gcc-4.9
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.9
+    script:
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
+      - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
+
+  - os: linux
+    env: CXX=g++-7 CC=gcc-7
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-7
+    script:
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
+      - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
     env: CXX=clang++-5.0 CC=clang-5.0
@@ -23,78 +55,102 @@ matrix:
         packages:
           - clang-5.0
           - clang-tidy-5.0
-          - libstdc++-6-dev
-          - tcl
-          - tcl-dev
-          - cloc
+          - libstdc++-7-dev
+    script:
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
+      - run-clang-tidy-5.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
+      - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
+      - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
-    env: CXX=g++-7 CC=gcc-7
+    env: Count_Lines_Of_Code=_
+    addons:
+      apt:
+        packages:
+          - cloc
+    script:
+      - cloc src --exclude-dir=egtb,mtbgen,polyglot
+      - cloc tcl --exclude-dir=lang
+
+  - os: linux
+    env: GTEST_ADDRESS=_ CXX=clang++-5.0 CC=clang-5.0
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-5.0
+        packages:
+          - clang-5.0
+          - libstdc++-7-dev
+    script:
+      - mkdir Test && cd Test
+      - cmake .. -DGTEST=ON -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=address,undefined,integer"
+      - make VERBOSE=1 scid_tests && gtest/scid_tests
+
+  - os: linux
+    env: GTEST_THREAD=_ CXX=g++-7 CC=gcc-7
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
           - g++-7
-          - tcl
-          - tcl-dev
-          - cloc
+    script:
+      - mkdir Test && cd Test
+      - cmake .. -DGTEST=ON  -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -pedantic -fsanitize=thread,undefined -fuse-ld=gold"
+      - make VERBOSE=1 scid_tests && gtest/scid_tests
 
   - os: linux
-    env: CXX=g++-7 CC=gcc-7 SCID_TH="-DSCID_MULTITHREADING=OFF"
+    env: SINGLETHREAD=_ CXX=g++-7 CC=gcc-7
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
           - g++-7
-          - tcl
-          - tcl-dev
-          - cloc
+    script:
+      - mkdir Debug && cd Debug && cmake .. -DCMAKE_CXX_FLAGS="-g -Wall -Wextra -Werror -pedantic" -DSPELLCHKVALIDATE=ON -DSCID_MULTITHREADING=OFF
+      - make VERBOSE=1
+      - cd $TRAVIS_BUILD_DIR && mkdir Full && cd Full && cmake .. -DGTEST=ON -DSCID_MULTITHREADING=OFF && make VERBOSE=1 && gtest/scid_tests
+      - cd $TRAVIS_BUILD_DIR && mkdir Release && cd Release && cmake .. -DSCID_MULTITHREADING=OFF && make VERBOSE=1 && size scid
+      - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" THREADS="-DMULTITHREADING_OFF" && make && size tkscid
 
   - os: linux
-    env: CXX=g++-4.9 CC=gcc-4.9
+    env: CODECOV=_ CXX=g++-7 CC=gcc-7
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-4.9
-          - tcl
-          - tcl-dev
-          - cloc
+          - g++-7
+          - lcov
+    script:
+      - mkdir Test && cd Test
+      - cmake .. -DGTEST=ON -DCMAKE_CXX_FLAGS="-g --coverage -Wall -Wextra -Werror -pedantic"
+      - make VERBOSE=1 scid_tests && gtest/scid_tests
+      - lcov -c -b "../src" -d gtest -no-external -o coverage.info
+      - genhtml coverage.info -o gcov
+      - lcov --list coverage.info
+    after_success:
+      - bash <(curl -s https://codecov.io/bash)
 
-script:
-  - cmake --version
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc src --exclude-dir=egtb,mtbgen,polyglot; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cloc tcl --exclude-dir=lang; fi
-  - cd $TRAVIS_BUILD_DIR
-  - if [ "${CXX}" != "g++-4.9" ]; then
-      mkdir Debug && cd Debug && cmake .. -DCMAKE_BUILD_TYPE=Debug -DSPELLCHKVALIDATE=ON $SCID_TH && make;
-    else
-      mkdir Debug && cd Debug && cmake .. -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror" -DSPELLCHKVALIDATE=ON $SCID_TH && make;
-    fi
-  - if [ "${CXX}" == "clang++-5.0" ]; then run-clang-tidy-5.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src; fi
-  - cd $TRAVIS_BUILD_DIR
-  - mkdir Testing && cd Testing
-  - if [ "${CXX}" == "clang++-5.0" ]; then
-      cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=address,undefined,integer" $SCID_TH;
-    else
-      if [ "${CXX}" == "g++-7" ]; then
-        cmake ../gtest/ -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=thread,undefined -fuse-ld=gold" $SCID_TH;
-      else
-        cmake ../gtest;
-      fi
-    fi
-  - make VERBOSE=1 && ./scid_tests
-  - cd $TRAVIS_BUILD_DIR
-  - mkdir Release && cd Release && cmake .. $SCID_TH && make VERBOSE=1 && size scid
-  - cd $TRAVIS_BUILD_DIR
-  - if [ "${SCID_TH}" == "-DSCID_MULTITHREADING=OFF" ]; then
-      ./configure COMPILE="${CXX}" THREADS="-DMULTITHREADING_OFF" && make && size tkscid;
-    fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      ./configure COMPILE="${CXX}" && make && size tkscid;
-    else
-      ./configure && make && size tkscid;
-    fi
+  - os: linux
+    env:
+      - secure: "KxZuUP0mMxidAABajjTn2/Z/sS2M2mDJuMwFEjSKfem+f0naZnKebVqV4N/FUkjUjDCWq9ZesEwxPWj22ipVmbvoWHSv8hYdFoQyr+YStvxNWoqYxIbcIF5s6QQdjsYzC9K5ytZzkT0PEXUwkThIMH6006dE+QkE+xTCKnykDTNV8p8pUzZMYyUU1mBLmRXNHZHkBAlc6basw8z5KQUPALbmg7b3+++6cu4bwtCfkpPv/Bl8aUy/bPcrJC+h6RgMnQ+Y+bVIJ0x47iVBp4mTHmS9Y7kmoDfWdTGxyS7Bou0ee5zikM8zmvajhQKgpn+tbrcV7d8ejhZg3YqBOz8poQ9AVBQmG1ub8Ct1uii2hIXmhpFvJXMbTr5AFSz65DsObSnCbK8Wf/+AcvW9J2aSLRF76xHtVXccOER9zBc7f37j+iyPFLe2IHs6g4Vawv568LhVp36Mj/7dayAwnNL5+wC49MD2VHuiJd0Mj/rWbEsSwl85hEtuA/Ikmx80U3N0K2dgvuakqIQnv6rhwD6FD2+LBm29U9oggu2rMBPV7qahDYE70MHkoYYHzXOYZqTz8UbZ3gkNxHxgAffrvNCXnwx1IX8DBoveIJZa6z1JCpS9vJtRHSGs4IiWrntlZUs+/1Cu5Jr3W6IWFO68da1mWxKhcyxD6J+jBRzQS7k2YZY="
+    before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+    addons:
+      coverity_scan:
+        project:
+          name: "benini/scid"
+          description: "SCID v.4.6.5"
+        notification_email: fulvioscid@users.sourceforge.net
+        build_command_prepend: "cmake . -DCMAKE_CXX_COMPILER=g++-7 && cov-configure --comptype gcc --compiler gcc-7 --template"
+        build_command:   "make scid"
+        branch_pattern: github
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-7

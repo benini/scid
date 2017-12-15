@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Fulvio Benini
+# Copyright (C) 2016-2017  Fulvio Benini
 # This file is part of Scid (Shane's Chess Information Database).
 #
 # Scid is free software: you can redistribute it and/or modify
@@ -26,9 +26,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 if(MSVC)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
 endif()
+
 
 # polyglot
 file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
@@ -90,11 +95,7 @@ set(SCIDLET_EXTRA
 add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
 install(TARGETS scidlet DESTINATION bin)
 
-
-if(NOT CMAKE_CXX_FLAGS)
-  if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release")
-  else(NOT CMAKE_BUILD_TYPE)
-    target_compile_options(scid PRIVATE -Wall PRIVATE -Wextra PRIVATE -pedantic PRIVATE -Werror)
-  endif(NOT CMAKE_BUILD_TYPE)
+option(GTEST "Build unit tests" OFF)
+if(GTEST)
+  add_subdirectory(gtest)
 endif()

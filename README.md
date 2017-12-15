@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/benini/scid.svg?branch=github)](https://travis-ci.org/benini/scid)
-<a href="https://scan.coverity.com/projects/benini-scid">
-  <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/14455/badge.svg"/>
-</a>
+[![codecov](https://codecov.io/gh/benini/scid/branch/github/graph/badge.svg)](https://codecov.io/gh/benini/scid)
+[![coverity](https://scan.coverity.com/projects/14455/badge.svg)](https://scan.coverity.com/projects/benini-scid)
 
 Scid (Shane's Chess Information Database) is a multi-platform (Linux, Mac OS X, Windows) chess database application.
 
