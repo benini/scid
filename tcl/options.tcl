@@ -517,13 +517,13 @@ set informant("++-") 5.5
 set exportFlags(comments) 1
 set exportFlags(indentc) 0
 set exportFlags(vars) 1
-set exportFlags(indentv) 1
+set exportFlags(indentv) 0
 set exportFlags(column) 0
 set exportFlags(append) 0
-set exportFlags(symbols) 1
+set exportFlags(symbols) 0
 set exportFlags(htmldiag) 0
 set exportFlags(stripMarks) 0
-set exportFlags(convertNullMoves) 1
+set exportFlags(convertNullMoves) 0
 set default_exportStartFile(PGN) {}
 set default_exportEndFile(PGN) {}
 
