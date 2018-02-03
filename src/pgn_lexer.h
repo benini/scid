@@ -220,15 +220,15 @@ bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
 			}
 			// trim right
 			while (value.first != value.second) {
-				auto ch = *--value.second;
-				if (ch == '"') {
+				auto last_ch = *--value.second;
+				if (last_ch == '"') {
 					break;
 				}
-				if (!is_PGNwhitespace(ch)) {
+				if (!is_PGNwhitespace(last_ch)) {
 					++value.second;
 					break;
 				}
-				if (ch == '\n')
+				if (last_ch == '\n')
 					parser.visitPGN_EndOfLine();
 			}
 			return parser.visitPGN_TagPair(tag, value);

@@ -49,7 +49,7 @@ ByteBuffer::BackToStart()
 //      data to the buffer's allocated space first.
 //
 void
-ByteBuffer::ProvideExternal (byte * data, uint length)
+ByteBuffer::ProvideExternal (byte * data, size_t length)
 {
     ExternalBuffer = data;
     ByteCount = length;
@@ -63,7 +63,7 @@ ByteBuffer::ProvideExternal (byte * data, uint length)
 // ByteBuffer::Skip():
 //      Skips over a specified number of bytes.
 void
-ByteBuffer::Skip (uint length)
+ByteBuffer::Skip (size_t length)
 {
     ASSERT (Current != NULL);
 
@@ -77,7 +77,7 @@ ByteBuffer::Skip (uint length)
 //      Reads a fixed-length string from the buffer. A terminating
 //      null character is not added.
 void
-ByteBuffer::GetFixedString (char * str, uint length)
+ByteBuffer::GetFixedString (char * str, size_t length)
 {
     ASSERT(Current != NULL  &&  str != NULL);
 
@@ -95,7 +95,7 @@ ByteBuffer::GetFixedString (char * str, uint length)
 //      Writes a fixed-length string to the buffer. A terminating null
 //      character is not written, unless it was part of the string.
 void
-ByteBuffer::PutFixedString (const char * str, uint length)
+ByteBuffer::PutFixedString (const char * str, size_t length)
 {
     ASSERT(Current != NULL  &&  str != NULL);
     if (ByteCount + length > BufferSize) { Err = ERROR_BufferFull; return; }
@@ -113,23 +113,19 @@ ByteBuffer::PutFixedString (const char * str, uint length)
 //    to the end of the string, so the calling function can to
 //    duplicate the string itself if it needs to.
 //    The length returned does not include the trailing '\0'.
-uint
+void
 ByteBuffer::GetTerminatedString (char ** str)
 {
     ASSERT(Current != NULL  &&  str != NULL);
 
-    uint length = 0;
     *str = (char *) Current;
     while (*Current) {
         Current++;
-        length++;
         ReadPos++;
     }
     Current++;
-    length++;
     ReadPos++;
     if (ReadPos > ByteCount) { Err = ERROR_BufferRead; }
-    return length;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

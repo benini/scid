@@ -207,7 +207,7 @@ public:
 	/**
 	 * Returns the size of the file.
 	 */
-	size_t size() const { return fileSz_; }
+	unsigned long long size() const { return fileSz_; }
 
 	/**
 	 * Invokes std::filebuf::sync() to write all pending output to the file.

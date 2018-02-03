@@ -29,9 +29,9 @@ class ByteBuffer
     //  TextBuffer:  Data Structures
     //----------------------------------
 
-    uint   ReadPos;
-    uint   ByteCount;
-    uint   BufferSize;
+    size_t ReadPos;
+    size_t ByteCount;
+    size_t BufferSize;
     byte * Buffer;
     byte * Current;
     byte * AllocatedBuffer;
@@ -43,7 +43,7 @@ class ByteBuffer
     //  TextBuffer:  Public Functions
     //----------------------------------
  public:
-    ByteBuffer(uint length) : BufferSize(length), AllocatedBuffer(new byte[length]) { Empty(); }
+    ByteBuffer(size_t length) : BufferSize(length), AllocatedBuffer(new byte[length]) { Empty(); }
     ~ByteBuffer() { delete[] AllocatedBuffer; }
 
 /*
@@ -53,12 +53,12 @@ class ByteBuffer
  * For example calling GFile::ReadGame(&bytebuffer, ...) followed by GFile::AddGame(&bytebuffer)
  * is __very__ bad
  */
-    void ProvideExternal (byte * data, uint length);
+    void ProvideExternal (byte * data, size_t length);
 
     errorT Status ()      { return Err; }
-    uint   GetByteCount() { return ByteCount; }
+    size_t GetByteCount() { return ByteCount; }
     void   BackToStart ();
-    void   Skip (uint value);
+    void   Skip (size_t value);
     byte   GetByte () {
         ASSERT(Current != NULL);
         if (ReadPos >= ByteCount) { Err = ERROR_BufferRead; return 0; }
@@ -66,8 +66,8 @@ class ByteBuffer
         Current++; ReadPos++;
         return b;
     }
-    void   GetFixedString (char *str, uint length);
-    uint   GetTerminatedString (char **str);
+    void   GetFixedString (char *str, size_t length);
+    void   GetTerminatedString (char **str);
     const byte* getData() { return Buffer; }
 
 /*
@@ -86,7 +86,7 @@ class ByteBuffer
         *Current = value;
         Current++; ByteCount++;
     }
-    void PutFixedString (const char *str, uint length);
+    void PutFixedString (const char *str, size_t length);
     void PutTerminatedString (const char *str);
 
 

@@ -246,7 +246,7 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 		auto mapCopy = equivMap_;
 		for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
 			filter->insert_or_assign(gnum, 0);
-			auto expected = (mask_ == nullptr) ? 1 : (*mask_)[gnum];
+			uint8_t expected = (mask_ == nullptr) ? 1 : (*mask_)[gnum];
 			if (expected == 0)
 				mapCopy.erase(gnum);
 			else

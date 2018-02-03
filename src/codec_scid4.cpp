@@ -115,24 +115,23 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 
 			// Read the name string.
 			// All strings EXCEPT the first are front-coded.
-			uint length = file.ReadOneByte();
-			uint prefix = (i > 0) ? file.ReadOneByte() : 0;
-			char* name = new char[length + 1];
-			if (prefix > length || prefix != prevName.copy(name, prefix)) {
-				delete[] name;
+			int length = file.ReadOneByte();
+			int prefix = (i > 0) ? file.ReadOneByte() : 0;
+			if (prefix > length)
 				return ERROR_Corrupt;
-			}
 
+			char* name = new char[length + 1];
+			std::copy_n(prevName.c_str(), prefix, name);
 			std::streamsize extra_chars = length - prefix;
 			if (extra_chars != file.sgetn(name + prefix, extra_chars)) {
 				delete[] name;
 				return ERROR_FileRead;
 			}
 			name[length] = 0;
-			prevName = name;
+			prevName.assign(name, length);
 
 			if (id < Header_numNames[nt] && names[nt][id] == 0) {
-				names[nt][id] = std::unique_ptr<const char[]>(name);
+				names[nt][id].reset(name);
 				map[nt].insert(map[nt].end(), std::make_pair(name, id));
 			} else {
 				delete[] name;

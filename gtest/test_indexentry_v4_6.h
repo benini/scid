@@ -86,7 +86,7 @@ public:
 
 
     uint32_t GetOffset () const { return Offset; }
-    void SetOffset (uint32_t offset) { Offset = offset; }
+    void SetOffset (uint64_t offset) { Offset = static_cast<uint32_t>(offset); }
     uint32_t GetLength() const {
         return Length_Low + (uint32_t(Length_High & 0x80) << 9);
     }

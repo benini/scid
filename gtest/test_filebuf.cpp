@@ -36,7 +36,7 @@ TEST_F(Test_Filebuf, FilebufAppend) {
 	std::uniform_int_distribution<> randch(0, 255);
 	std::vector<unsigned char> v(300 * 1024);
 	for (auto& e : v)
-		e = randch(gen);
+		e = static_cast<unsigned char>(randch(gen));
 
 	try {
 		{ // Test sequential write: write half of the data.
@@ -119,7 +119,7 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 		ASSERT_EQ(OK, file.Open(fileName32, FMODE_Create));
 
 		for (auto& e : v8) {
-			ASSERT_EQ(1, file.WriteOneByte(e));
+			ASSERT_EQ(1, file.WriteOneByte(static_cast<byte>(e)));
 		}
 		for (auto& e : v16) {
 			ASSERT_EQ(2, file.WriteTwoBytes(e));
@@ -140,7 +140,7 @@ TEST_F(Test_Filebuf, read_write_uint32_t) {
 			int pos = rpos(gen);
 
 			file.pubseekpos(pos / 4);
-			ASSERT_EQ(1, file.WriteOneByte(v8[pos / 4]));
+			ASSERT_EQ(1, file.WriteOneByte(static_cast<byte>(v8[pos / 4])));
 
 			file.pubseekpos(v8.size() + pos * 2);
 			ASSERT_EQ(2, file.WriteTwoBytes(v16[pos]));
@@ -216,7 +216,7 @@ TEST_F(Test_Filebuf, readAll) {
 	char* bEnd = buf.get() + fileSize + 1;
 	std::streamsize nTot = 0;
 	size_t nRead;
-	while ((nRead = file.getline(line, std::distance(line, bEnd)))) {
+	while ((nRead = file.getline(line, std::distance(line, bEnd))) != 0) {
 		nTot += nRead;
 		line += nRead;
 	}

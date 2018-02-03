@@ -42,8 +42,8 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 	std::mt19937 re;
 	std::uniform_int_distribution<> rndBool(0, 1);
 	std::uniform_int_distribution<> filterVal(0, 255);
-	for (size_t i = 0, n = dbase.numGames(); i < n; ++i) {
-		filter.set(i, rndBool(re) * filterVal(re));
+	for (gamenumT i = 0, n = dbase.numGames(); i < n; ++i) {
+		filter.set(i, static_cast<byte>(rndBool(re) * filterVal(re)));
 	}
 
 	// Valid fields
@@ -110,16 +110,19 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 				           NAME_INVALID;
 				// clang-format on
 				if (nt != NAME_INVALID) {
-					auto strA = nb->GetName(nt, a[field]);
-					auto strB = nb->GetName(nt, b[field]);
-					res = strCaseCompare(strA, strB);
+					res = strCaseCompare(
+					    nb->GetName(nt, static_cast<idNumberT>(a[field])),
+					    nb->GetName(nt, static_cast<idNumberT>(b[field])));
 				} else if (field == 5) {
-					auto strA = nb->GetName(NAME_ROUND, a[field]);
-					auto strB = nb->GetName(NAME_ROUND, b[field]);
-					res = strCompareRound(strA, strB);
+					nt = NAME_ROUND;
+					res = strCompareRound(
+					    nb->GetName(nt, static_cast<idNumberT>(a[field])),
+					    nb->GetName(nt, static_cast<idNumberT>(b[field])));
 				} else if (field == 12) {
-					auto strA = nb->GetName(NAME_SITE, a[field]);
-					auto strB = nb->GetName(NAME_SITE, b[field]);
+					auto strA = nb->GetName(NAME_SITE,
+					                        static_cast<idNumberT>(a[field]));
+					auto strB = nb->GetName(NAME_SITE,
+					                        static_cast<idNumberT>(b[field]));
 					if (std::strlen(strA) > 3)
 						strA += std::strlen(strA) - 3;
 					if (std::strlen(strB) > 3)
@@ -188,8 +191,9 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 				// move the games excluded from filter to the end of vIndex
 				if (validCriteria) {
 					stable_partition(
-					    vIndex.begin(), vIndex.end(),
-					    [flt](auto& e) { return flt->get(e[0]) != 0; });
+					    vIndex.begin(), vIndex.end(), [flt](auto& e) {
+						    return flt->get(static_cast<gamenumT>(e[0])) != 0;
+					    });
 				}
 
 				// Test scidBaseT::listGames()

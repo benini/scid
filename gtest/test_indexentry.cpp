@@ -129,29 +129,29 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 	auto setEntry = [](auto& entry, auto it) {
 		entry.SetOffset(*it++);
 		entry.SetLength(*it++);
-		entry.SetWhite(*it++);
-		entry.SetBlack(*it++);
-		entry.SetEvent(*it++);
-		entry.SetSite(*it++);
-		entry.SetRound(*it++);
-		entry.SetDate(*it++);
-		entry.SetEventDate(*it++);
-		entry.SetResult(*it++);
-		entry.SetWhiteElo(*it++);
-		entry.SetBlackElo(*it++);
-		entry.SetWhiteRatingType(*it++);
-		entry.SetBlackRatingType(*it++);
-		entry.SetEcoCode(*it++);
-		entry.SetNumHalfMoves(*it++);
+		entry.SetWhite(static_cast<idNumberT>(*it++));
+		entry.SetBlack(static_cast<idNumberT>(*it++));
+		entry.SetEvent(static_cast<idNumberT>(*it++));
+		entry.SetSite(static_cast<idNumberT>(*it++));
+		entry.SetRound(static_cast<idNumberT>(*it++));
+		entry.SetDate(static_cast<dateT>(*it++));
+		entry.SetEventDate(static_cast<dateT>(*it++));
+		entry.SetResult(static_cast<resultT>(*it++));
+		entry.SetWhiteElo(static_cast<eloT>(*it++));
+		entry.SetBlackElo(static_cast<eloT>(*it++));
+		entry.SetWhiteRatingType(static_cast<byte>(*it++));
+		entry.SetBlackRatingType(static_cast<byte>(*it++));
+		entry.SetEcoCode(static_cast<ecoT>(*it++));
+		entry.SetNumHalfMoves(static_cast<ushort>(*it++));
 		entry.clearFlags();
-		entry.SetFlag(*it++, true);
-		entry.SetVariationCount(*it++);
-		entry.SetCommentCount(*it++);
-		entry.SetNagCount(*it++);
-		entry.SetFinalMatSig(*it++);
-		entry.SetStoredLineCode(*it++);
+		entry.SetFlag(static_cast<uint32_t>(*it++), true);
+		entry.SetVariationCount(static_cast<unsigned>(*it++));
+		entry.SetCommentCount(static_cast<unsigned>(*it++));
+		entry.SetNagCount(static_cast<unsigned>(*it++));
+		entry.SetFinalMatSig(static_cast<matSigT>(*it++));
+		entry.SetStoredLineCode(static_cast<byte>(*it++));
 		for (int i = 0; i < 9; i++) {
-			entry.GetHomePawnData()[i] = *it++;
+			entry.GetHomePawnData()[i] = (static_cast<byte>(*it++));
 		}
 	};
 
@@ -163,9 +163,9 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		ASSERT_EQ(*it++, entry.GetEvent());
 		ASSERT_EQ(*it++, entry.GetSite());
 		ASSERT_EQ(*it++, entry.GetRound());
-		int64_t year = date_GetYear(*it);
+		int64_t year = date_GetYear(static_cast<dateT>(*it));
 		ASSERT_EQ(*it++, entry.GetDate());
-		dateT eventDate = *it++;
+		dateT eventDate = static_cast<dateT>(*it++);
 		// Due to a compact encoding format, the EventDate
 		// must be within a few years of the Date.
 		if (!fullEDate && std::abs(year - date_GetYear(eventDate)) > 3)
@@ -178,7 +178,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		ASSERT_EQ(*it++, entry.GetBlackRatingType());
 		ASSERT_EQ(*it++, entry.GetEcoCode());
 		ASSERT_EQ(*it++, entry.GetNumHalfMoves());
-		ASSERT_TRUE(entry.GetFlag(*it++));
+		ASSERT_TRUE(entry.GetFlag(static_cast<uint32_t>(*it++)));
 		ASSERT_TRUE(std::abs(int64_t(*it++) - entry.GetVariationCount()) <= 5);
 		ASSERT_TRUE(std::abs(int64_t(*it++) - entry.GetCommentCount()) <= 5);
 		ASSERT_TRUE(std::abs(int64_t(*it++) - entry.GetNagCount()) <= 5);

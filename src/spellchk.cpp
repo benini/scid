@@ -185,7 +185,8 @@ private:
 		switch (data.type) {
 			case SPELL_NEWNAME:
 				*keepBuffer = true;
-				nameIdx_ = sp_.names_[nt_].size();
+				ASSERT(sp_.names_[nt_].size() < (1ULL << 31));
+				nameIdx_ = static_cast<int32_t>(sp_.names_[nt_].size());
 				sp_.names_[nt_].push_back(data.name);
 				if (nt_ == NAME_PLAYER) {
 					sp_.pInfo_.push_back(data.extra);

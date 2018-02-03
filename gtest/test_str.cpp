@@ -33,7 +33,7 @@ static std::vector<std::string> createRandom(int maxLen, int nLines) {
 	for (int i = 0; i < nLines; i++) {
 		res.emplace_back();
 		for (int j = 0, len = lineLenght(re); j < len; j++) {
-			res.back().append(1, randomChar(re));
+			res.back().append(1, static_cast<unsigned char>(randomChar(re)));
 		}
 	}
 	return res;
