@@ -33,14 +33,62 @@ const std::vector<byte> dataFull = {1, 1, 1, 1, 1, 1};
 const std::vector<byte> noGames;
 
 using testParam = std::pair<const std::vector<byte>*, const std::vector<byte>*>;
-testParam test_cases[] = {
-	{&data1, nullptr},     {&data1, &data2},     {&data1, &dataEmpty}, {&data1, &dataFull},
-	{&data2, nullptr},     {&data2, &data1},     {&data2, &dataEmpty}, {&data2, &dataFull},
-	{&dataEmpty, nullptr}, {&dataEmpty, &data1}, {&dataEmpty, &data2}, {&dataEmpty, &dataFull},
-	{&dataFull, nullptr},  {&dataFull, &data1},  {&dataFull, &data2},  {&dataFull, &dataEmpty},
-	{&noGames, nullptr},   {&noGames, &noGames}
-};
+testParam test_cases[] = { // clang-format off
+    {&data1, nullptr},     {&data1, &data2},     {&data1, &dataEmpty}, {&data1, &dataFull},
+    {&data2, nullptr},     {&data2, &data1},     {&data2, &dataEmpty}, {&data2, &dataFull},
+    {&dataEmpty, nullptr}, {&dataEmpty, &data1}, {&dataEmpty, &data2}, {&dataEmpty, &dataFull},
+    {&dataFull, nullptr},  {&dataFull, &data1},  {&dataFull, &data2},  {&dataFull, &dataEmpty},
+    {&noGames, nullptr},   {&noGames, &noGames}
+}; // clang-format on
 
+} // namespace
+
+TEST(Test_Filter, Resize) {
+	Filter filter(10);
+	ASSERT_EQ(10, filter.Count());
+	ASSERT_EQ(10, filter.Size());
+	ASSERT_EQ(nullptr, filter.data());
+
+	auto test_resize = [&](gamenumT size, gamenumT expectCount,
+	                       gamenumT expectSize) {
+		filter.Resize(size);
+		ASSERT_EQ(expectCount, filter.Count());
+		ASSERT_EQ(expectSize, filter.Size());
+	};
+
+	test_resize(20, 20, 20);
+	ASSERT_EQ(nullptr, filter.data());
+	test_resize(5, 5, 5);
+	ASSERT_EQ(nullptr, filter.data());
+	filter.Set(1, 0);
+	ASSERT_NE(nullptr, filter.data());
+	filter.Set(2, 3);
+	filter.Set(3, 0);
+	ASSERT_EQ(3, filter.Count());
+	ASSERT_EQ(5, filter.Size());
+
+	test_resize(20, 3, 20);
+	test_resize(300, 3, 300);
+	test_resize(10, 3, 10);
+
+	filter.Set(1, 10);
+	filter.Set(3, 10);
+	ASSERT_EQ(5, filter.Count());
+	ASSERT_EQ(10, filter.Size());
+
+	test_resize(5, 5, 5);
+	test_resize(40, 40, 40);
+}
+
+TEST(Test_Filter, Filter) {
+	Filter filter(10);
+
+	for (byte val : {1, 0, 10, 1, 10}) {
+		filter.Fill(val);
+		ASSERT_EQ(10, filter.Size());
+		byte expect = (val == 0) ? 0 : 10;
+		ASSERT_EQ(expect, filter.Count());
+	}
 }
 
 class Test_HFilter : public ::testing::TestWithParam<testParam> {
@@ -71,35 +119,37 @@ protected:
 		               std::inserter(equivMap_, equivMap_.end()),
 		               [&i](auto& main, auto& mask) {
 			               auto key = i++;
-			               auto val = (main == 0) ? 0 : mask;
-			               if (val == 0)
+			               uint8_t val = (main == 0) ? 0 : mask;
+			               if (val-- == 0)
 				               key = std::numeric_limits<gamenumT>::max();
-			               return std::make_pair(key, val - 1);
-			           });
+			               return std::make_pair(key, val);
+		               });
 		equivMap_.erase(std::numeric_limits<gamenumT>::max());
 
 		for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
-			if (equivMap_.end() == equivMap_.find(gnum)) equivInv_.insert(gnum);
+			if (equivMap_.end() == equivMap_.find(gnum))
+				equivInv_.insert(gnum);
 		}
 	}
 
 	template <typename T> std::unique_ptr<Filter> makeFilter(const T* data) {
 		std::unique_ptr<Filter> res = nullptr;
 		if (data != nullptr) {
-			res = std::make_unique<Filter>(0);
-			for (auto& val : *data)
-				res->Append(val);
+			auto n = static_cast<gamenumT>(data->size());
+			res = std::make_unique<Filter>(n);
+			for (gamenumT i = 0; i < n; ++i) {
+				res->Set(i, data->operator[](i));
+			}
 		}
 		return res;
 	}
 
-	template <typename T>
-	bool equal(const T& map, const HFilter& filter) {
+	template <typename T> bool equal(const T& map, const HFilter& filter) {
 		return std::equal(map.begin(), map.end(), filter->begin(),
 		                  filter->end(), [&](auto& a, auto& b) {
 			                  auto value = filter->get(b) - 1;
 			                  return a.first == b && a.second == value;
-			              });
+		                  });
 	}
 };
 
@@ -112,11 +162,13 @@ TEST_P(Test_HFilter, hfilter_constFunc) {
 
 	EXPECT_EQ(equivMap_.size(), filter->size());
 	EXPECT_EQ(equivInv_.size(), filter->sizeInverted());
+	EXPECT_EQ(equivInv_.size(), HFilterInverted(filter).size());
 	EXPECT_TRUE(equal(equivMap_, filter));
 
 	// Test HFilter::get()
 	for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
 		auto val = filter->get(gnum);
+		ASSERT_EQ(static_cast<const HFilter&>(filter)->get(gnum), val);
 		if (val == 0) {
 			EXPECT_EQ(equivMap_.end(), equivMap_.find(gnum));
 			EXPECT_NE(equivInv_.end(), equivInv_.find(gnum));
@@ -131,7 +183,8 @@ TEST_P(Test_HFilter, hfilter_constFunc) {
 	// Test HFilter::begin() and HFilter::end()
 	HFilter::const_iterator it = filter->begin();
 	for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
-		if (filter->get(gnum) == 0) continue;
+		if (filter->get(gnum) == 0)
+			continue;
 
 		ASSERT_TRUE(it != filter->end());
 		EXPECT_EQ(gnum, *it);
@@ -142,7 +195,8 @@ TEST_P(Test_HFilter, hfilter_constFunc) {
 	// Test HFilter::beginInverted() and HFilter::endInverted()
 	HFilter::const_iterator itInv = filter->beginInverted();
 	for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
-		if (filter->get(gnum) != 0) continue;
+		if (filter->get(gnum) != 0)
+			continue;
 
 		ASSERT_TRUE(itInv != filter->end());
 		EXPECT_EQ(gnum, *itInv);
@@ -281,7 +335,8 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 
 		for (gamenumT gnum = 0; gnum < numGames_; gnum++) {
 			uint8_t value = (*main_)[gnum];
-			if (mask_ != nullptr && value != 0) value = (*mask_)[gnum];
+			if (mask_ != nullptr && value != 0)
+				value = (*mask_)[gnum];
 			if (value == 0)
 				filter->erase(gnum);
 			else

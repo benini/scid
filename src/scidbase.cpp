@@ -168,8 +168,17 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 	clear();
 	errorT res = codec_->flush();
 
-	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
-		sortCaches_[i].second->checkForChanges(gNum);
+	auto n_games = numGames();
+	if (dbFilter->Size() != n_games) {
+		dbFilter->Resize(n_games);
+		treeFilter->Resize(n_games);
+		for (auto& filter : filters_) {
+			filter.second->Resize(n_games);
+		}
+	}
+
+	for (auto& sortCache : sortCaches_) {
+		sortCache.second->checkForChanges(gNum);
 	}
 
 	return res;
@@ -279,10 +288,7 @@ errorT scidBaseT::saveGameHelper(Game* game, gamenumT gameId) {
 	if (gameId < numGames())
 		return codec_->saveGame(game, gameId);
 
-	errorT err = codec_->addGame(game);
-	if (err == OK)
-		extendFilters();
-	return err;
+	return codec_->addGame(game);
 }
 
 errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
@@ -318,18 +324,14 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 	return (err == OK) ? errClear : err;
 }
 
-errorT scidBaseT::importGameHelper(const scidBaseT* sourceBase, uint gNum) {
-	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
-	uint gameDataLen = srcIe->GetLength();
-	const byte* gameData =
-	    sourceBase->codec_->getGameData(srcIe->GetOffset(), gameDataLen);
-	if (gameData == 0) return ERROR_FileRead;
+errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
+	auto srcIe = srcBase->getIndexEntry(gNum);
+	auto dataSz = srcIe->GetLength();
+	auto data = srcBase->codec_->getGameData(srcIe->GetOffset(), dataSz);
+	if (data == nullptr)
+		return ERROR_FileRead;
 
-	errorT err = codec_->addGame(srcIe, sourceBase->getNameBase(), gameData,
-	                             gameDataLen);
-	if (err == OK)
-		extendFilters();
-	return err;
+	return codec_->addGame(srcIe, srcBase->getNameBase(), data, dataSz);
 }
 
 /**
@@ -376,15 +378,6 @@ void scidBaseT::deleteFilter(const char* filterId) {
 			filters_.erase(filters_.begin() + i);
 			break;
 		}
-	}
-}
-
-void scidBaseT::extendFilters() {
-	dbFilter->Append(dbFilter->isWhole() ? 1 : 0);
-	treeFilter->Append(treeFilter->isWhole() ? 1 : 0);
-	for (size_t i = 0, n = filters_.size(); i < n; i++) {
-		Filter* filter = filters_[i].second;
-		filter->Append(filter->isWhole() ? 1 : 0);
 	}
 }
 

@@ -12,6 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#include "hfilter.h"
 #include "filter.h"
 #include <cstring>
 
@@ -49,7 +50,7 @@ CompressedFilter::Verify (Filter * filter)
 
     // Decompress the compressed block and compare with the original:
     byte * tempBuffer = new byte [CFilterSize];
-    const byte * filterData = filter->Data;
+    const byte * filterData = filter->data();
 
     if (unpackBytemap (CompressedData, tempBuffer,
                        CompressedLength, CFilterSize) != OK) {
@@ -79,13 +80,13 @@ CompressedFilter::CompressFrom (Filter * filter)
 
     CFilterSize = filter->Size();
     CFilterCount = filter->Count();
-    if(filter->Data == NULL) {
+    if(filter->data() == NULL) {
         CompressedLength = 0;
         CompressedData = NULL;
         return;
     }
     byte * tempBuf = new byte [CFilterSize + OVERFLOW_BYTES];
-    CompressedLength = packBytemap (filter->Data, tempBuf, CFilterSize);
+    CompressedLength = packBytemap (filter->data(), tempBuf, CFilterSize);
     CompressedData = new byte [CompressedLength];
     std::memcpy (CompressedData, tempBuf, CompressedLength);
     delete[] tempBuf;

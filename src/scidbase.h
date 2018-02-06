@@ -355,7 +355,6 @@ private:
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 
-	void extendFilters();
 	Filter* fetchFilter(const std::string& filterId) const;
 	HFilter getFilterHelper(const std::string& filterId,
 	                        bool unmasked = false) const;
