@@ -329,9 +329,9 @@ private:
  */
 struct PgnParseLog {
 	std::string log;
-	size_t n_bytes = 0;
-	size_t n_lines = 0;
-	size_t n_games = 0;
+	unsigned long long n_bytes = 0;
+	unsigned long long n_lines = 0;
+	unsigned long long n_games = 0;
 
 	/**
 	 * Format and store errors occurred while parsing a Game.

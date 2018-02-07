@@ -33,22 +33,22 @@
 #include <vector>
 
 class CodecPgn : public CodecProxy<CodecPgn> {
-	std::string filename_;
-	std::streamsize fileSize_ = 0;
 	Filebuf file_;
+	std::streamsize fileSize_ = 0;
+	std::string filename_;
 	std::vector<char> buf_;
 	size_t nParsed_ = 0;
 	size_t nRead_ = 0;
 	PgnParseLog parseLog_;
 
 public:
-	Codec getType() override { return ICodecDatabase::PGN; }
+	Codec getType() final { return ICodecDatabase::PGN; }
 
-	std::vector<std::string> getFilenames() override {
+	std::vector<std::string> getFilenames() final {
 		return std::vector<std::string>(1, filename_);
 	};
 
-	errorT flush() override {
+	errorT flush() final {
 		errorT errFile = (file_.pubsync() == 0) ? OK : ERROR_FileWrite;
 		errorT errProxy = CodecProxy<CodecPgn>::flush();
 		return (errFile != OK) ? errFile : errProxy;
@@ -56,8 +56,8 @@ public:
 
 	/**
 	 * Opens/creates a PGN database.
-	 * After successfully opening/creating the file, the PgnParser object @e
-	 * parser_ is initialized to be ready for parseNext() calls.
+	 * After successfully opening/creating the file, the object is ready for
+	 * parseNext() calls.
 	 * @param filename: full path of the pgn file to be opened.
 	 * @param fMode:    valid file access mode.
 	 * @returns OK in case of success, an @p errorT code otherwise.
@@ -68,9 +68,9 @@ public:
 		if (filename_.empty())
 			return ERROR_FileOpen;
 
-		errorT res = file_.Open(filename, fmode);
-		if (res != OK)
-			return res;
+		errorT err_open = file_.Open(filename, fmode);
+		if (err_open != OK)
+			return err_open;
 
 		buf_.resize(128 * 1024);
 		nRead_ = nParsed_ = buf_.size();
@@ -78,8 +78,10 @@ public:
 
 		fileSize_ = file_.pubseekoff(0, std::ios::end);
 		file_.pubseekpos(0);
+		if (fileSize_ < 0)
+			return ERROR_FileSeek;
 
-		return (fileSize_ < 0) ? ERROR_FileSeek : OK;
+		return OK;
 	}
 
 	/**
@@ -141,7 +143,6 @@ public:
 	 */
 	const char* parseErrors() { return parseLog_.log.c_str(); }
 
-public:
 	/**
 	 * Add a game into the database.
 	 * The @e game is encoded in pgn format and appended at the end of @e file_.

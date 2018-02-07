@@ -63,9 +63,9 @@ TEST_F(Test_Filebuf, FilebufAppend) {
 				EXPECT_EQ(file.size(), v.size() - nLeft);
 
 				auto pos = std::uniform_int_distribution<size_t>(
-				    0, file.size() - 1)(gen);
+				    0, static_cast<size_t>(file.size()) - 1)(gen);
 				auto nRead = std::uniform_int_distribution<size_t>(
-				    1, file.size() - pos)(gen);
+				    1, static_cast<size_t>(file.size()) - pos)(gen);
 				file.pubseekpos(pos);
 				file.sgetn(buf2, nRead);
 				EXPECT_TRUE(std::equal(v2.begin(), v2.begin() + nRead,
@@ -211,7 +211,7 @@ TEST_F(Test_Filebuf, readAll) {
 	}
 	ASSERT_NE(-1, fileSize);
 
-	std::unique_ptr<char[]> buf(new char[fileSize + 1]);
+	std::unique_ptr<char[]> buf(new char[static_cast<size_t>(fileSize + 1)]);
 	char* line = buf.get();
 	char* bEnd = buf.get() + fileSize + 1;
 	std::streamsize nTot = 0;

@@ -52,7 +52,7 @@ public: // ICodecDatabase interface
 	const byte* getGameData(uint64_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);
-		ASSERT(v_.contiguous(offset) >= length);
+		ASSERT(v_.contiguous(static_cast<size_t>(offset)) >= length);
 		return &v_[offset];
 	}
 
@@ -87,7 +87,7 @@ public: // CodecNative CRTP
 		if (length >= LIMIT_GAMELEN)
 			return std::make_pair(ERROR_GameLengthLimit, 0);
 
-		uint64_t offset = v_.size();
+		auto offset = v_.size();
 		auto capacity = v_.capacity();
 		if (capacity - offset < length) // Do not fit in the current chunk
 			offset = capacity;
@@ -97,7 +97,7 @@ public: // CodecNative CRTP
 		v_.resize(offset + length);
 		ASSERT(v_.contiguous(offset) >= length);
 		std::copy_n(src, length, &v_[offset]);
-		return std::make_pair(OK, offset);
+		return {OK, offset};
 	}
 
 	/**

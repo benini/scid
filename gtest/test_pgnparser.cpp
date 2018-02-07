@@ -32,9 +32,9 @@ auto readFile(const char* filename) {
 	std::string res;
 	std::filebuf file;
 	if (file.open(filename, std::ios::in | std::ios::binary)) {
-		size_t fileSz = file.pubseekoff(0, std::ios::end);
+		auto fileSz = file.pubseekoff(0, std::ios::end);
 		if (fileSz > 0) {
-			res.resize(fileSz);
+			res.resize(static_cast<size_t>(fileSz));
 			file.pubseekpos(0);
 			file.sgetn(&res.front(), fileSz);
 		}

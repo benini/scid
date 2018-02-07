@@ -140,7 +140,7 @@ Index::WriteHeader ()
     if (FilePtr->pubseekpos(0) != std::streampos(0)) return ERROR_FileWrite;
 
     seqWrite_ = 0;
-    size_t n = 0;
+    std::streamsize n = 0;
     n += FilePtr->sputn(Header.magic, 8);
     n += FilePtr->WriteTwoBytes (Header.version);
     n += FilePtr->WriteFourBytes (Header.baseType);

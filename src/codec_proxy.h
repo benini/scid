@@ -106,14 +106,14 @@ protected:
 
 
 private:
-	errorT addGame(Game* game) override {
+	errorT addGame(Game* game) final {
 		errorT err = getDerived()->dyn_addGame(game);
 		if (err != OK) return err;
 
 		return CodecMemory::addGame(game);
 	}
 
-	errorT saveGame(Game* game, gamenumT replaced) override {
+	errorT saveGame(Game* game, gamenumT replaced) final {
 		errorT err = getDerived()->dyn_saveGame(game, replaced);
 		if (err != OK) return err;
 
@@ -121,7 +121,7 @@ private:
 	}
 
 	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
-	               const byte* srcData, size_t dataLen) override {
+	               const byte* srcData, size_t dataLen) final {
 		ByteBuffer buf(0);
 		buf.ProvideExternal(const_cast<byte*>(srcData), dataLen);
 		Game game;
@@ -136,11 +136,11 @@ private:
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
 
-	errorT saveIndexEntry(const IndexEntry&, gamenumT) override {
+	errorT saveIndexEntry(const IndexEntry&, gamenumT) final {
 		return ERROR_CodecUnsupFeat;
 	}
 
-	std::pair<errorT, idNumberT> addName(nameT, const char*) override {
+	std::pair<errorT, idNumberT> addName(nameT, const char*) final {
 		return std::pair<errorT, idNumberT>(ERROR_CodecUnsupFeat, 0);
 	}
 
@@ -151,9 +151,9 @@ private:
 	 * the games are copied into the memory database.
 	 */
 	errorT dyn_open(fileModeT fMode, const char* filename,
-	                const Progress& progress, Index* idx,
-	                NameBase* nb) override {
-		if (filename == 0) return ERROR;
+	                const Progress& progress, Index* idx, NameBase* nb) final {
+		if (filename == 0)
+			return ERROR;
 
 		errorT err = CodecMemory::dyn_open(FMODE_Memory, filename, progress, idx, nb);
 		if (err != OK) return err;

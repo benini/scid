@@ -128,7 +128,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 
 	auto setEntry = [](auto& entry, auto it) {
 		entry.SetOffset(*it++);
-		entry.SetLength(*it++);
+		entry.SetLength(static_cast<size_t>(*it++));
 		entry.SetWhite(static_cast<idNumberT>(*it++));
 		entry.SetBlack(static_cast<idNumberT>(*it++));
 		entry.SetEvent(static_cast<idNumberT>(*it++));
