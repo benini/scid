@@ -47,7 +47,9 @@
  */
 template <typename Derived>
 class CodecProxy : public CodecMemory {
-protected:
+	Derived* getDerived() { return static_cast<Derived*>(this); }
+
+public:
 	/**
 	 * Opens/creates a database encoded in a non-native format.
 	 * @param filename: full path of the database to be opened.
@@ -90,7 +92,7 @@ protected:
 	 * @param Game*: valid pointer to a Game object with the new data.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT dyn_addGame(Game*) {
+	errorT gameAdd(Game*) {
 		return ERROR_CodecUnsupFeat;
 	}
 
@@ -100,21 +102,21 @@ protected:
 	 * @param gamenumT: valid gamenumT of the game to be replaced.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT dyn_saveGame(Game*, gamenumT) {
+	errorT gameSave(Game*, gamenumT) {
 		return ERROR_CodecUnsupFeat;
 	}
 
 
 private:
 	errorT addGame(Game* game) final {
-		errorT err = getDerived()->dyn_addGame(game);
+		errorT err = getDerived()->gameAdd(game);
 		if (err != OK) return err;
 
 		return CodecMemory::addGame(game);
 	}
 
 	errorT saveGame(Game* game, gamenumT replaced) final {
-		errorT err = getDerived()->dyn_saveGame(game, replaced);
+		errorT err = getDerived()->gameSave(game, replaced);
 		if (err != OK) return err;
 
 		return CodecMemory::saveGame(game, replaced);
@@ -130,7 +132,7 @@ private:
 			err = game.LoadStandardTags(srcIe, srcNb);
 		if (err != OK) return err;
 
-		err = getDerived()->dyn_addGame(&game);
+		err = getDerived()->gameAdd(&game);
 		if (err != OK) return err;
 
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
@@ -145,10 +147,8 @@ private:
 	}
 
 	/*
-	 * Creates a memory database and invokes the function open(), which will
-	 * open the non-native database @p filename. Subsequently, the function
-	 * parseNext() is repeatedly called until it returns ERROR_NotFound, and
-	 * the games are copied into the memory database.
+	 * Create a memory database, open the non-native database @p filename and
+	 * copy all the games into the memory database.
 	 */
 	errorT dyn_open(fileModeT fMode, const char* filename,
 	                const Progress& progress, Index* idx, NameBase* nb) final {
@@ -161,17 +161,31 @@ private:
 		err = getDerived()->open(filename, fMode);
 		if (err != OK) return err;
 
+		return parseGames(progress, *getDerived(), [&](Game& game) {
+			return this->CodecMemory::addGame(&game);
+		});
+	}
+
+public:
+	/*
+	 * Given a source database of type CodecProxy<T>, for each game a
+	 * corresponding Game object is created and dispatched to @e destFn.
+	 */
+	template <typename TProgress, typename TSource, typename TDestFn>
+	static errorT parseGames(const TProgress& progress, TSource& src,
+	                         TDestFn destFn) {
 #ifndef MULTITHREADING_OFF
+		auto workTotal = src.parseProgress().second;
+
 		Game game[4];
+		std::atomic<size_t> workDone{};
 		std::atomic<int8_t> sync[4] = {};
 		enum {sy_free, sy_used, sy_stop};
 
-		auto work = getDerived()->parseProgress();
-		std::atomic<size_t> workDone(work.first);
-
-		std::thread producer([this, &game, &sync, &workDone]() {
+		std::thread producer([&]() {
 			uint64_t slot;
-			for (uint64_t nProduced = 0; true;) {
+			uint64_t nProduced = 0;
+			while (true) {
 				slot = nProduced % 4;
 				int sy;
 				while (true) { // spinlock if the slot is in use
@@ -184,23 +198,24 @@ private:
 				if (sy == sy_stop)
 					break;
 
-				if (getDerived()->parseNext(game[slot]) == ERROR_NotFound)
+				if (src.parseNext(game[slot]) == ERROR_NotFound)
 					break;
 
-				if (nProduced % 1024 == 0) {
-					workDone.store(getDerived()->parseProgress().first,
+				if (++nProduced % 1024 == 0) {
+					workDone.store(src.parseProgress().first,
 					               std::memory_order_release);
 				}
 
 				sync[slot].store(sy_used, std::memory_order_release);
-				++nProduced;
 			}
 			sync[slot].store(sy_stop, std::memory_order_release);
 		});
 
 		// Consumer
+		errorT err = OK;
 		uint64_t slot;
-		for (uint64_t nImported = 0; true; ++nImported) {
+		uint64_t nImported = 0;
+		while (true) {
 			slot = nImported % 4;
 			int sy;
 			while (true) { // spinlock if the slot is empty
@@ -213,15 +228,15 @@ private:
 			if (sy == sy_stop)
 				break;
 
-			if (nImported % 1024 == 0) {
+			if (++nImported % 1024 == 0) {
 				if (!progress.report(workDone.load(std::memory_order_acquire),
-				                     work.second)) {
+				                     workTotal)) {
 					err = ERROR_UserCancel;
 					break;
 				}
 			}
 
-			err = CodecMemory::addGame(&game[slot]);
+			err = destFn(game[slot]);
 			if (err != OK) break;
 
 			sync[slot].store(sy_free, std::memory_order_release);
@@ -229,33 +244,29 @@ private:
 		sync[slot].store(sy_stop, std::memory_order_release);
 
 		producer.join();
-		progress(1, 1, getDerived()->parseErrors());
+		progress(1, 1, src.parseErrors());
 		return err;
 
 #else
 		Game g;
-		uint nImported = 0;
-		while (getDerived()->parseNext(g) != ERROR_NotFound) {
-			err = CodecMemory::addGame(&g);
+		errorT err = OK;
+		uint64_t nImported = 0;
+		while (src.parseNext(g) != ERROR_NotFound) {
+			err = destFn(g);
 			if (err != OK) break;
 
 			if (++nImported % 1024 == 0) {
-				std::pair<size_t, size_t> count = getDerived()->parseProgress();
+				std::pair<size_t, size_t> count = src.parseProgress();
 				if (!progress.report(count.first, count.second)) {
 					err = ERROR_UserCancel;
 					break;
 				}
 			}
 		}
-		progress(1, 1, getDerived()->parseErrors());
+		progress(1, 1, src.parseErrors());
 		return err;
 #endif
 	}
-
-	/**
-	 * Return a pointer to the derived class.
-	 */
-	Derived* getDerived() { return static_cast<Derived*>(this); }
 };
 
 #endif

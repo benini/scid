@@ -149,7 +149,7 @@ public:
 	 * @param game: valid pointer to a Game object with the new data.
 	 * @returns OK in case of success, an @e errorT code otherwise.
 	 */
-	errorT dyn_addGame(Game* game) {
+	errorT gameAdd(Game* game) {
 		game->SetPgnFormat(PGN_FORMAT_Plain);
 		game->ResetPgnStyle(PGN_STYLE_TAGS | PGN_STYLE_VARS |
 		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
