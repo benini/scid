@@ -137,9 +137,10 @@ struct scidBaseT {
 	errorT getGame(const IndexEntry& ie, std::vector<GamePos>& dest);
 
 	errorT importGame(const scidBaseT* srcBase, uint gNum);
-	errorT importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress);
-	template <class T, class P>
-	errorT importGames(T& codec, const P& progress, uint& nImported, std::string& errorMsg);
+	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
+	                   const Progress& progress);
+	errorT importGames(ICodecDatabase::Codec dbtype, const char* filename,
+	                   const Progress& progress, std::string& errorMsg);
 
 	/**
 	 * Add or replace a game into the database.
@@ -408,33 +409,6 @@ inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
 		exp += r - expVect_[eloDiff+800];
 		nexp++;
 	}
-}
-
-template <class T, class P>
-inline errorT scidBaseT::importGames(T& codec, const P& progress,
-                                     uint& nImported, std::string& errorMsg) {
-	beginTransaction();
-	errorT res;
-	Game g;
-	nImported = 0;
-	while ((res = codec.parseNext(g)) != ERROR_NotFound) {
-		if (res != OK) continue;
-
-		res = saveGameHelper(&g, INVALID_GAMEID);
-		if (res != OK) break;
-
-		if ((++nImported % 200) == 0) {
-			std::pair<size_t, size_t> count = codec.parseProgress();
-			if (!progress.report(count.first, count.second)) {
-				res = ERROR_UserCancel;
-				break;
-			}
-		}
-	}
-	errorMsg = codec.parseErrors();
-	auto err = endTransaction();
-	progress.report(1,1);
-	return (res == ERROR_NotFound) ? err : res;
 }
 
 inline errorT scidBaseT::invertFlag(uint flag, uint gNum) {

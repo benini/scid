@@ -16,7 +16,6 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "codec_pgn.h"
 #include "common.h"
 #include "dbasepool.h"
 #include "misc.h"
@@ -497,26 +496,18 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char**
 	const char* usage = "Usage: sc_base import baseId filename";
 	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
 
-	if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
+	// if (pgn)
+	auto codec = ICodecDatabase::PGN;
 
-	const char* filename = argv[3];
-	uint gamesSeen = 0;
-	errorT err = ERROR_BadArg;
+	auto nImported = dbase->numGames();
 	std::string errorMsg;
-	Progress progress = UI_CreateProgress(ti);
-
-	// if (pgn) {
-		CodecPgn codec;
-		err = codec.open(filename, FMODE_ReadOnly);
-		if (err == OK) {
-			err = dbase->importGames(codec, progress, gamesSeen, errorMsg);
-		}
-	// }
-
-	if (err != OK) return UI_Result(ti, err);
+	auto res_imp =
+	    dbase->importGames(codec, argv[3], UI_CreateProgress(ti), errorMsg);
+	if (res_imp != OK)
+		return UI_Result(ti, res_imp);
 
 	UI_List res(2);
-	res.push_back(gamesSeen);
+	res.push_back(dbase->numGames() - nImported);
 	res.push_back(errorMsg);
 	return UI_Result(ti, OK, res);
 }

@@ -325,6 +325,28 @@ errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
 	return codec_->addGame(srcIe, srcBase->getNameBase(), data, dataSz);
 }
 
+errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
+                              const char* filename, const Progress& progress,
+                              std::string& errorMsg) {
+	ASSERT(dbtype == ICodecDatabase::PGN);
+
+	if (isReadOnly())
+		return ERROR_FileReadOnly;
+
+	beginTransaction();
+
+	CodecPgn pgn;
+	auto res = pgn.open(filename, FMODE_ReadOnly);
+	if (res == OK) {
+		res = CodecPgn::parseGames(
+		    progress, pgn, [&](Game& game) { return codec_->addGame(&game); });
+		errorMsg = pgn.parseErrors();
+	}
+
+	auto res_endTrans = endTransaction();
+	return (res != OK) ? res : res_endTrans;
+}
+
 /**
  * Filters
  */
