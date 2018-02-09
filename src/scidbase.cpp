@@ -26,33 +26,29 @@
 #include <algorithm>
 #include <math.h>
 
-ICodecDatabase* ICodecDatabase::make(Codec codec, errorT* resError,
-                                     fileModeT fMode, const char* filename,
-                                     const Progress& progress, Index* idx,
-                                     NameBase* nb) {
-	ICodecDatabase* res = 0;
-	errorT err = ERROR;
-	switch (codec) {
-	case ICodecDatabase::MEMORY:
-		res = new CodecMemory();
-		break;
-	case ICodecDatabase::SCID4:
-		res = new CodecSCID4();
-		break;
-	case ICodecDatabase::PGN:
-		res = new CodecPgn();
-		break;
-	}
-
-	if (res != 0) {
-		err = res->dyn_open(fMode, filename, progress, idx, nb);
-		if (err != OK && err != ERROR_NameDataLoss) {
-			delete res;
-			res = 0;
+std::pair<ICodecDatabase*, errorT>
+ICodecDatabase::open(Codec codec, fileModeT fMode, const char* filename,
+                     const Progress& progress, Index* idx, NameBase* nb) {
+	auto createCodec = [](auto codec) -> ICodecDatabase* {
+		switch (codec) {
+		case ICodecDatabase::MEMORY:
+			return new CodecMemory();
+		case ICodecDatabase::SCID4:
+			return new CodecSCID4();
+		case ICodecDatabase::PGN:
+			return new CodecPgn();
 		}
+		ASSERT(0);
+		return nullptr;
+	};
+
+	auto obj = createCodec(codec);
+	auto err = obj->dyn_open(fMode, filename, progress, idx, nb);
+	if (err != OK && err != ERROR_NameDataLoss) {
+		delete obj;
+		obj = nullptr;
 	}
-	if (resError) *resError = err;
-	return res;
+	return {obj, err};
 }
 
 scidBaseT::scidBaseT() {
@@ -64,7 +60,6 @@ scidBaseT::scidBaseT() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	fileMode_ = FMODE_None;
-	codec_ = 0;
 	bbuf = new ByteBuffer(BBUF_SIZE);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
@@ -88,35 +83,32 @@ scidBaseT::~scidBaseT() {
 
 errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
                        const char* filename, const Progress& progress) {
-	if (inUse) return ERROR_FileInUse;
-	if (filename == 0) filename = "";
+	if (inUse)
+		return ERROR_FileInUse;
+	if (filename == 0)
+		filename = "";
 
-	inUse = true;
+	auto obj = ICodecDatabase::open(dbtype, fMode, filename, progress, idx, nb_);
+	if (obj.first) {
+		codec_.reset(obj.first);
+		inUse = true;
+		fileMode_ = (fMode == FMODE_Create) ? FMODE_Both : fMode;
+		fileName_ = filename;
+		gameNumber = -1;
 
-	delete codec_;
-	errorT err = OK;
-	codec_ = ICodecDatabase::make(dbtype, &err, fMode, filename, progress, idx, nb_);
-	if (codec_ == 0) {
+		// Initialize the filters: all the games are included by default.
+		dbFilter->Init(numGames());
+		treeFilter->Init(numGames());
+		ASSERT(filters_.empty());
+
+		// Default treeCache size: 250
+		treeCache.CacheResize(250);
+	} else {
 		idx->Close();
 		nb_->Clear();
-		inUse = false;
-		return err;
 	}
 
-	if (fMode == FMODE_Create) fMode = FMODE_Both;
-	fileMode_ = fMode;
-	fileName_ = filename;
-	gameNumber = -1;
-
-	// Initialize the filters: all the games are included by default.
-	dbFilter->Init(numGames());
-	treeFilter->Init(numGames());
-	ASSERT(filters_.empty());
-
-	// Default treeCache size: 250
-	treeCache.CacheResize(250);
-
-	return err;
+	return obj.second;
 }
 
 errorT scidBaseT::Close () {
@@ -130,9 +122,8 @@ errorT scidBaseT::Close () {
 	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
 	nb_->Clear();
-	delete codec_;
+	codec_ = nullptr;
 
-	codec_ = NULL;
 	clear();
 	game->Clear();
 	fileMode_ = FMODE_None;

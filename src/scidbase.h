@@ -29,6 +29,7 @@
 #include "tree.h"
 #include <array>
 #include <vector>
+#include <memory>
 
 class SortCache;
 
@@ -338,7 +339,7 @@ public:
 	std::pair<Game*, bool> deprecated_push_pop;
 
 private:
-	ICodecDatabase* codec_;
+	std::unique_ptr<ICodecDatabase> codec_;
 	NameBase* nb_;
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
@@ -349,8 +350,6 @@ private:
 	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
 
 private:
-	scidBaseT(const scidBaseT&);
-	scidBaseT& operator=(const scidBaseT&);
 	void clear();
 	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);

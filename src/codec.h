@@ -48,19 +48,19 @@ public:
 	/**
 	 * Creates a new object and calls the virtual function dyn_open().
 	 * @param codec:    the type of the object to be created.
-	 * @param err[out]: OK on success, an error code on failure.
 	 * @param fMode:    a valid file mode.
 	 * @param filename: the full path of the database to be opened.
 	 * @param progress: a Progress object used for GUI communications.
 	 * @param idx:      valid pointer to the Index object for this database.
 	 * @param nb:       valid pointer to the NameBase object for this database.
 	 * @returns
-	 * - on success: a valid pointer to the new object and set @p err to OK.
-	 * - on error:   0 (nullptr) and sets @p err to the error code.
+	 * - on success: a valid pointer to the new object and OK.
+	 * - on error:   nullptr and the error code.
 	 */
-	static ICodecDatabase* make(Codec codec, errorT* err, fileModeT fMode,
-	                            const char* filename, const Progress& progress,
-	                            Index* idx, NameBase* nb);
+	static std::pair<ICodecDatabase*, errorT> open(Codec codec, fileModeT fMode,
+	                                               const char* filename,
+	                                               const Progress& progress,
+	                                               Index* idx, NameBase* nb);
 
 	/**
 	 * Returns the Codec type.

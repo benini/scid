@@ -183,14 +183,14 @@ void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
 	} cleanup;
 
 	{
-		errorT err;
 		Index idx;
 		NameBase nb;
-		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-		    dbtype, &err, fMode, filename, Progress(), &idx, &nb));
+		auto err = ICodecDatabase::open(dbtype, fMode, filename, Progress(),
+		                                &idx, &nb);
+		auto codec = std::unique_ptr<ICodecDatabase>(err.first);
 		ASSERT_NE(nullptr, codec);
 		cleanup.filenames = codec->getFilenames();
-		ASSERT_EQ(OK, err);
+		ASSERT_EQ(OK, err.second);
 
 		op(codec.get(), idx, nb);
 
@@ -200,13 +200,13 @@ void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
 	}
 
 	if (supports("FMODE" + std::to_string(FMODE_ReadOnly))) {
-		errorT err;
 		Index idx;
 		NameBase nb;
-		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-		    dbtype, &err, FMODE_ReadOnly, filename, Progress(), &idx, &nb));
+		auto err = ICodecDatabase::open(dbtype, FMODE_ReadOnly, filename,
+		                                Progress(), &idx, &nb);
+		auto codec = std::unique_ptr<ICodecDatabase>(err.first);
 		ASSERT_NE(nullptr, codec);
-		ASSERT_EQ(OK, err);
+		ASSERT_EQ(OK, err.second);
 		ASSERT_EQ(gameGenerator.get().size(), size_t(idx.GetNumGames()));
 
 		gameGenerator.cmp(codec.get(), idx);
@@ -288,9 +288,9 @@ TEST_P(Test_Codec, fileModeT) {
 	for (auto& fmode : fmodes) {
 		Index idx;
 		NameBase nb;
-		errorT err;
-		auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-		    dbtype, &err, fmode, filename, Progress(), &idx, &nb));
+		auto err = ICodecDatabase::open(dbtype, fmode, filename, Progress(),
+		                                &idx, &nb);
+		auto codec = std::unique_ptr<ICodecDatabase>(err.first);
 
 		if (supports("FMODE" + std::to_string(fmode))) {
 			ASSERT_NE(nullptr, codec);
@@ -316,9 +316,9 @@ TEST_P(Test_Codec, create_emptyfilename) {
 
 	Index idx;
 	NameBase nb;
-	errorT err;
-	auto codec = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-	    dbtype, &err, FMODE_Create, "", Progress(), &idx, &nb));
+	auto err =
+	    ICodecDatabase::open(dbtype, FMODE_Create, "", Progress(), &idx, &nb);
+	auto codec = std::unique_ptr<ICodecDatabase>(err.first);
 
 	if (!supports("empty_filename")) {
 		EXPECT_EQ(nullptr, codec);
@@ -355,20 +355,20 @@ TEST_P(Test_Codec, rename) {
 	{
 		Index idx1, idx2;
 		NameBase nb1, nb2;
-		errorT err;
-		auto codec1 = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-		    dbtype, &err, FMODE_Create, filename, Progress(), &idx1, &nb1));
+		auto err = ICodecDatabase::open(dbtype, FMODE_Create, filename,
+		                                Progress(), &idx1, &nb1);
+		auto codec1 = std::unique_ptr<ICodecDatabase>(err.first);
 		EXPECT_EQ(OK, codec1->flush());
 		ASSERT_NE(nullptr, codec1);
-		ASSERT_EQ(OK, err);
+		ASSERT_EQ(OK, err.second);
 
 		std::string renamed_name = std::string(filename) + "__renamed__";
-		auto codec2 = std::unique_ptr<ICodecDatabase>(ICodecDatabase::make(
-		    dbtype, &err, FMODE_Create, renamed_name.c_str(), Progress(), &idx2,
-		    &nb2));
+		err = ICodecDatabase::open(dbtype, FMODE_Create, renamed_name.c_str(),
+		                           Progress(), &idx2, &nb2);
+		auto codec2 = std::unique_ptr<ICodecDatabase>(err.first);
 		EXPECT_EQ(OK, codec2->flush());
 		ASSERT_NE(nullptr, codec2);
-		ASSERT_EQ(OK, err);
+		ASSERT_EQ(OK, err.second);
 
 		cleanup.filenames1 = codec1->getFilenames();
 		cleanup.filenames2 = codec2->getFilenames();
@@ -385,13 +385,13 @@ TEST_P(Test_Codec, rename) {
 	}
 
 	if (supports("FMODE" + std::to_string(FMODE_ReadOnly))) {
-		errorT err;
 		Index idx_reopen;
 		NameBase nb_reopen;
-		auto codec3 = std::unique_ptr<ICodecDatabase>(
-		    ICodecDatabase::make(dbtype, &err, FMODE_ReadOnly, filename,
-		                         Progress(), &idx_reopen, &nb_reopen));
+		auto err = ICodecDatabase::open(dbtype, FMODE_ReadOnly, filename,
+		                                Progress(), &idx_reopen, &nb_reopen);
+		auto codec3 = std::unique_ptr<ICodecDatabase>(err.first);
 		ASSERT_NE(nullptr, codec3);
+		ASSERT_EQ(OK, err.second);
 
 		auto filenames3 = codec3->getFilenames();
 		EXPECT_TRUE(cleanup.filenames1 == filenames3);
