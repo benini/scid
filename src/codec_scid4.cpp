@@ -247,8 +247,15 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
 
 } // namespace
 
-void CodecSCID4::decodeIndexEntry(const char* buf_it, versionT version,
-                                  IndexEntry* ie) {
+/**
+ * Decode SCID4 (or SCID3) data into an IndexEntry object.
+ * @param buf_it:  pointer to the buffer containing the data
+ *                 (should contain INDEX_ENTRY_SIZE chars)
+ * @param version: 400 for SCID4 or 300 for SCID3.
+ * @param ie:      pointer to the IndexEntry object where the data will be
+ *                 stored.
+ */
+void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 	auto ReadOneByte = [&buf_it]() {
 		uint8_t res = *buf_it++;
 		return res;

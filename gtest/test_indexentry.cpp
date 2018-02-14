@@ -23,6 +23,8 @@
 #include <stdint.h>
 #include <vector>
 
+void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie);
+
 namespace v4_6 {
 #include "test_indexentry_v4_6.h"
 }
@@ -222,13 +224,13 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 
 		{ // Read a current IndexEntry from ie_buf and check it
 			IndexEntry ie;
-			CodecSCID4::decodeIndexEntry(ie_buf.getBuffer(), 400, &ie);
+			decodeIndexEntry(ie_buf.getBuffer(), 400, &ie);
 			chkEntry(ie, v.cbegin());
 		}
 
 		{ // Read a current IndexEntry from ie_buf_v4_6 and check it
 			IndexEntry ie;
-			CodecSCID4::decodeIndexEntry(ie_buf_v4_6.getBuffer(), 400, &ie);
+			decodeIndexEntry(ie_buf_v4_6.getBuffer(), 400, &ie);
 			chkEntry(ie, v.cbegin());
 		}
 

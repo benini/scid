@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017  Fulvio Benini
+ * Copyright (C) 2016-2018  Fulvio Benini
 
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -18,8 +18,8 @@
  */
 
 /** @file
- * Implements the CodecSCID4 class, which manages the databases encoded
- * in Scid format version 4.
+ * Implements the CodecSCID4 class that manages databases encoded in SCID
+ * format v4.
  */
 
 #ifndef CODEC_SCID4_H
@@ -46,17 +46,15 @@ class CodecSCID4 : public CodecNative<CodecSCID4> {
 	};
 
 public: // ICodecDatabase interface
-	Codec getType() override { return ICodecDatabase::SCID4; }
+	Codec getType() final { return ICodecDatabase::SCID4; }
 
 	/**
 	 * Returns the full path of the three files (index, namebase and gamefile)
 	 * used by the database.
 	 */
-	std::vector<std::string> getFilenames() override {
-		return filenames_;
-	};
+	std::vector<std::string> getFilenames() final { return filenames_; };
 
-	const byte* getGameData(uint64_t offset, uint32_t length) override {
+	const byte* getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())
 			return NULL;
 		if (length >= LIMIT_GAMELEN)
@@ -70,20 +68,20 @@ public: // ICodecDatabase interface
 		return reinterpret_cast<const byte*>(gamecache_);
 	}
 
-	errorT flush() override;
+	errorT flush() final;
 
 	errorT dyn_open(fileModeT, const char*, const Progress&, Index*,
-	                NameBase*) override;
+	                NameBase*) final;
 
 public: // CodecNative interface
 	/**
 	 * Stores the data into the .sg4 file.
 	 * @param src:    valid pointer to a buffer that contains the game data
 	 *                (encoded in native format).
-	 * @param length: the length of the buffer @p src (in bytes).
+	 * @param length: the length of the buffer @e src (in bytes).
 	 * @returns
 	 * - on success, a @e std::pair containing OK and the offset of the stored
-	 * data (usable to retrieve the data with getGameData()).
+	 *   data (needed for retrieving the data with getGameData()).
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, uint64_t> dyn_addGameData(const byte* src,
@@ -94,12 +92,12 @@ public: // CodecNative interface
 		if (length >= LIMIT_GAMELEN)
 			return std::make_pair(ERROR_GameLengthLimit, 0);
 
-		// The Scid4 format uses 32-bits to store games' offset.
+		// The SCID4 format uses 32-bits to store games' offset.
 		uint64_t offset = gfile_.size();
 		if (offset >= LIMIT_GAMEOFFSET - length)
 			return std::make_pair(ERROR_OffsetLimit, 0);
 
-		// The Scid4 format stores games into blocks of 128KB.
+		// The SCID4 format stores games into blocks of 128KB.
 		// If the current block does not have enough space, we fill it with
 		// random data and use the next one.
 		uint64_t blockSpace = LIMIT_GAMELEN - (offset % LIMIT_GAMELEN);
@@ -155,17 +153,6 @@ public: // CodecNative interface
 	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
 		return idx_->WriteEntry(&ie, replaced);
 	}
-
-	/**
-	 * Decode SCID4 (or SCID3) data into an IndexEntry object.
-	 * @param buf_it:  pointer to the buffer containing the data
-	 *                 (should contain INDEX_ENTRY_SIZE chars)
-	 * @param version: 400 for SCID4 or 300 for SCID3.
-	 * @param ie:      pointer to the IndexEntry object where the data will be
-	 *                 stored.
-	 */
-	static void decodeIndexEntry(const char* buf_it, versionT version,
-	                             IndexEntry* ie);
 
 private:
 	errorT readIndex(const Progress& progress);
