@@ -992,7 +992,8 @@ errorT Game::MainVariation() {
 	// Swap the mainline with the current variation
 	root->swapLine(*parent.second->next);
 
-	VarDepth = 0;
+	ASSERT(VarDepth);
+	--VarDepth;
 
 	// Now, the information about the material at the end of the
 	// game, pawn promotions, will be wrong if the variation was

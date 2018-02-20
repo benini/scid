@@ -117,7 +117,7 @@ struct moveT {
 	void swapLine(moveT& move) {
 		ASSERT(prev && move.prev);
 		ASSERT(!startMarker() && !move.startMarker());
-		ASSERT(!move.endMarker());
+		ASSERT(!endMarker() && !move.endMarker());
 		// Swap lines
 		auto swap_tmp = move.prev;
 		prev->setNext(&move);
@@ -169,6 +169,7 @@ struct moveT {
 	}
 
 	void setNext(moveT* move) {
+		ASSERT(move);
 		this->next = move;
 		move->prev = this;
 	}
