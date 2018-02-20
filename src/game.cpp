@@ -982,6 +982,8 @@ errorT Game::MainVariation() {
 	auto root = parent.first;
 	if (!root)
 		return ERROR_NoVariation;
+	if (parent.second->next->endMarker()) // Do not promote empty variations
+		return OK;
 
 	// Make the current variation the first variation
 	root->detachChild(parent.second);

@@ -115,12 +115,23 @@ struct moveT {
 	}
 
 	void swapLine(moveT& move) {
+		ASSERT(prev && move.prev);
 		ASSERT(!startMarker() && !move.startMarker());
-		std::swap(*this, move);
-		// We need to swap back the pointers (but not next)
-		std::swap(prev, move.prev);
+		ASSERT(!move.endMarker());
+		// Swap lines
+		auto swap_tmp = move.prev;
+		prev->setNext(&move);
+		swap_tmp->setNext(this);
+		// Swap children
 		std::swap(varChild, move.varChild);
 		std::swap(numVariations, move.numVariations);
+		auto updateParentLink = [](moveT& parent) {
+			for (auto tmp = parent.varChild; tmp; tmp = tmp->varChild) {
+				tmp->prev = &parent;
+			}
+		};
+		updateParentLink(*this);
+		updateParentLink(move);
 	}
 
 	const moveT* getPrevMove() const {
