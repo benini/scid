@@ -186,7 +186,7 @@ inline dateT date_parsePGNTag(const char* str, size_t len) {
 	constexpr unsigned char days[] = {31, 31, 28, 31, 30, 31, 30,
 	                                  31, 31, 30, 31, 30, 31};
 	if (day > days[month]) {
-		if (day != 29 || year % 4 || !(year % 100)) {
+		if (day != 29 || year % 4 || (year % 100 == 0 && year % 400)) {
 			day = 0;
 		}
 	}
