@@ -397,7 +397,51 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults ;# -padx 20
   ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save ;# -padx 20
   ttk::button $w.b.stop -textvar ::tr(Stop) -command progressBarCancel
-  ttk::button $w.b.search -textvar ::tr(Search) -command {
+  ttk::button $w.b.new_search -text "[tr Search] ([tr GlistNewSort] [tr Filter])" -command {::search::header::do_search 1 }
+  ttk::button $w.b.search -textvar ::tr(Search) -command {::search::header::do_search 0 }
+  ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20
+
+  foreach i {defaults save cancel new_search search stop} {
+    $w.b.$i configure -style Small.TButton
+  }
+
+  pack $w.b.defaults $w.b.save -side left -padx 5
+  pack $w.b.cancel $w.b.new_search $w.b.search -side right -padx 5
+
+  pack [ ttk::frame $w.fprogress ] -fill both
+  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
+  $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
+      -fill black -text "0:00 / 0:00"
+  pack $w.fprogress.progress -side top -pady 2
+  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
+  pack $w.status -side bottom -fill x
+  # update
+  wm resizable $w 0 0
+  ::search::Config
+  focus $w.cWhite.e
+}
+
+proc ::search::header::do_search {new_filter} {
+    set dbase [string index $::refDatabaseH 0]
+    if {$::refFilterH ne ""} {
+        set ::refFilterH [sc_filter compose $dbase $::refFilterH ""]
+    } else {
+        set ::refFilterH "dbfilter"
+    }
+    if {$new_filter} {
+        set tmp_filter [sc_filter new $dbase]
+        sc_filter copy $dbase $tmp_filter $::refFilterH
+        set ::refFilterH $tmp_filter
+    }
+    set filter $::refFilterH
+
+    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
+    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+    global sEloDiffMin sEloDiffMax sSideToMove
+    global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
+    global sResWin sResLoss sResDraw sResOther sPgntext
+
     ::utils::history::AddEntry HeaderSearchWhite $sWhite
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
     ::utils::history::AddEntry HeaderSearchEvent $sEvent
@@ -415,13 +459,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     foreach i $sTitleList {
       if $sTitles(w:$i) { lappend wtitles $i }
       if $sTitles(b:$i) { lappend btitles $i }
-    }
-    
-    set dbase [string index $::refDatabaseH 0]
-    if {$::refFilterH == ""} {
-        set filter "dbfilter"
-    } else {
-        set filter [sc_filter compose $dbase $::refFilterH ""]
     }
 
     if {$sEco == "Yes"} {
@@ -473,7 +510,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     append results $sResOther
 
     progressBarSet .sh.fprogress.progress 301 21
-    set err [catch { sc_filter search $dbase $filter header \
+    sc_filter search $dbase $filter header \
           -filter RESET \
           -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \
@@ -485,7 +522,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
           -toMove $sSideToMove \
-          -gnum [list $sGnumMin $sGnumMax] \
+          -gnum [list $::sGnumMin $::sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -flag $flagsYes -flag! $flagsNo \
@@ -493,14 +530,13 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           $fCounts(Comments) $fCountsV(Comments) \
           $fCounts(Annotations) $fCountsV(Annotations) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-    }]
 
-    if {!$err && $sIgnoreCol == "Yes"} {
+    if {$sIgnoreCol == "Yes"} {
         set fIgnore [sc_filter new $dbase]
         set deloMin [ expr { $sEloDiffMax * -1 }]
         set deloMax [ expr { $sEloDiffMin * -1 }]
         progressBarSet .sh.fprogress.progress 301 21
-        catch { sc_filter search $dbase $fIgnore header \
+        sc_filter search $dbase $fIgnore header \
           -filter RESET \
           -white $sBlack -black $sWhite \
           -event $sEvent -site $sSite -round $sRound \
@@ -512,7 +548,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
           -toMove $sSideToMove \
-          -gnum [list $sGnumMin $sGnumMax] \
+          -gnum [list $::sGnumMin $::sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -flag $flagsYes -flag! $flagsNo \
@@ -520,7 +556,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           $fCounts(Comments) $fCountsV(Comments) \
           $fCounts(Annotations) $fCountsV(Annotations) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-        }
 
         sc_filter or $dbase $filter $fIgnore
         sc_filter release $dbase $fIgnore
@@ -543,30 +578,11 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     grab release .sh.b.stop
     pack forget .sh.b.stop
 
-    ::notify::DatabaseModified $dbase $filter
-  }
-  
-  ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20
-  
-  foreach i {defaults save cancel search stop} {
-    $w.b.$i configure -style Small.TButton
-    
-    pack $w.b.defaults $w.b.save -side left -padx 5
-    pack $w.b.cancel $w.b.search -side right -padx 5
-  }
-  
-  pack [ ttk::frame $w.fprogress ] -fill both
-  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
-  $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
-  pack $w.fprogress.progress -side top -pady 2
-  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
-  pack $w.status -side bottom -fill x
-  # update
-  wm resizable $w 0 0
-  ::search::Config
-  focus $w.cWhite.e
+    if {$new_filter} {
+        ::windows::gamelist::Open $dbase $::refFilterH
+    } else {
+        ::notify::DatabaseModified $dbase $::refFilterH
+    }
 }
 
 proc ::search::header::save {} {
