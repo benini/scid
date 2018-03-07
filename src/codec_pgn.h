@@ -99,34 +99,33 @@ public:
 			std::copy_n(buf_.data() + verge, nRead_, buf_.data());
 			nRead_ += file_.sgetn(buf_.data() + nRead_, verge);
 		}
-		while (true) {
-			game.Clear();
-			PgnVisitor visitor(game);
-			auto parse = pgn::parse_game(
-			    {buf_.data() + nParsed_, buf_.data() + nRead_}, visitor);
 
-			bool eof = (nRead_ - nParsed_ == parse.first);
-			if (eof && nRead_ == buf_.size()) {
-				// Reached the end of input, but the file contains more bytes.
-				if (nRead_ <= 128 * 1024 * 1024) {
-					// Double the buffer size and retry.
-					buf_.resize(nRead_ * 2);
-					nRead_ += file_.sgetn(buf_.data() + nRead_, nRead_);
-				} else {
-					// Give up
-					nRead_ = nParsed_ = 0;
-					parseLog_.log.append("PGN parsing aborted.\n");
-					return ERROR_NotFound;
-				}
-			} else {
-				nParsed_ += parse.first;
-				parseLog_.logGame(parse.first, visitor);
-				if (eof && !parse.second && *game.GetMoveComment() == '\0')
-					return ERROR_NotFound;
+		game.Clear();
+		PgnVisitor visitor(game);
+		auto parse = pgn::parse_game(
+		    {buf_.data() + nParsed_, buf_.data() + nRead_}, visitor);
 
-				return OK;
+		bool eof = (nRead_ - nParsed_ == parse.first);
+		if (eof && nRead_ == buf_.size()) {
+			// Reached the end of input, but the file contains more bytes.
+			if (nRead_ <= 128 * 1024 * 1024) {
+				// Double the buffer size and retry.
+				buf_.resize(nRead_ * 2);
+				nRead_ += file_.sgetn(buf_.data() + nRead_, nRead_);
+				return parseNext(game);
 			}
+			// Abort
+			nRead_ = nParsed_ = 0;
+			parseLog_.log.append("PGN parsing aborted.\n");
+			return ERROR_NotFound;
 		}
+
+		nParsed_ += parse.first;
+		parseLog_.logGame(parse.first, visitor);
+		if (eof && !parse.second && *game.GetMoveComment() == '\0')
+			return ERROR_NotFound;
+
+		return OK;
 	}
 
 	/**
