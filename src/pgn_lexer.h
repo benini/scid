@@ -176,8 +176,7 @@ bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
 		return true;
 
 	case '*': // self terminating
-		parser.visitPGN_ResultFinal('*');
-		return false;
+		return parser.visitPGN_ResultFinal('*');
 
 	case '(': // self terminating
 		return parser.visitPGN_VariationStart();
@@ -278,11 +277,8 @@ bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
 	if (notdigit == tok.second)
 		return parser.visitPGN_MoveNum(tok);
 
-	auto result = is_PGNtermination(tok);
-	if (result) {
-		parser.visitPGN_ResultFinal(result);
-		return false;
-	}
+	if (auto result = is_PGNtermination(tok))
+		return parser.visitPGN_ResultFinal(result);
 
 	return parser.visitPGN_Unknown(tok);
 }

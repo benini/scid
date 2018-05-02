@@ -108,9 +108,6 @@ public:
 	}
 
 	bool visitPGN_ResultFinal(char resultCh) {
-		if (nErrorsAllowed_ < 0) // Skip until the end of the game
-			return true;
-
 		auto result = RESULT_None;
 		switch (resultCh) {
 		case '0':
@@ -130,10 +127,10 @@ public:
 		if (result != prev_result) {
 			// Use the end-of-game result instead of the header tag result
 			game.SetResult(result);
-			if (prev_result != RESULT_None)
+			if (prev_result != RESULT_None && nErrorsAllowed_ >= 0)
 				logErr("Final result did not match the header tag.");
 		}
-		return true;
+		return false;
 	}
 
 	bool visitPGN_SANMove(TView tok) {
@@ -259,7 +256,7 @@ private:
 				return true;
 			}
 		}
-		return false;
+		return logErr("Invalid Result tag: ", str);
 	}
 
 	bool parseTagPair(const char* tag, size_t tagLen, TView value) {
