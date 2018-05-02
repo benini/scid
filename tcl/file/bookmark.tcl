@@ -156,7 +156,7 @@ proc ::bookmarks::New {type} {
   append text "[sc_game info year]"
   set list [list "g" $text]
   sc_game pgn
-  lappend list [sc_base filename ::curr_db] [sc_game number] [sc_pos pgnOffset]
+  lappend list [sc_base filename $::curr_db] [sc_game number] [sc_pos pgnOffset]
   lappend list [sc_game info white] [sc_game info black]
   lappend list [sc_game info year] [sc_game info site]
   lappend list [sc_game info round] [sc_game info result]
