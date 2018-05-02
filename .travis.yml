@@ -32,13 +32,13 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
-    env: CXX=g++-7 CC=gcc-7
+    env: CXX=g++-8 CC=gcc-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++-8
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
@@ -46,19 +46,19 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
-    env: CXX=clang++-5.0 CC=clang-5.0
+    env: CXX=clang++-6.0 CC=clang-6.0
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-trusty-5.0
+          - llvm-toolchain-trusty-6.0
         packages:
-          - clang-5.0
-          - clang-tidy-5.0
-          - libstdc++-7-dev
+          - clang-6.0
+          - clang-tidy-6.0
+          - libstdc++-8-dev
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
-      - run-clang-tidy-5.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
+      - run-clang-tidy-6.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
@@ -75,41 +75,41 @@ matrix:
 
   - os: linux
     sudo: true
-    env: GTEST_ADDRESS=_ CXX=clang++-5.0 CC=clang-5.0
+    env: GTEST_ADDRESS=_ CXX=clang++-6.0 CC=clang-6.0
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-trusty-5.0
+          - llvm-toolchain-trusty-6.0
         packages:
-          - clang-5.0
-          - libstdc++-7-dev
+          - clang-6.0
+          - libstdc++-8-dev
     script:
       - mkdir Test && cd Test
       - cmake .. -DGTEST=ON -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=address,undefined,integer"
       - make VERBOSE=1 scid_tests && gtest/scid_tests
 
   - os: linux
-    env: GTEST_THREAD=_ CXX=g++-7 CC=gcc-7
+    env: GTEST_THREAD=_ CXX=g++-8 CC=gcc-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++-8
     script:
       - mkdir Test && cd Test
       - cmake .. -DGTEST=ON  -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -pedantic -fsanitize=thread,undefined -fuse-ld=gold"
       - make VERBOSE=1 scid_tests && gtest/scid_tests
 
   - os: linux
-    env: SINGLETHREAD=_ CXX=g++-7 CC=gcc-7
+    env: SINGLETHREAD=_ CXX=g++-8 CC=gcc-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++-8
     script:
       - mkdir Debug && cd Debug && cmake .. -DCMAKE_CXX_FLAGS="-g -Wall -Wextra -Werror -pedantic" -DSPELLCHKVALIDATE=ON -DSCID_MULTITHREADING=OFF
       - make VERBOSE=1
@@ -118,13 +118,13 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" THREADS="-DMULTITHREADING_OFF" && make && size tkscid
 
   - os: linux
-    env: CODECOV=_ CXX=g++-7 CC=gcc-7
+    env: CODECOV=_ CXX=g++-8 CC=gcc-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++-8
           - lcov
     script:
       - mkdir Test && cd Test
@@ -154,4 +154,4 @@ matrix:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-7
+          - g++-8
