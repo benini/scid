@@ -554,7 +554,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
     }
 
     // LineWidth is used to determine length of line of dashes to print.
-    LineWidth = LongestNameLen;
+    LineWidth = LongestNameLen + 6;
     if (PrintRatings) { LineWidth += 16; }
     if (PrintTitles) { LineWidth += 4; }
     if (PrintCountries) { LineWidth += 4; }
@@ -713,6 +713,18 @@ Crosstable::PrintPerformance (DString * dstr, playerDataT * pdata)
     }
 }
 
+// Calculate and format the percentage performance of the player 8 Points from 10 Games = 80%
+void
+Crosstable::PrintScorePercentage (DString * dstr, playerDataT * pdata)
+{
+    char stemp [20];
+    uint per_score;
+
+    per_score = ( pdata->gameCount > 0) ? pdata->score * 500 / pdata->gameCount : 0;
+    sprintf (stemp, "%3d%c%1d%%", per_score / 10 , DecimalPointChar, per_score % 10);
+    dstr->Append (" ", StartRightCol, stemp, EndRightCol);
+}
+
 void
 Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
 {
@@ -797,8 +809,9 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
-    }
+        dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+    } else
+        dstr->Append (" ", StartBoldCol, "Percnt", EndBoldCol);
     if (PrintTallies && OutputFormat == CROSSTABLE_Html) {
         dstr->Append ("   ", StartBoldCol, "+/-/=", EndBoldCol);
     }
@@ -890,6 +903,7 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         }
 
         PrintPerformance (dstr, pdata);
+        PrintScorePercentage (dstr, pdata);
 
         if (PrintTallies) {
 	  dstr->Append (StartCol);
@@ -982,8 +996,9 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
-    }
+        dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+    } else
+        dstr->Append (" ", StartBoldCol, "Percnt", EndBoldCol);
     if (PrintTallies && OutputFormat == CROSSTABLE_Html) {
         dstr->Append ("   ", StartBoldCol, "+/-/=", EndBoldCol);
     }
@@ -1080,6 +1095,7 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
             dstr->Append (EndCol);
         }
         PrintPerformance (dstr, pdata);
+        PrintScorePercentage (dstr, pdata);
 
         if (PrintTallies) {
 	  dstr->Append (StartCol);

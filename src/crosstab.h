@@ -137,6 +137,7 @@ class Crosstable
     void   PrintDashesLine (DString * dstr);
     void   PrintPlayer (DString * dstr, playerDataT * pdata);
     void   PrintPerformance (DString * dstr, playerDataT * pdata);
+    void   PrintScorePercentage (DString * dstr, playerDataT * pdata);
     void   PrintAllPlayAll (DString * dstr, uint playerLimit);
     void   PrintKnockout (DString * dstr, uint playerLimit);
     void   PrintSwiss (DString * dstr, uint playerLimit);
