@@ -21,6 +21,7 @@
 #include "position.h"
 #include "stored.h"
 #include "textbuf.h"
+#include <algorithm>
 #include <cstring>
 
 // Piece letters translation
@@ -2336,7 +2337,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
 //      Write a game in PGN to a textbuffer.
 //
 errorT Game::WritePGN(TextBuffer* tb) {
-    char temp [255];
+    char temp[256];
     char dateStr [20];
     const char * newline = "\n";
     tb->NewlinesToSpaces (false);
@@ -2478,9 +2479,9 @@ errorT Game::WritePGN(TextBuffer* tb) {
                 StartPos->DumpHtmlBoard (&dstr, HtmlStyle, NULL);
                 tb->PrintString (dstr.Data());
             } else {
-                char fenStr [256];
-                StartPos->PrintFEN (fenStr, FEN_ALL_FIELDS);
-                sprintf (temp, "Position: %s%s", fenStr, newline);
+                StartPos->PrintFEN(std::copy_n("Position: ", 10, temp),
+                                   FEN_ALL_FIELDS);
+                std::strcat(temp, newline);
                 tb->PrintString (temp);
             }
         }
@@ -2545,9 +2546,9 @@ errorT Game::WritePGN(TextBuffer* tb) {
         }
         // Finally, write the FEN tag if necessary:
         if (StartPos) {
-            char fenStr [256];
-            StartPos->PrintFEN (fenStr, FEN_ALL_FIELDS);
-            sprintf (temp, "[FEN \"%s\"]%s", fenStr, newline);
+            StartPos->PrintFEN(std::copy_n("[FEN \"", 6, temp), FEN_ALL_FIELDS);
+            auto it_end = std::copy_n("\"]", 2, temp + std::strlen(temp));
+            std::strcpy(it_end, newline);
             tb->PrintString (temp);
         }
         if (IsColorFormat()) { tb->PrintString ("</tag>"); }
