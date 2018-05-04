@@ -36,7 +36,8 @@ proc ::tourney::Open {} {
 
   if {! [info exists ::tourney::_defaults]} { ::tourney::defaults }
 
-  toplevel $w
+  ::createToplevel $w
+  ::setTitle $w "Scid: [tr WindowsTmt]"
   wm title $w "Scid: [tr WindowsTmt]"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
@@ -54,7 +55,7 @@ proc ::tourney::Open {} {
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
 
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label TmtFile -menu $w.menu.file
   menu $w.menu.file
   $w.menu.file add command -label TmtFileUpdate -command ::tourney::refresh
@@ -186,6 +187,7 @@ proc ::tourney::Open {} {
   grid rowconfig $w.t 0 -weight 1 -minsize 0
   grid columnconfig $w.t 0 -weight 1 -minsize 0
 
+  ::createToplevelFinalize $w
   ::tourney::ConfigMenus
   ::tourney::refresh
 }

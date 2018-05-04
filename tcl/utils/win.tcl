@@ -615,8 +615,8 @@ proc ::docking::add_tab { {path} {title} } {
 ################################################################################
 # display a blue triangle showing the tab has a menu associated
 proc ::docking::setMenuMark { nb tab} {
-  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
-        $tab == ".fdockoprepWin" || $tab == ".fdockcrosstabWin" } {
+  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || $tab == ".fdocktourney" || \
+        $tab == ".fdockoprepWin" || $tab == ".fdockcrosstabWin" || $tab == ".fdocksgraph" || $tab == ".fdockplist" } {
     $nb tab $tab -image tb_menu -compound left
   } else {
     $nb tab $tab -image tb_close -compound left
@@ -789,6 +789,9 @@ proc ::docking::restore_tabs {} {
       if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
       if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
       if { $d == ".fdockoprepWin" } { ::optable::makeReportWin }
+      if { $d == ".fdockplist" } {::plist::Open}
+      if { $d == ".fdocktourney" } {::tourney::Open}
+      if { $d == ".fdocksgraph" } {::tools::graphs::score::Refresh}
       update
       update idletasks
     }

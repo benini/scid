@@ -372,9 +372,9 @@ proc ::tools::graphs::score::Refresh {} {
   set w .sgraph
   
   if {! [winfo exists $w]} {
-    toplevel $w
+    ::createToplevel $w
     menu $w.menu
-    $w configure -menu $w.menu
+    ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
     menu $w.menu.file
     $w.menu.file add command -label GraphFileColor \
@@ -408,9 +408,11 @@ proc ::tools::graphs::score::Refresh {} {
     bind $w.c <1> {::tools::graphs::score::Move %x}
     bind $w <Control-Z> ::tools::graphs::score::Refresh
     wm title $w "Scid: [tr ToolsScore]"
+    ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
   }
-  
+  ::setTitle $w "Scid: [tr ToolsScore]"
+
   $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
   $w.c coords text [expr {[winfo width $w.c] / 2}] 10
   set height [expr {[winfo height $w.c] - 90} ]

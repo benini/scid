@@ -352,9 +352,10 @@ proc playerInfo {{player ""}} {
   set ::rgraph(player) $player
   set w .playerInfoWin
   if {! [winfo exists $w]} {
-    toplevel $w
+    ::createToplevel $w
     setWinLocation $w
     wm title $w "Scid: [tr ToolsPInfo]"
+    ::setTitle $w "Scid: [tr ToolsPInfo]"
     wm minsize $w 40 5
     pack [frame $w.b2] -side bottom -fill x
     pack [frame $w.b] -side bottom -fill x
@@ -391,6 +392,7 @@ proc playerInfo {{player ""}} {
     bind $w <Escape> "focus .; destroy $w"
     bind $w <F1> {helpWindow PInfo}
     bind $w <Configure> "recordWinSize $w"
+    ::createToplevelFinalize $w
     keyboardShortcuts $w
   }
   set player [trimEngineName $player]

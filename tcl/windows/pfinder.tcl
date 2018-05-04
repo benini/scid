@@ -40,7 +40,8 @@ proc ::plist::Open {} {
   if {[winfo exists .plist]} { return }
   set plistWin 1
 
-  toplevel $w
+  ::createToplevel $w
+  ::setTitle $w "Scid: [tr WindowsPList]"
   wm title $w "Scid: [tr WindowsPList]"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
@@ -58,7 +59,7 @@ proc ::plist::Open {} {
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
 
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label PListFile -menu $w.menu.file
   menu $w.menu.file
   $w.menu.file add command -label Update -command ::plist::refresh
@@ -151,6 +152,8 @@ proc ::plist::Open {} {
   grid $w.t.xbar -row 1 -column 0 -sticky news
   grid rowconfig $w.t 0 -weight 1 -minsize 0
   grid columnconfig $w.t 0 -weight 1 -minsize 0
+
+  ::createToplevelFinalize $w
 
   ::plist::ConfigMenus
   ::plist::refresh
