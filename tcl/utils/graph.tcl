@@ -430,6 +430,10 @@ proc ::utils::graph::plot_data {graph} {
     # Plot bars:
     if {$_data($graph,$dataset,bars)} {
       set base [ymap $graph $_data($graph,aymin)]
+      # type Bars 2: draw from 0 to Value
+      if {$_data($graph,$dataset,bars) == 2} {
+	  set base [expr {int(($_data($graph,aymax) - 0) * $_data($graph,yfac) + $_data($graph,ytop))}]
+      }
       set hwidth [xmap $graph $_data($graph,$dataset,barwidth)]
       set hwidth [expr {$hwidth - [xmap $graph 0]}]
       set hwidth [expr {$hwidth / 2}]
@@ -438,8 +442,21 @@ proc ::utils::graph::plot_data {graph} {
       for {set i 0} {$i < $ncoords} {incr i 2} {
         set x [lindex $coords $i]
         set y [lindex $coords [expr {$i + 1}]]
+	  if {$_data($graph,$dataset,bars) == 2} {
+	      #Bars 2: ajust
+	      if { $hwidth > 4 } {
+		  set x1 [expr {$x+(($i+1)%2)*$hwidth-1}]
+		  set x [expr {$x-($i % 2)*$hwidth+1}]
+	      } else { #Bars 2: ajust for small window size: make bar smaller
+		  set x1 [expr {$x+(($i+1)%2)*$hwidth}]
+		  set x [expr {$x-($i % 2)*$hwidth}]
+	      }
+	  } else {
+	      set x1 [expr {$x+$hwidth}]
+	      set x [expr {$x-$hwidth}]
+	  }
         $canvas create rectangle \
-          [expr {$x-$hwidth}] $y [expr {$x+$hwidth}] $base \
+           $x $y $x1 $base \
           -fill $color -outline $outline -tag $tag
       }
     }
