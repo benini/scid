@@ -107,6 +107,7 @@ proc configureFilterGraph {} {
   button $w.update -textvar ::tr(Update) -command { checkConfigFilterGraph
     ::tools::graphs::absfilter::Refresh;
     ::tools::graphs::filter::Refresh
+    ::windows::stats::Refresh
   }
   
   pack $w.filter

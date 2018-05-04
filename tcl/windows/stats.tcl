@@ -3,6 +3,12 @@
 ###
 
 set ::windows::stats::isOpen 0
+set ::windows::stats::like_graphyear 1
+set ::windows::stats::like_graphelo 1
+set ::windows::stats::old_year 0
+set ::windows::stats::old_elo 0
+set ::windows::stats::stat_year 0
+set ::windows::stats::statelo 0
 
 proc ::windows::stats::Open {} {
   set w .statsWin
@@ -61,15 +67,28 @@ proc ::windows::stats::Open {} {
       -variable ::windows::stats::display($i) -command ::windows::stats::Refresh
   }
 
-#  text $w.stats -borderwidth 0 \
-    -width $::winWidth($w) -height $::winHeight($w) -font font_Fixed \
-    -foreground black -background white -cursor top_left_arrow -wrap none \
-      -setgrid 1 -yscrollcommand {.statsWin.sb set } 
+
+#  use autoscrollframe to display large infos
   autoscrollframe $w.statsasb text $w.stats -width 80 -height 40\
       -foreground black -background white -font font_Fixed\
        -wrap none 
 
+  checkbutton $w.graphyear -text $::tr(Year) \
+      -variable ::windows::stats::like_graphyear -command ::windows::stats::Refresh
+  checkbutton $w.graphelo  -text $::tr(Rating) \
+      -variable ::windows::stats::like_graphelo -command ::windows::stats::Refresh
+  checkbutton $w.statelo -text "StatElo" \
+      -variable ::windows::stats::statelo -command ::windows::stats::Refresh
+  checkbutton $w.statyear -text "StatYear" \
+      -variable ::windows::stats::stat_year -command ::windows::stats::Refresh
+  checkbutton $w.old_elo -text "Old_Elo" \
+      -variable ::windows::stats::old_elo -command ::windows::stats::Refresh
+  checkbutton $w.oldyear -text "OldYear" \
+      -variable ::windows::stats::old_year -command ::windows::stats::Refresh
+
   pack $w.statsasb -side top -fill both -expand yes
+  button $w.setup -image tb_graph -command configureFilterGraph
+  pack $w.graphyear $w.graphelo $w.statyear $w.statelo $w.oldyear $w.old_elo $w.setup -side left
   set ::windows::stats::isOpen 1
   bind $w <Control-q> "destroy $w"
   bind $w <Escape> "destroy $w"
@@ -78,18 +97,21 @@ proc ::windows::stats::Open {} {
     set ::windows::stats::isOpen 0
   }
   keyboardShortcuts $w
-#Klimmek: enable Resize vertical
+# enable Resize vertical
   wm resizable $w 0 1
   ::windows::stats::ConfigMenus
   ::windows::stats::Refresh
 }
 
 proc ::windows::stats::Refresh {} {
+  global FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO
   variable display
   if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
+  ::windows::gamelist::Refresh
   ::maint::Refresh
+  updateStatusBar
   ::tools::graphs::filter::Refresh
-  #Klimmek. Update Absfilter window
+  # Update Absfilter window
   ::tools::graphs::absfilter::Refresh
   if {! [winfo exists .statsWin]} { return }
 
@@ -103,7 +125,7 @@ proc ::windows::stats::Refresh {} {
   # Find length of longest left-hand column:
   set alen [expr {[string length $all] + 1}]
   set blen [expr {[string length $both] + 7}]
-  set slen [expr {[string length $since] + 14}]
+  set slen [expr {[string length $since] + 12}]
   set len $alen
   if {$len < $blen} { set len $blen }
   if {$len < $slen} { set len $slen }
@@ -131,84 +153,113 @@ proc ::windows::stats::Refresh {} {
   append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
   append s "------------------------------------------------------------------------"
   append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
-#Klimmek: New Statistic: Count the games in intervals "start elo  - end elo"
-#         if elo is deselected in option menu, then enlarge the interval to next selected elo.
-#Klimmek: New Statistic: Count the games in intervals
-  if {$ratings} {
-    append s "\n"
-    set j 0
-    set k [lindex $rlist $j]
-    while { $k!= "" && ! $display($k) } {
-	incr j
-	set k [lindex $ylist $j]
-	if { $k == "" } { break }
+# New Statistic: Count the games in intervalls "start elo  - end elo"
+#         if elo is deselected in option menu, then enlarge the intervall to next selectet elo.
+# New Statistic: Count the games in intervalls
+    if { $::windows::stats::like_graphelo } {
+	set endElo $FilterMaxElo
+	set startElo $FilterMinElo
+	for {set i $startElo} {$i <= $endElo} {set i [expr {$i + $FilterStepElo}]} {
+	    incr height
+	    incr height
+	    set nelo [expr {$i+$FilterStepElo}]
+	    # shorten gap between 0 and "useful" ratings 1800
+	    set j $i
+	    if { $i < 100 } { set i [expr { 1800 - $FilterStepElo}] }
+	    set stat "min. Elo $i-$nelo"
+	    append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $i $nelo]
+	    set stat "max. Elo $i-$nelo"
+	    # +10000 workaround to trigger max elo in filter function
+	    append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $i [expr {$nelo + 10000}]]
+	}
     }
-    set nelo [string range [lindex $rlist $j] 1 end]
-    incr height
-#first line searches all games greater 2600 Elo
-    set stat "min. Elo $nelo-3500"
-    append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo 9999]
-    set stat "max. Elo $nelo-3500"
-    append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo -9999]
-    set j 0
-    foreach i $rlist {
-      incr j  
-      if {$display($i)} {
-        incr height
-        set elo [string range $i 1 end]
-	set l $j
-	set k [lindex $rlist $l]
-        while { $k!= "" && ! $display($k) } {
-	    incr l
-	    set k [lindex $rlist $l]
+    if {$::windows::stats::statelo && $ratings} {
+	append s "\n"
+	set j 0
+	set k [lindex $rlist $j]
+	while { $k!= "" && ! $display($k) } {
+	    incr j
+	    set k [lindex $ylist $j]
 	    if { $k == "" } { break }
 	}
-	set nelo [string range [lindex $rlist $l] 1 end]
-	if { $nelo == "" } { set nelo 0 }  
-#count all games where player with lowest Elo is in the specific range      
-        set stat "min. Elo $nelo-$elo"
-        append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo $elo]
-        set stat "max. Elo $nelo-$elo"
-#count all games where player with highest Elo is in the specific range      
-# +10000 workaround to trigger max elo in filter function
-	append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo [expr {$elo + 10000}]]
-      }
-    }
-  }
-  append s $sm
-#Klimmek: New Statistic: Count the games in intervals "from year - to year"
-#         if year is deselected in option menu, then enlarge the interval to next selected year.
-  if {$years} {
-    append s "\n"
-    set j 0  
-    foreach i $ylist {
-      incr j  
-      if {$display($i)} {
-        incr height
-        set year [string range $i 1 end]
-	set l $j
-	set k [lindex $ylist $l]
-        while { $k!= "" && ! $display($k) } {
-	    incr l
-	    set k [lindex $ylist $l]
-	    if { $k == "" } { break }
+	set nelo [string range [lindex $rlist $j] 1 end]
+	incr height
+	#first line searches all games greater 2600 Elo
+	set stat "min. Elo $nelo-3500"
+	append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo 9999]
+	set stat "max. Elo $nelo-3500"
+	append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo -9999]
+	set j 0
+	foreach i $rlist {
+	    incr j
+	    if {$display($i)} {
+		incr height
+		set elo [string range $i 1 end]
+		set l $j
+		set k [lindex $rlist $l]
+		while { $k!= "" && ! $display($k) } {
+		    incr l
+		    set k [lindex $rlist $l]
+		    if { $k == "" } { break }
+		}
+		set nelo [string range [lindex $rlist $l] 1 end]
+		if { $nelo == "" } { set nelo 0 }
+		#count all games where player whith lowest Elo is in the specific range
+		set stat "min. Elo $nelo-$elo"
+		append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo $elo]
+		set stat "max. Elo $nelo-$elo"
+		#count all games where player whith highest Elo is in the specific range
+		# +10000 workaround to trigger max elo in filter function
+		append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo [expr {$elo + 10000}]]
+	    }
 	}
-	set nyear [string range $k 1 end]
-	if { $nyear == "" } { set nyear 2099 }  
-        set stat "$year - $nyear"
-        append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats year $year $nyear]
-      } 
     }
-  }
+    append s $sm
+    append s "\n"
+# New Statistic: Count the games in intervalls "from year - to year"
+# if year is deselected in option menu, then enlarge the intervall to next selectet year.
+    if { $::windows::stats::like_graphyear } {
+	set endYear $FilterMaxYear
+	set startYear $FilterMinYear
+	for {set i $startYear} {$i <= $endYear} {set i [expr {$i + $FilterStepYear}]} {
+	    incr height
+	    set ie [expr {$i+$FilterStepYear}]
+	    set stat "$i - $ie"
+	    append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats year $i $ie]
+	}
+    }
+    if {$::windows::stats::stat_year && $years} {
+# this statistic ignores the intervall and uses 1 Year as intervall
+	set j 0
+	foreach i $ylist {
+	    incr j
+	    if {$display($i)} {
+		incr height
+		set year [string range $i 1 end]
+		set l $j
+		set k [lindex $ylist $l]
+		while { $k!= "" && ! $display($k) } {
+		    incr l
+		    set k [lindex $ylist $l]
+		    if { $k == "" } { break }
+		}
+		set nyear [string range $k 1 end]
+		if { $nyear == "" } { set nyear 2099 }
+		set stat "$year - $nyear"
+		append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats year $year $nyear]
+	    }
+	}
+    }
 #Old statistic: count the games from specific value to maximum value 
   set stat ""
-  append s "\n\n"
-  append s " [::utils::string::Pad $stat [expr $len - 4]] [::utils::string::PadRight $games 10]"
-  append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
-  append s "------------------------------------------------------------------------"
-  append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
-
-  if {$ratings} {
+  if { $::windows::stats::old_elo || $::windows::stats::old_year} {
+      append s "\n\n"
+      append s " [::utils::string::Pad $stat [expr $len - 4]] [::utils::string::PadRight $games 10]"
+      append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
+      append s "------------------------------------------------------------------------"
+      append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
+  }
+  if {$ratings && $::windows::stats::old_elo} {
     append s "\n"
     foreach i $rlist {
       if {$display($i)} {
@@ -220,7 +271,7 @@ proc ::windows::stats::Refresh {} {
     }
   }
 
-  if {$years} {
+  if {$years && $::windows::stats::old_year} {
     append s "\n"
     foreach i $ylist {
       if {$display($i)} {
