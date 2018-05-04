@@ -2031,12 +2031,12 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 ASSERT(q - buf < static_cast<std::ptrdiff_t>(sizeof(buf) - 4));
 
                 switch (*p) {
-                    case 'K':    q = strncpy(q, "\xe2\x99\x94", 3) + 3; break;
-                    case 'Q':    q = strncpy(q, "\xe2\x99\x95", 3) + 3; break;
-                    case 'R':    q = strncpy(q, "\xe2\x99\x96", 3) + 3; break;
-                    case 'B':    q = strncpy(q, "\xe2\x99\x97", 3) + 3; break;
-                    case 'N':    q = strncpy(q, "\xe2\x99\x98", 3) + 3; break;
-                    case 'P':    q = strncpy(q, "\xe2\x99\x99", 3) + 3; break;
+                    case 'K':    q = std::copy_n("\xe2\x99\x94", 3, q); break;
+                    case 'Q':    q = std::copy_n("\xe2\x99\x95", 3, q); break;
+                    case 'R':    q = std::copy_n("\xe2\x99\x96", 3, q); break;
+                    case 'B':    q = std::copy_n("\xe2\x99\x97", 3, q); break;
+                    case 'N':    q = std::copy_n("\xe2\x99\x98", 3, q); break;
+                    case 'P':    q = std::copy_n("\xe2\x99\x99", 3, q); break;
                     default:    *q++ = *p; break;
                 }
 

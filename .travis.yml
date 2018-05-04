@@ -118,13 +118,13 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" THREADS="-DMULTITHREADING_OFF" && make && size tkscid
 
   - os: linux
-    env: CODECOV=_ CXX=g++-8 CC=gcc-8
+    env: CODECOV=_ CXX=g++-7 CC=gcc-7
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-8
+          - g++-7
           - lcov
     script:
       - mkdir Test && cd Test

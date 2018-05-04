@@ -3166,16 +3166,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     sprintf (temp, "%c%s %u:  <pi %s>%s</pi>", toupper(gameStr[0]),
              gameStr + 1, db->gameNumber + 1,
              db->game->GetWhiteStr(), db->game->GetWhiteStr());
-    if (db->game->FindExtraTag("WhiteCountry") != NULL) {
-       sprintf (temp, "%s (%s)", temp, db->game->FindExtraTag("WhiteCountry"));
-
-       //--- using img code causes scid to segfault in tcl (?!)
-       // sprintf (temp, "%s <img flag_%c%c%c>", temp, 
-       //       tolower(db->game->FindExtraTag("WhiteCountry")[0]),
-       //       tolower(db->game->FindExtraTag("WhiteCountry")[1]),
-       //       tolower(db->game->FindExtraTag("WhiteCountry")[2])
-       //       );
-    }
+    if (auto whCountry = db->game->FindExtraTag("WhiteCountry"))
+        sprintf(temp + std::strlen(temp), " (%s)", whCountry);
 
     Tcl_AppendResult (ti, temp, NULL);
     eloT elo = db->game->GetWhiteElo();
@@ -3190,16 +3182,9 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     sprintf (temp, "  --  <pi %s>%s</pi>",
              db->game->GetBlackStr(), db->game->GetBlackStr());
-    if (db->game->FindExtraTag("BlackCountry") != NULL) {
-       sprintf (temp, "%s (%s)", temp, db->game->FindExtraTag("BlackCountry"));
+    if (auto blCountry = db->game->FindExtraTag("BlackCountry"))
+        sprintf(temp + std::strlen(temp), " (%s)", blCountry);
 
-       //--- using img code causes scid to segfault in tcl (?!)
-       // sprintf (temp, "%s <img flag_%c%c%c>", temp, 
-       //       tolower(db->game->FindExtraTag("BlackCountry")[0]),
-       //       tolower(db->game->FindExtraTag("BlackCountry")[1]),
-       //       tolower(db->game->FindExtraTag("BlackCountry")[2])
-       //       );
-    }
     Tcl_AppendResult (ti, temp, NULL);
     elo = db->game->GetBlackElo();
     eloEstimated = false;
