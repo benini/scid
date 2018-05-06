@@ -357,15 +357,101 @@ proc ::tools::graphs::filter::Refresh {} {
   update
 }
 
-#Klimmek: Invert white/black Score in Score graph
+#Invert white/black Score in Score graph, switches for display move time and adding time
 set ::tools::graphs::score::White 0
 set ::tools::graphs::score::Black 0
+set ::tools::graphs::score::ThinkTime 0
+set ::tools::graphs::score::Both 1
+set ::tools::graphs::score::TimeSum 1
 
-####################
-# Game score graph
+###########################
+# Game score and time graph
+
+# MoveTimeList
+#    Returns a Tcl list of the numeric times of each move, as found
+#    in the commment for each move.
+#    A time is a number with the format
+#        "%clk 00:00:00" or
+#        "%clkms 12345" (used by BabaChess) or
+#        "%emt 00:00:00" (used by pychess)
+#        "%emt 1.23" (used by Raptor)
+#    found somewhere in the comment of the move.
+proc MoveTimeList {color add} {
+    set movetimes   { }
+    set mainline { }
+    set base [sc_base current]
+    set gnum [sc_game number]
+    set game ""
+    if { $gnum > 0 } {
+	set game [sc_base getGame $base $gnum]
+    }
+    set n [llength $game]
+    set movenr 0
+    for {set i 0} { $i < $n} { incr i } {
+	set RAVd [lindex [lindex $game $i] 0]
+	set RAVn [lindex [lindex $game $i] 1]
+	# only search in the mainline
+	if { $RAVd == 0 && $RAVn == 0} {
+	    # append comments for white
+	    if {  $color == "w" && [expr $movenr % 2] == 1 }  {
+		lappend mainline [lindex [lindex $game $i] 4] }
+	    # append comments for black
+	    if {  $color == "b" && [expr $movenr % 2] == 0 }  {
+		lappend mainline [lindex [lindex $game $i] 4] }
+	    incr movenr
+	}
+    }
+    set movenr 0
+    set sum 0.0
+    for {set i 0} { $i < $n} { incr i } {
+	# only look for the first match, because normaly only one of these types should used in game
+	set comment [lindex $mainline $i]
+	set clkmsExp {.*?\[%clkms\s*(.*?)\s*\].*}
+	set clkms ""
+	regexp $clkmsExp $comment -> clkms
+	if { $clkms != "" } {
+	    scan $clkms "%f" sec
+	    # scale millisec to minutes
+	    lappend movetimes $movenr [expr { $sec / 60000.0 }]
+	} else {
+	    set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
+	    set clock ""
+	    regexp $clkExp $comment -> clock
+	    if { $clock != "" } {
+		scan $clock "%f:%f:%f" ho mi sec
+		lappend movetimes $movenr [expr { $ho*60.0 + $mi + $sec/60}]
+	    } else {
+		set emtExp {.*?\[%emt\s*(.*?)\s*\].*}
+		set emt ""
+		regexp $emtExp $comment -> emt
+		if { $emt != "" } {
+		    # emt could have 2 formats: 00:12:34 or 1.23
+		    if { [regexp ":" $emt] } {
+			scan $emt "%f:%f:%f" ho mi sec
+		    } else {
+			set ho 0.0
+			set mi 0.0
+			scan $emt "%f" sec
+		    }
+		    set f [expr { $ho*3600.0 + $mi*60 + $sec}]
+		    if { $add == 1 } {
+			# add move times and scale to minutes
+			set f [expr { $f/60.0 + $sum }]
+			set sum $f
+		    }
+		    lappend movetimes $movenr $f
+		}
+	    }
+	}
+	incr movenr
+    }
+    return $movetimes
+}
 
 proc ::tools::graphs::score::Refresh {} {
   set linecolor red
+  set firstColor darkgreen
+  set secondColor blue
   set linewidth 2
   set psize 2
   
@@ -386,7 +472,7 @@ proc ::tools::graphs::score::Refresh {} {
     $w.menu add cascade -label GraphOptions -menu $w.menu.options
     #Checkbuttons for Invert white/black Score in Score graph
     menu $w.menu.options
-    foreach i {White Black} {
+    foreach i {White Black Both ThinkTime TimeSum } {
       $w.menu.options add checkbutton -label GraphOptions$i \
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
@@ -413,30 +499,62 @@ proc ::tools::graphs::score::Refresh {} {
   }
   ::setTitle $w "Scid: [tr ToolsScore]"
 
-  $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
+  $w.c itemconfigure text -width [expr {[winfo width $w.c] - 20}]
   $w.c coords text [expr {[winfo width $w.c] / 2}] 10
-  set height [expr {[winfo height $w.c] - 90} ]
-  set width [expr {[winfo width $w.c] - 100} ]
-  ::utils::graph::create score -width $width -height $height -xtop 50 -ytop 45 \
-      -ytick 1 -xtick 5 -font font_Small -canvas $w.c -textcolor black \
-      -hline {{gray80 1 each 1} {black 1 at 0}} \
+  set height [expr {[winfo height $w.c] - 50} ]
+  set width [expr {[winfo width $w.c] - 40} ]
+  set yticks 1
+  if { $::tools::graphs::score::Both == 1 || $::tools::graphs::score::ThinkTime == 1} {
+      ::setTitle $w "Scid: [tr ToolsScore] & [tr Time]"
+      set max 0
+      # Find max Value of time, then set the tick value vor horizontal lines
+      foreach j { "w" "b"} {
+	  set coords [MoveTimeList $j $::tools::graphs::score::TimeSum]
+	  set coords$j $coords
+	  set ncoords [expr {[llength $coords] - 1}]
+	  for {set i 0} {$i < $ncoords} {incr i 2} {
+	      set y [lindex $coords [expr {$i + 1}]]
+	      if { $y > $max } { set max $y }
+	  }
+      }
+      if {$max > 20} { set yticks 5 }
+      if {$max > 50} { set yticks 10 }
+      if {$max > 100} { set yticks 20 }
+  }
+  if { $::tools::graphs::score::ThinkTime == 1 &&  $::tools::graphs::score::Both == 0 } {
+      ::setTitle $w "Scid: [tr Time]" }
+
+  ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
+      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
+      -hline [list [list gray80 1 each $yticks ]] \
       -vline {{gray80 1 each 1} {steelBlue 1 each 5}}
-  
+
   # Create fake dataset with bounds so we see at least -1.0 to 1.0:
-  ::utils::graph::data score bounds -points 0 -lines 0 -bars 0 -coords {1 -0.9 1 0.9}
+  ::utils::graph::data score bounds -points 0 -lines 0 -bars 0 -coords {1 0 1 0.9}
   
   # Update the graph:
   set whiteelo [sc_game tag get WhiteElo]
   set blackelo [sc_game tag get BlackElo]
   if {$whiteelo == 0} {set whiteelo ""} else {set whiteelo "($whiteelo)"}
   if {$blackelo == 0} {set blackelo ""} else {set blackelo "($blackelo)"}
-  $w.c itemconfigure text -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo\n[sc_game info site]  [sc_game info date]"
+  $w.c itemconfigure text -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
   busyCursor $w
   update
-  #Klimmek: Invert white/black Score in Score graph
-  catch {::utils::graph::data score data -color $linecolor -points 0 -lines 0 -bars 2 \
-        -linewidth $linewidth -radius $psize -outline $linecolor \
-        -coords [sc_game scores $::tools::graphs::score::White $::tools::graphs::score::Black]}
+
+  if { $::tools::graphs::score::Both || $::tools::graphs::score::ThinkTime } {
+      # draw move time
+      catch {::utils::graph::data score data1 -color $firstColor -points 0 -lines 1\
+		  -key [sc_game info white] -linewidth $linewidth -radius $psize -outline $firstColor -coords $coordsw }
+      catch {::utils::graph::data score data2 -color $secondColor -points 0 -lines 1 \
+		 -linewidth $linewidth -radius $psize -outline $secondColor -coords $coordsb}
+  }
+  if { $::tools::graphs::score::Both || $::tools::graphs::score::ThinkTime == 0 } {
+      # draw score bars
+      catch {::utils::graph::data score data -color $linecolor -points 0 -lines 0 -bars 2 \
+		 -linewidth $linewidth -radius $psize -outline $linecolor \
+		 -coords [sc_game scores $::tools::graphs::score::White $::tools::graphs::score::Black]}
+  }
+
   ::utils::graph::redraw score
   unbusyCursor $w
   update
@@ -452,10 +570,13 @@ proc ::tools::graphs::score::ConfigMenus {{lang ""}} {
   foreach idx {0 1 3} tag {Color Grey Close} {
     configMenuText $m.file $idx GraphFile$tag $lang
   }
-  #Klimmek: translate optionsmenu
-  foreach idx {0 1} tag {White Black} {
+  foreach idx {0 1 2} tag {White Black Both} {
     configMenuText $m.options $idx GraphOptions$tag $lang
   }
+  #add option to show used Time and toggle between "Sum of time" (in min) and "Time per move" (in sec)
+  $m.options entryconfig 3 -label $::tr(Time)
+  $m.options entryconfig 4 -label $::tr(Total)
+
 }
 
 proc ::tools::graphs::score::Move {xc} {
