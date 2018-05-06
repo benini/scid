@@ -402,6 +402,8 @@ proc MoveTimeList {color add} {
 	}
     }
     set movenr 0
+    set offset 0.0
+    if {  $color == "w" } { set offset 0.5 }
     set sum 0.0
     for {set i 0} { $i < $n} { incr i } {
 	# only look for the first match, because normaly only one of these types should used in game
@@ -411,35 +413,39 @@ proc MoveTimeList {color add} {
 	regexp $clkmsExp $comment -> clkms
 	if { $clkms != "" } {
 	    scan $clkms "%f" sec
-	    # scale millisec to minutes
-	    lappend movetimes $movenr [expr { $sec / 60000.0 }]
+	    if { [scan $clkms "%f" sec ] == 1 } {
+		# scale millisec to minutes
+		lappend movetimes [expr $movenr+$offset] [expr { $sec / 60000.0 }] }
 	} else {
 	    set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
 	    set clock ""
 	    regexp $clkExp $comment -> clock
 	    if { $clock != "" } {
-		scan $clock "%f:%f:%f" ho mi sec
-		lappend movetimes $movenr [expr { $ho*60.0 + $mi + $sec/60}]
+		if { [scan $clock "%f:%f:%f" ho mi sec ] == 3 } {
+		    lappend movetimes [expr $movenr+$offset] [expr { $ho*60.0 + $mi + $sec/60}] }
 	    } else {
 		set emtExp {.*?\[%emt\s*(.*?)\s*\].*}
 		set emt ""
 		regexp $emtExp $comment -> emt
 		if { $emt != "" } {
 		    # emt could have 2 formats: 00:12:34 or 1.23
+		    set ok 0
 		    if { [regexp ":" $emt] } {
-			scan $emt "%f:%f:%f" ho mi sec
+			if { [scan $emt "%f:%f:%f" ho mi sec ] == 3 } { incr ok }
 		    } else {
 			set ho 0.0
 			set mi 0.0
-			scan $emt "%f" sec
+			if { [scan $emt "%f" sec ] == 1 } { incr ok }
 		    }
-		    set f [expr { $ho*3600.0 + $mi*60 + $sec}]
-		    if { $add == 1 } {
-			# add move times and scale to minutes
-			set f [expr { $f/60.0 + $sum }]
-			set sum $f
+		    if { $ok == 1 } {
+			set f [expr { $ho*3600.0 + $mi*60 + $sec}]
+			if { $add == 1 } {
+			    # add move times and scale to minutes
+			    set f [expr { $f/60.0 + $sum }]
+			    set sum $f
+			}
+			lappend movetimes [expr $movenr+$offset] $f
 		    }
-		    lappend movetimes $movenr $f
 		}
 	    }
 	}
