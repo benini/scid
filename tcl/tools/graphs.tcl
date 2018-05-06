@@ -454,7 +454,7 @@ proc MoveTimeList {color add} {
     return $movetimes
 }
 
-proc ::tools::graphs::score::Refresh {} {
+proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set linecolor red
   set firstColor darkgreen
   set secondColor blue
@@ -462,8 +462,10 @@ proc ::tools::graphs::score::Refresh {} {
   set psize 2
   
   set w .sgraph
+  # Game has changed, but window is not open: do nothing
+  if {! [winfo exists $w] && $docreate == 0 } { return }
   
-  if {! [winfo exists $w]} {
+  if {! [winfo exists $w] } {
     ::createToplevel $w
     menu $w.menu
     ::setMenu $w $w.menu
