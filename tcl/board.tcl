@@ -552,24 +552,24 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  [tr GameReplace]" -image tb_BD_Save -compound left
   $m add separator
   $m add command -label "  Undo all" -image tb_BD_Revert -compound left
-  $m add command -label "  Redo" -image tb_BD_Redo -compound left
-  $m add command -label "  Undo" -image tb_BD_Undo -compound left
+  $m add command -label "  [tr EditRedo]" -image tb_BD_Redo -compound left
+  $m add command -label "  [tr EditUndo]" -image tb_BD_Undo -compound left
 
   set m "$w.buttons.menu_[lindex $menus 1]"
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
 
   set m "$w.buttons.menu_[lindex $menus 2]"
-  $m add command -label "  Delete variant" -image tb_BD_VarDelete -compound left
-  $m add command -label "  Promote variant" -image tb_BD_VarPromote -compound left
+  $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
+  $m add command -label "  [tr EditMain]" -image tb_BD_VarPromote -compound left
   $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
   $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
   $m add separator
-  $m add command -label "  Go to start" -image tb_BD_Start -compound left
-  $m add command -label "  Go to end" -image tb_BD_End -compound left
+  $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left
+  $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left
   $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
 
   set m "$w.buttons.menu_[lindex $menus 3]"
-  $m add command -label "  Rotate" -image tb_BD_Flip -compound left
+  $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  Show/hide coord" -image tb_BD_Coords -compound left
   $m add command -label "  Show/hide material" -image tb_BD_Material -compound left
   $m add command -label "  Full Screen" -image tb_BD_Fullscreen -compound left
