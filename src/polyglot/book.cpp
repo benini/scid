@@ -337,7 +337,6 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
    entry_t entry[1];
    int move;
    int score;
-   char move_string[256];
 	 
 	 // keep board in memory to ease book update	 
 	 memcpy(scid_board[BookNumber], board, sizeof(board_t));
@@ -366,9 +365,10 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
       score = entry->count;
 
       if (score > 0 && move != MoveNone && move_is_legal(move,board)) {
-         char tmp[256];
-         move_to_san(move,board,move_string,256);
-         sprintf(tmp, " %s %.0f%%",move_string,(double(score)/double(sum))*100.0);
+         char tmp[256] = {' '};
+         move_to_san(move, board, tmp + 1, 255);
+         sprintf(tmp + std::strlen(tmp), " %.0f%%",
+                (double(score) / double(sum)) * 100.0);
          strcat(s, tmp);
       }
    }
@@ -380,10 +380,7 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
 int scid_position_book_disp(const board_t *board, char * s, const int BookNumber) {
 
    int move;
-   char move_string[256];
-   char tmp[256];
    list_t /*book_moves[1],*/ legal_moves[1];
-   board_t new_board[1];
    int i;
    s[0] = '\0';
    gen_legal_moves(legal_moves,board);
@@ -392,12 +389,11 @@ int scid_position_book_disp(const board_t *board, char * s, const int BookNumber
        move = list_move(legal_moves,i);
 //       if(list_contain(book_moves,move)) continue;
            // scratch_board
-       memcpy(new_board, board, sizeof(board_t));
-       move_do(new_board,move);
-       move_to_san(move,board,move_string,256);
-       if(is_in_book(new_board,BookNumber)){
-           move_to_san(move,board,move_string,256);
-           sprintf(tmp, " %s",move_string);
+       board_t new_board = *board;
+       move_do(&new_board, move);
+       if(is_in_book(&new_board, BookNumber)){
+           char tmp[256] = {' '};
+           move_to_san(move, board, tmp + 1, 255);
            strcat(s, tmp);
        }
    }
