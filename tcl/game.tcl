@@ -309,7 +309,6 @@ namespace eval ::notify {
     updateMainGame
     ::notify::PosChanged -pgn
     ::windows::gamelist::Refresh 0
-    ::tools::graphs::score::Refresh 0
   }
 
   # To be called when the current position changes
@@ -336,6 +335,10 @@ namespace eval ::notify {
     after cancel ::notify::privPosChanged
     update idletasks
     after idle ::notify::privPosChanged
+
+    if {$pgnNeedsUpdate} {
+        ::tools::graphs::score::Refresh 0
+    }
   }
 
   # To be called when the position of the current game change

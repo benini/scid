@@ -1320,14 +1320,7 @@ proc addAnnotation { {n 1} } {
             sc_pos setComment "[sc_pos getComment] $text"
         }
 
-        # Update the board
-        #
         updateBoard -pgn
-    
-        # Update score graph if it is open
-        #
-        if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
-        return
     }
     
 
@@ -1431,13 +1424,7 @@ proc addAnnotation { {n 1} } {
     set analysis(prevscoremate$n) $analysis(scoremate$n)
     set analysis(prevdepth$n)     $analysis(depth$n)
 
-    # Update the board
-    #
     updateBoard -pgn
-    
-    # Update score graph if it is open
-    #
-    if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
 }
 
 # Informant index strings
@@ -1583,10 +1570,7 @@ proc addAnalysisVariation {{n 1}} {
         sc_move forward
     }
 
-    if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
-    
-    # Update score graph if it is open:
-    if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+    ::notify::PosChanged -pgn
 }
 ################################################################################
 #
@@ -1634,9 +1618,7 @@ proc addAllVariations {{n 1}} {
         
     }
 
-    if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
-    # Update score graph if it is open:
-    if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+    ::notify::PosChanged -pgn
 }
 ################################################################################
 #

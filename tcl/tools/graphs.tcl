@@ -383,7 +383,7 @@ proc MoveTimeList {color add} {
     set gnum [sc_game number]
     set game ""
     if { $gnum > 0 } {
-	set game [sc_base getGame $base $gnum]
+	set game [sc_base getGame $base $gnum live]
     }
     set n [llength $game]
     set movenr 0
@@ -498,9 +498,7 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::configure score -width [expr {[winfo width .sgraph.c] - 100}]
       ::utils::graph::redraw score
     }
-    bind $w.c <$::MB3> ::tools::graphs::score::Refresh
     bind $w.c <1> {::tools::graphs::score::Move %x}
-    bind $w <Control-Z> ::tools::graphs::score::Refresh
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
