@@ -826,10 +826,7 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
         sc_move forward 1
     }
 
-    set ::sergame::lastPlayerMoveUci ""
-    if {[winfo exists ".serGameWin"]} {
-        set ::sergame::lastPlayerMoveUci "$moveUCI"
-    }
+    set ::sergame::lastPlayerMoveUci "$moveUCI"
 
     if {[winfo exists .fics]} {
         if { [::fics::playerCanMove] } {

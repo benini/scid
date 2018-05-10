@@ -20,8 +20,10 @@
 namespace eval ::move {}
 
 proc ::move::drawVarArrows {} {
-	if {! $::showVarArrows || $::autoplayMode} { return 0 }
-	if {[winfo exists .serGameWin]} { return 0 }
+	if {! $::showVarArrows || $::autoplayMode ||
+		([info exists ::playMode] && [eval "$::playMode drawVarArrows"] == 0)} {
+		return 0
+	}
 
 	set bDrawArrow 0
 	set varList [sc_var list UCI]

@@ -1003,7 +1003,6 @@ proc compactDB {{base -1}} {
   #
   destroy .analysisWin1
   destroy .analysisWin2
-  destroy .serGameWin
   destroy .coachWin
   destroy .tacticsWin
   destroy .reviewgame

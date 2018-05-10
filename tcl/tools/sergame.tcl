@@ -30,13 +30,6 @@ namespace eval sergame {
   proc config {} {
     global ::sergame::configWin ::sergame::chosenOpening
     
-    # check if game window is already opened. If yes abort previous game
-    set w ".serGameWin"
-    if {[winfo exists $w]} {
-      focus .
-      destroy $w
-    }
-    
     set w ".configSerGameWin"
     if {[winfo exists $w]} {
       focus $w
@@ -307,86 +300,98 @@ namespace eval sergame {
         lappend openingMovesHash [sc_pos hash]
       }
     }
+
+    # Engine plays for the upper side
+    if {[::board::isFlipped .main.board]} {
+      set ::sergame::playerColor "black"
+      set ::sergame::engineColor "white"
+    } else {
+      set ::sergame::playerColor "white"
+      set ::sergame::engineColor "black"
+    }
+
     if {!$::sergame::startFromCurrent} {
       # create a new game if a DB is opened
       sc_game new
       sc_game tags set -event "Serious game"
-      if { [::board::isFlipped .main.board] } {
-        sc_game tags set -white "$::sergame::engineName"
-      } else  {
-        sc_game tags set -black "$::sergame::engineName"
-      }
+      sc_game tags set -$::sergame::playerColor "Player"
+      sc_game tags set -$::sergame::engineColor "$::sergame::engineName"
       sc_game tags set -date [::utils::date::today]
       if {[sc_base inUse [sc_base current]]} { catch {sc_game save 0}  }
     }
-    
-    updateBoard -pgn
-    ::windows::gamelist::Refresh
-    updateTitle
-    set w ".serGameWin"
-    if {[winfo exists $w]} {
-      focus .
-      destroy $w
-      return
-    }
-    
-    createToplevel $w
-    setTitle $w "$::tr(coachgame) ($::sergame::engineName)"
-    
-    setWinLocation $w
-    
-    ttk::frame $w.fclocks -relief raised -borderwidth 1
-    ttk::frame $w.fbuttons
-    
-    ::gameclock::new $w.fclocks 2 80 1
-    ::gameclock::new $w.fclocks 1 80 1
-    ::gameclock::reset 1
-    ::gameclock::start 1
-    
-    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command "destroy .serGameWin"
-    pack $w.fbuttons.close -expand yes
-    
-    pack $w.fclocks -side top -expand yes -fill both
-    pack $w.fbuttons -side top -expand yes -fill both
-    
-    bind $w <F1> { helpWindow TacticalGame }
-    bind $w <Destroy> "if {\[string equal $w %W\]} {::sergame::abortGame}"
-    bind $w <Escape> "destroy .serGameWin"
-    bind $w <Configure> "recordWinSize $w"
-    wm minsize $w 45 0
-    createToplevelFinalize $w
 
-    # setup clocks
-    if { [::sergame::getEngineColor] == "white" } {
-      ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(wtime$n)/1000]
-      ::gameclock::setSec 1 [expr 0 - $::uci::uciInfo(btime$n)/1000]
-    } else  {
-      ::gameclock::setSec 1 [expr 0 - $::uci::uciInfo(wtime$n)/1000]
-      ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(btime$n)/1000]
-    }
-    
-    set ::playMode "::sergame::callback"
+    set ::sergame::waitPlayerMove 0
     set ::sergame::wentOutOfBook 0
+    set ::playMode "::sergame::callback"
+    ::notify::GameChanged
+
+    clocks init $n
+    clocks start
+
     ::sergame::engineGo $n
   }
 
   proc callback {cmd} {
     switch $cmd {
-        stop { destroy .serGameWin }
+        stop { ::sergame::abortGame }
     }
     return 0
   }
 
   proc abortGame { { n 3 } } {
     unset ::playMode
-    set ::sergame::lFen {}
-    if { $::uci::uciInfo(pipe$n) == ""} { return }
     after cancel ::sergame::engineGo $n
-    ::uci::closeUCIengine $n
-    ::gameclock::stop 1
-    ::gameclock::stop 2
-    set ::uci::uciInfo(bestmove$n) "abort"
+    clocks stop
+    set ::sergame::lFen {}
+    if { $::uci::uciInfo(pipe$n) != ""} {
+      ::uci::closeUCIengine $n
+      set ::uci::uciInfo(bestmove$n) "abort"
+    }
     ::notify::GameChanged
+  }
+
+  proc clocks {cmd {n 3}} {
+    if {$::sergame::timeMode != "timebonus"} { return }
+
+    switch $cmd {
+      init {
+          ::gameclock::new "" 1
+          ::gameclock::new "" 2
+          ::gameclock::setSec 1 [expr 0 - $::uci::uciInfo(wtime$n)/1000]
+          ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(btime$n)/1000]
+      }
+      start {
+          if { [sc_pos side] == "white" } {
+            ::gameclock::start 1
+          } else {
+            ::gameclock::start 2
+          }
+      }
+      stop {
+          ::gameclock::stop 1
+          ::gameclock::stop 2
+      }
+      toggle {
+          if {[::gameclock::stop 1]} {
+            ::gameclock::add 1 [expr $::uci::uciInfo(winc$n)/1000]
+            ::gameclock::start 2
+          } elseif {[::gameclock::stop 2]} {
+            ::gameclock::add 2 [expr $::uci::uciInfo(binc$n)/1000]
+            ::gameclock::start 1
+          }
+          ::notify::PosChanged
+      }
+    }
+  }
+
+  proc takeBack {takebackClockW takebackClockB} {
+    sc_move back 1
+    if {$takebackClockW != ""} {
+      ::gameclock::setSec 1 [expr 0 - $takebackClockW]
+      ::gameclock::setSec 2 [expr 0 - $takebackClockB]
+      clocks start
+    }
+    ::notify::PosChanged -pgn
   }
   
   ################################################################################
@@ -402,8 +407,7 @@ namespace eval sergame {
   proc endOfGame {} {
     set move_done [sc_game info previousMove]
     if { [string index [sc_game info previousMove] end ] == "#"} {
-      ::gameclock::stop 1
-      ::gameclock::stop 2
+      clocks stop
       return 1
     }
     return 0
@@ -419,22 +423,24 @@ namespace eval sergame {
     
     if { [::sergame::endOfGame] } { return }
     
-    if { [sc_pos side] != [::sergame::getEngineColor] } {
+    if { [sc_pos side] != $::sergame::engineColor } {
+      set ::sergame::waitPlayerMove 1
       after 1000 ::sergame::engineGo $n
       return
     }
     
-    # The player moved : add clock time
-    if {!([::sergame::getEngineColor] == "black" && [sc_pos moveNumber] == 1)} {
-      if { [::sergame::getEngineColor] == "white" } {
-        ::gameclock::add 1 [expr $::uci::uciInfo(binc$n)/1000]
-      } else  {
-        ::gameclock::add 1 [expr $::uci::uciInfo(winc$n)/1000]
+    set takebackClockW ""
+    set takebackClockB ""
+    if {$::sergame::waitPlayerMove} {
+      # The player moved
+      set ::sergame::waitPlayerMove 0
+      if {$::sergame::timeMode == "timebonus"} {
+        set takebackClockW [::gameclock::getSec 1]
+        set takebackClockB [::gameclock::getSec 2]
+        clocks toggle $n
       }
+      repetition
     }
-    ::gameclock::stop 1
-    ::gameclock::start 2
-    repetition
     
     # make a move corresponding to a specific opening, (it is engine's turn)
     if {$isOpening && !$outOfOpening} {
@@ -447,18 +453,17 @@ namespace eval sergame {
         }
         
         if { [lsearch $openingMovesHash [sc_pos hash]] == -1 && [llength $openingMovesList] >= $ply} {
+          clocks stop
           set answer [tk_messageBox -icon question -parent .main -title $::tr(OutOfOpening) -type yesno \
               -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
-            sc_move back 1
-            updateBoard -pgn
-            ::gameclock::stop 2
-            ::gameclock::start 1
+            takeBack $takebackClockW $takebackClockB
             after 1000 ::sergame::engineGo $n
             return
           }  else  {
             set outOfOpening 1
           }
+          clocks start
         }
       }
       
@@ -485,15 +490,9 @@ namespace eval sergame {
             sc_move forward 1
           }
           
+          clocks toggle $n
           updateBoard -pgn -animate
-          ::gameclock::stop 2
-          ::gameclock::start 1
           repetition
-          if { [::sergame::getEngineColor] == "white" } {
-            ::gameclock::add 2 [expr $::uci::uciInfo(winc$n)/1000]
-          } else  {
-            ::gameclock::add 2 [expr $::uci::uciInfo(binc$n)/1000]
-          }
           after 1000 ::sergame::engineGo $n
           return
         }
@@ -510,17 +509,9 @@ namespace eval sergame {
         ::utils::sound::AnnounceNewMove $move
         # we made a book move so assume a score = 0
         set ::uci::uciInfo(prevscore$n) 0.0
+        clocks toggle $n
         updateBoard -pgn -animate
-        ::gameclock::stop 2
-        ::gameclock::start 1
         repetition
-        if {$timeMode == "timebonus"} {
-          if { [::sergame::getEngineColor] == "white" } {
-            ::gameclock::add 2 [expr $::uci::uciInfo(winc$n)/1000]
-          } else  {
-            ::gameclock::add 2 [expr $::uci::uciInfo(binc$n)/1000]
-          }
-        }
         after 1000 ::sergame::engineGo $n
         return
       }
@@ -539,13 +530,8 @@ namespace eval sergame {
       ::sergame::sendToEngine $n "isready"
       vwait ::analysis(waitForReadyOk$n)
       ::sergame::sendToEngine $n "position fen [sc_pos fen]"
-      if { [::sergame::getEngineColor] == "white" } {
-        set wtime [expr [::gameclock::getSec 2] * 1000 ]
-        set btime [expr [::gameclock::getSec 1] * 1000 ]
-      } else  {
-        set wtime [expr [::gameclock::getSec 1] * 1000 ]
-        set btime [expr [::gameclock::getSec 2] * 1000 ]
-      }
+      set wtime [expr [::gameclock::getSec 1] * 1000 ]
+      set btime [expr [::gameclock::getSec 2] * 1000 ]
       if {$timeMode == "timebonus"} {
         ::sergame::sendToEngine $n "go wtime $wtime btime $btime winc $::uci::uciInfo(winc$n) binc $::uci::uciInfo(binc$n)"
       } elseif {$timeMode == "depth"} {
@@ -565,18 +551,18 @@ namespace eval sergame {
     if { $::sergame::coachIsWatching && $::uci::uciInfo(prevscore$n) != "" } {
       set blunder 0
       set delta [expr $::uci::uciInfo(score$n) - $::uci::uciInfo(prevscore$n)]
-      if {$delta > $::informant("?!") && [getEngineColor] == "white" ||
-        $delta < [expr 0.0 - $::informant("?!")] && [getEngineColor] == "black" } {
+      if {$delta > $::informant("?!") && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant("?!")] && $::sergame::engineColor == "black" } {
         set blunder 1
       }
       
-      if {$delta > $::informant("?") && [getEngineColor] == "white" ||
-        $delta < [expr 0.0 - $::informant("?")] && [getEngineColor] == "black" } {
+      if {$delta > $::informant("?") && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant("?")] && $::sergame::engineColor == "black" } {
         set blunder 2
       }
       
-      if {$delta > $::informant("??") && [getEngineColor] == "white" ||
-        $delta < [expr 0.0 - $::informant("??")] && [getEngineColor] == "black" } {
+      if {$delta > $::informant("??") && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant("??")] && $::sergame::engineColor == "black" } {
         set blunder 3
       }
       
@@ -589,15 +575,14 @@ namespace eval sergame {
       }
       
       if {$blunder != 0} {
+        clocks stop
         set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message $::tr($tBlunder) ]
         if {$answer == yes} {
-          sc_move back 1
-          updateBoard -pgn
-          ::gameclock::stop 2
-          ::gameclock::start 1
+          takeBack $takebackClockW $takebackClockB
           after 1000 ::sergame::engineGo $n
           return
         }
+        clocks start
       }
     }
     
@@ -612,27 +597,13 @@ namespace eval sergame {
     updateBoard -pgn -animate
     repetition
     
-    # add time after a move played
-    if {$timeMode == "timebonus"} {
-      if { [::sergame::getEngineColor] == "white" } {
-        ::gameclock::add 2 [expr $::uci::uciInfo(winc$n)/1000]
-      } else  {
-        ::gameclock::add 2 [expr $::uci::uciInfo(binc$n)/1000]
-      }
-    }
-    ::gameclock::stop 2
-    ::gameclock::start 1
-    
+    clocks toggle $n
+
     # ponder mode (the engine just played its move)
     if {$::sergame::ponder && $::uci::uciInfo(ponder$n) != ""} {
       ::sergame::sendToEngine $n "position fen [sc_pos fen] moves $::uci::uciInfo(ponder$n)"
-      if { [::sergame::getEngineColor] == "white" } {
-        set wtime [expr [::gameclock::getSec 2] * 1000 ]
-        set btime [expr [::gameclock::getSec 1] * 1000 ]
-      } else  {
-        set wtime [expr [::gameclock::getSec 1] * 1000 ]
-        set btime [expr [::gameclock::getSec 2] * 1000 ]
-      }
+      set wtime [expr [::gameclock::getSec 1] * 1000 ]
+      set btime [expr [::gameclock::getSec 2] * 1000 ]
       if {$timeMode == "timebonus"} {
         ::sergame::sendToEngine $n "go ponder wtime $wtime btime $btime winc $::uci::uciInfo(winc$n) binc $::uci::uciInfo(binc$n)"
       } elseif {$timeMode == "depth"} {
@@ -664,18 +635,6 @@ namespace eval sergame {
     }
     return 0
   }
-  ################################################################################
-  #
-  ################################################################################
-  proc getEngineColor {} {
-    # Engine always plays for the upper side
-    if { [::board::isFlipped .main.board] == 0 } {
-      return "black"
-    } else  {
-      return "white"
-    }
-  }
-  
   ################################################################################
   #
   ################################################################################

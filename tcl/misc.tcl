@@ -466,21 +466,24 @@ namespace eval gameclock {
   proc new { parent n { size 100 } {showfall 0} } {
     global ::gameclock::data
     set data(showfallen$n) $showfall
-    set data(id$n) $parent.clock$n
-    canvas $data(id$n) -height $size -width $size
-    pack $data(id$n) -side top -anchor center
-    for {set i 1} {$i<13} {incr i} {
-      set a [expr {$i/6.*acos(-1)}]
-      set x [expr { ($size/2 + (($size-15)/2)*sin($a) ) }]
-      set y [expr { ($size/2 - (($size-15)/2)*cos($a) ) }]
-      $data(id$n) create text $x $y -text $i -tag clock$n
+    set data(id$n) ""
+    if {$parent != ""} {
+      set data(id$n) $parent.clock$n
+      canvas $data(id$n) -height $size -width $size
+      pack $data(id$n) -side top -anchor center
+      for {set i 1} {$i<13} {incr i} {
+        set a [expr {$i/6.*acos(-1)}]
+        set x [expr { ($size/2 + (($size-15)/2)*sin($a) ) }]
+        set y [expr { ($size/2 - (($size-15)/2)*cos($a) ) }]
+        $data(id$n) create text $x $y -text $i -tag clock$n
+      }
+      bind $data(id$n) <Button-1> "::gameclock::toggleClock $n"
     }
     set data(fg$n) "black"
     set data(running$n) 0
     set data(digital$n) 1
     ::gameclock::reset $n
     ::gameclock::draw $n
-    bind $data(id$n) <Button-1> "::gameclock::toggleClock $n"
   }
   ################################################################################
   proc draw { n } {
@@ -535,7 +538,8 @@ namespace eval gameclock {
   proc every {ms body n} {
     incr ::gameclock::data(counter$n)
     eval $body
-    if {[winfo exists $::gameclock::data(id$n)]} {
+    if {$::gameclock::data(id$n) == "" ||
+        [winfo exists $::gameclock::data(id$n)]} {
       after $ms [info level 0]
     }
   }
@@ -567,9 +571,10 @@ namespace eval gameclock {
   }
   ################################################################################
   proc stop { n } {
-    if {! $::gameclock::data(running$n)} { return }
+    if {! $::gameclock::data(running$n)} { return 0 }
     set ::gameclock::data(running$n) 0
     after cancel "::gameclock::every 1000 \{draw $n\} $n"
+    return 1
   }
   ################################################################################
   proc toggleClock { n } {
