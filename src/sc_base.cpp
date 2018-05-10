@@ -453,7 +453,10 @@ static UI_res_t sc_base_getGameHelper(UI_handle_t ti, Game& game) {
 
 /**
  * sc_base_getGame() - return all the positions of a game
- * @gameNum: the number of the requested game
+ * @param gameNum: the number of the requested game
+ * @param live: optional parameter which specify the behavior when the requested
+ * game have unsaved changes. If present the latest unsaved version is returned,
+ * otherwise the saved copy in the database is used.
  *
  * Return a list containing all the positions of a game, including variations.
  * The positions are sorted according to pgn standard:
@@ -470,13 +473,21 @@ static UI_res_t sc_base_getGameHelper(UI_handle_t ti, Game& game) {
  */
 UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc,
                          const char** argv) {
-	const char* usage = "Usage: sc_base getGame baseId gameNum";
-	if (argc != 4)
+	const char* usage = "Usage: sc_base getGame baseId gameNum [live]";
+	bool live = (argc == 5 && std::strcmp("live", argv[4]) == 0);
+	if (!live && argc != 4)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
 	gamenumT gNum = strGetUnsigned(argv[3]);
 	if (!gNum)
 		return UI_Result(ti, ERROR_BadArg, usage);
+
+	if (live && dbase->gameNumber == static_cast<int64_t>(gNum - 1)) {
+		auto location = dbase->game->currentLocation();
+		auto res = sc_base_getGameHelper(ti, *(dbase->game));
+		dbase->game->restoreLocation(location);
+		return res;
+	}
 
 	const IndexEntry* ie = dbase->getIndexEntry_bounds(gNum - 1);
 	if (!ie)
