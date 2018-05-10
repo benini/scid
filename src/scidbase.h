@@ -125,16 +125,11 @@ struct scidBaseT {
 		destBuf->ProvideExternal(const_cast<byte*>(b), length);
 		return OK;
 	}
-
-	struct GamePos {
-		unsigned int RAVdepth;
-		unsigned int RAVnum;
-		std::string FEN; // "Forsyth-Edwards Notation" describing the position.
-		std::vector<int> NAGs;   // "Numeric Annotation Glyph"
-		std::string comment;     // text annotation of the position.
-		std::string lastMoveSAN; // move that was played to reach the position.
-	};
-	errorT getGame(const IndexEntry& ie, std::vector<GamePos>& dest);
+	errorT getGame(const IndexEntry& ie, Game& dest) const {
+		ByteBuffer buf(0);
+		auto res = getGame(&ie, &buf);
+		return (res != OK) ? res : dest.Decode(&buf, GAME_DECODE_ALL);
+	}
 
 	errorT importGame(const scidBaseT* srcBase, uint gNum);
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
@@ -352,7 +347,6 @@ private:
 
 private:
 	void clear();
-	GamePos makeGamePos(Game& game, unsigned int ravNum);
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 
 	Filter* fetchFilter(const std::string& filterId) const;

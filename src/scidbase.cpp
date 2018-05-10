@@ -210,61 +210,6 @@ errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value
 	return ERROR_BadArg;
 }
 
-/**
-* scidBaseT::getGame() - returns all the positions of a game
-* @ie: reference to the IndexEntry of the desired game
-* @dest: a container of GamePos objects where the positions will be stored.
-*
-* This function iterate all the positions of the game pointed by @ie and
-* stores the positions in @dest. The container is NOT automatically cleared
-* and the container should support push_back().
-* The order of positions and of Recursive Annotation Variations (RAV)
-* follows the pgn standard: "The alternate move sequence given by an RAV is
-* one that may be legally played by first unplaying the move that appears
-* immediately prior to the RAV. Because the RAV is a recursive construct,
-* it may be nested."
-* Each position have a RAVdepth and a RAVnum that allows to follow a
-* variation from any given position:
-* - skip all the next positions with a bigger RAVdepth
-* - the variation ends with:
-*   - a lower RAVdepth or
-*   - an equal RAVdepth but different RAVnum or
-*   - the end of @dest
-*
-* Return OK if successful.
-*/
-errorT scidBaseT::getGame(const IndexEntry& ie, std::vector<GamePos>& dest) {
-	ByteBuffer buf(BBUF_SIZE);
-	if (getGame(&ie, &buf) != OK) {
-		return ERROR_Decode;
-	}
-	Game game;
-	if (game.Decode(&buf, GAME_DECODE_ALL) != OK) {
-		return ERROR_Decode;
-	}
-	game.MoveToStart();
-	do {
-		if (game.AtVarStart() && !game.AtStart())
-			continue;
-
-		dest.emplace_back();
-		auto& gamepos = dest.back();
-		gamepos.RAVdepth = game.GetVarLevel();
-		gamepos.RAVnum = game.GetVarNumber();
-		char strBuf[256];
-		game.currentPos()->PrintFEN(strBuf, FEN_ALL_FIELDS);
-		gamepos.FEN = strBuf;
-		for (byte* nag = game.GetNags(); *nag; nag++) {
-			gamepos.NAGs.push_back(*nag);
-		}
-		gamepos.comment = game.GetMoveComment();
-		game.GetPrevSAN(strBuf);
-		gamepos.lastMoveSAN = strBuf;
-
-	} while (game.MoveForwardInPGN() == OK);
-	return OK;
-}
-
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
 	beginTransaction();
 	errorT err1 = saveGameHelper(game, replacedGameId);

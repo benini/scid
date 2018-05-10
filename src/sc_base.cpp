@@ -426,62 +426,68 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	return UI_Result(ti, OK, res);
 }
 
-
-/**
-* sc_base_getGame() - return all the positions of a game
-* @gameNum: the number of the requested game
-*
-* Return a list containing all the positions of a game, including variations.
-* The positions are sorted according to pgn standard:
-* "The alternate move sequence given by an RAV is one that may be legally played
-* by first unplaying the move that appears immediately prior to the RAV".
-* For each position the following informations are provided:
-* RAVdepth: current variation depth.
-* RAVnum: current variation num.
-* FEN: "Forsyth-Edwards Notation" describing the current position.
-* NAGS: "Numeric Annotation Glyph" is a non-negative integer from 0 to 255
-*       used to indicate a simple annotation in a language independent manner.
-* comment: text annotation of the current position.
-* lastMoveSAN: the last move that was played to reach the current position.
-*              The move is indicated using English "Standard Algebraic Notation".
-*/
-UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv) {
-	const char* usage = "Usage: sc_base getGame baseId gameNum";
-	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
-
-	const IndexEntry* ie = 0;
-	gamenumT gNum = strGetUnsigned(argv[3]);
-	if (gNum > 0) ie = dbase->getIndexEntry_bounds(gNum - 1);
-	if (ie == 0) return UI_Result(ti, ERROR_BadArg, usage);
-
-	std::vector<scidBaseT::GamePos> gamepos;
-	errorT err = dbase->getGame(*ie, gamepos);
-	if (err != OK) return UI_Result(ti, err);
-
-	size_t n = gamepos.size();
-	UI_List res(n);
+static UI_res_t sc_base_getGameHelper(UI_handle_t ti, Game& game) {
+	auto positions = gamepos::collectPositions(game);
+	UI_List res(positions.size());
 	UI_List posInfo(6);
-	for (size_t i = 0; i < n; i++) {
+	for (const auto& pos : positions) {
 		posInfo.clear();
-		posInfo.push_back(gamepos[i].RAVdepth);
-		posInfo.push_back(gamepos[i].RAVnum);
-		posInfo.push_back(gamepos[i].FEN);
+		posInfo.push_back(pos.RAVdepth);
+		posInfo.push_back(pos.RAVnum);
+		posInfo.push_back(pos.FEN);
 		std::string nags;
-		for (size_t iNag = 0, nNag = gamepos[i].NAGs.size(); iNag < nNag; iNag++) {
-			char temp[20];
-			game_printNag(gamepos[i].NAGs[iNag], temp, true, PGN_FORMAT_Plain);
-			if (!nags.empty()) nags += ' ';
+		for (const auto& nag : pos.NAGs) {
+			char temp[16];
+			game_printNag(nag, temp, true, PGN_FORMAT_Plain);
+			if (!nags.empty())
+				nags += ' ';
 			nags += temp;
 		}
 		posInfo.push_back(nags);
-		posInfo.push_back(gamepos[i].comment);
-		posInfo.push_back(gamepos[i].lastMoveSAN);
+		posInfo.push_back(pos.comment);
+		posInfo.push_back(pos.lastMoveSAN);
 		res.push_back(posInfo);
 	}
-
 	return UI_Result(ti, OK, res);
 }
 
+/**
+ * sc_base_getGame() - return all the positions of a game
+ * @gameNum: the number of the requested game
+ *
+ * Return a list containing all the positions of a game, including variations.
+ * The positions are sorted according to pgn standard:
+ * "The alternate move sequence given by an RAV is one that may be legally
+ * played by first unplaying the move that appears immediately prior to the
+ * RAV". For each position the following informations are provided: RAVdepth:
+ * current variation depth. RAVnum: current variation num. FEN: "Forsyth-Edwards
+ * Notation" describing the current position. NAGS: "Numeric Annotation Glyph"
+ * is a non-negative integer from 0 to 255 used to indicate a simple annotation
+ * in a language independent manner. comment: text annotation of the
+ * current position. lastMoveSAN: the last move that was played to reach the
+ * current position. The move is indicated using English "Standard Algebraic
+ * Notation".
+ */
+UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc,
+                         const char** argv) {
+	const char* usage = "Usage: sc_base getGame baseId gameNum";
+	if (argc != 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	gamenumT gNum = strGetUnsigned(argv[3]);
+	if (!gNum)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	const IndexEntry* ie = dbase->getIndexEntry_bounds(gNum - 1);
+	if (!ie)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	Game game;
+	errorT err = dbase->getGame(*ie, game);
+	if (err != OK)
+		return UI_Result(ti, err);
+	return sc_base_getGameHelper(ti, game);
+}
 
 /**
  * sc_base_import() - import games from non-native database

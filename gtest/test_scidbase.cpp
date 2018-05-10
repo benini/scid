@@ -23,7 +23,8 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 
-std::string encodePgn(const std::vector<scidBaseT::GamePos>& game)
+template <typename TCont>
+std::string encodePgn(const TCont& game)
 {
 	std::string res;
 
@@ -265,14 +266,14 @@ class Test_Scidbase : public ::testing::Test {
 	}
 
 protected:
-	std::vector<scidBaseT::GamePos> test_GamePos;
+	std::vector<gamepos::GamePos> test_GamePos;
 	std::string test_pgnLong;
 	const std::string test_pgnShort =
 		"1. d4 d5 2. c4 ( 2. Nf3 Nf6 ( 2... Bg4 ) 3. c3 ) ( 2. g3 Nf6 3. Bg2 ( 3. Nf3 ) )";
 
-	scidBaseT::GamePos makeGamePos(uint RAVdepth, uint RAVnum, const char* FEN, const char* SAN)
+	gamepos::GamePos makeGamePos(uint RAVdepth, uint RAVnum, const char* FEN, const char* SAN)
 	{
-		scidBaseT::GamePos res;
+		gamepos::GamePos res;
 		res.RAVdepth = RAVdepth;
 		res.RAVnum = RAVnum;
 		res.FEN = FEN;
@@ -280,6 +281,16 @@ protected:
 		return res;
 	}
 };
+
+auto collectPositions(const scidBaseT& dbase, gamenumT gnum) {
+	auto ie_bounds = dbase.getIndexEntry_bounds(gnum);
+	auto ie = dbase.getIndexEntry(gnum);
+	Game game;
+	if (ie_bounds && ie && dbase.getGame(*ie_bounds, game) == OK)
+		return gamepos::collectPositions(game);
+
+	return decltype(gamepos::collectPositions(game))();
+}
 
 TEST_F(Test_Scidbase, getGamePos1) {
 	Game game;
@@ -293,8 +304,7 @@ TEST_F(Test_Scidbase, getGamePos1) {
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
-	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
+	auto gamepos = collectPositions(dbase, 0);
 	EXPECT_EQ(test_GamePos.size(), gamepos.size());
 	size_t n = std::min(test_GamePos.size(), gamepos.size());
 	for (size_t i = 0; i < n; i++) {
@@ -321,8 +331,7 @@ TEST_F(Test_Scidbase, getGamePos2) {
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
-	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
+	auto gamepos = collectPositions(dbase, 0);
 	EXPECT_EQ(test_pgnShort.c_str(), encodePgn(gamepos));
 }
 
@@ -338,8 +347,7 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
-	std::vector<scidBaseT::GamePos> gamepos;
-	EXPECT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), gamepos));
+	auto gamepos = collectPositions(dbase, 0);
 	EXPECT_EQ(test_pgnLong.c_str(), encodePgn(gamepos));
 }
 
@@ -368,8 +376,7 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_NE(nullptr, ie0);
 		EXPECT_EQ(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
-		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
+		auto gamepos = collectPositions(dbase, 0);
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
 	}
 	{
@@ -381,11 +388,9 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_NE(nullptr, ie0);
 		EXPECT_NE(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
-		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
+		auto gamepos = collectPositions(dbase, 0);
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
-		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
+		gamepos = collectPositions(dbase, 1);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 	{
@@ -397,11 +402,9 @@ TEST_F(Test_Scidbase, saveGame) {
 		EXPECT_NE(nullptr, ie0);
 		EXPECT_NE(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
-		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
+		auto gamepos = collectPositions(dbase, 0);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
-		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
+		gamepos = collectPositions(dbase, 1);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }
@@ -446,8 +449,7 @@ TEST_F(Test_Scidbase, importGames) {
 		EXPECT_NE(nullptr, ie0);
 		EXPECT_EQ(nullptr, ie1);
 		EXPECT_NE(ie0, ie1);
-		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
+		auto gamepos = collectPositions(dbase, 0);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 	{
@@ -462,14 +464,11 @@ TEST_F(Test_Scidbase, importGames) {
 		EXPECT_NE(nullptr, ie2);
 		EXPECT_NE(ie0, ie1);
 		EXPECT_NE(ie0, ie2);
-		std::vector<scidBaseT::GamePos> gamepos;
-		EXPECT_EQ(OK, dbase.getGame(*ie0, gamepos));
+		auto gamepos = collectPositions(dbase, 0);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
-		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(*ie1, gamepos));
+		gamepos = collectPositions(dbase, 1);
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
-		gamepos.clear();
-		EXPECT_EQ(OK, dbase.getGame(*ie2, gamepos));
+		gamepos = collectPositions(dbase, 2);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }
