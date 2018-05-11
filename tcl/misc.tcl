@@ -577,6 +577,15 @@ namespace eval gameclock {
     return 1
   }
   ################################################################################
+  proc storeTimeComment { color } {
+    set sec [::gameclock::getSec $color]
+    set h [format "%02d" [expr abs($sec) / 60 / 60] ]
+    set m [format "%02d" [expr (abs($sec) / 60) % 60] ]
+    set s [format "%02d" [expr abs($sec) % 60] ]
+    set time "$h:$m:$s"
+    sc_pos setComment "\[%clk $time\]"
+  }
+  ################################################################################
   proc toggleClock { n } {
     if { $::gameclock::data(running$n) } {
       stop $n

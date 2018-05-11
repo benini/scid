@@ -374,12 +374,14 @@ namespace eval sergame {
       toggle {
           if {[::gameclock::stop 1]} {
             ::gameclock::add 1 [expr $::uci::uciInfo(winc$n)/1000]
+            ::gameclock::storeTimeComment 1
             ::gameclock::start 2
           } elseif {[::gameclock::stop 2]} {
             ::gameclock::add 2 [expr $::uci::uciInfo(binc$n)/1000]
+            ::gameclock::storeTimeComment 2
             ::gameclock::start 1
           }
-          ::notify::PosChanged
+          ::notify::PosChanged -pgn
       }
     }
   }
