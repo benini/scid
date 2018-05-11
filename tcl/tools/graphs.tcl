@@ -582,10 +582,10 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Score}
     bind $w <Configure> {
-      .sgraph.c itemconfigure text -width [expr {[winfo width .sgraph.c] - 50}]
+      .sgraph.c itemconfigure text -width [expr {[winfo width .sgraph.c] - 20}]
       .sgraph.c coords text [expr {[winfo width .sgraph.c] / 2}] 10
-      ::utils::graph::configure score -height [expr {[winfo height .sgraph.c] - 90}]
-      ::utils::graph::configure score -width [expr {[winfo width .sgraph.c] - 100}]
+      ::utils::graph::configure score -height [expr {[winfo height .sgraph.c] - 50}]
+      ::utils::graph::configure score -width [expr {[winfo width .sgraph.c] - 40}]
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
