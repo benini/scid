@@ -583,7 +583,13 @@ namespace eval gameclock {
     set m [format "%02d" [expr (abs($sec) / 60) % 60] ]
     set s [format "%02d" [expr abs($sec) % 60] ]
     set time "$h:$m:$s"
-    sc_pos setComment "\[%clk $time\]"
+
+    #Replace %clk if present, otherwise prepend it
+    if {[regsub {\[%clk\s*.*?\]} [sc_pos getComment] "\[%clk $time\]" comment]} {
+      sc_pos setComment "$comment"
+    } else {
+      sc_pos setComment "\[%clk $time\]$comment"
+    }
   }
   ################################################################################
   proc toggleClock { n } {
