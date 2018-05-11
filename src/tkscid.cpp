@@ -2090,7 +2090,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
-        "scores",     "startBoard", "strip",      "summary",
+        "startBoard", "strip",      "summary",
         "tags",       "truncate",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
@@ -2100,7 +2100,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
-        GAME_SCORES,     GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
+        GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
         GAME_TAGS,       GAME_TRUNCATE,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
@@ -2181,9 +2181,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_SAVE:
         return sc_game_save (cd, ti, argc, argv);
-
-    case GAME_SCORES:
-        return sc_game_scores (cd, ti, argc, argv);
 
     case GAME_STARTBOARD:
         return sc_game_startBoard (cd, ti, argc, argv);
@@ -4072,115 +4069,6 @@ sc_game_save (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return UI_Result(ti, res);;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// addScoreToList:
-//    Called by sc_game_scores to check a comment for a numeric
-//    evaluation (a score), and add it to the list result for the
-//    specified Tcl interpreter if a score is found.
-//
-static bool
-addScoreToList (Tcl_Interp * ti, int moveCounter, const char * comment,
-                bool negate, float min, float max)
-{
-    char buffer[1024];
-    if (comment == NULL) { return false; }
-    const char* avoid_overflow = comment;
-    while (*comment != 0  &&  *comment != '+'  &&  *comment != '-') {
-        comment++;
-    }
-    if (*comment == 0  ||
-        ! isdigit(static_cast<unsigned char>(*(comment+1)))) {
-        return false;
-    }
-    //Klimmek: ignore game results like 1-0 or 0-1 in a comment
-    if (*comment == '-' && comment != avoid_overflow &&
-        isdigit(static_cast<unsigned char>(*(comment-1)))) {
-        return false;
-    }
-    // OK, now we have found "+[digit]" or "-[digit]" in the comment,
-    // so extract its evaluation and add it to our list:
-    sprintf (buffer, "%.1f", (float)moveCounter * 0.5);
-    Tcl_AppendElement (ti, buffer);
-    float f;
-    sscanf (comment, "%f", &f);
-    if (negate) { f = -f; }
-    if (f < min) { f = min; }
-    if (f > max) { f = max; }
-    sprintf (buffer, "%.2f", f);
-    Tcl_AppendElement (ti, buffer);
-    return true;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_scores:
-//    Returns a Tcl list of the numeric scores of each move, as found
-//    in the comment for each move.
-//    A score is a number with the format
-//        "+digits.digits" or
-//        "-digits.digits"
-//    found somewhere in the comment of the move, OR the comment of the
-//    first variation of the move.
-//
-//    In this way, both Scid annotations which have the form
-//        1.e4 {"+0.13: ...."} e5 ...
-//    and those produced by crafty's annotate command which have the form
-//        1.e4 ({7:+0.12} ...) e5 ...
-//    are recognised. The latter form (comments in variations) had the score
-//    from the perspective of the side to move in Crafty versions 17 and
-//    older, but now have the score always from White's perspective, since
-//    version 18.
-//
-//    The list returned should be read in pairs of values: the first is the
-//    move (0.0 = start, 0.5 after White's first move, 1.0 after Black's
-//    first move, etc) and the second is the value found.
-//
-int
-sc_game_scores (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    int moveCounter = 0;
-    float max = 10.0;
-    float min = -max;
-    bool inv_w = false;
-    bool inv_b = false;
-    
-    if (argc == 3) {
-        max = atof (argv[2]);
-        min = -max;
-    }
-    // Klimmek: check Invertflags
-    else if (argc == 4) {
-        inv_w = atoi (argv[2]);
-        inv_b = atoi (argv[3]);
-    }
-
-    Game * g = db->game;
-    auto location = g->currentLocation();
-    g->MoveToPly (0);
-    while (g->MoveForward() == OK) {
-        moveCounter++;
-        const char * comment = g->GetMoveComment();
-        // Klimmek: use invertflags
-        if (addScoreToList (ti, moveCounter, comment, moveCounter % 2 ? inv_b : inv_w, min, max)) {
-            continue;
-        }
-        // Now try finding a score in the comment at the start of the
-        // first variation:
-        if (g->GetNumVariations() > 0) {
-            g->MoveIntoVariation (0);
-            comment = g->GetMoveComment();
-            addScoreToList (ti, moveCounter, comment,
-                            //false,
-                            // For the annotate format of crafty before v18,
-                            // replace "false" above with:
-                                 moveCounter % 2 ? inv_b : inv_w,
-                            min, max);
-            g->MoveExitVariation();
-        }
-    }
-    db->game->restoreLocation(location);
-    return TCL_OK;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_startBoard:

@@ -52,7 +52,6 @@ int sc_game_pgn       (TCL_ARGS);
 int sc_game_pop       (TCL_ARGS);
 int sc_game_push      (TCL_ARGS);
 int sc_game_save      (TCL_ARGS);
-int sc_game_scores    (TCL_ARGS);
 int sc_game_startBoard (TCL_ARGS);
 int sc_game_strip     (TCL_ARGS);
 int sc_game_summary   (TCL_ARGS);
