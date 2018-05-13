@@ -10,6 +10,7 @@
 namespace eval ::windows::commenteditor {
 	variable isOpen 0
 	variable w_ .commentWin
+	variable needNotify_ 0
 	variable undoComment_ 1
 	variable undoNAGs_ 1
 
@@ -17,20 +18,29 @@ namespace eval ::windows::commenteditor {
 		if {[sc_pos getComment] != ""} {
 			undoFeature save
 			sc_pos setComment ""
+			set ::windows::commenteditor::needNotify_ 1
 		}
-		notify_
+		notify_ idle
 	}
 
 	proc clearNAGs_ {} {
 		if {[sc_pos getNags] != 0} {
 			undoFeature save
 			sc_pos clearNags
+			set ::windows::commenteditor::needNotify_ 1
 		}
-		notify_
+		notify_ idle
 	}
 
-	proc notify_ {} {
-		after idle "::notify::PosChanged -pgn"
+	proc notify_ {wait} {
+		if {$::windows::commenteditor::needNotify_} {
+			after cancel "::notify::PosChanged -pgn"
+			after $wait "::notify::PosChanged -pgn"
+		}
+	}
+
+	proc notifyCancel_ {} {
+		after cancel "::notify::PosChanged -pgn"
 	}
 
 	proc storeComment_ {} {
@@ -38,16 +48,16 @@ namespace eval ::windows::commenteditor {
 		# The "end-1c" below is because Tk adds a newline to text contents:
 		set oldComment [sc_pos getComment]
 		set newComment [$w_.cf.txtframe.text get 1.0 end-1c]
-		if {[string compare "$oldComment" "$newComment"] == 0} { return }
-
-		variable undoComment_
-		if { $undoComment_ } {
-			set undoComment_ 0
-			undoFeature save
+		if {"$oldComment" ne "$newComment"} {
+			variable undoComment_
+			if { $undoComment_ } {
+				set undoComment_ 0
+				undoFeature save
+			}
+			sc_pos setComment $newComment
+			set ::windows::commenteditor::needNotify_ 1
 		}
-		sc_pos setComment $newComment
-		after cancel ::windows::commenteditor::notify_
-		after 1500 ::windows::commenteditor::notify_
+		notify_ 1500
 	}
 
 	proc storeNAGs_ {} {
@@ -56,19 +66,19 @@ namespace eval ::windows::commenteditor {
 		set nag_text [$w_.nf.text get]
 		#sc_pos getNags returns 0 when empty
 		if {$nag_text == ""} { set nag_text 0 }
-		if {[string compare "$nag_text" "$nag_stored"] == 0} { return }
-
-		variable undoNAGs_
-		if { $undoNAGs_ } {
-			set undoNAGs_ 0
-			undoFeature save
+		if {"$nag_text" ne "$nag_stored"} {
+			variable undoNAGs_
+			if { $undoNAGs_ } {
+				set undoNAGs_ 0
+				undoFeature save
+			}
+			sc_pos clearNags
+			foreach {nag} [split "$nag_text" " "] {
+				sc_pos addNag $nag
+			}
+			set ::windows::commenteditor::needNotify_ 1
 		}
-		sc_pos clearNags
-		foreach {nag} [split "$nag_text" " "] {
-			sc_pos addNag $nag
-		}
-		after cancel ::windows::commenteditor::notify_
-		after 1500 ::windows::commenteditor::notify_
+		notify_ 1500
 	}
 
 	proc updateMarkersCol_ {varname args} {
@@ -85,8 +95,6 @@ namespace eval ::windows::commenteditor {
 
 proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	variable w_
-	variable undoNAGs_
-	variable undoComment_
 
 	if {! [::createWindow $w_ 530 220 "[tr {Comment editor}]"]} {
 		if { $focus_if_exists } {
@@ -94,10 +102,6 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 		} else {
 			focus .
 			destroy $w_
-			if {$undoComment_ == 0 || $undoNAGs_ == 0} {
-				after cancel ::windows::commenteditor::notify_
-				after 1 ::windows::commenteditor::notify_
-			}
 		}
 		return
 	}
@@ -234,11 +238,18 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 
 	# Add bindings at the end, especially <Configure>
 	bind $w_ <F1> {helpWindow Comment}
-	bind $w_ <Destroy> "if {\[string equal $w_ %W\]} { set ::windows::commenteditor::isOpen 0 }"
+	bind $w_ <Destroy> "if {\[string equal $w_ %W\]} { set ::windows::commenteditor::isOpen 0; ::windows::commenteditor::notify_ 1 }"
+	bind $w_.nf.text <KeyPress>   "::windows::commenteditor::notifyCancel_"
 	bind $w_.nf.text <KeyRelease> "::windows::commenteditor::storeNAGs_"
-	bind $w_.cf.txtframe.text <KeyRelease> "::windows::commenteditor::storeComment_"
+	bind $w_.cf.txtframe.text <KeyPress>   "::windows::commenteditor::notifyCancel_"
+	bind $w_.cf.txtframe.text <KeyRelease> "::windows::commenteditor::notify_ 1000"
+	bind $w_.cf.txtframe.text <<Modified>> "
+		::windows::commenteditor::storeComment_;
+		$w_.cf.txtframe.text edit modified false
+	"
 
 	set ::windows::commenteditor::isOpen 1
+	$w_.cf.txtframe.text edit modified false
 	after idle focus $w_.cf.txtframe.text
 }
 
@@ -249,12 +260,15 @@ proc ::windows::commenteditor::Refresh {} {
 	variable w_
 	if {![winfo exists $w_]} { return }
 
+	variable needNotify_ 0
 	variable undoNAGs_ 1
 	variable undoComment_ 1
 
 	set comment [sc_pos getComment]
-	$w_.cf.txtframe.text delete 1.0 end
-	$w_.cf.txtframe.text insert end $comment
+	if {$comment != [$w_.cf.txtframe.text get 1.0 end-1c]} {
+		$w_.cf.txtframe.text delete 1.0 end
+		$w_.cf.txtframe.text insert end $comment
+	}
 
 	set nag [sc_pos getNags]
 	$w_.nf.text configure -state normal
