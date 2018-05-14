@@ -19,8 +19,8 @@ proc importPgnGame {} {
       -yscroll "$edit.ybar set" -xscroll "$edit.xbar set"  -setgrid 1
   # Override tab-binding for this widget:
   bind $edit.text <Key-Tab> "[bind all <Key-Tab>]; break"
-  scrollbar $edit.ybar -command "$edit.text yview" -takefocus 0
-  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview" -takefocus 0
+  ttk::scrollbar $edit.ybar -command "$edit.text yview" -takefocus 0
+  ttk::scrollbar $edit.xbar -orient horizontal -command "$edit.text xview" -takefocus 0
   grid $edit.text -row 0 -column 0 -sticky nesw
   grid $edit.ybar -row 0 -column 1 -sticky nesw
   grid $edit.xbar -row 1 -column 0 -sticky nesw
@@ -40,7 +40,7 @@ proc importPgnGame {} {
   $pane.err.text insert end "\n"
   $pane.err.text insert end $::tr(ImportHelp2)
   $pane.err.text configure -state disabled
-  scrollbar $pane.err.scroll -command "$pane.err.text yview" -takefocus 0
+  ttk::scrollbar $pane.err.scroll -command "$pane.err.text yview" -takefocus 0
   pack $pane.err.scroll -side right -fill y
   pack $pane.err.text -side left -expand true -fill both
   
@@ -175,7 +175,7 @@ proc importPgnFile {{base} {fnames ""}} {
   pack [frame $w.tf] -side top -expand yes -fill both
   text $w.text -height 8 -width 60 -background gray90 \
       -wrap none -setgrid 1 -yscrollcommand "$w.ybar set"
-  scrollbar $w.ybar -command "$w.text yview"
+  ttk::scrollbar $w.ybar -command "$w.text yview"
   pack $w.ybar -in $w.tf -side right -fill y
   pack $w.text -in $w.tf -side left -fill both -expand yes
   pack $w.buttons $w.progress -side right

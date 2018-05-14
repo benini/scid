@@ -71,9 +71,8 @@ proc ::tourney::Open {} {
   text $w.t.text -width 75 -height 22 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
     -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
-  scrollbar $w.t.ybar -command "$w.t.text yview" -width 12 -takefocus 0
-  scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -width 12 \
-    -takefocus 0
+  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
+  ttk::scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {3 r 4 l 18 r 23 r 30 r 32 l 55 l} {

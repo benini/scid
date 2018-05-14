@@ -250,7 +250,7 @@ namespace eval inputengine {
 
     recordWinSize $w
 
-    scrollbar $w.ysc     -command { .inputengineconsole.console yview }
+    ttk::scrollbar $w.ysc     -command { .inputengineconsole.console yview }
     text      $w.console -height 5  -width 80 -wrap word -yscrollcommand "$w.ysc set"
 
     label     $w.lmode   -text [::tr IESending]

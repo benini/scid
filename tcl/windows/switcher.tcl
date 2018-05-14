@@ -531,7 +531,7 @@ proc changeBaseType {baseNum} {
     -cursor top_left_arrow
   $w.t tag configure selected -background lightSteelBlue
 
-  scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
+  ttk::scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
   pack [frame $w.b] -side bottom -pady 5
   pack $w.yscroll -side right -fill y
   pack $w.t -side left -fill both -expand yes

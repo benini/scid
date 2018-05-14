@@ -241,8 +241,8 @@ proc ::crosstab::Open {} {
       -xscroll "$w.f.xbar set" -setgrid 1 -cursor top_left_arrow
   ::htext::init $w.f.text
   $w.f.text tag configure bgGray -background gray95
-  scrollbar $w.f.ybar -command "$w.f.text yview"
-  scrollbar $w.f.xbar -orient horizontal -command "$w.f.text xview"
+  ttk::scrollbar $w.f.ybar -command "$w.f.text yview"
+  ttk::scrollbar $w.f.xbar -orient horizontal -command "$w.f.text xview"
   grid $w.f.text -row 0 -column 0 -sticky nesw
   grid $w.f.ybar -row 0 -column 1 -sticky nesw
   grid $w.f.xbar -row 1 -column 0 -sticky nesw

@@ -76,8 +76,8 @@ proc ::plist::Open {} {
   text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
     -cursor top_left_arrow -xscrollcommand "$w.t.xbar set" -borderwidth 0
-  scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
-  scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
+  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
+  ttk::scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {4 r 10 r 18 r 24 r 32 r 35 l} {

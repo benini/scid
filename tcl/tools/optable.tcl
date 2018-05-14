@@ -212,7 +212,7 @@ proc ::optable::makeReportWin {args} {
         -wrap word -bg white -foreground black -yscrollcommand "$w.ybar set" \
         -cursor top_left_arrow
     ::htext::init $w.text
-    scrollbar $w.ybar -command "$w.text yview"
+    ttk::scrollbar $w.ybar -command "$w.text yview"
     frame $w.b
     button $w.b.previewLaTeX -textvar ::tr(OprepViewLaTeX) \
         -command ::optable::previewLaTeX
@@ -1212,7 +1212,7 @@ proc ::optable::addFavoriteDlg {} {
   pack [frame $w.existing] -side top -fill x -padx 2
   text $w.existing.list -width 30 -height 10 -background gray90 \
       -yscrollcommand [list $w.existing.ybar set]
-  scrollbar $w.existing.ybar -command [list $w.existing.list yview]
+  ttk::scrollbar $w.existing.ybar -command [list $w.existing.list yview]
   pack $w.existing.ybar -side right -fill y
   pack $w.existing.list -side left -fill both -expand yes
   foreach entry $::reportFavorites {

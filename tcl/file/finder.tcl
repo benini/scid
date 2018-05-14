@@ -69,7 +69,7 @@ proc ::file::finder::Open {} {
   text $w.t.text -width 65 -height 25 -font font_Small -wrap none \
       -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
       -cursor top_left_arrow
-  scrollbar $w.t.ybar -command "$w.t.text yview" -width 12
+  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
   $w.t.text tag configure Dir -foreground brown
   $w.t.text tag configure Vol -foreground gray25
   $w.t.text tag configure PGN -foreground blue

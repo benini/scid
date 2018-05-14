@@ -260,7 +260,7 @@ proc ::bookmarks::Edit {} {
   pack [frame $w.f] -side top -fill both -expand 1
   listbox $w.f.list -width 50 -height 10 -yscrollcommand "$w.f.ybar set" \
     -fg black -bg white -exportselection 0 -font font_Small -setgrid 1
-  scrollbar $w.f.ybar -takefocus 0 -command "$w.f.list yview"
+  ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.list yview"
   bind $w.f.list <<ListboxSelect>>  ::bookmarks::EditSelect
   pack $w.f.ybar -side right -fill y
   pack $w.f.list -side left -fill x -expand 1

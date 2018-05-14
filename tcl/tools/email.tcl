@@ -38,7 +38,7 @@ proc ::tools::email {} {
   listbox $f.list -height 16 -width 40 -exportselection false \
     -selectmode browse -selectbackground lightBlue -font font_Fixed \
     -yscrollcommand "$f.scroll set" -background white -setgrid 1
-  scrollbar $f.scroll -command "$w.list yview" -takefocus 0
+  ttk::scrollbar $f.scroll -command "$w.list yview" -takefocus 0
   pack $f -side left -expand true -fill both
   pack $f.title -side top
   pack $f.scroll -side right -fill y
@@ -219,7 +219,7 @@ proc ::tools::email::TimesButton {type} {
   frame $w.t
   text $w.t.text -height 15 -width 30 -font font_Fixed -setgrid 1 \
     -yscrollcommand "$w.t.ybar set" -bg white -fg black
-  scrollbar $w.t.ybar -command "$w.t.text yview"
+  ttk::scrollbar $w.t.ybar -command "$w.t.text yview"
   frame $w.b
   button $w.b.ok -text "OK" -command {
     set details [lindex $emailData $emailTimesIdx]
@@ -391,8 +391,8 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   pack $w.fields -fill x -padx 4 -pady 4
   pack $w.message -expand yes -fill both -padx 4 -pady 4
 
-  scrollbar $f.ybar -command "$f.text yview"
-  scrollbar $f.xbar -orient horizontal -command "$f.text xview"
+  ttk::scrollbar $f.ybar -command "$f.text yview"
+  ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
   text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
     -setgrid 1 -width 72 -height 20 -background white -wrap none
 

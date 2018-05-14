@@ -245,7 +245,7 @@ proc ::ptrack::make {} {
     lappend tablist $tabwidth $justify
   }
   $f.text configure -tabs $tablist
-  scrollbar $f.ybar -takefocus 0 -command "$f.text yview"
+  ttk::scrollbar $f.ybar -takefocus 0 -command "$f.text yview"
   pack $f.ybar -side right -fill y
   pack $f.text -side left -fill y -expand yes
 
