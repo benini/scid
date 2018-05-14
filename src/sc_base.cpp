@@ -63,7 +63,8 @@ static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
 	Progress progress = UI_CreateProgress(ti);
 	errorT err = dbase->Open(codec, fMode, filename, progress);
 
-	if (err == ERROR_FileOpen && fMode == FMODE_Both) {
+	if ((err == ERROR_FileOpen || err == ERROR_FileMode) &&
+	    fMode == FMODE_Both) {
 		err = dbase->Open(codec, FMODE_ReadOnly, filename, progress);
 	}
 	progress.report(1,1);

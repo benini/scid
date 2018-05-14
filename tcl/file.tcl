@@ -207,7 +207,7 @@ proc ::file::Upgrade {name} {
     catch {
       file delete "$name.sg4"
       file delete "$name.sn4"
-      file delete "$name.si4" }]
+      file delete "$name.si4" }
   } else {
     progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel)
     set err_compact [catch {sc_base compact $::file::lastOpened}]
