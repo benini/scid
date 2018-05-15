@@ -243,9 +243,8 @@ proc ::file::finder::Refresh {{newdir ""}} {
     set est [lindex $i 5]
     $t insert end "\n "
     $t insert end $type [list $type f$path]
-    set esize ""
-    if {$est} { set esize "~" }
-    append esize [::utils::thousands $size]
+    set  esize [::utils::thousands $size];
+    if {$est} { append esize " kB" }
     $t insert end "\t$esize" f$path
     $t insert end "\t[clock format $mtime -format {%b %d %Y}]" f$path
     $t insert end "\t$fname\t" f$path
@@ -450,34 +449,32 @@ proc ::file::finder::GetFiles {dir {len -1}} {
       set showFile 0
       set rootname [file rootname $f]
       set type PGN
+      set fsize [file size $f]
+      set est 0
+      # if it is not a scid database show size in kb
+      set size "[expr {$fsize/1024}]"
       if {$ext == ".si4"} {
         set showFile 1
+        set size [expr {($fsize - 182)/47}]
         set type Scid
       } elseif {$ext == ".si3"} {
         set showFile 1
+        set size [expr {($fsize - 128)/46}]
         set type Old
       } elseif {$ext == ".sor"} {
         set showFile 1
+        set est 1
         set type Rep
       } elseif {$ext == ".epd"} {
         set type EPD
+        set est 1
         set showFile 1
       } elseif {$ext == ".pgn"} {
+        set est 1
         set showFile 1
       }
       if {$showFile  &&  [info exists data($type)]  &&  $data($type)} {
         set path [string range $f $len end]
-        set est 0
-        if {[catch {set size [sc_info fsize $f]}]} {
-          # Could not determine file size, probably a PGN or EPD file
-          # that the user does not have permission to read.
-          set est 1
-          set size 0
-        }
-        if {$size < 0} {
-          set est 1
-          set size [expr {0 - $size}]
-        }
         if {[file dirname $path] == "."} { set path "./$path" }
         lappend flist [list $size $type [file tail $rootname] $path $mtime $est]
       }
