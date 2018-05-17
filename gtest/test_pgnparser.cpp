@@ -220,53 +220,52 @@ TEST(Test_PgnParser, is_PGNsymbol) {
 	}
 }
 
-TEST(Test_PgnParser, pgn_copy_norm) {
-	const char* pgn = "Surname, Name (2800)";
-	const char* pgn_spaces = "    Surname,     Name (2800)       ";
-	const char* pgn_tabs = "\n\tSurname, \v\r\t\nName\r\n(2800)\n";
-	const char* pgn_mixed = "  \n \r Surname,  \v\n   \tName\t\v(2800)       ";
-
-	std::string dest;
-	auto source = [](const char* str) {
-		return std::make_pair(str, str + std::strlen(str));
+TEST(Test_PgnParser, pgn_normalize) {
+	std::string buf;
+	auto make_str = [&buf](size_t pos, const char* str) {
+		buf.assign(pos, '^');
+		buf.append(str, str + std::strlen(str));
+		size_t n_newlines = std::count(buf.begin(), buf.end(), '\n');
+		return n_newlines == pgn::normalize(buf, pos) &&
+		       buf.substr(0, pos) == std::string(pos, '^');
 	};
 
+	std::pair<const char*, const char*> tests[] = {
+	    {"Surname, Name (2800)", "Surname, Name (2800)"},
+	    {"    Surname,     Name (2800)       ",
+	     "    Surname,     Name (2800)       "},
+	    {"Surname,\nName (2800)", "Surname, Name (2800)"},
+	    {"Surname,\r\nName (2800)", "Surname, Name (2800)"},
+	    {"Surname, \r\nName (2800)", "Surname, Name (2800)"},
+	    {"Surname,\r\n Name (2800)", "Surname, Name (2800)"},
+	    {"Surname, \r\n Name (2800)", "Surname,  Name (2800)"},
+	    {"\n\tSurname, \v\r\t\nName\r\n(2800)\n", "Surname, Name (2800)"},
+	    {"  \n \r Surname,  \v\n   \tName\t\v(2800)        \r\n",
+	     "    Surname,     Name (2800)        "}};
+
 	for (int pos = 0; pos <= 30; pos = (pos + 1) * 2) { // 0, 2, 6, 14, 30
-		dest.clear();
-		dest.resize(pos, '^');
-		std::string pre_dest = dest;
+		for (auto str : tests) {
+			EXPECT_TRUE(make_str(pos, str.first));
+			EXPECT_STREQ(buf.substr(pos).c_str(), str.second);
+		}
+	}
+}
 
-		pgn::copy_norm<true>(source(pgn), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
+TEST(Test_PgnParser, pgn_trim) {
+	const char* tests[] = {
+	    "Surname, Name  (2800)",                //
+	    "Surname, Name  (2800)       ",         //
+	    "    Surname, Name  (2800)",            //
+	    "    Surname, Name  (2800)       ",     //
+	    "\vSurname, Name  (2800)\r\n",          //
+	    " \t\n   Surname, Name  (2800)  \r\v  " //
+	};
 
-		pgn::copy_norm<false>(source(pgn), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
-
-		pgn::copy_norm<true>(source(pgn_spaces), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
-
-		pgn::copy_norm<false>(source(pgn_spaces), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn_spaces);
-
-		pgn::copy_norm<true>(source(pgn_tabs), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
-
-		pgn::copy_norm<false>(source(pgn_tabs), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
-
-		pgn::copy_norm<true>(source(pgn_mixed), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn);
-
-		pgn::copy_norm<false>(source(pgn_mixed), dest, pos);
-		EXPECT_STREQ(dest.substr(0, pos).c_str(), pre_dest.c_str());
-		EXPECT_STREQ(dest.substr(pos).c_str(), pgn_spaces);
+	for (auto str : tests) {
+		auto str_view = std::make_pair(str, str + std::strlen(str));
+		size_t n_newlines = std::count(str_view.first, str_view.second, '\n');
+		EXPECT_EQ(n_newlines, pgn::trim(str_view));
+		EXPECT_TRUE(std::equal(str_view.first, str_view.second, tests[0]));
 	}
 }
 

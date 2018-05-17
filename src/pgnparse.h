@@ -69,8 +69,11 @@ public:
 			return true;
 		}
 
+		linenum_ += pgn::trim(comment);
 		auto& str = game.accessMoveComment();
-		linenum_ += pgn::copy_norm<true>(comment, str, str.size());
+		auto prevSz = str.size();
+		str.append(comment.first, comment.second);
+		linenum_ += pgn::normalize(str, prevSz);
 		return true;
 	}
 
@@ -316,7 +319,9 @@ private:
 					return res;
 			}
 		}
-		pgn::copy_norm<false>(value, game.accessTagValue(tag, tagLen), 0);
+		auto& str = game.accessTagValue(tag, tagLen);
+		str.assign(value.first, value.second);
+		linenum_ += pgn::normalize(str, 0);
 		return true;
 	}
 };

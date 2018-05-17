@@ -383,8 +383,7 @@ std::pair<std::size_t, bool> parse_game(pgn_impl::InputMemory input,
 }
 
 /**
- * Copy characters to a string normalizing and trimming white spaces, and
- * converting Latin-1 chars to UTF-8 sequences.
+ * Normalize white spaces and converts Latin-1 chars to UTF-8 sequences.
  *
  * The original PGN standard used a subset of ISO 8859/1 (Latin 1):
  * "Code value from 0 to 126 are the standard ASCII character set."
@@ -394,45 +393,68 @@ std::pair<std::size_t, bool> parse_game(pgn_impl::InputMemory input,
  * that require such characters."
  * However this do not allow internationalization for comments and names
  * (players, sites, etc...); the common UTF-8 is a superior alternative.
- * @param src:     memory range with the source data.
- * @param dest:    the container where the characters will be stored.
- * @param destPos: the start position in @e dest where the chars will be stored.
- * @returns the number of '\n' chars in @e src.
+ * @param str: the string to be normalized.
+ * @param pos: start of the substring of @e str that will be normalized.
+ * @returns the number of '\n' chars in @e str.
  */
-template <bool trim_spaces, typename TView, typename TString>
-std::size_t copy_norm(TView src, TString& dest, std::size_t destPos) {
-	std::size_t n_endLines = 0;
-	std::size_t pos = destPos;
-	dest.resize(pos + std::distance(src.first, src.second));
-	while (src.first != src.second) {
-		unsigned char ch = *src.first++;
+template <typename TString>
+std::size_t normalize(TString& str, std::size_t pos) {
+	std::size_t n_newlines = 0;
+	for (std::size_t i = pos, n = str.size(); i < n; ++i) {
+		unsigned char ch = str[i];
+		// An invalid UTF-8 sequence is considered a Latin1 char and converted.
 		if (ch > 0xBF) {
-			unsigned char nxt = (src.first != src.second) ? *src.first : 0;
+			unsigned char nxt = (i + 1 != n) ? str[i + 1] : 0;
 			if (nxt < 0x80 || nxt > 0xBF) {
-				// An invalid utf-8 sequence is considered a Latin1 char and
-				// converted.
-				dest.resize(dest.size() + 1);
-				dest[pos++] = static_cast<unsigned char>(0xC3);
-				ch = static_cast<unsigned char>(ch & 0xBF);
+				str[i] = static_cast<unsigned char>(ch & 0xBF);
+				str.insert(str.begin() + i, static_cast<unsigned char>(0xC3));
+				++i;
+				++n;
 			}
-		} else if (ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v' ||
-		           (trim_spaces && ch == ' ')) {
+		} else if (ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v') {
 			if (ch == '\n')
-				++n_endLines;
+				++n_newlines;
 
-			if (pos == destPos || src.first == src.second ||
-			    pgn_impl::is_PGNwhitespace(*src.first) ||
-			    (!trim_spaces && dest[pos - 1] == ' ')) {
-				// Skip
-				dest.pop_back();
-				continue;
+			// Tab and new line characters are removed if there is an adjacent
+			// space, or converted to a normal space otherwise.
+			if (i == pos ||                             // First char
+			    (i + 1) == n ||                         // Last char
+			    str[i - 1] == ' ' ||                    // Preceded by a space
+			    pgn_impl::is_PGNwhitespace(str[i + 1])) // Followed by a space
+			{
+				str.erase(i, 1);
+				--i;
+				--n;
+			} else {
+				str[i] = ' ';
 			}
-
-			ch = ' '; // Normalize all white spaces
 		}
-		dest[pos++] = ch;
 	}
-	return n_endLines;
+	return n_newlines;
+}
+
+/**
+ * Trim leading and trailing white spaces.
+ * @param str: the string to trim.
+ * @returns the number of '\n' chars in @e str.
+ */
+template <typename TView> std::size_t trim(TView& str) {
+	std::size_t n_newlines = 0;
+	auto is_space = [&n_newlines](char ch) {
+		if (ch == '\n') {
+			++n_newlines;
+		} else if (ch != ' ' && ch != '\r' && ch != '\t' && ch != '\v') {
+			return false;
+		}
+		return true;
+	};
+	str.first = std::find_if_not(str.first, str.second, is_space);
+
+	using RevIt = std::reverse_iterator<decltype(str.first)>;
+	str.second =
+	    std::find_if_not(RevIt(str.second), RevIt(str.first), is_space).base();
+
+	return n_newlines;
 }
 
 } // namespace pgn
