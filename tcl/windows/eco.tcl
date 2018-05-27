@@ -49,7 +49,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
     ::utils::pane::SetDrag $w.pane 0
     pack $pane -side top -expand true -fill both
 
-    canvas $graph.c -width 500 -height 250
+    canvas $graph.c -width 500 -height 250 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
     pack $graph.c -side top -fill both -expand yes
     text $text.text -height 12 -width 75 -wrap word -font font_Regular \
       -background white -selectbackground lightBlue \

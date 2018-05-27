@@ -175,7 +175,7 @@ proc setupBoard {} {
   
   ### Buttons: Setup and Cancel.
   ttk::button $w.buttons.ok -text "OK" -width 7 -command exitSetupBoard
-  ttk::button $w.buttons.cancel -textvar ::tr(Cancel) -width 7 -command {destroy .setup}
+  ttk::button $w.buttons.cancel -textvar ::tr(Cancel) -command {destroy .setup}
   pack [ttk::frame $w.buttons.spaceTop -height 4] -side top
   pack $w.buttons.cancel -side right -padx 5
   pack $w.buttons.ok -side right -padx 5

@@ -166,8 +166,8 @@ namespace eval tactics {
         $w.dummy create rectangle 0 0 0 0
 
         #Engine selection
-        grid [frame $w.sep1 -height 10] -sticky news -padx 10
-        label $w.engine -font font_Bold -text "[tr Engine]:"
+        grid [ttk::frame $w.sep1 -height 10] -sticky news -padx 10
+        ttk::label $w.engine -font font_Bold -text "[tr Engine]:"
         grid $w.engine -sticky w -padx 10
         grid [ttk::frame $w.e] -sticky news -padx 10
         ttk::treeview $w.e.engines -columns {0 1} -selectmode browse -show {} -height 4
@@ -194,22 +194,22 @@ namespace eval tactics {
 
         grid [ttk::frame $w.t] -sticky news -padx 10
         grid columnconfigure $w.t 2 -weight 1
-        label $w.t.analabel -text "[tr SecondsPerMove]: "
-        scale $w.t.analysisTime -orient horizontal -from 1 -to 60 -length 120 -variable ::tactics::analysisTime \
-                -showvalue 0 -command { ::utils::validate::roundScale ::tactics::analysisTime 1 }
-        label $w.t.value -textvar ::tactics::analysisTime
+        ttk::label $w.t.analabel -text "[tr SecondsPerMove]: "
+        ttk::scale $w.t.analysisTime -orient horizontal -from 1 -to 60 -length 120 -variable ::tactics::analysisTime \
+                -command { ::utils::validate::roundScale ::tactics::analysisTime 1 }
+        ttk::label $w.t.value -textvar ::tactics::analysisTime
         grid $w.t.analabel  $w.t.value $w.t.analysisTime -sticky news
         
 
         #BaseDir selection
-        grid [frame $w.sep2 -height 20] -sticky news -padx 10 -pady 10
-        grid [frame $w.d] -sticky news -padx 10 -pady 10
-        label $w.d.lbl -font font_Bold -text "[tr ChooseTrainingBase]:"
+        grid [ttk::frame $w.sep2 -height 20] -sticky news -padx 10 -pady 10
+        grid [ttk::frame $w.d] -sticky news -padx 10 -pady 10
+        ttk::label $w.d.lbl -font font_Bold -text "[tr ChooseTrainingBase]:"
         grid $w.d.lbl -sticky w -columnspan 3
         grid columnconfigure $w.d 1 -weight 1
-        button $w.d.selectDir -image tb_open -command "setTacticsBasesDir; ::tactics::configValidDir $w"
-        label $w.d.basedir -textvariable scidBasesDir
-        button $w.d.search -text [tr Search]
+        ttk::button $w.d.selectDir -image tb_open -command "setTacticsBasesDir; ::tactics::configValidDir $w"
+        ttk::label $w.d.basedir -textvariable scidBasesDir
+        ttk::button $w.d.search -text [tr Search]
         grid $w.d.selectDir $w.d.basedir $w.d.search -sticky w -padx 10
 
 

@@ -72,7 +72,6 @@ proc ::crosstab::Open {} {
   setWinLocation $w
   
   menu $w.menu
-  $w configure -menu $w.menu
   $w.menu add cascade -label CrosstabFile -menu $w.menu.file
   $w.menu add cascade -label CrosstabEdit -menu $w.menu.edit
   $w.menu add cascade -label CrosstabOpt -menu $w.menu.opt
@@ -248,10 +247,9 @@ proc ::crosstab::Open {} {
   grid $w.f.xbar -row 1 -column 0 -sticky nesw
   grid rowconfig $w.f 0 -weight 1 -minsize 0
   grid columnconfig $w.f 0 -weight 1 -minsize 0
-  button $w.b.stop -textvar ::tr(Stop) -state disabled \
+  ttk::button $w.b.stop -textvar ::tr(Stop) -state disabled \
       -command { set ::htext::interrupt 1 }
-  menubutton $w.b.type -text "" -menu $w.b.type.menu \
-      -relief raised -bd 2 -indicatoron 1
+  ttk::menubutton $w.b.type -text "" -menu $w.b.type.menu
   menu $w.b.type.menu
   $w.b.type.menu add radiobutton -label [tr CrosstabOptAll] \
       -variable crosstab(type) -value allplay -command crosstabWin
@@ -261,16 +259,16 @@ proc ::crosstab::Open {} {
       -variable crosstab(type) -value knockout -command crosstabWin
   $w.b.type.menu add radiobutton -label [tr CrosstabOptAuto] \
       -variable crosstab(type) -value auto -command crosstabWin
-  button $w.b.update -textvar ::tr(Update) -command crosstabWin
-  button $w.b.cancel -textvar ::tr(Close) -command {
+  ttk::button $w.b.update -textvar ::tr(Update) -command crosstabWin
+  ttk::button $w.b.cancel -textvar ::tr(Close) -command {
     focus .
     destroy .crosstabWin
   }
-  button $w.b.setfilter -textvar ::tr(SetFilter) -command "
+  ttk::button $w.b.setfilter -textvar ::tr(SetFilter) -command "
     sc_filter reset $::crosstab(dbase) dbfilter empty
     $w.b.addfilter invoke
   "
-  button $w.b.addfilter -textvar ::tr(AddToFilter) -command {
+  ttk::button $w.b.addfilter -textvar ::tr(AddToFilter) -command {
     set curr_base [sc_base current]
     sc_base switch $::crosstab(dbase)
     sc_game crosstable filter

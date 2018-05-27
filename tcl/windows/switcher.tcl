@@ -532,7 +532,7 @@ proc changeBaseType {baseNum} {
   $w.t tag configure selected -background lightSteelBlue
 
   ttk::scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
-  pack [frame $w.b] -side bottom -pady 5
+  pack [ttk::frame $w.b] -side bottom -pady 5
   pack $w.yscroll -side right -fill y
   pack $w.t -side left -fill both -expand yes
 
@@ -689,7 +689,7 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
   autoscrollframe -bars y $w.border canvas $w.c -highlightthickness 0
 
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
-    set f [frame $w.c.f$i -background white -borderwidth 1 -relief raised]
+    set f [ttk::frame $w.c.f$i -borderwidth 1 -relief raised]
     $w.c create window 0 0 -window $w.c.f$i -anchor nw -tag tag$i
 
     set f $w.c.f$i
@@ -731,7 +731,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
       set color white
       if {$i == $selected} { set color lightSteelBlue }
 
-      $w.c.f$i configure -background $color
+#      $w.c.f$i configure -background $color
       if {$icons} {
         set dbtype [sc_base extra $i type]
         if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }

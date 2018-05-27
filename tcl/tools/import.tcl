@@ -10,9 +10,9 @@ proc importPgnGame {} {
   set w [toplevel .importWin]
   wm title $w "Scid: Import PGN game"
   wm minsize $w 50 5
-  frame $w.b
+  ttk::frame $w.b
   pack $w.b -side bottom
-  set pane [::utils::pane::Create $w.pane edit err 650 300 0.8]
+  set pane [::utils::pane::Create $w.pane edit err 580 300 0.8]
   pack $pane -side top -expand true -fill both
   set edit $w.pane.edit
   text $edit.text -height 12 -width 80 -wrap none -background white \
@@ -44,20 +44,20 @@ proc importPgnGame {} {
   pack $pane.err.scroll -side right -fill y
   pack $pane.err.text -side left -expand true -fill both
   
-  button $w.b.paste -text "$::tr(PasteCurrentGame) (Alt-P)" -command {
+  ttk::button $w.b.paste -text "$::tr(PasteCurrentGame) (Alt-P)" -command {
     .importWin.pane.edit.text delete 1.0 end
     .importWin.pane.edit.text insert end [sc_game pgn -width 70]
     .importWin.pane.err.text configure -state normal
     .importWin.pane.err.text delete 1.0 end
     .importWin.pane.err.text configure -state disabled
   }
-  button $w.b.clear -text "$::tr(Clear) (Alt-C)" -command {
+  ttk::button $w.b.clear -text "$::tr(Clear) (Alt-C)" -command {
     .importWin.pane.edit.text delete 1.0 end
     .importWin.pane.err.text configure -state normal
     .importWin.pane.err.text delete 1.0 end
     .importWin.pane.err.text configure -state disabled
   }
-  button $w.b.ok -text "$::tr(Import) (Alt-I)" -command {
+  ttk::button $w.b.ok -text "$::tr(Import) (Alt-I)" -command {
     set err [catch {sc_game import \
           [.importWin.pane.edit.text get 1.0 end]} result]
     .importWin.pane.err.text configure -state normal
@@ -68,10 +68,10 @@ proc importPgnGame {} {
       ::notify::GameChanged
     }
   }
-  button $w.b.cancel -textvar ::tr(Close) -command {
+  ttk::button $w.b.cancel -textvar ::tr(Close) -command {
     destroy .importWin; focus .
   }
-  frame $w.b.space -width 20
+  ttk::frame $w.b.space
   pack $w.b.paste $w.b.clear $w.b.space -side left -padx 2 -pady 2
   pack $w.b.cancel $w.b.ok -side right -padx 10 -pady 5
   # Paste the current selected text automatically:
@@ -167,12 +167,12 @@ proc importPgnFile {{base} {fnames ""}} {
   $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
     -fill black -text "0:00 / 0:00"
 
-  frame $w.buttons
-  button $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel}
-  button $w.buttons.close -textvar ::tr(Close) -command "focus .; destroy $w"
+  ttk::frame $w.buttons
+  ttk::button $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel}
+  ttk::button $w.buttons.close -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.buttons.close $w.buttons.stop -side right -ipadx 5 -padx 5 -pady 2
     
-  pack [frame $w.tf] -side top -expand yes -fill both
+  pack [ttk::frame $w.tf] -side top -expand yes -fill both
   text $w.text -height 8 -width 60 -background gray90 \
       -wrap none -setgrid 1 -yscrollcommand "$w.ybar set"
   ttk::scrollbar $w.ybar -command "$w.text yview"

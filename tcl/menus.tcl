@@ -684,18 +684,18 @@ proc configInformant {} {
   toplevel $w
   ::setTitle $w $::tr(ConfigureInformant)
   setWinLocation $w
-  frame $w.spinF
+  ttk::frame $w.spinF
   set idx 0
   set row 0
   
   foreach i [lsort [array names informant]] {
-    label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
-    label $w.spinF.label$idx -text $i
+    ttk::label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
+    ttk::label $w.spinF.label$idx -text $i
      # Allow the configuration of "won game" up to "Mate found"
      if {$i == "\"++-\""} {
-         spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+         ttk::spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
      } else {
-         spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+         ttk::spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
      }
     grid $w.spinF.labelExpl$idx -row $row -column 0 -sticky w
     incr row
@@ -705,7 +705,7 @@ proc configInformant {} {
     incr idx
   }
   
-  button $w.close -textvar ::tr(Close) -command "destroy $w"
+  ttk::button $w.close -textvar ::tr(Close) -command "destroy $w"
   pack $w.spinF $w.close
   bind $w <Configure> "recordWinSize $w"
 }
@@ -756,22 +756,22 @@ proc setTableBaseDir {} {
   set w .tbDialog
   toplevel $w
   ::setTitle $w Scid
-  label $w.title -text "Select up to 4 table base directories:"
+  ttk::label $w.title -text "Select up to 4 table base directories:"
   pack $w.title -side top
   foreach i {1 2 3 4} {
     set tempDir(tablebase$i) $initialDir(tablebase$i)
-    pack [frame $w.f$i] -side top -pady 3 -fill x -expand yes
-    entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
+    pack [ttk::frame $w.f$i] -side top -pady 3 -fill x -expand yes
+    ttk::entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
     bindFocusColors $w.f$i.e
-    button $w.f$i.b -text "..." -pady 2 -command [list chooseTableBaseDir $i]
+    ttk::button $w.f$i.b -text "..." -command [list chooseTableBaseDir $i]
     pack $w.f$i.b -side right -padx 2
     pack $w.f$i.e -side left -padx 2 -fill x -expand yes
   }
   addHorizontalRule $w
-  pack [frame $w.b] -side top -fill x
-  button $w.b.ok -text "OK" \
+  pack [ttk::frame $w.b] -side top -fill x
+  ttk::button $w.b.ok -text "OK" \
       -command "catch {grab release $w; destroy $w}; openTableBaseDirs"
-  button $w.b.cancel -text $::tr(Cancel) \
+  ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w; destroy $w}"
   pack $w.b.cancel $w.b.ok -side right -padx 2
   bind $w <Escape> "$w.b.cancel invoke"

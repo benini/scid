@@ -484,9 +484,9 @@ namespace eval fics {
     grid [ttk::frame $w.f]
 
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
-    spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $w.f.linc -text [::tr "FICSIncrement"]
-    spinbox $w.f.sbTime2 -background white -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbTime2 -background white -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.f.linit -column 0 -row 0 -sticky ew
     grid $w.f.sbTime1 -column 1 -row 0 -sticky ew
     grid $w.f.linc -column 0 -row 1 -sticky ew
@@ -505,8 +505,8 @@ namespace eval fics {
     grid $w.f.rb3 -column 2 -row 4 -sticky ew
 
     ttk::checkbutton $w.f.cblimitrating -text [::tr "RatingRange"] -variable ::fics::findopponent(limitrating)
-    spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
-    spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.f.cblimitrating -column 0 -row 5 -columnspan 2 -sticky ew
     grid $w.f.sbrating1 -column 0 -row 6 -sticky ew
     grid $w.f.sbrating2 -column 1 -row 6 -sticky ew

@@ -357,17 +357,17 @@ proc playerInfo {{player ""}} {
     wm title $w "Scid: [tr ToolsPInfo]"
     ::setTitle $w "Scid: [tr ToolsPInfo]"
     wm minsize $w 40 5
-    pack [frame $w.b2] -side bottom -fill x
-    pack [frame $w.b] -side bottom -fill x
-    button $w.b.graph -text [tr ToolsRating] \
+    pack [ttk::frame $w.b2] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
+    ttk::button $w.b.graph -text [tr ToolsRating] \
       -command {::tools::graphs::rating::Refresh player $playerInfoName}
-    button $w.b.edit -text $::tr(PInfoEditRatings) -command {
+    ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
       makeNameEditor
       setNameEditorType rating
       set editName $playerInfoName
       set editNameSelect crosstable
     }
-    button $w.b2.report -text [tr ToolsPlayerReport] \
+    ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
       -command {::preport::preportDlg $playerInfoName}
     dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
     dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo $playerInfoName}
@@ -383,7 +383,7 @@ proc playerInfo {{player ""}} {
     #text $w.text -font font_Regular -background white \
     #  -width $::winWidth($w) -height $::winHeight($w) \
     #  -setgrid 1 -wrap none -yscrollcommand "$w.ybar set"
-    label $w.photo -background white
+    ttk::label $w.photo -background white
     #pack $w.text -side top -fill both -expand yes
     pack $w.frame -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"

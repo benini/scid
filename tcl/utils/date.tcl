@@ -37,18 +37,18 @@ proc ::utils::date::chooser {{date "now"}} {
   set win .dateChooser
   toplevel $win
   canvas $win.cal -width 300 -height 220
-  pack [frame $win.b] -side bottom -fill x
-  button $win.b.ok -text "OK" -command "destroy $win"
-  button $win.b.cancel -text $::tr(Cancel) -command "
+  pack [ttk::frame $win.b] -side bottom -fill x
+  ttk::button $win.b.ok -text "OK" -command "destroy $win"
+  ttk::button $win.b.cancel -text $::tr(Cancel) -command "
     set ::utils::date::_selected {}
     destroy $win"
   pack $win.b.cancel $win.b.ok -side right -padx 5 -pady 5
   pack $win.cal -side top -expand yes -fill both
 
-  button $win.cal.prevY -image tb_start -command "::utils::date::_month $win -12"
-  button $win.cal.prev -image tb_prev -command "::utils::date::_month $win -1"
-  button $win.cal.next -image tb_next -command "::utils::date::_month $win +1"
-  button $win.cal.nextY -image tb_end -command "::utils::date::_month $win +12"
+  ttk::button $win.cal.prevY -image tb_start -command "::utils::date::_month $win -12"
+  ttk::button $win.cal.prev -image tb_prev -command "::utils::date::_month $win -1"
+  ttk::button $win.cal.next -image tb_next -command "::utils::date::_month $win +1"
+  ttk::button $win.cal.nextY -image tb_end -command "::utils::date::_month $win +12"
   bind $win.cal <Configure> "::utils::date::_redraw $win"
   bind $win.cal <Double-Button-1> "destroy $win"
   bind $win <Escape> "$win.b.cancel invoke"

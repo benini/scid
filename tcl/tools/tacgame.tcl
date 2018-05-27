@@ -204,7 +204,7 @@ namespace eval tacgame {
     $w.fopening.fOpeningList.lbOpening see $::tacgame::chosenOpening
     
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
-    pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
+    pack $w.fopening.fOpeningList.lbOpening -side left -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar  -side right -fill y
     pack $w.fopening.fOpeningList -expand yes -fill both -side top -expand 1
     

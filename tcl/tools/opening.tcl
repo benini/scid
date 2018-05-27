@@ -47,23 +47,23 @@ namespace eval opening {
     toplevel $w
     wm title $w $::tr(Repertoiretrainingconfiguration)
     setWinLocation $w
-    frame $w.f0 -relief groove
+    ttk::frame $w.f0 -relief groove
     
-    radiobutton $w.f0.rbRepColorW -value "w" -variable ::opening::repColor -text $::tr(white)
-    radiobutton $w.f0.rbRepColorB -value "b" -variable ::opening::repColor -text $::tr(black)
-    radiobutton $w.f0.rbRepColorWB -value "wb" -variable ::opening::repColor -text $::tr(both)
+    ttk::radiobutton $w.f0.rbRepColorW -value "w" -variable ::opening::repColor -text $::tr(white)
+    ttk::radiobutton $w.f0.rbRepColorB -value "b" -variable ::opening::repColor -text $::tr(black)
+    ttk::radiobutton $w.f0.rbRepColorWB -value "wb" -variable ::opening::repColor -text $::tr(both)
     pack $w.f0.rbRepColorW $w.f0.rbRepColorB $w.f0.rbRepColorWB -side left  -expand yes -fill both
     
-    frame $w.f1
-    checkbutton $w.f1.cbPlayerBestMove -text $::tr(PlayerBestMove) -variable ::opening::playerBestMove
-    checkbutton $w.f1.cbOpBestMove -text $::tr(OpponentBestMove) -variable ::opening::opBestMove
-    checkbutton $w.f1.cbOnlyFlaggedLines -text $::tr(OnlyFlaggedLines) -variable ::opening::onlyFlaggedLines
-    checkbutton $w.f1.cbResetStats -text $::tr(resetStats) -variable ::opening::resetStats
+    ttk::frame $w.f1
+    ttk::checkbutton $w.f1.cbPlayerBestMove -text $::tr(PlayerBestMove) -variable ::opening::playerBestMove
+    ttk::checkbutton $w.f1.cbOpBestMove -text $::tr(OpponentBestMove) -variable ::opening::opBestMove
+    ttk::checkbutton $w.f1.cbOnlyFlaggedLines -text $::tr(OnlyFlaggedLines) -variable ::opening::onlyFlaggedLines
+    ttk::checkbutton $w.f1.cbResetStats -text $::tr(resetStats) -variable ::opening::resetStats
     pack $w.f1.cbPlayerBestMove $w.f1.cbOpBestMove $w.f1.cbOnlyFlaggedLines $w.f1.cbResetStats -anchor w -side top
     
-    frame $w.f2
-    button $w.f2.ok -text $::tr(Continue) -command " destroy $w ; ::opening::openRep"
-    button $w.f2.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
+    ttk::frame $w.f2
+    ttk::button $w.f2.ok -text $::tr(Continue) -command " destroy $w ; ::opening::openRep"
+    ttk::button $w.f2.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
     pack $w.f2.ok $w.f2.cancel -expand yes -side left -padx 20 -pady 2
     
     pack $w.f0 $w.f1 $w.f2 -side top -fill both
@@ -461,29 +461,29 @@ namespace eval opening {
     toplevel $w
     wm title $w $::tr(Openingtrainer)
     setWinLocation $w
-    frame $w.f1
-    frame $w.f2 -relief raised -bd 2
-    frame $w.f3
+    ttk::frame $w.f1
+    ttk::frame $w.f2 -relief raised
+    ttk::frame $w.f3
     
-    checkbutton $w.f1.cbDisplayCM  -text $::tr(DisplayCM) -variable ::opening::displayCM -relief flat \
+    ttk::checkbutton $w.f1.cbDisplayCM  -text $::tr(DisplayCM) -variable ::opening::displayCM \
         -command "set fenLastUpdate 0 ; ::opening::update_tCM 1"
-    checkbutton $w.f1.cbDisplayCMValue  -text $::tr(DisplayCMValue) -variable ::opening::displayCMValue -relief flat \
+    ttk::checkbutton $w.f1.cbDisplayCMValue  -text $::tr(DisplayCMValue) -variable ::opening::displayCMValue \
         -command "set fenLastUpdate 0 ; ::opening::update_tCM 1"
-    label $w.f1.lCM -textvariable ::opening::tCM
+    ttk::label $w.f1.lCM -textvariable ::opening::tCM
     pack $w.f1.cbDisplayCM $w.f1.cbDisplayCMValue -anchor w -side top
     pack $w.f1.lCM -side top -anchor center
     
-    checkbutton $w.f2.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats -relief flat \
+    ttk::checkbutton $w.f2.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats \
         -command "::opening::updateStats 1"
-    label $w.f2.lStats1 -textvariable ::opening::lStats1 -width 4 -anchor center -background green
-    label $w.f2.lStats2 -textvariable ::opening::lStats2 -width 4 -anchor center -background yellow
-    label $w.f2.lStats3 -textvariable ::opening::lStats3 -width 4 -anchor center -background red
-    label $w.f2.lStats4 -textvariable ::opening::lStats4 -width 4 -anchor center -background white
+    ttk::label $w.f2.lStats1 -textvariable ::opening::lStats1 -width 4 -anchor center -background green
+    ttk::label $w.f2.lStats2 -textvariable ::opening::lStats2 -width 4 -anchor center -background yellow
+    ttk::label $w.f2.lStats3 -textvariable ::opening::lStats3 -width 4 -anchor center -background red
+    ttk::label $w.f2.lStats4 -textvariable ::opening::lStats4 -width 4 -anchor center -background white
     
-    label $w.f2.lStats1exp -text $::tr(NumberOfGoodMovesPlayed)
-    label $w.f2.lStats2exp -text $::tr(NumberOfDubiousMovesPlayed)
-    label $w.f2.lStats3exp -text $::tr(NumberOfMovesPlayedNotInRepertoire)
-    label $w.f2.lStats4exp -text $::tr(NumberOfTimesPositionEncountered)
+    ttk::label $w.f2.lStats1exp -text $::tr(NumberOfGoodMovesPlayed)
+    ttk::label $w.f2.lStats2exp -text $::tr(NumberOfDubiousMovesPlayed)
+    ttk::label $w.f2.lStats3exp -text $::tr(NumberOfMovesPlayedNotInRepertoire)
+    ttk::label $w.f2.lStats4exp -text $::tr(NumberOfTimesPositionEncountered)
     
     grid $w.f2.cbDisplayStats -row 0 -column 0 -columnspan 2
     grid $w.f2.lStats4 -row 1 -column 0 -sticky w -padx 5
@@ -497,8 +497,8 @@ namespace eval opening {
     grid $w.f2.lStats2exp -row 3 -column 1 -sticky w -padx 5
     grid $w.f2.lStats3exp -row 4 -column 1 -sticky w -padx 5
     
-    button $w.f3.report -textvar ::tr(ShowReport) -command ::opening::report
-    button $w.f3.close -textvar ::tr(Abort) -command ::opening::endTraining
+    ttk::button $w.f3.report -textvar ::tr(ShowReport) -command ::opening::report
+    ttk::button $w.f3.close -textvar ::tr(Abort) -command ::opening::endTraining
     
     pack $w.f3.report $w.f3.close -side top -anchor center -fill x
     pack $w.f1 $w.f2 $w.f3 -fill x
@@ -530,7 +530,7 @@ namespace eval opening {
     set cm [ getCm ]
     
     if { [llength $cm] == 0 } {
-      .openingWin.f1.lCM configure -bg LightCoral
+      .openingWin.f1.lCM configure -background LightCoral
       set tCM $::tr(EndOfVar)
       set fenLastUpdate [sc_pos fen]
       return
@@ -538,7 +538,7 @@ namespace eval opening {
     
     if { !$displayCM } { set tCM "" ; set fenLastUpdate 0 ; return }
     
-    .openingWin.f1.lCM configure -bg linen
+    .openingWin.f1.lCM configure -background linen
     
     set tmp ""
     
@@ -695,13 +695,13 @@ namespace eval opening {
     wm title $w $::tr(Openingtrainer)
     setWinLocation $w
     
-    frame $w.ft
+    ttk::frame $w.ft
     text $w.ft.text -height 10 -width 40 -wrap word -background white
     pack $w.ft.text
     pack $w.ft
     
-    frame $w.fclose
-    button $w.fclose.close -textvar ::tr(Close) -command "destroy $w"
+    ttk::frame $w.fclose
+    ttk::button $w.fclose.close -textvar ::tr(Close) -command "destroy $w"
     pack $w.fclose.close
     
     # builds stats report

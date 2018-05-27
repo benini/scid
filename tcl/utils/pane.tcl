@@ -30,30 +30,30 @@ proc ::utils::pane::Create {win pane1 pane2 width height {ratio 0.5} {orient ver
   set _data($win,min) 0.1
   set _data($win,max) 0.9
 
-  frame $win -width $width -height $height
-  frame $win.$pane1
-  frame $win.$pane2
+  ttk::frame $win -width $width -height $height
+  ttk::frame $win.$pane1
+  ttk::frame $win.$pane2
   if {$vertical} {
     place $win.$pane1 -relx 0.5 -rely 0 -anchor n -relwidth 1.0 -relheight 0.5
     place $win.$pane2 -relx 0.5 -rely 1 -anchor s -relwidth 1.0 -relheight 0.5
 
-    frame $win.pane_sash -height 2 -borderwidth 2 -relief groove \
+    ttk::frame $win.pane_sash -height 2 -borderwidth 2 -relief groove \
       -cursor sb_v_double_arrow ;# -background black
     place $win.pane_sash -relx 0.5 -rely 0.5 -relwidth 1.0 -anchor c
 
-    frame $win.pane_grip -width 20 -height 7 -borderwidth 1 -relief solid \
-      -cursor sb_v_double_arrow -background gray
+    ttk::frame $win.pane_grip -width 20 -height 7 -borderwidth 1 -relief solid \
+      -cursor sb_v_double_arrow
     place $win.pane_grip -relx 0.95 -rely 0.5 -anchor c
   } else {
     place $win.$pane1 -relx 0 -rely 0.5 -anchor w -relwidth 0.5 -relheight 1.0
     place $win.$pane2 -relx 1 -rely 0.5 -anchor e -relwidth 0.5 -relheight 1.0
 
-    frame $win.pane_sash -width 1 -borderwidth 1 -relief flat \
-      -cursor sb_h_double_arrow -background black
+    ttk::frame $win.pane_sash -width 1 -borderwidth 1 -relief flat \
+      -cursor sb_h_double_arrow
     place $win.pane_sash -relx 0.5 -rely 0.5 -relheight 1.0 -anchor c
 
-    frame $win.pane_grip -height 20 -width 7 -borderwidth 1 -relief solid \
-      -cursor sb_h_double_arrow -background gray
+    ttk::frame $win.pane_grip -height 20 -width 7 -borderwidth 1 -relief solid \
+      -cursor sb_h_double_arrow
     place $win.pane_grip -relx 0.5 -rely 0.95 -anchor c
   }
 
@@ -84,18 +84,18 @@ proc ::utils::pane::SetRange {win min max} {
 }
 
 proc ::utils::pane::Enter {win} {
-  $win.pane_sash configure -background yellow
-  $win.pane_grip configure -background yellow
+#  $win.pane_sash configure -background yellow
+#  $win.pane_grip configure -background yellow
 }
 
 proc ::utils::pane::Leave {win} {
-  $win.pane_sash configure -background black
-  $win.pane_grip configure -background black
+#  $win.pane_sash configure -background black
+#  $win.pane_grip configure -background black
 }
 
 proc ::utils::pane::Grab {win} {
-  $win.pane_sash configure -background red
-  $win.pane_grip configure -background red
+#  $win.pane_sash configure -background red
+#  $win.pane_grip configure -background red
 }
 
 proc ::utils::pane::Drag {win y} {
@@ -129,8 +129,8 @@ proc ::utils::pane::Drag {win y} {
 proc ::utils::pane::Drop {win y} {
   set frac [::utils::pane::Drag $win $y]
   ::utils::pane::Divide $win $frac
-  $win.pane_sash configure -background black
-  $win.pane_grip configure -background gray
+#  $win.pane_sash configure -background black
+#  $win.pane_grip configure -background gray
 }
 
 proc ::utils::pane::Divide {win frac} {

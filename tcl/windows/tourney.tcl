@@ -67,7 +67,7 @@ proc ::tourney::Open {} {
       -variable ::tourney::sort -value $name -command {::tourney::refresh}
   }
 
-  foreach i {t o1 o2 o3 b} {frame $w.$i}
+  foreach i {t o1 o2 o3 b} {ttk::frame $w.$i}
   text $w.t.text -width 75 -height 22 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
     -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
@@ -90,17 +90,17 @@ proc ::tourney::Open {} {
   set font font_Small
   set fbold font_SmallBold
   set f $w.o1
-  label $f.from -text "[tr TmtSortDate]:" -font $fbold
-  entry $f.efrom -textvariable ::tourney::start -width 10 -font $font
+  ttk::label $f.from -text "[tr TmtSortDate]:" -font $fbold
+  ttk::entry $f.efrom -textvariable ::tourney::start -width 10 -font $font
   bindFocusColors $f.efrom
   bind $f.efrom <FocusOut> +::tourney::check
-  label $f.to -text "-" -font $font
-  entry $f.eto -textvariable ::tourney::end -width 10 -font $font
+  ttk::label $f.to -text "-" -font $font
+  ttk::entry $f.eto -textvariable ::tourney::end -width 10 -font $font
   bindFocusColors $f.eto
   bind $f.eto <FocusOut> +::tourney::check
   pack $f.from $f.efrom $f.to $f.eto -side left
 
-  label $f.cn -text "  $::tr(Country):" -font $fbold
+  ttk::label $f.cn -text "  $::tr(Country):" -font $fbold
   ttk::combobox $f.ecn -width 4 -textvar ::tourney::country -values {{} AUT CZE DEN ENG ESP FRA GER GRE HUN ITA NED POL RUS \
         SCG SUI SWE USA YUG}
   
@@ -108,7 +108,7 @@ proc ::tourney::Open {} {
   bind $f.ecn <FocusOut> +::tourney::check
   pack $f.cn $f.ecn -side left
 
-  label $f.size -text $::tr(TmtLimit:) -font $fbold
+  ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
   ttk::combobox $f.esize -width 4 -justify right -textvar ::tourney::size -values {10 20 50 100 200 500 1000}
   trace variable ::tourney::size w {::utils::validate::Integer 1000 0}
   bindFocusColors $f.esize
@@ -116,53 +116,53 @@ proc ::tourney::Open {} {
   pack $f.esize $f.size -side right
 
   set f $w.o2
-  label $f.players -text "[tr TmtSortPlayers]:" -font $fbold
-  entry $f.pmin -textvariable ::tourney::minPlayers \
+  ttk::label $f.players -text "[tr TmtSortPlayers]:" -font $fbold
+  ttk::entry $f.pmin -textvariable ::tourney::minPlayers \
     -width 3 -justify right -font $font
   bindFocusColors $f.pmin
   bind $f.pmin <FocusOut> +::tourney::check
-  label $f.pto -text "-"
-  entry $f.pmax -textvariable ::tourney::maxPlayers \
+  ttk::label $f.pto -text "-"
+  ttk::entry $f.pmax -textvariable ::tourney::maxPlayers \
     -width 3 -justify right -font $font
   bindFocusColors $f.pmax
   bind $f.pmax <FocusOut> +::tourney::check
   pack $f.players $f.pmin $f.pto $f.pmax -side left
 
-  label $f.games -text "   [tr TmtSortGames]:" -font $fbold
-  entry $f.gmin -textvariable ::tourney::minGames \
+  ttk::label $f.games -text "   [tr TmtSortGames]:" -font $fbold
+  ttk::entry $f.gmin -textvariable ::tourney::minGames \
     -width 4 -justify right -font $font
   bindFocusColors $f.gmin
   bind $f.gmin <FocusOut> +::tourney::check
-  label $f.gto -text "-" -font $font
-  entry $f.gmax -textvariable ::tourney::maxGames \
+  ttk::label $f.gto -text "-" -font $font
+  ttk::entry $f.gmax -textvariable ::tourney::maxGames \
     -width 4 -justify right -font $font
   bindFocusColors $f.gmax
   bind $f.gmax <FocusOut> +::tourney::check
   pack $f.games $f.gmin $f.gto $f.gmax -side left
-  label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
-  entry $f.elomin -textvariable ::tourney::minElo \
+  ttk::label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
+  ttk::entry $f.elomin -textvariable ::tourney::minElo \
     -width 5 -justify right -font $font
   bindFocusColors $f.elomin
-  label $f.eto -text "-" -font $font
-  entry $f.elomax -textvariable ::tourney::maxElo \
+  ttk::label $f.eto -text "-" -font $font
+  ttk::entry $f.elomax -textvariable ::tourney::maxElo \
     -width 5 -justify right -font $font
   bindFocusColors $f.elomax
   pack $f.elomax $f.eto $f.elomin $f.elolab -side right
 
   set f $w.o3
-  label $f.sitelab -text "$::tr(Site):" -font $fbold
+  ttk::label $f.sitelab -text "$::tr(Site):" -font $fbold
   ttk::combobox $f.site -textvariable ::tourney::site -width 12
   ::utils::history::SetCombobox ::tourney::site $f.site
   bindFocusColors $f.site
   pack $f.sitelab $f.site -side left
 
-  label $f.eventlab -text "   $::tr(Event):" -font $fbold
+  ttk::label $f.eventlab -text "   $::tr(Event):" -font $fbold
   ttk::combobox $f.event -textvariable ::tourney::event -width 12
   ::utils::history::SetCombobox ::tourney::event $f.event
   bindFocusColors $f.event
   pack $f.eventlab $f.event -side left
 
-  label $f.playerlab -text "$::tr(Player):" -font $fbold
+  ttk::label $f.playerlab -text "$::tr(Player):" -font $fbold
   ttk::combobox $f.player -textvariable ::tourney::player -width 12
   ::utils::history::SetCombobox ::tourney::player $f.player
   bindFocusColors $f.player

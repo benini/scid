@@ -499,23 +499,23 @@ proc ::windows::gamelist::createMenu_ {w} {
 	::windows::switcher::Create $w.database $w
 
 	ttk::frame $w.filter -padding {4 5 6 0}
-	ttk::frame $w.filter.b -borderwidth 2 -relief groove
+	ttk::frame $w.filter.b
 	grid $w.filter.b -sticky news
 	grid rowconfigure $w.filter 0 -weight 1
 	grid columnconfigure $w.filter 0 -weight 1
 	set bgcolor [ttk::style lookup Button.label -background]
-	button $w.filter.b.rfilter -image tb_rfilter -background $bgcolor \
-		-command "::windows::gamelist::filter_ $w r" -width 24 -height 24
-	button $w.filter.b.bsearch -image tb_bsearch -background $bgcolor \
-		-command "::windows::gamelist::filter_ $w b" -width 24 -height 24
-	button $w.filter.b.hsearch -image tb_hsearch -background $bgcolor \
-		-command "::windows::gamelist::filter_ $w h" -width 24 -height 24
-	button $w.filter.b.msearch -image tb_msearch -background $bgcolor \
-		-command "::windows::gamelist::filter_ $w m" -width 24 -height 24
-	button $w.filter.b.tmt -image tb_tmt -background $bgcolor \
-		-command ::tourney::toggle -width 24 -height 24
-	button $w.filter.b.crosst -image tb_crosst -background $bgcolor \
-		-command toggleCrosstabWin -width 24 -height 24
+	ttk::button $w.filter.b.rfilter -image tb_rfilter  \
+		-command "::windows::gamelist::filter_ $w r"
+	ttk::button $w.filter.b.bsearch -image tb_bsearch \
+		-command "::windows::gamelist::filter_ $w b"
+	ttk::button $w.filter.b.hsearch -image tb_hsearch \
+		-command "::windows::gamelist::filter_ $w h"
+	ttk::button $w.filter.b.msearch -image tb_msearch \
+		-command "::windows::gamelist::filter_ $w m"
+	ttk::button $w.filter.b.tmt -image tb_tmt \
+		-command ::tourney::toggle
+	ttk::button $w.filter.b.crosst -image tb_crosst \
+		-command toggleCrosstabWin
 	#TODO: rewrite the tooltip system (most tooltip are not translated when you change language)
 	::utils::tooltip::Set "$w.filter.b.rfilter" "$::helpMessage($::language,SearchReset)"
 	::utils::tooltip::Set "$w.filter.b.bsearch" "$::helpMessage($::language,SearchCurrent)"
@@ -749,8 +749,8 @@ namespace eval ::glist_Ly {
 		if {[winfo exists $w.layout.b.c.f]} { destroy $w.layout.b.c.f}
 		ttk::frame $w.layout.b.c.f -padding 5
 		$w.layout.b.c create window 0 0 -window $w.layout.b.c.f -anchor nw
-		tk::entry $w.layout.b.c.f.text_new -textvariable ::gamelistNewLayout -font font_Small
-		tk::button $w.layout.b.c.f.new -image tb_new -command "::glist_Ly::New_ $w"
+		ttk::entry $w.layout.b.c.f.text_new -textvariable ::gamelistNewLayout -width 12
+		ttk::button $w.layout.b.c.f.new -image tb_new -command "::glist_Ly::New_ $w"
 		grid $w.layout.b.c.f.text_new $w.layout.b.c.f.new
 		ttk::frame $w.layout.b.c.f.sep -padding { 0 4 0 4 }
 		ttk::separator $w.layout.b.c.f.sep.line
@@ -760,8 +760,8 @@ namespace eval ::glist_Ly {
 		grid $w.layout.b.c.f.sep -columnspan 2 -sticky we
 		for {set i 0} {$i < [llength $::glist_Layouts]} {incr i} {
 			set name [lindex $::glist_Layouts $i]
-			tk::button $w.layout.b.c.f.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change_ $w $i" -bg lightSteelBlue
-			tk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del_ $w $i"
+			ttk::button $w.layout.b.c.f.layout$i -text $name -width 12 -command "::glist_Ly::Change_ $w $i"
+			ttk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del_ $w $i"
 			grid $w.layout.b.c.f.layout$i $w.layout.b.c.f.layoutDel$i -sticky we
 		}
 		after idle "::glist_Ly::AdjScrollbar_ $w.layout.b.c"

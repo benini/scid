@@ -119,7 +119,7 @@ proc ::ptrack::make {} {
   bind $w <Escape> "destroy $w"
   bind $w <F1> {helpWindow PTracker}
   image create photo ptrack -width $::ptrack::psize -height $::ptrack::psize
-  label $w.status -width 1 -anchor w -relief sunken -font font_Small
+  ttk::label $w.status -width 1 -anchor w -relief sunken -font font_Small
   pack $w.status -side bottom -fill x
 
   canvas $w.progress -height 20 -width 400 -bg white -relief solid -border 1
@@ -128,17 +128,17 @@ proc ::ptrack::make {} {
     -fill black -text "0:00 / 0:00"
   pack $w.progress -side bottom -pady 2
 
-  frame $w.bd
+  ttk::frame $w.bd
   pack $w.bd -side left -padx 2 -pady 4
 
-  frame $w.t
+  ttk::frame $w.t
   pack $w.t -side right -fill y -expand yes
-  pack [frame $w.gap -width 5] -side left
+  pack [ttk::frame $w.gap -width 5] -side left
 
-  frame $w.t.color
-  frame $w.t.mode
-  frame $w.t.moves
-  frame $w.t.buttons
+  ttk::frame $w.t.color
+  ttk::frame $w.t.mode
+  ttk::frame $w.t.moves
+  ttk::frame $w.t.buttons
   pack $w.t.buttons -side bottom -fill x
   pack $w.t.moves -side bottom
   pack $w.t.mode -side bottom
@@ -146,7 +146,7 @@ proc ::ptrack::make {} {
 
   set ::ptrack::shade {}
   for {set i 0} {$i < 64} {incr i} {
-    label $w.bd.sq$i -image ptrack -background white -border 1 -relief raised
+    ttk::label $w.bd.sq$i -image ptrack -background white -border 1 -relief raised
     set rank [expr {$i / 8}]
     set file [expr {$i % 8} ]
     grid $w.bd.sq$i -row [expr {7 - $rank} ] -column [expr {$file + 1} ]
@@ -154,37 +154,37 @@ proc ::ptrack::make {} {
   }
 
   foreach rank {1 2 3 4 5 6 7 8} {
-    label $w.bd.r$rank -text $rank -width 2
+    ttk::label $w.bd.r$rank -text $rank -width 2
     grid $w.bd.r$rank -column 0 -row [expr {8 - $rank} ]
   }
 
   foreach column {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
-    label $w.bd.f$file -text $file
+    ttk::label $w.bd.f$file -text $file
     grid $w.bd.f$file -row 8 -column $column
   }
 
-  grid [frame $w.bd.gap1 -height 5] -row 9 -column 0
+  grid [ttk::frame $w.bd.gap1 -height 5] -row 9 -column 0
 
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {r n b q k b n r} {
     set sq ${file}8
     set b $w.bd.p$sq
-    label $b -image b$p$::ptrack::psize -border 1 -relief raised
+    ttk::label $b -image b$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 10 -column $c
     bind $b <1> "::ptrack::select $sq"
   }
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {p p p p p p p p} {
     set sq ${file}7
     set b $w.bd.p$sq
-    label $b -image b$p$::ptrack::psize -border 1 -relief raised
+    ttk::label $b -image b$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 11 -column $c
     bind $b <1> "::ptrack::select $sq"
     bind $b <$::MB3> "::ptrack::select {a7 b7 c7 d7 e7 f7 g7 h7}"
   }
-  grid [frame $w.bd.gap2 -height 5] -row 12 -column 0
+  grid [ttk::frame $w.bd.gap2 -height 5] -row 12 -column 0
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {p p p p p p p p} {
     set sq ${file}2
     set b $w.bd.p$sq
-    label $b -image w$p$::ptrack::psize -border 1 -relief raised
+    ttk::label $b -image w$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 13 -column $c
     bind $b <ButtonPress-1> "::ptrack::select $sq"
     bind $b <$::MB3> "::ptrack::select {a2 b2 c2 d2 e2 f2 g2 h2}"
@@ -192,7 +192,7 @@ proc ::ptrack::make {} {
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {r n b q k b n r} {
     set sq ${file}1
     set b $w.bd.p$sq
-    label $b -image w$p$::ptrack::psize -border 1 -relief raised
+    ttk::label $b -image w$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 14 -column $c
     bind $b <Button-1> "::ptrack::select $sq"
   }
@@ -235,7 +235,7 @@ proc ::ptrack::make {} {
   ::ptrack::select $plist
 
   set f $w.t.text
-  pack [frame $f] -side top -fill both -expand yes -padx 2 -pady 2
+  pack [ttk::frame $f] -side top -fill both -expand yes -padx 2 -pady 2
   text $f.text -width 28 -height 1 -foreground black -background white \
     -yscrollcommand "$f.ybar set" -relief sunken -takefocus 0 \
     -wrap none -font font_Small
@@ -263,24 +263,24 @@ proc ::ptrack::make {} {
       -command "::ptrack::recolor $col"
   }
   $f.b configure -image ptrack_$::ptrack::color
-  label $f.label -text $::tr(GlistColor:) -font font_Bold
+  ttk::label $f.label -text $::tr(GlistColor:) -font font_Bold
   pack $f.label $f.b -side left -pady 5
 
   set f $w.t.mode
-  label $f.mode -text $::tr(TrackerStat:) -font font_Bold
+  ttk::label $f.mode -text $::tr(TrackerStat:) -font font_Bold
   grid $f.mode -row 0 -column 0
-  radiobutton $f.games -text $::tr(TrackerGames) -anchor w \
+  ttk::radiobutton $f.games -text $::tr(TrackerGames) \
     -variable ::ptrack::mode -value "-games"
-  radiobutton $f.time -text $::tr(TrackerTime) -anchor w \
+  ttk::radiobutton $f.time -text $::tr(TrackerTime) \
     -variable ::ptrack::mode -value "-time"
   grid $f.games -row 1 -column 0 -sticky we
   grid $f.time -row 2 -column 0 -sticky we
 
   set f $w.t.moves
-  label $f.lfrom -text $::tr(TrackerMoves:) -font font_Bold
-  entry $f.from -width 3 -justify right -textvariable ::ptrack::moves(start)
-  label $f.lto -text "-"
-  entry $f.to -width 3 -justify right -textvariable ::ptrack::moves(end)
+  ttk::label $f.lfrom -text $::tr(TrackerMoves:) -font font_Bold
+  ttk::entry $f.from -width 3 -justify right -textvariable ::ptrack::moves(start)
+  ttk::label $f.lto -text "-"
+  ttk::entry $f.to -width 3 -justify right -textvariable ::ptrack::moves(end)
   pack $f.lfrom $f.from $f.lto $f.to -side left -pady 5
   bindFocusColors $f.from
   bindFocusColors $f.to
@@ -290,9 +290,9 @@ proc ::ptrack::make {} {
   bind $f.to <FocusOut> +::ptrack::status
 
   set f $w.t.buttons
-  button $f.stop -text $::tr(Stop) -command progressBarCancel -state disabled
-  button $f.update -text $::tr(Update) -command ::ptrack::refresh
-  button $f.close -text $::tr(Close) -command "destroy $w"
+  ttk::button $f.stop -text $::tr(Stop) -command progressBarCancel -state disabled
+  ttk::button $f.update -text $::tr(Update) -command ::ptrack::refresh
+  ttk::button $f.close -text $::tr(Close) -command "destroy $w"
   pack $f.close $f.update $f.stop -side right -padx 3 -pady 5
   ::ptrack::status
   bind $w <Configure> "recordWinSize $w"

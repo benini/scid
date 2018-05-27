@@ -26,31 +26,31 @@ proc findNovelty {} {
   pack [frame $w.help] -side top -fill x
   text $w.help.text -width 1 -height 5 -wrap word \
       -relief ridge -cursor top_left_arrow -yscrollcommand "$w.help.ybar set"
-  scrollbar $w.help.ybar -orient vertical -command "$w.help.text yview" \
-      -takefocus 0 -width 10
+  ttk::scrollbar $w.help.ybar -orient vertical -command "$w.help.text yview" \
+      -takefocus 0
   pack $w.help.ybar -side right -fill y
   pack $w.help.text -side left -fill x -expand yes
   $w.help.text insert end [string trim $::tr(NoveltyHelp)]
   $w.help.text configure -state disabled
   
-  label $w.title -text $::tr(Database:) -font font_Bold
+  ttk::label $w.title -text $::tr(Database:) -font font_Bold
   pack $w.title -side top
 
   pack [frame $w.bases] -side top -fill x
   pack [frame $w.bases.del]
   addHorizontalRule $w
   
-  label $w.which -text $::tr(TwinsWhich:) -font font_Bold
+  ttk::label $w.which -text $::tr(TwinsWhich:) -font font_Bold
   pack $w.which -side top
-  radiobutton $w.all -text $::tr(SelectAllGames) \
+  ttk::radiobutton $w.all -text $::tr(SelectAllGames) \
       -variable noveltyOlder -value 0
-  radiobutton $w.older -text $::tr(SelectOlderGames) \
+  ttk::radiobutton $w.older -text $::tr(SelectOlderGames) \
       -variable noveltyOlder -value 1
   pack $w.all $w.older -side top -anchor w -padx 10
   
   addHorizontalRule $w
   
-  label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
+  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
   pack [frame $w.b] -side top -fill x
   dialogbutton $w.b.go -text $::tr(FindNovelty) -command {
@@ -94,7 +94,7 @@ proc updateNoveltyWin {} {
     set name [file tail [sc_base filename $i]]
     set ng [::utils::thousands [sc_base numGames $i]]
     set txt "Base $i: $name ($ng $::tr(games))"
-    radiobutton $w.bases.del.b$i -text "$txt" -variable noveltyBase -value $i -underline 5
+    ttk::radiobutton $w.bases.del.b$i -text "$txt" -variable noveltyBase -value $i -underline 5
     if {$ng == 0} { $w.bases.del.b$i configure -state disabled }
     pack $w.bases.del.b$i -side top -anchor w -padx 10
   }
@@ -124,28 +124,27 @@ proc mergeGame {base gnum} {
   wm title $w "Scid: $::tr(MergeGame)"
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <F1> {helpWindow GameList Browsing}
-  label $w.title -text $::tr(Preview:) -font font_Bold
+  ttk::label $w.title -text $::tr(Preview:) -font font_Bold
   pack $w.title -side top
   pack [frame $w.b] -side bottom -fill x
-  frame $w.f
+  ttk::frame $w.f
   text $w.f.text -background white -wrap word -width 60 -height 20 \
       -font font_Small -yscrollcommand "$w.f.ybar set"
-  scrollbar $w.f.ybar -takefocus 0 -command "$w.f.text yview"
+  ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.text yview"
   event generate $w.f.text <ButtonRelease-1>
   pack $w.f.ybar -side right -fill y
   pack $w.f.text -side left -fill both -expand yes
   pack $w.f -fill both -expand yes
   set small font_Small
-  label $w.b.label -text "Up to move:" -font $small
+  ttk::label $w.b.label -text "Up to move:" -font $small
   pack $w.b.label -side left
   foreach i {5 10 15 20 25 30 35 40} {
-    radiobutton $w.b.m$i -text $i -variable merge(ply) -value [expr {$i * 2}] \
-        -indicatoron 0 -padx 2 -pady 1 -font $small -command updateMergeGame
+    ttk::radiobutton $w.b.m$i -text $i -variable merge(ply) -value [expr {$i * 2}] \
+         -command updateMergeGame
     pack $w.b.m$i -side left
   }
-  radiobutton $w.b.all -text [::utils::string::Capital $::tr(all)] \
-      -variable merge(ply) -value 1000 -indicatoron 0 -padx 2 -pady 1 \
-      -font $small -command updateMergeGame
+  ttk::radiobutton $w.b.all -text [::utils::string::Capital $::tr(all)] \
+      -variable merge(ply) -value 1000 -command updateMergeGame
   pack $w.b.all -side left
   dialogbutton $w.b.ok -text "OK" -command {
     undoFeature save
@@ -213,18 +212,18 @@ proc setExportText {exportType} {
   toplevel $w
   wm title $w "Scid: $title"
   
-  frame $w.buttons
+  ttk::frame $w.buttons
   pack $w.buttons -side bottom -fill x -anchor e
   
   set pane [::utils::pane::Create $w.pane start end 500 400]
   ::utils::pane::SetRange $w.pane 0.3 0.7
   pack $pane -side top -expand true -fill both
   foreach f [list $pane.start $pane.end] type {start end} {
-    label $f.title -font font_Bold -text "Text at $type of $exportType file:"
+    ttk::label $f.title -font font_Bold -text "Text at $type of $exportType file:"
     text $f.text -wrap none -background white \
         -yscroll "$f.ybar set" -xscroll "$f.xbar set"
-    scrollbar $f.ybar -orient vertical -command "$f.text yview"
-    scrollbar $f.xbar -orient horizontal -command "$f.text xview"
+    ttk::scrollbar $f.ybar -orient vertical -command "$f.text yview"
+    ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
     bind $f.text <FocusIn> {%W configure -background lightYellow}
     bind $f.text <FocusOut> {%W configure -background white}
     grid $f.title -row 0 -column 0 -sticky w
@@ -238,7 +237,7 @@ proc setExportText {exportType} {
   $pane.start.text insert end $exportStartFile($exportType)
   $pane.end.text insert end $exportEndFile($exportType)
   
-  button $w.buttons.default -text "Reset to Default" -command "
+  ttk::button $w.buttons.default -text "Reset to Default" -command "
   $pane.start.text delete 1.0 end
   $pane.start.text insert end \$default_exportStartFile($exportType)
   $pane.end.text delete 1.0 end
@@ -335,44 +334,44 @@ proc exportOptions {exportType} {
   bind $w <Return> "$w.b.ok invoke"
   bind $w <F1> {helpWindow Export}
   
-  pack [frame $w.o] -side top -fill x -pady 5 -padx 5
-  label $w.o.append -text $::tr(AddToExistingFile)
-  radiobutton $w.o.appendYes -text $::tr(Yes) \
+  pack [ttk::frame $w.o] -side top -fill x -pady 5 -padx 5
+  ttk::label $w.o.append -text $::tr(AddToExistingFile)
+  ttk::radiobutton $w.o.appendYes -text $::tr(Yes) \
       -variable exportFlags(append) -value 1
-  radiobutton $w.o.appendNo -text $::tr(No) \
+  ttk::radiobutton $w.o.appendNo -text $::tr(No) \
       -variable exportFlags(append) -value 0
-  label $w.o.comments -text $::tr(ExportComments)
-  radiobutton $w.o.commentsOn -text $::tr(Yes) \
+  ttk::label $w.o.comments -text $::tr(ExportComments)
+  ttk::radiobutton $w.o.commentsOn -text $::tr(Yes) \
       -variable exportFlags(comments) -value 1
-  radiobutton $w.o.commentsOff -text $::tr(No) \
+  ttk::radiobutton $w.o.commentsOff -text $::tr(No) \
       -variable exportFlags(comments) -value 0
-  label $w.o.stripMarks -text $::tr(ExportStripMarks)
-  radiobutton $w.o.stripMarksOn -text $::tr(Yes) \
+  ttk::label $w.o.stripMarks -text $::tr(ExportStripMarks)
+  ttk::radiobutton $w.o.stripMarksOn -text $::tr(Yes) \
       -variable exportFlags(stripMarks) -value 1
-  radiobutton $w.o.stripMarksOff -text $::tr(No) \
+  ttk::radiobutton $w.o.stripMarksOff -text $::tr(No) \
       -variable exportFlags(stripMarks) -value 0
-  label $w.o.indentc -text $::tr(IndentComments)
-  radiobutton $w.o.indentcOn -text $::tr(Yes) \
+  ttk::label $w.o.indentc -text $::tr(IndentComments)
+  ttk::radiobutton $w.o.indentcOn -text $::tr(Yes) \
       -variable exportFlags(indentc) -value 1
-  radiobutton $w.o.indentcOff -text $::tr(No) \
+  ttk::radiobutton $w.o.indentcOff -text $::tr(No) \
       -variable exportFlags(indentc) -value 0
-  label $w.o.vars -text $::tr(ExportVariations)
-  radiobutton $w.o.varsOn -text $::tr(Yes) -variable exportFlags(vars) -value 1
-  radiobutton $w.o.varsOff -text $::tr(No) -variable exportFlags(vars) -value 0
-  label $w.o.indentv -text $::tr(IndentVariations)
-  radiobutton $w.o.indentvOn -text $::tr(Yes) \
+  ttk::label $w.o.vars -text $::tr(ExportVariations)
+  ttk::radiobutton $w.o.varsOn -text $::tr(Yes) -variable exportFlags(vars) -value 1
+  ttk::radiobutton $w.o.varsOff -text $::tr(No) -variable exportFlags(vars) -value 0
+  ttk::label $w.o.indentv -text $::tr(IndentVariations)
+  ttk::radiobutton $w.o.indentvOn -text $::tr(Yes) \
       -variable exportFlags(indentv) -value 1
-  radiobutton $w.o.indentvOff -text $::tr(No) \
+  ttk::radiobutton $w.o.indentvOff -text $::tr(No) \
       -variable exportFlags(indentv) -value 0
-  label $w.o.column -text $::tr(ExportColumnStyle)
-  radiobutton $w.o.columnOn -text $::tr(Yes) \
+  ttk::label $w.o.column -text $::tr(ExportColumnStyle)
+  ttk::radiobutton $w.o.columnOn -text $::tr(Yes) \
       -variable exportFlags(column) -value 1
-  radiobutton $w.o.columnOff -text $::tr(No) \
+  ttk::radiobutton $w.o.columnOff -text $::tr(No) \
       -variable exportFlags(column) -value 0
-  label $w.o.symbols -text $::tr(ExportSymbolStyle)
-  radiobutton $w.o.symbolsOn -text "! +=" \
+  ttk::label $w.o.symbols -text $::tr(ExportSymbolStyle)
+  ttk::radiobutton $w.o.symbolsOn -text "! +=" \
       -variable exportFlags(symbols) -value 1
-  radiobutton $w.o.symbolsOff -text {$2 $14} \
+  ttk::radiobutton $w.o.symbolsOff -text {$2 $14} \
       -variable exportFlags(symbols) -value 0
   grid $w.o.append -row 0 -column 0 -sticky w
   grid $w.o.appendYes -row 0 -column 1 -sticky w
@@ -401,12 +400,12 @@ proc exportOptions {exportType} {
   
   # Extra option for PGN format: handling of null moves
   if {$exportType == "PGN"} {
-    label $w.o.space -text ""
+    ttk::label $w.o.space -text ""
     grid $w.o.space -row 8 -column 0 -sticky w
-    label $w.o.nullMoves -text "Convert null moves to comments"
-    radiobutton $w.o.convertNullMoves -text $::tr(Yes) \
+    ttk::label $w.o.nullMoves -text "Convert null moves to comments"
+    ttk::radiobutton $w.o.convertNullMoves -text $::tr(Yes) \
         -variable exportFlags(convertNullMoves) -value 1
-    radiobutton $w.o.keepNullMoves -text $::tr(No) \
+    ttk::radiobutton $w.o.keepNullMoves -text $::tr(No) \
         -variable exportFlags(convertNullMoves) -value 0
     grid $w.o.nullMoves -row 9 -column 0 -sticky w
     grid $w.o.convertNullMoves -row 9 -column 1 -sticky w
@@ -415,14 +414,14 @@ proc exportOptions {exportType} {
   
   # Extra option for HTML format: diagram image set
   if {$exportType == "HTML"} {
-    label $w.o.space -text ""
-    label $w.o.hdiag -text "Diagram"
-    radiobutton $w.o.hb0 -text "bitmaps" \
+    ttk::label $w.o.space -text ""
+    ttk::label $w.o.hdiag -text "Diagram"
+    ttk::radiobutton $w.o.hb0 -text "bitmaps" \
         -variable exportFlags(htmldiag) -value 0
-    radiobutton $w.o.hb1 -text "bitmaps2" \
+    ttk::radiobutton $w.o.hb1 -text "bitmaps2" \
         -variable exportFlags(htmldiag) -value 1
-    label $w.o.hl0 -image htmldiag0
-    label $w.o.hl1 -image htmldiag1
+    ttk::label $w.o.hl0 -image htmldiag0
+    ttk::label $w.o.hl1 -image htmldiag1
     grid $w.o.space -row 8 -column 0
     grid $w.o.hdiag -row 9 -column 0 -sticky w
     grid $w.o.hb0 -row 9 -column 1 -sticky w
@@ -432,7 +431,7 @@ proc exportOptions {exportType} {
   }
   
   addHorizontalRule $w
-  pack [frame $w.b] -side top
+  pack [ttk::frame $w.b] -side top
   dialogbutton $w.b.ok -text "OK" -command {
     set exportFlags(ok) 1
   }
@@ -648,13 +647,13 @@ proc nameEditor {} {
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
   
-  label $w.typeLabel -textvar ::tr(NameEditType:) -font font_Bold
-  frame $w.typeButtons
-  pack $w.typeLabel $w.typeButtons -side top -pady 5
-  foreach i { "Player" "Event" "Site" "Round"} {
+  pack [ttk::frame $w.typeButtons] -side top -fill x -pady 5 -padx 5
+  ttk::label $w.typeButtons.typeLabel -textvar ::tr(NameEditType:) -font font_Bold
+  grid $w.typeButtons.typeLabel -row 0 -column 1 -columnspan 2 -sticky w
+  foreach i { "Player" "Event" "Site" "Round"} col {0 1 2 3} {
     set j [string tolower $i]
-    radiobutton $w.typeButtons.$j -textvar ::tr($i) -variable editNameType \
-        -value $j -indicatoron false -pady 5 -padx 5 -command {
+    ttk::radiobutton $w.typeButtons.$j -textvar ::tr($i) -variable editNameType \
+        -value $j -command {
           grid remove .nedit.g.ratingE
           grid remove .nedit.g.rtype
           grid remove .nedit.g.fromD
@@ -663,10 +662,10 @@ proc nameEditor {} {
           grid .nedit.g.fromE -row 0 -column 2 -sticky w
           grid .nedit.g.toE -row 1 -column 2 -sticky w
         }
-    pack $w.typeButtons.$j -side left -padx 5
+    grid $w.typeButtons.$j -row 1 -column $col -sticky w
   }
-  radiobutton $w.typeButtons.rating -textvar ::tr(Rating) -variable editNameType \
-      -value rating -indicatoron false -pady 5 -padx 5 -command {
+  ttk::radiobutton $w.typeButtons.rating -textvar ::tr(Rating) -variable editNameType \
+      -value rating -command {
         grid remove .nedit.g.toE
         grid remove .nedit.g.toL
         grid remove .nedit.g.fromD
@@ -675,8 +674,9 @@ proc nameEditor {} {
         grid .nedit.g.rtype -row 1 -column 0 -columnspan 2 -sticky e
         grid .nedit.g.ratingE -row 1 -column 2 -sticky w
       }
-  radiobutton $w.typeButtons.date -textvar ::tr(Date) -variable editNameType \
-      -value date -indicatoron false -pady 5 -padx 5 -command {
+  grid $w.typeButtons.rating -row 2 -column 2  -columnspan 2 -sticky w
+  ttk::radiobutton $w.typeButtons.date -textvar ::tr(Date) -variable editNameType \
+      -value date -command {
         grid remove .nedit.g.toE
         grid remove .nedit.g.fromE
         grid remove .nedit.g.ratingE
@@ -685,8 +685,9 @@ proc nameEditor {} {
         grid .nedit.g.toL -row 1 -column 1 -sticky e
         grid .nedit.g.toD -row 1 -column 2 -sticky w
       }
-  radiobutton $w.typeButtons.edate -textvar ::tr(EventDate) \
-      -variable editNameType -value edate -indicatoron false -pady 5 -padx 5 \
+  grid $w.typeButtons.date -row 2 -column 1 -sticky w
+  ttk::radiobutton $w.typeButtons.edate -textvar ::tr(EventDate) \
+      -variable editNameType -value edate \
       -command {
         grid remove .nedit.g.toE
         grid remove .nedit.g.fromE
@@ -696,30 +697,29 @@ proc nameEditor {} {
         grid .nedit.g.toL -row 1 -column 1 -sticky e
         grid .nedit.g.toD -row 1 -column 2 -sticky w
       }
-  pack $w.typeButtons.rating $w.typeButtons.date $w.typeButtons.edate \
-      -side left -padx 5
-  
+  grid $w.typeButtons.edate -row 2 -column 0 -sticky w
+
   addHorizontalRule .nedit
   
-  label $w.selectLabel -textvar ::tr(NameEditSelect) -font font_Bold
-  frame $w.selectButtons
+  ttk::label $w.selectLabel -textvar ::tr(NameEditSelect) -font font_Bold
+  ttk::frame $w.selectButtons
   pack $w.selectLabel $w.selectButtons -side top -pady 5
   foreach i {all filter crosstable} row {0 1 2} text {
     SelectAllGames
     SelectFilterGames
     SelectTournamentGames
   } {
-    radiobutton $w.selectButtons.$i -textvar ::tr($text) \
+    ttk::radiobutton $w.selectButtons.$i -textvar ::tr($text) \
         -variable editNameSelect -value $i
     grid $w.selectButtons.$i -row $row -column 0 -sticky w
   }
   
   addHorizontalRule $w
   
-  pack [frame $w.g] -side top
-  label $w.g.space -text "    "
+  pack [ttk::frame $w.g] -side top
+  ttk::label $w.g.space -text "    "
   grid $w.g.space $w.g.space -row 0 -column 0
-  label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
+  ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
   entry $w.g.fromE -width 40 -background white -relief sunken \
       -textvariable editName
   entry $w.g.fromD -width 15 -background white -relief sunken \
@@ -727,7 +727,7 @@ proc nameEditor {} {
   grid $w.g.fromL -row 0 -column 1 -sticky e
   grid $w.g.fromE -row 0 -column 2 -sticky we
   
-  label $w.g.toL -textvar ::tr(NameEditWith:) -font font_Bold -anchor e
+  ttk::label $w.g.toL -textvar ::tr(NameEditWith:) -font font_Bold -anchor e
   entry $w.g.toE -width 40 -background white -relief sunken \
       -textvariable editNameNew
   entry $w.g.toD -width 15 -background white -relief sunken \
@@ -740,12 +740,12 @@ proc nameEditor {} {
   eval tk_optionMenu $w.g.rtype editNameRType [sc_info ratings]
   $w.g.rtype configure -pady 2
   
-  label $w.g.title -textvar ::tr(NameEditMatches) \
+  ttk::label $w.g.title -textvar ::tr(NameEditMatches) \
       -font font_Bold
   text $w.g.list -height 9 -width 40 -relief sunken \
       -background grey90 -tabs {2c right 2.5c left} -wrap none
   
-  label $w.g.padding -text ""
+  ttk::label $w.g.padding -text ""
   grid $w.g.padding -row 2 -column 0
   
   grid $w.g.title -row 3 -column 1 -columnspan 2 -sticky n
@@ -767,8 +767,8 @@ proc nameEditor {} {
   
   addHorizontalRule $w
   
-  frame $w.buttons
-  button $w.buttons.replace -textvar ::tr(NameEditReplace) -command {
+  ttk::frame $w.buttons
+  ttk::button $w.buttons.replace -textvar ::tr(NameEditReplace) -command {
     if {$editNameType == "rating"} {
       set err [catch {sc_name edit $editNameType $editNameSelect $editName $editNameRating $editNameRType} result]
     } elseif {$editNameType == "date"  ||  $editNameType == "edate"} {
@@ -790,7 +790,7 @@ proc nameEditor {} {
   pack $w.buttons -side top -pady 5
   pack $w.buttons.replace $w.buttons.cancel -side left -padx 10
   
-  label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
+  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
   
   wm resizable $w 0 0

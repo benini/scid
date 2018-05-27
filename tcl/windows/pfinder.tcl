@@ -71,7 +71,7 @@ proc ::plist::Open {} {
       -value $name -command ::plist::refresh
   }
 
-  foreach i {t o1 o2 o3 b} {frame $w.$i}
+  foreach i {t o1 o2 o3 b} {ttk::frame $w.$i}
   $w.t configure -relief sunken -borderwidth 1
   text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
@@ -95,12 +95,12 @@ proc ::plist::Open {} {
   set fbold font_SmallBold
 
   set f $w.o1
-  label $f.nlabel -text $::tr(Player:) -font $fbold
+  ttk::label $f.nlabel -text $::tr(Player:) -font $fbold
   ttk::combobox $f.name -textvariable ::plist::name -width 20
   ::utils::history::SetCombobox ::plist::name $f.name
   bindFocusColors $f.name
   focus $f.name
-  label $f.size -text $::tr(TmtLimit:) -font $fbold
+  ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
   ttk::combobox $f.esize -width 4 -justify right -textvar ::plist::size -values {50 100 200 500 1000}
   trace variable ::plist::size w {::utils::validate::Integer 1000 0}
   bindFocusColors $f.esize
@@ -111,14 +111,14 @@ proc ::plist::Open {} {
   pack $f.nlabel $f.name -side left
 
   set f $w.o2
-  label $f.elo -text "[tr PListSortElo]:" -font $fbold
-  entry $f.emin -textvariable ::plist::minElo
-  label $f.eto -text "-"
-  entry $f.emax -textvariable ::plist::maxElo
-  label $f.games -text "[tr PListSortGames]:" -font $fbold
-  entry $f.gmin -textvariable ::plist::minGames
-  label $f.gto -text "-"
-  entry $f.gmax -textvariable ::plist::maxGames
+  ttk::label $f.elo -text "[tr PListSortElo]:" -font $fbold
+  ttk::entry $f.emin -textvariable ::plist::minElo
+  ttk::label $f.eto -text "-"
+  ttk::entry $f.emax -textvariable ::plist::maxElo
+  ttk::label $f.games -text "[tr PListSortGames]:" -font $fbold
+  ttk::entry $f.gmin -textvariable ::plist::minGames
+  ttk::label $f.gto -text "-"
+  ttk::entry $f.gmax -textvariable ::plist::maxGames
 
   foreach entry {emin emax} {
     $f.$entry configure -width 4 -justify right -font $font

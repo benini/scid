@@ -248,16 +248,16 @@ proc ::bookmarks::Edit {} {
   wm title $w "Scid: [tr FileBookmarksEdit]"
   # wm transient $w .
   bind $w <F1> {helpWindow Bookmarks}
-  entry $w.e -width 40 -foreground black -background white \
+  ttk::entry $w.e -width 40 \
     -textvariable bookmarks(edit) -font font_Small -exportselection 0
   bind $w.e <FocusIn>  {.bmedit.e configure -background lightYellow}
   bind $w.e <FocusOut> {.bmedit.e configure -background white}
 
   trace variable bookmarks(edit) w ::bookmarks::EditRefresh
   pack $w.e -side top -fill x
-  pack [frame $w.b2] -side bottom -fill x
-  pack [frame $w.b1] -side bottom -fill x
-  pack [frame $w.f] -side top -fill both -expand 1
+  pack [ttk::frame $w.b2] -side bottom -fill x
+  pack [ttk::frame $w.b1] -side bottom -fill x
+  pack [ttk::frame $w.f] -side top -fill both -expand 1
   listbox $w.f.list -width 50 -height 10 -yscrollcommand "$w.f.ybar set" \
     -fg black -bg white -exportselection 0 -font font_Small -setgrid 1
   ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.list yview"
@@ -273,11 +273,8 @@ proc ::bookmarks::Edit {} {
     -command {::bookmarks::EditNew game}
   if {! [::bookmarks::CanAdd]} { $w.b1.newGame configure -state disabled }
   dialogbutton $w.b1.delete -text $::tr(Delete)  -command ::bookmarks::EditDelete
-  button $w.b2.up -image tb_up -command {::bookmarks::EditMove up}
-  button $w.b2.down -image tb_down -command {::bookmarks::EditMove down}
-  foreach i [list $w.b2.up $w.b2.down] {
-    $i configure -padx 0 -pady 0 -borderwidth 1
-  }
+  ttk::button $w.b2.up -image tb_up -command {::bookmarks::EditMove up}
+  ttk::button $w.b2.down -image tb_down -command {::bookmarks::EditMove down}
   dialogbutton $w.b2.ok -text "OK" -command ::bookmarks::EditDone
   dialogbutton $w.b2.cancel -text $::tr(Cancel) -command {
     set bookmarks(data) $bookmarks(old)

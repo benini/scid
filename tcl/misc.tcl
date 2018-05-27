@@ -150,7 +150,7 @@ proc autoscrollframe {args} {
   
   set retval $frame
   if {! [winfo exists $frame]} {
-    frame $frame
+    ttk::frame $frame
     $frame configure -relief sunken -borderwidth 2
   }
   if {! [winfo exists $w]} {

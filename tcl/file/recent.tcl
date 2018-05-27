@@ -189,24 +189,24 @@ proc ::recentFiles::configure {} {
   set w .recentFilesDlg
   toplevel $w
   wm title $w "Scid: [tr OptionsRecent]"
-  label $w.lmenu -text $::tr(RecentFilesMenu)
+  ttk::label $w.lmenu -text $::tr(RecentFilesMenu)
   scale $w.menu -variable recentFiles(temp_menu) -from 0 -to 10 -length 250 \
       -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small
-  frame $w.sep -height 4
-  label $w.lextra -text $::tr(RecentFilesExtra)
+  ttk::frame $w.sep -height 4
+  ttk::label $w.lextra -text $::tr(RecentFilesExtra)
   scale $w.extra -variable recentFiles(temp_extra) -from 0 -to 10 -length 250 \
       -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small
   pack $w.lmenu $w.menu $w.sep $w.lextra $w.extra -side top -padx 10
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom
-  button $w.b.ok -text "OK" -command {
+  pack [ttk::frame $w.b] -side bottom
+  ttk::button $w.b.ok -text "OK" -command {
     set recentFiles(menu) $recentFiles(temp_menu)
     set recentFiles(extra) $recentFiles(temp_extra)
     catch {grab release .recentFilesDlg}
     destroy .recentFilesDlg
     ::recentFiles::save
   }
-  button $w.b.cancel -text $::tr(Cancel) \
+  ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
   catch {grab $w}

@@ -131,15 +131,15 @@ proc ::game::GotoMoveNumber {} {
   wm title $w "Scid: [tr GameGotoMove]"
   grab $w
   
-  label $w.label -text $::tr(GotoMoveNumber)
+  ttk::label $w.label -text $::tr(GotoMoveNumber)
   pack $w.label -side top -pady 5 -padx 5
   
-  entry $w.entry -background white -width 10 -textvariable ::game::moveEntryNumber
+  ttk::entry $w.entry -width 8 -textvariable ::game::moveEntryNumber
   bind $w.entry <Escape> { .mnumDialog.buttons.cancel invoke }
   bind $w.entry <Return> { .mnumDialog.buttons.load invoke }
   pack $w.entry -side top -pady 5
   
-  set b [frame $w.buttons]
+  set b [ttk::frame $w.buttons]
   pack $b -side top -fill x
   dialogbutton $b.load -text "OK" -command {
     grab release .mnumDialog
@@ -241,7 +241,7 @@ proc ::game::ConfirmDiscard {} {
   ttk::frame $w.msg
   ttk::label $w.msg.image -image tb_iconSave
   ttk::frame $w.msg.txt
-  label $w.msg.txt.l1 -text "$players$fname: [tr game] $gnum" -background $bgcolor -relief groove
+  ttk::label $w.msg.txt.l1 -text "$players$fname: [tr game] $gnum" -background $bgcolor -relief groove
   ttk::label $w.msg.txt.l2 -text $::tr(ClearGameDialog) -wraplength 360 -font font_Bold -justify left
   grid $w.msg.txt.l1 -row 0 -sticky news -pady 4 -padx 2
   grid $w.msg.txt.l2 -row 1 -sticky news

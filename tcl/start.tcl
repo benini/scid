@@ -300,7 +300,7 @@ proc createFonts {} {
 createFonts
 
 # Load theme
-ttk::style theme use $::lookTheme
+catch { ttk::style theme use $::lookTheme }
 
 # Use default font everywhere
 ttk::style configure TLabel -font font_Regular

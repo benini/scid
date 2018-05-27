@@ -874,7 +874,7 @@ proc configAnnotation {} {
     pack $f.blunderbox -side top -padx 5 -pady 5
     
     ttk::label $f.blunderbox.label -text $::tr(BlundersThreshold:)
-    spinbox $f.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
+    ttk::spinbox $f.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
             -from 0.1 -to 3.0 -increment 0.1
     pack $f.blunderbox.label $f.blunderbox.spBlunder -side left -padx 5 -pady 5
     
@@ -927,11 +927,11 @@ proc configAnnotation {} {
     set to [sc_base numGames $::curr_db]
     if {$to <1} { set to 1}
     ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
-    spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
-            -from 1 -to $to -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
+            -from 1 -to $to -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::checkbutton $f.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::isBatchOpening
-    spinbox $f.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
-            -from 10 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $f.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
+            -from 10 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $f.batch.lBatchOpening -text $::tr(moves)
     # pack $w.batch.cbBatch $w.batch.spBatchEnd -side top -fill x
     # pack $w.batch.cbBatchOpening $w.batch.spBatchOpening $w.batch.lBatchOpening  -side left -fill x
@@ -1897,7 +1897,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     button $w.b1.move -image tb_addmove -command "makeAnalysisMove $n"
     ::utils::tooltip::Set $w.b1.move $::tr(AddMove)
 
-    spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state disabled -width 2 \
+    ttk::spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state disabled -width 2 \
             -command "changePVSize $n"
     ::utils::tooltip::Set $w.b1.multipv $::tr(Lines)
     
@@ -2427,7 +2427,7 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.wh_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.wh_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	spinbox $w.wh_f.cv -width 4 -textvariable ::finishGameCmdVal1 -from 1 -to 999
+	ttk::spinbox $w.wh_f.cv -width 4 -textvariable ::finishGameCmdVal1 -from 1 -to 999
 	ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGameCmd1 -value "movetime"
 	ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd1 -value "depth"
 	grid $w.wh_f.cv -column 1 -row 2 -sticky w
@@ -2448,7 +2448,7 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.bk_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.bk_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	spinbox $w.bk_f.cv -width 4 -textvariable ::finishGameCmdVal2 -from 1 -to 999
+	ttk::spinbox $w.bk_f.cv -width 4 -textvariable ::finishGameCmdVal2 -from 1 -to 999
 	ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGameCmd2 -value "movetime"
 	ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd2 -value "depth"
 	grid $w.bk_f.cv -column 1 -row 2 -sticky w

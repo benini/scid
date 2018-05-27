@@ -548,9 +548,9 @@ namespace eval uci {
             if { $elt(type) == "spin"} {
                 ttk::label $w.fopt.label$optnbr -text "$name$default"
                 if { $elt(name) == "UCI_Elo" } {
-                    spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
+                    ttk::spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
                 } else  {
-                    spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
+                    ttk::spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
                 }
                 $w.fopt.opt$optnbr set $value
                 grid $w.fopt.label$optnbr -row $row -column $col -sticky e

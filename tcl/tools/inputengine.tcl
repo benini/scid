@@ -63,7 +63,7 @@ namespace eval ExtHardware {
      } else {
         if { $::ExtHardware::showbutton == 1 } {
 
-           frame .main.fbutton.button.space4 -width 15
+           ttk::frame .main.fbutton.button.space4 -width 15
            button .main.fbutton.button.exthardware -image tb_eng_disconnected
            .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
                -anchor n -takefocus 0
@@ -114,26 +114,26 @@ namespace eval ExtHardware {
     wm title $w [::tr ExtHWConfigConnection]
 
     label $w.lport -text  [::tr ExtHWPort]
-    entry $w.eport -width 50 -textvariable ::ExtHardware::port
+    ttk::entry $w.eport -width 50 -textvariable ::ExtHardware::port
 
     label $w.lengine -text [::tr ExtHWEngineCmd]
-    entry $w.eengine -width 50 -textvariable ::ExtHardware::engine
+    ttk::entry $w.eengine -width 50 -textvariable ::ExtHardware::engine
 
     label $w.lparam -text  [::tr ExtHWEngineParam]
-    entry $w.eparam -width 50 -textvariable ::ExtHardware::param
+    ttk::entry $w.eparam -width 50 -textvariable ::ExtHardware::param
 
     label $w.options -text [::tr ExtHWHardware]
     
-    checkbutton $w.showbutton -text [::tr ExtHWShowButton] -variable ::ExtHardware::showbutton
+    ttk::checkbutton $w.showbutton -text [::tr ExtHWShowButton] -variable ::ExtHardware::showbutton
 
     #--------------
     # Add a new radio button for subsequent new hardware here:
-    radiobutton $w.novag    -text [::tr ExtHWNovag]  -variable ::ExtHardware::hardware -value 1 -command { \
+    ttk::radiobutton $w.novag    -text [::tr ExtHWNovag]  -variable ::ExtHardware::hardware -value 1 -command { \
        set ::ExtHardware::bindbutton "::novag::connect"
        .exthardwareConfig.eengine configure -state disabled
        .exthardwareConfig.eparam  configure -state disabled
     }
-    radiobutton $w.inputeng -text [::tr ExtHWInputEngine]   -variable ::ExtHardware::hardware -value 2 -command { \
+    ttk::radiobutton $w.inputeng -text [::tr ExtHWInputEngine]   -variable ::ExtHardware::hardware -value 2 -command { \
        set ::ExtHardware::bindbutton "::inputengine::connectdisconnect"
        .exthardwareConfig.eengine configure -state normal
        .exthardwareConfig.eparam  configure -state normal
@@ -145,12 +145,12 @@ namespace eval ExtHardware {
        .exthardwareConfig.eparam  configure -state disabled
     }
 
-    button $w.bOk -text OK -command { ::ExtHardware::saveHardwareOptions
+    ttk::button $w.bOk -text OK -command { ::ExtHardware::saveHardwareOptions
        ::ExtHardware::HWbuttonBind $::ExtHardware::bindbutton
        destroy .exthardwareConfig
        $::ExtHardware::bindbutton
     }
-    button $w.bCancel -text [::tr Cancel] -command "::ExtHardware::HWbuttonImg tb_eng_disconnected ; destroy $w"
+    ttk::button $w.bCancel -text [::tr Cancel] -command "::ExtHardware::HWbuttonImg tb_eng_disconnected ; destroy $w"
 
 
     grid $w.options    -stick ew    -row 0 -column 0
@@ -185,7 +185,7 @@ namespace eval ExtHardware {
      # Add the button to connect the engine to the button bar
      if { $::ExtHardware::showbutton == 1 } {
 
-        frame .main.fbutton.button.space4 -width 15
+        ttk::frame .main.fbutton.button.space4 -width 15
         button .main.fbutton.button.exthardware -image tb_eng_disconnected
         .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
             -anchor n -takefocus 0
@@ -260,17 +260,17 @@ namespace eval inputengine {
 
     label     $w.engine      -text "$::ExtHardware::engine $::ExtHardware::port $::ExtHardware::param"
 
-    radiobutton $w.sendboth  -text [::tr Both]  -variable send -value 1 -command { ::inputengine::sendToEngine sendboth  }
-    radiobutton $w.sendwhite -text [::tr White] -variable send -value 2 -command { ::inputengine::sendToEngine sendwhite }
-    radiobutton $w.sendblack -text [::tr Black] -variable send -value 3 -command { ::inputengine::sendToEngine sendblack }
+    ttk::radiobutton $w.sendboth  -text [::tr Both]  -variable send -value 1 -command { ::inputengine::sendToEngine sendboth  }
+    ttk::radiobutton $w.sendwhite -text [::tr White] -variable send -value 2 -command { ::inputengine::sendToEngine sendwhite }
+    ttk::radiobutton $w.sendblack -text [::tr Black] -variable send -value 3 -command { ::inputengine::sendToEngine sendblack }
 
-    button $w.bInfo          -text Info           -command { ::inputengine::sysinfo }
+    ttk::button $w.bInfo          -text Info           -command { ::inputengine::sysinfo }
 
     ###---### rotate does not work yet
-    button $w.bRotate        -text [::tr IERotate]      -command { ::inputengine::rotateboard }
+    ttk::button $w.bRotate        -text [::tr IERotate]      -command { ::inputengine::rotateboard }
 
-    button $w.bSync          -text [::tr IESynchronise] -command { ::inputengine::synchronise }
-    button $w.bClose         -text [::tr Close]         -command { ::inputengine::connectdisconnect }
+    ttk::button $w.bSync          -text [::tr IESynchronise] -command { ::inputengine::synchronise }
+    ttk::button $w.bClose         -text [::tr Close]         -command { ::inputengine::connectdisconnect }
 
     # Buttons for visual move announcement
     button $w.bPiece -image $inputengine::MovingPieceImg
@@ -286,7 +286,7 @@ namespace eval inputengine {
 
 
     # Store the time as comment
-    checkbutton $w.bStoreClock -text "Store Clock" -variable ::inputengine::StoreClock
+    ttk::checkbutton $w.bStoreClock -text "Store Clock" -variable ::inputengine::StoreClock
 
     grid $w.console    -stick ns    -column 0  -row 0 -columnspan 12
     grid $w.ysc        -stick ns    -column 12 -row 0

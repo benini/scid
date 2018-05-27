@@ -139,7 +139,7 @@ namespace eval book {
     pack $w.f.combo
     
     # text displaying book moves
-    frame $w.f.fscroll
+    ttk::frame $w.f.fscroll
     autoscrollframe -bars y $w.f.fscroll text $w.f.text -wrap word -state disabled -width 12
     
     ttk::button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
@@ -344,7 +344,7 @@ namespace eval book {
     set count [expr [llength $children] / 2]
     ttk::label $w.f.m$count -text [::trans $move]
     bind $w.f.m$count <ButtonPress-1> " ::book::makeBookMove $move"
-    spinbox $w.f.sp$count -from 0 -to 100 -width 3
+    ttk::spinbox $w.f.sp$count -from 0 -to 100 -width 3
     $w.f.sp$count set 0
     grid $w.f.m$count -row $count -column 0 -sticky w
     grid $w.f.sp$count -row $count -column 1 -sticky w
@@ -377,7 +377,7 @@ namespace eval book {
       lappend ::book::bookTuningMoves [lindex $moves $i]
       label $w.f.m$row -text [::trans [lindex $moves $i]]
       bind $w.f.m$row <ButtonPress-1> " ::book::makeBookMove [lindex $moves $i] "
-      spinbox $w.f.sp$row -from 0 -to 100 -width 3
+      ttk::spinbox $w.f.sp$row -from 0 -to 100 -width 3
       set pct [lindex $moves [expr $i+1] ]
       set value [string replace $pct end end ""]
       $w.f.sp$row set $value

@@ -38,38 +38,38 @@ proc ::preport::preportDlg {args} {
   toplevel $w
   wm title $w "Scid: [tr ToolsPlayerReport]"
   wm resizable $w 0 0
-  pack [label $w.plabel -text "Generate Player Report"]
-  pack [frame $w.g] -side top -fill x -expand yes -padx 2
-  label $w.g.where -text "Player:"
+  pack [ttk::label $w.plabel -text "Generate Player Report"]
+  pack [ttk::frame $w.g] -side top -fill x -expand yes -padx 2
+  ttk::label $w.g.where -text "Player:"
   grid $w.g.where -row 0 -column 0 -sticky w
   ttk::combobox $w.g.player -width 40 -textvariable ::preport::_player
   ::utils::history::SetCombobox ::preport::_player $w.g.player
   grid $w.g.player -row 0 -column 1 -sticky we
-  label $w.g.has -text "Color:"
+  ttk::label $w.g.has -text "Color:"
   grid $w.g.has -row 1 -column 0 -sticky w
-  frame $w.g.color
-  radiobutton $w.g.color.white -text $::tr(White) \
+  ttk::frame $w.g.color
+  ttk::radiobutton $w.g.color.white -text $::tr(White) \
       -variable ::preport::_color -value white
-  frame $w.g.color.gap -width 5
-  radiobutton $w.g.color.black -text $::tr(Black) \
+  ttk::frame $w.g.color.gap -width 5
+  ttk::radiobutton $w.g.color.black -text $::tr(Black) \
       -variable ::preport::_color -value black
   pack $w.g.color.white $w.g.color.gap $w.g.color.black -side left
   grid $w.g.color -row 1 -column 1 -sticky w
-  label $w.g.pos -text "Start position:"
+  ttk::label $w.g.pos -text "Start position:"
   grid $w.g.pos -row 2 -column 0
-  frame $w.g.pselect
-  radiobutton $w.g.pselect.start -text "Standard start position" \
+  ttk::frame $w.g.pselect
+  ttk::radiobutton $w.g.pselect.start -text "Standard start position" \
       -variable ::preport::_pos -value start
-  radiobutton $w.g.pselect.current -text "Current board position" \
+  ttk::radiobutton $w.g.pselect.current -text "Current board position" \
       -variable ::preport::_pos -value current
   pack $w.g.pselect.start $w.g.pselect.current -side left
   grid $w.g.pselect -row 2 -column 1 -sticky w
-  checkbutton $w.g.clipbase -text $::tr(PReportClipbase) \
+  ttk::checkbutton $w.g.clipbase -text $::tr(PReportClipbase) \
       -variable ::preport::_clipbase
   grid $w.g.clipbase -row 3 -column 1 -sticky w
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
-  pack [frame $w.b2] -side bottom -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.b2] -side bottom -fill x
   set whiteName [sc_game info white]
   set blackName [sc_game info black]
   dialogbutton $w.b2.white -text "$::tr(White) ($whiteName)" -command {
@@ -141,9 +141,9 @@ proc ::preport::makeReportWin {args} {
     wm title $w "Scid: [tr ToolsPlayerReport]"
     bind $w <Visibility> "raiseWin $w"
     
-    pack [frame $w.b] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
     set ::preport::_interrupt 0
-    button $w.b.cancel -text $::tr(Cancel) -command {
+    ttk::button $w.b.cancel -text $::tr(Cancel) -command {
       set ::preport::_interrupt 1
       progressBarCancel
     }
@@ -151,7 +151,7 @@ proc ::preport::makeReportWin {args} {
     
     foreach i {1 2 3} name {"Searching database for report games"
       "Searching current board" "Generating report information"} {
-      label $w.text$i -text "$i. $name"
+      ttk::label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
       canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
       $w.c$i create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
@@ -254,15 +254,15 @@ proc ::preport::makeReportWin {args} {
         -height 30 -width 85 -font font_Small -setgrid 1 -wrap word \
         -background white -foreground black -cursor top_left_arrow
     ::htext::init $w.text
-    frame $w.b
-    button $w.b.opts -text [tr OprepFileOptions] -command ::preport::setOptions
-    button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Player}
-    button $w.b.viewHTML -text $::tr(OprepViewHTML) \
+    ttk::frame $w.b
+    ttk::button $w.b.opts -text [tr OprepFileOptions] -command ::preport::setOptions
+    ttk::button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Player}
+    ttk::button $w.b.viewHTML -text $::tr(OprepViewHTML) \
         -command ::preport::previewHTML
-    button $w.b.update -textvar ::tr(Update...) -command {
+    ttk::button $w.b.update -textvar ::tr(Update...) -command {
       ::preport::preportDlg
     }
-    button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
+    ttk::button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
     pack $w.b -side bottom -fill x
     pack $w.scroll -side top -fill both -expand yes
     pack $w.b.close $w.b.update -side right -padx 2 -pady 2
@@ -290,7 +290,7 @@ proc ::preport::setOptions {} {
   set w .preportOptions
   if {[winfo exists $w]} { return }
   toplevel $w
-  pack [frame $w.f] -side top -fill x -padx 5 -pady 5
+  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5
   set row 0
   foreach i {Stats AvgPerf Results MovesFrom Themes Endgames} {
     set yesno($i) 1
@@ -304,26 +304,26 @@ proc ::preport::setOptions {} {
       set from 0; set to 500; set tick 100; set res 50
     }
     if {$i == "sep"} {
-      frame $w.f.fsep$row -height 2 -borderwidth 2 -relief sunken -bg white
-      frame $w.f.tsep$row -height 2 -borderwidth 2 -relief sunken -bg white
+      ttk::frame $w.f.fsep$row -height 2 -borderwidth 2 -relief sunken
+      ttk::frame $w.f.tsep$row -height 2 -borderwidth 2 -relief sunken
       grid $w.f.fsep$row -row $row -column 0 -sticky we -columnspan 4
       #grid $w.f.tsep$row -row $row -column 1 -sticky we -columnspan 2
     } elseif {[info exists yesno($i)]} {
-      frame $w.f.f$i
-      radiobutton $w.f.f$i.yes -variable ::preport($i) -value 1 \
-          -text "$::tr(Yes)   " -font font_Small
-      radiobutton $w.f.f$i.no -variable ::preport($i) -value 0 \
-          -text "$::tr(No)   "  -font font_Small
+      ttk::frame $w.f.f$i
+      ttk::radiobutton $w.f.f$i.yes -variable ::preport($i) -value 1 \
+          -text "$::tr(Yes)   "
+      ttk::radiobutton $w.f.f$i.no -variable ::preport($i) -value 0 \
+          -text "$::tr(No)   "
       pack $w.f.f$i.yes -side left
       pack $w.f.f$i.no -side right
-      label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
+      ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.f$i -row $row -column 0 -sticky n
       grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
     } else {
       scale $w.f.s$i -variable ::preport($i) -from $from -to $to \
           -width 8 -length 200 -tickinterval $tick -orient horizontal \
           -font font_Small -resolution $res -showvalue 0
-      label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
+      ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.s$i -row $row -column 0 -sticky we
       grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
     }
@@ -331,17 +331,17 @@ proc ::preport::setOptions {} {
     incr row
   }
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
-  button $w.b.defaults -textvar ::tr(Defaults) -command {
+  pack [ttk::frame $w.b] -side bottom -fill x
+  ttk::button $w.b.defaults -textvar ::tr(Defaults) -command {
     array set ::preport [array get ::preportDefaults]
   }
-  button $w.b.ok -text "OK" -command {
+  ttk::button $w.b.ok -text "OK" -command {
     destroy .preportOptions
     catch {set ::preport::_data(yview) [lindex [.preportWin.text yview] 0]}
     ::preport::makeReportWin
     catch {.preportWin.text yview moveto $::preport::_data(yview)}
   }
-  button $w.b.cancel -textvar ::tr(Cancel) -command {
+  ttk::button $w.b.cancel -textvar ::tr(Cancel) -command {
     array set ::preport [array get ::preport::backup]
     destroy .preportOptions
   }

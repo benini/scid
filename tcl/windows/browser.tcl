@@ -20,7 +20,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   set ::gbrowser::boards($n) [sc_game summary -base $base -game $gnum boards]
   set moves [sc_game summary -base $base -game $gnum moves]
   
-  pack [frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
   ::board::new $w.bd $::gbrowser::size
   pack $w.bd -side left -padx 4 -pady 4
   
@@ -71,14 +71,14 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize %W.bd +1]}
   bindMouseWheel $w "::gbrowser::mousewheelHandler $n"
   
-  button $w.b.start -image tb_start -command "::gbrowser::update $n start"
-  button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
-  button $w.b.forward -image tb_next -command "::gbrowser::update $n +1"
-  button $w.b.end -image tb_end -command "::gbrowser::update $n end"
-  frame $w.b.gap -width 3
-  button $w.b.autoplay -image tb_play -command "::gbrowser::autoplay $n"
-  frame $w.b.gap2 -width 3
-  button $w.b.flip -image tb_flip -command "::gbrowser::flip $n"
+  ttk::button $w.b.start -image tb_start -command "::gbrowser::update $n start"
+  ttk::button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
+  ttk::button $w.b.forward -image tb_next -command "::gbrowser::update $n +1"
+  ttk::button $w.b.end -image tb_end -command "::gbrowser::update $n end"
+  ttk::frame $w.b.gap -width 3
+  ttk::button $w.b.autoplay -image tb_play -command "::gbrowser::autoplay $n"
+  ttk::frame $w.b.gap2 -width 3
+  ttk::button $w.b.flip -image tb_flip -command "::gbrowser::flip $n"
   
   pack $w.b.start $w.b.back $w.b.forward $w.b.end $w.b.gap \
       $w.b.autoplay $w.b.gap2 $w.b.flip -side left -padx 3 -pady 1
@@ -86,10 +86,10 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   set ::gbrowser::autoplay($n) 0
   
   if {$gnum > 0} {
-    button $w.b.load -textvar ::tr(LoadGame) -command "sc_base switch $base; ::game::Load $gnum"
-    button $w.b.merge -textvar ::tr(MergeGame) -command "mergeGame $base $gnum"
+    ttk::button $w.b.load -textvar ::tr(LoadGame) -command "sc_base switch $base; ::game::Load $gnum"
+    ttk::button $w.b.merge -textvar ::tr(MergeGame) -command "mergeGame $base $gnum"
   }
-  button $w.b.close -textvar ::tr(Close) -command "destroy $w"
+  ttk::button $w.b.close -textvar ::tr(Close) -command "destroy $w"
   pack $w.b.close -side right -padx 1 -pady 1
   if {$gnum > 0} {
     pack $w.b.merge $w.b.load -side right -padx 1 -pady 1

@@ -102,16 +102,16 @@ proc ::optable::makeReportWin {args} {
     wm title $w "Scid: Generating Report"
     bind $w <Visibility> "raiseWin $w"
     
-    pack [frame $w.b] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
     set ::optable::_interrupt 0
-    button $w.b.cancel -text $::tr(Cancel) -command {
+    ttk::button $w.b.cancel -text $::tr(Cancel) -command {
       set ::optable::_interrupt 1
       progressBarCancel
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
     
     foreach i {1 2} name { "Searching database for report games" "Generating report information" } {
-      label $w.text$i -text "$i. $name"
+      ttk::label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
       canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
       $w.c$i create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
@@ -213,25 +213,24 @@ proc ::optable::makeReportWin {args} {
         -cursor top_left_arrow
     ::htext::init $w.text
     ttk::scrollbar $w.ybar -command "$w.text yview"
-    frame $w.b
-    button $w.b.previewLaTeX -textvar ::tr(OprepViewLaTeX) \
+    ttk::frame $w.b
+    ttk::button $w.b.previewLaTeX -textvar ::tr(OprepViewLaTeX) \
         -command ::optable::previewLaTeX
-    button $w.b.previewHTML -textvar ::tr(OprepViewHTML) \
+    ttk::button $w.b.previewHTML -textvar ::tr(OprepViewHTML) \
         -command ::optable::previewHTML
-    button $w.b.opts -text [tr OprepFileOptions] -command ::optable::setOptions
-    label $w.b.lexclude -text "Exclude:"
-    menubutton $w.b.exclude -textvar ::optable::_data(exclude) \
-        -indicatoron 1 -relief raised -bd 2 -menu $w.b.exclude.m -padx 1
+    ttk::button $w.b.opts -text [tr OprepFileOptions] -command ::optable::setOptions
+    ttk::label $w.b.lexclude -text "Exclude:"
+    ttk::menubutton $w.b.exclude -textvar ::optable::_data(exclude) -menu $w.b.exclude.m
     menu $w.b.exclude.m -tearoff 0
-    button $w.b.update -textvar ::tr(Update) -command {
+    ttk::button $w.b.update -textvar ::tr(Update) -command {
       set ::optable::_data(yview) [lindex [.oprepWin.text yview] 0]
       ::optable::makeReportWin
       .oprepWin.text yview moveto $::optable::_data(yview)
     }
     
-    button $w.b.mergeGames -textvar ::tr(MergeGames) -command ::optable::mergeGames
-    button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Opening}
-    button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
+    ttk::button $w.b.mergeGames -textvar ::tr(MergeGames) -command ::optable::mergeGames
+    ttk::button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Opening}
+    ttk::button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
     pack $w.b -side bottom -fill x
     pack $w.ybar -side right -fill y
     pack $w.text -side left -fill both -expand yes
@@ -328,7 +327,7 @@ proc ::optable::setOptions {} {
   set w .oprepOptions
   if {[winfo exists $w]} { return }
   toplevel $w
-  pack [frame $w.f] -side top -fill x -padx 5 -pady 5
+  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5
   set row 0
   foreach i {Stats Popular AvgPerf Results MovesFrom Themes Endgames} {
     set yesno($i) 1
@@ -344,7 +343,7 @@ proc ::optable::setOptions {} {
     
     if {$i == "col"} {
       incr left 4
-      frame $w.f.colsep$left -width 8
+      ttk::frame $w.f.colsep$left -width 8
       grid $w.f.colsep$left -row 0 -column $left
       incr left
       set right [expr {$left + 1}]
@@ -352,19 +351,19 @@ proc ::optable::setOptions {} {
     } elseif {$i == "gap"} {
       # nothing
     } elseif {$i == "sep"} {
-      frame $w.f.fsep$row$left -height 2 -borderwidth 2 -relief sunken -bg white
-      frame $w.f.tsep$row$left -height 2 -borderwidth 2 -relief sunken -bg white
+      ttk::frame $w.f.fsep$row$left -height 2 -borderwidth 2 -relief sunken
+      ttk::frame $w.f.tsep$row$left -height 2 -borderwidth 2 -relief sunken
       grid $w.f.fsep$row$left -row $row -column $left -sticky we -columnspan 4
     } elseif {[info exists yesno($i)]} {
-      checkbutton $w.f.f$i -variable ::optable($i) -onvalue 1 -offvalue 0
-      label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
+      ttk::checkbutton $w.f.f$i -variable ::optable($i) -onvalue 1 -offvalue 0
+      ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.f$i -row $row -column $left -sticky n
       grid $w.f.t$i -row $row -column $right -sticky w -columnspan 3
     } else {
       
       # Pascal Georges : changed combobox to spinbox to widen choices
       if {$i == "MaxGames"} {
-        spinbox $w.f.s$i -textvariable ::optable($i) -from 0 -to 5000 -increment 50 \
+        ttk::spinbox $w.f.s$i -textvariable ::optable($i) -from 0 -to 5000 -increment 50 \
             -state readonly -width 5 -justify right -font font_Small
       } else  {
         set tmpcombo {}
@@ -374,12 +373,12 @@ proc ::optable::setOptions {} {
         ttk::combobox $w.f.s$i -textvariable ::optable($i) -width 2 -height 11 -values $tmpcombo
       }
       
-      label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
+      ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.s$i -row $row -column $left ;# -sticky e
       if {$i == "MostFrequent"  ||  $i == "Shortest"} {
-        checkbutton $w.f.w$i -text $::tr(White) -font font_Small \
+        ttk::checkbutton $w.f.w$i -text $::tr(White) \
             -variable ::optable(${i}White)
-        checkbutton $w.f.b$i -text $::tr(Black) -font font_Small \
+        ttk::checkbutton $w.f.b$i -text $::tr(Black) \
             -variable ::optable(${i}Black)
         grid $w.f.t$i -row $row -column $right -sticky w
         grid $w.f.w$i -row $row -column 2
@@ -392,7 +391,7 @@ proc ::optable::setOptions {} {
     if {$i != "col"} { incr row }
   }
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
   dialogbutton $w.b.defaults -textvar ::tr(Defaults) -command {
     array set ::optable [array get ::optableDefaults]
   }
@@ -1200,16 +1199,16 @@ proc ::optable::addFavoriteDlg {} {
   set w .addFavoriteDlg
   toplevel $w
   wm title $w "Scid: Add Opening Report Favorite"
-  label $w.name -text "Enter a name for the opening report of this position:"
+  ttk::label $w.name -text "Enter a name for the opening report of this position:"
   pack $w.name -side top
   # label $w.name2 -text "(Use letters, digits, spaces and underscores only)"
   # pack $w.name2 -side top
-  entry $w.e -width 40
+  ttk::entry $w.e -width 40
   pack $w.e -side top -fill x -padx 2
   addHorizontalRule $w
-  label $w.old -text "Existing favorite report names:"
+  ttk::label $w.old -text "Existing favorite report names:"
   pack $w.old -side top
-  pack [frame $w.existing] -side top -fill x -padx 2
+  pack [ttk::frame $w.existing] -side top -fill x -padx 2
   text $w.existing.list -width 30 -height 10 -background gray90 \
       -yscrollcommand [list $w.existing.ybar set]
   ttk::scrollbar $w.existing.ybar -command [list $w.existing.list yview]
@@ -1220,10 +1219,10 @@ proc ::optable::addFavoriteDlg {} {
   }
   $w.existing.list configure -state disabled
   addHorizontalRule $w
-  frame $w.b
+  ttk::frame $w.b
   pack $w.b -side bottom -fill x
-  button $w.b.ok -text OK -command ::optable::addFavoriteOK
-  button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+  ttk::button $w.b.ok -text OK -command ::optable::addFavoriteOK
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
   focus $w.e
   grab $w
@@ -1265,14 +1264,14 @@ proc ::optable::editFavoritesDlg {} {
   wm title $w "Scid: [tr OprepFavoritesEdit]"
   # wm transient $w .
   bind $w <F1> {helpWindow Reports Opening}
-  entry $w.e -width 60 -foreground black -background white \
-      -textvariable reportFavoritesName -font font_Small -exportselection 0
+  ttk::entry $w.e -width 60 \
+      -textvariable reportFavoritesName -exportselection 0
   bind $w.e <FocusIn>  "$w.e configure -background lightYellow"
   bind $w.e <FocusOut> "$w.e configure -background white"
   
   trace variable reportFavoritesName w ::optable::editFavoritesRefresh
   pack $w.e -side top -fill x
-  pack [frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
   autoscrollframe $w.f listbox $w.f.list -width 50 -height 10 \
       -fg black -bg white -exportselection 0 -font font_Small -setgrid 1
   pack $w.f -side top -fill both -expand yes
@@ -1282,14 +1281,11 @@ proc ::optable::editFavoritesDlg {} {
     set moves [lindex $entry 1]
     $w.f.list insert end "$name \[$moves\]"
   }
-  button $w.b.delete -text $::tr(Delete)  -command ::optable::editFavoritesDelete
-  button $w.b.up -image tb_up -command {::optable::editFavoritesMove up}
-  button $w.b.down -image tb_down -command {::optable::editFavoritesMove down}
-  foreach i [list $w.b.up $w.b.down] {
-    $i configure -padx 0 -pady 0 -borderwidth 1
-  }
-  button $w.b.ok -text "OK" -command ::optable::editFavoritesOK
-  button $w.b.cancel -text "Cancel" -command {
+  ttk::button $w.b.delete -text $::tr(Delete)  -command ::optable::editFavoritesDelete
+  ttk::button $w.b.up -image tb_up -command {::optable::editFavoritesMove up}
+  ttk::button $w.b.down -image tb_down -command {::optable::editFavoritesMove down}
+  ttk::button $w.b.ok -text "OK" -command ::optable::editFavoritesOK
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command {
     catch {grab release .editFavoritesDlg}
     destroy .editFavoritesDlg
   }
@@ -1431,24 +1427,24 @@ proc ::optable::generateFavoriteReports {} {
   if {[winfo exists $w]} { return }
   toplevel $w
   wm title $w "Scid: Generate Reports..."
-  pack [label $w.typelabel -text "Select the report type:" -font font_Bold] -side top
-  pack [frame $w.type] -side top -padx 2
-  radiobutton $w.type.full -text "Full" -variable reportType -value full
-  radiobutton $w.type.compact -text "Compact (no theory table)" -variable reportType -value compact
-  radiobutton $w.type.theory -text "Theory table only" -variable reportType -value theory
+  pack [ttk::label $w.typelabel -text "Select the report type:" -font font_Bold] -side top
+  pack [ttk::frame $w.type] -side top -padx 2
+  ttk::radiobutton $w.type.full -text "Full" -variable reportType -value full
+  ttk::radiobutton $w.type.compact -text "Compact (no theory table)" -variable reportType -value compact
+  ttk::radiobutton $w.type.theory -text "Theory table only" -variable reportType -value theory
   pack $w.type.full $w.type.compact $w.type.theory -side left -padx 4
   addHorizontalRule $w
-  pack [label $w.fmtlabel -text "Select the report file format:" -font font_Bold] -side top
-  pack [frame $w.fmt] -side top -padx 2
-  radiobutton $w.fmt.text -text "Plain text (.txt)" -variable reportFormat -value text
-  radiobutton $w.fmt.html -text "HTML" -variable reportFormat -value html
-  radiobutton $w.fmt.latex -text "LaTeX" -variable reportFormat -value latex
+  pack [ttk::label $w.fmtlabel -text "Select the report file format:" -font font_Bold] -side top
+  pack [ttk::frame $w.fmt] -side top -padx 2
+  ttk::radiobutton $w.fmt.text -text "Plain text (.txt)" -variable reportFormat -value text
+  ttk::radiobutton $w.fmt.html -text "HTML" -variable reportFormat -value html
+  ttk::radiobutton $w.fmt.latex -text "LaTeX" -variable reportFormat -value latex
   pack $w.fmt.text $w.fmt.html $w.fmt.latex -side left -padx 4
   addHorizontalRule $w
-  pack [frame $w.dir] -side top -padx 2 -pady 2
-  label $w.dir.label -text "Save reports in the folder: " -font font_Bold
-  entry $w.dir.entry -background white -textvariable ::reportDir
-  button $w.dir.choose -text $::tr(Browse...) -command {
+  pack [ttk::frame $w.dir] -side top -padx 2 -pady 2
+  ttk::label $w.dir.label -text "Save reports in the folder: " -font font_Bold
+  ttk::entry $w.dir.entry -textvariable ::reportDir
+  ttk::button $w.dir.choose -text $::tr(Browse...) -command {
     set tmpdir [tk_chooseDirectory -parent .reportFavoritesDlg \
         -title "Scid: Choose Report Folder"]
     if {$tmpdir != ""} {
@@ -1459,10 +1455,10 @@ proc ::optable::generateFavoriteReports {} {
   pack $w.dir.choose -side right
   pack $w.dir.entry -side left -fill x
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
-  button $w.b.ok -text "OK"\
+  pack [ttk::frame $w.b] -side bottom -fill x
+  ttk::button $w.b.ok -text "OK"\
       -command "::optable::reportFavoritesOK; grab release $w; destroy $w; ::optable::makeReportWin"
-  button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
   grab $w
 }
@@ -1482,8 +1478,8 @@ proc ::optable::reportFavoritesOK {} {
   wm withdraw $w
   wm title $w "Scid: Generating Reports"
   bind $w <Visibility> "raiseWin $w"
-  pack [label $w.t -width 40 -text "Generating reports. Please wait..." -font font_Bold] -side top -pady 5
-  pack [label $w.report] -side top -pady 5
+  pack [ttk::label $w.t -width 40 -text "Generating reports. Please wait..." -font font_Bold] -side top -pady 5
+  pack [ttk::label $w.report] -side top -pady 5
   ::utils::win::Centre $w
   wm deiconify $w
   grab $w

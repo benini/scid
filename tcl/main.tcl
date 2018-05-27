@@ -1260,9 +1260,9 @@ proc CreateGameInfo {} {
 
 proc InitToolbar {{tb}} {
 	ttk::frame $tb -relief raised -border 1
-	button $tb.new -image tb_new -command ::file::New
-	button .main.tb.open -image tb_open -command ::file::Open
-	button .main.tb.save -image tb_save -command {
+	ttk::button $tb.new -image tb_new -command ::file::New -padding {2 0}
+	ttk::button .main.tb.open -image tb_open -command ::file::Open -padding {2 0}
+	ttk::button .main.tb.save -image tb_save  -padding {2 0} -command {
 	  if {[sc_game number] != 0} {
 		#busyCursor .
 		gameReplace
@@ -1272,43 +1272,40 @@ proc InitToolbar {{tb}} {
 		gameAdd
 	  }
 	}
-	button .main.tb.close -image tb_close -command ::file::Close
-	button .main.tb.finder -image tb_finder -command ::file::finder::Open
-	menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
+	ttk::button .main.tb.close -image tb_close -command ::file::Close -padding {2 0}
+	ttk::button .main.tb.finder -image tb_finder -command ::file::finder::Open -padding {2 0}
+	ttk::menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
 	menu .main.tb.bkm.menu
-	bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
 
-	ttk::frame .main.tb.space1 -width 12
-	button .main.tb.cut -image tb_cut -command ::game::Clear
-	button .main.tb.copy -image tb_copy -command ::gameAddToClipbase
-	button .main.tb.paste -image tb_paste \
-		-command {catch {sc_clipbase paste}; updateBoard -pgn}
-	ttk::frame .main.tb.space2 -width 12
-	button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
-	button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
-	ttk::frame .main.tb.space3 -width 12
-	button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
-	button .main.tb.bsearch -image tb_bsearch -command ::search::board
-	button .main.tb.hsearch -image tb_hsearch -command ::search::header
-	button .main.tb.msearch -image tb_msearch -command ::search::material
-	ttk::frame .main.tb.space4 -width 12
-	button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
-	button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
-	button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
-	button .main.tb.tmt -image tb_tmt -command ::tourney::toggle
-	button .main.tb.maint -image tb_maint -command ::maint::OpenClose
-	button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose
-	button .main.tb.tree -image tb_tree -command ::tree::make
-	button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin
-	button .main.tb.engine -image tb_engine -command makeAnalysisWin
-	button .main.tb.help -image tb_help -command {helpWindow Index}
+	ttk::frame .main.tb.space1 -width 4
+	ttk::button .main.tb.cut -image tb_cut -command ::game::Clear -padding {2 0}
+	ttk::button .main.tb.copy -image tb_copy -command ::gameAddToClipbase -padding {2 0}
+	ttk::button .main.tb.paste -image tb_paste \
+		-command {catch {sc_clipbase paste}; updateBoard -pgn} -padding {2 0}
+	ttk::frame .main.tb.space2 -width 4
+	ttk::button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous} -padding {2 0}
+	ttk::button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next} -padding {2 0}
+	ttk::frame .main.tb.space3 -width 4
+	ttk::button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset -padding {2 0}
+	ttk::button .main.tb.bsearch -image tb_bsearch -command ::search::board -padding {2 0}
+	ttk::button .main.tb.hsearch -image tb_hsearch -command ::search::header -padding {2 0}
+	ttk::button .main.tb.msearch -image tb_msearch -command ::search::material -padding {2 0}
+	ttk::frame .main.tb.space4 -width 4
+	ttk::button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open -padding {2 0}
+	ttk::button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open -padding {2 0}
+	ttk::button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose -padding {2 0}
+	ttk::button .main.tb.tmt -image tb_tmt -command ::tourney::toggle -padding {2 0}
+	ttk::button .main.tb.maint -image tb_maint -command ::maint::OpenClose -padding {2 0}
+	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
+	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
+	ttk::button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin -padding {2 0}
+	ttk::button .main.tb.engine -image tb_engine -command makeAnalysisWin -padding {2 0}
+	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
 
 	foreach i {new open save close finder bkm cut copy paste gprev gnext \
 		  rfilter bsearch hsearch msearch \
 		  switcher glist pgn tmt maint eco tree crosst engine help} {
-	  .main.tb.$i configure -takefocus 0 -relief flat -border 1 -anchor n -highlightthickness 0
-	  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
-	  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; break"
+	  .main.tb.$i configure -takefocus 0
 	}
 
 	# Set toolbar help status messages:
@@ -1337,41 +1334,36 @@ proc configToolbar {} {
   array set ::toolbar_temp [array get ::toolbar]
   pack [ttk::frame $w.f1] -side top -fill x
   foreach i {new open save close finder bkm} {
-    checkbutton $w.f1.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
-        -variable toolbar_temp($i) -relief solid -borderwidth 1
-    pack $w.f1.$i -side left -ipadx 2 -ipady 2
+    ttk::checkbutton $w.f1.$i -image tb_$i -variable toolbar_temp($i)
+    pack $w.f1.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f2] -side top -fill x
   foreach i {gprev gnext} {
-    checkbutton $w.f2.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
-        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    ttk::checkbutton $w.f2.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f2.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f3] -side top -fill x
   foreach i {cut copy paste} {
-    checkbutton $w.f3.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
-        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    ttk::checkbutton $w.f3.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f3.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f4] -side top -fill x
   foreach i {bsearch hsearch msearch} {
-    checkbutton $w.f4.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
-        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    ttk::checkbutton $w.f4.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f4.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f5] -side top -fill x
   foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
-    checkbutton $w.f5.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
-        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    ttk::checkbutton $w.f5.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f5.$i -side left -ipadx 1 -ipady 1
   }
 
   addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
-  button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
+  ttk::button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
     foreach i [array names toolbar_temp] { set toolbar_temp($i) 1 }
   }
-  button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
+  ttk::button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
     foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 }
   }
   ttk::button $w.ok -text "OK" -command {

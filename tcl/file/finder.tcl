@@ -54,18 +54,18 @@ proc ::file::finder::Open {} {
       -accelerator F1 -command {helpWindow Finder}
   $w.menu.helpmenu add command -label FinderHelpIndex -command {helpWindow Index}
   
-  pack [frame $w.d] -side top -fill x
-  label $w.d.label -text "$::tr(FinderDir):" -font font_Small
+  pack [ttk::frame $w.d] -side top -fill x
+  ttk::label $w.d.label -text "$::tr(FinderDir):" -font font_Small
   set ::file::finder::data(menu) [tk_optionMenu $w.d.mb ::file::finder::data(dir) ""]
   $w.d.mb configure -font font_Small -width 1 -anchor e
   $::file::finder::data(menu) configure -font font_Small
-  button $w.d.up -image tb_updir -command {::file::finder::Refresh ..}
+  ttk::button $w.d.up -image tb_updir -command {::file::finder::Refresh ..}
   pack $w.d.label -side left -padx 5
   pack $w.d.up -side right -padx 5
   pack $w.d.mb -side left -fill x -expand yes
   
-  frame $w.t
-  frame $w.b
+  ttk::frame $w.t
+  ttk::frame $w.b
   text $w.t.text -width 65 -height 25 -font font_Small -wrap none \
       -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
       -cursor top_left_arrow
@@ -87,7 +87,7 @@ proc ::file::finder::Open {} {
   }
   $w.t.text configure -tabs $tablist
   
-  checkbutton $w.b.sub -text [tr FinderFileSubdirs] \
+  ttk::checkbutton $w.b.sub -text [tr FinderFileSubdirs] \
       -variable ::file::finder::data(recurse) -onvalue 1 -offvalue 0 \
       -command ::file::finder::Refresh
   dialogbutton $w.b.stop -textvar ::tr(Stop) -command {set finder(stop) 1 }

@@ -82,7 +82,7 @@ namespace eval calvar {
     ttk::frame $w.fengines -relief raised -borderwidth 1
     listbox $w.fengines.lbEngines -yscrollcommand "$w.fengines.ybar set" -height 5 -width 50 -exportselection 0
     ttk::scrollbar $w.fengines.ybar -command "$w.fengines.lbEngines yview"
-    pack $w.fengines.ybar -side left -fill y
+    pack $w.fengines.ybar -side right -fill y
     pack $w.fengines.lbEngines -side left -fill both -expand yes
     pack $w.fengines -expand yes -fill both -side top
     set i 0
@@ -112,10 +112,10 @@ namespace eval calvar {
     # spinbox $f.sbThreshold -background white -width 3 -textvariable ::calvar::blunderThreshold -from 0.1 -to 1.5 -increment 0.1
     # pack $f.lThreshold $f.sbThreshold -side left
     ttk::label $f.lTime -text "Move thinking time"
-    spinbox $f.sbTime -background white -width 3 -textvariable ::calvar::thinkingTimePerLine -from 5 -to 120 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $f.sbTime -background white -width 3 -textvariable ::calvar::thinkingTimePerLine -from 5 -to 120 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     pack $f.lTime $f.sbTime -side left
     ttk::label $f.lTime2 -text "Position thinking time"
-    spinbox $f.sbTime2 -background white -width 3 -textvariable ::calvar::thinkingTimePosition -from 5 -to 300 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $f.sbTime2 -background white -width 3 -textvariable ::calvar::thinkingTimePosition -from 5 -to 300 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     pack $f.lTime2 $f.sbTime2 -side left
     
     ttk::frame $w.fbuttons

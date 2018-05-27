@@ -852,7 +852,7 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     $w.menu.file add separator
     $w.menu.file add command -label GraphFileClose -command "destroy $w"
     
-    canvas $w.c -width 500 -height 300
+    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
     pack $w.c -side top -fill both -expand yes
     $w.c create text 25 10 -tag text -justify center -width 1 -font font_Regular -anchor n
     update

@@ -27,8 +27,8 @@ proc ::tools::email {} {
   bind $w <Destroy> { set .emailWin 0 }
   bind $w <F1> { helpWindow Email }
 
-  frame $w.f
-  frame $w.b
+  ttk::frame $w.f
+  ttk::frame $w.b
   pack $w.f -side left -fill y
   addVerticalRule $w
   pack $w.b -side right -fill y
@@ -58,19 +58,18 @@ proc ::tools::email {} {
 
   set b .emailWin.b
 
-  button $b.add -text "Add..." -underline 0 -command {
+  ttk::button $b.add -text "Add..." -underline 0 -command {
     set idx [llength $emailData]
     lappend emailData [list "" "" "" "" ""]
     modifyEmailDetails $idx
     ::tools::email::refresh
   }
 
-  button $b.edit -text "Edit..." -underline 0 -command ::tools::email::EditButton
-  button $b.delete -text "Delete..." -underline 0 -command ::tools::email::DeleteButton
-  button $b.load -text "Load game" -underline 0 -command ::tools::email::LoadButton
-  button $b.send -text "Send email..." -underline 0 -command ::tools::email::SendButton
-  menubutton $b.time -text "Time" -underline 0 -indicatoron 1 \
-    -menu $b.time.m -relief raised
+  ttk::button $b.edit -text "Edit..." -underline 0 -command ::tools::email::EditButton
+  ttk::button $b.delete -text "Delete..." -underline 0 -command ::tools::email::DeleteButton
+  ttk::button $b.load -text "Load game" -underline 0 -command ::tools::email::LoadButton
+  ttk::button $b.send -text "Send email..." -underline 0 -command ::tools::email::SendButton
+  ttk::menubutton $b.time -text "Time" -underline 0 -menu $b.time.m
   menu $b.time.m
   $b.time.m add command -label "Received today" -underline 0 \
     -command {::tools::email::TimesButton r}
@@ -79,13 +78,9 @@ proc ::tools::email {} {
   $b.time.m add command -label "Edit..." -underline 0 \
     -command {::tools::email::TimesButton e}
 
-  button $b.config -text "Settings..." -command ::tools::email::config
-  button $b.help -text $::tr(Help) -command { helpWindow Email }
-  button $b.close -text $::tr(Close) -command { destroy .emailWin }
-
-  foreach i {add edit delete load send time config help close} {
-    $b.$i configure -font font_Small
-  }
+  ttk::button $b.config -text "Settings..." -command ::tools::email::config
+  ttk::button $b.help -text $::tr(Help) -command { helpWindow Email }
+  ttk::button $b.close -text $::tr(Close) -command { destroy .emailWin }
   pack $b.add $b.edit $b.delete $b.load $b.send $b.time \
     -side top -pady 1 -padx 5 -fill x
   pack $b.close $b.help $b.config -side bottom -pady 1 -padx 5  -fill x
@@ -102,35 +97,35 @@ proc ::tools::email::config {} {
   toplevel $w
   wm title $w "Scid"
   label $w.use -text "Send email using:" -font font_Bold
-  frame $w.smtp
-  radiobutton $w.smtp.b -text "SMTP server:" -variable email(smtp) -value 1
-  entry $w.smtp.s -width 30 -textvar email(server) -bg white
-  frame $w.sm
-  radiobutton $w.sm.b -text "sendmail process:" -variable email(smtp) -value 0
-  entry $w.sm.s -width 30 -textvar email(smproc) -bg white
+  ttk::frame $w.smtp
+  ttk::radiobutton $w.smtp.b -text "SMTP server:" -variable email(smtp) -value 1
+  ttk::entry $w.smtp.s -width 30 -textvar email(server)
+  ttk::frame $w.sm
+  ttk::radiobutton $w.sm.b -text "sendmail process:" -variable email(smtp) -value 0
+  ttk::entry $w.sm.s -width 30 -textvar email(smproc)
   pack $w.use -side top
   pack $w.smtp $w.sm -side top -fill x
   pack $w.smtp.s $w.smtp.b -side right
   pack $w.sm.s $w.sm.b -side right
   addHorizontalRule $w
-  label $w.addr -text "Email address fields:" -font font_Bold
-  frame $w.from
-  label $w.from.lab -text "From:"
-  entry $w.from.e -textvar email(from) -width 30 -bg white
-  frame $w.bcc
-  label $w.bcc.lab -text "Bcc:"
-  entry $w.bcc.e -textvar email(bcc) -width 30 -bg white
+  ttk::label $w.addr -text "Email address fields:" -font font_Bold
+  ttk::frame $w.from
+  ttk::label $w.from.lab -text "From:"
+  ttk::entry $w.from.e -textvar email(from) -width 30
+  ttk::frame $w.bcc
+  ttk::label $w.bcc.lab -text "Bcc:"
+  ttk::entry $w.bcc.e -textvar email(bcc) -width 30
   pack $w.addr $w.from $w.bcc -side top -fill x
   pack $w.from.e $w.from.lab -side right
   pack $w.bcc.e $w.bcc.lab -side right
   addHorizontalRule $w
-  pack [frame $w.b] -side top -fill x
-  button $w.b.ok -text [tr OptionsSave] -command {
+  pack [ttk::frame $w.b] -side top -fill x
+  ttk::button $w.b.ok -text [tr OptionsSave] -command {
     options.write
     catch {grab release .emailConfig}
     destroy .emailConfig
   }
-  button $w.b.cancel -text $::tr(Cancel) \
+  ttk::button $w.b.cancel -text $::tr(Cancel) \
     -command "catch {grab release $w}; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
   wm resizable $w 1 0
@@ -215,13 +210,13 @@ proc ::tools::email::TimesButton {type} {
   if {[winfo exists $w]} { return }
   toplevel $w
   wm title $w "Scid: Email Times"
-  label $w.title -text "Email Times for [lindex $details 0]"
-  frame $w.t
+  ttk::label $w.title -text "Email Times for [lindex $details 0]"
+  ttk::frame $w.t
   text $w.t.text -height 15 -width 30 -font font_Fixed -setgrid 1 \
     -yscrollcommand "$w.t.ybar set" -bg white -fg black
   ttk::scrollbar $w.t.ybar -command "$w.t.text yview"
-  frame $w.b
-  button $w.b.ok -text "OK" -command {
+  ttk::frame $w.b
+  ttk::button $w.b.ok -text "OK" -command {
     set details [lindex $emailData $emailTimesIdx]
     set timeList [split [string trim [.emailTimesWin.t.text get 1.0 end]] "\n"]
     set details [lreplace $details 5 5 $timeList]
@@ -232,7 +227,7 @@ proc ::tools::email::TimesButton {type} {
     catch {focus .emailWin}
     destroy .emailTimesWin
   }
-  button $w.b.cancel -text $::tr(Cancel) \
+  ttk::button $w.b.cancel -text $::tr(Cancel) \
     -command "grab release $w; catch {focus .emailWin}; destroy $w"
   pack $w.title -side top -fill x
   pack $w.t -side top -fill both
@@ -354,26 +349,26 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   set w ".emailMessageWin$emailCount"
   toplevel $w
   wm title $w "Send email to $name"
-  set f [frame $w.fields]
+  set f [ttk::frame $w.fields]
 
-  label $f.fromlab -text "From: "
-  entry $f.from -background white
+  ttk::label $f.fromlab -text "From: "
+  ttk::entry $f.from
   $f.from insert end $email(from)
 
-  label $f.tolab -text "To: "
-  entry $f.to -background white
+  ttk::label $f.tolab -text "To: "
+  ttk::entry $f.to
   $f.to insert end $addr
 
-  label $f.subjlab -text "Subject: "
-  entry $f.subj -background white
+  ttk::label $f.subjlab -text "Subject: "
+  ttk::entry $f.subj
   $f.subj insert end $subj
 
-  label $f.bcclab -text "Bcc: "
-  entry $f.bcc -background white
+  ttk::label $f.bcclab -text "Bcc: "
+  ttk::entry $f.bcc
   $f.bcc insert end $email(bcc)
 
-  button $f.send -text "Send" -command "::tools::email::processMessage $w $idx"
-  button $f.cancel -text "Cancel" -command "destroy $w"
+  ttk::button $f.send -text "Send" -command "::tools::email::processMessage $w $idx"
+  ttk::button $f.cancel -text "Cancel" -command "destroy $w"
 
   grid $f.send -row 0 -column 3 -rowspan 2 -sticky nesw
   grid $f.cancel -row 2 -column 3 -rowspan 2 -sticky nesw
@@ -387,7 +382,7 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   grid $f.bcc -row 3 -column 1 -sticky ew
   grid columnconfigure $f 1 -weight 1
 
-  set f [frame $w.message]
+  set f [ttk::frame $w.message]
   pack $w.fields -fill x -padx 4 -pady 4
   pack $w.message -expand yes -fill both -padx 4 -pady 4
 
@@ -511,24 +506,24 @@ proc modifyEmailDetails {i} {
   } else {
     wm title $w "Edit opponent details"
   }
-  set f [frame $w.name]
-  label $f.label -text "Name: "
-  entry $f.entry -width 30 -background white -textvariable emailData_name
+  set f [ttk::frame $w.name]
+  ttk::label $f.label -text "Name: "
+  ttk::entry $f.entry -width 30 -textvariable emailData_name
   set ::tools::email::helpBar(name) "Enter the opponent's name"
 
-  set f [frame $w.addr]
-  label $f.label -text "Email address: "
-  entry $f.entry -width 30 -background white -textvariable emailData_addr
+  set f [ttk::frame $w.addr]
+  ttk::label $f.label -text "Email address: "
+  ttk::entry $f.entry -width 30 -textvariable emailData_addr
   set ::tools::email::helpBar(addr) "Enter the opponent's email address"
 
-  set f [frame $w.subj]
-  label $f.label -text "Subject: "
-  entry $f.entry -width 30 -background white -textvariable emailData_subj
+  set f [ttk::frame $w.subj]
+  ttk::label $f.label -text "Subject: "
+  ttk::entry $f.entry -width 30 -textvariable emailData_subj
   set ::tools::email::helpBar(subj) "Enter the subject for each message"
 
-  set f [frame $w.glist]
-  label $f.label -text "Game Numbers: "
-  entry $f.entry -width 30 -background white -textvariable emailData_glist
+  set f [ttk::frame $w.glist]
+  ttk::label $f.label -text "Game Numbers: "
+  ttk::entry $f.entry -width 30 -textvariable emailData_glist
   set ::tools::email::helpBar(glist) \
     "Enter opponent's game numbers, separated by spaces"
 
@@ -543,8 +538,8 @@ proc modifyEmailDetails {i} {
 
   addHorizontalRule $w
 
-  set f [frame $w.sig]
-  label $f.label -text "Signature: " -anchor n
+  set f [ttk::frame $w.sig]
+  ttk::label $f.label -text "Signature: " -anchor n
   text $f.entry -width 30 -height 5 -background white
   bind $f.entry <FocusIn> "$f.entry configure -background lightYellow
     set emailData_helpBar {Enter the closing text for each message}"
@@ -555,8 +550,8 @@ proc modifyEmailDetails {i} {
 
   addHorizontalRule $w
 
-  set f [frame $w.buttons]
-  button $w.buttons.save -text "Save" -command {
+  set f [ttk::frame $w.buttons]
+  ttk::button $w.buttons.save -text "Save" -command {
     set gNumberErr [::tools::email::validGameNumbers $emailData_glist]
     if {$gNumberErr != -1} {
       set nGames [sc_base numGames [sc_base current]]
@@ -573,7 +568,7 @@ proc modifyEmailDetails {i} {
       ::tools::email::refresh
     }
   }
-  button $f.cancel -text "Cancel" -command {
+  ttk::button $f.cancel -text "Cancel" -command {
     set emailData [::tools::email::readOpponentFile]
     destroy .emailEditor
     ::tools::email::refresh
@@ -581,7 +576,7 @@ proc modifyEmailDetails {i} {
   pack $f -side top
   pack $f.save $f.cancel -side left -padx 20 -pady 10
 
-  label $w.helpBar -width 1 -textvariable emailData_helpBar -relief sunken \
+  ttk::label $w.helpBar -width 1 -textvariable emailData_helpBar \
     -font font_Small -anchor w
   pack $w.helpBar -side bottom -fill x
 

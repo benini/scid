@@ -58,7 +58,7 @@ namespace eval sergame {
     listbox $w.fengines.fEnginesList.lbEngines -yscrollcommand "$w.fengines.fEnginesList.ybar set" \
         -height 5 -width 50 -exportselection 0
     ttk::scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
-    pack $w.fengines.fEnginesList.ybar -side left -fill y
+    pack $w.fengines.fEnginesList.ybar -side right -fill y
     pack $w.fengines.fEnginesList.lbEngines -side left -fill both -expand yes
     pack $w.fengines.fEnginesList -expand yes -fill both -side top
     set i 0
@@ -134,11 +134,11 @@ namespace eval sergame {
     
     ttk::label $w.ftime.timebonus.whitelabel -text $::tr(White)
     grid $w.ftime.timebonus.whitelabel -row $row -column 1
-    spinbox $w.ftime.timebonus.whitespminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.timebonus.whitespminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.whitespminutes -row $row -column 2
     ttk::label $w.ftime.timebonus.whitelminutes -text $::tr(TimeMin)
     grid $w.ftime.timebonus.whitelminutes -row $row -column 3
-    spinbox $w.ftime.timebonus.whitespseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.timebonus.whitespseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.whitespseconds -row $row -column 4
     ttk::label $w.ftime.timebonus.whitelseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.whitelseconds -row $row -column 5
@@ -146,11 +146,11 @@ namespace eval sergame {
     incr row
     ttk::label $w.ftime.timebonus.blacklabel -text $::tr(Black)
     grid $w.ftime.timebonus.blacklabel -row $row -column 1
-    spinbox $w.ftime.timebonus.blackspminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.timebonus.blackspminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.blackspminutes -row $row -column 2
     ttk::label $w.ftime.timebonus.blacklminutes -text $::tr(TimeMin)
     grid $w.ftime.timebonus.blacklminutes -row $row -column 3
-    spinbox $w.ftime.timebonus.blackspseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.timebonus.blackspseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.blackspseconds -row $row -column 4
     ttk::label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.blacklseconds -row $row -column 5
@@ -163,7 +163,7 @@ namespace eval sergame {
     # Fixed depth
     ttk::frame $w.ftime.depth
     ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode
-    spinbox $w.ftime.depth.value -background white -width 4 -from 1 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.depth.value -background white -width 4 -from 1 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     $w.ftime.depth.value set $::sergame::depth
     
     pack $w.ftime.depth -side top -fill x
@@ -172,7 +172,7 @@ namespace eval sergame {
     
     ttk::frame $w.ftime.nodes
     ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode
-    spinbox $w.ftime.nodes.value -background white -width 4 -from 5 -to 10000 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.nodes.value -background white -width 4 -from 5 -to 10000 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     $w.ftime.nodes.value set [ expr $::sergame::nodes /1000]
     
     pack $w.ftime.nodes -side top -fill x
@@ -181,7 +181,7 @@ namespace eval sergame {
     
     ttk::frame $w.ftime.movetime
     ttk::radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::timeMode
-    spinbox $w.ftime.movetime.value -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.movetime.value -background white -width 4 -from 1 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     $w.ftime.movetime.value set [ expr $::sergame::movetime /1000]
     
     pack $w.ftime.movetime -side top -fill x
@@ -209,7 +209,7 @@ namespace eval sergame {
     $w.fopening.fOpeningList.lbOpening see $::sergame::chosenOpening
     
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
-    pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
+    pack $w.fopening.fOpeningList.lbOpening -side left -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar -side right -fill y
     pack $w.fopening.cbOpening -fill x -side top
     pack $w.fopening.fOpeningList -expand yes -fill both -side top -expand 1

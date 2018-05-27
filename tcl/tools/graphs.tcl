@@ -64,24 +64,24 @@ proc configureFilterGraph {} {
   wm title $w $::tr(ConfigureFilter)
   setWinLocation $w
   bind $w <F1> {helpWindow Graphs Filter}
-  frame $w.filter
+  ttk::frame $w.filter
   set col 0
   set row 0
   #Create input for each configurationvalue
   foreach { i n } { Year Year Elo Rating Moves moves} {
-    label $w.filter.label$i -text $::tr($n): -font font_Bold
+    ttk::label $w.filter.label$i -text $::tr($n): -font font_Bold
     grid $w.filter.label$i -row $row -column $col -sticky w
     incr col
     foreach {j k} { FilterMin "  " FilterMax " - " FilterStep "  Interval:"} {
-      label $w.filter.label$j$i -text $k
-      entry $w.filter.i$j$i -textvariable $j$i -justify right -width 5 -validate all -vcmd { regexp {^[0-9]{0,4}$} %P }
+      ttk::label $w.filter.label$j$i -text $k
+      ttk::entry $w.filter.i$j$i -textvariable $j$i -justify right -width 5 -validate all -validatecommand { regexp {^[0-9]{0,4}$} %P }
       grid $w.filter.label$j$i -row $row -column $col -sticky w
       incr col
       grid $w.filter.i$j$i -row $row -column $col -sticky w
       incr col
     }
     if { $i == "Elo" } {
-      checkbutton $w.filter.iEloGuess -text $::tr(FilterEstimate) -onvalue 1 -offvalue 0 -variable FilterGuessELO
+      ttk::checkbutton $w.filter.iEloGuess -text $::tr(FilterEstimate) -onvalue 1 -offvalue 0 -variable FilterGuessELO
       grid $w.filter.iEloGuess -row $row -column $col -sticky w
       #	  incr col
     }
@@ -89,10 +89,11 @@ proc configureFilterGraph {} {
     set col 0
   }
   
-  button $w.close -textvar ::tr(Close) -command {
+  ttk::frame $w.buttons
+  ttk::button $w.buttons.close -textvar ::tr(Close) -command {
     checkConfigFilterGraph; ::tools::graphs::filter::Refresh
     ::tools::graphs::absfilter::Refresh; destroy .configFilterGraph  }
-  button $w.standard -textvar ::tr(Defaults) -command {
+  ttk::button $w.buttons.standard -textvar ::tr(Defaults) -command {
     set FilterMinElo 2100
     set FilterMaxElo 2800
     set FilterStepElo 100
@@ -104,14 +105,15 @@ proc configureFilterGraph {} {
     set FilterStepMoves 1
     set FilterGuessELO 1
   }
-  button $w.update -textvar ::tr(Update) -command { checkConfigFilterGraph
+  ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
     ::tools::graphs::absfilter::Refresh;
     ::tools::graphs::filter::Refresh
     ::windows::stats::Refresh
   }
   
   pack $w.filter
-  pack $w.close $w.update $w.standard -side right -padx 2 -pady 2
+  pack $w.buttons
+  pack $w.buttons.close $w.buttons.update $w.buttons.standard -side right -padx 2 -pady 2
   focus $w.filter.iFilterMinYear
   bind $w <Configure> "recordWinSize $w"
 }
@@ -135,7 +137,7 @@ proc tools::graphs::filter::Open {} {
   }
   toplevel $w
   menu $w.menu
-  $w configure -menu $w.menu
+  $w configure -menu $w.menu -background [ttk::style lookup . -background]
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file
@@ -150,13 +152,13 @@ proc tools::graphs::filter::Open {} {
   set filterGraph 1
   bind $w <Destroy> {set filterGraph 0}
   
-  frame $w.b
+  ttk::frame $w.b
   pack $w.b -side bottom -fill x
-  label $w.b.status -width 1 -font font_Small -anchor w
-  frame $w.sep -height 2 -borderwidth 2 -relief sunken -background white
+  ttk::label $w.b.status -width 1 -font font_Small -anchor w
+  ttk::frame $w.sep -height 2 -borderwidth 2 -relief sunken
   pack $w.sep -side bottom -fill x -pady 4
   
-  canvas $w.c -width 600 -height 400
+  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
   $w.c create text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
   $w.c create text 250 295 -tag type -justify center -width 1 \
@@ -179,12 +181,12 @@ proc tools::graphs::filter::Open {} {
   bind $w.c <$::MB3> ::tools::graphs::filter::Refresh
   
   foreach {name text} {decade Decade year Year elo Rating move moves} {
-    radiobutton $w.b.$name -padx 4 -pady 3 -text $::tr($text) \
+    ttk::radiobutton $w.b.$name -text $::tr($text) \
         -variable ::tools::graphs::filter::type -value $name \
         -command ::tools::graphs::filter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  button $w.b.setup -image tb_graph -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_graph -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2
@@ -575,8 +577,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    
-    canvas $w.c -width 500 -height 300
+    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+
     $w.c create text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
     pack $w.c -side top -expand yes -fill both
@@ -708,7 +710,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   if {! [winfo exists $w]} {
     toplevel $w
     menu $w.menu
-    $w configure -menu $w.menu
+    $w configure -menu $w.menu -background [ttk::style lookup . -background]
     $w.menu add cascade -label GraphFile -menu $w.menu.file
     menu $w.menu.file
     $w.menu.file add command -label GraphFileColor \
@@ -731,7 +733,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
           -command "::tools::graphs::rating::Refresh"
     }
     
-    canvas $w.c -width 500 -height 300
+    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
     $w.c create text 25 10 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
     pack $w.c -side top -expand yes -fill both
@@ -831,7 +833,7 @@ proc tools::graphs::absfilter::Open {} {
   }
   toplevel $w
   menu $w.menu
-  $w configure -menu $w.menu
+  $w configure -menu $w.menu -background [ttk::style lookup . -background]
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file
@@ -846,13 +848,13 @@ proc tools::graphs::absfilter::Open {} {
   set absfilterGraph 1
   bind $w <Destroy> {set absfilterGraph 0}
   
-  frame $w.b
+  ttk::frame $w.b
   pack $w.b -side bottom -fill x
-  label $w.b.status -width 1 -font font_Small -anchor w
-  frame $w.sep -height 2 -borderwidth 2 -relief sunken -background white
+  ttk::label $w.b.status -width 1 -font font_Small -anchor w
+  ttk::frame $w.sep -height 2 -borderwidth 2 -relief sunken
   pack $w.sep -side bottom -fill x -pady 4
   
-  canvas $w.c -width 600 -height 400
+  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
   $w.c create text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
   $w.c create text 250 295 -tag type -justify center -width 1 \
@@ -874,12 +876,12 @@ proc tools::graphs::absfilter::Open {} {
   bind $w.c <1> tools::graphs::absfilter::Switch
   bind $w.c <$::MB3> ::tools::graphs::absfilter::Refresh
   foreach {name text} {decade Decade year Year elo Rating move moves} {
-    radiobutton $w.b.$name -padx 4 -pady 3 -text $::tr($text) \
+    ttk::radiobutton $w.b.$name -text $::tr($text) \
         -variable ::tools::graphs::absfilter::type -value $name \
         -command ::tools::graphs::absfilter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  button $w.b.setup -image tb_graph -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_graph -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2

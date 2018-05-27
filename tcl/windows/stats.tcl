@@ -73,22 +73,25 @@ proc ::windows::stats::Open {} {
       -foreground black -background white -font font_Fixed\
        -wrap none 
 
-  checkbutton $w.graphyear -text $::tr(Year) \
+  ttk::frame $w.fbuttons
+  ttk::checkbutton $w.fbuttons.graphyear -text $::tr(Year) \
       -variable ::windows::stats::like_graphyear -command ::windows::stats::Refresh
-  checkbutton $w.graphelo  -text $::tr(Rating) \
+  ttk::checkbutton $w.fbuttons.graphelo  -text $::tr(Rating) \
       -variable ::windows::stats::like_graphelo -command ::windows::stats::Refresh
-  checkbutton $w.statelo -text "StatElo" \
+  ttk::checkbutton $w.fbuttons.statelo -text "StatElo" \
       -variable ::windows::stats::statelo -command ::windows::stats::Refresh
-  checkbutton $w.statyear -text "StatYear" \
+  ttk::checkbutton $w.fbuttons.statyear -text "StatYear" \
       -variable ::windows::stats::stat_year -command ::windows::stats::Refresh
-  checkbutton $w.old_elo -text "Old_Elo" \
+  ttk::checkbutton $w.fbuttons.old_elo -text "Old_Elo" \
       -variable ::windows::stats::old_elo -command ::windows::stats::Refresh
-  checkbutton $w.oldyear -text "OldYear" \
+  ttk::checkbutton $w.fbuttons.oldyear -text "OldYear" \
       -variable ::windows::stats::old_year -command ::windows::stats::Refresh
 
   pack $w.statsasb -side top -fill both -expand yes
-  button $w.setup -image tb_graph -command configureFilterGraph
-  pack $w.graphyear $w.graphelo $w.statyear $w.statelo $w.oldyear $w.old_elo $w.setup -side left
+  ttk::button $w.fbuttons.setup -image tb_graph -command configureFilterGraph
+  pack $w.fbuttons -side top -fill x
+  pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
+  pack $w.fbuttons.setup -side right
   set ::windows::stats::isOpen 1
   bind $w <Control-q> "destroy $w"
   bind $w <Escape> "destroy $w"

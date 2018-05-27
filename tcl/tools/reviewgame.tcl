@@ -67,13 +67,13 @@ proc ::reviewgame::start {} {
   
   ttk::frame $w.fparam
   ttk::label $w.fparam.ltime1 -text "[::tr Time] ([::tr sec])"
-  spinbox $w.fparam.time1 -values { 5 10 15 30 45 60 90 120 } -command { set ::reviewgame::timeShort [$::reviewgame::window.fparam.time1 get] }
+  ttk::spinbox $w.fparam.time1 -values { 5 10 15 30 45 60 90 120 } -command { set ::reviewgame::timeShort [$::reviewgame::window.fparam.time1 get] } -width 7
   $w.fparam.time1 set $::reviewgame::timeShort
   ttk::label $w.fparam.ltime2 -text "[::tr GameReviewTimeExtended] ([ ::tr min])"
-  spinbox $w.fparam.time2 -values { 1 2 3 4 5} -command { set ::reviewgame::timeExtended [$::reviewgame::window.fparam.time1 get] }
+  ttk::spinbox $w.fparam.time2 -values { 1 2 3 4 5} -command { set ::reviewgame::timeExtended [$::reviewgame::window.fparam.time1 get] } -width 7
   $w.fparam.time2 set $::reviewgame::timeExtended
   ttk::label $w.fparam.lmargin -text "[::tr GameReviewMargin]"
-  spinbox $w.fparam.margin -from 0.1 -to 1.0 -increment 0.1 -command { set ::reviewgame::margin [$::reviewgame::window.fparam.time1 get] }
+  ttk::spinbox $w.fparam.margin -from 0.1 -to 1.0 -increment 0.1 -command { set ::reviewgame::margin [$::reviewgame::window.fparam.time1 get] } -width 7
   $w.fparam.margin set $::reviewgame::margin
   
   set row 0
@@ -124,7 +124,7 @@ proc ::reviewgame::start {} {
   # Display statistics
   ttk::label $w.finfo.stats -text ""
   grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 3
-  
+
   ttk::frame $w.fbuttons
   pack $w.fbuttons -fill x
   ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::reviewgame::endTraining
