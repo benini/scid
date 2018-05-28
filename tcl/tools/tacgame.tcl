@@ -8,9 +8,6 @@ namespace eval tacgame {
   ### Tacgame window: uses a chess engine (Phalanx) in easy mode and
   ### another engine (for example Toga) to track blunders
   
-  ### many variables are now set in start.tcl to allow for
-  ### remembering them in options.dat S.A
-  
   set resignCount 0
   
   # if true, follow a specific opening
@@ -41,7 +38,6 @@ namespace eval tacgame {
   set lscore {}
   
   set analysisCoach(automove1) 0
-  set analysisCoach(paused) 0 ; # S.A
   
   # ======================================================================
   # resetValues
@@ -255,8 +251,6 @@ namespace eval tacgame {
     
     set ::tacgame::lFen {}
     
-    set analysisCoach(paused) 0
-    
     set w .coachWin
     if {[winfo exists $w]} {
       focus .
@@ -272,7 +266,7 @@ namespace eval tacgame {
       }
       set level [expr int(rand()*($::tacgame::levelMax - $::tacgame::levelMin)) + $::tacgame::levelMin ]
     } else {
-      set level $::tacgame::levelFixed; # S.A.
+      set level $::tacgame::levelFixed
     }
     
     # if will follow a specific opening line
@@ -348,14 +342,6 @@ namespace eval tacgame {
     ::gameclock::reset 1
     ::gameclock::start 1
     
-    ### Resume restarts paused computer (while player moves forward/back in history) S.A.
-    ttk::button $w.fbuttons.resume -state disabled -textvar ::tr(Resume) -command {
-      set ::tacgame::analysisCoach(paused) 0
-      .coachWin.fbuttons.resume configure -state disabled
-      ::tacgame::phalanxGo
-    }
-    pack $w.fbuttons.resume -expand yes -fill both -padx 20 -pady 2
-    
     ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command "destroy .coachWin"
     pack $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     
@@ -384,15 +370,30 @@ namespace eval tacgame {
     }
     return 0
   }
+
+  proc toggleClocks {} {
+    if {[::gameclock::stop 1]} {
+      ::gameclock::storeTimeComment 1
+      ::gameclock::start 2
+    } elseif {[::gameclock::stop 2]} {
+      ::gameclock::storeTimeComment 2
+      ::gameclock::start 1
+    }
+    ::notify::PosChanged -pgn -animate
+  }
+
+
   ################################################################################
   #
   ################################################################################
   proc abortGame { { destroyWin 1 } } {
-    unset ::playMode
+    catch { unset ::playMode }
     after cancel ::tacgame::phalanxGo
     stopAnalyze
     ::tacgame::closeEngine 1
     ::tacgame::closeEngine 2
+    ::gameclock::stop 1
+    ::gameclock::stop 2
     ::notify::GameChanged
   }
   # ======================================================================
@@ -593,8 +594,6 @@ namespace eval tacgame {
   ################################################################################
   proc endOfGame {} {
     if { [string index [sc_game info previousMove] end ] == "#"} {
-      ::gameclock::stop 1
-      ::gameclock::stop 2
       return 1
     }
     return 0
@@ -609,14 +608,10 @@ namespace eval tacgame {
     
     after cancel ::tacgame::phalanxGo
     
-    ### should show endOfGame
-    
-    if {$analysisCoach(paused)} {
-      .coachWin.fbuttons.resume configure -state normal
+    if { [::tacgame::endOfGame] } {
+      ::tacgame::abortGame
       return
     }
-    
-    if { [::tacgame::endOfGame] } { return }
     
     # check if Phalanx is already thinking
     if { $analysisCoach(automoveThinking1) == 1 } {
@@ -631,8 +626,7 @@ namespace eval tacgame {
       return
     }
     
-    ::gameclock::stop 1
-    ::gameclock::start 2
+    toggleClocks
     repetition
     
     # make a move corresponding to a specific opening, (it is Phalanx's turn)
@@ -650,9 +644,7 @@ namespace eval tacgame {
               -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             sc_move back 1
-            updateBoard -pgn
-            ::gameclock::stop 2
-            ::gameclock::start 1
+            toggleClocks
             after 1000 ::tacgame::phalanxGo
             return
           }  else  {
@@ -686,9 +678,7 @@ namespace eval tacgame {
           
           ::utils::sound::AnnounceNewMove $move
           
-          updateBoard -pgn -animate
-          ::gameclock::stop 2
-          ::gameclock::start 1
+          toggleClocks
           repetition
           after 1000 ::tacgame::phalanxGo
           return
@@ -792,10 +782,8 @@ namespace eval tacgame {
     
     ::tacgame::startAnalyze
     ::utils::sound::AnnounceNewMove $move
-    updateBoard -pgn -animate
     
-    ::gameclock::stop 2
-    ::gameclock::start 1
+    toggleClocks
     repetition
     
     if { $resignCount > 3 } {
