@@ -124,9 +124,9 @@ proc mergeGame {base gnum} {
   wm title $w "Scid: $::tr(MergeGame)"
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <F1> {helpWindow GameList Browsing}
-  ttk::label $w.title -text $::tr(Preview:) -font font_Bold
-  pack $w.title -side top
-  pack [frame $w.b] -side bottom -fill x
+  ttk::label $w.title -text $::tr(Preview:) -font font_Bold -anchor center
+  pack $w.title -side top -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
   ttk::frame $w.f
   text $w.f.text -background white -wrap word -width 60 -height 20 \
       -font font_Small -yscrollcommand "$w.f.ybar set"
@@ -138,14 +138,18 @@ proc mergeGame {base gnum} {
   set small font_Small
   ttk::label $w.b.label -text "Up to move:" -font $small
   pack $w.b.label -side left
-  foreach i {5 10 15 20 25 30 35 40} {
-    ttk::radiobutton $w.b.m$i -text $i -variable merge(ply) -value [expr {$i * 2}] \
-         -command updateMergeGame
+  foreach i {5 10 15 20 25 30 35 40 500} {
+    if {$i != 500} {
+      set label $i
+      set label_width 3
+    } else {
+      set label [::utils::string::Capital $::tr(all)]
+      set label_width [string length $label]
+    }
+    ttk::button $w.b.m$i -text $label -width $label_width -padding 0 \
+      -command "updateMergeGame $w $i"
     pack $w.b.m$i -side left
   }
-  ttk::radiobutton $w.b.all -text [::utils::string::Capital $::tr(all)] \
-      -variable merge(ply) -value 1000 -command updateMergeGame
-  pack $w.b.all -side left
   dialogbutton $w.b.ok -text "OK" -command {
     undoFeature save
     sc_game merge $merge(base) $merge(gnum) $merge(ply)
@@ -157,13 +161,19 @@ proc mergeGame {base gnum} {
       -command "catch {grab release $w}; destroy $w"
   packbuttons right $w.b.cancel $w.b.ok
   grab $w
-  updateMergeGame
+  updateMergeGame $w [expr $merge(ply) / 2]
 }
 
-proc updateMergeGame {args} {
+proc updateMergeGame {{w} {n_moves}} {
   global merge
-  set w .mergeDialog
   if {! [winfo exists $w]} { return }
+
+  # Update widgets
+  set widget [expr $merge(ply) / 2]
+  $w.b.m$widget state !pressed
+  $w.b.m$n_moves state pressed
+  set merge(ply) [expr {$n_moves * 2}];
+
   sc_game push copy
   sc_game merge $merge(base) $merge(gnum) $merge(ply)
   set pgn [sc_game pgn -indentV 1 -short 1 -width 60]
