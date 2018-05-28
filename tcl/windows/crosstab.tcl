@@ -72,6 +72,7 @@ proc ::crosstab::Open {} {
   setWinLocation $w
   
   menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label CrosstabFile -menu $w.menu.file
   $w.menu add cascade -label CrosstabEdit -menu $w.menu.edit
   $w.menu add cascade -label CrosstabOpt -menu $w.menu.opt
