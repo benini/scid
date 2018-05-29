@@ -532,8 +532,6 @@ void Game::ClearMoves() {
 
     VarDepth = 0;
     NumHalfMoves = 0;
-    KeepDecodedMoves = true;
-    PromotionsFlag = false;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -562,6 +560,8 @@ void Game::Clear() {
 	HtmlStyle = 0;
 
 	ClearMoves();
+	KeepDecodedMoves = true;
+	PromotionsFlag = false;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -599,47 +599,15 @@ Game::SetPgnFormatFromString (const char * str)
     return PgnFormatFromString (str, &PgnFormat);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::SetStartPos():
-//      Setup a start position.
-//
-void
-Game::SetStartPos (Position * pos)
-{
-    // We should not have any moves:
-    if (CurrentMove != FirstMove->next  ||
-          CurrentMove->marker != END_MARKER) {
-        ClearMoves();
-    }
-    VarDepth = 0;
-    if (!StartPos)
-        StartPos = std::make_unique<Position>(*pos);
-
-    StartPos->CopyFrom (pos);
-    CurrentPos->CopyFrom (pos);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::SetStartFen():
-//      Setup the start position from a FEN string.
-//      I might remove this, so the only way to set the start position
-//      is with the above method, SetStartPos().
-//
 errorT
 Game::SetStartFen (const char * fenStr)
 {
-    // First try to read the position:
     auto pos = std::make_unique<Position>();
     errorT err = pos->ReadFromFEN (fenStr);
     if (err != OK)
         return err;
 
-    // We should not have any moves:
-    if (CurrentMove != FirstMove->next  ||
-          CurrentMove->marker != END_MARKER) {
-        ClearMoves();
-    }
-    VarDepth = 0;
+    ClearMoves();
     StartPos = std::move(pos);
     *CurrentPos = *StartPos;
     return OK;

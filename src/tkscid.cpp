@@ -4085,37 +4085,25 @@ sc_game_startBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game startBoard <fenString>");
     }
     const char * str = argv[2];
-    Position scratchPos;
+    char buf[256];
     if (strIsPrefix ("random:", str)) {
         // A "FEN" string that starts with "random:" is interpreted as a
         // material configuration, and a random position with this
         // set of material is generated. For example, "random:krpkr"
         // generates a random legal Rook+Pawn-vs-Rook position.
+        Position scratchPos;
         if (scratchPos.Random (str+7) != OK) {
             return errorResult (ti, "Invalid material string.");
         }
-    } else {
-        if (scratchPos.ReadFromFEN (str) != OK) {
-            if (scratchPos.ReadFromLongStr (str) != OK) {
-                return errorResult (ti, "Invalid FEN string.");
-            }
-        }
-        // ReadFromFEN checks that there is one king of each side, but it
-        // does not check that the position is actually legal:
-        if (! scratchPos.IsLegal()) {
-            // Illegal position! Find out why to return a useful error:
-           squareT wk = scratchPos.GetKingSquare (WHITE);
-           squareT bk = scratchPos.GetKingSquare (BLACK);
-           if (square_Adjacent (wk, bk)) {
-               return errorResult (ti, "Illegal position: adjacent kings.");
-           }
-           // No adjacent kings, so enemy king must be in check.
-           return errorResult (ti, "Illegal position: enemy king in check.");
-        }
+        scratchPos.PrintFEN(buf, FEN_ALL_FIELDS);
+        str = buf;
     }
-    db->game->SetStartPos(&scratchPos);
+    auto err = db->game->SetStartFen(str);
+    if (err != OK)
+        return errorResult(ti, "Invalid FEN string.");
+
     db->gameAltered = true;
-    return TCL_OK;
+    return UI_Result(ti, OK);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

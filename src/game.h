@@ -232,7 +232,8 @@ public:
 
     bool HasNonStandardStart() const { return StartPos != nullptr; }
 
-    void SetStartPos(Position* pos);
+    /// Setup the start position from a FEN string and remove all the moves.
+    /// If the FEN is invalid the game is not changed.
     errorT SetStartFen(const char* fenStr);
 
     void SetScidFlags(const char* s, size_t len) {
