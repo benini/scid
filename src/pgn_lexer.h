@@ -393,11 +393,12 @@ std::pair<std::size_t, bool> parse_game(pgn_impl::InputMemory input,
  * that require such characters."
  * However this do not allow internationalization for comments and names
  * (players, sites, etc...); the common UTF-8 is a superior alternative.
+ * @param unescape: if true converts \\ to \ and \" to ".
  * @param str: the string to be normalized.
  * @param pos: start of the substring of @e str that will be normalized.
  * @returns the number of '\n' chars in @e str.
  */
-template <typename TString>
+template <bool unescape = false, typename TString>
 std::size_t normalize(TString& str, std::size_t pos) {
 	std::size_t n_newlines = 0;
 	for (std::size_t i = pos, n = str.size(); i < n; ++i) {
@@ -427,6 +428,14 @@ std::size_t normalize(TString& str, std::size_t pos) {
 				--n;
 			} else {
 				str[i] = ' ';
+			}
+		} else if (unescape && ch == '\\' && i + 1 != n) {
+			// "A quote inside a string is represented by the backslash
+			// immediately followed by a quote. A backslash inside a string is
+			// represented by two adjacent backslashes."
+			if (str[i + 1] == '\\' || str[i + 1] == '"') {
+				str.erase(i, 1);
+				--n;
 			}
 		}
 	}

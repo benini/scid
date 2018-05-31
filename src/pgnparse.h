@@ -321,7 +321,7 @@ private:
 		}
 		auto& str = game.accessTagValue(tag, tagLen);
 		str.assign(value.first, value.second);
-		linenum_ += pgn::normalize(str, 0);
+		linenum_ += pgn::normalize<true>(str, 0);
 		return true;
 	}
 };

@@ -105,7 +105,7 @@ TEST(Test_PgnParser, EPD) {
 		"1-0\n\n";
 	const char* expected_game =
 		"[Event \"F/S Return Match\"]\n"
-		"[Site \"Bel]gr\\\"ade], Serbia JUG\"]\n"
+		"[Site \"Bel]gr\"ade], Serbia JUG\"]\n"
 		"[Date \"1992.11.04\"]\n"
 		"[Round \"29\"]\n"
 		"[White \"Fischer, Robert J.\"]\n"
@@ -326,8 +326,8 @@ TEST(Test_PgnParser, TagPairs) {
 	v[1] = "[Site \"Test Site\"]";
 	v[2] = "[Date \"2017.08.31\"]";
 	v[3] = "[Round \"Test Round\"]";
-	v[4] = "[White \"White\\\"Senpai\"]";
-	v[5] = "[Black \"Black\\\"]Minister\"]";
+	v[4] = R"([White "White "Senpai"])";
+	v[5] = R"([Black "Black \ "Minister"])";
 	v[6] = "[Result \"0-1\"]";
 	v[7] = "[WhiteElo \"1106\"]";
 	v[8] = "[BlackElo \"971\"]";
@@ -412,6 +412,15 @@ TEST(Test_PgnParser, TagPairs) {
 		tmp_s[1] = "[Site  \n\t\v\r\n\n   \"  Site\ntest  \"   \n \t \v \r  ]";
 		test(tmp_s, tmp_e, false);
 	}
+	{ // Unescape \\ to \ and \" to "
+		auto tmp_s = v;
+		auto tmp_e = v;
+		tmp_s[4] = R"([White "White\"Senpai"])";
+		tmp_e[4] = R"([White "White"Senpai"])";
+		tmp_s[5] = R"([Black "Black\"]Minister\\"])";
+		tmp_e[5] = R"([Black "Black"]Minister\"])";
+		test(tmp_s, tmp_e, false);
+	}
 	{ // Wrong result.
 		auto tmp_e = v;
 		tmp_e[6] = "[Result \"*\"]";
@@ -494,7 +503,7 @@ TEST(Test_PgnParser, TagPairs) {
 		tmp_s[3] = "[Round \"Test Round\\\"]";
 		test(tmp_s, tmp_e, false);
 
-		tmp_e[3] = "[Round \"Test Round\\\"] [Bad tag on the same line\"]";
+		tmp_e[3] = "[Round \"Test Round\"] [Bad tag on the same line\"]";
 		tmp_s[3] = "[Round \"Test Round\\\"] [Bad tag on the same line]";
 		test(tmp_s, tmp_e, false);
 	}
