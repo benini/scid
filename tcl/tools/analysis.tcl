@@ -810,16 +810,27 @@ proc startAutoplay { } {
     after 100 autoplay
 }
 
+proc setAnnotateModeButtonValue { value } {
+    if { ! $value } {
+	.analysisWin1.b1.annotate configure -image tb_annotate
+	.analysisWin1.b1.annotate state !pressed
+    } else {
+	.analysisWin1.b1.annotate configure -image tb_annotate_on
+	.analysisWin1.b1.annotate state pressed
+    }
+    set ::annotateModeButtonValue $value
+}
+
 proc cancelAutoplay {} {
     set ::autoplayMode 0
     set ::annotateMode 0
-    set ::annotateModeButtonValue 0
+    setAnnotateModeButtonValue 0
     after cancel autoplay
     ::notify::PosChanged
 }
 
 
-proc configAnnotation {} {
+proc configAnnotation {n} {
     global autoplayDelay tempdelay blunderThreshold annotateModeButtonValue
     
     set w .configAnnotation
@@ -831,6 +842,11 @@ proc configAnnotation {} {
         return
     }
     
+    if { ! $annotateModeButtonValue } {
+	setAnnotateModeButtonValue 1
+    } else {
+	setAnnotateModeButtonValue 0
+    }
     # If the annotation button is pressed while annotation is
     # running, stop the annotation
     #
@@ -954,7 +970,9 @@ proc configAnnotation {} {
     pack $f.buttons -side top -fill x
     ttk::button $f.buttons.cancel -text $::tr(Cancel) -command {
         destroy .configAnnotation
-        set annotateModeButtonValue 0
+        setAnnotateModeButtonValue 0
+	.analysisWin1.b1.annotate configure -image tb_annotate
+	.analysisWin1.b1.annotate state !pressed
     }
     ttk::button $f.buttons.ok -text "OK" -command {
         set ::useAnalysisBookName [.configAnnotation.f.comboBooks get]
@@ -974,7 +992,8 @@ proc configAnnotation {} {
         set autoplayDelay [expr {int($tempdelay * 1000)}]
         destroy .configAnnotation
         cancelAutoplay
-        set annotateModeButtonValue 1
+        setAnnotateModeButtonValue 1
+	.analysisWin1.b1.annotate configure -image tb_annotate_on
         # Tell the analysis mode that we want an initial assessment of the
         # position. So: no comments yet, please!
         set ::initialAnalysis 1
@@ -1881,20 +1900,20 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     
     ttk::frame $w.b1
     pack $w.b1 -side bottom -fill x
-    checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
+    ttk::button $w.b1.automove -image tb_training  -command "toggleAutomove $n"
     ::utils::tooltip::Set $w.b1.automove $::tr(Training)
     
-    checkbutton $w.b1.lockengine -image tb_lockengine -indicatoron false -height 24 -width 24 -variable analysis(lockEngine$n) -command "toggleLockEngine $n"
+    ttk::button $w.b1.lockengine -image tb_lockengine -command "toggleLockEngine $n"
     ::utils::tooltip::Set $w.b1.lockengine $::tr(LockEngine)
-    .analysisWin$n.b1.lockengine configure -relief raised -state disabled
+    .analysisWin$n.b1.lockengine configure -state disabled
     
-    button $w.b1.line -image tb_addvar -height 24 -width 24 -command "addAnalysisVariation $n"
+    ttk::button $w.b1.line -image tb_addvar -command "addAnalysisVariation $n"
     ::utils::tooltip::Set $w.b1.line $::tr(AddVariation)
     
-    button $w.b1.alllines -image tb_addallvars -height 24 -width 24 -command "addAllVariations $n"
+    ttk::button $w.b1.alllines -image tb_addallvars -command "addAllVariations $n"
     ::utils::tooltip::Set $w.b1.alllines $::tr(AddAllVariations)
     
-    button $w.b1.move -image tb_addmove -command "makeAnalysisMove $n"
+    ttk::button $w.b1.move -image tb_addmove -command "makeAnalysisMove $n"
     ::utils::tooltip::Set $w.b1.move $::tr(AddMove)
 
     ttk::spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state disabled -width 2 \
@@ -1902,18 +1921,18 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     ::utils::tooltip::Set $w.b1.multipv $::tr(Lines)
     
     # add a button to start/stop engine analysis
-    button $w.b1.bStartStop -image tb_eng_on -command "toggleEngineAnalysis $n"
+    ttk::button $w.b1.bStartStop -image tb_eng_on -command "toggleEngineAnalysis $n"
     ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StartEngine) (F[expr 3 + $n])"
 
     if {$n == 1} {
         set ::finishGameMode 0
-        button $w.b1.bFinishGame -image tb_finish_off -command "toggleFinishGame $n" -relief flat
+        ttk::button $w.b1.bFinishGame -image tb_finish_off -command "toggleFinishGame $n"
         ::utils::tooltip::Set $w.b1.bFinishGame $::tr(FinishGame)
     }
-    button $w.b1.showboard -image tb_coords -height 24 -width 24 -command "toggleAnalysisBoard $n"
+    ttk::button $w.b1.showboard -image tb_coords -command "toggleAnalysisBoard $n"
     ::utils::tooltip::Set $w.b1.showboard $::tr(ShowAnalysisBoard)
     
-    checkbutton $w.b1.showinfo -image tb_engineinfo -indicatoron false -height 24 -width 24 -variable analysis(showEngineInfo$n) -command "toggleEngineInfo $n"
+    ttk::button $w.b1.showinfo -image tb_engineinfo -command "toggleEngineInfo $n"
     ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
     if {!$analysis(uci$n)} {
         $w.b1.showinfo configure -state disabled
@@ -1921,11 +1940,12 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     }
     
     if {$n == 1} {
-        checkbutton $w.b1.annotate -image tb_annotate -indicatoron false -height 24 -variable annotateModeButtonValue -relief raised -command { configAnnotation }
+        ttk::button $w.b1.annotate -image tb_annotate -command "configAnnotation $n"
         ::utils::tooltip::Set $w.b1.annotate $::tr(Annotate...)
     }
-    checkbutton $w.b1.priority -image tb_cpu -indicatoron false -relief raised -variable analysis(priority$n) -onvalue idle -offvalue normal \
-            -command "setAnalysisPriority $n"
+    set cpu_graphic tb_cpu_hi
+    if { $analysis(priority$n) == "idle" } {set cpu_graphic tb_cpu }
+    ttk::button $w.b1.priority -image $cpu_graphic -command "setAnalysisPriority $w $n"
     ::utils::tooltip::Set $w.b1.priority $::tr(LowPriority)
     
     if {$analysis(uci$n)} {
@@ -1934,10 +1954,10 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
         set state normal
     }
     
-    button $w.b1.update -image tb_update -state $state -command "if {$analysis(uci$n)} {sendToEngine $n .}" ;# UCI does not support . command
+    ttk::button $w.b1.update -image tb_update -state $state -command "if {$analysis(uci$n)} {sendToEngine $n .}" ;# UCI does not support . command
     ::utils::tooltip::Set $w.b1.update $::tr(Update)
     
-    button $w.b1.help -image tb_help -height 24 -width 24 -command { helpWindow Analysis }
+    ttk::button $w.b1.help -image tb_help -command { helpWindow Analysis }
     ::utils::tooltip::Set $w.b1.help $::tr(Help)
     
     if {$n ==1} {
@@ -1996,7 +2016,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     # necessary on windows because the UI sometimes starves, also keep latest priority setting
     if {$::windowsOS || $analysis(priority$n) == "idle"} {
         set analysis(priority$n) idle
-        setAnalysisPriority $n
+        setAnalysisPriority $w $n
     }
     
     catch {
@@ -2071,9 +2091,14 @@ proc changePVSize { n } {
 #   Sets the priority class (in Windows) or nice level (in Unix)
 #   of a running analysis engine.
 ################################################################################
-proc setAnalysisPriority {n} {
+proc setAnalysisPriority {w n} {
     global analysis
     
+    if { $analysis(priority$n) == "idle" } {
+	set $analysis(priority$n) "normal"
+    } else {
+	set $analysis(priority$n) "idle"
+    }
     # Get the process ID of the analysis engine:
     if {$analysis(pipe$n) == ""} { return }
     set pidlist [pid $analysis(pipe$n)]
@@ -2100,7 +2125,12 @@ proc setAnalysisPriority {n} {
         if {$newpriority > 0} { set priority idle }
         set analysis(priority$n) $priority
     }
-}
+   if { $analysis(priority$n) == "idle" } {
+	$w.b1.priority configure -image tb_cpu
+    } else {
+	$w.b1.priority configure -image tb_cpu_hi
+    }
+ }
 ################################################################################
 # checkAnalysisStarted
 #   Called a short time after an analysis engine was started
@@ -2362,11 +2392,11 @@ proc toggleFinishGame { { n 1 } } {
     
         if {!$::finishGameMode} {
     	    set ::finishGameMode 1
-            $b configure -image tb_finish_on -relief flat
+            $b configure -image tb_finish_on
             after $::autoplayDelay autoplayFinishGame
     	} else  {
         	set ::finishGameMode 0
-            $b configure -image tb_finish_off -relief flat
+            $b configure -image tb_finish_off
             after cancel autoplayFinishGame
     	}
     	return
@@ -2398,7 +2428,7 @@ proc toggleFinishGame { { n 1 } } {
         sendToEngine 2 "stop"
    		set analysis(waitForReadyOk2) 0
         set analysis(waitForBestMove2) 0   		
-        $b configure -image tb_finish_off -relief flat
+        $b configure -image tb_finish_off
    		grab release .analysisWin$n
    		.analysisWin$n.b1.bStartStop configure -state normal
         .analysisWin$n.b1.move configure -state normal
@@ -2497,7 +2527,7 @@ proc toggleFinishGame { { n 1 } } {
 
     stopEngineAnalysis 1
     stopEngineAnalysis 2
-	$b configure -image tb_finish_on -relief flat
+	$b configure -image tb_finish_on
 	.analysisWin$n.b1.bStartStop configure -state disabled
 	.analysisWin$n.b1.move configure -state disabled
 	.analysisWin$n.b1.line configure -state disabled
@@ -2585,9 +2615,8 @@ proc stopEngineAnalysis { {n 1} } {
         $b configure -image tb_eng_on
         ::utils::tooltip::Set $b "$::tr(StartEngine)"
         # reset lock mode and disable lock button
-        set analysis(lockEngine$n) 0
+        set analysis(lockEngine$n) 1
         toggleLockEngine $n
-        .analysisWin$n.b1.lockengine configure -relief raised
         .analysisWin$n.b1.lockengine configure -state disabled
     }
 }
@@ -2660,11 +2689,18 @@ proc stopAnalyzeMode { {n 1} } {
 proc toggleLockEngine {n} {
     global analysis
     if { $analysis(lockEngine$n) } {
+	set analysis(lockEngine$n) 0
+    } else {
+	set analysis(lockEngine$n) 1
+    }
+    if { $analysis(lockEngine$n) } {
         set state disabled
         set analysis(lockN$n) [sc_pos moveNumber]
         set analysis(lockSide$n) [sc_pos side]
+	.analysisWin$n.b1.lockengine state pressed
     } else {
         set state normal
+	.analysisWin$n.b1.lockengine state !pressed
     }
     set w ".analysisWin$n"
     $w.b1.move configure -state $state
@@ -2920,6 +2956,7 @@ proc toggleAnalysisBoard {n} {
         set analysis(showBoard$n) 0
         pack forget .analysisWin$n.bd
         setWinSize .analysisWin$n
+	.analysisWin$n.b1.showboard state !pressed
         bind .analysisWin$n <Configure> "recordWinSize .analysisWin$n"
     } else {
         bind .analysisWin$n <Configure> ""
@@ -2933,6 +2970,7 @@ proc toggleAnalysisBoard {n} {
         wm geometry .analysisWin$n ${x}x${y}
         .analysisWin$n.hist.text configure -setgrid 1
         .analysisWin$n.text configure -setgrid 1
+	.analysisWin$n.b1.showboard state pressed
     }
 }
 ################################################################################
@@ -2942,9 +2980,13 @@ proc toggleAnalysisBoard {n} {
 proc toggleEngineInfo {n} {
     global analysis
     if { $analysis(showEngineInfo$n) } {
-        .analysisWin$n.text configure -height 2
-    } else {
+	set analysis(showEngineInfo$n) 0
         .analysisWin$n.text configure -height 1
+	.analysisWin$n.b1.showinfo state !pressed
+    } else {
+	set analysis(showEngineInfo$n) 1
+        .analysisWin$n.text configure -height 2
+	.analysisWin$n.b1.showinfo state pressed
     }
     updateAnalysisText $n
 }
@@ -3177,12 +3219,14 @@ proc setAutomoveTime {{n 1}} {
     #wm transient $w .analysisWin
     ::setTitle $w "Scid: Engine thinking time"
     wm resizable $w 0 0
-    ttk::label $w.label -text "Set the engine thinking time per move in seconds:"
-    pack $w.label -side top -pady 5 -padx 5
-    ttk::entry $w.entry -background white -width 10 -textvariable temptime
-    pack $w.entry -side top -pady 5
-    bind $w.entry <Escape> { .apdialog.buttons.cancel invoke }
-    bind $w.entry <Return> { .apdialog.buttons.ok invoke }
+    ttk::frame $w.f
+    pack $w.f -expand 1
+    ttk::label $w.f.label -text "Set the engine thinking time per move in seconds:"
+    pack $w.f.label -side top -pady 5 -padx 5
+    ttk::entry $w.f.entry -background white -width 10 -textvariable temptime
+    pack $w.f.entry -side top -pady 5
+    bind $w.f.entry <Escape> { .apdialog.buttons.cancel invoke }
+    bind $w.f.entry <Return> { .apdialog.buttons.ok invoke }
     
     addHorizontalRule $w
     
@@ -3207,7 +3251,7 @@ proc setAutomoveTime {{n 1}} {
         set dialogResult OK
     }
     pack $b.cancel $b.ok -side right -padx 5 -pady 5
-    focus $w.entry
+    focus $w.f.entry
     update
     catch {grab .apdialog}
     tkwait window .apdialog
@@ -3219,7 +3263,9 @@ proc setAutomoveTime {{n 1}} {
 
 proc toggleAutomove {{n 1}} {
     global analysis
-    if {! $analysis(automove$n)} {
+    .analysisWin1.b1.automove state !pressed
+    if { $analysis(automove$n) } {
+	set analysis(automove$n) 0
         cancelAutomove $n
     } else {
         set analysis(automove$n) 0
@@ -3227,6 +3273,7 @@ proc toggleAutomove {{n 1}} {
             return
         }
         set analysis(automove$n) 1
+	.analysisWin1.b1.automove state pressed
         automove $n
     }
 }

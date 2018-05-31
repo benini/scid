@@ -130,16 +130,18 @@ proc ::game::GotoMoveNumber {} {
   set w [toplevel .mnumDialog]
   wm title $w "Scid: [tr GameGotoMove]"
   grab $w
+  set f [ttk::frame $w.f]
+  pack $f -expand 1
+
+  ttk::label $f.label -text $::tr(GotoMoveNumber)
+  pack $f.label -side top -pady 5 -padx 5
   
-  ttk::label $w.label -text $::tr(GotoMoveNumber)
-  pack $w.label -side top -pady 5 -padx 5
+  ttk::entry $f.entry -width 8 -textvariable ::game::moveEntryNumber
+  bind $f.entry <Escape> { .mnumDialog.f.buttons.cancel invoke }
+  bind $f.entry <Return> { .mnumDialog.f.buttons.load invoke }
+  pack $f.entry -side top -pady 5
   
-  ttk::entry $w.entry -width 8 -textvariable ::game::moveEntryNumber
-  bind $w.entry <Escape> { .mnumDialog.buttons.cancel invoke }
-  bind $w.entry <Return> { .mnumDialog.buttons.load invoke }
-  pack $w.entry -side top -pady 5
-  
-  set b [ttk::frame $w.buttons]
+  set b [ttk::frame $f.buttons]
   pack $b -side top -fill x
   dialogbutton $b.load -text "OK" -command {
     grab release .mnumDialog
@@ -162,7 +164,7 @@ proc ::game::GotoMoveNumber {} {
   set y [ expr {[winfo height .] / 4 + [winfo rooty .] } ]
   wm geometry $w "+$x+$y"
   
-  focus $w.entry
+  focus $f.entry
 }
 
 ################################################################################

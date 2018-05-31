@@ -23,7 +23,7 @@ proc findNovelty {} {
   toplevel $w
   wm title $w "Scid: $::tr(FindNovelty)"
   
-  pack [frame $w.help] -side top -fill x
+  pack [ttk::frame $w.help] -side top -fill x
   text $w.help.text -width 1 -height 5 -wrap word \
       -relief ridge -cursor top_left_arrow -yscrollcommand "$w.help.ybar set"
   ttk::scrollbar $w.help.ybar -orient vertical -command "$w.help.text yview" \
@@ -34,25 +34,25 @@ proc findNovelty {} {
   $w.help.text configure -state disabled
   
   ttk::label $w.title -text $::tr(Database:) -font font_Bold
-  pack $w.title -side top
+  pack $w.title -side top -fill x
 
-  pack [frame $w.bases] -side top -fill x
-  pack [frame $w.bases.del]
+  pack [ttk::frame $w.bases] -side top -fill x
+  pack [ttk::frame $w.bases.del]
   addHorizontalRule $w
   
   ttk::label $w.which -text $::tr(TwinsWhich:) -font font_Bold
-  pack $w.which -side top
+  pack $w.which -side top -fill x
   ttk::radiobutton $w.all -text $::tr(SelectAllGames) \
       -variable noveltyOlder -value 0
   ttk::radiobutton $w.older -text $::tr(SelectOlderGames) \
       -variable noveltyOlder -value 1
-  pack $w.all $w.older -side top -anchor w -padx 10
+  pack $w.all $w.older -side top -anchor w -fill x
   
   addHorizontalRule $w
   
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
-  pack [frame $w.b] -side top -fill x
+  pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.go -text $::tr(FindNovelty) -command {
     destroy .noveltyWin
     progressWindow "Scid" "$::tr(FindNovelty)" $::tr(Cancel)
@@ -96,7 +96,7 @@ proc updateNoveltyWin {} {
     set txt "Base $i: $name ($ng $::tr(games))"
     ttk::radiobutton $w.bases.del.b$i -text "$txt" -variable noveltyBase -value $i -underline 5
     if {$ng == 0} { $w.bases.del.b$i configure -state disabled }
-    pack $w.bases.del.b$i -side top -anchor w -padx 10
+    pack $w.bases.del.b$i -side top -anchor w -fill x
   }
 }
 
@@ -344,7 +344,7 @@ proc exportOptions {exportType} {
   bind $w <Return> "$w.b.ok invoke"
   bind $w <F1> {helpWindow Export}
   
-  pack [ttk::frame $w.o] -side top -fill x -pady 5 -padx 5
+  pack [ttk::frame $w.o] -side top -fill x
   ttk::label $w.o.append -text $::tr(AddToExistingFile)
   ttk::radiobutton $w.o.appendYes -text $::tr(Yes) \
       -variable exportFlags(append) -value 1
@@ -441,14 +441,14 @@ proc exportOptions {exportType} {
   }
   
   addHorizontalRule $w
-  pack [ttk::frame $w.b] -side top
+  pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.ok -text "OK" -command {
     set exportFlags(ok) 1
   }
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command {
     set exportFlags(ok) 0
   }
-  pack $w.b.ok $w.b.cancel -side left -padx 5 -pady 5
+  pack $w.b.cancel $w.b.ok -side right
   
   wm withdraw $w
   update idletasks
@@ -657,7 +657,7 @@ proc nameEditor {} {
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
   
-  pack [ttk::frame $w.typeButtons] -side top -fill x -pady 5 -padx 5
+  pack [ttk::frame $w.typeButtons] -side top -fill x
   ttk::label $w.typeButtons.typeLabel -textvar ::tr(NameEditType:) -font font_Bold
   grid $w.typeButtons.typeLabel -row 0 -column 1 -columnspan 2 -sticky w
   foreach i { "Player" "Event" "Site" "Round"} col {0 1 2 3} {
@@ -713,7 +713,7 @@ proc nameEditor {} {
   
   ttk::label $w.selectLabel -textvar ::tr(NameEditSelect) -font font_Bold
   ttk::frame $w.selectButtons
-  pack $w.selectLabel $w.selectButtons -side top -pady 5
+  pack $w.selectLabel $w.selectButtons -side top -fill x
   foreach i {all filter crosstable} row {0 1 2} text {
     SelectAllGames
     SelectFilterGames
@@ -726,7 +726,7 @@ proc nameEditor {} {
   
   addHorizontalRule $w
   
-  pack [ttk::frame $w.g] -side top
+  pack [ttk::frame $w.g] -side top -fill x
   ttk::label $w.g.space -text "    "
   grid $w.g.space $w.g.space -row 0 -column 0
   ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
@@ -747,8 +747,12 @@ proc nameEditor {} {
   
   entry $w.g.ratingE -width 5 -background white -relief sunken \
       -textvariable editNameRating -justify right
-  eval tk_optionMenu $w.g.rtype editNameRType [sc_info ratings]
-  $w.g.rtype configure -pady 2
+  set mlist [split [sc_info ratings] " "]
+  ttk::menubutton $w.g.rtype -textvariable editNameRType -menu $w.g.rtype.menu
+  menu $w.g.rtype.menu
+  foreach m $mlist {
+      $w.g.rtype.menu add radiobutton -variable editNameRType -label $m
+  }
   
   ttk::label $w.g.title -textvar ::tr(NameEditMatches) \
       -font font_Bold
@@ -797,8 +801,8 @@ proc nameEditor {} {
   }
   
   dialogbutton $w.buttons.cancel -textvar ::tr(Close) -command {focus .; destroy .nedit}
-  pack $w.buttons -side top -pady 5
-  pack $w.buttons.replace $w.buttons.cancel -side left -padx 10
+  pack $w.buttons -fill x
+  pack $w.buttons.cancel $w.buttons.replace -side right
   
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x

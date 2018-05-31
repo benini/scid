@@ -57,12 +57,13 @@ proc ::file::finder::Open {} {
   pack [ttk::frame $w.d] -side top -fill x
   ttk::label $w.d.label -text "$::tr(FinderDir):" -font font_Small
   set ::file::finder::data(menu) [tk_optionMenu $w.d.mb ::file::finder::data(dir) ""]
-  $w.d.mb configure -font font_Small -width 1 -anchor e
-  $::file::finder::data(menu) configure -font font_Small
+  # use ttk instead of tk_optionbutton, but use the menu
+  ttk::menubutton $w.d.mbn -text $::file::finder::data(dir) -menu $::file::finder::data(menu)
+
   ttk::button $w.d.up -image tb_updir -command {::file::finder::Refresh ..}
   pack $w.d.label -side left -padx 5
   pack $w.d.up -side right -padx 5
-  pack $w.d.mb -side left -fill x -expand yes
+  pack $w.d.mbn -side left -fill x -expand yes
   
   ttk::frame $w.t
   ttk::frame $w.b
@@ -287,6 +288,8 @@ proc ::file::finder::Refresh {{newdir ""}} {
     $data(menu) add command -label $m -command "::file::finder::Refresh [list $m]"
   }
   
+  #store actual directory string in menubutton
+  .finder.d.mbn configure -text [lindex $mlist [ expr { [llength $mlist] - 1}]]
   catch {grab release $w.b.stop}
   $w.b.stop configure -state disabled
   $w.b.help configure -state normal

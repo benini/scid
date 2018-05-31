@@ -196,9 +196,9 @@ proc ::recentFiles::configure {} {
   ttk::label $w.lextra -text $::tr(RecentFilesExtra)
   scale $w.extra -variable recentFiles(temp_extra) -from 0 -to 10 -length 250 \
       -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small
-  pack $w.lmenu $w.menu $w.sep $w.lextra $w.extra -side top -padx 10
+  pack $w.lmenu $w.menu $w.sep $w.lextra $w.extra -side top -padx 10 -fill x
   addHorizontalRule $w
-  pack [ttk::frame $w.b] -side bottom
+  pack [ttk::frame $w.b] -side bottom -fill x
   ttk::button $w.b.ok -text "OK" -command {
     set recentFiles(menu) $recentFiles(temp_menu)
     set recentFiles(extra) $recentFiles(temp_extra)
@@ -208,7 +208,7 @@ proc ::recentFiles::configure {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
+  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5 -fill x
   catch {grab $w}
 }
 

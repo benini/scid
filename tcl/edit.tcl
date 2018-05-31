@@ -8,6 +8,8 @@ set setupStatus {}     ;# stores the FEN string.
 set castling KQkq      ;# will be empty or some combination of KQkq letters.
 set toMove White       ;# side to move, "White" or "Black".
 set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
+set pasteColor w       ;# last clicked piece button
+set pastePieceButton k ;# last clicked piece button
 
 # Traces to keep entry values sensible:
 trace variable moveNum  w {::utils::validate::Integer 999 0}
@@ -16,6 +18,14 @@ trace variable castling w {::utils::validate::Regexp {^(-|[KQkq]*)$}}
 
 set setupBd {}
 set setupFen {}
+
+proc setActivePiece {w color piece value} {
+    $w.pieces.$::pasteColor.$::pastePieceButton state !pressed
+    $w.pieces.$color.$piece state pressed
+    set ::pastePiece $value
+    set ::pastePieceButton $piece
+    set ::pasteColor $color
+}
 
 # setupBoard:
 #   The main procedure for creating the dialog for setting the start board.
@@ -72,14 +82,14 @@ proc setupBoard {} {
   grid [ttk::frame $w.pieces.b] -row 1 -column 1 -sticky news
   foreach i {p n b r q k} {
     foreach color {w b} value "[string toupper $i] $i" {
-      radiobutton $w.pieces.$color.$i -image $color$i$psize -indicatoron 0 -variable pastePiece -value $value -activebackground $highcolor    
+      ttk::button $w.pieces.$color.$i -image $color$i$psize -command "setActivePiece $w $color $i $value"
       grid $w.pieces.$color.$i -column 0 -pady 2 -padx 2
     }
   }
   set ::setupBoardFlipped [::board::isFlipped .main.board]
   ::board::flip .setup.l.bd $::setupBoardFlipped
-  checkbutton $w.pieces.rotate -text "  Rotate" -image tb_BD_Flip -compound left \
-      -indicatoron 0 -variable ::setupBoardFlipped -command {
+  ttk::checkbutton $w.pieces.rotate -text "Rotate" -image tb_BD_Flip -compound left \
+      -variable ::setupBoardFlipped -command {
     set ::setupBd  [string reverse $::setupBd]
     set ::setupFen [makeSetupFen]
     ::board::update .setup.l.bd $::setupBd

@@ -231,9 +231,9 @@ proc ::crosstab::Open {} {
   
   ::crosstab::ConfigMenus
   
-  frame $w.b
+  ttk::frame $w.b
   pack $w.b -side bottom -fill x
-  frame $w.f
+  ttk::frame $w.f
   pack $w.f -side top -fill both -expand true
   text $w.f.text -width $::winWidth($w) -height $::winHeight($w) \
       -wrap none -font font_Fixed \

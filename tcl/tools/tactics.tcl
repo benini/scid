@@ -166,10 +166,10 @@ namespace eval tactics {
         $w.dummy create rectangle 0 0 0 0
 
         #Engine selection
-        grid [ttk::frame $w.sep1 -height 10] -sticky news -padx 10
+        grid [ttk::frame $w.sep1 -height 10] -sticky news
         ttk::label $w.engine -font font_Bold -text "[tr Engine]:"
-        grid $w.engine -sticky w -padx 10
-        grid [ttk::frame $w.e] -sticky news -padx 10
+        grid $w.engine -sticky we
+        grid [ttk::frame $w.e] -sticky nwes
         ttk::treeview $w.e.engines -columns {0 1} -selectmode browse -show {} -height 4
         $w.e.engines column 0 -width 200
         $w.e.engines column 1 -width 400
@@ -192,29 +192,29 @@ namespace eval tactics {
         }
         autoscrollframe -bars both $w.e "" $w.e.engines
 
-        grid [ttk::frame $w.t] -sticky news -padx 10
+        grid [ttk::frame $w.t] -sticky news
         grid columnconfigure $w.t 2 -weight 1
         ttk::label $w.t.analabel -text "[tr SecondsPerMove]: "
         ttk::scale $w.t.analysisTime -orient horizontal -from 1 -to 60 -length 120 -variable ::tactics::analysisTime \
                 -command { ::utils::validate::roundScale ::tactics::analysisTime 1 }
         ttk::label $w.t.value -textvar ::tactics::analysisTime
-        grid $w.t.analabel  $w.t.value $w.t.analysisTime -sticky news
+        grid $w.t.analabel  $w.t.value $w.t.analysisTime -sticky nwes
         
 
         #BaseDir selection
-        grid [ttk::frame $w.sep2 -height 20] -sticky news -padx 10 -pady 10
-        grid [ttk::frame $w.d] -sticky news -padx 10 -pady 10
+        grid [ttk::frame $w.sep2 -height 20] -sticky nwes
+        grid [ttk::frame $w.d] -sticky news
         ttk::label $w.d.lbl -font font_Bold -text "[tr ChooseTrainingBase]:"
         grid $w.d.lbl -sticky w -columnspan 3
         grid columnconfigure $w.d 1 -weight 1
         ttk::button $w.d.selectDir -image tb_open -command "setTacticsBasesDir; ::tactics::configValidDir $w"
         ttk::label $w.d.basedir -textvariable scidBasesDir
         ttk::button $w.d.search -text [tr Search]
-        grid $w.d.selectDir $w.d.basedir $w.d.search -sticky w -padx 10
+        grid $w.d.selectDir $w.d.basedir $w.d.search -sticky w
 
 
         #Base selection
-        grid [ttk::frame $w.s] -sticky news -padx 10
+        grid [ttk::frame $w.s] -sticky news
         ttk::treeview $w.s.bases -columns {0 1 2 3} -show headings -selectmode browse -height 8
         $w.s.bases tag configure empty -foreground #a5a2ac
         $w.s.bases heading 0 -text [tr DatabaseName]
