@@ -43,7 +43,7 @@ proc setupBoard {} {
 
   set w ".setup"
   toplevel $w
-  wm title $w "Scid: Setup Board"
+  wm title $w "Scid: $::tr(SetupBoard)"
   wm minsize $w 640 450
 
   #Frames
@@ -88,7 +88,7 @@ proc setupBoard {} {
   }
   set ::setupBoardFlipped [::board::isFlipped .main.board]
   ::board::flip .setup.l.bd $::setupBoardFlipped
-  ttk::checkbutton $w.pieces.rotate -text "Rotate" -image tb_BD_Flip -compound left \
+  ttk::checkbutton $w.pieces.rotate -text $::tr(Rotate) -image tb_BD_Flip -compound left \
       -variable ::setupBoardFlipped -command {
     set ::setupBd  [string reverse $::setupBd]
     set ::setupFen [makeSetupFen]
@@ -162,7 +162,7 @@ proc setupBoard {} {
   ttk::button $w.r.b.initial -textvar ::tr(InitialBoard) -command {
     setSetupBoardToFen %W "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   }
-  ttk::button $w.r.b.switchcolor -text "Switch colors" -command {
+  ttk::button $w.r.b.switchcolor -text $::tr(SwitchColors) -command {
     regsub -all {(?:([A-Z])|([a-z]))} $::setupBd {[string tolower "\1"][string toupper "\2"]} invertCase
     set ::setupBd [subst $invertCase]
     set ::toMove [expr {$::toMove == "White" ? "Black" : "White"}]
@@ -172,7 +172,7 @@ proc setupBoard {} {
     ::board::update .setup.l.bd $setupBd
     set ::setupFen [makeSetupFen]
   }
-  ttk::button $w.r.b.flip -text "Flip Board" -command {
+  ttk::button $w.r.b.flip -text $::tr(FlipBoard) -command {
     ::board::flip .setup.l.bd
     set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
   }

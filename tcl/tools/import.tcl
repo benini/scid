@@ -8,7 +8,7 @@
 proc importPgnGame {} {
   if {[winfo exists .importWin]} { return }
   set w [toplevel .importWin]
-  wm title $w "Scid: Import PGN game"
+  wm title $w "Scid: $::tr(ImportPGN)"
   wm minsize $w 50 5
   ttk::frame $w.b
   pack $w.b -side bottom
@@ -150,7 +150,7 @@ proc importPgnFile {{base} {fnames ""}} {
     lappend ftypes { "Text files" {".txt" ".TXT"} }
     lappend ftypes { "All files" {"*"} }
 
-    set fnames [tk_getOpenFile -multiple 1 -initialdir $::initialDir(pgn) -filetypes $ftypes -title "Import games in [file tail [sc_base filename $base] ]" ]
+    set fnames [tk_getOpenFile -multiple 1 -initialdir $::initialDir(pgn) -filetypes $ftypes -title "$::tr(ImportingIn) [file tail [sc_base filename $base] ]" ]
     if {$fnames == ""} { return }
     set ::initialDir(pgn) [file dirname [lindex $fnames 0]]
     set autoclose 0
@@ -161,7 +161,7 @@ proc importPgnFile {{base} {fnames ""}} {
   set w .ipgnWin
   if {[winfo exists $w]} { destroy $w }
   toplevel $w
-  wm title $w "Scid: Importing PGN files in [file tail [sc_base filename $base] ]"
+  wm title $w "Scid: $::tr(ImportingFiles) [file tail [sc_base filename $base] ]"
   canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
@@ -186,7 +186,7 @@ proc importPgnFile {{base} {fnames ""}} {
 
   busyCursor .
   foreach fname $fnames {
-    $w.text insert end "Importing from [file tail $fname]...\n"
+    $w.text insert end "$::tr(ImportingFrom) [file tail $fname]...\n"
     $w.text configure -state disabled
     progressBarSet $w.progress 401 21
     set err [catch {sc_base import $base $fname} result]

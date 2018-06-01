@@ -83,8 +83,7 @@ menuText D EditTrial "Variante testen" 9 \
 menuText D EditStrip "Entfernen" 1 \
    {Kommentare oder Varianten aus der Partie entfernen}
 menuText D EditUndo "Rückgängig" 0 {Macht die letzte Änderung rückgängig}
-# ====== TODO To be translated ======
-menuText D EditRedo "Redo" 0 {Redo last game change}
+menuText D EditRedo "Wiederherstellen" 0 {Redo last game change}
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
@@ -194,8 +193,7 @@ menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
 menuText D ToolsTrainFics "Internetpartie (FICS)"  0 {Internetpartie auf freechess.org}
-# ====== TODO To be translated ======
-menuText D ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+menuText D ToolsEngineTournament "Engine Turnier"  0 {Start a tournament between chess engines}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
 menuText D ToolsConnectHardware "Hardware verbinden" 0 {Externe Hardware mit Scid verbinden}
 menuText D ToolsConnectHardwareConfigure "Konfigurieren..." 0 {Hardware und Verbindung konfigurieren}
@@ -278,8 +276,7 @@ menuText D OptionsMovesHighlightLastMove "Letzen Zug hervorheben" 0 {Rahmt Start
 menuText D OptionsMovesHighlightLastMoveDisplay "Anzeigen" 0 {Hervorhebung des letzen Zuges anzeigen}
 menuText D OptionsMovesHighlightLastMoveWidth "Dicke" 0 {Dicke der Linie}
 menuText D OptionsMovesHighlightLastMoveColor "Farbe" 0 {Farbe der Linie}
-# ====== TODO To be translated ======
-menuText D OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText D OptionsMovesHighlightLastMoveArrow "inklusive Pfeil" 0 {Pfeil ebenfalls hervorheben}
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
 menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
   {Vor Überschreiben existierender Züge nachfragen}
@@ -296,8 +293,7 @@ menuText D OptionsMovesSpace "Leerzeichen nach Zugnummer einfügen" 0 {Leerzeiche
 menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
 menuText D OptionsMovesShowVarArrows "Pfeile für Varianten anzeigen" 0 {Zeige Pfeile in Varianten an: ja/nein}
-# ====== TODO To be translated ======
-menuText D OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
+menuText D OptionsMovesGlossOfDanger "Bedrohte Figuren einfärben" 0 {Markieren von gefärdeten Figuren ein/ausschalten}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
 menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
 menuText D OptionsTheme "Design" 0 {Verändert das Aussehen der Oberfläche}
@@ -322,6 +318,7 @@ menuText D OptionsRecent "Aktuelle Dateien..." 9 \
   {Anzahl der aktuellen Dateien im Dateimenü ändern}
 menuText D OptionsBooksDir "Buchverzeichnis..." 0 {Eröffnungsbuchverzeichnis einstellen}
 menuText D OptionsTacticsBasesDir "Bases Verzeichnis..." 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
+menuText D OptionsPhotosDir "Bilder Verzeichnis..." 0 {Verzeichnis für Bilder einstellen}
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
@@ -483,6 +480,14 @@ translate D WinningMoves {Gewinnzüge}
 translate D DrawingMoves {Remiszüge}
 translate D LosingMoves {Verlustzüge}
 translate D UnknownMoves {Züge mit unbekanntem Resultat}
+translate D SideLongest {Seite   Längstes  %     %     %\n}
+translate D toNoveMate  {am Zug    Matt   Gew. Remis Verlust\n}
+translate D NoSummary {\nKeine Zusammenfassung für diese Tablebase.}
+translate D MutualZugzwang {Gegenseitiger Zugzwang: }
+translate D SelectetZugzwang {\nAusgewählte Zugzwangpositionen:}
+translate D WdrawBloss {Weiß remis,Schwarz verliert:}
+translate D BdrawWloss {Schwarz remis, Weiß verliert: }
+translate D AllLoss {" Wer zieht verliert:     " }
 
 # Tip of the day:
 translate D Tip {Tip}
@@ -893,7 +898,7 @@ translate D GlistRemoveGameAndAboveFromFilter  {Partie (und alle oberhalb) aus F
 translate D GlistRemoveGameAndBelowFromFilter  {Partie (und alle darunter) aus Filter entfernen}
 translate D GlistDeleteGame {(Ent)Loesche Partie}
 translate D GlistDeleteAllGames {Lösche alle Partien im Filter} 
-translate D GlistUndeleteAllGames {Entlösche alle Partien im Filter} 
+translate D GlistUndeleteAllGames {Alle Partien im Filter wiederherstellen}
 translate D GlistMergeGameInBase {Mit Partie in anderer Datebank zusammenführen} 
 
 # Maintenance window:
@@ -950,7 +955,7 @@ ausgewählten Funktionen und deren Einstellungen.
 Sind Sie sicher, daß Sie die ausgewählten Wartungsarbeiten starten möchten?
 }
 # Twinchecker
-translate D TwinCheckUndelete { umdrehen; "u" beide entlöschen)}
+translate D TwinCheckUndelete { umdrehen; "u" beide wiederherstellen)}
 translate D TwinCheckprevPair {Vorheriges Paar}
 translate D TwinChecknextPair {Nächstes Paar}
 translate D TwinChecker {Scid: Dublettenprüfer}
@@ -1597,8 +1602,7 @@ translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
-# ====== TODO To be translated ======
-translate D FICSpremove {Enable premove}
+translate D FICSpremove {Premoves aktivieren}
 translate D GameReview {Partieanalyse}
 translate D GameReviewTimeExtended {Lange Bedenkzeit}
 translate D GameReviewMargin {Fehlergrenze}
@@ -1672,8 +1676,7 @@ translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine 
 translate D CCDlgServerName {Server Name:}
 translate D CCDlgLoginName  {Login Name:}
 translate D CCDlgPassword   {Paßwort:}
-# ====== TODO To be translated ======
-translate D CCDlgShowPassword {Show password}
+translate D CCDlgShowPassword {Password anzeigen}
 translate D CCDlgURL        {Xfcc-URL:}
 translate D CCDlgRatingType {Wertungszahl:}
 translate D CCDlgDuplicateGame {Nichteindeutige Partie}
@@ -1711,7 +1714,38 @@ translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster befreien}
+#Gamelist
 translate D ChangeIcon {Symbol ändern...}
+translate D ShowHideDB {Datenbank anzeigen/verbergen}
+translate D ChangeFilter {Filter ändern}
+translate D ChangeLayout {Sortierkriterien und Spaltenlayout laden/speichern/ändern }
+translate D ShowHideStatistic {Statistik anzeigen/verbergen}
+translate D BoardFilter {Nur Partien, die gleich der aktuellen Brettstellung sind, anzeigen}
+translate D CopyGameTo {Kopiere Partie nach}
+translate D FindBar {Suchleiste}
+translate D FindCurrentGame {Aktuelle Partie finden}
+translate D DeleteGame {Partie löschen}
+translate D UndeleteGame {Partie wiederherstellen}
+translate D ResetSort {Sortierung zurücksetzten}
+
+translate D ConvertNullMove {Null-Züge in Kommentare umwandeln}
+translate D SetupBoard {Stellung eingeben}
+translate D Rotate {Drehen}
+translate D SwitchColors {Farbe wechseln}
+translate D FlipBoard {Brett drehen}
+translate D ImportPGN {Importiere PGN Partieen}
+translate D ImportingFiles {Importiere PGN Dateien nach}
+translate D ImportingFrom {Importiere von}
+translate D ImportingIn {Importiere Partien nach}
+translate D UseLastTag {Letzte Tags\nverwenden}
+translate D Random {Zufällig}
+translate D BackToMainline {Zurück zur Hauptvariante}
+translate D LeaveVariant {Variante verlassen}
+translate D Autoplay {Vorspielen}
+translate E ShowHideCoords {Beschriftung ein/aus}
+translate E ShowHideMaterial {Material ein/aus}
+translate E FullScreen {Vollbild}
+translate E FilterStatistic {Filter Statistik}
 }
 
 ##########

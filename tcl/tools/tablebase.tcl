@@ -182,7 +182,7 @@ proc ::tb::Open {} {
   if { !$::tb::online_available } {
     catch { $w.b.online configure -state disabled }
   }
-  ttk::button $w.b.random -text "Random" -command ::tb::random
+  ttk::button $w.b.random -text $::tr(Random) -command ::tb::random
   ttk::button $w.b.showboard -image tb_coords -command ::tb::showBoard
   dialogbutton $w.b.help -text $::tr(Help) -command { helpWindow TB }
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
@@ -324,7 +324,7 @@ proc ::tb::summary {{material ""}} {
   $t delete 1.0 end
   $t insert end [format "%-6s" [::tb::name $material]]
   if {! [info exists tbs($material)]} {
-    $t insert end "\nNo summary for this tablebase."
+    $t insert end $::tr(NoSummary)
     $t configure -state disabled
     return
   }
@@ -334,12 +334,12 @@ proc ::tb::summary {{material ""}} {
   
   # Longest-mate and result-percentage stats:
   
-  $t insert end "Side    Longest    %     %     %\n"
-  $t insert end "to move   mate    Win  Draw  Loss\n"
+  $t insert end $::tr(SideLongest)
+  $t insert end $::tr(toNoveMate)
   $t insert end "---------------------------------\n"
   
   # Stats for White:
-  $t insert end "White     "
+  $t insert end [format "%-11s" $::tr(White)]
   set len [lindex $data 1]
   set fen [lindex $data 2]
   if {$len == "0"} { set len "-" }
@@ -361,7 +361,7 @@ proc ::tb::summary {{material ""}} {
   $t insert end "\n"
   
   # Stats for Black:
-  $t insert end "Black     "
+  $t insert end [format "%-11s" $::tr(Black)]
   set len [lindex $data 3]
   set fen [lindex $data 4]
   if {$len == "0"} { set len "-" }
@@ -383,7 +383,7 @@ proc ::tb::summary {{material ""}} {
   $t insert end "\n\n"
   
   set mzugs [lindex $data 11]
-  $t insert end "Mutual zugzwangs: "
+  $t insert end $::tr(MutualZugzwang)
   if {$mzugs >= 0} { $t insert end "$mzugs\n" } else { $t insert end "?\n" }
   if {$mzugs <= 0} {
     $t configure -state disabled
@@ -394,9 +394,11 @@ proc ::tb::summary {{material ""}} {
   set nBtmLoses [lindex $data 12]
   set nWtmLoses [lindex $data 14]
   set nBothLose [lindex $data 16]
-  set zugnames [list " White draws, Black loses: " \
-      " Black draws, White loses: " \
-      " Whoever moves loses:      "]
+  set n1 $::tr(WdrawBloss)
+  set n2 $::tr(BdrawWloss)
+  set n3 $::tr(AllLoss)
+  set zugnames [list $n1 $n2 $n3 ]
+#  set zugnames [list [$::tr(WdrawBloss)] [$::tr(BdrawWloss)] [$::tr(AllLoss)] ]
   if {$nBtmLoses > 0} {
     $t insert end [lindex $zugnames 0]
     $t insert end [format "%5d\n" $nBtmLoses]
@@ -424,7 +426,7 @@ proc ::tb::summary {{material ""}} {
   }
   
   # Print the lists of selected zugzwang positions:
-  $t insert end "\nSelected zugzwang positions:"
+  $t insert end $::tr(SelectetZugzwang)
   foreach n [list $nBtmFens $nWtmFens $nBothFens] \
       fenlist [list $btmFens $wtmFens $bothFens] \
       name $zugnames tomove [list b w w] {

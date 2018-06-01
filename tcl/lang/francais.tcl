@@ -64,8 +64,7 @@ menuText F EditTrial "Essayer une variante" 0 \
   {Démarrer/Stopper mode d'essai, pour tester une idée sur l'échiquier}
 menuText F EditStrip "Épurer" 2 {Épurer les commentaires ou les variantes de cette partie}
 menuText F EditUndo "Annuler" 0 {Annuler la dernière modification de la partie}
-# ====== TODO To be translated ======
-menuText F EditRedo "Redo" 0 {Redo last game change}
+menuText F EditRedo "Rétablir" 0 {Redo last game change}
 menuText F EditStripComments "Commentaires" 0 \
   {Épurer cette partie de tous les commentaires et annotations}
 menuText F EditStripVars "Variantes" 0 {Épurer cette partie des variantes}
@@ -248,8 +247,7 @@ menuText F OptionsFonts "Polices" 0 {Changer les polices}
 menuText F OptionsFontsRegular "Normales" 0 {Changer les polices normales}
 menuText F OptionsFontsMenu "Menu" 0 {Changer la police des menus}
 menuText F OptionsFontsSmall "Petites" 0 {Changer les petites polices}
-# ====== TODO To be translated ======
-menuText F OptionsFontsTiny "Tiny" 0 {Change the tiny font}
+menuText F OptionsFontsTiny "Minuscule" 0 {Change the tiny font}
 menuText F OptionsFontsFixed "Fixe" 0 {Changer les polices de chasse fixe}
 menuText F OptionsGInfo "Informations de la partie" 7 {Options d'information de la partie}
 menuText F OptionsLanguage "Langue" 0 {Sélectionner le menu de choix des langues}
@@ -258,8 +256,7 @@ menuText F OptionsMovesHighlightLastMove "Surbrillance dernier coup" 0 {Surbrill
 menuText F OptionsMovesHighlightLastMoveDisplay "Afficher" 0 {Afficher la surbrillance du dernier coup}
 menuText F OptionsMovesHighlightLastMoveWidth "Epaisseur" 0 {Epaisseur de la ligne}
 menuText F OptionsMovesHighlightLastMoveColor "Couleur" 0 {Couleur de la ligne}
-# ====== TODO To be translated ======
-menuText F OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText F OptionsMovesHighlightLastMoveArrow "inclure Flèche" 0 {Include Arrow with Highlight}
 menuText F OptionsMoves "Coups" 2 {Gestion des coups}
 menuText F OptionsMovesAsk "Demander avant d'écraser les coups" 0 \
   {Demander avant d'écraser un coup existant}
@@ -276,8 +273,7 @@ menuText F OptionsMovesSpace "Ajouter un espace après le numéro du coup" 0 {Espa
 menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
 menuText F OptionsMovesShowVarArrows "Montrer flêches pour les variations" 0 {Montrer des flêches pour les variations existantes}
-# ====== TODO To be translated ======
-menuText F OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
+menuText F OptionsMovesGlossOfDanger "Couleur codée Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}
@@ -304,6 +300,7 @@ menuText F OptionsRecent "Fichiers récents..." 0 \
   {Changer le nombre de fichiers récents affichés dans le menu Fichier}
 menuText F OptionsBooksDir "Répertoire des bibliothèques..." 0 {Répertoire des bibliothèques d'ouverture}
 menuText F OptionsTacticsBasesDir "Répertoire des bases d'entrainement..." 0 {Répertoire des bases pour l'entrainement tactique}
+menuText F OptionsPhotosDir "Répertoire des images..." 0 {Répertoire des bases pour l'images}
 menuText F OptionsSave "Sauver les options" 0 "Sauver les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
   {Sauvegarder automatiquement toutes les options en quittant Scid}
@@ -462,6 +459,22 @@ translate F WinningMoves {Coups gagnants}
 translate F DrawingMoves {Coups faisant nulle}
 translate F LosingMoves {Coups perdants}
 translate F UnknownMoves {Coups dont le résultat est inconnu}
+# ====== TODO To be translated ======
+translate F SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate F toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate F NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate F MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate F SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate F WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate F BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate F AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate F Tip {Conseil}
@@ -913,8 +926,7 @@ translate F YearRange {Années:}
 translate F RatingRange {Classements:}
 translate F Description {Description}
 translate F Flag {Drapeau}
-# ====== TODO To be translated ======
-translate F CustomFlags {Custom flags}
+translate F CustomFlags {Drapeaux personnalisés}
 translate F DeleteCurrent {Effacer la partie courante}
 translate F DeleteFilter {Effacer le filtre de parties}
 translate F DeleteAll {Effacer toutes les parties}
@@ -1702,6 +1714,30 @@ translate F DockLeft {Déplacer à gauche}
 translate F DockRight {Déplacer à droite}
 translate F Undock {Détacher}
 translate F ChangeIcon {Changer icone...}
+translate F ShowHideDB {Afficher/Masquer les bases de données}
+translate F ChangeFilter {Remplacer le filtre}
+translate F ChangeLayout {Charger/Enregistrer/Modifier les critères de tri et la disposition des colonnes.}
+translate F ShowHideStatistic {Afficher/Masquer les statistiques}
+translate F BoardFilter {Afficher uniquement les jeux qui correspondent à la position actuelle du plateau de jeu.}
+translate F CopyGameTo {Copier le jeu dans}
+translate F FindBar {Trouver un bar}
+translate F FindCurrentGame {Trouver le jeu actuel}
+translate F DeleteGame {Supprimer le jeu}
+translate F UndeleteGame {Reconstitue le jeu}
+translate F ResetSort {Réinitialiser le tri}
+translate F ConvertNullMove {Convertir les mouvements nuls en commentaires}
+# ====== TODO To be translated ======
+translate F SetupBoard {Setup Board}
+translate F Rotate {Rotation}
+translate F SwitchColors {Changer de couleur}
+# ====== TODO To be translated ======
+translate F FlipBoard {Flip Board}
+translate F ImportPGN {Importer un jeu PGN}
+translate F ImportingFiles {Importing PGN files in}
+translate F ImportingFrom {Importation de}
+translate F ImportingIn {Importer des jeux dans}
+translate F UseLastTag {Utilisez les tags de last\ngame's tags}
+translate F Random {Aléatoire}
 
 ##########
 #

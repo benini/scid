@@ -482,12 +482,11 @@ proc ::windows::gamelist::createMenu_ {w} {
 	ttk::button $w.buttons.boardFilter -image tb_BoardMask -command "::windows::gamelist::searchpos_ $w"
 	#TODO:
 	#ttk::button $w.buttons.stats -image b_bargraph
-	#TODO: translate
-	::utils::tooltip::Set $w.buttons.database "Show/Hide databases"
-	::utils::tooltip::Set $w.buttons.filter "Change filter"
-	::utils::tooltip::Set $w.buttons.layout "Load/Save/Change sorting criteria and column layout"
-	::utils::tooltip::Set $w.buttons.stats "Show/Hide statistics"
-	::utils::tooltip::Set $w.buttons.boardFilter "Show only games that matches the current board position"
+	::utils::tooltip::Set $w.buttons.database $::tr(ShowHideDB)
+	::utils::tooltip::Set $w.buttons.filter $::tr(ChangeFilter)
+	::utils::tooltip::Set $w.buttons.layout $::tr(ChangeLayout)
+	::utils::tooltip::Set $w.buttons.stats $::tr(ShowHideStatistic)
+	::utils::tooltip::Set $w.buttons.boardFilter $::tr(BoardFilter)
 	grid $w.buttons.database -row 0
 	grid $w.buttons.filter -row 1
 	grid $w.buttons.layout -row 2
@@ -1211,24 +1210,20 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
               -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
       }
       $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
-      #TODO: translate label
-      $w.game_menu add cascade -label "Copy Game to" -menu $w.game_menu.copy
+      $w.game_menu add cascade -label $::tr(CopyGameTo) -menu $w.game_menu.copy
 
       #GOTO GAME
       $w.game_menu add separator
-      #TODO: translate label
       $w.game_menu add checkbutton -variable ::glist_FindBar($layout) \
-                   -label "Find Bar" -command "glist.showfindbar_ $w $layout"
+                   -label $::tr(FindBar) -command "glist.showfindbar_ $w $layout"
       if {$::glistBase($w) == [sc_base current] && [sc_game number] != 0} {
-        #TODO: translate label
-        $w.game_menu add command -label "Find current game" -command "glist.findcurrentgame_ $w [sc_game number]"
+        $w.game_menu add command -label $::tr(FindCurrentGame) -command "glist.findcurrentgame_ $w [sc_game number]"
       } else {
-        #TODO: translate label
-        $w.game_menu add command -label "Find current game" -state disabled
+        $w.game_menu add command -label $::tr(FindCurrentGame) -state disabled
       }
       $w.game_menu add separator
       menu $w.game_menu.filter
-      $w.game_menu.filter add command -label "Export" -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
+      $w.game_menu.filter add command -label $::tr(Export) -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label [tr SearchReset] \
         -command "::windows::gamelist::FilterReset [winfo toplevel $w] $::glistBase($w)"
@@ -1248,9 +1243,8 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w)"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
       $w.game_menu add separator
-      #TODO: translate labels
-      set dellabel "Delete game"
-      if {[sc_base gameflag $::glistBase($w) $idx get del]} { set dellabel "Undelete game" }
+      set dellabel $::tr(DeleteGame)
+      if {[sc_base gameflag $::glistBase($w) $idx get del]} { set dellabel $::tr(UndeleteGame) }
       $w.game_menu add command -label $dellabel -command "glist.delflag_ $w $idx; $w selection set {};"
       tk_popup $w.game_menu $abs_x $abs_y
     }
@@ -1291,14 +1285,12 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
 
     #RESET SORT
     $w.header_menu add separator
-    #TODO: translate label
-    $w.header_menu add command -label "Reset sort" -command "glist.sort_ $w 0 $layout 1"
+    $w.header_menu add command -label $::tr(ResetSort) -command "glist.sort_ $w 0 $layout 1"
 
     #BARS
     $w.header_menu add separator
-    #TODO: translate label
     $w.header_menu add checkbutton -variable ::glist_FindBar($layout) \
-                   -label "Find Bar" -command "glist.showfindbar_ $w $layout"
+                   -label $::tr(FindBar) -command "glist.showfindbar_ $w $layout"
 
     tk_popup $w.header_menu $abs_x $abs_y
   }

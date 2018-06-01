@@ -389,8 +389,7 @@ $m add command -label OptionsTable -command setTableBaseDir \
     -state [expr {[sc_info tb] ? "normal" : "disabled"}]
 $m add command -label OptionsBooksDir -command setBooksDir
 $m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
-#TODO: translate
-$m add command -label "Photos directory..." -command setPhotoDir
+$m add command -label OptionsPhotosDir -command setPhotoDir
 $m add separator
 $m add command -label OptionsSave -command options.write
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \

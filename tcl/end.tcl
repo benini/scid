@@ -412,7 +412,7 @@ proc exportOptions {exportType} {
   if {$exportType == "PGN"} {
     ttk::label $w.o.space -text ""
     grid $w.o.space -row 8 -column 0 -sticky w
-    ttk::label $w.o.nullMoves -text "Convert null moves to comments"
+    ttk::label $w.o.nullMoves -text $::tr(ConvertNullMove)
     ttk::radiobutton $w.o.convertNullMoves -text $::tr(Yes) \
         -variable exportFlags(convertNullMoves) -value 1
     ttk::radiobutton $w.o.keepNullMoves -text $::tr(No) \
@@ -1003,7 +1003,7 @@ proc gameSave { gnum } {
   # Override tab-binding for this text widget:
   bind .save.extra.text <Key-Tab> "[bind all <Key-Tab>]; break"
   ttk::scrollbar .save.extra.scroll -command ".save.extra.text yview" -takefocus 0
-  ttk::button .save.extra.last -text "Use\nlast\ngame's\ntags" -command {
+  ttk::button .save.extra.last -text $::tr(UseLastTag) -command {
     set extraTags [sc_game tag get -last Extra]
     .save.extra.text delete 1.0 end
     .save.extra.text insert 1.0 $extraTags

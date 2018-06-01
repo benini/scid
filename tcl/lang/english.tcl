@@ -332,6 +332,7 @@ menuText E OptionsTable "Tablebase Directory..." 10 \
 menuText E OptionsRecent "Recent Files..." 0 {Change the number of recent files displayed in the File menu}
 menuText E OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
 menuText E OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText E OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText E OptionsSave "Save Options" 0 "Save all settable options to the file $::optionsFile"
 menuText E OptionsAutoSave "Auto-Save Options on Exit" 0 \
   {Auto-save all options when exiting Scid}
@@ -490,6 +491,14 @@ translate E WinningMoves {Winning moves}
 translate E DrawingMoves {Drawing moves}
 translate E LosingMoves {Losing moves}
 translate E UnknownMoves {Unknown-result moves}
+translate E SideLongest {Side    Longest    %     %     %\n}
+translate E toNoveMate {to move   mate    Win  Draw  Loss\n}
+translate E NoSummary {\nNo summary for this tablebase.}
+translate E MutualZugzwang {Mutual zugzwangs: }
+translate E SelectetZugzwang {\nSelected zugzwang positions:}
+translate E WdrawBloss {White draws, Black loses:}
+translate E BdrawWloss {Black draws, White loses:}
+translate E AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate E Tip {Tip}
@@ -1725,5 +1734,36 @@ translate E Undock {Undock}
 # Switcher window
 translate E ChangeIcon {Change icon...}
 
+# Gamelist window
+translate E ShowHideDB {Show/Hide databases}
+translate E ChangeFilter {Change filter}
+translate E ChangeLayout {Load/Save/Change sorting criteria and column layout}
+translate E ShowHideStatistic {Show/Hide statistics}
+translate E BoardFilter {Show only games that matches the current board position}
+translate E CopyGameTo {Copy Game to}
+translate E FindBar {Find Bar}
+translate E FindCurrentGame {Find current game}
+translate E DeleteGame {Delete game}
+translate E UndeleteGame {Undelete game}
+translate E ResetSort {Reset sort}
+
+translate E ConvertNullMove {Convert null moves to comments}
+translate E SetupBoard {Setup Board}
+translate E Rotate {Rotate}
+translate E SwitchColors {Switch colors}
+translate E FlipBoard {Flip Board}
+translate E ImportPGN {Import PGN game}
+translate E ImportingFiles {Importing PGN files in}
+translate E ImportingFrom {Importing from}
+translate E ImportingIn {Import games in}
+translate E UseLastTag {Use last\ngame's tags}
+translate E Random {Random}
+translate E BackToMainline {Go back to mainline}
+translate E LeaveVariant {Leave variant}
+translate E Autoplay {Autoplay}
+translate E ShowHideCoords {Show/Hide Coord.}
+translate E ShowHideMaterial {Show/Hide Material}
+translate E FullScreen {Full Screen}
+translate E FilterStatistic {Filter Statistics}
 }
 # end of english.tcl

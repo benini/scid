@@ -19,7 +19,7 @@ proc ::windows::stats::Open {} {
     return
   }
   toplevel $w
-  wm title $w "Scid: Filter Statistics"
+  wm title $w "Scid: $::tr(FilterStatistic)"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
 
@@ -88,7 +88,7 @@ proc ::windows::stats::Open {} {
       -variable ::windows::stats::old_year -command ::windows::stats::Refresh
 
   pack $w.statsasb -side top -fill both -expand yes
-  ttk::button $w.fbuttons.setup -image tb_graph -command configureFilterGraph
+  ttk::button $w.fbuttons.setup -image tb_CC_engine -command configureFilterGraph
   pack $w.fbuttons -side top -fill x
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
   pack $w.fbuttons.setup -side right

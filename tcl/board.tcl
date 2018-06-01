@@ -528,14 +528,14 @@ proc ::board::newToolBar_ {{w} {varname}} {
   ttk::frame $w.buttons
 
   set m [menu $w.buttons.menu_back -bg white -font font_Regular]
-  $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
-  $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
-  $m add command -label "  Go to start" -image tb_BD_Start -compound left -accelerator "<home>"
+  $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
+  $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
+  $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left -accelerator "<home>"
   ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set m [menu $w.buttons.menu_forw -bg white -font font_Regular]
-  $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
-  $m add command -label "  Go to end" -image tb_BD_End -compound left -accelerator "<end>"
+  $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
+  $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left -accelerator "<end>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set menus { tb_BD_Changes tb_BD_Comment tb_BD_Variations tb_BD_Layout }
@@ -561,18 +561,18 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set m "$w.buttons.menu_[lindex $menus 2]"
   $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
   $m add command -label "  [tr EditMain]" -image tb_BD_VarPromote -compound left
-  $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
-  $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
+  $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
+  $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
   $m add separator
   $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left
   $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left
-  $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
+  $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
 
   set m "$w.buttons.menu_[lindex $menus 3]"
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
-  $m add command -label "  Show/hide coord" -image tb_BD_Coords -compound left
-  $m add command -label "  Show/hide material" -image tb_BD_Material -compound left
-  $m add command -label "  Full Screen" -image tb_BD_Fullscreen -compound left
+  $m add command -label "  [tr ShowHideCoords]" -image tb_BD_Coords -compound left
+  $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
+  $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Coords) "::board::coords $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
