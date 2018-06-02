@@ -91,7 +91,6 @@ proc resetEngine {n} {
     set analysis(log$n) ""              ;# Log file channel
     set analysis(logCount$n) 0          ;# Number of lines sent to log file
     set analysis(wbEngineDetected$n) 0  ;# Is this a special Winboard engine?
-    set analysis(priority$n) normal     ;# CPU priority: idle/normal
     set analysis(multiPV$n) {}          ;# multiPV list sorted : depth score moves
     set analysis(multiPVraw$n) {}       ;# same thing but with raw UCI moves
     set analysis(uci$n) 0               ;# UCI engine
@@ -1943,9 +1942,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
         ttk::button $w.b1.annotate -image tb_annotate -command "configAnnotation $n"
         ::utils::tooltip::Set $w.b1.annotate $::tr(Annotate...)
     }
-    set cpu_graphic tb_cpu_hi
-    if { $analysis(priority$n) == "idle" } {set cpu_graphic tb_cpu }
-    ttk::button $w.b1.priority -image $cpu_graphic -command "setAnalysisPriority $w $n"
+    ttk::button $w.b1.priority -image tb_cpu_hi -command "setAnalysisPriority $w $n"
     ::utils::tooltip::Set $w.b1.priority $::tr(LowPriority)
     
     if {$analysis(uci$n)} {
@@ -2013,12 +2010,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     if { !$analysis(uci$n) && $autostart != 0 } {
         initialAnalysisStart $n
     }
-    # necessary on windows because the UI sometimes starves, also keep latest priority setting
-    if {$::windowsOS || $analysis(priority$n) == "idle"} {
-        set analysis(priority$n) idle
-        setAnalysisPriority $w $n
-    }
-    
+
     catch {
         ::enginelist::sort
         ::enginelist::write
@@ -2094,11 +2086,6 @@ proc changePVSize { n } {
 proc setAnalysisPriority {w n} {
     global analysis
     
-    if { $analysis(priority$n) == "idle" } {
-	set $analysis(priority$n) "normal"
-    } else {
-	set $analysis(priority$n) "idle"
-    }
     # Get the process ID of the analysis engine:
     if {$analysis(pipe$n) == ""} { return }
     set pidlist [pid $analysis(pipe$n)]
@@ -2106,29 +2093,18 @@ proc setAnalysisPriority {w n} {
     set pid [lindex $pidlist 0]
     
     # Set the priority class (idle or normal):
-    if {$::windowsOS} {
-        catch {sc_info priority $pid $analysis(priority$n)}
-    } else {
-        set priority 0
-        if {$analysis(priority$n) == "idle"} { set priority 15 }
-        catch {sc_info priority $pid $priority}
-    }
+    set priority "normal"
+    if {[lindex [$w.b1.priority configure -image] end] eq "tb_cpu_hi"} { set priority "idle" }
+    catch {sc_info priority $pid $priority}
     
     # Re-read the priority class for confirmation:
     if {[catch {sc_info priority $pid} newpriority]} { return }
-    if {$::windowsOS} {
-        if {$newpriority == "idle"  ||  $newpriority == "normal"} {
-            set analysis(priority$n) $newpriority
-        }
+    if {$newpriority > 0} {
+        $w.b1.priority configure -image tb_cpu
+        $w.b1.priority state pressed
     } else {
-        set priority normal
-        if {$newpriority > 0} { set priority idle }
-        set analysis(priority$n) $priority
-    }
-   if { $analysis(priority$n) == "idle" } {
-	$w.b1.priority configure -image tb_cpu
-    } else {
-	$w.b1.priority configure -image tb_cpu_hi
+        $w.b1.priority configure -image tb_cpu_hi
+        $w.b1.priority state !pressed
     }
  }
 ################################################################################

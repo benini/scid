@@ -4785,12 +4785,12 @@ int
 sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "decimal",
+        "clipbase", "decimal", "priority",
         "html", "limit", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
-        INFO_CLIPBASE, INFO_DECIMAL,
+        INFO_CLIPBASE, INFO_DECIMAL, INFO_PRIORITY,
         INFO_HTML, INFO_LIMIT, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
@@ -4809,6 +4809,9 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return UI_Result(ti, OK, std::string(1, decimalPointChar));
         }
         break;
+
+    case INFO_PRIORITY:
+        return sc_info_priority(cd, ti, argc, argv);
 
     case INFO_HTML:
         if (argc >= 3) {
