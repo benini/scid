@@ -362,6 +362,8 @@ menuText P OptionsRecent "Ostatnie pliki..." 0 \
 menuText P OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
 # ====== TODO To be translated ======
 menuText P OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+# ====== TODO To be translated ======
+menuText P OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \
@@ -524,6 +526,22 @@ translate P WinningMoves {Wygrywaj±ce posuniêcia}
 translate P DrawingMoves {Remisuj±ce posuniêcia} 
 translate P LosingMoves {Przegrywaj±ce posuniêcia} 
 translate P UnknownMoves {Posuniêcia o nieznanej ocenie} 
+# ====== TODO To be translated ======
+translate P SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate P toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate P NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate P MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate P SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate P WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate P BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate P AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate P Tip {Porada}
@@ -2206,6 +2224,64 @@ translate P DockRight {Move to right}
 translate P Undock {Undock}
 # ====== TODO To be translated ======
 translate P ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
+translate P ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate P ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate P ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate P ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate P BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate P CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate P FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate P FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate P DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate P UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate P ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate P ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate P SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate P Rotate {Rotate}
+# ====== TODO To be translated ======
+translate P SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate P FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate P ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate P ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate P ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate P ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate P UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate P Random {Random}
+# ====== TODO To be translated ======
+translate P BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate P LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate P Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate P ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate P ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate P FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate P FilterStatistic {Filter Statistics}
 # ====== TODO To be translated ======
 }
 

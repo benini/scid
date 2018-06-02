@@ -298,6 +298,8 @@ menuText R OptionsRecent "Недавно используемые файлы..."
   {Изменить количество недавно используемых файлов в меню "Файл"}
 menuText R OptionsBooksDir "Директория книг..." 0 {Установить директорию книг дебютов}
 menuText R OptionsTacticsBasesDir "Директория баз..." 0 {Установить директорию баз тактик (тренировок)}
+# ====== TODO To be translated ======
+menuText R OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText R OptionsSave "Сохранить установки" 0 "Сохранить все установки в файл $::optionsFile"
 menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
   {Автосохранение всех установок при выходе из программы}
@@ -456,6 +458,22 @@ translate R WinningMoves {Выигрышные ходы}
 translate R DrawingMoves {Ничейные ходы}
 translate R LosingMoves {Проигрышные ходы}
 translate R UnknownMoves {Ходы, приводящие к неизвестному результату}
+# ====== TODO To be translated ======
+translate R SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate R toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate R NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate R MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate R SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate R WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate R BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate R AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate R Tip {Совет}
@@ -1691,6 +1709,64 @@ translate R Undock {Расстыковать}
 
 # Switcher window
 translate R ChangeIcon {Сменить иконку...}
+# ====== TODO To be translated ======
+translate R ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate R ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate R ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate R ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate R BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate R CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate R FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate R FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate R DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate R UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate R ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate R ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate R SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate R Rotate {Rotate}
+# ====== TODO To be translated ======
+translate R SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate R FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate R ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate R ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate R ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate R ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate R UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate R Random {Random}
+# ====== TODO To be translated ======
+translate R BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate R LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate R Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate R ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate R ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate R FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate R FilterStatistic {Filter Statistics}
 
 }
 # end of russian.tcl

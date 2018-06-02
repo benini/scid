@@ -339,6 +339,8 @@ menuText S OptionsBooksDir "Carpeta de libros de aperturas..." 0 \
   {Fija la carpeta de los libros de aperturas (Books)}
 menuText S OptionsTacticsBasesDir "Carpeta de bases de datos..." 0 \
   {Fija la carpeta de la base de entrenamiento táctico}
+# ====== TODO To be translated ======
+menuText S OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText S OptionsSave "Guardar opciones" 0 \
   "Guarda todas las opciones en el fichero $::optionsFile"
 menuText S OptionsAutoSave "Autoguardar opciones al salir" 0 \
@@ -499,6 +501,22 @@ translate S WinningMoves {Movimientos ganadores}
 translate S DrawingMoves {Movimientos para tablas}
 translate S LosingMoves {Movimientos perdedores}
 translate S UnknownMoves {Movimientos de resultado desconocido}
+# ====== TODO To be translated ======
+translate S SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate S toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate S NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate S MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate S SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate S WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate S BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate S AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate S Tip {Sugerencia}
@@ -1741,6 +1759,64 @@ translate S DockLeft {Mover a la izquierda}
 translate S DockRight {Mover a la derecha}
 translate S Undock {Ventana flotante}
 translate S ChangeIcon {Cambiar icono...}
+# ====== TODO To be translated ======
+translate S ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate S ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate S ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate S ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate S BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate S CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate S FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate S FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate S DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate S UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate S ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate S ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate S SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate S Rotate {Rotate}
+# ====== TODO To be translated ======
+translate S SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate S FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate S ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate S ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate S ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate S ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate S UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate S Random {Random}
+# ====== TODO To be translated ======
+translate S BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate S LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate S Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate S ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate S ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate S FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate S FilterStatistic {Filter Statistics}
 
 }
 # end of spanish.tcl

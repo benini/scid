@@ -1738,6 +1738,20 @@ translate F ImportingFrom {Importation de}
 translate F ImportingIn {Importer des jeux dans}
 translate F UseLastTag {Utilisez les tags de last\ngame's tags}
 translate F Random {Aléatoire}
+# ====== TODO To be translated ======
+translate F BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate F LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate F Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate F ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate F ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate F FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate F FilterStatistic {Filter Statistics}
 
 ##########
 #

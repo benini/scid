@@ -1742,6 +1742,14 @@ translate D Random {Zufällig}
 translate D BackToMainline {Zurück zur Hauptvariante}
 translate D LeaveVariant {Variante verlassen}
 translate D Autoplay {Vorspielen}
+# ====== TODO To be translated ======
+translate D ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate D ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate D FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate D FilterStatistic {Filter Statistics}
 translate E ShowHideCoords {Beschriftung ein/aus}
 translate E ShowHideMaterial {Material ein/aus}
 translate E FullScreen {Vollbild}

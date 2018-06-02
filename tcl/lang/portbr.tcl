@@ -293,6 +293,8 @@ menuText B OptionsRecent "Arquivos recentes..." 0 \
   {Muda o número de arquivos recentes no menu Arquivo} 
 menuText B OptionsBooksDir "Diretório de Livros..." 0 {Define o diretório para os livros de aberturas}
 menuText B OptionsTacticsBasesDir "Diretório de bases..." 0 {Define o diretório para as bases de treinamento de táticas}
+# ====== TODO To be translated ======
+menuText B OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
@@ -452,6 +454,22 @@ translate B WinningMoves {Movimentos vencedores}
 translate B DrawingMoves {Movimentos para empate} 
 translate B LosingMoves {Movimentos perdedores} 
 translate B UnknownMoves {Movimentos com resultado desconhecido} 
+# ====== TODO To be translated ======
+translate B SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate B toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate B NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate B MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate B SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate B WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate B BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate B AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate B Tip {Dica}
@@ -1648,6 +1666,64 @@ translate B DockLeft {Mover para a esquerda}
 translate B DockRight {Mover para a direita}
 translate B Undock {Desacoplar}
 translate B ChangeIcon {Alterar icone...}
+# ====== TODO To be translated ======
+translate B ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate B ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate B ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate B ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate B BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate B CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate B FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate B FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate B DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate B UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate B ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate B ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate B SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate B Rotate {Rotate}
+# ====== TODO To be translated ======
+translate B SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate B FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate B ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate B ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate B ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate B ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate B UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate B Random {Random}
+# ====== TODO To be translated ======
+translate B BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate B LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate B Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate B ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate B ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate B FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate B FilterStatistic {Filter Statistics}
 }
 
 # end of portbr.tcl

@@ -327,6 +327,8 @@ menuText G OptionsTable "Κατάλογος βάσης φινάλε..." 10 \
 menuText G OptionsRecent "Πρόσφατα αρχεία..." 0 {Αλλάξτε το πλήθος των πρόσφατων αρχείων που εμφανίζονται στο μενού Αρχείο}
 menuText G OptionsBooksDir "Κατάλογος βιβλίων..." 0 {Καθορίζει τον κατάλογο των βιβλίων ανοιγμάτων}
 menuText G OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+# ====== TODO To be translated ======
+menuText G OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText G OptionsSave "Αποθήκευση επιλογών" 0 "Αποθηκεύστε όλες τις μεταβολές ρυθμίσεων στο αρχείο $::optionsFile"
 menuText G OptionsAutoSave "Αυτόματη αποθήκευση επιλογών κατά την έξοδο" 0 \
   {Να αποθηκεύονται αυτόματα οι επιλογές κατά την έξοδο από το Scid}
@@ -485,6 +487,22 @@ translate G WinningMoves {Κινήσεις που κερδίζουν}
 translate G DrawingMoves {Κινήσεις που οδηγούν σε ισοπαλία}
 translate G LosingMoves {Κινήσεις που χάνουν}
 translate G UnknownMoves {Κινήσεις αγνώστου αποτελέσματος}
+# ====== TODO To be translated ======
+translate G SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate G toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate G NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate G MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate G SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate G WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate G BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate G AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate G Tip {Συμβουλή}
@@ -1752,6 +1770,64 @@ translate G Undock {Αποκόληση}
 
 # Switcher window
 translate G ChangeIcon {Αλλαγή εικονιδίου...}
+# ====== TODO To be translated ======
+translate G ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate G ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate G ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate G ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate G BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate G CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate G FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate G FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate G DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate G UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate G ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate G ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate G SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate G Rotate {Rotate}
+# ====== TODO To be translated ======
+translate G SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate G FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate G ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate G ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate G ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate G ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate G UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate G Random {Random}
+# ====== TODO To be translated ======
+translate G BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate G LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate G Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate G ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate G ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate G FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate G FilterStatistic {Filter Statistics}
 
 }
 # end of greek.tcl

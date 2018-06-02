@@ -290,6 +290,8 @@ menuText C OptionsRecent "Nedávné soubory..." 0 \
   {Zmìnit poèet nedávných souborù zobrazovaných v menu Soubor}
 menuText C OptionsBooksDir "Adresáø knihoven zahájení..." 0 {Nastavení adresáøe knihoven zahájení}
 menuText C OptionsTacticsBasesDir "Adresáø databází..." 0 {Nastavení adresáøù taktických (tréninkových) databází}
+# ====== TODO To be translated ======
+menuText C OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText C OptionsSave "Ulo¾it volby" 0 \
   "Ulo¾it v¹echny nastavitelné volby do souboru $::optionsFile"
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 20 \
@@ -449,6 +451,22 @@ translate C WinningMoves {vyhrávající tahy}
 translate C DrawingMoves {remizující tahy}
 translate C LosingMoves {prohrávající tahy}
 translate C UnknownMoves {tahy s neznámým výsledkem}
+# ====== TODO To be translated ======
+translate C SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate C toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate C NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate C MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate C SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate C WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate C BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate C AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate C Tip {Tip}
@@ -1701,6 +1719,64 @@ translate C DockRight {Pøesunout doprava}
 # ====== TODO To be translated ======
 translate C Undock {Undock}
 translate C ChangeIcon {Zmìnit ikonu...}
+# ====== TODO To be translated ======
+translate C ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate C ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate C ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate C ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate C BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate C CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate C FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate C FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate C DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate C UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate C ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate C ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate C SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate C Rotate {Rotate}
+# ====== TODO To be translated ======
+translate C SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate C FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate C ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate C ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate C ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate C ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate C UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate C Random {Random}
+# ====== TODO To be translated ======
+translate C BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate C LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate C Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate C ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate C ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate C FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate C FilterStatistic {Filter Statistics}
 }
 
 

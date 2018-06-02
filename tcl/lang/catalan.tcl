@@ -320,6 +320,8 @@ menuText K OptionsRecent "Arxius recents..." 9 \
   {Canvia el nombre d'arxius recentes que es mostren al menú Arxiu}
 menuText K OptionsBooksDir "Carpeta de llibres d'obertures..." 0 {Fixa la carpeta d'els llibres d'obertures (Books)}
 menuText K OptionsTacticsBasesDir "Carpeta de bases de dades..." 0 {Fixa la carpeta de la base d'entrenament tàctic}
+# ====== TODO To be translated ======
+menuText K OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText K OptionsSave "Salvar opcions" 0 \
   {Salva totes les opcions a l'arxiu $::optionsFile}
 menuText K OptionsAutoSave "Autoguardar opcions en sortir" 0 \
@@ -480,6 +482,22 @@ translate K WinningMoves {Jugades guanyadores}
 translate K DrawingMoves {Jugades per taules}
 translate K LosingMoves {Jugades perdedores}
 translate K UnknownMoves {Jugades de resultat desconegut}
+# ====== TODO To be translated ======
+translate K SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate K toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate K NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate K MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate K SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate K WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate K BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate K AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate K Tip {Suggeriment}
@@ -1765,6 +1783,64 @@ translate K DockRight {Moure a la dreta}
 translate K Undock {Finestra flotant}
 # ====== TODO To be translated ======
 translate K ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
+translate K ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate K ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate K ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate K ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate K BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate K CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate K FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate K FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate K DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate K UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate K ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate K ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate K SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate K Rotate {Rotate}
+# ====== TODO To be translated ======
+translate K SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate K FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate K ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate K ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate K ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate K ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate K UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate K Random {Random}
+# ====== TODO To be translated ======
+translate K BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate K LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate K Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate K ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate K ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate K FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate K FilterStatistic {Filter Statistics}
 
 }
 # end of catalan.tcl

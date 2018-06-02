@@ -319,6 +319,8 @@ menuText N OptionsRecent "Recente bestanden..." 0 \
   {Wijzig het aantal recent gebruikte bestanden in het Bestand menu}
 menuText N OptionsBooksDir "Boeken map..." 0 {Stel de map met openingsboeken in}
 menuText N OptionsTacticsBasesDir "Databases map..." 0 {Stel de map met de  taktiek (training) databases in}
+# ====== TODO To be translated ======
+menuText N OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \
@@ -478,6 +480,22 @@ translate N WinningMoves {Winnende zetten} ;
 translate N DrawingMoves {Remise zetten} ;
 translate N LosingMoves {Verliezende zetten} ;
 translate N UnknownMoves {Onbekend resultaat zetten} ;
+# ====== TODO To be translated ======
+translate N SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate N toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate N NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate N MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate N SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate N WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate N BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate N AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate N Tip {Tip}
@@ -1842,5 +1860,63 @@ translate N DockLeft {Zend naar links}
 translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
+# ====== TODO To be translated ======
+translate N ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate N ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate N ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate N ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate N BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate N CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate N FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate N FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate N DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate N UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate N ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate N ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate N SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate N Rotate {Rotate}
+# ====== TODO To be translated ======
+translate N SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate N FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate N ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate N ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate N ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate N ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate N UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate N Random {Random}
+# ====== TODO To be translated ======
+translate N BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate N LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate N Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate N ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate N ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate N FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate N FilterStatistic {Filter Statistics}
 }
 # End of nederlan.tcl

@@ -303,6 +303,8 @@ menuText H OptionsRecent "Aktuális fájlok..." 3 \
   {A Fájl menüben megjelenített aktuális fájlok számának megváltoztatása}
 menuText H OptionsBooksDir "A megnyitástár könyvtára" 6 {Kijelöli a megnyitástár könyvtárát.}
 menuText H OptionsTacticsBasesDir "Az adatbázisok könyvtára" 4 {Kijelöli a taktikai (edzés) adatbázisok könyvtárát.}
+# ====== TODO To be translated ======
+menuText H OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText H OptionsSave "Beállítások mentése" 12 \
   "Minden beállítható értéket elment a $::optionsFile fájlba."
 menuText H OptionsAutoSave "Beállítások automatikus mentése kilépéskor." 0 \
@@ -462,6 +464,22 @@ translate H WinningMoves {Nyerõ lépés}
 translate H DrawingMoves {Döntetlenre vezetõ lépés}
 translate H LosingMoves {Vesztõ lépés}
 translate H UnknownMoves {Bizonytalan kimenetelû lépés}
+# ====== TODO To be translated ======
+translate H SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate H toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate H NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate H MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate H SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate H WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate H BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate H AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate H Tip {Tipp}
@@ -1746,6 +1764,64 @@ translate H DockRight {Mozgatás jobbra}
 translate H Undock {Feloldás}
 # ====== TODO To be translated ======
 translate H ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
+translate H ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate H ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate H ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate H ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate H BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate H CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate H FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate H FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate H DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate H UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate H ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate H ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate H SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate H Rotate {Rotate}
+# ====== TODO To be translated ======
+translate H SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate H FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate H ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate H ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate H ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate H ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate H UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate H Random {Random}
+# ====== TODO To be translated ======
+translate H BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate H LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate H Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate H ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate H ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate H FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate H FilterStatistic {Filter Statistics}
 }
 
 # Tips of the day in Hungarian

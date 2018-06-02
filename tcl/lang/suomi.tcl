@@ -331,6 +331,8 @@ menuText U OptionsTable "Loppupelitietokannat" 0 \
 menuText U OptionsRecent "Viimeaikaiset tiedostot" 0 {Kuinka monta tiedostoa n‰ytet‰‰n Tiedosto-valikon viimeaikaisten listassa}
 menuText U OptionsBooksDir "Avauskirjat" 0 {Hakemisto, jossa avauskirjat sijaitsevat}
 menuText U OptionsTacticsBasesDir "Taktiikkakannat" 0 {Hakemisto, jossa taktiikka (harjoitus) tietokannat sijaitsevat}
+# ====== TODO To be translated ======
+menuText U OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 menuText U OptionsSave "Tallenna asetukset" 0 "Tallenna kaikki asetukset tiedostoon $::optionsFile"
 menuText U OptionsAutoSave "Automaattinen asetusten tallennus" 0 \
   {Tallenna asetukset automaattisesti ohjelmasta poistuttaessa}
@@ -489,6 +491,22 @@ translate U WinningMoves {Voittavat siirrot}
 translate U DrawingMoves {Tasapeliin viev‰t siirrot}
 translate U LosingMoves {H‰vi‰v‰t siirrot}
 translate U UnknownMoves {Ep‰varma tulos}
+# ====== TODO To be translated ======
+translate U SideLongest {Side    Longest    %     %     %\n}
+# ====== TODO To be translated ======
+translate U toNoveMate {to move   mate    Win  Draw  Loss\n}
+# ====== TODO To be translated ======
+translate U NoSummary {\nNo summary for this tablebase.}
+# ====== TODO To be translated ======
+translate U MutualZugzwang {Mutual zugzwangs: }
+# ====== TODO To be translated ======
+translate U SelectetZugzwang {\nSelected zugzwang positions:}
+# ====== TODO To be translated ======
+translate U WdrawBloss {White draws, Black loses:}
+# ====== TODO To be translated ======
+translate U BdrawWloss {Black draws, White loses:}
+# ====== TODO To be translated ======
+translate U AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate U Tip {Vihje}
@@ -1712,6 +1730,64 @@ translate U Undock {Vapauta lukitus}
 
 # Switcher window
 translate U ChangeIcon {Vaihda kuvake...}
+# ====== TODO To be translated ======
+translate U ShowHideDB {Show/Hide databases}
+# ====== TODO To be translated ======
+translate U ChangeFilter {Change filter}
+# ====== TODO To be translated ======
+translate U ChangeLayout {Load/Save/Change sorting criteria and column layout}
+# ====== TODO To be translated ======
+translate U ShowHideStatistic {Show/Hide statistics}
+# ====== TODO To be translated ======
+translate U BoardFilter {Show only games that matches the current board position}
+# ====== TODO To be translated ======
+translate U CopyGameTo {Copy Game to}
+# ====== TODO To be translated ======
+translate U FindBar {Find Bar}
+# ====== TODO To be translated ======
+translate U FindCurrentGame {Find current game}
+# ====== TODO To be translated ======
+translate U DeleteGame {Delete game}
+# ====== TODO To be translated ======
+translate U UndeleteGame {Undelete game}
+# ====== TODO To be translated ======
+translate U ResetSort {Reset sort}
+# ====== TODO To be translated ======
+translate U ConvertNullMove {Convert null moves to comments}
+# ====== TODO To be translated ======
+translate U SetupBoard {Setup Board}
+# ====== TODO To be translated ======
+translate U Rotate {Rotate}
+# ====== TODO To be translated ======
+translate U SwitchColors {Switch colors}
+# ====== TODO To be translated ======
+translate U FlipBoard {Flip Board}
+# ====== TODO To be translated ======
+translate U ImportPGN {Import PGN game}
+# ====== TODO To be translated ======
+translate U ImportingFiles {Importing PGN files in}
+# ====== TODO To be translated ======
+translate U ImportingFrom {Importing from}
+# ====== TODO To be translated ======
+translate U ImportingIn {Import games in}
+# ====== TODO To be translated ======
+translate U UseLastTag {Use last\ngame's tags}
+# ====== TODO To be translated ======
+translate U Random {Random}
+# ====== TODO To be translated ======
+translate U BackToMainline {Go back to mainline}
+# ====== TODO To be translated ======
+translate U LeaveVariant {Leave variant}
+# ====== TODO To be translated ======
+translate U Autoplay {Autoplay}
+# ====== TODO To be translated ======
+translate U ShowHideCoords {Show/Hide Coord.}
+# ====== TODO To be translated ======
+translate U ShowHideMaterial {Show/Hide Material}
+# ====== TODO To be translated ======
+translate U FullScreen {Full Screen}
+# ====== TODO To be translated ======
+translate U FilterStatistic {Filter Statistics}
 
 }
 # end of suomi.tcl
