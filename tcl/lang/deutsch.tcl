@@ -205,7 +205,7 @@ menuText D ToolsPlayerReport "Spielerbericht..." 7 \
   {Erzeuge einen Spielerbericht}
 menuText D ToolsRating "ELO-Zahl-Verlauf" 4 \
   {Wertungsverlauf beider Spieler grafisch darstellen}
-menuText D ToolsScore "Partiebewertungsgraph" 0 {Partie-Bewertungsgraph zeigen}
+menuText D ToolsScore "Partiebewertung" 0 {Partie-Bewertung und Zeitverbrauch anzeigen}
 menuText D ToolsExpCurrent "Partie exportieren" 8 \
   {Aktuelle Partie in eine Textdatei schreiben}
 menuText D ToolsExpCurrentPGN "Partie in PGN-Datei exportieren..." 10 \
@@ -1713,7 +1713,7 @@ translate D DockTop {Nach oben}
 translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
-translate D Undock {Fenster befreien}
+translate D Undock {Fenster lösen}
 #Gamelist
 translate D ChangeIcon {Symbol ändern...}
 translate D ShowHideDB {Datenbank anzeigen/verbergen}
@@ -4562,28 +4562,37 @@ erzeugen oder für beide Spieler der aktuellen Partie, indem Sie
 <term>ELO-Zahl-Verlauf</term> im <menu>Werkzeuge</menu>-Menü auswählen.
 </p>
 
-<h3><name Score>Partie-Bewertungsgraph</name></h3>
+<h3><name Score>Partiebewertung</name></h3>
 <p>
-Das Fenster <term>Partie-Bewertungsgraph</term> zeigt die numerische
+Das Fenster <term>Partiebewertung</term> zeigt die numerische
 Bewertung (Stand) der aktuellen Partie, wie sie in den Kommentaren
-gespeichert ist, als Graphen.
+gespeichert ist, als Grafik an.
 Sie können mit der linken Maustaste irgendwo auf den Graphen klicken,
 um zu der korrespondierenden Partiestellung zu gelangen.
 </p>
-<p>
-Zwei Typen von Bewertungs-Kommentaren werden erkannt: die von Scids
-<a Analysis>Analyse</a>-Fenster erstellten (welche das Format
-<ul>
-<li><b>1.e4 {"+0.25 ...."}</b></li>
-</ul>
-haben und immer aus der Sicht von Weiß bewerten) und die vom
-Crafty-Kommando "Kommentieren" erstellten (die das Format
-<ul>
-<li><b>1.e4 ({9:+0.25} ....)</b></li>
-</ul>
-haben und ebenfalls aus der Perspektive von Weiß bewerten).
-</p>
-
+  <p>
+  Es werden zwei Arten von Bewertungskommentaren erkannt: 
+  <ul>
+  Alle Kommentare, die eine Vorzeichen behaftete Zahl enthalten, z.B. 
+  <li><b>+1.23, -0.23</b></li>. Gibt es mehrere Zahlen im Kommentar wird nur die erste verwendet.
+  </ul>
+  <ul>
+  Tags mit dem Namen [%eval .. ]
+  <li><b>[%eval -6.64/23]</b></li>
+  </ul>
+  </p>
+  <p>
+    Einige Partien werden nur aus der Perspektive der Weißen angezeigt. Sie können die Punktzahl für Weiß oder Schwarz invertieren.
+    Um dies zu korrigieren können Sie im Optionsmenü die zu intertierende Seite auswählen: <b>Weiß</b> und/oder <b>Schwarz</b>.
+  </p>
+  <p>
+    In einem <term>Zeitdiagramm</term> kann die Zeit für den Zeitverbrauch pro Zug oder die verbleibende Zeit auf der Uhr kann ebenfalls dargestellt werden. Für die Auswertung der Zeit müssen im Kommentar die Tags [%clk 0:01:19] und [%emt 0:00:19] enthalten sein.
+    Die Werte werden immer in Minuten angezeigt.
+    Über das Menü können Sie auswählen, welche Kombination der Diagramme angezeigt werden soll:
+    <li><b>Beide:</b> Die Partiebewertung und die Zeit werden angezeigt.
+    <li><b>Zeit:</b> Nur die Zeit wird angezeigt ("Beide" muss abgewählt werden!)</li>
+    <li><b>Summe:</b> In der Zeitanzeige wird die Summe der verbrauchten Zeit angezeigt, wenn die Zeit als [%emt 00:12] zur Verfügung steht.
+  </p>
 <h3><name Tree>Zugbaumgrafik</name></h3>
 <p>
 Das Fenster <term>Zugbaumgrafik</term> ist aus dem Zugbaumfenster
@@ -4592,7 +4601,7 @@ aktuellen Position. Weitere Informationen finden Sie auf der
 <a Tree Graph>Zugbaum</a>-Hilfeseite.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.6.21, Nov 2007)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.6.5, Juni 2018)</footer></p>
 }
 
 

@@ -1640,15 +1640,8 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   <h3>File sizes</h3>
   <p>
   The meaning of a file size displayed by the Finder depends on the file
-  type. For Scid databases and <a PGN>PGN</a> files, it is the number of games. For
-  EPD files, it is the number of positions. For repertoire files, it is
-  the number of (include or exclude) lines.
-  </p>
-  <p>
-  For all file types except Scid databases, the file size is an estimate
-  taken by examining only the first 64 kilobytes of the file, so the size
-  may not be correct for files larger than 64 kb. Estimate sizes are shown
-  with a tilde (~) to show they are not exact.
+  type. For Scid databases, it is the number of games. For
+  all other files, it is the size in kilobyte.
   </p>
 
   <p>
@@ -1671,7 +1664,7 @@ set helpText(Finder) {<h1>The File Finder window</h1>
    consist of several files.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.6.5, June 2018)</footer></p>
 }
 
 ####################
@@ -3602,23 +3595,27 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   corresponding position in the game.
   </p>
   <p>
-  Two types of evaluation comment are recognized: those produced by
-  the Scid <a Analysis>analysis</a> window (which have the format
+  Two types of evaluation comment are recognized: 
   <ul>
-  <li><b>1.e4 {"+0.25 ...."}</b></li>
+  All comments that contain a signed number, for example 
+  <li><b>+1.23, -0.23</b></li>
   </ul>
-  and are always scores from White's perspective) and those produced
-  by the Crafty annotate command (which have the format
   <ul>
-  <li><b>1.e4 ({9:+0.25} ....)</b></li>
+  Tags with the name [%eval .. ]
+  <li><b>[%emt 0:00:19][%eval -6.64/23]</b></li>
   </ul>
-  and are also scores from White's perspective).
   </p>
   <p>
-  In case the scores are not given from whites perspective, one can
-  choose the perspective to use from the options menu to correct for
-  this.
-  ###--- Checking both ??? ---###
+    Some scores are are only shown from whites perspective. You can invert the score for White or Black
+    from the options menu to correct this. Select White and/or Black.
+  </p>
+  <p>
+    In a <term>Time diagram</term> the time for the time consumption per move or the time remaining on the clock can also be displayed. For the evaluation of the time the tags[%clk 0:01:19] and [%emt 0:00:19] must be contained in the comment.
+    The values are always displayed in minutes.
+    Via the menu you can select which combination of the diagrams should be shown:
+    <li><b>Both:</b> The game evaluation and time are displayed.</li>
+    <li><b>Time:</b> Only the time graph is displayed ("Both" must be deselected!)</li>
+    <li><b>Sum:</b> In the time display, the sum of the time consumed is displayed if the time is available as [%emt 00:12].</li>
   </p>
   
   <h3><name Tree>Tree Graph window</name></h3>
@@ -3629,7 +3626,7 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   <a Tree Graph>Tree</a> help page.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.6.5, June 2018)</footer></p>
 }
 
 ####################

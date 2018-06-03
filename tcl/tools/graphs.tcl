@@ -500,6 +500,12 @@ proc MoveScoreList { invw invb } {
 	    if { [scan $eval "%f" score ] == 1 } {
 		if { $score > 10 } { set score 9.9 }
 		if { $score < -10 } { set score -9.9 }
+	    } else {
+		# Mate found in %eval #N oder #-N
+		if { [string first "#" $eval] != -1 } {
+		    set score 9.9
+		    if { [string first "-" $eval] > 0 } { set score -9.9 }
+		}
 	    }
 	}
 	set foundIndex [string first ":M" $comment]
@@ -570,6 +576,7 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
     $w.menu.file add separator
     $w.menu.file add command -label GraphFileClose -command "destroy $w"
     $w.menu add cascade -label GraphOptions -menu $w.menu.options
+    $w.menu add command -label Help -accelerator F1 -command {helpWindow Graphs Score}
     #Checkbuttons for Invert white/black Score in Score graph
     menu $w.menu.options
     foreach i {White Black Both ThinkTime TimeSum } {
@@ -672,6 +679,7 @@ proc ::tools::graphs::score::ConfigMenus {{lang ""}} {
     configMenuText $m.options $idx GraphOptions$tag $lang
   }
   #add option to show used Time and toggle between "Sum of time" (in min) and "Time per move" (in sec)
+  $m entryconfig 2 -label $::tr(Help)
   $m.options entryconfig 3 -label $::tr(Time)
   $m.options entryconfig 4 -label $::tr(Total)
 
