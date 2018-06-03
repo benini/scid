@@ -18,7 +18,9 @@
  */
 
 #ifdef WIN32
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 #undef ERROR
 #else
 #include <sys/resource.h>
