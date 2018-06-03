@@ -827,6 +827,9 @@ proc options.write {} {
     foreach slot {1 2 3 auto} {
       puts $optionF "set ::docking::layout_list($slot) [list $::docking::layout_list($slot)]"
     }
+    foreach wnd $::docking::layout_undocked {
+      puts $optionF "set ::docking::notebook_name($wnd) {}"
+    }
     
     # Save var that was added with options.save()
     if {[info exists ::autosave_opt]} {

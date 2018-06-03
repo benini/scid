@@ -38,15 +38,20 @@ proc createToplevel { {w} {closeto ""} } {
   }
 
   if { $::docking::USE_DOCKING } {
-    set old_dest $::docking::layout_dest_notebook
-    if {$old_dest == "" && $closeto != ""} {
-      set tab [string range $closeto 1 end]
-      set ::docking::layout_dest_notebook [::docking::find_tbn .fdock$tab]
-    }
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
-    docking::add_tab "$f" "$f"
-    set ::docking::layout_dest_notebook $old_dest
+    if {[info exists ::docking::notebook_name($f)]} {
+      wm manage $f
+      ::docking::setMenuVisibility $f true
+    } else {
+      set old_dest $::docking::layout_dest_notebook
+      if {$old_dest == "" && $closeto != ""} {
+        set tab [string range $closeto 1 end]
+        set ::docking::layout_dest_notebook [::docking::find_tbn .fdock$tab]
+      }
+      docking::add_tab "$f" "$f"
+      set ::docking::layout_dest_notebook $old_dest
+    }
   } else  {
     toplevel $w
   }
@@ -110,7 +115,9 @@ proc cleanupWindow { {w} {w_destroy} } {
 ################################################################################
 proc createToplevelFinalize {w} {
   if { $::docking::USE_DOCKING } {
-    bind $w <Destroy> +[ namespace code "::docking::cleanup $w %W"]
+    bind $w <Destroy> "+if {\[string equal $w %W\]} {
+      ::docking::cleanup $w %W
+    }"
   }
 }
 
@@ -119,14 +126,14 @@ proc createToplevelFinalize {w} {
 # if docked : sets the name of the tab
 # w : name of the toplevel window
 proc setTitle { w title } {
-    set f .fdock[ string range $w 1 end ]
-    if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
-      set nb ""
-    }
-
-    if { $nb == "" } {
+    if { ! $::docking::USE_DOCKING } {
       wm title $w $title
-    } else  {
+      return
+    }
+    set f .fdock[ string range $w 1 end ]
+    catch { wm title $f $title }
+    set nb [ ::docking::find_tbn $f ]
+    if {$nb ne ""} {
       # in docked mode trim down title to spare space
       if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
         set title [string range $title 6 end]

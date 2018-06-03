@@ -209,7 +209,6 @@ proc ::docking::cleanup { w { origin "" } } {
     if {$tab != ""} {
       $tab forget $dockw
       ::docking::_cleanup_tabs $tab
-      catch { unset ::docking::notebook_name($dockw) }
       ::docking::setTabStatus
     }
     after idle "if {[winfo exists $dockw]} { destroy $dockw }"
@@ -465,48 +464,36 @@ proc ::docking::undock {srctab} {
   if {! [winfo exists $f]} { return }
   
   set name [$srctab tab $f -text]
-  set o [$srctab tab $f]
-  
   $srctab forget $f
   _cleanup_tabs $srctab
   
   wm manage $f
-  
-  setMenuVisibility $f true
-  
   wm title $f "Scid: $name"
-  setWinLocation $f
-  setWinSize $f
-
-  # Uncomment this code to dock windows that have been previously undocked
-  # wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
-  
-  wm deiconify $f
-  set ::docking::notebook_name($f) [list $srctab $o]
+  setMenuVisibility $f true
   setTabStatus
+  ::setWinLocation $f
+  ::setWinSize $f
+  tk::PlaceWindow $f
+
+  # Uncomment this code to allow the advanced docking/re-docking behavior
+  # set ::docking::notebook_name($f) $srctab
 }
 
 ################################################################################
-proc ::docking::__dock {wnd} {
-  variable tbs
-  
-  setMenuVisibility $wnd false
-  
+proc ::docking::dock {wnd} {
   set name [wm title $wnd]
-  wm withdraw $wnd
-  wm forget $wnd
-  
-  set d  $::docking::notebook_name($wnd)
-  
-  set dsttab [lindex $d 0]
-  set o [lindex $d 1]
-  
-  if {![winfo exists $dsttab]} {
-    set dsttab [lindex [array names tbs] 0]
+  if {[string equal -length 6 $name "Scid: "]} {
+    set name [string range $name 6 end]
   }
-  eval $dsttab add $wnd $o
-  raise $wnd
-  $dsttab select $wnd
+  setMenuVisibility $wnd false
+  wm forget $wnd
+  set old_dest $::docking::layout_dest_notebook
+  if {[winfo exists $::docking::notebook_name($wnd)]} {
+    set ::docking::layout_dest_notebook $::docking::notebook_name($wnd)
+  }
+  unset ::docking::notebook_name($wnd)
+  docking::add_tab "$wnd" $name
+  set ::docking::layout_dest_notebook $old_dest
 }
 
 ################################################################################
@@ -607,7 +594,7 @@ proc ::docking::add_tab { {path} {title} } {
   } else  {
     set dsttab $::docking::layout_dest_notebook
   }
-  
+
   $dsttab add $path -text "$title"
   setMenuMark $dsttab $path
   $dsttab select $path
@@ -637,6 +624,9 @@ array set ::docking::layout_tabs {}
 # the notebook into which to create a new tab
 set ::docking::layout_dest_notebook ""
 
+# list of windows to be opened undocked
+set ::docking::layout_undocked {}
+
 ################################################################################
 # saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
@@ -654,6 +644,7 @@ proc ::docking::layout_save { slot } {
   }
 
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
+  set ::docking::layout_undocked [array names ::docking::notebook_name]
 }
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
@@ -669,6 +660,12 @@ proc ::docking::layout_save_pw {pw} {
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
       set wins [$p tabs]
+      if {[lsearch -exact $wins ".fdockmain"] != "-1"} {
+        # Append the list of undocked windows
+        foreach wnd [array names ::docking::notebook_name] {
+          if {[winfo exists $wnd]} { lappend wins $wnd }
+        }
+      }
       set glistWins [lsearch -all $wins ".fdockglistWin*"]
       set i [llength $glistWins]
       while {$i > 1} {
