@@ -328,7 +328,6 @@ proc ::docking::show_menu { path x y} {
 }
 ################################################################################
 # returns the menu name of a toplevel window (must be in the form $w.menu)
-# f is the frame embedding the toplevel (.fdock$w)
 proc  ::docking::getMenu  {w} {
   if {[string equal -length 6 $w ".fdock"]} {
     set w [string replace $w 1 5]
@@ -654,7 +653,8 @@ proc ::docking::layout_save_pw {pw} {
           if {[winfo exists $wnd]} { lappend wins $wnd }
         }
       }
-      set glistWins [lsearch -all $wins ".fdockglistWin*"]
+      # Keep only the first glistWin in each pane
+      set glistWins [lsearch -all -regexp $wins "\.(fdock)?glistWin\[0-9\]+"]
       set i [llength $glistWins]
       while {$i > 1} {
         incr i -1
@@ -758,35 +758,43 @@ proc ::docking::restore_tabs {} {
   foreach nb $::docking::restoring_nb {
     foreach d $::docking::restoring_tabs($nb) {
       set ::docking::layout_dest_notebook $nb
-      if { $d == ".fdockmain" } {
-        $nb add $d -text $::tr(Board)
-        raise $d
+      switch -regexp -matchvar regmatch -- $d {
+      "\.fdockmain"                   { $nb add $d -text $::tr(Board)
+                                        raise $d }
+      "\.(fdock)?pgnWin"              { ::pgn::OpenClose
+                                        ::pgn::Refresh 1 }
+      "\.(fdock)?baseWin"             { ::windows::switcher::Open }
+      "\.(fdock)?bookWin"             { ::book::open }
+      "\.(fdock)?ecograph"            { ::windows::eco::OpenClose }
+      "\.(fdock)?tbWin"               { ::tb::Open }
+      "\.(fdock)?commentWin"          { ::makeCommentWin }
+      "\.(fdock)?ccWindow"            { ::CorrespondenceChess::CCWindow }
+      "\.(fdock)?oprepWin"            { ::optable::makeReportWin }
+      "\.(fdock)?plist"               { ::plist::Open }
+      "\.(fdock)?tourney"             { ::tourney::Open }
+      "\.(fdock)?sgraph"              { ::tools::graphs::score::Refresh }
+      "\.(fdock)?glistWin([0-9]+)"    { ::windows::gamelist::Open }
+      "\.(fdock)?treeWin([0-9]+)"     { ::tree::make [lindex $regmatch end]}
+      "\.(fdock)?analysisWin([0-9]+)" { ::makeAnalysisWin [lindex $regmatch end] 0 0}
       }
-      if { $d == ".fdockpgnWin" } { ::pgn::OpenClose ; ::pgn::Refresh 1 }
-      if { $d == ".fdockanalysisWin1" } { ::makeAnalysisWin 1 0 0}
-      if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 0}
-      if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
-      if { $d == ".fdockbookWin" } {  ::book::open }
-      if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
-      if { $d == ".fdocktbWin" } { ::tb::Open }
-      if { $d == ".fdockcommentWin" } { ::makeCommentWin }
-      if { [string first ".fdockglistWin" $d] != -1 } { ::windows::gamelist::Open }
-      if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
-      if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
-      if { $d == ".fdockoprepWin" } { ::optable::makeReportWin }
-      if { $d == ".fdockplist" } {::plist::Open}
-      if { $d == ".fdocktourney" } {::tourney::Open}
-      if { $d == ".fdocksgraph" } {::tools::graphs::score::Refresh}
       update
       update idletasks
     }
   }
-
   set ::docking::layout_dest_notebook $old_dest
   foreach nb $::docking::restoring_nb {
     set ::docking::restoring_tabs($nb) {}
   }
   set ::docking::restoring_nb {}
+
+  # Bring the main board to the front
+  set mainboard ".fdockmain"
+  set maintab [::docking::find_tbn $mainboard]
+  if {$maintab != ""} {
+    raise $mainboard
+    $maintab select $mainboard
+  }
+  raise .
 }
 
 ################################################################################
