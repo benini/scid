@@ -1,5 +1,5 @@
 # Copyright (C) 2008-2009 Pascal Georges
-# Copyright (C) 2013-2016 Fulvio Benini
+# Copyright (C) 2013-2018 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 #
@@ -14,6 +14,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Closes a window, independently of its docked state.
+# If the window is undocked the window geometry is saved.
+#
+proc closeWindow {w} {
+	set nb [ ::docking::find_tbn $w ]
+	if {$nb ne ""} {
+		::docking::close $nb
+	} else {
+		set f ".fdock[string range $w 1 end]"
+		if {[winfo exists $f]} { return [::closeWindow $f] }
+
+		saveWinGeometry $w
+		destroy $w
+	}
+}
+
 
 # ::utils::win::Centre
 #
@@ -464,6 +482,7 @@ proc ::docking::undock {srctab} {
 proc ::docking::undock_win {w title} {
   wm manage $w
   wm title $w "Scid: $title"
+  wm protocol $w WM_DELETE_WINDOW "closeWindow $w"
   wm deiconify $w
   if {![::restoreWinGeometry $w]} {
     ::setWinSize $w

@@ -100,8 +100,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 		if { $focus_if_exists } {
 			focus $w_.cf.txtframe.text
 		} else {
-			focus .
-			destroy $w_
+			::closeWindow $w_
 		}
 		return
 	}

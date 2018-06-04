@@ -82,17 +82,8 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 	}
 
 	keyboardShortcuts $w
-	after idle "bind $w <Destroy> \"+cleanupWindow $w %W\""
 
 	return 1
-}
-
-proc cleanupWindow { {w} {w_destroy} } {
-	if {[string equal $w $w_destroy]} {
-		if {! [saveWinGeometry $w]} {
-			::docking::cleanup $w
-		}
-	}
 }
 
 proc saveWinGeometry {w} {
