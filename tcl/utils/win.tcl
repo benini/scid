@@ -16,9 +16,96 @@
 # along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# Creates a docked/undocked window.
+proc createWindow { {w} {default_w} {default_h} {title} } {
+	# Raise window if already exists
+	if { [winfo exists $w] } {
+		if {[winfo toplevel $w] == $w} {
+			wm deiconify $w
+		} else {
+			[::docking::find_tbn $w] select $w
+		}
+		return 0
+	}
+
+	# Set default width and height values, if they do not exists
+	if {![info exists ::winGeometry($w)]} {
+		set ::winGeometry($w) [string cat "$default_w" "x" "$default_h"]
+	}
+
+	# Create the window
+	frame $w
+	if {![info exists ::docking::notebook_name($w)] && $::docking::USE_DOCKING } {
+		::docking::add_tab $w "$title"
+	} else {
+		::docking::undock_win $w "$title"
+	}
+
+	keyboardShortcuts $w
+
+	return 1
+}
+
+# if undocked window : sets the title of the toplevel window.
+# if docked : sets the name of the tab.
+proc setTitle { w title } {
+	set nb [ ::docking::find_tbn $w ]
+	if {$nb ne ""} {
+		# in docked mode trim down title to spare space
+		if {[string equal -length 6 $title "Scid: "]} {
+			set title [string range $title 6 end]
+		}
+		$nb tab $w -text $title
+	} else {
+		set f ".fdock[string range $w 1 end]"
+		if {[winfo exists $f]} { return [::setTitle $f $title] }
+
+		wm title $w $title
+	}
+}
+
+# if undocked window : sets the menu of the toplevel window.
+# if docked : displays a menu icon in the tab.
+proc setMenu { w m} {
+	if {[string equal -length 6 $w ".fdock"]} {
+		set wnd [string replace $w 1 5]
+	} else {
+		set wnd $w
+	}
+
+	set nb [ ::docking::find_tbn $w ]
+	if {$nb ne ""} {
+		$nb tab $w -image tb_menu -compound left
+		catch { $wnd configure -menu "" }
+	} else {
+		set f ".fdock[string range $w 1 end]"
+		if {[winfo exists $f]} { return [::setMenu $f $m] }
+		$wnd configure -menu $m
+	}
+}
+
+# if undocked window : saves the geometry of the window.
+# return true if the geometry was saved.
+proc saveWinGeometry {w} {
+	if {[winfo toplevel $w] == $w} {
+		set ::winGeometry($w) [wm geometry $w]
+		return 1
+	}
+	return 0
+}
+
+# Restores the geometry of the window.
+# return true if a stored geometry was available.
+proc restoreWinGeometry {w} {
+	if {[info exists ::winGeometry($w)]} {
+		wm geometry $w $::winGeometry($w)
+		return 1
+	}
+	return 0
+}
+
 # Closes a window, independently of its docked state.
 # If the window is undocked the window geometry is saved.
-#
 proc closeWindow {w} {
 	set nb [ ::docking::find_tbn $w ]
 	if {$nb ne ""} {

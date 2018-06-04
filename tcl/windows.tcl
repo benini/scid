@@ -56,53 +56,6 @@ proc createToplevel { {w} {closeto ""} } {
   }
 }
 
-
-proc createWindow { {w} {default_w} {default_h} {title} } {
-	# Raise window if already exists
-	if { [winfo exists $w] } {
-		if {[winfo toplevel $w] == $w} {
-			wm deiconify $w
-		} else {
-			[::docking::find_tbn $w] select $w
-		}
-		return 0
-	}
-
-	# Set default width and height values, if they do not exists
-	if {![info exists ::winGeometry($w)]} {
-		set ::winGeometry($w) [string cat "$default_w" "x" "$default_h"]
-	}
-
-	# Create the window
-	frame $w
-	if {![info exists ::docking::notebook_name($w)] && $::docking::USE_DOCKING } {
-		::docking::add_tab $w "$title"
-	} else {
-		::docking::undock_win $w "$title"
-	}
-
-	keyboardShortcuts $w
-
-	return 1
-}
-
-proc saveWinGeometry {w} {
-	if {[winfo toplevel $w] == $w} {
-		set ::winGeometry($w) [wm geometry $w]
-		return 1
-	}
-	return 0
-}
-
-proc restoreWinGeometry {w} {
-	if {[info exists ::winGeometry($w)]} {
-		wm geometry $w $::winGeometry($w)
-		return 1
-	}
-	return 0
-}
-
-
 ################################################################################
 # In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up
 # Alternative way : directly call ::docking::cleanup $w when closing window
@@ -114,48 +67,6 @@ proc createToplevelFinalize {w} {
     }"
   }
 }
-
-################################################################################
-# if undocked window : sets the title of the toplevel window
-# if docked : sets the name of the tab
-# w : name of the toplevel window
-proc setTitle { w title } {
-  set nb [ ::docking::find_tbn $w ]
-  if {$nb ne ""} {
-    # in docked mode trim down title to spare space
-    if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
-      set title [string range $title 6 end]
-    }
-    $nb tab $w -text $title
-  } else {
-    set f ".fdock[string range $w 1 end]"
-    if {[winfo exists $f]} { return [::setTitle $f $title] }
-
-    wm title $w $title
-  }
-}
-
-################################################################################
-# Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
-################################################################################
-proc setMenu { w m} {
-  if {[string equal -length 6 $w ".fdock"]} {
-    set wnd [string replace $w 1 5]
-  } else {
-    set wnd $w
-  }
-
-  set nb [ ::docking::find_tbn $w ]
-  if {$nb ne ""} {
-    $nb tab $w -image tb_menu -compound left
-    catch { $wnd configure -menu "" }
-  } else {
-    set f ".fdock[string range $w 1 end]"
-    if {[winfo exists $f]} { return [::setMenu $f $m] }
-    $wnd configure -menu $m
-  }
-}
-
 
 # recordWinSize:
 #   Records window width and height, for saving in options file.
