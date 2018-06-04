@@ -41,8 +41,7 @@ proc createToplevel { {w} {closeto ""} } {
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
     if {[info exists ::docking::notebook_name($f)]} {
-      wm manage $f
-      ::docking::setMenuVisibility $f true
+      ::docking::undock_win $f ""
     } else {
       set old_dest $::docking::layout_dest_notebook
       if {$old_dest == "" && $closeto != ""} {
@@ -79,13 +78,10 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 
 	# Create the window
 	frame $w
-	if { $::docking::USE_DOCKING } {
-		docking::add_tab $w "$title"
+	if {![info exists ::docking::notebook_name($w)] && $::docking::USE_DOCKING } {
+		::docking::add_tab $w "$title"
 	} else {
-		wm manage $w
-		wm title $w "Scid: $title"
-		setWinLocation $w
-		setWinSize $w
+		::docking::undock_win $w "$title"
 	}
 
 	keyboardShortcuts $w
@@ -126,28 +122,39 @@ proc createToplevelFinalize {w} {
 # if docked : sets the name of the tab
 # w : name of the toplevel window
 proc setTitle { w title } {
-    if { ! $::docking::USE_DOCKING } {
-      wm title $w $title
-      return
+  set nb [ ::docking::find_tbn $w ]
+  if {$nb ne ""} {
+    # in docked mode trim down title to spare space
+    if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
+      set title [string range $title 6 end]
     }
-    set f .fdock[ string range $w 1 end ]
-    catch { wm title $f $title }
-    set nb [ ::docking::find_tbn $f ]
-    if {$nb ne ""} {
-      # in docked mode trim down title to spare space
-      if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
-        set title [string range $title 6 end]
-      }
-      $nb tab $f -text $title
-    }
+    $nb tab $w -text $title
+  } else {
+    set f ".fdock[string range $w 1 end]"
+    if {[winfo exists $f]} { return [::setTitle $f $title] }
+
+    wm title $w $title
+  }
 }
 
 ################################################################################
 # Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
 ################################################################################
 proc setMenu { w m} {
-  if { ! $::docking::USE_DOCKING } {
-    $w configure -menu $m
+  if {[string equal -length 6 $w ".fdock"]} {
+    set wnd [string replace $w 1 5]
+  } else {
+    set wnd $w
+  }
+
+  set nb [ ::docking::find_tbn $w ]
+  if {$nb ne ""} {
+    $nb tab $w -image tb_menu -compound left
+    catch { $wnd configure -menu "" }
+  } else {
+    set f ".fdock[string range $w 1 end]"
+    if {[winfo exists $f]} { return [::setMenu $f $m] }
+    $wnd configure -menu $m
   }
 }
 

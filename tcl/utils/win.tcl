@@ -318,7 +318,7 @@ proc ::docking::show_menu { path x y} {
   if {$isIcon} {
     set f [lindex [$path tabs] $tab]
     set m [getMenu $f]
-    if { [winfo exists $m] } {
+    if {$m ne ""} {
       tk_popup $m [winfo pointerx .] [winfo pointery .]
     } else {
       if {$f != ".fdockmain"} { ::docking::close $c_path }
@@ -329,28 +329,13 @@ proc ::docking::show_menu { path x y} {
 ################################################################################
 # returns the menu name of a toplevel window (must be in the form $w.menu)
 # f is the frame embedding the toplevel (.fdock$w)
-proc  ::docking::getMenu  {f} {
-  if { [scan $f ".fdock%s" tl] != 1 || $f == ".fdockmain"} {
-    return ""
+proc  ::docking::getMenu  {w} {
+  if {[string equal -length 6 $w ".fdock"]} {
+    set w [string replace $w 1 5]
   }
-  return ".$tl.menu"
-}
-################################################################################
-# Toggles menu visibility
-# f is the frame embedding the toplevel (.fdock$w)
-proc ::docking::setMenuVisibility  { f show } {
-  
-  if { [scan $f ".fdock%s" tl] != 1 || $f == ".fdockmain"} {
-    return
-  }
-  set tl ".$tl"
-  
-  if { $show == "true" || $show == "1" } {
-    $tl configure -menu "$tl.menu"
-  } else  {
-    $tl configure -menu {}
-  }
-  
+  set m "$w.menu"
+  if {![winfo exists $m]} { return "" }
+  return $m
 }
 
 ################################################################################
@@ -466,27 +451,34 @@ proc ::docking::undock {srctab} {
   set name [$srctab tab $f -text]
   $srctab forget $f
   _cleanup_tabs $srctab
-  
-  wm manage $f
-  wm title $f "Scid: $name"
-  setMenuVisibility $f true
   setTabStatus
-  ::setWinLocation $f
-  ::setWinSize $f
-  tk::PlaceWindow $f
+
+  ::docking::undock_win $f $name
+
+  set m [getMenu $f]
+  if {$m ne ""} { ::setMenu $f $m }
 
   # Uncomment this code to allow the advanced docking/re-docking behavior
   # set ::docking::notebook_name($f) $srctab
 }
 
-################################################################################
+proc ::docking::undock_win {w title} {
+  wm manage $w
+  wm title $w "Scid: $title"
+  wm deiconify $w
+  ::setWinSize $w
+  ::setWinLocation $w
+  focus $w
+}
+
 proc ::docking::dock {wnd} {
   set name [wm title $wnd]
   if {[string equal -length 6 $name "Scid: "]} {
     set name [string range $name 6 end]
   }
-  setMenuVisibility $wnd false
+
   wm forget $wnd
+
   set old_dest $::docking::layout_dest_notebook
   if {[winfo exists $::docking::notebook_name($wnd)]} {
     set ::docking::layout_dest_notebook $::docking::notebook_name($wnd)
@@ -494,6 +486,9 @@ proc ::docking::dock {wnd} {
   unset ::docking::notebook_name($wnd)
   docking::add_tab "$wnd" $name
   set ::docking::layout_dest_notebook $old_dest
+
+  set m [getMenu $wnd]
+  if {$m ne ""} { ::setMenu $wnd $m }
 }
 
 ################################################################################
@@ -595,20 +590,10 @@ proc ::docking::add_tab { {path} {title} } {
     set dsttab $::docking::layout_dest_notebook
   }
 
-  $dsttab add $path -text "$title"
-  setMenuMark $dsttab $path
+  $dsttab add $path -text "$title" -image tb_close -compound left
   $dsttab select $path
 }
-################################################################################
-# display a blue triangle showing the tab has a menu associated
-proc ::docking::setMenuMark { nb tab} {
-  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || $tab == ".fdocktourney" || \
-        $tab == ".fdockoprepWin" || $tab == ".fdockcrosstabWin" || $tab == ".fdocksgraph" || $tab == ".fdockplist" } {
-    $nb tab $tab -image tb_menu -compound left
-  } else {
-    $nb tab $tab -image tb_close -compound left
-  }
-}
+
 ################################################################################
 # Layout management
 ################################################################################
