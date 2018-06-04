@@ -466,12 +466,15 @@ proc ::docking::undock_win {w title} {
   wm manage $w
   wm title $w "Scid: $title"
   wm deiconify $w
-  ::setWinSize $w
-  ::setWinLocation $w
+  if {![::restoreWinGeometry $w]} {
+    ::setWinSize $w
+    ::setWinLocation $w
+  }
   focus $w
 }
 
 proc ::docking::dock {wnd} {
+  ::saveWinGeometry $wnd
   set name [wm title $wnd]
   if {[string equal -length 6 $name "Scid: "]} {
     set name [string range $name 6 end]

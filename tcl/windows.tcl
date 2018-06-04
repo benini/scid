@@ -69,11 +69,8 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 	}
 
 	# Set default width and height values, if they do not exists
-	if {![info exists ::winWidth($w)]} {
-		set ::winWidth($w) $default_w
-	}
-	if {![info exists ::winHeight($w)]} {
-		set ::winHeight($w) $default_h
+	if {![info exists ::winGeometry($w)]} {
+		set ::winGeometry($w) [string cat "$default_w" "x" "$default_h"]
 	}
 
 	# Create the window
@@ -92,16 +89,26 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 
 proc cleanupWindow { {w} {w_destroy} } {
 	if {[string equal $w $w_destroy]} {
-		if {[winfo toplevel $w] == $w} {
-			scan [wm geometry $w] "%dx%d+%d+%d" l h x y
-			set ::winWidth($w) $l
-			set ::winHeight($w) $h
-			set ::winX($w) $x
-			set ::winY($w) $y
-		} else {
+		if {! [saveWinGeometry $w]} {
 			::docking::cleanup $w
 		}
 	}
+}
+
+proc saveWinGeometry {w} {
+	if {[winfo toplevel $w] == $w} {
+		set ::winGeometry($w) [wm geometry $w]
+		return 1
+	}
+	return 0
+}
+
+proc restoreWinGeometry {w} {
+	if {[info exists ::winGeometry($w)]} {
+		wm geometry $w $::winGeometry($w)
+		return 1
+	}
+	return 0
 }
 
 

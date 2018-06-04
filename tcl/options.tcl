@@ -830,6 +830,13 @@ proc options.write {} {
     foreach wnd $::docking::layout_undocked {
       puts $optionF "set ::docking::notebook_name($wnd) {}"
     }
+    foreach wnd [array names ::winGeometry] {
+      if {[winfo exists $wnd]} {
+        ::saveWinGeometry $wnd
+      }
+      puts $optionF "set ::winGeometry($wnd) $::winGeometry($wnd)"
+    }
+
     
     # Save var that was added with options.save()
     if {[info exists ::autosave_opt]} {

@@ -208,9 +208,9 @@ proc setupBoard {} {
   pack .setup.status -in .setup.statusbar -side right -expand yes -fill x -anchor w
 
   bind $w.l <Configure> "::board::resizeAuto $w.l.bd \[grid bbox $w 0 1\]"
-  bind $w <Destroy> "if {\[string equal $w %W\]} { set ::winGeometry($w) \[wm geometry $w\]; options.save ::winGeometry($w) }"
+  bind $w <Destroy> "if {\[string equal $w %W\]} { ::saveWinGeometry $w }"
   bind $w <Escape> {destroy .setup}
-  if {[info exists ::winGeometry($w)]} { wm geometry $w $::winGeometry($w) }
+  ::restoreWinGeometry $w
 
   set setupFen [makeSetupFen]
 }
