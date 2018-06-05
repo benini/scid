@@ -15,12 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace eval ::win {}
 
 # Creates a docked/undocked window.
-proc createWindow { {w} {default_w} {default_h} {title} } {
+proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 	# Raise window if already exists
 	if { [winfo exists $w] } {
-		if {[winfo toplevel $w] == $w} {
+		if { [::win::isToplevel $w] } {
 			wm deiconify $w
 		} else {
 			[::docking::find_tbn $w] select $w
@@ -38,7 +39,8 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 	if {![info exists ::docking::notebook_name($w)] && $::docking::USE_DOCKING } {
 		::docking::add_tab $w "$title"
 	} else {
-		::docking::undock_win $w "$title"
+		::win::undockWindow $w
+		setTitle "$title"
 	}
 
 	keyboardShortcuts $w
@@ -46,76 +48,174 @@ proc createWindow { {w} {default_w} {default_h} {title} } {
 	return 1
 }
 
+# Close a window, independently of its docked state.
+# If the window is undocked the window geometry is saved.
+proc ::win::closeWindow {w} {
+	lassign [::win::isDocked $w] docked w
+	if {$docked} {
+		set nb [ ::docking::find_tbn $w ]
+		::docking::remove_tab $nb $w
+	} else {
+		::win::saveWinGeometry $w
+	}
+	destroy $w
+}
+
 # if undocked window : sets the title of the toplevel window.
 # if docked : sets the name of the tab.
+# TODO: ::win::setTitle
 proc setTitle { w title } {
-	set nb [ ::docking::find_tbn $w ]
-	if {$nb ne ""} {
+	lassign [::win::isDocked $w] docked w
+	if {$docked} {
 		# in docked mode trim down title to spare space
 		if {[string equal -length 6 $title "Scid: "]} {
 			set title [string range $title 6 end]
 		}
+		set nb [ ::docking::find_tbn $w ]
 		$nb tab $w -text $title
 	} else {
-		set f ".fdock[string range $w 1 end]"
-		if {[winfo exists $f]} { return [::setTitle $f $title] }
-
 		wm title $w $title
 	}
 }
 
+# Return a list containing the name of the menu (or "" if a menu do not exists)
+# and the name of the corresponding toplevel window
+# param w: the (child) widget
+proc ::win::getMenu {w} {
+	lassign [::win::isDocked $w] docked wnd
+	if {[string equal -length 6 $wnd ".fdock"]} {
+		set w [string replace $wnd 1 5]
+	}
+	if {[info exists ::win::menu_($wnd)]} {
+		return [list $::win::menu_($wnd) $w]
+	}
+	return [list "" $w]
+}
+
 # if undocked window : sets the menu of the toplevel window.
 # if docked : displays a menu icon in the tab.
-proc setMenu { w m} {
-	if {[string equal -length 6 $w ".fdock"]} {
-		set wnd [string replace $w 1 5]
+# param w: the (child) widget
+# TODO: ::win::setMenu
+proc setMenu {w m} {
+	lassign [::win::isDocked $w] docked wnd
+	if {$docked} {
+		set nb [ ::docking::find_tbn $wnd ]
+		$nb tab $wnd -image tb_menu -compound left
 	} else {
-		set wnd $w
+		$w configure -menu $m
 	}
+	set ::win::menu_($wnd) $m
+}
 
-	set nb [ ::docking::find_tbn $w ]
-	if {$nb ne ""} {
-		$nb tab $w -image tb_menu -compound left
-		catch { $wnd configure -menu "" }
-	} else {
-		set f ".fdock[string range $w 1 end]"
-		if {[winfo exists $f]} { return [::setMenu $f $m] }
-		$wnd configure -menu $m
+# Save the geometry of an undocked toplevel window.
+proc ::win::saveWinGeometry {w} {
+	if {[::win::isToplevel $w]} {
+		update idletasks
+		if {[wm state $w] == "zoomed"} {
+			set ::winGeometry($w) "zoomed"
+		} else {
+			set ::winGeometry($w) [wm geometry $w]
+		}
 	}
 }
 
-# if undocked window : saves the geometry of the window.
-# return true if the geometry was saved.
-proc saveWinGeometry {w} {
-	if {[winfo toplevel $w] == $w} {
-		set ::winGeometry($w) [wm geometry $w]
-		return 1
-	}
-	return 0
-}
-
-# Restores the geometry of the window.
+# Restore the geometry of an undocked toplevel window.
 # return true if a stored geometry was available.
-proc restoreWinGeometry {w} {
+proc ::win::restoreWinGeometry {w} {
 	if {[info exists ::winGeometry($w)]} {
-		wm geometry $w $::winGeometry($w)
+		if {$::winGeometry($w) == "zoomed"} {
+			if { $::windowsOS || $::macOS } {
+				wm state $w zoomed
+			} else {
+				wm attributes $w -zoomed
+			}
+		} else {
+			wm geometry $w $::winGeometry($w)
+		}
 		return 1
 	}
 	return 0
 }
 
-# Closes a window, independently of its docked state.
-# If the window is undocked the window geometry is saved.
-proc closeWindow {w} {
-	set nb [ ::docking::find_tbn $w ]
-	if {$nb ne ""} {
-		::docking::close $nb
-	} else {
-		set f ".fdock[string range $w 1 end]"
-		if {[winfo exists $f]} { return [::closeWindow $f] }
+# Return true if is a toplevel undocked window
+proc ::win::isToplevel {wnd} {
+	lassign [::win::isDocked $wnd] docked top
+	return [expr {!$docked && $top eq $wnd}]
+}
 
-		saveWinGeometry $w
-		destroy $w
+# Return true if is a (child of a) docked window
+proc ::win::isDocked {wnd} {
+	# Get the window at the top of the hierarchy (not the toplevel)
+	regexp {[.]\w*} "$wnd" wnd
+	set f ".fdock[string range $wnd 1 end]"
+	if {[winfo exists $f]} { set wnd $f }
+
+	set docked [catch {wm title $wnd}]
+	return [list $docked $wnd]
+}
+
+# Undock a toplevel window
+proc ::win::undockWindow {wnd {srctab ""}} {
+	set title ""
+	if {$srctab ne "" } {
+		set title [::docking::remove_tab $srctab $wnd]
+	}
+
+	wm manage $wnd
+	wm title $wnd "Scid: $title"
+	wm protocol $wnd WM_DELETE_WINDOW "::win::closeWindow $wnd"
+	::win::restoreWinGeometry $wnd
+
+	lassign [::win::getMenu $wnd] menu wmenu
+	if {$menu ne ""} { ::setMenu $wmenu $menu }
+
+	# Set the default opening mode of this window to undocked
+	# set ::docking::notebook_name($wnd) $srctab
+}
+
+# Dock a toplevel window
+proc ::win::dockWindow {wnd} {
+	set title [wm title $wnd]
+	lassign [::win::getMenu $wnd] menu wmenu
+
+	$wmenu configure -menu {}
+	::win::saveWinGeometry $wnd
+	wm forget $wnd
+
+	# Do we want to re-dock the window into the previous tab?
+	# set old_dest $::docking::layout_dest_notebook
+	# if {[winfo exists $::docking::notebook_name($wnd)]} {
+	#   set ::docking::layout_dest_notebook $::docking::notebook_name($wnd)
+	# }
+	# set ::docking::layout_dest_notebook $old_dest
+
+	# in docked mode trim down title to spare space
+	if {[string equal -length 6 $title "Scid: "]} {
+		set title [string range $title 6 end]
+	}
+	::docking::add_tab $wnd $title
+
+	if {$menu ne ""} { ::setMenu $wnd $menu }
+
+	# Set the default opening mode of this window to docked
+	# unset ::docking::notebook_name($wnd)
+}
+
+# Toggle the docked/undocked status of a window
+# param wnd: the (child) widget
+proc ::win::toggleDocked {wnd} {
+	lassign [::win::isDocked $wnd] docked wnd
+
+	# Check if the window can be docked/undocked
+	if {$wnd eq ".fdockmain" || [winfo class $wnd] ne "Frame"} {
+		return
+	}
+
+	if {$docked} {
+		set srctab [::docking::find_tbn $wnd]
+		::win::undockWindow $wnd $srctab
+	} else {
+		::win::dockWindow $wnd
 	}
 }
 
@@ -321,11 +421,6 @@ proc ::docking::cleanup { w { origin "" } } {
   }
 }
 ################################################################################
-proc ::docking::isUndocked { w } {
-  set w ".fdock[string range $w 1 end]"
-  return [expr { [winfo exists $w] && [winfo toplevel $w] == $w }]
-}
-################################################################################
 proc ::docking::move_tab {srctab dsttab} {
   variable tbs
   # move tab
@@ -422,7 +517,7 @@ proc ::docking::show_menu { path x y} {
   # of embedded toplevels is not displayed. The menu must be of the form $w.menu
   if {$isIcon} {
     set f [lindex [$path tabs] $tab]
-    set m [getMenu $f]
+    lassign [::win::getMenu $f] m
     if {$m ne ""} {
       tk_popup $m [winfo pointerx .] [winfo pointery .]
     } else {
@@ -430,16 +525,6 @@ proc ::docking::show_menu { path x y} {
     }
   }
   
-}
-################################################################################
-# returns the menu name of a toplevel window (must be in the form $w.menu)
-proc  ::docking::getMenu  {w} {
-  if {[string equal -length 6 $w ".fdock"]} {
-    set w [string replace $w 1 5]
-  }
-  set m "$w.menu"
-  if {![winfo exists $m]} { return "" }
-  return $m
 }
 
 ################################################################################
@@ -529,8 +614,8 @@ proc ::docking::ctx_menu {w x y} {
   # Main board can not be closed or undocked
   if { [$w select] != ".fdockmain" } {
     $mctxt add separator
-    $mctxt add command -label [ ::tr Undock ] -command "::docking::undock $w"
-    $mctxt add command -label [ ::tr Close ] -command " ::docking::close $w"
+    $mctxt add command -label [ ::tr Undock ] -command "::win::undockWindow \[$w select\] $w"
+    $mctxt add command -label [ ::tr Close ] -command "::win::closeWindow \[$w select\]"
   }
   tk_popup $mctxt [winfo pointerx .] [winfo pointery .]
 }
@@ -544,61 +629,6 @@ proc ::docking::close {w} {
   _cleanup_tabs $w
   setTabStatus
 }
-################################################################################
-proc ::docking::undock {srctab} {
-  variable tbs
-  if {[llength [$srctab tabs]]==1 && [llength [array names tbs]]==1} { return }
-  
-  set f [$srctab select]
-  if {! [winfo exists $f]} { return }
-  
-  set name [$srctab tab $f -text]
-  $srctab forget $f
-  _cleanup_tabs $srctab
-  setTabStatus
-
-  ::docking::undock_win $f $name
-
-  set m [getMenu $f]
-  if {$m ne ""} { ::setMenu $f $m }
-
-  # Uncomment this code to allow the advanced docking/re-docking behavior
-  # set ::docking::notebook_name($f) $srctab
-}
-
-proc ::docking::undock_win {w title} {
-  wm manage $w
-  wm title $w "Scid: $title"
-  wm protocol $w WM_DELETE_WINDOW "closeWindow $w"
-  wm deiconify $w
-  if {![::restoreWinGeometry $w]} {
-    ::setWinSize $w
-    ::setWinLocation $w
-  }
-  focus $w
-}
-
-proc ::docking::dock {wnd} {
-  ::saveWinGeometry $wnd
-  set name [wm title $wnd]
-  if {[string equal -length 6 $name "Scid: "]} {
-    set name [string range $name 6 end]
-  }
-
-  wm forget $wnd
-
-  set old_dest $::docking::layout_dest_notebook
-  if {[winfo exists $::docking::notebook_name($wnd)]} {
-    set ::docking::layout_dest_notebook $::docking::notebook_name($wnd)
-  }
-  unset ::docking::notebook_name($wnd)
-  docking::add_tab "$wnd" $name
-  set ::docking::layout_dest_notebook $old_dest
-
-  set m [getMenu $wnd]
-  if {$m ne ""} { ::setMenu $wnd $m }
-}
-
 ################################################################################
 # The coefficients for the selections of the container Notebook
 # have been calculated doing a linear regression of this matrix:
@@ -701,6 +731,16 @@ proc ::docking::add_tab { {path} {title} } {
   $dsttab add $path -text "$title" -image tb_close -compound left
   $dsttab select $path
 }
+
+# Remove a window from a notebook
+proc ::docking::remove_tab {srctab wnd} {
+	set title [$srctab tab $wnd -text]
+	$srctab forget $wnd
+	::docking::_cleanup_tabs $srctab
+	::docking::setTabStatus
+	return $title
+}
+
 
 ################################################################################
 # Layout management

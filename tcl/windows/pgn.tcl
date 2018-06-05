@@ -63,8 +63,8 @@ namespace eval pgn {
     global pgnWin pgnHeight pgnWidth pgnColor
 
     set w .pgnWin
-    if {! [::createWindow $w 500 500 "[tr {PgnWindowTitle}]"]} {
-      ::closeWindow $w
+    if {! [::win::createWindow $w 500 500 "[tr {PgnWindowTitle}]"]} {
+      ::win::closeWindow $w
       return
     }
     
@@ -107,7 +107,7 @@ namespace eval pgn {
     }
     $w.menu.file add separator
     $w.menu.file add command -label PgnFileClose \
-        -command "::closeWindow $w"
+        -command "::win::closeWindow $w"
     
     $w.menu.opt add checkbutton -label PgnOptColor \
         -variable ::pgn::showColor -command {updateBoard -pgn}

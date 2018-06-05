@@ -828,7 +828,7 @@ proc options.write {} {
     }
     foreach wnd [array names ::winGeometry] {
       if {[winfo exists $wnd]} {
-        ::saveWinGeometry $wnd
+        ::win::saveWinGeometry $wnd
       }
       puts $optionF "set ::winGeometry($wnd) $::winGeometry($wnd)"
     }

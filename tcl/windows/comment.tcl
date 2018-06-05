@@ -96,11 +96,11 @@ namespace eval ::windows::commenteditor {
 proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	variable w_
 
-	if {! [::createWindow $w_ 530 220 "[tr {Comment editor}]"]} {
+	if {! [::win::createWindow $w_ 530 220 "[tr {Comment editor}]"]} {
 		if { $focus_if_exists } {
 			focus $w_.cf.txtframe.text
 		} else {
-			::closeWindow $w_
+			::win::closeWindow $w_
 		}
 		return
 	}

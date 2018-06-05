@@ -114,6 +114,8 @@ proc keyboardShortcuts {w} {
 	# Open the help window
 	bind $w <F1> { helpWindowPertinent %W }
 
+	# Toggle the active window between docked/undocked
+	bind $w <F9> { ::win::toggleDocked %W }
 
 	#TODO: to be checked
 	bind $w <F6>	::book::open
