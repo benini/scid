@@ -50,6 +50,24 @@ proc help_PopStack {} {
   .helpWin.text yview moveto $yview
 }
 
+# Given a window name (usually the focused widget)
+# opens the help window trying to select a pertinent page
+proc helpWindowPertinent {win} {
+  set availTitles [array names ::helpTitle]
+  regexp {[.]\w*} $win topWin
+
+  # Look for a toplevel page (i.e. ".treeWin1" -> "tree")
+  if { [regexp {[.](\w*?)Win\d*$} $topWin -> topTitle] } {
+    set title [lsearch -inline -nocase $availTitles $topTitle]
+    if {$title != ""} {
+      return [helpWindow $title]
+    }
+  }
+
+  # Default
+  return [helpWindow "Contents"]
+}
+
 proc helpWindow {name {heading ""}} {
   help_PushStack $name
   updateHelpWindow $name $heading

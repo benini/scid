@@ -235,8 +235,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	# Load current NAGs and comment
 	Refresh
 
-	# Add bindings at the end, especially <Configure>
-	bind $w_ <F1> {helpWindow Comment}
+	# Add bindings at the end
 	bind $w_ <Destroy> "if {\[string equal $w_ %W\]} { set ::windows::commenteditor::isOpen 0; ::windows::commenteditor::notify_ 1 }"
 	bind $w_.nf.text <KeyPress>   "::windows::commenteditor::notifyCancel_"
 	bind $w_.nf.text <KeyRelease> "::windows::commenteditor::storeNAGs_"

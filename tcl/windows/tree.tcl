@@ -76,7 +76,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set tree(allgames$baseNumber) 1
   
   bind $w <Destroy> "::tree::closeTree $baseNumber"
-  bind $w <F1> { helpWindow Tree } 
   bind $w <Escape> "::tree::hideCtxtMenu $baseNumber ; .treeWin$baseNumber.buttons.stop invoke "
   
   # Bind left button to close ctxt menu:

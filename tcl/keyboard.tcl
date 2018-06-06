@@ -111,6 +111,10 @@ proc keyboardShortcuts {w} {
 		bind $w <Control-Key-$i> "::file::SwitchToBase $i"
 	}
 
+	# Open the help window
+	bind $w <F1> { helpWindowPertinent %W }
+
+
 	#TODO: to be checked
 	bind $w <F6>	::book::open
 	bind $w <F12> ::CorrespondenceChess::CCWindow
@@ -157,7 +161,6 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-J> tools::graphs::absfilter::Open
 	bind $w <Control-u> ::game::GotoMoveNumber
 	bind $w <Control-Y> findNovelty
-	bind $w <F1> {helpWindow Contents}
 	bind $w <Control-N> nameEditor
 
 	bind $w <Control-slash> ::file::finder::Open

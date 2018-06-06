@@ -193,7 +193,6 @@ proc ::tb::Open {} {
   pack $w.b.random $w.b.showboard -side left -padx 2 -pady 2
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set ::tb::isOpen 0; set tbTraining 0 }
-  bind $w <F1> { helpWindow TB }
   bind $w <Configure> "recordWinSize $w"
   wm minsize $w 15 20
   ::createToplevelFinalize $w

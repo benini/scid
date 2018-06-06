@@ -101,7 +101,6 @@ namespace eval book {
     
     setWinLocation $w
     bind $w <Configure> "recordWinSize $w"
-    bind $w <F1> { helpWindow Book }
     
     ttk::frame $w.f
     
