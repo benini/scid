@@ -19,6 +19,7 @@ proc ::windows::stats::Open {} {
     return
   }
   toplevel $w
+  keyboardShortcuts $w
   wm title $w "Scid: $::tr(FilterStatistic)"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
@@ -99,7 +100,6 @@ proc ::windows::stats::Open {} {
   bind $w <Destroy> {
     set ::windows::stats::isOpen 0
   }
-  keyboardShortcuts $w
 # enable Resize vertical
   wm resizable $w 0 1
   ::windows::stats::ConfigMenus

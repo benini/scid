@@ -666,7 +666,6 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   bind $w <Escape> "focus .; destroy $w"
   bind $w <Destroy> "+ if {\[string equal $w %W\]} {set ::baseWin 0}"
   bind $w <F1> { helpWindow Switcher }
-  keyboardShortcuts $w
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
   bind $w <Configure> "+recordWinSize $w"

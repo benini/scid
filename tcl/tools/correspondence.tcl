@@ -1640,9 +1640,6 @@ namespace eval CorrespondenceChess {
 		setWinLocation $w
 		setWinSize $w
 
-		# enable the standard shortcuts
-		keyboardShortcuts $w
-
 		::CorrespondenceChess::EnableEngineAnalysis 0
 
 		# create the menu and add default CC menu items here as well

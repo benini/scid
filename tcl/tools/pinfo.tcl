@@ -393,7 +393,6 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     bind $w <Configure> "recordWinSize $w"
     ::createToplevelFinalize $w
-    keyboardShortcuts $w
   }
   set player [trimEngineName $player]
   set imgdata [getphoto $player]

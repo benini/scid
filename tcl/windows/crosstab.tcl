@@ -296,7 +296,6 @@ proc ::crosstab::Open {} {
   bind $w <Key-End> {
     .crosstabWin.f.text xview moveto 0.99
   }
-  keyboardShortcuts $w
   
   ::createToplevelFinalize $w
   ::crosstab::Refresh

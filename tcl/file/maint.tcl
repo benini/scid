@@ -87,6 +87,7 @@ proc ::maint::OpenClose {} {
   set font font_Small
   set bold font_SmallBold
   toplevel $w
+  keyboardShortcuts $w
   wm title $w "Scid: [tr FileMaint]"
   wm resizable $w 0 0
   bind $w <F1> {helpWindow Maintenance}
@@ -241,7 +242,6 @@ proc ::maint::OpenClose {} {
   packbuttons right $w.buttons.close $w.buttons.help
   
   bind $w <Alt-h> "$w.buttons.help invoke"
-  keyboardShortcuts $w
   ::maint::Refresh
 }
 

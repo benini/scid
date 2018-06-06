@@ -55,7 +55,7 @@ proc keyboardShortcuts {w} {
 	}
 
 	# Close Scid
-	bind $w <Alt-F4> { ::file::Exit }
+	# bind $w <Control-q> { ::file::Exit }
 
 	# Open a database
 	bind $w <Control-o> { ::file::Open }

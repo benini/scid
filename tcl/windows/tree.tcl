@@ -81,8 +81,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   # Bind left button to close ctxt menu:
   bind $w <ButtonPress-1> "::tree::hideCtxtMenu $baseNumber"
   
-  keyboardShortcuts $w
-  
   menu $w.menu
   ::setMenu $w $w.menu
   $w.menu add cascade -label TreeFile -menu $w.menu.file

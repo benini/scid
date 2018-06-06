@@ -1890,7 +1890,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
         ::setTitle $w "Analysis $n: $analysisName"
     }
     bind $w <F1> { helpWindow Analysis }
-    keyboardShortcuts $w
     
     ::board::new $w.bd 25
     $w.bd configure -relief solid -borderwidth 1

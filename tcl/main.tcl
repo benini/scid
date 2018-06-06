@@ -1096,7 +1096,6 @@ proc toggleGameInfo {} {
 
 proc CreateMainBoard { {w} } {
   setTitle $w [ ::tr "Board" ]
-  keyboardShortcuts $w
 
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board 1

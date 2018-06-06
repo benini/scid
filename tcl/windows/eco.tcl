@@ -81,7 +81,6 @@ proc ::windows::eco::Refresh {{code "x"}} {
     bind $w <Down>  {.ecograph.pane.text.text yview scroll 1 units}
     bind $w <Prior> {.ecograph.pane.text.text yview scroll -1 pages}
     bind $w <Next>  {.ecograph.pane.text.text yview scroll 1 pages}
-    keyboardShortcuts $w
 
     bind $graph.c <1> { ::windows::eco::Select %x }
     bind $graph.c <$::MB3> { ::windows::eco::KeyPress "<" }
@@ -99,8 +98,9 @@ proc ::windows::eco::Refresh {{code "x"}} {
     ::setTitle $w "Scid: [tr WindowsECO]"
     ::utils::graph::create eco -width 1 -height 1 -xtop 50 -ytop 20 \
       -xmin 0.5 -xtick 1 -ytick 5 -font font_Small -canvas $graph.c
-    update
+
     ::createToplevelFinalize $w
+    update
   }
 
   ::windows::eco::update

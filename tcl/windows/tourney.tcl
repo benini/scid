@@ -46,7 +46,6 @@ proc ::tourney::Open {} {
   bind $w <Escape> "$w.b.close invoke"
   bind $w <Return> ::tourney::refresh
   bind $w <Destroy> { set tourneyWin 0 }
-  keyboardShortcuts $w
   bind $w <Up> "$w.t.text yview scroll -1 units"
   bind $w <Down> "$w.t.text yview scroll 1 units"
   bind $w <Prior> "$w.t.text yview scroll -1 pages"

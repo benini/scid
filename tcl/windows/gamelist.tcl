@@ -446,7 +446,6 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 	set ::gamelistFilter($w) $filter
 	set ::gamelistPosMask($w) 0
 	set ::gamelistMenu($w) ""
-	keyboardShortcuts $w
 	::windows::gamelist::createMenu_ $w
 	if {[info exists ::recentSort]} {
 		set idx [lsearch -exact $::recentSort "[sc_base filename $base]"]

@@ -54,6 +54,8 @@ proc createToplevel { {w} {closeto ""} } {
   } else  {
     toplevel $w
   }
+
+  keyboardShortcuts $w
 }
 
 ################################################################################
