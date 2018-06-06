@@ -40,7 +40,7 @@ proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 		::docking::add_tab $w "$title"
 	} else {
 		::win::undockWindow $w
-		setTitle "$title"
+		setTitle $w "$title"
 	}
 
 	keyboardShortcuts $w
@@ -53,8 +53,7 @@ proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 proc ::win::closeWindow {w} {
 	lassign [::win::isDocked $w] docked w
 	if {$docked} {
-		set nb [ ::docking::find_tbn $w ]
-		::docking::remove_tab $nb $w
+		::docking::remove_tab $w [::docking::find_tbn $w]
 	} else {
 		::win::saveWinGeometry $w
 	}
@@ -100,7 +99,7 @@ proc setMenu {w m} {
 	lassign [::win::isDocked $w] docked wnd
 	if {$docked} {
 		set nb [ ::docking::find_tbn $wnd ]
-		$nb tab $wnd -image tb_menu -compound left
+		$nb tab $wnd -image tb_tabmenu -compound left
 	} else {
 		$w configure -menu $m
 	}
@@ -158,7 +157,8 @@ proc ::win::isDocked {wnd} {
 proc ::win::undockWindow {wnd {srctab ""}} {
 	set title ""
 	if {$srctab ne "" } {
-		set title [::docking::remove_tab $srctab $wnd]
+		set old_options [::docking::remove_tab $wnd $srctab]
+		set title [dict get $old_options -text]
 	}
 
 	wm manage $wnd
@@ -249,14 +249,8 @@ proc ::utils::win::Centre {w} {
 namespace eval docking {
   # associates notebook to paned window
   variable tbs
-  
-  # keep tracks of active tab for each notebook
-  array set activeTab {}
-  # associates notebook with a boolean value indicating the tab has changed
-  array set changedTab {}
-  
   variable tbcnt 0
-  array set notebook_name {}
+
 }
 
 ################################################################################
@@ -319,8 +313,7 @@ proc ::docking::embed_tbn {tbn anchor} {
     $pw insert $i $npw -weight 1
   }
   # add new notebook
-  set ntb [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
-  incr tbcnt
+  set ntb [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
   set tbs($tbn) $npw
   set tbs($ntb) $npw
   # make sure correct order
@@ -347,8 +340,7 @@ proc ::docking::add_tbn {tbn anchor} {
   if {$orient=="horizontal" && ($anchor=="w" || $anchor=="e")} {
     set i [lsearch -exact [$pw panes] $tbn]
     if {$anchor=="e"} { incr i }
-    set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
-    incr tbcnt
+    set tbn [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
     set tbs($tbn) $pw
     if {$i>=[llength [$pw panes]]} {
       $pw add $tbn -weight 1
@@ -358,8 +350,7 @@ proc ::docking::add_tbn {tbn anchor} {
   } elseif {$orient=="vertical" && ($anchor=="n" || $anchor=="s")} {
     set i [lsearch -exact [$pw panes] $tbn]
     if {$anchor=="s"} { incr i}
-    set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
-    incr tbcnt
+    set tbn [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
     set tbs($tbn) $pw
     if {$i>=[llength [$pw panes]]} {
       $pw add $tbn -weight 1
@@ -414,210 +405,10 @@ proc ::docking::cleanup { w { origin "" } } {
     if {$tab != ""} {
       $tab forget $dockw
       ::docking::_cleanup_tabs $tab
-      ::docking::setTabStatus
     }
     after idle "if {[winfo exists $dockw]} { destroy $dockw }"
     catch { focus .main }
   }
-}
-################################################################################
-proc ::docking::move_tab {srctab dsttab} {
-  variable tbs
-  # move tab
-  set f [$srctab select]
-  set o [$srctab tab $f]
-  $srctab forget $f
-  eval $dsttab add $f $o
-  raise $f
-  $dsttab select $f
-  _cleanup_tabs $srctab
-}
-
-variable ::docking::c_path {}
-
-################################################################################
-proc ::docking::start_motion {path} {
-  variable c_path
-  if {[winfo exists .ctxtMenu]} {
-    destroy .ctxtMenu
-  }
-  if {$path!=$c_path} {
-    set c_path [find_tbn $path]
-  }
-}
-################################################################################
-proc ::docking::motion {path} {
-  variable c_path
-  if {$c_path==""} { return }
-  
-  $c_path configure -cursor exchange
-}
-################################################################################
-proc ::docking::end_motion {w x y} {
-  variable c_path
-  
-  bind TNotebook <ButtonRelease-1> [namespace code {::docking::show_menu %W %X %Y}]
-  
-  if {$c_path==""} { return }
-  set path [winfo containing $x $y]
-  if {$path == ""} {
-    return
-  }
-  $path configure -cursor {}
-  
-  set t [find_tbn $path]
-  if {$t!=""} {
-    if {$t==$c_path} {
-      # we stayed on the same notebook, so display the menu
-      show_menu $w $x $y
-      
-      if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
-        set c_path {}
-        return
-      }
-    }
-    if {$t!=$c_path} {
-      move_tab $c_path $t
-    }
-  }
-  set c_path {}
-  
-  setTabStatus
-  
-}
-################################################################################
-proc ::docking::show_menu { path x y} {
-  variable c_path
-  
-  if {[winfo exists .ctxtMenu]} {
-    destroy .ctxtMenu
-  }
-  
-  if {$path!=$c_path} {
-    set c_path [find_tbn $path]
-  }
-  
-  # HACK ! Because notebooks may also be used inside internal windows
-  if {! [info exists ::docking::changedTab($c_path)] } {
-    return
-  }
-  
-  set localX [expr $x - [winfo rootx $path]]
-  set localY [expr $y - [winfo rooty $path]]
-  set tab [$path identify tab $localX $localY]
-  if {$tab == ""} { return }
-  set iconW 20
-  if {$tab == 0} {
-    set isIcon [expr {$localX < $iconW ? 1 : 0}]
-  } else {
-    set isIcon [expr [$path identify tab [expr $localX - $iconW] $localY] != $tab]
-  }
-
-  # display window's menu (workaround for windows where the menu
-  # of embedded toplevels is not displayed. The menu must be of the form $w.menu
-  if {$isIcon} {
-    set f [lindex [$path tabs] $tab]
-    lassign [::win::getMenu $f] m
-    if {$m ne ""} {
-      tk_popup $m [winfo pointerx .] [winfo pointery .]
-    } else {
-      if {$f != ".fdockmain"} { ::docking::close $c_path }
-    }
-  }
-  
-}
-
-################################################################################
-proc  ::docking::tabChanged  {path} {
-  update
-  #TODO: the update is dangerous!
-  #For example the windows may be destroyed
-  if {! [winfo exists $path] } { return }
-  
-  # HACK ! Because notebooks may also be used inside internal windows
-  if { ! [ info exists ::docking::activeTab($path)] } {
-    return
-  }
-
-  if { [$path select] != $::docking::activeTab($path)} {
-    set ::docking::activeTab($path) [$path select]
-    set ::docking::changedTab($path) 1
-  }
-}
-
-################################################################################
-
-bind TNotebook <ButtonRelease-1> {::docking::show_menu %W %X %Y}
-
-bind TNotebook <ButtonPress-1> +[ list ::docking::start_motion %W ]
-
-bind TNotebook <B1-Motion> {
-  ::docking::motion %W
-  bind TNotebook <ButtonRelease-1> {::docking::end_motion %W %X %Y}
-}
-
-bind TNotebook <Escape> {
-  if {[winfo exists .ctxtMenu]} {
-    destroy .ctxtMenu
-  }
-}
-
-bind TNotebook <ButtonPress-$::MB3> {::docking::ctx_menu %W %x %y}
-bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
-
-################################################################################
-#
-################################################################################
-proc ::docking::ctx_cmd {path anchor} {
-  variable c_path
-  
-  if {$path!=$c_path} {
-    set c_path [find_tbn $path]
-  }
-  
-  if {$c_path==""} {
-    puts "WARNING c_path null in ctx_cmd"
-    return
-  }
-  
-  set tbn [add_tbn $path $anchor]
-  move_tab $c_path $tbn
-  
-  set c_path {}
-  
-  setTabStatus
-}
-################################################################################
-proc ::docking::ctx_menu {w x y} {
-  
-  # HACK ! Because notebooks may also be used inside internal windows
-  if {! [info exists ::docking::changedTab($w)] } {
-    return
-  }
-
-  if {[catch { $w select @$x,$y }]} { return }
-  update idletasks
-  set mctxt .ctxtMenu
-  if { [winfo exists $mctxt] } {
-    destroy $mctxt
-  }
-  
-  menu $mctxt -tearoff 0
-  set state "normal"
-  if { [llength [$w tabs]] <= 1} {
-    set state "disabled"
-  }
-  $mctxt add command -label [ ::tr DockTop ] -state $state -command "::docking::ctx_cmd $w n"
-  $mctxt add command -label [ ::tr DockBottom ] -state $state -command "::docking::ctx_cmd $w s"
-  $mctxt add command -label [ ::tr DockLeft ] -state $state -command "::docking::ctx_cmd $w w"
-  $mctxt add command -label [ ::tr DockRight ] -state $state -command "::docking::ctx_cmd $w e"
-  # Main board can not be closed or undocked
-  if { [$w select] != ".fdockmain" } {
-    $mctxt add separator
-    $mctxt add command -label [ ::tr Undock ] -command "::win::undockWindow \[$w select\] $w"
-    $mctxt add command -label [ ::tr Close ] -command "::win::closeWindow \[$w select\]"
-  }
-  tk_popup $mctxt [winfo pointerx .] [winfo pointery .]
 }
 ################################################################################
 proc ::docking::close {w} {
@@ -627,9 +418,13 @@ proc ::docking::close {w} {
     destroy $tabid
   }
   _cleanup_tabs $w
-  setTabStatus
 }
+
 ################################################################################
+################################################################################
+################################################################################
+
+
 # The coefficients for the selections of the container Notebook
 # have been calculated doing a linear regression of this matrix:
 # board   tabs    tabs^2   similar  sim^2   sim^3   area     fitness
@@ -728,25 +523,155 @@ proc ::docking::add_tab { {path} {title} } {
     set dsttab $::docking::layout_dest_notebook
   }
 
-  $dsttab add $path -text "$title" -image tb_close -compound left
-  $dsttab select $path
+	::docking::insert_tab $path $dsttab end \
+		[list -text $title -image tb_close -compound left]
+}
+
+# Insert a window into a notebook
+proc ::docking::insert_tab {wnd dest_noteb {dest_pos "end"} {options ""}} {
+	$dest_noteb insert $dest_pos $wnd {*}$options
+	$dest_noteb select $wnd
+	raise $wnd
 }
 
 # Remove a window from a notebook
-proc ::docking::remove_tab {srctab wnd} {
-	set title [$srctab tab $wnd -text]
-	$srctab forget $wnd
-	::docking::_cleanup_tabs $srctab
-	::docking::setTabStatus
-	return $title
+proc ::docking::remove_tab {wnd src_noteb} {
+	set options [$src_noteb tab $wnd]
+	$src_noteb forget $wnd
+	::docking::_cleanup_tabs $src_noteb
+	return $options
+}
+
+# Move a window between two (different) notebooks
+proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
+	set options [::docking::remove_tab $wnd $src_noteb]
+	::docking::insert_tab $wnd $dest_noteb $dest_pos $options
+}
+
+# Create a new notebook
+proc ::docking::create_notebook_ {path} {
+	set noteb [ttk::notebook $path]
+	incr tbcnt
+	ttk::notebook::enableTraversal $noteb
+	bind $noteb <B1-Motion> {
+		if {[info exists ::docking::motion_]} { continue }
+		set ::docking::motion_ [::docking::identify_tab_ %W %x %y]
+		if {[lindex $::docking::motion_ 0] eq ""} {
+			# Do nothing if motion started outside a tab
+			continue
+		}
+		if {[lindex $::docking::motion_ 1]} {
+			# Not a motion event if it starts and ends over the icon
+			unset ::docking::motion_
+		} else {
+			%W configure -cursor hand2
+		}
+	}
+	bind $noteb <ButtonRelease-1> {
+		if {[info exists ::docking::motion_]} {
+			%W configure -cursor {}
+			::docking::manage_motion_ %W %X %Y
+		} else {
+			::docking::manage_click_ %W %X %Y %x %y
+		}
+	}
+	bind $noteb <ButtonRelease-$::MB3> {
+		::docking::manage_rightclick_ %W %X %Y %x %y
+	}
+	return $noteb
+}
+
+# Given the x y coords relative to a notebook, returns a list containing the
+# index of the tab (or "") and true if the point given is over the tab's image.
+proc ::docking::identify_tab_ {noteb localX localY} {
+	set isIcon 0
+	set tab [$noteb identify tab $localX $localY]
+	if {$tab ne ""} {
+		set icon [$noteb tab $tab -image]
+		if {$icon ne ""} {
+			set iconW [expr { 4 + [image width $icon] }]
+			if {$tab == 0} {
+				set isIcon [expr {$localX < $iconW ? 1 : 0}]
+			} else {
+				set isIcon [expr [$noteb identify tab [expr $localX - $iconW] $localY] != $tab]
+			}
+		}
+	}
+	return [list $tab $isIcon]
+}
+
+# Relocate tabs in response to drag events.
+proc ::docking::manage_motion_ {src_noteb x y} {
+	lassign $::docking::motion_ src_tab
+	unset ::docking::motion_
+	if {$src_tab eq ""} { return }
+
+	set dest_noteb [winfo containing $x $y]
+	if {![info exists ::docking::tbs($dest_noteb)]} { return }
+
+	set localX [expr $x-[winfo rootx $dest_noteb]]
+	set localY [expr $y-[winfo rooty $dest_noteb]]
+	set dest_pos [$dest_noteb identify tab $localX $localY]
+	if {$dest_pos eq ""} { set dest_pos "end" }
+
+	set wnd [lindex [$src_noteb tabs] $src_tab]
+	if {$src_noteb eq $dest_noteb} {
+		$dest_noteb insert $dest_pos $wnd
+	} else {
+		::docking::move_tab_ $wnd $src_noteb $dest_noteb $dest_pos
+	}
+}
+
+# Special handling of a left click on a tab's icon: show an associated menu
+# if it exists, otherwise close the window.
+proc ::docking::manage_click_ {noteb x y localX localY} {
+	lassign [::docking::identify_tab_ $noteb $localX $localY] tab isIcon
+	if {$tab eq "" || ! $isIcon} { return }
+
+	set wnd [lindex [$noteb tabs] $tab]
+	lassign [::win::getMenu $wnd] menu wnd
+	if {$menu ne ""} {
+		tk_popup $menu $x $y
+	} else {
+		::win::closeWindow $wnd
+	}
+}
+
+# Right click on a tab label: show a windows management menu.
+proc ::docking::manage_rightclick_ {noteb x y localX localY} {
+	lassign [::docking::identify_tab_ $noteb $localX $localY] tab isIcon
+	if {$tab eq "" || $isIcon} { return }
+
+	$noteb select $tab
+
+	set noteb_tabs [$noteb tabs]
+	set state [expr { [llength $noteb_tabs] > 1 ? "normal" : "disabled" }]
+	set wnd [lindex $noteb_tabs $tab]
+
+	set m .ctxtMenu
+	if { [winfo exists $m] } { destroy $m }
+	menu $m -tearoff 0
+	$m add command -label [ ::tr DockTop ] -state $state \
+		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb n]"
+	$m add command -label [ ::tr DockBottom ] -state $state \
+		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb s]"
+	$m add command -label [ ::tr DockLeft ] -state $state \
+		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb w]"
+	$m add command -label [ ::tr DockRight ] -state $state \
+		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb e]"
+	# Main board can not be closed or undocked
+	if { $wnd != ".fdockmain" } {
+		$m add separator
+		$m add command -label [ ::tr Undock ] -command "::win::undockWindow $wnd $noteb"
+		$m add command -label [ ::tr Close ] -command "::win::closeWindow $wnd"
+	}
+	tk_popup $m $x $y
 }
 
 
 ################################################################################
 # Layout management
 ################################################################################
-
-set ::docking::layout_tbcnt 0
 
 # associates pw -> notebook list
 array set ::docking::layout_notebook {}
@@ -884,8 +809,7 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   variable tbcnt
   variable tbs
   
-  set nb [ttk::notebook $name]
-  incr tbcnt
+  set nb [create_notebook_ $name]
   if {[scan $name ".tb%d" tmp] == 1} {
     if {$tmp >= $tbcnt} {
       set tbcnt [ expr $tmp +1]
@@ -947,7 +871,6 @@ proc ::docking::restore_tabs {} {
 proc ::docking::layout_restore { slot } {
   variable tbcnt
   variable tbs
-  bind TNotebook <<NotebookTabChanged>> {}
   
   # if no layout recorded, retry with the last used
   if { $::docking::layout_list($slot) == {} } {
@@ -970,24 +893,7 @@ proc ::docking::layout_restore { slot } {
   layout_restore_pw $::docking::layout_list($slot)
   ::docking::restoreGeometry
 
-  array set ::docking::activeTab {}
-  setTabStatus
-  
-  bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
   after idle ::docking::restore_tabs
-}
-################################################################################
-# for every notebook, keeps track of the last selected tab to see if the local menu can be popped up or not
-proc ::docking::setTabStatus { } {
-  variable tbs
-  array set ::docking::activeTab {}
-  array set ::docking::changedTab {}
-  
-  foreach nb [array names tbs] {
-    set ::docking::activeTab($nb) [$nb select]
-    set ::docking::changedTab($nb) 0
-  }
-  
 }
 ################################################################################
 # erase all mapped windows, except .main
@@ -1016,9 +922,8 @@ proc ::docking::closeAll {pw} {
 ################################################################################
 if {$::docking::USE_DOCKING} {
   pack [ttk::panedwindow .pw -orient vertical] -fill both -expand true
-  .pw add [ttk::notebook .nb] -weight 1
+  .pw add [::docking::create_notebook_ .nb] -weight 1
   
   set docking::tbs(.nb) .pw
-  
 }
 
