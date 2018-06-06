@@ -170,7 +170,9 @@ proc keyboardShortcuts {w} {
 
 proc excludeTextWidget {w} {
 	if { [regexp ".*(Entry|Text|Combobox)" [winfo class $w] ] } {
-		if {! [info exists ::keyboardShortcutsExcept($w)]} {
+		# HACK: enable binding for .pgnWin
+		# TODO: replace this using the new %M (available since Tk 8.6.4)
+		if {$w ne ".pgnWin.text"} {
 			return "continue"
 		}
 	}

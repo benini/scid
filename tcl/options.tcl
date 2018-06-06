@@ -30,7 +30,7 @@ proc InitWinsDefaultGeometry {} {
   global winX winY winWidth winHeight
 
   # Default window locations:
-  foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist
+  foreach i {. .helpWin .crosstabWin .treeWin .glist
     .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder
     .ecograph .statsWin .glistWin .maintWin .nedit} {
     set winX($i) -1
@@ -47,10 +47,6 @@ proc InitWinsDefaultGeometry {} {
   # Default window size:
   set winWidth(.) 1024
   set winHeight(.) 570
-
-  # Default PGN window size:
-  set winWidth(.pgnWin)  65
-  set winHeight(.pgnWin) 20
 
   # Default help window size:
   set winWidth(.helpWin)  50

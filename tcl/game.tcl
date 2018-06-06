@@ -59,10 +59,8 @@ proc ::game::Truncate {} {
 #   The parameter <action> should be "previous" or "next".
 #
 proc ::game::LoadNextPrev {action} {
-  global pgnWin statusBar
   set number [sc_filter $action]
   if {$number == 0} {
-    set statusBar "  There is no $action game in the current filter."
     return
   }
   ::game::Load $number

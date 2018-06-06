@@ -61,20 +61,12 @@ namespace eval pgn {
   ################################################################################
   proc OpenClose {} {
     global pgnWin pgnHeight pgnWidth pgnColor
-    if {[winfo exists .pgnWin]} {
-      focus .
-      destroy .pgnWin
-      set pgnWin 0
+
+    set w .pgnWin
+    if {! [::createWindow $w 500 500 "[tr {PgnWindowTitle}]"]} {
+      ::closeWindow $w
       return
     }
-    
-    set w .pgnWin
-    
-    ::createToplevel $w
-    
-    setWinLocation $w
-    setWinSize $w
-    bind $w <Configure> "recordWinSize $w"
     
     menu $w.menu
     ::setMenu $w $w.menu
@@ -114,8 +106,8 @@ namespace eval pgn {
       }
     }
     $w.menu.file add separator
-    $w.menu.file add command -label PgnFileClose -accelerator Esc \
-        -command "focus .; destroy $w"
+    $w.menu.file add command -label PgnFileClose \
+        -command "::closeWindow $w"
     
     $w.menu.opt add checkbutton -label PgnOptColor \
         -variable ::pgn::showColor -command {updateBoard -pgn}
@@ -150,63 +142,38 @@ namespace eval pgn {
         -command {::pgn::ChooseColor Background background}
     $w.menu.color add command -label PgnColorCurrent -command {::pgn::ChooseColor Current current}
 
-    $w.menu.helpmenu add command -label PgnHelpPgn \
-        -accelerator F1 -command {helpWindow PGN}
+    $w.menu.helpmenu add command -label PgnHelpPgn -command {helpWindow PGN}
     $w.menu.helpmenu add command -label PgnHelpIndex -command {helpWindow Index}
     
     ::pgn::ConfigMenus
     
-    text $w.text -width $::winWidth($w) -height $::winHeight($w) -wrap word \
+    frame $w.frame
+    text $w.text -wrap word \
         -background $pgnColor(Background) -cursor crosshair \
-        -yscrollcommand "$w.scroll set" -setgrid 1 -tabs {1c right 2c 4c}
+        -tabs {1c right 2c 4c}
     if { $::pgn::boldMainLine } {
-      $w.text configure -font font_Bold
+        $w.text configure -font font_Bold
     }
-    
-    ttk::scrollbar $w.scroll -command "$w.text yview" -takefocus 0
-    pack [ttk::frame $w.buttons] -side bottom -fill x
-    pack $w.scroll -side right -fill y
-    pack $w.text -fill both -expand yes
-    ttk::button $w.buttons.help -textvar ::tr(Help) -command { helpWindow PGN }
-    ttk::button $w.buttons.close -textvar ::tr(Close) -command { focus .; destroy .pgnWin }
-    #pack $w.buttons.close $w.buttons.help -side right -padx 5 -pady 2
+
+    autoscrollframe -bars y $w.frame "" $w.text
+    grid $w.frame -sticky news
+    grid rowconfigure $w 0 -weight 1
+    grid columnconfigure $w 0 -weight 1
+
     set pgnWin 1
     bind $w <Destroy> { set pgnWin 0 }
     
-    # Bind left button to close ctxt menu:
-    bind $w <ButtonPress-1> {
-      if {[winfo exists .pgnWin.text.ctxtMenu]} { destroy .pgnWin.text.ctxtMenu; focus .pgnWin }
-    }
-    
-    bind $w <ButtonRelease-$::MB2> ::pgn::HideBoard
-
     # Bind right button to popup a contextual menu:
-    bind $w <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text 5 %x %y %X %Y"
-    
-    # set the same arrow key, etc bindings that the main window has:
-    bind $w <F1> { helpWindow PGN }
-    bind $w <Escape> {
-      if {[winfo exists .pgnWin.text.ctxtMenu]} {
-        destroy .pgnWin.text.ctxtMenu
-        focus .pgnWin
-      } else {
-        focus .
-        destroy .pgnWin
-      }
-    }
-    keyboardShortcuts $w
-    set ::keyboardShortcutsExcept($w.text) 1
+    bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"
     
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors
-    
-    ::createToplevelFinalize $w
   }
   
   ################################################################################
   #
   ################################################################################
-  proc contextMenu {win startLine x y xc yc} {
+  proc contextMenu {win x y} {
     
     update idletasks
     
@@ -258,8 +225,7 @@ namespace eval pgn {
     $mctxt add cascade -label "+-  +/-  ..." -menu $mctxt.evals2
     $mctxt add command -label "[tr WindowsComment]" -command {::makeCommentWin}
     
-    $mctxt post [winfo pointerx .] [winfo pointery .]
-    
+    tk_popup $mctxt $x $y
   }
 
   proc deleteVar {} {
