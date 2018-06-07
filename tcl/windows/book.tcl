@@ -99,9 +99,6 @@ namespace eval book {
     ::setTitle $w $::tr(Book)
     wm resizable $w 0 1
     
-    setWinLocation $w
-    bind $w <Configure> "recordWinSize $w"
-    
     ttk::frame $w.f
     
     # load book names

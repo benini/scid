@@ -61,8 +61,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set w .treeWin$baseNumber
   
   ::createToplevel .treeWin$baseNumber
-  setWinLocation $w
-  setWinSize $w
   
   # Set the tree window title now:
   ::setTitle $w "Scid: [tr WindowsTree] $baseNumber"
@@ -166,7 +164,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   ::tree::doConfigMenus $baseNumber
   
   autoscrollframe $w.f text $w.f.tl \
-      -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) -wrap none -selectbackground lightgrey -selectforeground black \
+      -wrap none -selectbackground lightgrey -selectforeground black \
       -font font_Fixed -foreground black -background white -setgrid 1 -exportselection 1
   #define default tags
   $w.f.tl tag configure greybg -background gray95
@@ -176,8 +174,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.f.tl tag configure redfg -foreground red
   
   selection handle $w.f.tl "::tree::copyToSelection $baseNumber"
-
-  bind $w <Configure> "recordWinSize $w"
 
   ttk::frame $w.statusframe
   pack $w.statusframe -side bottom -fill x

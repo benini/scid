@@ -39,8 +39,6 @@ proc ::tourney::Open {} {
   ::createToplevel $w
   ::setTitle $w "Scid: [tr WindowsTmt]"
   wm title $w "Scid: [tr WindowsTmt]"
-  setWinLocation $w
-  bind $w <Configure> "recordWinSize $w"
 
   bind $w <F1> {helpWindow Tmt}
   bind $w <Escape> "$w.b.close invoke"

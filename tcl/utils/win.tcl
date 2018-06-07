@@ -225,7 +225,6 @@ proc ::win::toggleDocked {wnd} {
 #   Centres a window on the screen.
 #
 proc ::utils::win::Centre {w} {
-  if { $::docking::USE_DOCKING } { return }
   wm withdraw $w
   update idletasks
   set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \

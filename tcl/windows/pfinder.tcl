@@ -43,8 +43,6 @@ proc ::plist::Open {} {
   ::createToplevel $w
   ::setTitle $w "Scid: [tr WindowsPList]"
   wm title $w "Scid: [tr WindowsPList]"
-  setWinLocation $w
-  bind $w <Configure> "recordWinSize $w"
 
   bind $w <F1> {helpWindow PList}
   bind $w <Escape> "$w.b.close invoke"

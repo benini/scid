@@ -69,7 +69,6 @@ proc ::crosstab::Open {} {
 
   ::setTitle $w "Scid: [tr ToolsCross]"
   wm minsize $w 50 5
-  setWinLocation $w
   
   menu $w.menu
   ::setMenu $w $w.menu
@@ -235,7 +234,7 @@ proc ::crosstab::Open {} {
   pack $w.b -side bottom -fill x
   ttk::frame $w.f
   pack $w.f -side top -fill both -expand true
-  text $w.f.text -width $::winWidth($w) -height $::winHeight($w) \
+  text $w.f.text \
       -wrap none -font font_Fixed \
       -background white -yscroll "$w.f.ybar set" \
       -xscroll "$w.f.xbar set" -setgrid 1 -cursor top_left_arrow
@@ -280,7 +279,6 @@ proc ::crosstab::Open {} {
       -side right -pady 3 -padx 5
   pack $w.b.setfilter $w.b.addfilter -side left -pady 3 -padx 5
   
-  bind $w <Configure> "recordWinSize $w"
   bind $w <F1> { helpWindow Crosstable }
   bind $w <Return> { .crosstabWin.b.update invoke }
   bind $w <Escape> { .crosstabWin.b.cancel invoke }

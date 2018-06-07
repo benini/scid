@@ -668,8 +668,6 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   bind $w <F1> { helpWindow Switcher }
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
-  bind $w <Configure> "+recordWinSize $w"
-  setWinSize $w
   ::createToplevelFinalize $w
   after idle "::windows::switcher::Update_ $w"
 }

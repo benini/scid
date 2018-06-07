@@ -240,15 +240,9 @@ namespace eval inputengine {
        ::inputengine::disconnect
        return
     }
-    if {$::tcl_version >= 8.5} {
-       ::createToplevel $w
-      ::setTitle $w [::tr IEConsole]
-    } else {
-       toplevel $w
-       wm title $w [::tr IEConsole]
-    }
 
-    recordWinSize $w
+    ::createToplevel $w
+    ::setTitle $w [::tr IEConsole]
 
     ttk::scrollbar $w.ysc     -command { .inputengineconsole.console yview }
     text      $w.console -height 5  -width 80 -wrap word -yscrollcommand "$w.ysc set"

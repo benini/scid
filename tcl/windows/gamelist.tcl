@@ -463,9 +463,6 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 			::windows::gamelist::filterRelease_ $::gamelistBase(%W) $::gamelistFilter(%W)
 		}
 	}
-	setWinLocation $w
-	setWinSize $w
-	bind $w <Configure> "recordWinSize $w"
 	bind $w <Control-l> "::windows::gamelist::Open \$::gamelistBase($w)"
 	createToplevelFinalize $w
 	lappend ::windows::gamelist::wins $w

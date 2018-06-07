@@ -29,7 +29,6 @@ proc ::windows::eco::Refresh {{code "x"}} {
     set ::windows::eco::isOpen 1
     ::createToplevel $w
     wm minsize $w 200 100
-    setWinLocation $w
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow ECO}
     bind $w <Destroy> {set ::windows::eco::isOpen 0}

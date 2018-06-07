@@ -353,7 +353,6 @@ proc playerInfo {{player ""}} {
   set w .playerInfoWin
   if {! [winfo exists $w]} {
     ::createToplevel $w
-    setWinLocation $w
     wm title $w "Scid: [tr ToolsPInfo]"
     ::setTitle $w "Scid: [tr ToolsPInfo]"
     wm minsize $w 40 5
@@ -377,12 +376,8 @@ proc playerInfo {{player ""}} {
     packbuttons left $w.b2.report
 
     autoscrollframe $w.frame text $w.text -font font_Regular -background white \
-      -width $::winWidth($w) -height $::winHeight($w) -setgrid 1 -wrap none
-    #scrollbar $w.ybar -command "$w.text yview"
-    #pack $w.ybar -side right -fill y
-    #text $w.text -font font_Regular -background white \
-    #  -width $::winWidth($w) -height $::winHeight($w) \
-    #  -setgrid 1 -wrap none -yscrollcommand "$w.ybar set"
+      -setgrid 1 -wrap none
+
     ttk::label $w.photo -background white
     #pack $w.text -side top -fill both -expand yes
     pack $w.frame -side top -fill both -expand yes
@@ -391,7 +386,6 @@ proc playerInfo {{player ""}} {
     ::htext::updateRate $w.text 0
     bind $w <Escape> "focus .; destroy $w"
     bind $w <F1> {helpWindow PInfo}
-    bind $w <Configure> "recordWinSize $w"
     ::createToplevelFinalize $w
   }
   set player [trimEngineName $player]

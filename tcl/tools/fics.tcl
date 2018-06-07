@@ -383,7 +383,6 @@ namespace eval fics {
 
     bind $w.f.top <<NotebookTabChanged>> { ::fics::tabchanged ; break }
     bind $w <Destroy> { catch ::fics::close }
-    bind $w <Configure> "recordWinSize $w"
 
     bind $w <F1> { helpWindow FICS}
     bind $w.f.top.fconsole.f1.console <FocusIn> "focus $w.f.top.fconsole.f2.cmd"
@@ -397,9 +396,6 @@ namespace eval fics {
     set x [winfo reqwidth $w]
     set y [winfo reqheight $w]
     wm minsize $w $x $y
-
-    setWinLocation $w
-    setWinSize $w
 
     ::gameclock::setColor 1 white
     ::gameclock::setColor 2 black

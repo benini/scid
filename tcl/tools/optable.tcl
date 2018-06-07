@@ -242,7 +242,6 @@ proc ::optable::makeReportWin {args} {
     }
     pack $w.b.opts $w.b.lexclude $w.b.exclude $w.b.mergeGames -side left -padx 1 -pady 2
     ::optable::ConfigMenus
-    ::utils::win::Centre $w
     ::createToplevelFinalize $w
   }
   

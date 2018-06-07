@@ -129,7 +129,6 @@ proc ::tb::Open {} {
   set w .tbWin
   if {[winfo exists $w]} { return }
   ::createToplevel $w
-  setWinLocation $w
   ::setTitle $w "Scid: [tr WindowsTB]"
   pack [ttk::frame $w.b] -side bottom -fill x
   pack [ttk::frame $w.info] -side left -fill y
@@ -193,7 +192,6 @@ proc ::tb::Open {} {
   pack $w.b.random $w.b.showboard -side left -padx 2 -pady 2
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set ::tb::isOpen 0; set tbTraining 0 }
-  bind $w <Configure> "recordWinSize $w"
   wm minsize $w 15 20
   ::createToplevelFinalize $w
   set ::tbTraining 0

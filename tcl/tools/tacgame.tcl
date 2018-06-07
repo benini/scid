@@ -312,7 +312,6 @@ namespace eval tacgame {
     
     createToplevel $w
     setTitle $w "$::tr(coachgame) (Elo $level)"
-    setWinLocation $w
     
     ttk::frame $w.fdisplay -relief groove -borderwidth 1
     ttk::frame $w.fthreshold -relief groove -borderwidth 1
@@ -356,7 +355,6 @@ namespace eval tacgame {
     bind $w <F1> { helpWindow TacticalGame }
     bind $w <Destroy> "if {\[string equal $w %W\]} {::tacgame::abortGame}"
     bind $w <Escape> "destroy .coachWin"
-    bind $w <Configure> "recordWinSize $w"
     wm minsize $w 45 0
     createToplevelFinalize $w
 

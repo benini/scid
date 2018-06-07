@@ -152,7 +152,6 @@ namespace eval calvar {
     createToplevel $w
     ::setTitle $w [::tr "Calvar"]
     bind $w <F1> { helpWindow CalVar }
-    setWinLocation $w
     
     set f $w.fNag
     ttk::frame $f

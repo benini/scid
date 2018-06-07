@@ -275,7 +275,6 @@ namespace eval tactics {
         
         createToplevel $w .pgnWin
         setTitle $w $::tr(Tactics)
-        setWinLocation $w
         # because sometimes the 2 buttons at the bottom are hidden
         wm minsize $w 170 170
         ttk::frame $w.f1 -relief groove ;# -borderwidth 1
@@ -304,7 +303,6 @@ namespace eval tactics {
         ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command "destroy $w"
         pack $w.fbuttons.next $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
         bind $w <Destroy> "if {\[string equal $w %W\]} {::tactics::endTraining}"
-        bind $w <Configure> "recordWinSize $w"
         bind $w <F1> { helpWindow TacticsTrainer }
         createToplevelFinalize $w
         

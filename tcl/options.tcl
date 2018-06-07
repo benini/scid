@@ -27,22 +27,7 @@ proc InitDefaultToolbar {} {
 }
 
 proc InitWinsDefaultGeometry {} {
-  global winX winY winWidth winHeight
-
-  # Default window locations:
-  foreach i {. .helpWin .crosstabWin .treeWin .glist
-    .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder
-    .ecograph .statsWin .glistWin .maintWin .nedit} {
-    set winX($i) -1
-    set winY($i) -1
-  }
-
-  for {set b [sc_info limit bases] } {$b > 0} {incr b -1} {
-    foreach i { .treeWin .treeBest .treeGraph } {
-        set winX($i$b) -1
-        set winY($i$b) -1
-    }
-  }
+  global winWidth winHeight
 
   # Default window size:
   set winWidth(.) 1024
@@ -56,38 +41,13 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.statsWin) 60
   set winHeight(.statsWin) 13
 
-  # Default crosstable window size:
-  set winWidth(.crosstabWin)  65
-  set winHeight(.crosstabWin) 15
-
-  # Default tree window size:
-  set winWidth(.treeWin)  58
-  set winHeight(.treeWin) 20
-
   # Default spellcheck results window size:
   set winWidth(.spellcheckWin)  55
   set winHeight(.spellcheckWin) 25
 
-  # Default player info window size:
-  set winWidth(.playerInfoWin)  45
-  set winHeight(.playerInfoWin) 20
-
-  # Default switcher window size:
-  set winWidth(.baseWin) 310
-  set winHeight(.baseWin) 110
-
   # Default Correspondence Chess window size:
   set winWidth(.ccWindow) 10
   set winHeight(.ccWindow) 20
-
-  # Default fics window size
-  set winWidth(.fics) 500
-  set winHeight(.fics) 600
-
-  # Default size for input engine console:
-  ###---### needs adjustment!
-  set winWidth(.inputengineconsole) 10
-  set winHeight(.inputengineconsole) 20
 
   # List of saved layouts : 3 slots available
   set ::docking::layout_list(1) {}

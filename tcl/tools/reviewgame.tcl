@@ -48,7 +48,6 @@ proc ::reviewgame::start {} {
   set w $::reviewgame::window
   createToplevel $w
   setTitle $w [::tr "GameReview" ]
-  setWinLocation $w
   wm minsize $w 200 200
   
   ttk::frame $w.fgameinfo
@@ -133,7 +132,6 @@ proc ::reviewgame::start {} {
   set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
   
   bind $w <Destroy> "if {\[string equal $w %W\]} {::reviewgame::endTraining}"
-  bind $w <Configure> "recordWinSize $w"
   bind $w <F1> { helpWindow ReviewGame }
   ::createToplevelFinalize $w
   set ::reviewgame::prevFen [sc_pos fen]

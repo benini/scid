@@ -32,10 +32,9 @@ proc createToplevel { {w} {closeto ""} } {
     return "already_exists"
   }
 
-  if { $::docking::USE_DOCKING } {
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
-    if {[info exists ::docking::notebook_name($f)]} {
+    if {[info exists ::docking::notebook_name($f)] || !$::docking::USE_DOCKING} {
       ::win::undockWindow $f
     } else {
       set old_dest $::docking::layout_dest_notebook
@@ -46,9 +45,6 @@ proc createToplevel { {w} {closeto ""} } {
       docking::add_tab "$f" "$f"
       set ::docking::layout_dest_notebook $old_dest
     }
-  } else  {
-    toplevel $w
-  }
 
   keyboardShortcuts $w
 }
@@ -69,8 +65,6 @@ proc createToplevelFinalize {w} {
 #   Records window width and height, for saving in options file.
 #
 proc recordWinSize {win} {
-  if { $::docking::USE_DOCKING } { return }
-
   global winWidth winHeight winX winY
   if {![winfo exists $win]} { return }
   set temp [wm geometry $win]
@@ -86,8 +80,6 @@ proc recordWinSize {win} {
 }
 
 proc setWinLocation {win} {
-  if { $::docking::USE_DOCKING } { return }
-
   global winX winY
   set suffix ""
   if {[info exists winX${suffix}($win)]  &&  [info exists winY${suffix}($win)]  && \
@@ -97,8 +89,6 @@ proc setWinLocation {win} {
 }
 
 proc setWinSize {win} {
-  if { $::docking::USE_DOCKING } { return }
-
   global winWidth winHeight
   set suffix ""
   if {[info exists winWidth${suffix}($win)]  &&  [info exists winHeight${suffix}($win)]  &&  \

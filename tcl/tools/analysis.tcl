@@ -1882,8 +1882,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     #
     ::createToplevel $w
     set analysisWin$n 1
-    setWinLocation $w
-    setWinSize $w
     if {$n == 1} {
         ::setTitle $w "Analysis: $analysisName"
     } else {
@@ -1990,7 +1988,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     }
     $w.text configure -state disabled
     bind $w <Destroy> "if {\[string equal $w %W\]} { destroyAnalysisWin $n }"
-    bind $w <Configure> "recordWinSize $w"
     bind $w <Escape> "focus .; destroy $w"
     bind $w <Key-a> "$w.b1.bStartStop invoke"
     wm minsize $w 25 0
@@ -2932,7 +2929,6 @@ proc toggleAnalysisBoard {n} {
         pack forget .analysisWin$n.bd
         setWinSize .analysisWin$n
 	.analysisWin$n.b1.showboard state !pressed
-        bind .analysisWin$n <Configure> "recordWinSize .analysisWin$n"
     } else {
         bind .analysisWin$n <Configure> ""
         set analysis(showBoard$n) 1
