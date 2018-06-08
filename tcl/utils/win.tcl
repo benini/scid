@@ -17,6 +17,14 @@
 
 namespace eval ::win {}
 
+# Create a container panedwindow for docking
+proc ::win::createDockWindow {path} {
+	ttk::panedwindow $path -orient vertical
+	$path add [::docking::create_notebook_ .nb] -weight 1
+	set docking::tbs(.nb) $path
+	pack $path -fill both -expand true
+}
+
 # Creates a docked/undocked window.
 proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 	# Raise window if already exists
@@ -551,7 +559,6 @@ proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 proc ::docking::create_notebook_ {path} {
 	set noteb [ttk::notebook $path]
 	incr tbcnt
-	ttk::notebook::enableTraversal $noteb
 	bind $noteb <B1-Motion> {
 		if {[info exists ::docking::motion_]} { continue }
 		set ::docking::motion_ [::docking::identify_tab_ %W %x %y]
@@ -917,12 +924,3 @@ proc ::docking::closeAll {pw} {
     destroy $p
   }
 }
-
-################################################################################
-if {$::docking::USE_DOCKING} {
-  pack [ttk::panedwindow .pw -orient vertical] -fill both -expand true
-  .pw add [::docking::create_notebook_ .nb] -weight 1
-  
-  set docking::tbs(.nb) .pw
-}
-

@@ -162,6 +162,9 @@ namespace eval pgn {
 
     set pgnWin 1
     bind $w <Destroy> { set pgnWin 0 }
+
+    # Take input focus even if -state is disabled
+    bind $w.text <ButtonPress-1> "focus %W"
     
     # Bind right button to popup a contextual menu:
     bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"

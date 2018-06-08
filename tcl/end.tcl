@@ -1381,6 +1381,11 @@ proc CreateMainWin { mainWin } {
 }
 
 if { $::docking::USE_DOCKING } {
+  # Disable ttk default left/right key bindings (they invoke ttk::notebook::CycleTab)
+  bind TNotebook <Key-Right> {}
+  bind TNotebook <Key-Left>  {}
+  ::win::createDockWindow .pw
+
   CreateMainWin .
   ::docking::layout_restore 1
   keyboardShortcuts .
