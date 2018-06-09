@@ -44,12 +44,7 @@ proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 
 	# Create the window
 	frame $w
-	if {![info exists ::docking::notebook_name($w)] && $::docking::USE_DOCKING } {
-		::docking::add_tab $w "$title"
-	} else {
-		::win::undockWindow $w
-		setTitle $w "$title"
-	}
+	::win::manageWindow $w $title
 
 	keyboardShortcuts $w
 
@@ -177,36 +172,34 @@ proc ::win::undockWindow {wnd {srctab ""}} {
 	lassign [::win::getMenu $wnd] menu wmenu
 	if {$menu ne ""} { ::setMenu $wmenu $menu }
 
-	# Set the default opening mode of this window to undocked
-	# set ::docking::notebook_name($wnd) $srctab
+	# Remember the source notebook
+	set ::docking::notebook_name($wnd) $srctab
 }
 
 # Dock a toplevel window
 proc ::win::dockWindow {wnd} {
-	set title [wm title $wnd]
-	lassign [::win::getMenu $wnd] menu wmenu
-
-	$wmenu configure -menu {}
-	::win::saveWinGeometry $wnd
-	wm forget $wnd
-
-	# Do we want to re-dock the window into the previous tab?
-	# set old_dest $::docking::layout_dest_notebook
-	# if {[winfo exists $::docking::notebook_name($wnd)]} {
-	#   set ::docking::layout_dest_notebook $::docking::notebook_name($wnd)
-	# }
-	# set ::docking::layout_dest_notebook $old_dest
-
 	# in docked mode trim down title to spare space
+	set title [wm title $wnd]
 	if {[string equal -length 6 $title "Scid: "]} {
 		set title [string range $title 6 end]
 	}
-	::docking::add_tab $wnd $title
+
+	lassign [::win::getMenu $wnd] menu wmenu
+	$wmenu configure -menu {}
+
+	::win::saveWinGeometry $wnd
+	wm forget $wnd
+
+	if {[winfo exists $::docking::notebook_name($wnd)]} {
+		set dsttab $::docking::notebook_name($wnd)
+	} else {
+		set dsttab [::docking::choose_notebook $wnd]
+	}
+	unset ::docking::notebook_name($wnd)
+	::docking::insert_tab $wnd $dsttab end \
+		[list -text $title -image tb_close -compound left]
 
 	if {$menu ne ""} { ::setMenu $wnd $menu }
-
-	# Set the default opening mode of this window to docked
-	# unset ::docking::notebook_name($wnd)
 }
 
 # Toggle the docked/undocked status of a window
@@ -227,6 +220,25 @@ proc ::win::toggleDocked {wnd} {
 	}
 }
 
+proc ::win::manageWindow {wnd title} {
+	if { [info exists ::docking::layout_dest_notebook]} {
+		set dsttab $::docking::layout_dest_notebook
+		unset ::docking::layout_dest_notebook
+		set docked [expr { $dsttab ne "undocked" }]
+	} else  {
+		set docked $::windowsDock
+	}
+	if {$docked} {
+		if {![info exists dsttab]} {
+			set dsttab [::docking::choose_notebook $wnd]
+		}
+		::docking::insert_tab $wnd $dsttab end \
+			[list -text $title -image tb_close -compound left]
+	} else {
+		::win::undockWindow $wnd
+		setTitle $wnd "$title"
+	}
+}
 
 # ::utils::win::Centre
 #
@@ -286,7 +298,7 @@ proc ::docking::find_tbn {path} {
   
   # try to find notebook that manages this page
   foreach tb [array names tbs] {
-    if {[get_class $tb] != "TNotebook"} {
+    if {[winfo class $tb] != "TNotebook"} {
       continue
     }
     if {[lsearch -exact [$tb tabs] $path]>=0} {
@@ -370,14 +382,6 @@ proc ::docking::add_tbn {tbn anchor} {
     set tbn [embed_tbn $tbn $anchor]
   }
   return $tbn
-}
-
-################################################################################
-proc ::docking::get_class {path} {
-  if {![winfo exists $path]} {
-    return ""
-  }
-  return [lindex [bindtags $path] 1]
 }
 
 ################################################################################
@@ -478,14 +482,11 @@ proc ::docking::close {w} {
 # 1       2       4        0        0       0       0,5      5500
 # 1       2       4        0        0       0       0,1      5100
 # Improving the matrix and recalculating can improve the select algorithm
-proc ::docking::add_tab { {path} {title} } {
-  variable tbs
-
-  if { $::docking::layout_dest_notebook == ""} {
+proc ::docking::choose_notebook { path } {
     set dsttab {}
     set best_fitting ""
     foreach tb [array names ::docking::tbs] {
-      if {[::docking::get_class $tb] != "TNotebook"} { continue }
+      if {[winfo class $tb] != "TNotebook"} { continue }
 
       set tabs [$tb tabs]
 
@@ -513,7 +514,7 @@ proc ::docking::add_tab { {path} {title} } {
       set coeff(6) "-323.52"
       # ratio between the area of the notebook and the screen
       set feat(7) [expr { double([winfo width $tb] * [winfo height $tb]) }]
-	  set feat(7) [expr { $feat(7) / ([winfo screenwidth $tb] * [winfo screenheight $tb]) }]
+      set feat(7) [expr { $feat(7) / ([winfo screenwidth $tb] * [winfo screenheight $tb]) }]
       set coeff(7) "1000"
 
       set fit 0;
@@ -526,12 +527,7 @@ proc ::docking::add_tab { {path} {title} } {
         set dsttab $tb
       }
     }
-  } else  {
-    set dsttab $::docking::layout_dest_notebook
-  }
-
-	::docking::insert_tab $path $dsttab end \
-		[list -text $title -image tb_close -compound left]
+    return $dsttab
 }
 
 # Insert a window into a notebook
@@ -549,7 +545,7 @@ proc ::docking::remove_tab {wnd src_noteb} {
 	return $options
 }
 
-# Move a window between two (different) notebooks
+# Move a window between two different notebooks
 proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 	set options [::docking::remove_tab $wnd $src_noteb]
 	::docking::insert_tab $wnd $dest_noteb $dest_pos $options
@@ -635,7 +631,7 @@ proc ::docking::manage_click_ {noteb x y localX localY} {
 	if {$tab eq "" || ! $isIcon} { return }
 
 	set wnd [lindex [$noteb tabs] $tab]
-	lassign [::win::getMenu $wnd] menu wnd
+	lassign [::win::getMenu $wnd] menu
 	if {$menu ne ""} {
 		tk_popup $menu $x $y
 	} else {
@@ -685,12 +681,6 @@ array set ::docking::layout_notebook {}
 # associates notebook -> list of tabs
 array set ::docking::layout_tabs {}
 
-# the notebook into which to create a new tab
-set ::docking::layout_dest_notebook ""
-
-# list of windows to be opened undocked
-set ::docking::layout_undocked {}
-
 ################################################################################
 # saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
@@ -708,7 +698,13 @@ proc ::docking::layout_save { slot } {
   }
 
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
-  set ::docking::layout_undocked [array names ::docking::notebook_name]
+
+  # Append undocked windows
+  foreach wnd [array names ::docking::notebook_name] {
+    if {[winfo exists $wnd]} {
+      lappend ::docking::layout_list($slot) [list [list "Toplevel" $wnd]]
+    }
+  }
 }
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
@@ -722,14 +718,8 @@ proc ::docking::layout_save_pw {pw} {
   lappend ret [list $pw [$pw cget -orient ] $sashpos ]
 
   foreach p [$pw panes] {
-    if {[get_class $p] == "TNotebook"} {
+    if {[winfo class $p] == "TNotebook"} {
       set wins [$p tabs]
-      if {[lsearch -exact $wins ".fdockmain"] != "-1"} {
-        # Append the list of undocked windows
-        foreach wnd [array names ::docking::notebook_name] {
-          if {[winfo exists $wnd]} { lappend wins $wnd }
-        }
-      }
       # Keep only the first glistWin in each pane
       set glistWins [lsearch -all -regexp $wins "\.(fdock)?glistWin\[0-9\]+"]
       set i [llength $glistWins]
@@ -739,8 +729,8 @@ proc ::docking::layout_save_pw {pw} {
         set wins [lreplace $wins $remove $remove]
       }
       lappend ret [list "TNotebook" $p $wins ]
-    }
-    if {[get_class $p] == "TPanedwindow"} {
+
+    } elseif {[winfo class $p] == "TPanedwindow"} {
       lappend ret [ list "TPanedwindow" [layout_save_pw $p] ]
     }
   }
@@ -755,9 +745,8 @@ proc ::docking::layout_restore_pw { data } {
     set type [lindex $elt 0]
     
     if {$type == "MainWindowGeometry"} {
-      wm geometry . [lindex $elt 1]
-      layout_restore_pw [lindex $data 1]
-      if {[lindex $elt 2]  == "zoomed"} {
+      wm geometry . [lindex $data 1]
+      if {[lindex $data 2]  == "zoomed"} {
         if { $::windowsOS || $::macOS } {
           wm state . zoomed
         } else {
@@ -765,6 +754,11 @@ proc ::docking::layout_restore_pw { data } {
         }
       }
       break
+
+    } elseif {$type == "Toplevel"} {
+        set ::docking::layout_dest_notebook "undocked"
+        ::docking::create_window [lindex $elt 1]
+
     } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
       
@@ -829,14 +823,8 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   set ::docking::restoring_tabs($nb) $tabs
 }
 
-proc ::docking::restore_tabs {} {
-  set old_dest $::docking::layout_dest_notebook
-  foreach nb $::docking::restoring_nb {
-    foreach d $::docking::restoring_tabs($nb) {
-      set ::docking::layout_dest_notebook $nb
-      switch -regexp -matchvar regmatch -- $d {
-      "\.fdockmain"                   { $nb add $d -text $::tr(Board)
-                                        raise $d }
+proc ::docking::create_window {wnd} {
+      switch -regexp -matchvar regmatch -- $wnd {
       "\.(fdock)?pgnWin"              { ::pgn::OpenClose
                                         ::pgn::Refresh 1 }
       "\.(fdock)?baseWin"             { ::windows::switcher::Open }
@@ -852,12 +840,24 @@ proc ::docking::restore_tabs {} {
       "\.(fdock)?glistWin([0-9]+)"    { ::windows::gamelist::Open }
       "\.(fdock)?treeWin([0-9]+)"     { ::tree::make [lindex $regmatch end]}
       "\.(fdock)?analysisWin([0-9]+)" { ::makeAnalysisWin [lindex $regmatch end] 0 0}
+      "\.(fdock)?crosstabWin"         { crosstabWin }
+      }
+}
+
+proc ::docking::restore_tabs {} {
+  foreach nb $::docking::restoring_nb {
+    foreach d $::docking::restoring_tabs($nb) {
+      set ::docking::layout_dest_notebook $nb
+      if {$d eq ".fdockmain"} {
+        $nb add $d -text $::tr(Board)
+        raise $d
+      } else {
+        ::docking::create_window $d
       }
       update
       update idletasks
     }
   }
-  set ::docking::layout_dest_notebook $old_dest
   foreach nb $::docking::restoring_nb {
     set ::docking::restoring_tabs($nb) {}
   }
@@ -896,7 +896,9 @@ proc ::docking::layout_restore { slot } {
     set ::docking::restoring_nb {}
   }
 
-  layout_restore_pw $::docking::layout_list($slot)
+  foreach mainwnd $::docking::layout_list($slot) {
+	layout_restore_pw $mainwnd
+  }
   ::docking::restoreGeometry
 
   after idle ::docking::restore_tabs
@@ -906,12 +908,10 @@ proc ::docking::layout_restore { slot } {
 proc ::docking::closeAll {pw} {
   
   foreach p [$pw panes] {
-    
-    if {[get_class $p] == "TPanedwindow"} {
+    if {[winfo class $p] == "TPanedwindow"} {
       ::docking::closeAll $p
-    }
-    
-    if {[get_class $p] == "TNotebook"} {
+
+    } elseif {[winfo class $p] == "TNotebook"} {
       foreach tabid [$p tabs] {
         $p forget $tabid
         if {$tabid != ".fdockmain"} {

@@ -32,19 +32,9 @@ proc createToplevel { {w} {closeto ""} } {
     return "already_exists"
   }
 
-    frame $f  -container 1
-    toplevel .$name -use [ winfo id $f ]
-    if {[info exists ::docking::notebook_name($f)] || !$::docking::USE_DOCKING} {
-      ::win::undockWindow $f
-    } else {
-      set old_dest $::docking::layout_dest_notebook
-      if {$old_dest == "" && $closeto != ""} {
-        set tab [string range $closeto 1 end]
-        set ::docking::layout_dest_notebook [::docking::find_tbn .fdock$tab]
-      }
-      docking::add_tab "$f" "$f"
-      set ::docking::layout_dest_notebook $old_dest
-    }
+  frame $f  -container 1
+  toplevel .$name -use [ winfo id $f ]
+  ::win::manageWindow $f ""
 
   keyboardShortcuts $w
 }

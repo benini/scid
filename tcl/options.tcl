@@ -787,9 +787,6 @@ proc options.write {} {
     foreach slot {1 2 3 auto} {
       puts $optionF "set ::docking::layout_list($slot) [list $::docking::layout_list($slot)]"
     }
-    foreach wnd $::docking::layout_undocked {
-      puts $optionF "set ::docking::notebook_name($wnd) {}"
-    }
     foreach wnd [array names ::winGeometry] {
       if {[winfo exists $wnd]} {
         ::win::saveWinGeometry $wnd
