@@ -198,7 +198,7 @@ proc ::utils::sound::OptionsDialog {} {
     set ::utils::sound::${v}_temp [set ::utils::sound::$v]
   }
   
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid: Sound Options"
   # wm transient $w .
   
@@ -208,9 +208,8 @@ proc ::utils::sound::OptionsDialog {} {
     $w.status configure -text "Scid could not find the Snack audio package at startup; Sound is disabled."
     pack $w.status -side bottom
   }
-  pack [ttk::frame $w.b] -side bottom -fill x -pady 2
-  pack [ttk::frame $w.f -relief groove -borderwidth 2] \
-      -side top -fill x -padx 5 -pady 5 -ipadx 4 -ipady 4
+  pack [ttk::frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5 -ipadx 4 -ipady 4
   
   set f $w.f
   set r 0
@@ -253,8 +252,7 @@ proc ::utils::sound::OptionsDialog {} {
   ttk::checkbutton $f.announceBack -text $::tr(SoundsAnnounceBack) \
       -variable ::utils::sound::announceBack_temp
   grid $f.announceBack -row $r -column 0 -columnspan 2 -sticky w
-  incr r
-  
+  addHorizontalRule $w
   dialogbutton $w.b.ok -text OK -command ::utils::sound::OptionsDialogOK
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command [list destroy $w]
   packbuttons right $w.b.cancel $w.b.ok

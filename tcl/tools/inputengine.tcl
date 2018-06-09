@@ -110,19 +110,20 @@ namespace eval ExtHardware {
 
     set w .exthardwareConfig
     if { [winfo exists $w]} { return }
-    toplevel $w
+    toplevel $w -background [ttk::style lookup . -background]
+
     wm title $w [::tr ExtHWConfigConnection]
 
-    label $w.lport -text  [::tr ExtHWPort]
+    ttk::label $w.lport -text  [::tr ExtHWPort]
     ttk::entry $w.eport -width 50 -textvariable ::ExtHardware::port
 
-    label $w.lengine -text [::tr ExtHWEngineCmd]
+    ttk::label $w.lengine -text [::tr ExtHWEngineCmd]
     ttk::entry $w.eengine -width 50 -textvariable ::ExtHardware::engine
 
-    label $w.lparam -text  [::tr ExtHWEngineParam]
+    ttk::label $w.lparam -text  [::tr ExtHWEngineParam]
     ttk::entry $w.eparam -width 50 -textvariable ::ExtHardware::param
 
-    label $w.options -text [::tr ExtHWHardware]
+    ttk::label $w.options -text [::tr ExtHWHardware]
     
     ttk::checkbutton $w.showbutton -text [::tr ExtHWShowButton] -variable ::ExtHardware::showbutton
 
@@ -242,17 +243,18 @@ namespace eval inputengine {
     }
 
     ::createToplevel $w
+    $w configure -background [ttk::style lookup . -background]
     ::setTitle $w [::tr IEConsole]
 
     ttk::scrollbar $w.ysc     -command { .inputengineconsole.console yview }
     text      $w.console -height 5  -width 80 -wrap word -yscrollcommand "$w.ysc set"
 
-    label     $w.lmode   -text [::tr IESending]
+    ttk::label     $w.lmode   -text [::tr IESending]
 
     ::board::new $w.bd 25
      $w.bd configure -relief solid -borderwidth 1
 
-    label     $w.engine      -text "$::ExtHardware::engine $::ExtHardware::port $::ExtHardware::param"
+    ttk::label     $w.engine      -text "$::ExtHardware::engine $::ExtHardware::port $::ExtHardware::param"
 
     ttk::radiobutton $w.sendboth  -text [::tr Both]  -variable send -value 1 -command { ::inputengine::sendToEngine sendboth  }
     ttk::radiobutton $w.sendwhite -text [::tr White] -variable send -value 2 -command { ::inputengine::sendToEngine sendwhite }

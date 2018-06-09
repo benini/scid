@@ -54,7 +54,7 @@ namespace eval sergame {
     pack $w.fbuttons -side top -fill x
     
     # builds the list of UCI engines
-    ttk::frame $w.fengines.fEnginesList -relief raised -borderwidth 1
+    ttk::frame $w.fengines.fEnginesList -relief groove -borderwidth 1
     listbox $w.fengines.fEnginesList.lbEngines -yscrollcommand "$w.fengines.fEnginesList.ybar set" \
         -height 5 -width 50 -exportselection 0
     ttk::scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
@@ -202,7 +202,7 @@ namespace eval sergame {
     
     # choose a specific opening
     ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
-    ttk::frame $w.fopening.fOpeningList -relief raised -borderwidth 1
+    ttk::frame $w.fopening.fOpeningList -relief groove -borderwidth 1
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 50 -list ::tacgame::openingList -exportselection 0
     $w.fopening.fOpeningList.lbOpening selection set $::sergame::chosenOpening

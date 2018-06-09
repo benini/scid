@@ -148,7 +148,7 @@ namespace eval tacgame {
     ttk::frame $w.flevel.diff_fixed
     ttk::frame $w.flevel.diff_random
     ttk::labelframe $w.fopening -text $::tr(Opening)
-    ttk::frame $w.flimit -relief raised -borderwidth 1
+    ttk::frame $w.flimit -relief groove -borderwidth 1
     ttk::frame $w.fbuttons
     
     pack $w.flevel -side top -fill x
@@ -316,8 +316,8 @@ namespace eval tacgame {
     ttk::frame $w.fdisplay -relief groove -borderwidth 1
     ttk::frame $w.fthreshold -relief groove -borderwidth 1
     ttk::frame $w.finformations -relief groove -borderwidth 1
-    ttk::frame $w.fclocks -relief raised -borderwidth 2
-    ttk::frame $w.fbuttons
+    ttk::frame $w.fclocks -relief groove -borderwidth 1
+    ttk::frame $w.fbuttons -relief groove -borderwidth 1
     pack $w.fdisplay $w.fthreshold $w.finformations $w.fclocks $w.fbuttons -side top -expand yes -fill both
     
     ttk::checkbutton $w.fdisplay.b1 -text $::tr(showblunderexists) -variable ::tacgame::showblunder

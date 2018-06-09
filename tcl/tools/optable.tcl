@@ -97,7 +97,7 @@ proc ::optable::makeReportWin {args} {
   if {[lsearch -exact $args "-noprogress"] >= 0} { set showProgress 0 }
   if {$showProgress} {
     set w .progress
-    toplevel $w
+    toplevel $w -background [ttk::style lookup . -background]
     wm withdraw $w
     wm title $w "Scid: Generating Report"
     bind $w <Visibility> "raiseWin $w"
@@ -325,8 +325,8 @@ proc ::optable::resizeBoard {} {
 proc ::optable::setOptions {} {
   set w .oprepOptions
   if {[winfo exists $w]} { return }
-  toplevel $w
-  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5
+  toplevel $w  -background [ttk::style lookup . -background]
+  pack [ttk::frame $w.f] -side top -fill x -padx 5
   set row 0
   foreach i {Stats Popular AvgPerf Results MovesFrom Themes Endgames} {
     set yesno($i) 1
@@ -350,8 +350,8 @@ proc ::optable::setOptions {} {
     } elseif {$i == "gap"} {
       # nothing
     } elseif {$i == "sep"} {
-      ttk::frame $w.f.fsep$row$left -height 2 -borderwidth 2 -relief sunken
-      ttk::frame $w.f.tsep$row$left -height 2 -borderwidth 2 -relief sunken
+      ttk::frame $w.f.fsep$row$left
+      ttk::frame $w.f.tsep$row$left
       grid $w.f.fsep$row$left -row $row -column $left -sticky we -columnspan 4
     } elseif {[info exists yesno($i)]} {
       ttk::checkbutton $w.f.f$i -variable ::optable($i) -onvalue 1 -offvalue 0

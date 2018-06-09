@@ -243,6 +243,7 @@ namespace eval book {
     }
     
     ::createToplevel $w
+    $w configure -background [ttk::style lookup . -background]
     ::setTitle $w $::tr(Book)
     # wm resizable $w 0 0
     
@@ -284,7 +285,7 @@ namespace eval book {
     ttk::frame $w.fbutton
     
     
-    menubutton $w.fbutton.mbAdd -text $::tr(AddMove) -menu $w.fbutton.mbAdd.otherMoves
+    ttk::menubutton $w.fbutton.mbAdd -text $::tr(AddMove) -menu $w.fbutton.mbAdd.otherMoves
     menu $w.fbutton.mbAdd.otherMoves
     
     
@@ -371,7 +372,7 @@ namespace eval book {
     set row 0
     for {set i 0} {$i<[llength $moves]} {incr i 2} {
       lappend ::book::bookTuningMoves [lindex $moves $i]
-      label $w.f.m$row -text [::trans [lindex $moves $i]]
+      ttk::label $w.f.m$row -text [::trans [lindex $moves $i]]
       bind $w.f.m$row <ButtonPress-1> " ::book::makeBookMove [lindex $moves $i] "
       ttk::spinbox $w.f.sp$row -from 0 -to 100 -width 3
       set pct [lindex $moves [expr $i+1] ]

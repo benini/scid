@@ -1327,7 +1327,7 @@ proc InitToolbar {{tb}} {
 
 proc configToolbar {} {
   set w .tbconfig
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid: [tr OptionsToolbar]"
 
   array set ::toolbar_temp [array get ::toolbar]

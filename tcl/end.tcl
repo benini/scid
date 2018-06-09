@@ -20,7 +20,7 @@ proc findNovelty {} {
     updateNoveltyWin
     return
   }
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid: $::tr(FindNovelty)"
   
   pack [ttk::frame $w.help] -side top -fill x
@@ -336,7 +336,7 @@ proc exportOptions {exportType} {
   
   set w .exportFlagsWin
   set exportFlags(ok) -1
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid: [tr OptionsExport]"
   # wm transient $w .
   wm protocol $w WM_DELETE_WINDOW { }
@@ -344,7 +344,7 @@ proc exportOptions {exportType} {
   bind $w <Return> "$w.b.ok invoke"
   bind $w <F1> {helpWindow Export}
   
-  pack [ttk::frame $w.o] -side top -fill x
+  pack [ttk::frame $w.o] -side top -fill x -padx 10
   ttk::label $w.o.append -text $::tr(AddToExistingFile)
   ttk::radiobutton $w.o.appendYes -text $::tr(Yes) \
       -variable exportFlags(append) -value 1
@@ -840,10 +840,10 @@ proc gameSave { gnum } {
   # Make a new toplevel that contains the game save dialog:
   set w .save
   if {[winfo exists $w]} { return }
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   if {$gnum == 0} {
     wm title $w "Scid: [tr GameAdd]"
-    pack [ttk::frame $w.refdb] -side top -fill x
+    pack [ttk::frame $w.refdb] -side top -fill x -padx 10
     CreateSelectDBWidget "$w.refdb" "gameSave_toBase" [sc_base current] 0
     addHorizontalRule $w
   } else {
@@ -853,7 +853,7 @@ proc gameSave { gnum } {
   catch {grab $w}
   
   set f [ttk::frame $w.g]
-  pack $f -side top
+  pack $f -side top -padx 10
   
   ttk::label $f.title -textvar ::tr(NameEditMatches)
   text $f.list -height 9 -width 40 -relief sunken -background grey90 \
@@ -996,7 +996,7 @@ proc gameSave { gnum } {
   addHorizontalRule .save
   
   ttk::label .save.extralabel -text "Extra Tags: (example format: Annotator \"Anand, V\") "
-  pack .save.extralabel -side top -fill x
+  pack .save.extralabel -side top -fill x -padx 10
   ttk::frame .save.extra
   text .save.extra.text -height 4 -width 40 -bg white -wrap none \
       -yscrollcommand ".save.extra.scroll set"
@@ -1008,7 +1008,7 @@ proc gameSave { gnum } {
     .save.extra.text delete 1.0 end
     .save.extra.text insert 1.0 $extraTags
   }
-  pack .save.extra -side top -fill both -expand 1 -ipady 10
+  pack .save.extra -side top -fill both -expand 1 -padx 10
   pack .save.extra.text -side left -fill both -expand 1
   if {$gnum == 0} {
     pack .save.extra.last -side right -padx 10
@@ -1058,7 +1058,7 @@ proc gameSave { gnum } {
   # bind .save <Alt-s> { .save.buttons.save invoke; break }
   
   dialogbutton .save.buttons.cancel -textvar ::tr(Cancel) -command {destroy .save}
-  pack .save.buttons -side bottom -ipady 10 -fill both -expand 1
+  pack .save.buttons -side bottom -padx 10 -fill both -expand 1
   if {$gnum == 0} {
     #pack .save.buttons.prev -side left -padx 10
   }

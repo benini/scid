@@ -99,7 +99,7 @@ proc makeBoolMenu {w varName} {
   if {![info exists var]} { set var "Yes" }
   # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -relief raised -bd 2 -highlightthickness 2 -indicatoron 0 -anchor w
   menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 0 -anchor w -image ""
+      -relief raised -bd 2 -highlightthickness 0 -anchor w -image "" -background [ttk::style lookup . -background]
   
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
@@ -115,7 +115,7 @@ proc makePieceMenu {w varName} {
   if {![info exists var]} { set var "?" }
   # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -indicatoron 0 -relief raised -bd 2 -highlightthickness 2 -anchor w
   menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 0 -anchor w -image ""
+      -relief raised -bd 2 -highlightthickness 0 -anchor w -image "" -background [ttk::style lookup . -background]
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label " ? " -variable $varName -value "?" \
       -command "$w configure -image e20"  -hidemargin 1
@@ -423,7 +423,7 @@ proc ::search::material {{ref_base ""}} {
   ttk::label $w.mp.patt.title -textvar ::tr(Patterns:) -font font_Bold
   pack $w.mp.patt.title -side top -pady 3
   
-  pack [ttk::frame $f.grid] -side top -fill both -expand 1
+  pack [ttk::frame $f.grid] -side top -fill both -expand 1 -padx 10
   for { set i 1 } { $i <= $nPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
@@ -432,8 +432,8 @@ proc ::search::material {{ref_base ""}} {
     # $f.grid.b$i configure -style pad0.TMenubutton
     $f.grid.b$i configure -indicatoron 0 ;# -width 4
     
-    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0
-    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0
+    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
+    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     set column [expr {5 * (($i - 1) / 5)} ]
     set row [expr {($i - 1) % 5} ]
     grid $f.grid.b$i -row $row -column $column -padx 0 -pady 0 ; incr column

@@ -142,14 +142,14 @@ proc chooseBoardColors {{choice -1}} {
     return
   }
   
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid: [tr OptionsBoardColors]"
   
   foreach i $colors { set newColors($i) [set $i] }
   set bd $w.bd
   pack [ttk::frame $bd] -side top -expand 1
   addHorizontalRule $w
-  pack [ttk::frame $w.select] -side top -fill x
+  pack [ttk::frame $w.select] -side top -fill x -padx 5
   addHorizontalRule $w
   pack [ttk::frame $w.preset] -side top -fill x
   pack [ttk::frame $w.texture] -side top -fill x
@@ -335,7 +335,7 @@ proc ::board::new {w {psize 40} } {
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
-  set bgcolor [ttk::style lookup Button.label -background]
+  set bgcolor [ttk::style lookup . -background]
   
   ttk::frame $w -class Board
   canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background $bgcolor -borderwidth 0 -highlightthickness 0

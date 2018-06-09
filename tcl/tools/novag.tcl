@@ -18,6 +18,7 @@ namespace eval novag {
     
     set w .novag
     ::createToplevel $w
+    $w configure -background [ttk::style lookup . -background]
     ::setTitle $w "Novag Citrine"
     pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
     

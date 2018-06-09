@@ -34,7 +34,7 @@ proc ::tools::email {} {
   pack $w.b -side right -fill y
 
   set f $w.f
-  label $f.title -text "Opponent list" -font font_Bold
+  ttk::label $f.title -text "Opponent list" -font font_Bold
   listbox $f.list -height 16 -width 40 -exportselection false \
     -selectmode browse -selectbackground lightBlue -font font_Fixed \
     -yscrollcommand "$f.scroll set" -background white -setgrid 1
@@ -65,17 +65,17 @@ proc ::tools::email {} {
     ::tools::email::refresh
   }
 
-  ttk::button $b.edit -text "Edit..." -underline 0 -command ::tools::email::EditButton
+    ttk::button $b.edit -text [tr Edit] -underline 0 -command ::tools::email::EditButton
   ttk::button $b.delete -text "Delete..." -underline 0 -command ::tools::email::DeleteButton
-  ttk::button $b.load -text "Load game" -underline 0 -command ::tools::email::LoadButton
+  ttk::button $b.load -text $::tr(LoadGame) -underline 0 -command ::tools::email::LoadButton
   ttk::button $b.send -text "Send email..." -underline 0 -command ::tools::email::SendButton
-  ttk::menubutton $b.time -text "Time" -underline 0 -menu $b.time.m
+  ttk::menubutton $b.time -text "Time" -menu $b.time.m
   menu $b.time.m
   $b.time.m add command -label "Received today" -underline 0 \
     -command {::tools::email::TimesButton r}
   $b.time.m add command -label "Sent today" -underline 0 \
     -command {::tools::email::TimesButton s}
-  $b.time.m add command -label "Edit..." -underline 0 \
+  $b.time.m add command -label [tr Edit] -underline 0 \
     -command {::tools::email::TimesButton e}
 
   ttk::button $b.config -text "Settings..." -command ::tools::email::config
@@ -94,9 +94,9 @@ proc ::tools::email {} {
 proc ::tools::email::config {} {
   global email
   set w .emailConfig
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   wm title $w "Scid"
-  label $w.use -text "Send email using:" -font font_Bold
+  ttk::label $w.use -text "Send email using:" -font font_Bold
   ttk::frame $w.smtp
   ttk::radiobutton $w.smtp.b -text "SMTP server:" -variable email(smtp) -value 1
   ttk::entry $w.smtp.s -width 30 -textvar email(server)
@@ -497,7 +497,7 @@ proc modifyEmailDetails {i} {
   global emailData emailData_name emailData_addr emailData_glist emailData_subj
   global emailData_sig emailData_index emailData_helpBar ::tools::email::helpBar
 
-  toplevel .emailEditor
+  toplevel .emailEditor -background [ttk::style lookup . -background]
   set w .emailEditor
   bind $w <F1> { helpWindow Email }
   set emailData_index $i
@@ -551,7 +551,7 @@ proc modifyEmailDetails {i} {
   addHorizontalRule $w
 
   set f [ttk::frame $w.buttons]
-  ttk::button $w.buttons.save -text "Save" -command {
+  ttk::button $w.buttons.save -text "OK" -command {
     set gNumberErr [::tools::email::validGameNumbers $emailData_glist]
     if {$gNumberErr != -1} {
       set nGames [sc_base numGames [sc_base current]]
@@ -568,13 +568,13 @@ proc modifyEmailDetails {i} {
       ::tools::email::refresh
     }
   }
-  ttk::button $f.cancel -text "Cancel" -command {
+  ttk::button $f.cancel -text $::tr(Cancel) -command {
     set emailData [::tools::email::readOpponentFile]
     destroy .emailEditor
     ::tools::email::refresh
   }
   pack $f -side top
-  pack $f.save $f.cancel -side left -padx 20 -pady 10
+  pack $f.save $f.cancel -side left
 
   ttk::label $w.helpBar -width 1 -textvariable emailData_helpBar \
     -font font_Small -anchor w

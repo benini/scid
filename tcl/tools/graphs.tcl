@@ -60,7 +60,7 @@ proc configureFilterGraph {} {
     destroy $w
   }
   
-  toplevel $w
+  toplevel $w  -background [ttk::style lookup . -background]
   wm title $w $::tr(ConfigureFilter)
   setWinLocation $w
   bind $w <F1> {helpWindow Graphs Filter}
@@ -155,8 +155,6 @@ proc tools::graphs::filter::Open {} {
   ttk::frame $w.b
   pack $w.b -side bottom -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
-  ttk::frame $w.sep -height 2 -borderwidth 2 -relief sunken
-  pack $w.sep -side bottom -fill x -pady 4
   
   canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
   $w.c create text 25 5 -tag title -justify center -width 1 \
@@ -186,7 +184,7 @@ proc tools::graphs::filter::Open {} {
         -command ::tools::graphs::filter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_graph -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2
@@ -859,8 +857,6 @@ proc tools::graphs::absfilter::Open {} {
   ttk::frame $w.b
   pack $w.b -side bottom -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
-  ttk::frame $w.sep -height 2 -borderwidth 2 -relief sunken
-  pack $w.sep -side bottom -fill x -pady 4
   
   canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
   $w.c create text 25 5 -tag title -justify center -width 1 \
@@ -889,7 +885,7 @@ proc tools::graphs::absfilter::Open {} {
         -command ::tools::graphs::absfilter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_graph -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2

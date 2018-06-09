@@ -679,7 +679,7 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
     set ::sw_LinkedGList_($w) $gamelist
   }
 
-  ttk::frame $w.border -borderwidth 2 -relief groove
+  ttk::frame $w.border
   grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
   grid columnconfigure $w 0 -weight 1

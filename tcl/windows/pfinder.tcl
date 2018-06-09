@@ -41,6 +41,7 @@ proc ::plist::Open {} {
   set plistWin 1
 
   ::createToplevel $w
+  $w configure -background [ttk::style lookup . -background]
   ::setTitle $w "Scid: [tr WindowsPList]"
   wm title $w "Scid: [tr WindowsPList]"
 

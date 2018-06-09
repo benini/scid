@@ -38,14 +38,13 @@ proc ::preport::preportDlg {args} {
   toplevel $w
   wm title $w "Scid: [tr ToolsPlayerReport]"
   wm resizable $w 0 0
-  pack [ttk::label $w.plabel -text "Generate Player Report"]
-  pack [ttk::frame $w.g] -side top -fill x -expand yes -padx 2
-  ttk::label $w.g.where -text "Player:"
+  pack [ttk::frame $w.g] -side top -fill x -expand yes
+  ttk::label $w.g.where -text $::tr(Player)
   grid $w.g.where -row 0 -column 0 -sticky w
   ttk::combobox $w.g.player -width 40 -textvariable ::preport::_player
   ::utils::history::SetCombobox ::preport::_player $w.g.player
   grid $w.g.player -row 0 -column 1 -sticky we
-  ttk::label $w.g.has -text "Color:"
+  ttk::label $w.g.has -text $::tr(ColorMarker)
   grid $w.g.has -row 1 -column 0 -sticky w
   ttk::frame $w.g.color
   ttk::radiobutton $w.g.color.white -text $::tr(White) \
@@ -55,12 +54,12 @@ proc ::preport::preportDlg {args} {
       -variable ::preport::_color -value black
   pack $w.g.color.white $w.g.color.gap $w.g.color.black -side left
   grid $w.g.color -row 1 -column 1 -sticky w
-  ttk::label $w.g.pos -text "Start position:"
+  ttk::label $w.g.pos -text $::tr(StartPos)
   grid $w.g.pos -row 2 -column 0
   ttk::frame $w.g.pselect
-  ttk::radiobutton $w.g.pselect.start -text "Standard start position" \
+  ttk::radiobutton $w.g.pselect.start -text "$::tr(Defaults) $::tr(StartPos)" \
       -variable ::preport::_pos -value start
-  ttk::radiobutton $w.g.pselect.current -text "Current board position" \
+  ttk::radiobutton $w.g.pselect.current -text $::tr(CurrentBoard) \
       -variable ::preport::_pos -value current
   pack $w.g.pselect.start $w.g.pselect.current -side left
   grid $w.g.pselect -row 2 -column 1 -sticky w
@@ -290,7 +289,7 @@ proc ::preport::setOptions {} {
   set w .preportOptions
   if {[winfo exists $w]} { return }
   toplevel $w
-  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5
+  pack [ttk::frame $w.f] -side top -fill x
   set row 0
   foreach i {Stats AvgPerf Results MovesFrom Themes Endgames} {
     set yesno($i) 1
@@ -305,9 +304,8 @@ proc ::preport::setOptions {} {
     }
     if {$i == "sep"} {
       ttk::frame $w.f.fsep$row -height 2 -borderwidth 2 -relief sunken
-      ttk::frame $w.f.tsep$row -height 2 -borderwidth 2 -relief sunken
       grid $w.f.fsep$row -row $row -column 0 -sticky we -columnspan 4
-      #grid $w.f.tsep$row -row $row -column 1 -sticky we -columnspan 2
+
     } elseif {[info exists yesno($i)]} {
       ttk::frame $w.f.f$i
       ttk::radiobutton $w.f.f$i.yes -variable ::preport($i) -value 1 \
@@ -322,7 +320,7 @@ proc ::preport::setOptions {} {
     } else {
       scale $w.f.s$i -variable ::preport($i) -from $from -to $to \
           -width 8 -length 200 -tickinterval $tick -orient horizontal \
-          -font font_Small -resolution $res -showvalue 0
+          -font font_Small -resolution $res -showvalue 0  -background [ttk::style lookup . -background]
       ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.s$i -row $row -column 0 -sticky we
       grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3

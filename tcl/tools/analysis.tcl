@@ -388,8 +388,6 @@ proc ::enginelist::choose {} {
     pack $w.flabel -side top -expand 1 -fill both
     
     pack [ttk::frame $w.buttons] -side bottom -fill x
-    ttk::frame $w.rule -height 2 -borderwidth 2 -relief sunken
-    pack $w.rule -side bottom -fill x
     
     # Set up title frame for sorting the list:
     text $w.title -width 55 -height 1 -font font_Fixed -relief flat \
@@ -1881,6 +1879,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     # Set up the  analysis window:
     #
     ::createToplevel $w
+    $w configure -background [ttk::style lookup . -background]
     set analysisWin$n 1
     if {$n == 1} {
         ::setTitle $w "Analysis: $analysisName"
