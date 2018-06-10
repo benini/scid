@@ -300,6 +300,9 @@ proc createFonts {} {
 createFonts
 
 # Load theme
+catch { if { [file exists $::ThemePackageFile] } {
+	  source -encoding utf-8 [file nativename $::ThemePackageFile] }
+      }
 catch { ttk::style theme use $::lookTheme }
 
 # Use default font everywhere

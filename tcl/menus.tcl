@@ -298,7 +298,10 @@ menu $m.numbers
           -variable locale(numeric) -value $numeric -command updateLocale
   }
 $m add cascade -label OptionsNumbers -menu $m.numbers
-menu $m.theme
+menu $m.theme -tearoff 1
+$m.theme add command -label OptionsThemeDir -command setThemePkgFile
+$m.theme add separator
+set ::menuThemeListIdx [expr [$m.theme index end] +1]
   foreach i [ttk::style theme names] {
       $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
           -command {ttk::style theme use $::lookTheme}
@@ -847,6 +850,22 @@ proc setPhotoDir {} {
     set n [loadPlayersPhoto]
     tk_messageBox -message "Found [lindex $n 0] images in [lindex $n 1] file(s)"
     ::notify::GameChanged
+  }
+}
+
+proc setThemePkgFile {} {
+  global initialDir
+  set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialfile $::ThemePackageFile \
+	       -filetypes { {Theme "pkgIndex.tcl"} }]
+  if {$f ne ""} {
+      catch { source -encoding utf-8 [file nativename $f ] }
+      set m .menu.options.theme
+      $m delete $::menuThemeListIdx end
+      foreach i [ttk::style theme names] {
+	  $m add radiobutton -label "$i" -value $i -variable ::lookTheme \
+	      -command {ttk::style theme use $::lookTheme}
+      }
+      set ::ThemePackageFile $f
   }
 }
 

@@ -319,6 +319,7 @@ menuText D OptionsRecent "Aktuelle Dateien..." 9 \
 menuText D OptionsBooksDir "Buchverzeichnis..." 0 {Eröffnungsbuchverzeichnis einstellen}
 menuText D OptionsTacticsBasesDir "Bases Verzeichnis..." 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
 menuText D OptionsPhotosDir "Bilder Verzeichnis..." 0 {Verzeichnis für Bilder einstellen}
+menuText E OptionsThemeDir "Design(s) laden..."  0 { Packetdatei für GUI Design Themen einstellen }
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
@@ -1742,18 +1743,10 @@ translate D Random {Zufällig}
 translate D BackToMainline {Zurück zur Hauptvariante}
 translate D LeaveVariant {Variante verlassen}
 translate D Autoplay {Vorspielen}
-# ====== TODO To be translated ======
-translate D ShowHideCoords {Show/Hide Coord.}
-# ====== TODO To be translated ======
-translate D ShowHideMaterial {Show/Hide Material}
-# ====== TODO To be translated ======
-translate D FullScreen {Full Screen}
-# ====== TODO To be translated ======
-translate D FilterStatistic {Filter Statistics}
-translate E ShowHideCoords {Beschriftung ein/aus}
-translate E ShowHideMaterial {Material ein/aus}
-translate E FullScreen {Vollbild}
-translate E FilterStatistic {Filter Statistik}
+translate D ShowHideCoords {Beschriftung ein/aus}
+translate D ShowHideMaterial {Material ein/aus}
+translate D FullScreen {Vollbild}
+translate D FilterStatistic {Filter Statistik}
 }
 
 ##########

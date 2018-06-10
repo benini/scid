@@ -167,6 +167,7 @@ set language E
 
 # Default theme
 set ::lookTheme "default"
+set ::ThemePackageFile ""
 
 # Auto-save options when exiting:
 set optionsAutoSave 1
@@ -699,7 +700,7 @@ proc options.write {} {
           ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme autoResizeBoard } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
     }
     
@@ -745,7 +746,7 @@ proc options.write {} {
       puts $optionF "set fontOptions($i) [list $fontOptions($i)]"
     }
     puts $optionF ""
-    foreach type {base book html tex stm pgn report tablebase1 tablebase2 tablebase3 tablebase4} {
+    foreach type [array names initialDir] {
       puts $optionF "set initialDir($type) [list $initialDir($type)]"
     }
     puts $optionF ""
