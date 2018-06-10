@@ -288,6 +288,8 @@ menu $m.fonts
   $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
   $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
 $m add cascade -label OptionsFonts -menu $m.fonts
+$m add command -label OptionsMenuColor -command { menuConfigDialog }
+if { $::macOS } { $m entryconfigure end -state disabled }
 menu $m.numbers
   foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
           underline {  0     1      2     4      5      6} {

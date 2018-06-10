@@ -455,6 +455,7 @@ tools/tablebase.tcl
 tools/ptracker.tcl
 help/help.tcl
 help/tips.tcl
+appearance.tcl
 keyboard.tcl
 menus.tcl
 board.tcl

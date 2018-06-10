@@ -337,6 +337,10 @@ menuText E OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file
 menuText E OptionsSave "Save Options" 0 "Save all settable options to the file $::optionsFile"
 menuText E OptionsAutoSave "Auto-Save Options on Exit" 0 \
   {Auto-save all options when exiting Scid}
+menuText E OptionsMenuColor "Setup Menu Colors..." 0 { }
+translate E MenuColorForeground "Foreground"
+translate E MenuColorBackground "Background"
+translate E MenuColorSelect "Select"
 
 # Help menu:
 menuText E Help "Help" 0

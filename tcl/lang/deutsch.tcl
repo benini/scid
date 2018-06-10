@@ -324,6 +324,10 @@ menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
   {Alle Optionen beim Beenden von Scid automatisch speichern}
+menuText D OptionsMenuColor "Menüfarben einstellen..." 0 {  }
+translate D MenuColorForeground "Vordergrund"
+translate D MenuColorBackground "Hintergrund"
+translate D MenuColorSelect "Auswahl"
 
 # Help menu:
 menuText D Help "Hilfe" 0
