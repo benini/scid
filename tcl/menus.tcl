@@ -683,7 +683,7 @@ proc configInformant {} {
     destroy $w
   }
   
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   ::setTitle $w $::tr(ConfigureInformant)
   setWinLocation $w
   ttk::frame $w.spinF
@@ -706,9 +706,10 @@ proc configInformant {} {
     incr row
     incr idx
   }
-  
+  pack $w.spinF
+  addHorizontalRule $w
   ttk::button $w.close -textvar ::tr(Close) -command "destroy $w"
-  pack $w.spinF $w.close
+  pack $w.close
   bind $w <Configure> "recordWinSize $w"
 }
 
@@ -756,13 +757,13 @@ proc setTableBaseDir {} {
   set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
 
   set w .tbDialog
-  toplevel $w
+  toplevel $w -background [ttk::style lookup . -background]
   ::setTitle $w Scid
   ttk::label $w.title -text "Select up to 4 table base directories:"
-  pack $w.title -side top
+  pack $w.title -side top -fill x -padx 10
   foreach i {1 2 3 4} {
     set tempDir(tablebase$i) $initialDir(tablebase$i)
-    pack [ttk::frame $w.f$i] -side top -pady 3 -fill x -expand yes
+    pack [ttk::frame $w.f$i] -side top -fill x -expand yes -padx 10
     ttk::entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
     bindFocusColors $w.f$i.e
     ttk::button $w.f$i.b -text "..." -command [list chooseTableBaseDir $i]
