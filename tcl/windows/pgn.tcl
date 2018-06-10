@@ -168,7 +168,12 @@ namespace eval pgn {
     
     # Bind right button to popup a contextual menu:
     bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"
-    
+
+    # Workaround for Text widget bug (Tk 8.6.6+)
+    # The new "asynchronous update of line heights" does not work if
+    # the Text widget is inside an inactive ttk::notebook tab.
+    if {![catch { $w.text sync }]} { bind $w.text <Visibility> "$w.text sync" }
+
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors
   }
