@@ -230,7 +230,13 @@ public:
     void Clear();
     void strip(bool variations, bool comments, bool NAGs);
 
-    bool HasNonStandardStart() const { return StartPos != nullptr; }
+    bool HasNonStandardStart(char* outFEN = nullptr) const {
+        if (!StartPos)
+            return false;
+        if (outFEN)
+            StartPos->PrintFEN(outFEN, FEN_ALL_FIELDS);
+        return true;
+    }
 
     /// Setup the start position from a FEN string and remove all the moves.
     /// If the FEN is invalid the game is not changed.
@@ -389,21 +395,21 @@ public:
     int setRating(colorT col, const char* ratingType, size_t ratingTypeLen,
                   std::pair<const char*, const char*> rating);
     void     SetEco (ecoT eco)       { EcoCode = eco; }
-    const char* GetEventStr ()       { return EventStr.c_str(); }
-    const char* GetSiteStr ()        { return SiteStr.c_str();  }
-    const char* GetWhiteStr ()       { return WhiteStr.c_str(); }
-    const char* GetBlackStr ()       { return BlackStr.c_str(); }
-    const char* GetRoundStr ()       { return RoundStr.c_str(); }
-    dateT    GetDate ()              { return Date; }
-    dateT    GetEventDate ()         { return EventDate; }
-    resultT  GetResult ()            { return Result; }
-    eloT     GetWhiteElo ()          { return WhiteElo; }
-    eloT     GetBlackElo ()          { return BlackElo; }
-    eloT     GetWhiteEstimateElo()   { return WhiteEstimateElo; }
-    eloT     GetBlackEstimateElo()   { return BlackEstimateElo; }
-    byte     GetWhiteRatingType ()   { return WhiteRatingType; }
-    byte     GetBlackRatingType ()   { return BlackRatingType; }
-    ecoT     GetEco ()               { return EcoCode; }
+    const char* GetEventStr () const { return EventStr.c_str(); }
+    const char* GetSiteStr ()  const { return SiteStr.c_str();  }
+    const char* GetWhiteStr () const { return WhiteStr.c_str(); }
+    const char* GetBlackStr () const { return BlackStr.c_str(); }
+    const char* GetRoundStr () const { return RoundStr.c_str(); }
+    dateT    GetDate ()        const { return Date; }
+    dateT    GetEventDate ()   const { return EventDate; }
+    resultT  GetResult ()      const { return Result; }
+    eloT     GetWhiteElo ()    const { return WhiteElo; }
+    eloT     GetBlackElo ()    const { return BlackElo; }
+    eloT     GetWhiteEstimateElo() const { return WhiteEstimateElo; }
+    eloT     GetBlackEstimateElo() const { return BlackEstimateElo; }
+    byte     GetWhiteRatingType () const { return WhiteRatingType; }
+    byte     GetBlackRatingType () const { return BlackRatingType; }
+    ecoT     GetEco ()         const { return EcoCode; }
     eloT     GetAverageElo ();
 
     // PGN conversion
@@ -465,6 +471,53 @@ public:
     Game* clone();
 };
 
+namespace gamevisit {
+
+template <typename TFunc> void tags_STR(const Game& game, TFunc visitor) {
+	char dateBuf[16];
+	visitor("Event", game.GetEventStr());
+	visitor("Site", game.GetSiteStr());
+	date_DecodeToString(game.GetDate(), dateBuf);
+	visitor("Date", dateBuf);
+	visitor("Round", game.GetRoundStr());
+	visitor("White", game.GetWhiteStr());
+	visitor("Black", game.GetBlackStr());
+	visitor("Result", RESULT_LONGSTR[game.GetResult()]);
+}
+
+template <typename TFunc> void tags_extra(const Game& game, TFunc visitor) {
+	char strBuf[256];
+	if (auto elo = game.GetWhiteElo()) {
+		std::string rType = "White";
+		rType.append(ratingTypeNames[game.GetWhiteRatingType()]);
+		visitor(rType.c_str(), std::to_string(elo).c_str());
+	}
+	if (auto elo = game.GetBlackElo()) {
+		std::string rType = "Black";
+		rType.append(ratingTypeNames[game.GetBlackRatingType()]);
+		visitor(rType.c_str(), std::to_string(elo).c_str());
+	}
+	if (game.GetEco() != ECO_None) {
+		eco_ToExtendedString(game.GetEco(), strBuf);
+		visitor("ECO", strBuf);
+	}
+	if (game.GetEventDate() != ZERO_DATE) {
+		date_DecodeToString(game.GetEventDate(), strBuf);
+		visitor("EventDate", strBuf);
+	}
+	// TODO:
+	// if (*ScidFlags)
+	//	visitor("ScidFlags", ScidFlags);
+
+	for (auto& e : game.GetExtraTags()) {
+		visitor(e.first.c_str(), e.second.c_str());
+	}
+	if (game.HasNonStandardStart(strBuf)) {
+		visitor("FEN", strBuf);
+	}
+}
+
+} // namespace gamevisit
 
 namespace gamepos {
 
