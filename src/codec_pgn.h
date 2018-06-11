@@ -30,6 +30,7 @@
 #include "filebuf.h"
 #include "pgnparse.h"
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
 class CodecPgn : public CodecProxy<CodecPgn> {
@@ -149,10 +150,18 @@ public:
 	 * @returns OK in case of success, an @e errorT code otherwise.
 	 */
 	errorT gameAdd(Game* game) {
+		// buf_.clear();
+		// auto moves_begin = encode(*game, buf_);
+		// Split the range (moves_begin, buf_.size()) into lines
+		// auto sz = static_cast<std::streamsize>(buf_.size());
+
+		auto old_language = language;
+		language = 0;
 		game->SetPgnFormat(PGN_FORMAT_Plain);
 		game->ResetPgnStyle(PGN_STYLE_TAGS | PGN_STYLE_VARS |
 		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
 		std::pair<const char*, unsigned> pgn = game->WriteToPGN(75, true);
+		language = old_language;
 
 		file_.pubseekpos(fileSize_);
 		if (file_.sputn(pgn.first, pgn.second) == pgn.second) {
@@ -160,6 +169,55 @@ public:
 			return OK;
 		}
 		return ERROR_FileWrite;
+	}
+
+	/**
+	 * Encode a game into PGN format.
+	 * @param game: the Game object to encode.
+	 * @param dest: the container where the PGN Game will be appended.
+	 * @returns the size of the tag pairs section.
+	 */
+	template <typename TCont> static size_t encode(Game& game, TCont& dest) {
+		size_t tags_size = encodeTags(game, dest);
+		dest.push_back('\n');
+
+		game.MoveToStart();
+		do {
+			// TODO: comment, variations, etc..
+			const char* next_move = game.GetNextSAN();
+			dest.insert(dest.end(), next_move,
+			            next_move + std::strlen(next_move));
+			dest.push_back(' ');
+		} while (game.MoveForwardInPGN() == OK);
+
+		return tags_size;
+	}
+
+	template <typename TCont>
+	static size_t encodeTags(Game& game, TCont& dest) {
+		auto format_tag = [&dest](const char* tag, const char* value) {
+			dest.push_back('[');
+			dest.insert(dest.end(), tag, tag + std::strlen(tag));
+			dest.push_back(' ');
+
+			dest.push_back('"');
+			auto value_begin = dest.size();
+			dest.insert(dest.end(), value, value + std::strlen(value));
+			pgn::escape_string(dest, value_begin);
+			dest.push_back('"');
+
+			dest.push_back(']');
+			dest.push_back('\n');
+		};
+		auto format_tag_question_mark = [&format_tag](const char* tag,
+		                                              const char* value) {
+			format_tag(tag, (*value) ? value : "?");
+		};
+
+		size_t tags_size = dest.size();
+		gamevisit::tags_STR(game, format_tag_question_mark);
+		gamevisit::tags_extra(game, format_tag);
+		return dest.size() - tags_size;
 	}
 };
 
