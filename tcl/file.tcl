@@ -55,6 +55,7 @@ proc ::file::Exit {}  {
 proc ::file::New {} {
   set ftype {
     { "Scid databases" {".si4"} }
+    { "PGN files" {".pgn" ".PGN"} }
   }
   
   set fName [tk_getSaveFile \
@@ -64,10 +65,14 @@ proc ::file::New {} {
              -title "Create a Scid database"]
   
   if {$fName == ""} { return }
-  if {[file extension $fName] == ".si4"} {
+  set file_extension [string tolower [file extension $fName]]
+  if {$file_extension == ".si4"} {
+    set dbType "SCID4"
     set fName [file rootname $fName]
+  } elseif {$file_extension == ".pgn"} {
+    set dbType "PGN"
   }
-  if {[catch {sc_base create $fName} baseId]} {
+  if {[catch {sc_base create $dbType $fName} baseId]} {
     ERROR::MessageBox "$fName\n"
     return
   }
@@ -76,6 +81,7 @@ proc ::file::New {} {
   ::recentFiles::add "$fName.si4"
   ::notify::GameChanged
   ::notify::DatabaseChanged
+  return $baseId
 }
 
 # ::file::Open
