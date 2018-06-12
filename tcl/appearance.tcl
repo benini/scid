@@ -23,6 +23,7 @@ proc initMenuColor {} {
   set ::menuColorStandard(selectColor) [.xmenu cget -selectcolor]
   set ::menuColorStandard(activeForeground) [.xmenu cget -activeforeground]
   set ::menuColorStandard(foreground) [.xmenu cget  -foreground]
+  set ::menuColorStandard(disabledforeground) [.xmenu cget  -disabledforeground]
   destroy .xmenu
   foreach c [array names ::menuColorStandard] {
     if { [info exists ::menuColor($c)] } {
@@ -39,6 +40,7 @@ proc chooseMenuColor {c} {
   set col [ tk_chooseColor -initialcolor $::menuDialog_($c) -title "Scid"]
   if { $col != "" } {
       set menuDialog_($c) $col
+      .menuOptions.f.menuline0 configure -background $menuDialog_(bg) -foreground $menuDialog_(dfg)
       .menuOptions.f.menuline1 configure -background $menuDialog_(bg) -foreground $menuDialog_(fg)
       .menuOptions.f.menuline2 configure -background $menuDialog_(abg) -foreground $menuDialog_(afg)
       .menuOptions.f.select configure -foreground $menuDialog_(sc)
@@ -47,16 +49,16 @@ proc chooseMenuColor {c} {
   focus .menuOptions.f.bg
 }
 
-proc setNewMenuColors { m bg fg abg afg sc } {
-  $m configure -background $bg -foreground $fg -selectcolor $sc -activebackground $abg -activeforeground $afg
+proc setNewMenuColors { m bg fg abg afg sc dfg } {
+  $m configure -background $bg -foreground $fg -selectcolor $sc -activebackground $abg -activeforeground $afg -disabledforeground $dfg
   foreach child [winfo children $m] {
-    setNewMenuColors $child $bg $fg $abg $afg $sc
+    setNewMenuColors $child $bg $fg $abg $afg $sc $dfg
   }
 }
 
 proc setMenuColors {} {
   global menuDialog_
-  foreach c { background foreground activeBackground activeForeground selectColor } newc  {bg fg abg afg sc } {
+  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
     if { $menuDialog_($newc) != $::menuColorStandard($c) } {
       set ::menuColor($c) $menuDialog_($newc)
     } else {
@@ -64,7 +66,7 @@ proc setMenuColors {} {
     }
     option add *Menu.$c $::menuDialog_($newc)
   }
-  setNewMenuColors .menu $menuDialog_(bg) $menuDialog_(fg) $menuDialog_(abg) $menuDialog_(afg) $menuDialog_(sc)
+  setNewMenuColors .menu $menuDialog_(bg) $menuDialog_(fg) $menuDialog_(abg) $menuDialog_(afg) $menuDialog_(sc) $menuDialog_(dfg)
 
   set w .menuOptions
   catch {grab release $w}
@@ -73,7 +75,7 @@ proc setMenuColors {} {
 
 proc resetMenuColors {} {
   global menuDialog_
-  foreach c { background foreground activeBackground activeForeground selectColor } newc  {bg fg abg afg sc } {
+  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
       set menuDialog_($newc) $::menuColorStandard($c)
   }
   setMenuColors
@@ -89,6 +91,7 @@ proc menuConfigDialog {} {
   set menuDialog_(abg) [.menu cget -activebackground]
   set menuDialog_(afg) [.menu cget -activeforeground]
   set menuDialog_(sc)  [.menu cget -selectcolor]
+  set menuDialog_(dfg) [.menu cget -disabledforeground]
 
   set w .menuOptions
 
@@ -103,7 +106,7 @@ proc menuConfigDialog {} {
   set f $w.f
   set r 0
 
-  foreach c { background foreground activeBackground activeForeground selectColor } newc  {bg fg abg afg sc } {
+  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
       if { [info exists ::menuColor($c)] } {
         set menuDialog_($newc) $::menuColor($c)
       } else {
@@ -111,6 +114,11 @@ proc menuConfigDialog {} {
       }
   }
 
+  ttk::label $f.menuline0 -text "Disabled"  -background $menuDialog_(bg) -foreground $menuDialog_(dfg)
+  grid $f.menuline0 -row $r -column 2 -padx 4
+  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command { chooseMenuColor dfg }
+  grid $f.dfg -row $r -column 3 -padx 4
+  incr r
   ttk::button $f.sel -text $::tr(MenuColorSelect) -command { chooseMenuColor sc }
   grid $f.sel -row $r -column 0 -padx 4
   ttk::label $f.select -text "x" -background $menuDialog_(bg) -foreground $menuDialog_(sc)
