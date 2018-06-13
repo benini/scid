@@ -114,10 +114,10 @@ errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
 errorT scidBaseT::Close () {
 	ASSERT(inUse);
 
-	for (size_t i = 0, n = sortCaches_.size(); i < n; i++) {
-		delete sortCaches_[i].second;
+	for (auto& sortCache : sortCaches_) {
+		delete sortCache.second;
 	}
-	sortCaches_.resize(0);
+	sortCaches_.clear();
 
 	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
@@ -150,8 +150,8 @@ void scidBaseT::clear() {
 }
 
 void scidBaseT::beginTransaction() {
-	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
-		sortCaches_[i].second->prepareForChanges();
+	for (auto& sortCache : sortCaches_) {
+		sortCache.second->prepareForChanges();
 	}
 }
 
@@ -649,10 +649,10 @@ errorT scidBaseT::compact(const Progress& progress) {
 		filters[i] = filters_[i].first;
 	}
 	std::vector< std::pair<std::string, int> > oldSC;
-	for (size_t i = 0, n = sortCaches_.size(); i < n; i++) {
-		int refCount = sortCaches_[i].second->incrRef(0);
+	for (auto& sortCache : sortCaches_) {
+		int refCount = sortCache.second->incrRef(0);
 		if (refCount >= 0)
-			oldSC.push_back(std::make_pair(sortCaches_[i].first, refCount));
+			oldSC.emplace_back(sortCache.first, refCount);
 	}
 
 	//8) Remove the old database
@@ -680,7 +680,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 			SortCache* sc = SortCache::create(idx, nb_, criteria.c_str());
 			if (sc != NULL) {
 				sc->incrRef(oldSC[i].second);
-				sortCaches_.push_back(std::make_pair(criteria, sc));
+				sortCaches_.emplace_back(criteria, sc);
 			}
 		}
 	}
@@ -702,14 +702,14 @@ errorT scidBaseT::compact(const Progress& progress) {
 SortCache* scidBaseT::getSortCache(const char* criteria) {
 	ASSERT(criteria != NULL);
 
-	for (size_t i = 0, n = sortCaches_.size(); i < n; ++i) {
-		if (std::strcmp(criteria, sortCaches_[i].first.c_str()) == 0)
-			return sortCaches_[i].second;
+	for (auto& sortCache : sortCaches_) {
+		if (sortCache.first == criteria)
+			return sortCache.second;
 	}
 
 	SortCache* sc = SortCache::create(idx, getNameBase(), criteria);
 	if (sc != NULL)
-		sortCaches_.push_back(std::pair<std::string, SortCache*>(criteria, sc));
+		sortCaches_.emplace_back(criteria, sc);
 
 	return sc;
 }
