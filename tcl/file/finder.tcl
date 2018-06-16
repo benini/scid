@@ -15,7 +15,7 @@ proc ::file::finder::Open {} {
   set w .finder
   if {[winfo exists $w]} { return }
   
-  toplevel $w
+  themeToplevel $w 0
   wm title $w "Scid: $::tr(FileFinder)"
   bind $w <F1> {helpWindow Finder}
   setWinLocation $w
