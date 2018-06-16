@@ -338,7 +338,7 @@ menuText E OptionsSave "Save Options" 0 "Save all settable options to the file $
 menuText E OptionsAutoSave "Auto-Save Options on Exit" 0 \
   {Auto-save all options when exiting Scid}
 menuText E OptionsMenuColor "Setup Menu Colors..." 0 { }
-translate E MenuColorForeground "Foreground"
+translate E MenuColorForeground "Textcolor"
 translate E MenuColorBackground "Background"
 translate E MenuColorSelect "Select"
 
@@ -1308,14 +1308,14 @@ translate E CommonSorts {Common sorts}
 translate E Sort {Sort}
 
 # Exporting:
-translate E AddToExistingFile {Add games to an existing file?}
-translate E ExportComments {Export comments?}
-translate E ExportVariations {Export variations?}
-translate E IndentComments {Indent comments?}
-translate E IndentVariations {Indent variations?}
-translate E ExportColumnStyle {Column style (one move per line)?}
+translate E AddToExistingFile {Add games to an existing file}
+translate E ExportComments {Export comments}
+translate E ExportVariations {Export variations}
+translate E IndentComments {Indent comments}
+translate E IndentVariations {Indent variations}
+translate E ExportColumnStyle {Column style (one move per line)}
 translate E ExportSymbolStyle {Symbolic annotation style:}
-translate E ExportStripMarks {Strip square/arrow mark codes from comments?}
+translate E ExportStripMarks {Strip square/arrow mark\ncodes from comments}
 
 # Goto game/move dialogs:
 translate E LoadGameNumber {Enter the game number to load:}

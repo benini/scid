@@ -336,7 +336,7 @@ proc exportOptions {exportType} {
   
   set w .exportFlagsWin
   set exportFlags(ok) -1
-  toplevel $w -background [ttk::style lookup . -background]
+  themeToplevel $w
   wm title $w "Scid: [tr OptionsExport]"
   # wm transient $w .
   wm protocol $w WM_DELETE_WINDOW { }
@@ -344,87 +344,32 @@ proc exportOptions {exportType} {
   bind $w <Return> "$w.b.ok invoke"
   bind $w <F1> {helpWindow Export}
   
-  pack [ttk::frame $w.o] -side top -fill x -padx 10
-  ttk::label $w.o.append -text $::tr(AddToExistingFile)
-  ttk::radiobutton $w.o.appendYes -text $::tr(Yes) \
-      -variable exportFlags(append) -value 1
-  ttk::radiobutton $w.o.appendNo -text $::tr(No) \
-      -variable exportFlags(append) -value 0
-  ttk::label $w.o.comments -text $::tr(ExportComments)
-  ttk::radiobutton $w.o.commentsOn -text $::tr(Yes) \
-      -variable exportFlags(comments) -value 1
-  ttk::radiobutton $w.o.commentsOff -text $::tr(No) \
-      -variable exportFlags(comments) -value 0
-  ttk::label $w.o.stripMarks -text $::tr(ExportStripMarks)
-  ttk::radiobutton $w.o.stripMarksOn -text $::tr(Yes) \
-      -variable exportFlags(stripMarks) -value 1
-  ttk::radiobutton $w.o.stripMarksOff -text $::tr(No) \
-      -variable exportFlags(stripMarks) -value 0
-  ttk::label $w.o.indentc -text $::tr(IndentComments)
-  ttk::radiobutton $w.o.indentcOn -text $::tr(Yes) \
-      -variable exportFlags(indentc) -value 1
-  ttk::radiobutton $w.o.indentcOff -text $::tr(No) \
-      -variable exportFlags(indentc) -value 0
-  ttk::label $w.o.vars -text $::tr(ExportVariations)
-  ttk::radiobutton $w.o.varsOn -text $::tr(Yes) -variable exportFlags(vars) -value 1
-  ttk::radiobutton $w.o.varsOff -text $::tr(No) -variable exportFlags(vars) -value 0
-  ttk::label $w.o.indentv -text $::tr(IndentVariations)
-  ttk::radiobutton $w.o.indentvOn -text $::tr(Yes) \
-      -variable exportFlags(indentv) -value 1
-  ttk::radiobutton $w.o.indentvOff -text $::tr(No) \
-      -variable exportFlags(indentv) -value 0
-  ttk::label $w.o.column -text $::tr(ExportColumnStyle)
-  ttk::radiobutton $w.o.columnOn -text $::tr(Yes) \
-      -variable exportFlags(column) -value 1
-  ttk::radiobutton $w.o.columnOff -text $::tr(No) \
-      -variable exportFlags(column) -value 0
-  ttk::label $w.o.symbols -text $::tr(ExportSymbolStyle)
-  ttk::radiobutton $w.o.symbolsOn -text "! +=" \
-      -variable exportFlags(symbols) -value 1
-  ttk::radiobutton $w.o.symbolsOff -text {$2 $14} \
-      -variable exportFlags(symbols) -value 0
+  pack [ttk::frame $w.o] -side top -fill x
+  ttk::checkbutton $w.o.append -variable exportFlags(append) -offvalue 0 -onvalue 1 -textvar ::tr(AddToExistingFile)
+  ttk::checkbutton $w.o.comments -variable exportFlags(comments) -offvalue 0 -onvalue 1 -textvar ::tr(ExportComments)
+  ttk::checkbutton $w.o.stripMarks -variable exportFlags(stripMarks) -offvalue 0 -onvalue 1 -textvar ::tr(ExportStripMarks)
+  ttk::checkbutton $w.o.indentc -variable exportFlags(indentc) -offvalue 0 -onvalue 1 -textvar ::tr(IndentComments)
+  ttk::checkbutton $w.o.vars -variable exportFlags(vars) -offvalue 0 -onvalue 1 -textvar ::tr(ExportVariations)
+  ttk::checkbutton $w.o.indentv -variable exportFlags(indentv) -offvalue 0 -onvalue 1 -textvar ::tr(IndentVariations)
+  ttk::checkbutton $w.o.column -variable exportFlags(column) -offvalue 0 -onvalue 1 -textvar ::tr(ExportColumnStyle)
+  ttk::checkbutton $w.o.symbols -variable exportFlags(symbols) -offvalue 0 -onvalue 1 -text "$::tr(ExportSymbolStyle) ! +="
   grid $w.o.append -row 0 -column 0 -sticky w
-  grid $w.o.appendYes -row 0 -column 1 -sticky w
-  grid $w.o.appendNo -row 0 -column 2 -sticky w
   grid $w.o.comments -row 1 -column 0 -sticky w
-  grid $w.o.commentsOn -row 1 -column 1 -sticky w
-  grid $w.o.commentsOff -row 1 -column 2 -sticky w
   grid $w.o.stripMarks -row 2 -column 0 -sticky w
-  grid $w.o.stripMarksOn -row 2 -column 1 -sticky w
-  grid $w.o.stripMarksOff -row 2 -column 2 -sticky w
   grid $w.o.indentc -row 3 -column 0 -sticky w
-  grid $w.o.indentcOn -row 3 -column 1 -sticky w
-  grid $w.o.indentcOff -row 3 -column 2 -sticky w
   grid $w.o.vars -row 4 -column 0 -sticky w
-  grid $w.o.varsOn -row 4 -column 1 -sticky w
-  grid $w.o.varsOff -row 4 -column 2 -sticky w
   grid $w.o.indentv -row 5 -column 0 -sticky w
-  grid $w.o.indentvOn -row 5 -column 1 -sticky w
-  grid $w.o.indentvOff -row 5 -column 2 -sticky w
   grid $w.o.column -row 6 -column 0 -sticky w
-  grid $w.o.columnOn -row 6 -column 1 -sticky w
-  grid $w.o.columnOff -row 6 -column 2 -sticky w
   grid $w.o.symbols -row 7 -column 0 -sticky w
-  grid $w.o.symbolsOn -row 7 -column 1 -sticky w
-  grid $w.o.symbolsOff -row 7 -column 2 -sticky w
   
   # Extra option for PGN format: handling of null moves
   if {$exportType == "PGN"} {
-    ttk::label $w.o.space -text ""
-    grid $w.o.space -row 8 -column 0 -sticky w
-    ttk::label $w.o.nullMoves -text $::tr(ConvertNullMove)
-    ttk::radiobutton $w.o.convertNullMoves -text $::tr(Yes) \
-        -variable exportFlags(convertNullMoves) -value 1
-    ttk::radiobutton $w.o.keepNullMoves -text $::tr(No) \
-        -variable exportFlags(convertNullMoves) -value 0
-    grid $w.o.nullMoves -row 9 -column 0 -sticky w
-    grid $w.o.convertNullMoves -row 9 -column 1 -sticky w
-    grid $w.o.keepNullMoves -row 9 -column 2 -sticky w
+    ttk::checkbutton $w.o.nullMoves -variable exportFlags(convertNullMoves) -offvalue 0 -onvalue 1 -textvar ::tr(ConvertNullMove)
+    grid $w.o.nullMoves -row 8 -column 0 -sticky w
   }
   
   # Extra option for HTML format: diagram image set
   if {$exportType == "HTML"} {
-    ttk::label $w.o.space -text ""
     ttk::label $w.o.hdiag -text "Diagram"
     ttk::radiobutton $w.o.hb0 -text "bitmaps" \
         -variable exportFlags(htmldiag) -value 0
@@ -432,15 +377,13 @@ proc exportOptions {exportType} {
         -variable exportFlags(htmldiag) -value 1
     ttk::label $w.o.hl0 -image htmldiag0
     ttk::label $w.o.hl1 -image htmldiag1
-    grid $w.o.space -row 8 -column 0
-    grid $w.o.hdiag -row 9 -column 0 -sticky w
-    grid $w.o.hb0 -row 9 -column 1 -sticky w
-    grid $w.o.hb1 -row 9 -column 2 -sticky w
-    grid $w.o.hl0 -row 10 -column 1
-    grid $w.o.hl1 -row 10 -column 2
+    grid $w.o.hdiag -row 8 -column 0 -sticky w
+    grid $w.o.hb0 -row 9 -column 0 -sticky w
+    grid $w.o.hb1 -row 9 -column 1 -sticky w
+    grid $w.o.hl0 -row 10 -column 0 -sticky w
+    grid $w.o.hl1 -row 10 -column 1 -sticky w
   }
   
-  addHorizontalRule $w
   pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.ok -text "OK" -command {
     set exportFlags(ok) 1
@@ -448,7 +391,7 @@ proc exportOptions {exportType} {
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command {
     set exportFlags(ok) 0
   }
-  pack $w.b.cancel $w.b.ok -side right
+  packbuttons right $w.b.cancel $w.b.ok
   
   wm withdraw $w
   update idletasks

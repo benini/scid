@@ -924,3 +924,11 @@ proc ::docking::closeAll {pw} {
     destroy $p
   }
 }
+
+# themeToplevel
+#   Standard initialize a toplevel window with unique attributes
+#   y is used for windows with menu. They do not need a border on the top and call with y=0
+proc themeToplevel {w {y 10}} {
+    toplevel $w -background [ttk::style lookup . -background] -padx 10 -pady $y
+}
+

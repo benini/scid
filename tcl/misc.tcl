@@ -95,7 +95,7 @@ proc dialogbuttonframe {frame buttonlist} {
 #   with a standard amount of padding.
 #
 proc packbuttons {side args} {
-  eval pack $args -side $side -padx 5 -pady 3
+  eval pack $args -side $side -padx 10 -pady 3
 }
 
 # dialogbutton:
@@ -309,7 +309,7 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
 
   set ::progressWin_focus [focus]
 
-  toplevel $w
+  themeToplevel $w
   wm resizable $w 0 0
   wm title $w $title
 
@@ -317,7 +317,7 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   ttk::label $w.f.t -text $text
   autoscrollframe -bars y $w.f.cmsg text $w.f.cmsg.text -width 70 -height 14 -wrap word -font font_Regular
   canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
-  $w.f.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.f.c create rectangle 0 0 0 0 -fill [ttk::style lookup TProgressbar -foreground] -outline [ttk::style lookup TProgressbar -bordercolor] -tags bar
   $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   ttk::button $w.f.cancel -text $button -command "$command"
 

@@ -325,7 +325,7 @@ menuText D OptionsSave "Optionen speichern" 0 \
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
   {Alle Optionen beim Beenden von Scid automatisch speichern}
 menuText D OptionsMenuColor "Menüfarben einstellen..." 0 {  }
-translate D MenuColorForeground "Vordergrund"
+translate D MenuColorForeground "Text"
 translate D MenuColorBackground "Hintergrund"
 translate D MenuColorSelect "Auswahl"
 
@@ -802,10 +802,10 @@ menuText D OprepHelpIndex "Index" 0
 # Header search:
 translate D HeaderSearch {Partiedatensuche}
 translate D EndSideToMove {Wer ist beim Partieende am Zug?}
-translate D GamesWithNoECO {Partien ohne ECO?}
+translate D GamesWithNoECO {Partien ohne ECO}
 translate D GameLength {Partielänge}
 translate D FindGamesWith {Finde Partien mit den Markierungen (Flags)}
-translate D StdStart {Standardausgangsposition}
+translate D StdStart {Grundstellung}
 translate D Promotions {Umwandlung}
 translate D Comments {Kommentare}
 translate D Variations {Varianten}
@@ -825,7 +825,7 @@ translate D BlunderFlag {Grober Fehler}
 translate D UserFlag {Benutzer}
 translate D PgnContains {PGN enthält Text}
 translate D Annotator {Kommentator}
-translate D Cmnts {Kommentare}
+translate D Cmnts {Nur kommentierte Partien}
 
 # Game list window:
 translate D GlistNumber {Nummer}
@@ -851,7 +851,7 @@ translate D GlistVars {Varianten}
 translate D GlistComments {Kommentare}
 translate D GlistAnnos {Anmerkungen}
 translate D GlistStart {Stellung}
-translate D GlistGameNumber {Partie Nummer:}
+translate D GlistGameNumber {Partie Nummer}
 translate D GlistAverageElo {ELO Durchschnitt}
 translate D GlistRating {Wertungszahl}
 translate D GlistFindText {Text finden}
@@ -1019,7 +1019,7 @@ translate D Diagram {Diagramm}
 
 # Board search:
 translate D BoardSearch {Brettsuchen}
-translate D FilterOperation {Durchführung am aktuellen Filter:}
+translate D FilterOperation {Suche im aktuellen Filter:}
 translate D FilterAnd {UND (Beschränke Filter)}
 translate D FilterOr {ODER (Zum Filter hinzufügen)}
 translate D FilterIgnore {IGNORIERE (Filter zurücksetzen)}
@@ -1312,15 +1312,15 @@ translate D CommonSorts {Übliche Sortierkriterien}
 translate D Sort {Sortiere}
 
 # Exporting:
-translate D AddToExistingFile {Anhängen an eine bestehende Datei?}
-translate D ExportComments {Kommentare exportieren?}
-translate D ExportVariations {Varianten exportieren?}
-translate D IndentComments {Kommentare einrücken?}
-translate D IndentVariations {Varianten einrücken?}
-translate D ExportColumnStyle {Tabellarisch (ein Zug pro Zeile)?}
-translate D ExportSymbolStyle {Symbolische Notation:}
+translate D AddToExistingFile {Anhängen an eine bestehende Datei}
+translate D ExportComments {Kommentare exportieren}
+translate D ExportVariations {Varianten exportieren}
+translate D IndentComments {Kommentare einrücken}
+translate D IndentVariations {Varianten einrücken}
+translate D ExportColumnStyle {Tabellarisch: ein Zug pro Zeile}
+translate D ExportSymbolStyle {Symbolische Notation }
 translate D ExportStripMarks \
-  {Felder-/Pfeilemarkierzeichen aus den Kommentaren entfernen?}
+  {Felder-/Pfeilemarkierzeichen\naus den Kommentaren entfernen}
 
 # Goto game/move dialogs:
 translate D LoadGameNumber {Geben Sie die zu ladende Spielnr. ein:}
@@ -1498,7 +1498,7 @@ translate D Time {Zeit}
 translate D SecondsPerMove {Sekunden pro Zug}
 translate D Engine {Engine}
 translate D TimeMode {Zeitmodus}
-translate D TimeBonus {Zeit + Bonus}
+translate D TimeBonus {Zeit+\nBonus}
 translate D TimeMin {min}
 translate D TimeSec {s}
 translate D AllExercisesDone {Alle Übungen gemacht}
