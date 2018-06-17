@@ -36,7 +36,7 @@ namespace eval sergame {
       return
     }
     
-    themeToplevel $w
+    win::createDialog $w
     wm title $w "$::tr(configuregame)"
     
     bind $w <F1> { helpWindow SeriousGame }
@@ -221,7 +221,7 @@ namespace eval sergame {
       set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines get $::sergame::chosenEngine]
       set ::sergame::chosenOpening [.configSerGameWin.fopening.fOpeningList.lbOpening curselection]
       if {$::sergame::useBook} {
-        set ::sergame::bookToUse [.configSerGameWin.fbook.combo get]
+        set ::sergame::bookToUse [.configSerGameWin.fconfig.combo get]
         if {$::sergame::bookToUse == "" } {
           set ::sergame::useBook 0
         }

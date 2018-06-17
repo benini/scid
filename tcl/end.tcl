@@ -336,7 +336,7 @@ proc exportOptions {exportType} {
   
   set w .exportFlagsWin
   set exportFlags(ok) -1
-  themeToplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr OptionsExport]"
   # wm transient $w .
   wm protocol $w WM_DELETE_WINDOW { }
