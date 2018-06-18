@@ -422,13 +422,12 @@ proc ::board::addInfoBar {w varname} {
   grid propagate $w.bar.info 0
   grid $w.bar.info.t -sticky news
   ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
-  ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton -command "::board::toggleInfoBar_ $w"
   ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
-  set bar_tb [::board::newToolBar_ $w $varname]
+  set menu [::board::newToolBar_ $w $varname]
+  ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
+    -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
   grid $w.bar.back -row 0 -column 0 -sticky news
   grid $w.bar.cmd -in $w.bar -row 0 -column 1 -sticky news -padx 8
-  grid $bar_tb -in $w.bar -row 0 -column 2 -sticky ew
-  grid remove $bar_tb
   grid $w.bar.info -in $w.bar -row 0 -column 2 -sticky news
   grid $w.bar.forward -row 0 -column 4 -sticky news
   grid columnconfigure $w.bar 2 -weight 1
@@ -436,7 +435,6 @@ proc ::board::addInfoBar {w varname} {
 }
 
 proc ::board::setInfo {{w} {msg}} {
-  toggleInfoBar_ $w "tmpRestore"
   $w.bar.info.t configure -state normal
   $w.bar.info.t delete 1.0 end
   $w.bar.info.t insert end "$msg"
@@ -458,7 +456,6 @@ proc ::board::setInfoAlert {{w} {header} {msg} {msgcolor} {cmd}} {
       after idle $cmd
     }
   "
-  toggleInfoBar_ $w "tmpInfo"
 }
 
 set ::board::repeatCmd 400
@@ -480,23 +477,6 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
       after cancel \"event generate $w.bar.$button <ButtonPress-1>\"
       set ::board::repeatCmd 400
     "
-  }
-}
-
-proc ::board::toggleInfoBar_ {{w} {action "click"}} {
-  set bstate [$w.bar.cmd state]
-  if {$action == "tmpInfo" && $bstate == "pressed"} {
-      grid remove $w.buttons;
-      grid $w.bar.info
-  } elseif {($action == "tmpRestore" && $bstate == "pressed") || \
-            ($action == "click" && "$w.bar.info" == [grid slaves $w.bar -column 2])} {
-      grid remove $w.bar.info;
-      grid $w.buttons
-      $w.bar.cmd state pressed
-  } else {
-      grid remove $w.buttons;
-      grid $w.bar.info
-      $w.bar.cmd state !pressed
   }
 }
 
@@ -525,50 +505,21 @@ proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
 
 proc ::board::newToolBar_ {{w} {varname}} {
   global "$varname"
-  ttk::frame $w.buttons
 
-  set m [menu $w.buttons.menu_back -bg white -font font_Regular]
+  set m [menu $w.menu_back -bg white -font font_Regular]
   $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
+  $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
   $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
   $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left -accelerator "<home>"
   ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
-  set m [menu $w.buttons.menu_forw -bg white -font font_Regular]
+  set m [menu $w.menu_forw -bg white -font font_Regular]
   $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
   $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left -accelerator "<end>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
-  set menus { tb_BD_Changes tb_BD_Comment tb_BD_Variations tb_BD_Layout }
-  set i 0
-  foreach b $menus {
-    menu $w.buttons.menu_$b -bg white -font font_Regular -postcommand "::board::updateToolBar_ $w.buttons.menu_$b $varname"
-    ttk::menubutton $w.buttons.$b -style Toolbutton -image $b -menu "$w.buttons.menu_$b" -direction above
-    grid $w.buttons.$b -row 0 -column $i -padx 4
-    incr i
-  }
-
-  set m "$w.buttons.menu_[lindex $menus 0]"
-  $m add command -label "  [tr GameAdd]" -image tb_BD_SaveAs -compound left
-  $m add command -label "  [tr GameReplace]" -image tb_BD_Save -compound left
-  $m add separator
-  $m add command -label "  Undo all" -image tb_BD_Revert -compound left
-  $m add command -label "  [tr EditRedo]" -image tb_BD_Redo -compound left
-  $m add command -label "  [tr EditUndo]" -image tb_BD_Undo -compound left
-
-  set m "$w.buttons.menu_[lindex $menus 1]"
+  set m [menu $w.menu -bg white -font font_Regular]
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
-
-  set m "$w.buttons.menu_[lindex $menus 2]"
-  $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
-  $m add command -label "  [tr EditMain]" -image tb_BD_VarPromote -compound left
-  $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
-  $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
-  $m add separator
-  $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left
-  $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left
-  $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
-
-  set m "$w.buttons.menu_[lindex $menus 3]"
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  [tr ShowHideCoords]" -image tb_BD_Coords -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
@@ -578,7 +529,7 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
-  return $w.buttons
+  return $m
 }
 
 proc ::board::flipNames_ { {w} {white_on_top} } {

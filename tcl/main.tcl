@@ -263,27 +263,6 @@ proc updateMainToolbar {} {
     set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
   }
 
-  set canChange [expr {![sc_base isReadOnly $::curr_db]}]
-  if {$canChange && [sc_game number] != 0} {
-    set ::gameInfoBar(tb_BD_Save) "gameReplace"
-  } else {
-    catch { unset ::gameInfoBar(tb_BD_Save) }
-  }
-  set ::gameInfoBar(tb_BD_SaveAs) "gameSave 0"
-
-  if {[sc_game undo size] > 0} {
-    set ::gameInfoBar(tb_BD_Undo) "undoFeature undo"
-    set ::gameInfoBar(tb_BD_Revert) "undoFeature undoAll"
-  } else {
-    catch { unset ::gameInfoBar(tb_BD_Undo) }
-    catch { unset ::gameInfoBar(tb_BD_Revert) }
-  }
-  if {[sc_game redo size] > 0} {
-    set ::gameInfoBar(tb_BD_Redo) "undoFeature redo"
-  } else {
-    catch { unset ::gameInfoBar(tb_BD_Redo) }
-  }
-
   set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
 }
 
