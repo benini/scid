@@ -647,7 +647,7 @@ translate F StartEngine {Démarrer le moteur}
 translate F LockEngine {Verrouiller moteur à la position actuelle}
 translate F AnalysisCommand {Commande d'analyse}
 translate F PreviousChoices {Choix précédents}
-translate F AnnotateTime {Fixer le temps en secondes entre deux coups}
+translate F AnnotateTime {Temps en secondes par deux coups}
 translate F AnnotateWhich {Ajouter des variantes}
 translate F AnnotateAll {Pour les coups des deux cotés}
 translate F AnnotateAllMoves {Annoter tous les coups}
