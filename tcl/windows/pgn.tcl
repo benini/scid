@@ -63,7 +63,7 @@ namespace eval pgn {
     global pgnWin pgnHeight pgnWidth pgnColor
 
     set w .pgnWin
-    if {! [::win::createWindow $w 500 500 "[tr {PgnWindowTitle}]"]} {
+    if {! [::win::createWindow $w [tr PgnWindowTitle] ]} {
       ::win::closeWindow $w
       return
     }

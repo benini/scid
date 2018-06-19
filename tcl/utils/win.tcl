@@ -26,7 +26,7 @@ proc ::win::createDockWindow {path} {
 }
 
 # Creates a docked/undocked window.
-proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
+proc ::win::createWindow { {w} {title} {default_geometry ""} } {
 	# Raise window if already exists
 	if { [winfo exists $w] } {
 		if { [::win::isToplevel $w] } {
@@ -39,7 +39,7 @@ proc ::win::createWindow { {w} {default_w} {default_h} {title} } {
 
 	# Set default width and height values, if they do not exists
 	if {![info exists ::winGeometry($w)]} {
-		set ::winGeometry($w) [string cat "$default_w" "x" "$default_h"]
+		set ::winGeometry($w) $default_geometry
 	}
 
 	# Create the window
