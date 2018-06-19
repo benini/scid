@@ -1570,7 +1570,7 @@ namespace eval CorrespondenceChess {
 
 			# disable hotkeys, needs to be done for each window
 			foreach w { .maintWin .sortWin .playerInfoWin .repWin \
-							.fics .metadataWindow .crosstabWin .ecograph \
+							.fics .metadataWindow .crosstableWin .ecograph \
 							.glistWin .plist .statsWin .baseWin .tourney \
 							.pgnWin .main .nedit .ccWindow } {
 
@@ -1590,7 +1590,7 @@ namespace eval CorrespondenceChess {
 
 			# disable hotkeys, needs to be done for each window
 			foreach w { .maintWin .sortWin .playerInfoWin .repWin \
-							.fics .metadataWindow .crosstabWin .ecograph \
+							.fics .metadataWindow .crosstableWin .ecograph \
 							.glistWin .plist .statsWin .baseWin .tourney \
 							.pgnWin .main .nedit .ccWindow } {
 

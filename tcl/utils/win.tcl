@@ -847,7 +847,7 @@ proc ::docking::create_window {wnd} {
       "\.(fdock)?glistWin([0-9]+)"    { ::windows::gamelist::Open }
       "\.(fdock)?treeWin([0-9]+)"     { ::tree::make [lindex $regmatch end]}
       "\.(fdock)?analysisWin([0-9]+)" { ::makeAnalysisWin [lindex $regmatch end] 0 0}
-      "\.(fdock)?crosstabWin"         { crosstabWin }
+      "\.(fdock)?crosstableWin"       { ::crosstab::Open }
       }
 }
 

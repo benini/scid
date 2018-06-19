@@ -510,7 +510,7 @@ proc ::windows::gamelist::createMenu_ {w} {
 	ttk::button $w.filter.b.tmt -image tb_tmt \
 		-command ::tourney::toggle
 	ttk::button $w.filter.b.crosst -image tb_crosst \
-		-command toggleCrosstabWin
+		-command ::crosstab::Open
 	#TODO: rewrite the tooltip system (most tooltip are not translated when you change language)
 	::utils::tooltip::Set "$w.filter.b.rfilter" "$::helpMessage($::language,SearchReset)"
 	::utils::tooltip::Set "$w.filter.b.bsearch" "$::helpMessage($::language,SearchCurrent)"

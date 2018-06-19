@@ -1285,11 +1285,6 @@ proc showHideAllWindows {type} {
   
   # Now iconify/deiconify all the major Scid windows that exist:
   foreach w [getTopLevel] {
-    # .baseWin .glistWin .pgnWin .tourney .maintWin \
-    # .ecograph .crosstabWin .treeWin .analysisWin1 .anslysisWin2 \
-    # .playerInfoWin .commentWin .repWin .statsWin .tbWin \
-    # .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
-    # .rgraph .sgraph .importWin .helpWin .tipsWin
     if {[winfo exists $w]} { catch {wm $type $w} }
   }
   
@@ -1302,11 +1297,6 @@ proc raiseAllWindows {} {
   showHideAllWindows deiconify
   
   foreach w [getTopLevel] {
-    # .baseWin .glistWin .pgnWin .tourney .maintWin \
-    # .ecograph .crosstabWin .treeWin .analysisWin1 .anslysisWin2 \
-    # .playerInfoWin .commentWin .repWin .statsWin .tbWin \
-    # .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
-    # .rgraph .sgraph .importWin .helpWin .tipsWin
     if {[winfo exists $w]} { catch { raise $w } }
   }
 }
@@ -1338,7 +1328,7 @@ if { $::docking::USE_DOCKING } {
   if {$startup(pgn)} { ::pgn::OpenClose }
   if {$startup(gamelist)} { ::windows::gamelist::Open }
   if {$startup(tree)} { ::tree::make }
-  if {$startup(crosstable)} { crosstabWin }
+  if {$startup(crosstable)} { ::crosstab::Open }
   if {$startup(book)} { ::book::open }
 }
 menuUpdateBases

@@ -1276,7 +1276,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.maint -image tb_maint -command ::maint::OpenClose -padding {2 0}
 	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
 	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
-	ttk::button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin -padding {2 0}
+	ttk::button .main.tb.crosst -image tb_crosst -command ::crosstab::OpenClose -padding {2 0}
 	ttk::button .main.tb.engine -image tb_engine -command makeAnalysisWin -padding {2 0}
 	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
 

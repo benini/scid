@@ -135,7 +135,7 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-O> ::optable::makeReportWin
 	bind $w <Control-P> ::plist::toggle
 	bind $w <Control-T> ::tourney::toggle
-	bind $w <Control-X> crosstabWin
+	bind $w <Control-X> ::crosstab::Open
 
 
 	#TODO: to be improved
