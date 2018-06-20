@@ -333,9 +333,19 @@ menuText U OptionsBooksDir "Avauskirjat" 0 {Hakemisto, jossa avauskirjat sijaits
 menuText U OptionsTacticsBasesDir "Taktiikkakannat" 0 {Hakemisto, jossa taktiikka (harjoitus) tietokannat sijaitsevat}
 # ====== TODO To be translated ======
 menuText U OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText U OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText U OptionsSave "Tallenna asetukset" 0 "Tallenna kaikki asetukset tiedostoon $::optionsFile"
 menuText U OptionsAutoSave "Automaattinen asetusten tallennus" 0 \
   {Tallenna asetukset automaattisesti ohjelmasta poistuttaessa}
+# ====== TODO To be translated ======
+menuText U OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate U MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate U MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate U MenuColorSelect "Select"
 
 # Help menu:
 menuText U Help "Ohje" 0

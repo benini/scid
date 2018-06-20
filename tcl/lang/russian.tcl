@@ -300,9 +300,19 @@ menuText R OptionsBooksDir "Директория книг..." 0 {Установ�
 menuText R OptionsTacticsBasesDir "Директория баз..." 0 {Установить директорию баз тактик (тренировок)}
 # ====== TODO To be translated ======
 menuText R OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText R OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText R OptionsSave "Сохранить установки" 0 "Сохранить все установки в файл $::optionsFile"
 menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
   {Автосохранение всех установок при выходе из программы}
+# ====== TODO To be translated ======
+menuText R OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate R MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate R MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate R MenuColorSelect "Select"
 
 # Help menu:
 menuText R Help "Помощь" 2

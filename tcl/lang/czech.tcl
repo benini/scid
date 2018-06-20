@@ -292,10 +292,20 @@ menuText C OptionsBooksDir "Adresáø knihoven zahájení..." 0 {Nastavení adresáøe 
 menuText C OptionsTacticsBasesDir "Adresáø databází..." 0 {Nastavení adresáøù taktických (tréninkových) databází}
 # ====== TODO To be translated ======
 menuText C OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText C OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText C OptionsSave "Ulo¾it volby" 0 \
   "Ulo¾it v¹echny nastavitelné volby do souboru $::optionsFile"
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 20 \
   {Automaticky ukládat v¹echny volby pøi ukonèení Scidu}
+# ====== TODO To be translated ======
+menuText C OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate C MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate C MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate C MenuColorSelect "Select"
 
 # Help menu:
 menuText C Help "Nápovìda" 0

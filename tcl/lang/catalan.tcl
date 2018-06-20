@@ -322,10 +322,20 @@ menuText K OptionsBooksDir "Carpeta de llibres d'obertures..." 0 {Fixa la carpet
 menuText K OptionsTacticsBasesDir "Carpeta de bases de dades..." 0 {Fixa la carpeta de la base d'entrenament tàctic}
 # ====== TODO To be translated ======
 menuText K OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText K OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText K OptionsSave "Salvar opcions" 0 \
   {Salva totes les opcions a l'arxiu $::optionsFile}
 menuText K OptionsAutoSave "Autoguardar opcions en sortir" 0 \
   {Guarda automàticament totes les opcions quan es surt de Scid}
+# ====== TODO To be translated ======
+menuText K OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate K MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate K MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate K MenuColorSelect "Select"
 
 # Help menu:
 menuText K Help "Ajut" 1

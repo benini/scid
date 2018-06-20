@@ -321,10 +321,20 @@ menuText N OptionsBooksDir "Boeken map..." 0 {Stel de map met openingsboeken in}
 menuText N OptionsTacticsBasesDir "Databases map..." 0 {Stel de map met de  taktiek (training) databases in}
 # ====== TODO To be translated ======
 menuText N OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText N OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \
   {Automatisch bewaren alle gewijzigde opties bij het afsluiten van Scid}
+# ====== TODO To be translated ======
+menuText N OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate N MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate N MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate N MenuColorSelect "Select"
 
 # Help menu:
 menuText N Help "Help" 0

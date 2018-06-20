@@ -358,10 +358,20 @@ menuText Y OptionsBooksDir "Books directory..." 0 {Sets the opening books direct
 menuText Y OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
 menuText Y OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText Y OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText Y OptionsSave "Saèuvaj opcije" 0 \
   "Saèuvaj sve opcije u fajl $::optionsFile"
 menuText Y OptionsAutoSave "Auto-saèuvaj opcije na izlasku" 0 \
   {Auto-saèuvaj sve opcije pri izlasku iz Scid-a}
+# ====== TODO To be translated ======
+menuText Y OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate Y MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate Y MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate Y MenuColorSelect "Select"
 
 # Help menu:
 menuText Y Help "Pomoæ" 2

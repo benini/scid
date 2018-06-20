@@ -364,10 +364,20 @@ menuText P OptionsBooksDir "Books directory..." 0 {Sets the opening books direct
 menuText P OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
 menuText P OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText P OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \
   {Automatycznie zapisz opcje przy zamykaniu programu}
+# ====== TODO To be translated ======
+menuText P OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate P MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate P MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate P MenuColorSelect "Select"
 
 menuText P Help "Pomoc" 2
 menuText P HelpContents "Contents" 0 {Poka¿ spis tre¶ci pomocy} 

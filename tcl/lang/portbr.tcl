@@ -295,10 +295,20 @@ menuText B OptionsBooksDir "Diretório de Livros..." 0 {Define o diretório para o
 menuText B OptionsTacticsBasesDir "Diretório de bases..." 0 {Define o diretório para as bases de treinamento de táticas}
 # ====== TODO To be translated ======
 menuText B OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText B OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
   {Salva automaticamente todas as opcoes quando sair do Scid}
+# ====== TODO To be translated ======
+menuText B OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate B MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate B MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate B MenuColorSelect "Select"
 
 # Help menu:
 menuText B Help "Ajuda" 0

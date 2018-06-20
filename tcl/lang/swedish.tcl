@@ -298,10 +298,20 @@ menuText W OptionsBooksDir "Öppningsbokskatalog..." 0 {Anger Öppningsbokskatalog
 menuText W OptionsTacticsBasesDir "Taktikbaskatalog..." 0 {Anger Taktikbaskatalog (för träning)}
 # ====== TODO To be translated ======
 menuText W OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText W OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText W OptionsSave "Spara alternativ" 7 \
   "Spara alla alternativ till en inställningsfil"
 menuText W OptionsAutoSave "Autospara vid avslut" 1 \
   {Spara alla alternativ när du avslutar Scid}
+# ====== TODO To be translated ======
+menuText W OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate W MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate W MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate W MenuColorSelect "Select"
 
 # Help menu:
 menuText W Help "Hjälp" 0

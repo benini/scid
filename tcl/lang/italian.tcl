@@ -296,10 +296,20 @@ menuText I OptionsBooksDir "Directory del libro di aperture..." 0 {Configura la 
 menuText I OptionsTacticsBasesDir "Directory dei database..." 15 {Configura la directory per i database di allenamento}
 # ====== TODO To be translated ======
 menuText I OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText I OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText I OptionsSave "Salva opzioni" 3 \
   "Salva tutte le opzioni definibili nel file $::optionsFile"
 menuText I OptionsAutoSave "Salva opzioni all'uscita" 17 \
   {Salva automaticamente tutte le opzioni quando si esce da Scid}
+# ====== TODO To be translated ======
+menuText I OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate I MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate I MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate I MenuColorSelect "Select"
 
 # Help menu:
 menuText I Help "Aiuto" 0

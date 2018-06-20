@@ -360,10 +360,20 @@ menuText O OptionsBooksDir "Books directory..." 0 {Sets the opening books direct
 menuText O OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
 menuText O OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText O OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText O OptionsSave "Lagre innstillinger" 0 \
   "Lagre alle instillinger til $::optionsFile"
 menuText O OptionsAutoSave "Autolagre innstillinger ved avslutning" 0 \
   {Autolagre alle innstillinger når Scid avsluttes}
+# ====== TODO To be translated ======
+menuText O OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate O MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate O MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate O MenuColorSelect "Select"
 
 # Help menu:
 menuText O Help "Hjelp" 0

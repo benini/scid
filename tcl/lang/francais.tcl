@@ -301,9 +301,19 @@ menuText F OptionsRecent "Fichiers récents..." 0 \
 menuText F OptionsBooksDir "Répertoire des bibliothèques..." 0 {Répertoire des bibliothèques d'ouverture}
 menuText F OptionsTacticsBasesDir "Répertoire des bases d'entrainement..." 0 {Répertoire des bases pour l'entrainement tactique}
 menuText F OptionsPhotosDir "Répertoire des images..." 0 {Répertoire des bases pour l'images}
+# ====== TODO To be translated ======
+menuText F OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText F OptionsSave "Sauver les options" 0 "Sauver les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
   {Sauvegarder automatiquement toutes les options en quittant Scid}
+# ====== TODO To be translated ======
+menuText F OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate F MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate F MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate F MenuColorSelect "Select"
 
 # Help menu:
 menuText F Help "Aide" 0

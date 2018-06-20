@@ -319,7 +319,7 @@ menuText D OptionsRecent "Aktuelle Dateien..." 9 \
 menuText D OptionsBooksDir "Buchverzeichnis..." 0 {Eröffnungsbuchverzeichnis einstellen}
 menuText D OptionsTacticsBasesDir "Bases Verzeichnis..." 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
 menuText D OptionsPhotosDir "Bilder Verzeichnis..." 0 {Verzeichnis für Bilder einstellen}
-menuText E OptionsThemeDir "Design(s) laden..."  0 { Packetdatei für GUI Design Themen einstellen }
+menuText D OptionsThemeDir "Design(s) laden..."  0 { Packetdatei für GUI Design Themen einstellen }
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \

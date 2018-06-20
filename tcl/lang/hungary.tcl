@@ -305,10 +305,20 @@ menuText H OptionsBooksDir "A megnyitástár könyvtára" 6 {Kijelöli a megnyitástár
 menuText H OptionsTacticsBasesDir "Az adatbázisok könyvtára" 4 {Kijelöli a taktikai (edzés) adatbázisok könyvtárát.}
 # ====== TODO To be translated ======
 menuText H OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText H OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText H OptionsSave "Beállítások mentése" 12 \
   "Minden beállítható értéket elment a $::optionsFile fájlba."
 menuText H OptionsAutoSave "Beállítások automatikus mentése kilépéskor." 0 \
   {Automatikusan elment minden beállítást, amikor kilépsz SCID-bõl.}
+# ====== TODO To be translated ======
+menuText H OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate H MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate H MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate H MenuColorSelect "Select"
 
 # Help menu:
 menuText H Help "Segítség" 0

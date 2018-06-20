@@ -329,9 +329,19 @@ menuText G OptionsBooksDir "Κατάλογος βιβλίων..." 0 {Καθορ�
 menuText G OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
 menuText G OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+# ====== TODO To be translated ======
+menuText G OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText G OptionsSave "Αποθήκευση επιλογών" 0 "Αποθηκεύστε όλες τις μεταβολές ρυθμίσεων στο αρχείο $::optionsFile"
 menuText G OptionsAutoSave "Αυτόματη αποθήκευση επιλογών κατά την έξοδο" 0 \
   {Να αποθηκεύονται αυτόματα οι επιλογές κατά την έξοδο από το Scid}
+# ====== TODO To be translated ======
+menuText G OptionsMenuColor "Setup Menu Colors..." 0 { }
+# ====== TODO To be translated ======
+translate G MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate G MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate G MenuColorSelect "Select"
 
 # Help menu:
 menuText G Help "Βοήθεια" 0
