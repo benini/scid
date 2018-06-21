@@ -21,7 +21,7 @@ namespace eval ::win {}
 proc ::win::createDockWindow {path} {
 	ttk::panedwindow $path -orient vertical
 	$path add [::docking::create_notebook_ .nb] -weight 1
-	set docking::tbs(.nb) $path
+	set ::docking::tbs(.nb) $path
 	pack $path -fill both -expand true
 }
 
@@ -282,37 +282,11 @@ namespace eval docking {
 ################################################################################
 # find notebook, corresponding to path
 proc ::docking::find_tbn {path} {
-  variable tbs
-  
-  if {$path=="" || ![winfo exists $path]} { return "" }
-  # already a managed notebook?
-  if {[info exists tbs($path)]} {
-    return $path
-  }
-  # managed notebooks have the form .toplevel.tbn#
-  # pages within notebooks should also have the path .toplevel.page#
-  set spath [split $path "."]
-  if {[winfo toplevel $path]=="."} {
-    set path [join [lrange $path 0 1] "."]
-  } else {
-    set path [join [lrange $path 0 2] "."]
-  }
-  
-  # is it a managed notebook?
-  if {[info exists tbs($path)]} {
-    return $path
-  }
-  
-  # try to find notebook that manages this page
-  foreach tb [array names tbs] {
-    if {[winfo class $tb] != "TNotebook"} {
-      continue
-    }
+  foreach tb [array names ::docking::tbs] {
     if {[lsearch -exact [$tb tabs] $path]>=0} {
       return $tb
     }
   }
-  
   return {}
 }
 
@@ -427,15 +401,6 @@ proc ::docking::cleanup { w { origin "" } } {
     after idle "if {[winfo exists $dockw]} { destroy $dockw }"
     catch { focus .main }
   }
-}
-################################################################################
-proc ::docking::close {w} {
-  set tabid [$w select]
-  if {[winfo exists $tabid]} {
-    $w forget $tabid
-    destroy $tabid
-  }
-  _cleanup_tabs $w
 }
 
 ################################################################################
@@ -561,7 +526,7 @@ proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 # Create a new notebook
 proc ::docking::create_notebook_ {path} {
 	set noteb [ttk::notebook $path]
-	incr tbcnt
+	incr ::docking::tbcnt
 	bind $noteb <B1-Motion> {
 		if {[info exists ::docking::motion_]} { continue }
 		set ::docking::motion_ [::docking::identify_tab_ %W %x %y]
@@ -814,7 +779,6 @@ proc ::docking::restoreGeometry {} {
 # data to make tabs -> data (list of names which can be used to trigger the correct windows)
 proc ::docking::layout_restore_nb { pw name tabs} {
   variable tbcnt
-  variable tbs
   
   set nb [create_notebook_ $name]
   if {[scan $name ".tb%d" tmp] == 1} {
@@ -823,7 +787,6 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     }
   }
 
-  set tbs($nb) $pw
   $pw add $nb -weight 1
   set ::docking::tbs($nb) $pw
   lappend ::docking::restoring_nb $nb
@@ -882,9 +845,6 @@ proc ::docking::restore_tabs {} {
 
 ################################################################################
 proc ::docking::layout_restore { slot } {
-  variable tbcnt
-  variable tbs
-  
   # if no layout recorded, retry with the last used
   if { $::docking::layout_list($slot) == {} } {
     if { $slot != "auto" } { ::docking::layout_restore "auto" }
@@ -892,7 +852,7 @@ proc ::docking::layout_restore { slot } {
   }
   
   closeAll {.pw}
-  set tbcnt 0
+  set ::docking::tbcnt 0
   array set ::docking::notebook_name {}
   array set ::docking::tbs {}
   set ::docking::sashpos {}
