@@ -20,8 +20,8 @@ namespace eval ::win {}
 # Create a container panedwindow for docking
 proc ::win::createDockWindow {path} {
 	ttk::panedwindow $path -orient vertical
-	$path add [::docking::create_notebook_ .nb] -weight 1
-	set ::docking::tbs(.nb) $path
+	::docking::create_notebook_ .nb
+	::docking::insert_notebook_ $path end .nb
 	pack $path -fill both -expand true
 }
 
@@ -291,81 +291,6 @@ proc ::docking::find_tbn {path} {
 }
 
 ################################################################################
-# added paned window of other direction, move a notebook there and create a new notebook
-proc ::docking::embed_tbn {tbn anchor} {
-  variable tbcnt
-  variable tbs
-  set pw $tbs($tbn)
-  if {$anchor=="w" || $anchor=="e"} {
-    set orient "horizontal"
-  } else {
-    set orient "vertical"
-  }
-  # create new paned window
-  set npw [ttk::panedwindow $pw.pw$tbcnt -orient $orient  ]
-  incr tbcnt
-  # move old notebook
-  set i [lsearch -exact [$pw panes] $tbn]
-  $pw forget $tbn
-  if {$i>=[llength [$pw panes]]} {
-    $pw add $npw -weight 1
-  } else {
-    $pw insert $i $npw -weight 1
-  }
-  # add new notebook
-  set ntb [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
-  set tbs($tbn) $npw
-  set tbs($ntb) $npw
-  # make sure correct order
-  if {$anchor=="n" || $anchor=="w"} {
-    $npw add $ntb -weight 1
-    $npw add $tbn -weight 1
-  } else {
-    $npw add $tbn -weight 1
-    $npw add $ntb -weight 1
-  }
-  return $ntb
-}
-
-################################################################################
-# add a new notebook to the side anchor of the notebook tbn
-proc ::docking::add_tbn {tbn anchor} {
-  variable tbcnt
-  variable tbs
-  
-  set pw $tbs($tbn)
-  set orient [$pw cget -orient]
-  
-  # if orientation of the uplevel panedwindow is consistent with anchor, just add the pane
-  if {$orient=="horizontal" && ($anchor=="w" || $anchor=="e")} {
-    set i [lsearch -exact [$pw panes] $tbn]
-    if {$anchor=="e"} { incr i }
-    set tbn [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
-    set tbs($tbn) $pw
-    if {$i>=[llength [$pw panes]]} {
-      $pw add $tbn -weight 1
-    } else {
-      $pw insert $i $tbn -weight 1
-    }
-  } elseif {$orient=="vertical" && ($anchor=="n" || $anchor=="s")} {
-    set i [lsearch -exact [$pw panes] $tbn]
-    if {$anchor=="s"} { incr i}
-    set tbn [create_notebook_ [winfo toplevel $pw].tb$tbcnt]
-    set tbs($tbn) $pw
-    if {$i>=[llength [$pw panes]]} {
-      $pw add $tbn -weight 1
-    } else {
-      $pw insert $i $tbn -weight 1
-    }
-  } else {
-    # orientation of the uplevel panedwindow is opposite to the anchor
-    # need to add new panedwindow
-    set tbn [embed_tbn $tbn $anchor]
-  }
-  return $tbn
-}
-
-################################################################################
 # always keep .pw paned window
 proc ::docking::_cleanup_tabs {srctab} {
   variable tbs
@@ -520,12 +445,64 @@ proc ::docking::remove_tab {wnd src_noteb} {
 # Move a window between two different notebooks
 proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 	set options [::docking::remove_tab $wnd $src_noteb]
+	if {[string length $dest_noteb] == 1} {
+		set idx [::docking::orient_pw_ $src_noteb $dest_noteb]
+		if {$dest_noteb eq "s" || $dest_noteb eq "e"} {
+			incr idx
+		}
+		set pw $::docking::tbs($src_noteb)
+		set dest_noteb [create_notebook_ [winfo toplevel $pw].tb$::docking::tbcnt]
+		::docking::insert_notebook_ $pw $idx $dest_noteb
+	}
 	::docking::insert_tab $wnd $dest_noteb $dest_pos $options
+}
+
+# Given a notebook, orient its paned window so that a new notebook can be added
+# in the wanted direction. Return the idx of the notebook.
+proc ::docking::orient_pw_ {tbn anchor} {
+	variable tbcnt
+	variable tbs
+
+	if {$anchor=="w" || $anchor=="e"} {
+		set orient "horizontal"
+	} else {
+		set orient "vertical"
+	}
+
+	set pw $tbs($tbn)
+	set idx [lsearch -exact [$pw panes] $tbn]
+
+	if {[$pw cget -orient] ne $orient} {
+		# create new paned window
+		set old_pw $pw
+		set pw [ttk::panedwindow $pw.pw$tbcnt -orient $orient]
+		incr tbcnt
+		# move old notebook
+		$old_pw forget $tbn
+		::docking::insert_notebook_ $pw end $tbn
+		::docking::insert_pane_ $old_pw $idx $pw
+		set idx 0
+	}
+	return $idx
+}
+
+# Insert a new pane into a paned window
+proc ::docking::insert_pane_ {pw idx wnd} {
+	if {$idx ne "end" && $idx >= [llength [$pw panes]]} {
+		set idx "end"
+	}
+	$pw insert $idx $wnd -weight 1
+}
+
+# Insert a notebook into a paned window
+proc ::docking::insert_notebook_ {pw idx noteb} {
+	::docking::insert_pane_ $pw $idx $noteb
+	set ::docking::tbs($noteb) $pw
 }
 
 # Create a new notebook
 proc ::docking::create_notebook_ {path} {
-	set noteb [ttk::notebook $path]
+	set noteb [ttk::notebook $path -width 1 -height 1]
 	incr ::docking::tbcnt
 	bind $noteb <B1-Motion> {
 		if {[info exists ::docking::motion_]} { continue }
@@ -626,13 +603,13 @@ proc ::docking::manage_rightclick_ {noteb x y localX localY} {
 	if { [winfo exists $m] } { destroy $m }
 	menu $m -tearoff 0
 	$m add command -label [ ::tr DockTop ] -state $state \
-		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb n]"
+		-command "::docking::move_tab_ $wnd $noteb n"
 	$m add command -label [ ::tr DockBottom ] -state $state \
-		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb s]"
+		-command "::docking::move_tab_ $wnd $noteb s"
 	$m add command -label [ ::tr DockLeft ] -state $state \
-		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb w]"
+		-command "::docking::move_tab_ $wnd $noteb w"
 	$m add command -label [ ::tr DockRight ] -state $state \
-		-command "::docking::move_tab_ $wnd $noteb \[::docking::add_tbn $noteb e]"
+		-command "::docking::move_tab_ $wnd $noteb e"
 	# Main board can not be closed or undocked
 	if { $wnd != ".fdockmain" } {
 		$m add separator
@@ -751,7 +728,7 @@ proc ::docking::layout_restore_pw { data } {
       ttk::panedwindow $pw -orient $orient
       
       set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
-      $parent add $pw -weight 1
+      ::docking::insert_pane_ $parent end $pw
     }
     
   }
@@ -787,8 +764,7 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     }
   }
 
-  $pw add $nb -weight 1
-  set ::docking::tbs($nb) $pw
+  ::docking::insert_notebook_ $pw end $nb
   lappend ::docking::restoring_nb $nb
   set ::docking::restoring_tabs($nb) $tabs
 }
