@@ -51,10 +51,9 @@ proc InitWinsDefaultGeometry {} {
 
   # List of saved layouts : 3 slots available
   set ::docking::layout_list(1) {}
-  set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
-  set ::docking::layout_list(3) {{MainWindowGeometry 1024x542+0+0 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 360} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 368} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 196} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin1}}}}}}}}}
-  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical {}} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 270} {TNotebook .tb7 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb9 .fdockglistWin1}}}}}}}}}}}
-
+  set ::docking::layout_list(2) {{MainWindowGeometry 540x650+0+0} {{.pw vertical {}} {TNotebook .nb .fdockmain}}}
+  set ::docking::layout_list(3) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
+  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
 }
 
 proc InitDefaultStats {} {
