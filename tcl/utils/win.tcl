@@ -804,10 +804,8 @@ proc ::docking::restore_tabs {} {
       update idletasks
     }
   }
-  foreach nb $::docking::restoring_nb {
-    set ::docking::restoring_tabs($nb) {}
-  }
-  set ::docking::restoring_nb {}
+  unset ::docking::restoring_nb
+  array unset ::docking::restoring_tabs
 
   # Bring the main board to the front
   set mainboard ".fdockmain"
@@ -827,17 +825,11 @@ proc ::docking::layout_restore { slot } {
     return
   }
   
-  closeAll {.pw}
+  closeAll
   set ::docking::tbcnt 0
-  array set ::docking::notebook_name {}
-  array set ::docking::tbs {}
   set ::docking::sashpos {}
-  if {[info exists ::docking::restoring_nb]} {
-    foreach nb $::docking::restoring_nb {
-      set ::docking::restoring_tabs($nb) {}
-    }
-    set ::docking::restoring_nb {}
-  }
+  set ::docking::restoring_nb {}
+  array unset ::docking::restoring_tabs
 
   foreach mainwnd $::docking::layout_list($slot) {
 	layout_restore_pw $mainwnd
@@ -848,22 +840,20 @@ proc ::docking::layout_restore { slot } {
 }
 ################################################################################
 # erase all mapped windows, except .main
-proc ::docking::closeAll {pw} {
-  
-  foreach p [$pw panes] {
-    if {[winfo class $p] == "TPanedwindow"} {
-      ::docking::closeAll $p
-
-    } elseif {[winfo class $p] == "TNotebook"} {
-      foreach tabid [$p tabs] {
-        $p forget $tabid
-        if {$tabid != ".fdockmain"} {
-          destroy $tabid
-        }
-        _cleanup_tabs $p
-      }
-    }
-
-    destroy $p
-  }
+proc ::docking::closeAll {} {
+	foreach undocked [array names ::docking::notebook_name] {
+		if {[winfo exists $undocked]} {
+			::win::closeWindow $undocked
+		}
+	}
+	foreach noteb [array names ::docking::tbs] {
+		foreach docked [$noteb tabs] {
+			if {$docked eq ".fdockmain"} {
+				$noteb forget $docked
+				_cleanup_tabs $noteb
+			} else {
+				::win::closeWindow $docked
+			}
+		}
+	}
 }
