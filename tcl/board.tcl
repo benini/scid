@@ -434,13 +434,19 @@ proc ::board::addInfoBar {w varname} {
   grid $w.bar -row 20 -column 3 -columnspan 8 -sticky news -pady 4
 }
 
+proc ::board::addInfo {{w} {msg}} {
+  if {$msg eq ""} { return }
+  $w.bar.info.t configure -state normal
+  $w.bar.info.t insert end "\n$msg"
+  $w.bar.info.t configure -state disabled
+}
+
 proc ::board::setInfo {{w} {msg}} {
   $w.bar.info.t configure -state normal
   $w.bar.info.t delete 1.0 end
   $w.bar.info.t insert end "$msg"
   $w.bar.info.t configure -state disabled
 }
-
 
 proc ::board::setInfoAlert {{w} {header} {msg} {msgcolor} {cmd}} {
   $w.bar.info.t configure -state normal

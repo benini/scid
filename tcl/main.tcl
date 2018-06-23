@@ -199,6 +199,7 @@ proc updateStatusBar {} {
 
     if {$comment != ""} {
         ::board::setInfoAlert .main.board "Comment:" "$comment" "green" "::makeCommentWin"
+        ::board::addInfo .main.board [sc_game info ECO]
         return
     }
     
@@ -218,19 +219,13 @@ proc updateStatusBar {} {
       }
       append statusBar "Last move"
       if {[sc_var level] != 0} { append statusBar " (var)" }
-      append statusBar ": $number.$move\n"
+      append statusBar ": $number.$move"
+      ::board::setInfo .main.board "$statusBar"
+    } else {
+      set msg "[sc_game info date] - [sc_game info event]"
+      ::board::setInfoAlert .main.board "[tr Event]:" $msg "blue" "::crosstab::Open"
     }
-
-    set eco "[sc_game info ECO]"
-    append statusBar "$eco"
-
-    if {$move == "" || $eco == ""} {
-      set result [sc_game info result]
-      if {$result == "=-="} { set result "\u00BD-\u00BD" }
-      if {$eco != ""} { append statusBar "\n" }
-      append statusBar "[sc_game info date] - [sc_game info event] ($result)"
-    }
-    ::board::setInfo .main.board "$statusBar"
+    ::board::addInfo .main.board [sc_game info ECO]
 }
 
 proc updateMainToolbar {} {
