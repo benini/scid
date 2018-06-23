@@ -86,7 +86,7 @@ proc ::maint::OpenClose {} {
   set maintWin 1
   set font font_Small
   set bold font_SmallBold
-  toplevel $w
+  win::createDialog $w
   keyboardShortcuts $w
   wm title $w "Scid: [tr FileMaint]"
   wm resizable $w 0 0
@@ -119,7 +119,6 @@ proc ::maint::OpenClose {} {
   pack $w.title.desc.lab -side left
   pack $w.title.desc.edit -side right -padx 2
   pack $w.title.desc.text -side left -fill x -expand yes
-  
   # Custom flags
   ttk::frame $w.title.cust
   ttk::label $w.title.cust.lab -text "[::tr CustomFlags]:" -font font_SmallBold
@@ -239,7 +238,7 @@ proc ::maint::OpenClose {} {
   
   dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
-  packbuttons right $w.buttons.close $w.buttons.help
+  packdlgbuttons $w.buttons.close $w.buttons.help
   
   bind $w <Alt-h> "$w.buttons.help invoke"
   ::maint::Refresh
@@ -248,7 +247,7 @@ proc ::maint::OpenClose {} {
 proc ::maint::ChangeBaseDescription {} {
   set w .bdesc
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(Description): [file tail [sc_base filename $::curr_db]]"
   set font font_Small
   ttk::entry $w.entry -width 50 ;# -relief sunken -background white
@@ -266,7 +265,7 @@ proc ::maint::ChangeBaseDescription {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
   pack $w.b -side bottom -fill x
-  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   wm resizable $w 0 0
   catch {grab $w}
 }
@@ -276,22 +275,27 @@ proc ::maint::ChangeBaseDescription {} {
 proc ::maint::ChangeCustomDescription {} {
   set w .bcustom
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(CustomFlags): [file tail [sc_base filename $::curr_db]]"
   ttk::frame $w.a
   ttk::label $w.a.lb -text [::tr CustomFlags]
-  grid $w.a.lb -column 0 -row 0 -columnspan 12
+  grid $w.a.lb -column 0 -row 0 -columnspan 5 -sticky w
   set col 0
+  set row 1
   set ::curr_db [sc_base current]
   for {set i 1} {$i <7} {incr i} {
     ttk::label $w.a.lab$i -text "$i:"
     ttk::entry $w.a.e$i -width 8
     set desc [sc_base extra $::curr_db flag$i]
     $w.a.e$i insert end $desc
-    grid $w.a.lab$i -column $col -row 1
+    grid $w.a.lab$i -column $col -row $row
     incr col
-    grid $w.a.e$i -column $col -row 1
+    grid $w.a.e$i -column $col -row $row -padx 5
     incr col
+    if { $i eq 3 } {
+	incr row
+	set col 0
+    }
   }
   ttk::frame $w.b
   ttk::button $w.b.ok -text OK -command {
@@ -320,7 +324,7 @@ proc ::maint::ChangeCustomDescription {} {
   ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
   pack $w.a -side top -fill x
   pack $w.b -side bottom -fill x
-  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   wm resizable $w 0 0
   catch {grab $w}
 }
@@ -405,14 +409,14 @@ proc ::maint::SetAutoloadGame {} {
   global autoloadGame
   set w .autoload
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid"
   set ::curr_db [sc_base current]
   set autoloadGame [sc_base extra $::curr_db autoload]
   
   pack [ttk::frame $w.f] -side top -fill x -expand 1
   ttk::label $w.f.label -text $::tr(AutoloadGame:)
-  ttk::entry $w.f.entry -textvar autoloadGame -justify right -width 10 ;# -foreground black -background white
+  ttk::entry $w.f.entry -textvar autoloadGame -justify right -width 10
   pack $w.f.label $w.f.entry -side left
   
   pack [ttk::frame $w.set] -side top -fill x
@@ -423,16 +427,14 @@ proc ::maint::SetAutoloadGame {} {
   ttk::button $w.set.last -text $::tr(Last) -command {set autoloadGame 9999999}
   foreach i {none first current last} {$w.set.$i configure -style Small.TButton}
   pack $w.set.none $w.set.first $w.set.current $w.set.last \
-      -side left -padx 1 -pady 2
-  
-  addHorizontalRule $w
-  
+      -side right -padx 5 -pady 2
+
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text OK -command \
       "sc_base extra $::curr_db autoload \$autoloadGame; catch {grab release $w}; destroy $w"
   ttk::button $w.b.cancel -text $::tr(Cancel) -command \
       "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   
   bind $w.f.entry <Return> "$w.b.ok invoke"
   bind $w.f.entry <Escape> "$w.b.cancel invoke"
@@ -457,23 +459,19 @@ proc markTwins {{parent .}} {
   
   set w .twinSettings
   if {! [winfo exists $w]} {
-    toplevel $w
+    win::createDialog $w
     wm resizable $w 0 0
     wm title $w "Scid: $::tr(DeleteTwins)"
     pack [ttk::frame $w.f]
     set small font_Small
     
-    ttk::label $w.f.note -text $::tr(TwinsNote) -justify left -wraplength 500 -font $small
+    ttk::label $w.f.note -text $::tr(TwinsNote) -justify left -wraplength 300 -font $small
     pack $w.f.note -side top -anchor w -ipady 0 -pady 0
-    addHorizontalRule $w.f
-    ttk::label $w.f.tc -text $::tr(TwinsCriteria) -font font_Bold
-    pack $w.f.tc -side top
-    
-    ttk::frame $w.f.g
-    pack $w.f.g -side top
+    ttk::labelframe $w.f.g -text $::tr(TwinsCriteria)
+    pack $w.f.g -side top -anchor w -fill x -pady 10
     set row 0
     set col 0
-    foreach name {Colors Event Site Round Year Month Day Result ECO Moves} {
+    foreach name {Colors Event Day Result Round Month ECO Site Year Moves} {
       set n [string tolower $name]
       ttk::checkbutton $w.f.g.b$n -text $::tr(Twins$name) \
           -variable twinSettings($n) -onvalue Yes -offvalue No
@@ -486,73 +484,45 @@ proc markTwins {{parent .}} {
         incr col
       }
     }
-    ttk::frame $w.f.players
-    ttk::label $w.f.players.label -text $::tr(TwinsPlayers) -font $small
-    ttk::radiobutton $w.f.players.yes -variable twinSettings(players) -value Yes \
+    ttk::frame $w.f.pg
+    pack $w.f.pg -side top -anchor w -pady 10 -fill x
+    ttk::labelframe $w.f.pg.players -text $::tr(TwinsPlayers)
+    ttk::radiobutton $w.f.pg.players.yes -variable twinSettings(players) -value Yes \
         -text $::tr(TwinsPlayersExact) -style Small.TRadiobutton
-    ttk::radiobutton $w.f.players.no -variable twinSettings(players) -value No \
+    ttk::radiobutton $w.f.pg.players.no -variable twinSettings(players) -value No \
         -text $::tr(TwinsPlayersPrefix) -style Small.TRadiobutton
     
-    pack $w.f.players -side top
-    pack $w.f.players.label $w.f.players.yes $w.f.players.no -side left
+    pack $w.f.pg.players.yes $w.f.pg.players.no -side top -anchor w
   }
   
-  
-  addHorizontalRule $w.f
-  ttk::label $w.f.twhich -text $::tr(TwinsWhich:) -font font_Bold
-  pack $w.f.twhich -side top
-  pack [ttk::frame $w.f.g2] -side top -fill x
-  ttk::radiobutton $w.f.g2.exall -text $::tr(SelectAllGames) -style Small.TRadiobutton \
+  ttk::labelframe $w.f.pg.g2 -text $::tr(TwinsWhich)
+  pack $w.f.pg.players $w.f.pg.g2 -side left -anchor w -fill x -padx "0 15"
+  ttk::radiobutton $w.f.pg.g2.exall -text $::tr(SelectAllGames) -style Small.TRadiobutton \
       -variable twinSettings(usefilter) -value No
-  ttk::label $w.f.g2.space -text "    " -font $small
-  ttk::radiobutton $w.f.g2.exfil -text $::tr(SelectFilterGames) -style Small.TRadiobutton \
+  ttk::radiobutton $w.f.pg.g2.exfil -text $::tr(SelectFilterGames) -style Small.TRadiobutton \
       -variable twinSettings(usefilter) -value Yes
-  grid $w.f.g2.exall -row 0 -column 0 -sticky e
-  grid $w.f.g2.space -row 0 -column 1
-  grid $w.f.g2.exfil -row 0 -column 2 -sticky w
-  grid columnconfigure $w.f.g2 0 -weight 1
-  grid columnconfigure $w.f.g2 2 -weight 1
-  
-  addHorizontalRule $w.f
-  ttk::label $w.f.twhen -text $::tr(TwinsWhen:) -font font_Bold
-  pack $w.f.twhen -side top
-  pack [ttk::frame $w.f.g3] -side top
+  pack $w.f.pg.g2.exall $w.f.pg.g2.exfil -side top -fill x -anchor w
+
+  ttk::labelframe $w.f.g3 -text $::tr(TwinsWhen)
+  pack $w.f.g3 -side top -fill x
   set row 0
-  set col 0
   foreach n {skipshort undelete setfilter comments variations} \
       name {SkipShort Undelete SetFilter Comments Vars} {
         ttk::checkbutton $w.f.g3.b$n -text $::tr(Twins$name) -variable twinSettings($n) -onvalue Yes -offvalue No
-        grid $w.f.g3.b$n -row $row -column $col -sticky w
-        incr col
-        if {$col >= 2} {
-          incr row; set col 0
-        } else {
-          grid [ttk::label $w.f.g3.space$n -text "   "] -row $row -column $col
-          incr col
-        }
+        grid $w.f.g3.b$n -row $row -column 0 -sticky w
+        incr row
       }
-  incr row
-  #$w.f.g3.lskipshort configure -text $::tr(TwinsSkipShort)
-  #$w.f.g3.lundelete configure -text $::tr(TwinsUndelete)
-  #$w.f.g3.lsetfilter configure -text $::tr(TwinsSetFilter)
-  #$w.f.g3.lcomments configure -text $::tr(TwinsComments)
-  #$w.f.g3.lvariations configure -text $::tr(TwinsVars)
   ttk::label $w.f.g3.ldelete -text $::tr(TwinsDeleteWhich) -font font_Bold
-  grid $w.f.g3.ldelete -row $row -column 0 -sticky we -columnspan 3
-  incr row
-  ttk::frame $w.f.g3.vdelete
+  grid $w.f.g3.ldelete -row 0 -column 1 -sticky w -padx "15 0"
+
+  set row 1
   foreach v {Shorter Older Newer} {
-    ttk::radiobutton $w.f.g3.vdelete.v$v -text $::tr(TwinsDelete$v) \
+    ttk::radiobutton $w.f.g3.v$v -text $::tr(TwinsDelete$v) \
         -variable twinSettings(delete) -value $v -style Small.TRadiobutton
-    pack $w.f.g3.vdelete.v$v -side left -padx 5
+     grid $w.f.g3.v$v -row $row -column 1 -padx "25 0" -sticky w
+     incr row
   }
-  grid $w.f.g3.vdelete -row $row -column 0 -columnspan 3
-  
-  #foreach g {g2 g3} {
-  #  grid columnconfigure $w.f.$g 0 -weight 1
-  #}
-  
-  addHorizontalRule $w.f
+
   ttk::frame $w.f.b
   dialogbutton $w.f.b.defaults -textvar ::tr(Defaults) -command {
     array set twinSettings [array get twinSettingsDefaults]
@@ -583,8 +553,8 @@ proc markTwins {{parent .}} {
   
   pack $w.f.progress -side bottom -padx 2 -pady 2
   pack $w.f.b -side bottom -fill x
-  packbuttons right  $w.f.b.cancel $w.f.b.go
-  packbuttons left $w.f.b.defaults $w.f.b.help
+  packdlgbuttons  $w.f.b.cancel $w.f.b.go
+  pack $w.f.b.defaults $w.f.b.help -side left -padx 5 -pady "15 5"
   bind $w <F1> "$w.f.b.help invoke"
   bind $w <Escape> "$w.f.b.cancel invoke"
   bind $w <Return> "$w.f.b.go invoke"
@@ -692,13 +662,11 @@ proc makeClassifyWin {} {
     raiseWin $w
     return
   }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr FileMaintClass]"
   
   pack [ttk::frame $w.f] -expand 1
-  
-  ttk::label $w.f.label -font font_Bold -textvar ::tr(ClassifyWhich)
-  ttk::frame $w.f.g
+  ttk::labelframe  $w.f.g -text $::tr(ClassifyWhich)
   ttk::radiobutton $w.f.g.all -textvar ::tr(ClassifyAll) -variable classifyOption(AllGames) -value all
   ttk::radiobutton $w.f.g.filter -textvar ::tr(SelectFilterGames) -variable classifyOption(AllGames) -value filter
   set year [::utils::date::today year]
@@ -722,9 +690,9 @@ proc makeClassifyWin {} {
     grid $w.f.g.$f -row $row -column 0 -sticky w
     incr row
   }
-  ttk::label $w.f.codes -font font_Bold -textvar ::tr(ClassifyCodes:)
-  ttk::radiobutton $w.f.extended -textvar ::tr(ClassifyBasic) -variable classifyOption(ExtendedCodes) -value 0
-  ttk::radiobutton $w.f.basic -textvar ::tr(ClassifyExtended) -variable classifyOption(ExtendedCodes) -value 1
+  ttk::labelframe $w.f.codes -text $::tr(ClassifyCodes)
+  ttk::radiobutton $w.f.codes.extended -textvar ::tr(ClassifyBasic) -variable classifyOption(ExtendedCodes) -value 0
+  ttk::radiobutton $w.f.codes.basic -textvar ::tr(ClassifyExtended) -variable classifyOption(ExtendedCodes) -value 1
   
   ttk::frame $w.f.b
   ttk::button $w.f.b.go -textvar ::tr(Classify) -command {
@@ -748,13 +716,13 @@ proc makeClassifyWin {} {
   $w.f.progress create text 295 10 -anchor e -font font_Regular -tags time \
       -fill black -text "0:00 / 0:00"
   
-  pack $w.f.label $w.f.g -side top -pady 5
-  addHorizontalRule $w.f
-  pack $w.f.codes $w.f.extended $w.f.basic -side top -pady 5
-  addHorizontalRule $w.f
-  pack $w.f.b -side top -pady 5 -fill x
+  pack $w.f.g -anchor w -fill x -side top -pady "0 10"
+
+  pack $w.f.codes -side top -pady 10 -anchor w -fill x
+  pack $w.f.codes.extended $w.f.codes.basic -side top -anchor w -fill x
+  pack $w.f.b -side top -fill x
+  packdlgbuttons $w.f.b.cancel $w.f.b.go
   pack $w.f.progress -side bottom -padx 2 -pady 2
-  pack $w.f.b.cancel $w.f.b.go -side right -pady 10 -padx 10
   wm resizable $w 0 0
   bind $w <F1> {helpWindow ECO}
   bind $w <Escape> "$w.b.cancel invoke"
@@ -779,15 +747,13 @@ proc updateTwinChecker {} {
   global twincheck
   set w .twinchecker
   if {![winfo exists $w]} {
-    toplevel $w
+    win::createDialog $w
     pack [ttk::frame $w.b] -side bottom -fill x
     pack [ttk::frame $w.f] -side top -fill both -expand yes
     ttk::frame $w.f.left
     pack $w.f.left -side left -fill y -expand yes
-    ttk::frame $w.f.split -width 2 -borderwidth 2 -relief sunken
-    pack $w.f.split -side left -fill y -padx 5
     ttk::frame $w.f.right
-    pack $w.f.right -side left -fill y -expand yes
+    pack $w.f.right -side left -fill y -expand yes -padx "10 0"
     foreach i {left right} {
       set f $w.f.$i
       pack [ttk::frame $f.title] -side top -fill x
@@ -795,7 +761,7 @@ proc updateTwinChecker {} {
       ttk::checkbutton $f.title.d -text $::tr(Deleted) -variable twincheck($i) -style Small.TCheckbutton
       ttk::label $f.title.note -font font_Small
       pack $f.title.label $f.title.d $f.title.note -side left
-      ttk::label $f.tmt -font font_Small -text "" -anchor w -width 1 -relief sunken
+      ttk::label $f.tmt -font font_Small -text "" -anchor w
       pack $f.tmt -side bottom -fill x
       autoscrollframe $f.t text $f.t.text \
           -height 16 -width 40 -background white \
@@ -814,8 +780,8 @@ proc updateTwinChecker {} {
         -command "markTwins $w"
     ttk::button $w.b.help -text $::tr(Help) -command {helpWindow Maintenance Twins}
     ttk::button $w.b.close -text $::tr(Close) -command "focus .; destroy $w"
-    pack $w.b.close $w.b.help $w.b.delete -side right -padx 5 -pady 2
-    pack $w.b.prev $w.b.next $w.b.share -side left -padx 5 -pady 2
+    packdlgbuttons $w.b.close $w.b.delete $w.b.help
+    pack $w.b.prev $w.b.next $w.b.share -side left -padx 5 -pady "15 5"
     bind $w <F1> "$w.b.help invoke"
     bind $w <Escape> "focus .; destroy $w"
     bind $w <Alt-p> {::game::LoadNextPrev previous}
@@ -1043,33 +1009,26 @@ proc allocateRatings {} {
     return
   }
   set w .ardialog
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid"
-  ttk::label $w.lab -wraplength 3i -justify center -text $::tr(AllocRatingDescription)
-  pack $w.lab -side top -expand 1 -fill x -anchor center
-  addHorizontalRule $w
-  pack [ttk::frame $w.r] -side top
-  ttk::label $w.r.lab -text $::tr(RatingOverride)
-  ttk::radiobutton $w.r.yes -variable addRatings(overwrite) \
-      -value 1 -text $::tr(Yes)
-  ttk::radiobutton $w.r.no -variable addRatings(overwrite) \
-      -value 0 -text $::tr(No)
-  pack $w.r.lab $w.r.yes $w.r.no -side left
-  addHorizontalRule $w
-  pack [ttk::frame $w.g] -side top -expand 1 -fill x
-  ttk::label $w.g.lab -text $::tr(AddRatings)
+  ttk::label $w.lab -wraplength 3i -justify left -text $::tr(AllocRatingDescription)
+  pack $w.lab -side top -expand 1 -fill x -anchor w
+  ttk::labelframe $w.g -text $::tr(AddRatings)
+  pack $w.g -side top -fill x -anchor w -pady 10
   ttk::radiobutton $w.g.all -variable addRatings(filter) \
       -value 0 -text $::tr(SelectAllGames)
   ttk::radiobutton $w.g.filter -variable addRatings(filter) \
       -value 1 -text $::tr(SelectFilterGames)
-  pack $w.g.lab $w.g.all $w.g.filter -side top
-  addHorizontalRule $w
+  pack $w.g $w.g.all $w.g.filter -side top -anchor w
+  ttk::checkbutton $w.r -text $::tr(RatingOverride) \
+          -variable addRatings(overwrite) -onvalue 1 -offvalue 0
+  pack $w.r -side top -anchor w -fill x -pady "5 0"
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text "OK" \
       -command "catch {grab release $w}; destroy $w; doAllocateRatings"
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 3 -pady 3
+  packdlgbuttons $w.b.cancel $w.b.ok
   catch {grab $w}
   focus $w.b.ok
 }
@@ -1132,12 +1091,11 @@ proc stripTags {} {
     return
   }
   
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(StripTags)"
-  ttk::label $w.title -text "Extra PGN tags:" -font font_Bold -anchor center
+  ttk::label $w.title -text "Extra PGN tags:" -font font_Bold -anchor w
   pack $w.title -side top -fill x -anchor center
   pack [ttk::frame $w.f] -side top -fill x
-  addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
   
   set row 0
@@ -1160,7 +1118,7 @@ proc stripTags {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.strip $w.b.find -side right -padx 2 -pady 2
+  packdlgbuttons $w.b.cancel $w.b.strip $w.b.find
   wm resizable $w 0 0
   update
   catch {grab $w}
@@ -1217,54 +1175,36 @@ proc cleanerWin {} {
   set w .mtoolWin
   if {[winfo exists $w]} { return }
   
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(Cleaner)"
   bind $w <F1> {helpWindow Maintenance Cleaner}
   pack [ttk::frame $w.f]
   
   pack [ttk::frame $w.f.help] -side top -fill x
-  text $w.f.help.text -width 1 -height 8 -wrap word \
-      -relief ridge -cursor top_left_arrow -yscrollcommand "$w.f.help.ybar set"
-  ttk::scrollbar $w.f.help.ybar -orient vertical -command "$w.f.help.text yview" \
-      -takefocus 0
-  pack $w.f.help.ybar -side right -fill y
+  ttk::label $w.f.help.text -wraplength 3i -text [string trim $::tr(CleanerHelp)]
   pack $w.f.help.text -side left -fill x -expand yes
-  $w.f.help.text insert end [string trim $::tr(CleanerHelp)]
-  $w.f.help.text configure -state disabled
   
-  pack [ttk::frame $w.f.f] -side top -padx 20
-  foreach i {players events sites rounds} j {Players Events Sites Rounds} {
-    ttk::label $w.f.f.$i -text "$::tr(Spellchecking): $::tr($j)"
-  }
-  ttk::label $w.f.f.eco -text $::tr(ReclassifyGames)
-  ttk::label $w.f.f.elo -text $::tr(AddEloRatings)
-  ttk::label $w.f.f.twins -text $::tr(DeleteTwins)
-  ttk::label $w.f.f.cgames -text $::tr(CompactDatabase)
-  
-  foreach i {players events sites rounds eco elo twins cgames} {
-    ttk::radiobutton $w.f.f.y$i -variable cleaner($i) -value 1 -text $::tr(Yes)
-    ttk::radiobutton $w.f.f.n$i -variable cleaner($i) -value 0 -text $::tr(No)
+  pack [ttk::frame $w.f.f] -side top -pady "10 0"
+
+  set spelltext $::tr(Spellchecking)
+  foreach i {players events sites rounds eco elo twins cgames} \
+      j {Players Events Sites Rounds ReclassifyGames AddEloRatings DeleteTwins CompactDatabase } {
+    # only use pretext spellcheck for the first four values
+    if { $i eq "eco" } { set spelltext "" }
+    ttk::checkbutton $w.f.f.$i -variable cleaner($i) -offvalue 0 -onvalue 1 -text "$spelltext $::tr($j)"
   }
   set row 0
   foreach i {players events sites rounds eco elo twins cgames} {
     grid $w.f.f.$i -row $row -column 0 -sticky w
-    grid $w.f.f.y$i -row $row -column 1 -sticky w
-    grid $w.f.f.n$i -row $row -column 2 -sticky w
     incr row
   }
   
-  addHorizontalRule $w.f
   pack [ttk::frame $w.f.b] -side bottom -fill x
   ttk::button $w.f.b.ok -text "OK" -command "catch {grab release $w}; destroy $w; doCleaner"
   ttk::button $w.f.b.cancel -text $::tr(Cancel) -command "catch {grab release $w}; destroy $w"
-  pack $w.f.b.cancel $w.f.b.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.f.b.cancel $w.f.b.ok
   wm resizable $w 0 0
-  # Remove the scrollbar if it is not needed:
   update
-  set yview [$w.f.help.text yview]
-  if {[lindex $yview 0] <= 0.01  &&  [lindex $yview 1] >= 0.99} {
-    pack forget $w.f.help.ybar
-  }
   catch {grab $w}
 }
 
@@ -1281,14 +1221,14 @@ proc doCleaner {} {
   
   set dbase [sc_base current]
 
-  set answer [tk_dialog .mtoolDialog "Scid" \
-      [string trim $::tr(CleanerConfirm)] "" \
-      0 $::tr(Yes) $::tr(No)]
-  if {$answer != 0} { return }
+  set answer [tk_messageBox -type yesno -icon question \
+      -title $::tr(TwinCriteriaConfirm) \
+      -message [string trim $::tr(CleanerConfirm)]]
+  if {$answer == "no"} { return 0 } else { return 1 }
   
   set w .mtoolStatus
   if {! [winfo exists $w]} {
-    toplevel $w
+    win::createDialog $w
     wm title $w "Scid: $::tr(Cleaner)"
     pack [ttk::frame $w.f]
     pack [ttk::frame $w.f.b] -side bottom -fill x -expand yes
@@ -1299,7 +1239,7 @@ proc doCleaner {} {
     pack $w.f.t.ybar -side right -fill y
     pack $w.f.t.text -side left -fill both -expand yes
     ttk::button $w.f.b.close -text $::tr(Close) -command "catch {grab release $w}; destroy $w"
-    pack $w.f.b.close -side right -padx 2 -pady 2
+    packdlgbuttons $w.f.b.close
     wm minsize $w 20 5
   }
   

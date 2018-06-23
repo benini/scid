@@ -940,17 +940,13 @@ translate D ReclassifyGames {Partien ECO-klassifizieren}
 translate D CompactDatabase {Datenbank komprimieren}
 translate D SortDatabase {Datenbank sortieren}
 translate D AddEloRatings {ELO-Zahlen hinzufügen}
-translate D AutoloadGame {Automatisch Partie Nr. laden}
+translate D AutoloadGame {Lade automatisch Partie Nr.}
 translate D StripTags {PGN-Markierungen entfernen}
 translate D StripTag {Markierung entfernen}
 translate D Cleaner {Bereiniger}
 translate D CleanerHelp {
-Der Scid-Bereiniger wird für die aktuelle Datenbank alle
-Wartungsarbeiten ausführen, welche aus der unten stehenden
-Liste ausgewählt werden.
-
-Aktuelle Einstellungen in den Menüs "ECO-Klassifikation" und "Dubletten löschen"
-werden angewendet, falls diese Funktionen ausgewählt sind.}
+Der Scid-Bereiniger wird für die aktuelle Datenbank alle Wartungsarbeiten ausführen, welche aus der unten stehenden Liste ausgewählt werden.
+Aktuelle Einstellungen in den Menüs "ECO-Klassifikation" und "Dubletten löschen" werden bei Auswahl dieser Funktionen verwendet.}
 translate D CleanerConfirm {
 Ist der Bereiniger einmal gestartet, kann er nicht mehr unterbrochen werden!
 
@@ -983,9 +979,9 @@ translate D TwinCriteria3 {Es wird empfohlen, dass bei der Auswahl "Ja" für mind
 Wollen Sie fortsetzen und mit dieser Auswahl die Dubletten löschen?}
 translate D TwinCriteriaConfirm {Scid: Bestätigen der Dublettensuchparameter}
 translate D TwinChangeTag "Ändern der folgenden Partie-Tags:\n\n"
-translate D AllocRatingDescription "Mit dieser Funktion werden die ELO-Werte aus der Schreibkorrekturdatei den Partien hinzugefügt. Der Wert wird hinzugefügt, wenn ein/e Spieler/in keinen aktuellen Wert in der Partie besitzt, aber in der Korrekturdatei ein Wert für den Zeitraum der Partie vorhanden ist."
-translate D RatingOverride "Existierende ELO-Werte überschreiben?"
-translate D AddRatings "Elo-Werte hinzufügen:"
+translate D AllocRatingDescription "Es werden die ELO-Werte aus der Schreibkorrekturdatei den Partien hinzugefügt, wenn der/die Spieler/in keinen aktuellen Wert in der Partie besitzt, aber in der Korrekturdatei ein Wert für den Zeitraum der Partie vorhanden ist."
+translate D RatingOverride "Existierende ELO-Werte überschreiben"
+translate D AddRatings "Elo-Werte hinzufügen"
 translate D AddedRatings {Scid hat $r Elo-Werte in $g Partien hinzugefügt.}
 
 #Bookmark editor
@@ -1235,35 +1231,35 @@ translate D TrackerMovesStop \
   {Zugnummer, wo die Verteilungsberechnung enden soll.}
 
 # Game selection dialogs:
-translate D SelectAllGames {Alle Spiele in der Datenbank}
-translate D SelectFilterGames {Nur Spiele im Filter}
-translate D SelectTournamentGames {Nur Spiele des aktuellen Turniers}
-translate D SelectOlderGames {Nur ältere Spiele}
+translate D SelectAllGames {Alle Partien in der Datenbank}
+translate D SelectFilterGames {Nur Partien im Filter}
+translate D SelectTournamentGames {Nur Partien des aktuellen Turniers}
+translate D SelectOlderGames {Nur ältere Partien}
 
 # Delete Twins window:
 translate D TwinsNote {Damit zwei Spiele Dubletten sind, müssen diese mindestens die beiden selben Spieler haben und die folgenden Kriterien, die Sie auswählen können, erfüllen. Wenn zwei Dubletten gefunden werden, so wird die kürzere der beiden Spiele gelöscht. Tip: am besten führt man erst eine Schreibkorrektur durch, da dadurch das Finden von Dubletten verbessert wird.}
 translate D TwinsCriteria {Kriterium: Dubletten müssen haben ...}
-translate D TwinsWhich {Überprüfe, welche Spiele}
-translate D TwinsColors {die gleichen Spielerfarben?}
-translate D TwinsEvent {das gleich Ereignis?}
-translate D TwinsSite {den gleichen Ort?}
-translate D TwinsRound {die gleiche Runde?}
-translate D TwinsYear {das gleiche Jahr?}
-translate D TwinsMonth {den gleichen Monat?}
-translate D TwinsDay {den gleichen Tag?}
-translate D TwinsResult {das gleiche Ergebnis?}
-translate D TwinsECO {den gleichen ECO-Code?}
-translate D TwinsMoves {die gleichen Züge?}
-translate D TwinsPlayers {Vergleich Spielernamen}
+translate D TwinsWhich {Überprüfe Partien}
+translate D TwinsColors {gleiche Spielerfarbe}
+translate D TwinsEvent {gleiches Ereignis}
+translate D TwinsSite {gleichen Ort}
+translate D TwinsRound {gleiche Runde}
+translate D TwinsYear {gleiches Jahr}
+translate D TwinsMonth {gleichen Monat}
+translate D TwinsDay {gleichen Tag}
+translate D TwinsResult {gleiches Ergebnis}
+translate D TwinsECO {gleichen ECO-Code}
+translate D TwinsMoves {gleiche Züge}
+translate D TwinsPlayers {Vergleiche Spielernamen}
 translate D TwinsPlayersExact {Exakte Treffer}
 translate D TwinsPlayersPrefix {Nur erste 4 Buchstaben}
 translate D TwinsWhen {Beim Löschen der Dubletten}
-translate D TwinsSkipShort {Partien unter 5 Zügen ignorieren?}
-translate D TwinsUndelete {Zuerst alle Partien entlöschen?}
-translate D TwinsSetFilter {Filter auf Dubletten setzen?}
-translate D TwinsComments {Spiele mit Kommentar immer behalten?}
-translate D TwinsVars {Spiele mit Varianten immer behalten?}
-translate D TwinsDeleteWhich {Welche Partie löschen:}
+translate D TwinsSkipShort {Partien unter 5 Zügen ignorieren}
+translate D TwinsUndelete {Zuerst alle Partien entlöschen}
+translate D TwinsSetFilter {Filter auf Dubletten setzen}
+translate D TwinsComments {Spiele mit Kommentar immer behalten}
+translate D TwinsVars {Spiele mit Varianten immer behalten}
+translate D TwinsDeleteWhich {Lösche Partie}
 translate D TwinsDeleteShorter {Kürzere Partie}
 translate D TwinsDeleteOlder {Kleinere Partienummer}
 translate D TwinsDeleteNewer {Größere Partienummer}
@@ -1282,14 +1278,14 @@ translate D CheckSelectFilterGames {Partien im Filter}
 
 # Classify window:
 translate D Classify {Klassifiziere}
-translate D ClassifyWhich {ECO-klassifizieren}
+translate D ClassifyWhich {Partien ECO-klassifizieren}
 translate D ClassifyAll {Alle Spiele (überschreibe alte ECO-Codes)}
 translate D ClassifyYear {Alle Spiele  aus dem letzten Jahr}
 translate D ClassifyMonth {Alle Spiele aus dem letzten Monat}
 translate D ClassifyNew {Nur Spiele ohne ECO-Code}
-translate D ClassifyCodes {Verwende}
-translate D ClassifyBasic {Normale ECO-Codes ("B12", ...)}
-translate D ClassifyExtended {ECO-Codes mit Scid-Erweiterung ("B12j", ...)}
+translate D ClassifyCodes {ECO-Codes verwenden}
+translate D ClassifyBasic {Standard Codes ("B12", ...)}
+translate D ClassifyExtended {mit Scid-Erweiterung ("B12j", ...)}
 
 # Compaction:
 translate D NameFile {Namendatenbank}

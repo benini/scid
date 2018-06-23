@@ -994,7 +994,7 @@ translate F TwinCriteria3 {Il est recommandé de sélectionner "Oui" pour au moins
 translate F TwinCriteriaConfirm {Scid: Confirmer les paramètres de doublons}
 translate F TwinChangeTag "Changer les tags de partie suivants:\n\n"
 translate F AllocRatingDescription "Cette commande va utiliser les fichiers de vérification de noms et de classement ELO pour les parties de cette base. Chaque fois qu'un joueur n'a pas de classement mais que son classement est listé dans le fichier de vérification de noms à la date de la partie, ce classement est pris en compte."
-translate F RatingOverride "Remplacer le classement non nul existant ?"
+translate F RatingOverride "Remplacer le classement non nul existant"
 translate F AddRatings "ajouter classement à:"
 translate F AddedRatings {Scid a ajouté $r classements Elo dans $g parties.}
 translate F NewSubmenu "Nouveau sous-menu"
@@ -1247,26 +1247,26 @@ translate F SelectOlderGames {Seulement les parties plus anciennes}
 translate F TwinsNote {Pour être considérées comme doublons, deux parties doivent au moins avoir les deux mêmes joueurs, et avoir les critères que vous pouvez fixer ci-dessous satisfaits. Quand une paire de doublons est trouvée, la partie la plus courte est effacée. Conseil: il est préférable de vérifier l'orthographe dans la base avant d'effacer les doublons, car cela améliore la détection des doublons. }
 translate F TwinsCriteria {Critère: Les doublons doivent avoir...}
 translate F TwinsWhich {Parties à examiner}
-translate F TwinsColors {Même couleurs de joueurs?}
-translate F TwinsEvent {Même évènement?}
-translate F TwinsSite {Même lieu?}
-translate F TwinsRound {Même ronde?}
-translate F TwinsYear {Même année?}
-translate F TwinsMonth {Même mois?}
-translate F TwinsDay {Même jour?}
-translate F TwinsResult {Même résultat?}
-translate F TwinsECO {Même code ECO?}
-translate F TwinsMoves {Mêmes coups?}
-translate F TwinsPlayers {Comparaison des noms des joueurs:}
+translate F TwinsColors {Même couleurs de joueurs}
+translate F TwinsEvent {Même évènement}
+translate F TwinsSite {Même lieu}
+translate F TwinsRound {Même ronde}
+translate F TwinsYear {Même année}
+translate F TwinsMonth {Même mois}
+translate F TwinsDay {Même jour}
+translate F TwinsResult {Même résultat}
+translate F TwinsECO {Même code ECO}
+translate F TwinsMoves {Mêmes coups}
+translate F TwinsPlayers {Comparaison des noms des joueurs}
 translate F TwinsPlayersExact {Correspondance exacte}
 translate F TwinsPlayersPrefix {Les 4 premières lettres seules}
 translate F TwinsWhen {En effacant les doublons}
-translate F TwinsSkipShort {Ignorer toutes les parties de moins de cinq coups?}
-translate F TwinsUndelete {Récupérer toutes les parties d'abord?}
-translate F TwinsSetFilter {Appliquer le filtre à tous les doublons éliminés?}
-translate F TwinsComments {Toujours garder les parties qui comportent des commentaires?}
-translate F TwinsVars {Toujours garder les parties qui comportent des variantes?}
-translate F TwinsDeleteWhich {Partie à effacer:}
+translate F TwinsSkipShort {Ignorer toutes les parties de moins de cinq coups}
+translate F TwinsUndelete {Récupérer toutes les parties d'abord}
+translate F TwinsSetFilter {Appliquer le filtre à tous les doublons éliminés}
+translate F TwinsComments {Toujours garder les parties qui comportent des commentaires}
+translate F TwinsVars {Toujours garder les parties qui comportent des variantes}
+translate F TwinsDeleteWhich {Partie à effacer}
 translate F TwinsDeleteShorter {La partie la plus courte}
 translate F TwinsDeleteOlder {La partie avec le plus petit numéro}
 translate F TwinsDeleteNewer {La partie avec le plus grand numéro}

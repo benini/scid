@@ -954,7 +954,6 @@ translate E StripTag {Strip tag}
 translate E Cleaner {Cleaner}
 translate E CleanerHelp {
 The Scid Cleaner will perform all the maintenance actions you select from the list below, on the current database.
-
 Current settings in the ECO classification and twin deletion dialogs will apply if you select those functions.
 }
 translate E CleanerConfirm {
@@ -982,7 +981,7 @@ translate E TwinCriteria3 {It is recommended that you specify "Yes" for at least
 translate E TwinCriteriaConfirm {Scid: Confirm twin settings}
 translate E TwinChangeTag "Change the following game tags:\n\n"
 translate E AllocRatingDescription "This command will use the current spellcheck file to add Elo ratings to games in this database. Wherever a player has no current rating but his/her rating at the time of the game is listed in the spellcheck file, that rating will be added."
-translate E RatingOverride "Overwrite existing non-zero ratings?"
+translate E RatingOverride "Overwrite existing non-zero ratings"
 translate E AddRatings "Add ratings to:"
 translate E AddedRatings {Scid added $r Elo ratings in $g games.}
 
@@ -1238,26 +1237,26 @@ translate E SelectOlderGames {Only older games}
 translate E TwinsNote {To be twins, two games must at least have the same two players, and criteria you can set below. When a pair of twins is found, the shorter game is deleted. Hint: it is best to spellcheck the database before deleting twins, since it improves twin detection. }
 translate E TwinsCriteria {Criteria: Twin games must have...}
 translate E TwinsWhich {Examine which games}
-translate E TwinsColors {Same player colors?}
-translate E TwinsEvent {Same event?}
-translate E TwinsSite {Same site?}
-translate E TwinsRound {Same round?}
-translate E TwinsYear {Same year?}
-translate E TwinsMonth {Same month?}
-translate E TwinsDay {Same day?}
-translate E TwinsResult {Same result?}
-translate E TwinsECO {Same ECO code?}
-translate E TwinsMoves {Same moves?}
-translate E TwinsPlayers {Comparing player names:}
+translate E TwinsColors {Same player colors}
+translate E TwinsEvent {Same event}
+translate E TwinsSite {Same site}
+translate E TwinsRound {Same round}
+translate E TwinsYear {Same year}
+translate E TwinsMonth {Same month}
+translate E TwinsDay {Same day}
+translate E TwinsResult {Same result}
+translate E TwinsECO {Same ECO code}
+translate E TwinsMoves {Same moves}
+translate E TwinsPlayers {Comparing player names}
 translate E TwinsPlayersExact {Exact match}
 translate E TwinsPlayersPrefix {First 4 letters only}
 translate E TwinsWhen {When deleting twin games}
-translate E TwinsSkipShort {Ignore all games under 5 moves long?}
-translate E TwinsUndelete {Undelete all games first?}
-translate E TwinsSetFilter {Set filter to all deleted twin games?}
-translate E TwinsComments {Always keep games with comments?}
-translate E TwinsVars {Always keep games with variations?}
-translate E TwinsDeleteWhich {Delete which game:}
+translate E TwinsSkipShort {Ignore all games under 5 moves long}
+translate E TwinsUndelete {Undelete all games first}
+translate E TwinsSetFilter {Set filter to all deleted twin games}
+translate E TwinsComments {Always keep games with comments}
+translate E TwinsVars {Always keep games with variations}
+translate E TwinsDeleteWhich {Delete game}
 translate E TwinsDeleteShorter {Shorter game}
 translate E TwinsDeleteOlder {Smaller game number}
 translate E TwinsDeleteNewer {Larger game number}

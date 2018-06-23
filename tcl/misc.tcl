@@ -97,7 +97,9 @@ proc dialogbuttonframe {frame buttonlist} {
 proc packbuttons {side args} {
   eval pack $args -side $side -padx 5 -pady 3
 }
-
+proc packdlgbuttons {args} {
+  pack {*}$args -side right -padx 5 -pady "15 5"
+}
 # dialogbutton:
 #   Creates a button that will be shown in a dialog box, so it
 #   is given a minimum width.
