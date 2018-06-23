@@ -572,7 +572,7 @@ translate D ToBeVerified {Überprüfen}
 translate D ToTrain {Trainieren}
 translate D Dubious {Zweifelhaft}
 translate D ToRemove {Entfernen}
-translate D NoMarker {Keine Markierung}
+translate D NoMarker {Keine Kennzeichen}
 translate D ColorMarker {Farbe}
 translate D WhiteMark {Weiß}
 translate D GreenMark {Grün}
@@ -804,7 +804,7 @@ translate D HeaderSearch {Partiedatensuche}
 translate D EndSideToMove {Wer ist beim Partieende am Zug?}
 translate D GamesWithNoECO {Partien ohne ECO}
 translate D GameLength {Partielänge}
-translate D FindGamesWith {Finde Partien mit den Markierungen (Flags)}
+translate D FindGamesWith {Finde Partien mit Kennzeichen}
 translate D StdStart {Grundstellung}
 translate D Promotions {Umwandlung}
 translate D Comments {Kommentare}
@@ -846,7 +846,7 @@ translate D GlistECO {ECO}
 translate D GlistOpening {Eröffnung}
 translate D GlistEndMaterial {Endmaterial}
 translate D GlistDeleted {Gelöscht}
-translate D GlistFlags {Markierungen}
+translate D GlistFlags {Kennzeichen}
 translate D GlistVars {Varianten}
 translate D GlistComments {Kommentare}
 translate D GlistAnnos {Anmerkungen}
@@ -915,8 +915,8 @@ translate D NumFilterGames {Partien im Filter:}
 translate D YearRange {Jahr-Spanne:}
 translate D RatingRange {Elo-Spanne:}
 translate D Description {Beschreibung}
-translate D Flag {Markierung}
-translate D CustomFlags {Benutzerdefinierte Markierungen}
+translate D Flag {Kennzeichen}
+translate D CustomFlags {Benutzerdefinierte Kennzeichen}
 translate D DeleteCurrent {Lösche aktuelle Partie}
 translate D DeleteFilter {Lösche Partien im Filter}
 translate D DeleteAll {Lösche alle Partien}
@@ -941,8 +941,8 @@ translate D CompactDatabase {Datenbank komprimieren}
 translate D SortDatabase {Datenbank sortieren}
 translate D AddEloRatings {ELO-Zahlen hinzufügen}
 translate D AutoloadGame {Lade automatisch Partie Nr.}
-translate D StripTags {PGN-Markierungen entfernen}
-translate D StripTag {Markierung entfernen}
+translate D StripTags {PGN-Kennungen entfernen}
+translate D StripTag {Kennungen entfernen}
 translate D Cleaner {Bereiniger}
 translate D CleanerHelp {
 Der Scid-Bereiniger wird für die aktuelle Datenbank alle Wartungsarbeiten ausführen, welche aus der unten stehenden Liste ausgewählt werden.
@@ -2014,7 +2014,7 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Cmdline><b>Kommandozeilen</b>-Optionen</a></li>
 <li><a LaTeX>Scid und <b>LaTeX</b></a> </li>
 <li><a Bookmarks><b>Lesezeichen</b></a></li>
-<li><a Flags>Partie-<b>Markierungen</b> (Flags)</a></red></li>
+<li><a Flags>Partie-<b>Kennzeichen</b> (Flags)</a></red></li>
 <li><a Options><b>Optionen</b> und Präferenzen</a></li>
 <li><a Pgnscid><b>Pgnscid</b>: PGN-Dateien konvertieren</a></li>
 <li><a NAGs><b>NAG</b>-Standard-Kommentarwerte</a></li>
@@ -2129,7 +2129,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>M</h3>
 <ul>
-<li><a Flags>Markierungen</a></li>
+<li><a Flags>Kennzeichen</a></li>
 <li><a Searches Material>Material-/Muster-Suche</a></li>
 <li><a Menus>Menüs</a></li>
 </ul>
@@ -2151,7 +2151,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <ul>
 <li><a Searches Header>Partiedaten-Suche</a></li>
 <li><a GameList>Partielisten</a></li>
-<li><a Flags>Partie-Markierungen</a></li>
+<li><a Flags>Partie-Kennzeichen</a></li>
 <li><a Menus Game>Partie-Menü</a></li>
 <li><a PGN>PGN-Fenster</a></li>
 <li><a Pgnscid>Pgnscid</a></li>
@@ -2473,7 +2473,7 @@ falls enthalten in der gerade benutzen ECO-Datei.
 <p>
 Der Informationsbereich hat ein Menü, welches man mit der
 rechten Maustaste aktivieren kann. Hierüber kann man bestimmte
-Informationen zum Spiel zeigen oder verstecken sowie Markierungen
+Informationen zum Spiel zeigen oder verstecken sowie Kennzeichen
 für die aktuelle Partie setzten und löschen. Man kann das
 Menü auch über die <b>[F9]</b> Funktionstaste erreichen.
 </p>
@@ -2992,9 +2992,9 @@ Texte durchsucht werden müssen.
 Es ist daher eine gute Idee, diese Suchen so weit wie möglich einzugrenzen.
 Hier sind einige Beispiele:
 Um Partien mit einer Unterverwandlung in einen Turm zu finden,
-suchen Sie nach <b>=R</b> und setzen gleichzeitig die Markierung
+suchen Sie nach <b>=R</b> und setzen gleichzeitig die Kennung
 <b>Umwandlung</b> auf Ja.
-Wenn Sie nach Text in Kommentaren suchen, setzen Sie die Markierung
+Wenn Sie nach Text in Kommentaren suchen, setzen Sie die Kennung
 <b>Kommentare</b> auf Ja.
 Falls Sie nach den Zügen <b>Bxh7+</b> und <b>Kxh7</b> suchen, möchten
 Sie z.B. die Suche möglicherweise auf Partien mit dem Ergebnis 1-0 und
@@ -4434,7 +4434,7 @@ gespeichert ist).
 <p>
 Benutzerdefinierte Maskendateien (.stm) können angelegt werden, um die
 Anzeige der Statistik im Zugabaumfenster zu erweitern. Hiermit können
-einerseits farbige Markierungen, NAG-Codes oder Kommentare für eine
+einerseits farbige Symbole, NAG-Codes oder Kommentare für eine
 bestimmte Stellung hinzugefügt werden, um beispielsweise kritische
 Positionen zu markieren.
 </p>
@@ -4892,7 +4892,7 @@ Wartungsfenster erledigt werden, welches man mit dem Menü
 oder der Tastenkombination <b>Strg+M</b> öffnen kann.
 </p>
 <p>
-Sie können in diesem Fenster <a Flags>Partie-Markierungen</a>
+Sie können in diesem Fenster <a Flags>Partie-Kennzeichen</a>
 bearbeiten, Schreibkorrekturen durchführen, eine Datenbank
 <a Compact>komprimieren</a> oder <a Sorting>sortieren</a>.
 Alle Operationen, die für die aktuelle Datenbank nicht zur Verfügung
@@ -5220,8 +5220,8 @@ Eine EPD-Datei hat eine Reihe definierter "<term>Opcodes</term>"(-Felder),
 die in der Datei durch Semikolons (<b>;</b>) getrennt gespeichert sind,
 in einem EPD-Fenster von Scid aber in separaten Zeilen dargestellt
 werden, um das Bearbeiten zu erleichtern. Ein Semikolon innerhalb eines
-EPD-Feldes wird von Scid als "<b>\s</b>" gespeichert, um es von den
-Feldende-Markierungen zu unterscheiden.
+EPD-Feldes wird von Scid als "<b>\s</b>" gespeichert, um es von der
+Feldende-Kennung zu unterscheiden.
 Jede Position und ihre zugehöriger Opcode wird in der EPD-Datei in
 einer einzelnen Zeile gespeichert.
 </p>
@@ -5383,21 +5383,21 @@ Für weitere Informationen siehe die Hilfeseite <a LaTeX>Scid und LaTeX</a>.
 ####################
 ### Flags help:
 
-set helpTitle(D,Flags) "Partie-Markierungen"
-set helpText(D,Flags) {<h1>Partie-Markierungen</h1>
+set helpTitle(D,Flags) "Partie-Kennzeichen"
+set helpText(D,Flags) {<h1>Partie-Kennzeichen</h1>
 
 <p>
-Eine <term>Markierung</term> ("flag") ist ein Kennzeichen irgendeiner
+Eine <term>Kennzeichen</term> ("flag") ist ein Kennzeichen irgendeiner
 Schach-Charakteristik, die für jede Partie der Datenbank ein- oder
 ausgeschaltet werden kann. Es gibt 13 vom Benutzer einstellbare
-Markierungen, die Sie direkt für jede Partie setzen können. Von diesen
-hat nur die Lösch-Markierung eine besondere Bedeutung: Partien, bei
-denen die Lösch-Markierung eingeschaltet ist, sind zur Löschung
+Kennzeichen, die Sie direkt für jede Partie setzen können. Von diesen
+hat nur die Lösch-Kennzeichen eine besondere Bedeutung: Partien, bei
+denen die Lösch-Kennzeichen eingeschaltet ist, sind zur Löschung
 vorgemerkt und werden entfernt, wenn die Datenbank
 <a Compact>komprimiert</a> wird.
 </p>
 <p>
-Die anderen 12 vom Benutzer einstellbaren Markierungen und ihre
+Die anderen 12 vom Benutzer einstellbaren Kennzeichen und ihre
 Symbole sind:
 </p>
 
@@ -5417,26 +5417,26 @@ Symbole sind:
 </ul>
 
 <p>
-Eine Markierung kann für die aktuelle Partie, für alle Partien im
+Eine Kennzeichen kann für die aktuelle Partie, für alle Partien im
 Filter oder für alle Partien der Datenbank im
 <a Maintenance>Wartungs</a>-Fenster gesetzt werden.
 </p>
 <p>
 Sie können die <a Searches Header>Suche nach Partiedaten</a> benutzen,
-um alle Datenbankpartien zu finden, die eine bestimmte Markierung ein-
-oder ausgeschaltet haben, oder die Markierungen als Teil einer
+um alle Datenbankpartien zu finden, die ein bestimmtes Kennzeichen ein-
+oder ausgeschaltet haben, oder die Kennzeichen als Teil einer
 komplexeren Suche verwenden.
 </p>
 <p>
-Da alle vom Benutzer einstellbaren Markierungen keine Bedeutung für
-Scid haben (mit Ausnahme der Lösch-Markierung), können Sie sie für
+Da alle vom Benutzer einstellbaren Kennzeichen keine Bedeutung für
+Scid haben (mit Ausnahme der Lösch-Kennzeichen), können Sie diese für
 Ihre eigenen Bedürfnisse  verwenden. Zum Beispiel könnten Sie die
-Markierung "Spiel auf dem Köngsflügel" (K) für Bauernstürme auf den
+Kennzeichen "Spiel auf dem Köngsflügel" (K) für Bauernstürme auf den
 König verwenden, für Figurenangriffe auf den König oder auch für
 Endspiele mit allen Bauern auf dem Königsflügel.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.0, November 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.6, Juni 2018)</footer></p>
 }
 
 
@@ -6187,11 +6187,11 @@ set tips(D) {
     Dubletten zu finden und zum Löschen vorzumerken.
   }
   {
-    <a Flags>Markierungen</a> sind nützlich, um Datenbankpartien mit
+    <a Flags>Kennzeichen</a> sind nützlich, um Datenbankpartien mit
     Charakteristiken zu versehen, nach denen Sie zu einem späteren
     Zeitpunkt vielleicht suchen wollen, wie etwa Bauernstruktur, Taktik
     etc. Sie können mit der <a Searches Header>Partiedaten-Suche</a>
-    nach Markierungen suchen.
+    nach Kennzeichen suchen.
   }
   {
     Wenn Sie eine Partie nachspielen und einige Züge ausprobieren

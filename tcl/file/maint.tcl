@@ -93,14 +93,19 @@ proc ::maint::OpenClose {} {
   bind $w <F1> {helpWindow Maintenance}
   bind $w <Escape> "destroy $w; break"
   bind $w <Destroy> {set maintWin 0}
-  foreach f {title delete mark spell db buttons} {
+  foreach f {title dm buttons} {
     ttk::frame $w.$f
   }
-  foreach f {title delete mark spell db} {
-    pack $w.$f -side top -fill x
-    addHorizontalRule $w
+    foreach f {dm.delete dm.mark dm.spell dm.db} t { DeleteFlag Flag Spellchecking DatabaseOps } {
+    ttk::labelframe $w.$f -text $::tr($t)
   }
-  pack $w.buttons -side top -fill x
+  pack $w.title -side top -fill x
+  pack $w.dm -side top -fill x -fill y -pady 10
+  pack $w.buttons -side bottom -fill x
+  grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
+  grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
+  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
+  grid $w.dm.db -row 1 -column 1 -sticky snwe
   
   ttk::label $w.title.name -textvar ::tr(DatabaseName) -font font_Bold
   ttk::label $w.title.games -textvar ::tr(NumOfGames) -font font_SmallBold
@@ -116,9 +121,9 @@ proc ::maint::OpenClose {} {
   ttk::label $w.title.desc.lab -text $::tr(Description:) -font font_SmallBold
   ttk::label $w.title.desc.text -width 1 -font $font -relief sunken -anchor w
   ttk::button $w.title.desc.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeBaseDescription
-  pack $w.title.desc.lab -side left
-  pack $w.title.desc.edit -side right -padx 2
-  pack $w.title.desc.text -side left -fill x -expand yes
+  pack $w.title.desc.lab -side left -padx "0 5"
+  pack $w.title.desc.edit -side right -pady "0 5"
+  pack $w.title.desc.text -side left -fill x -expand yes -padx 5
   # Custom flags
   ttk::frame $w.title.cust
   ttk::label $w.title.cust.lab -text "[::tr CustomFlags]:" -font font_SmallBold
@@ -129,11 +134,19 @@ proc ::maint::OpenClose {} {
   }
   
   ttk::button $w.title.cust.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeCustomDescription
-  pack $w.title.cust.lab -side left
-  pack $w.title.cust.edit -side right -padx 2
+  pack $w.title.cust.lab -side left -padx "0 5"
+  pack $w.title.cust.edit -side right -padx "5 0" -pady "0 5"
   for {set i 1} { $i < 7} { incr i} {
     pack $w.title.cust.text$i -side left -fill x -expand yes
   }
+  ttk::frame $w.title.start
+  ttk::label $w.title.start.lab -text $::tr(AutoloadGame:) -font font_SmallBold
+  ttk::label $w.title.start.text -width 8 -font $font -relief sunken -anchor e
+  ttk::button $w.title.start.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::SetAutoloadGame
+  pack $w.title.start.lab -side left -padx "0 5"
+  pack $w.title.start.edit -side right
+  pack $w.title.start.text -side left -padx 5
+
   foreach name {name games delete mark filter dates ratings} {
     ttk::label $w.title.v$name -text "0" -font $font
   }
@@ -154,87 +167,87 @@ proc ::maint::OpenClose {} {
   grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
   incr row
   grid $w.title.cust -row $row -column 0 -columnspan 5 -sticky we
+  incr row
+  grid $w.title.start -row $row -column 0 -columnspan 5 -sticky we
   
-  foreach grid {title delete mark spell db} cols {5 3 3 4 3} {
+  foreach grid {title dm.delete dm.mark dm.spell dm.db} cols {5 2 2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
       grid columnconfigure $w.$grid $i -weight 1
     }
   }
   
-  ttk::label $w.delete.title -textvar ::tr(DeleteFlag) -font $bold
-  ttk::menubutton $w.mark.title -menu $w.mark.title.m ;# -indicatoron 1 -relief raised -font $bold
-  menu $w.mark.title.m -font $font
+  ttk::menubutton $w.dm.mark.title -menu $w.dm.mark.title.m
+  menu $w.dm.mark.title.m -font $font
   
   set i 0
   foreach flag $maintFlaglist  {
     if {$i < 12} {
-      $w.mark.title.m add command -label "$::tr($maintFlags($flag)) ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
+      $w.dm.mark.title.m add command -label "$::tr($maintFlags($flag)) ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
     } else  {
       set tmp [sc_base extra $::curr_db flag$flag]
       if {$tmp == "" } { set tmp $maintFlags($flag) }
-      $w.mark.title.m add command -label "$tmp ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
+      $w.dm.mark.title.m add command -label "$tmp ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
     }
     incr i
   }
   
-  foreach flag {delete mark} on {Delete Mark} off {Undelete Unmark} {
+  foreach flag {dm.delete dm.mark} on {Delete Mark} off {Undelete Unmark} {
+    set row 0
     foreach b {Current Filter All} {
       ttk::button $w.$flag.on$b -textvar "::tr($on$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 1"
       ttk::button $w.$flag.off$b -textvar "::tr($off$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 0"
     }
-    
-    grid $w.$flag.title -columnspan 3 -row 0 -column 0 -sticky n
-    grid $w.$flag.onCurrent -row 1 -column 0 -sticky we
-    grid $w.$flag.offCurrent -row 2 -column 0 -sticky we
-    grid $w.$flag.onFilter -row 1 -column 1 -sticky we
-    grid $w.$flag.offFilter -row 2 -column 1 -sticky we
-    grid $w.$flag.onAll -row 1 -column 2 -sticky we
-    grid $w.$flag.offAll -row 2 -column 2 -sticky we
+
+    if { $flag eq "dm.mark" } {
+	grid $w.$flag.title -columnspan 2 -row 0 -column 0 -sticky we -padx 30 -pady "0 5"
+	incr row
+    }
+    grid $w.$flag.onCurrent -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.$flag.offCurrent -row $row -column 1 -sticky we -pady "0 5"
+    incr row
+    grid $w.$flag.onFilter -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.$flag.offFilter -row $row -column 1 -sticky we -pady "0 5"
+    incr row
+    grid $w.$flag.onAll -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.$flag.offAll -row $row -column 1 -sticky we -pady "0 5"
   }
   
-  ttk::label $w.spell.title -textvar ::tr(Spellchecking) -font $bold
-  grid $w.spell.title -columnspan 4 -row 0 -column 0 -sticky n
-  ttk::button $w.spell.player -textvar ::tr(Players...) -style Small.TButton \
+  ttk::button $w.dm.spell.player -textvar ::tr(Players...) -style Small.TButton \
       -command "openSpellCheckWin Player $w"
-  ttk::button $w.spell.event -textvar ::tr(Events...) -style Small.TButton \
+  ttk::button $w.dm.spell.event -textvar ::tr(Events...) -style Small.TButton \
       -command "openSpellCheckWin Event $w"
-  ttk::button $w.spell.site -textvar ::tr(Sites...) -style Small.TButton \
+  ttk::button $w.dm.spell.site -textvar ::tr(Sites...) -style Small.TButton \
       -command "openSpellCheckWin Site $w"
-  ttk::button $w.spell.round -textvar ::tr(Rounds...) -style Small.TButton \
+  ttk::button $w.dm.spell.round -textvar ::tr(Rounds...) -style Small.TButton \
       -command "openSpellCheckWin Round $w"
-  grid $w.spell.player -row 1 -column 0 -sticky we
-  grid $w.spell.event -row 1 -column 1 -sticky we
-  grid $w.spell.site -row 1 -column 2 -sticky we
-  grid $w.spell.round -row 1 -column 3 -sticky we
-  
-  bind $w <Alt-p> "$w.spell.player invoke"
-  bind $w <Alt-e> "$w.spell.event invoke"
-  bind $w <Alt-s> "$w.spell.site invoke"
-  bind $w <Alt-r> "$w.spell.round invoke"
-  
-  ttk::label $w.db.title -textvar ::tr(DatabaseOps) -font $bold
-  grid $w.db.title -columnspan 3 -row 0 -column 0 -sticky n
-  
-  ttk::button $w.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
-  ttk::button $w.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command compactDB
-  ttk::button $w.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
-  ttk::button $w.db.dups -style Small.TButton -textvar ::tr(DeleteTwins...) -command "markTwins $w"
-  ttk::button $w.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
-  ttk::button $w.db.autoload -style Small.TButton -textvar ::tr(AutoloadGame...) -command ::maint::SetAutoloadGame
-  ttk::button $w.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
-  
-  foreach i {eco compact elo dups cleaner autoload strip} {
-    $w.db.$i configure -style Small.TButton
+  grid $w.dm.spell.player -row 0 -column 0 -sticky we -padx "0 5" -pady "0 5"
+  grid $w.dm.spell.event -row 0 -column 1 -sticky we -pady "0 5"
+  grid $w.dm.spell.site -row 1 -column 0 -sticky we -padx "0 5" -pady "0 5"
+  grid $w.dm.spell.round -row 1 -column 1 -sticky we -pady "0 5"
+
+  bind $w <Alt-p> "$w.dm.spell.player invoke"
+  bind $w <Alt-e> "$w.dm.spell.event invoke"
+  bind $w <Alt-s> "$w.dm.spell.site invoke"
+  bind $w <Alt-r> "$w.dm.spell.round invoke"
+
+  ttk::button $w.dm.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
+  ttk::button $w.dm.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command compactDB
+  ttk::button $w.dm.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
+  ttk::button $w.dm.db.dups -style Small.TButton -textvar ::tr(DeleteTwins...) -command "markTwins $w"
+  ttk::button $w.dm.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
+  ttk::button $w.dm.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
+
+  foreach i {eco compact elo dups cleaner strip} {
+    $w.dm.db.$i configure -style Small.TButton
   }
-  bind $w <Alt-d> "$w.db.dups invoke"
+  bind $w <Alt-d> "$w.dm.db.dups invoke"
   
-  grid $w.db.eco -row 1 -column 0 -sticky we
-  grid $w.db.compact -row 1 -column 1 -sticky we
-  grid $w.db.elo -row 2 -column 0 -sticky we
-  grid $w.db.dups -row 2 -column 1 -sticky we
-  grid $w.db.cleaner -row 2 -column 2 -sticky we
-  grid $w.db.autoload -row 3 -column 0 -sticky we
-  grid $w.db.strip -row 3 -column 1 -sticky we
+  grid $w.dm.db.eco -row 0 -column 0 -sticky we -padx "0 5" -pady "0 5"
+  grid $w.dm.db.elo -row 0 -column 1 -sticky we -pady "0 5"
+  grid $w.dm.db.dups -row 1 -column 0 -sticky we -padx "0 5" -pady "0 5"
+  grid $w.dm.db.strip -row 1 -column 1 -sticky we -pady "0 5"
+  grid $w.dm.db.compact -row 2 -column 0 -sticky we -padx "0 5" -pady "0 5"
+  grid $w.dm.db.cleaner -row 2 -column 1 -sticky we -pady "0 5"
   
   dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
@@ -311,7 +324,7 @@ proc ::maint::ChangeCustomDescription {} {
       set flag [ lindex $::maintFlaglist $idx]
       set tmp [sc_base extra $::curr_db flag$flag]
       if {$tmp == "" } { set tmp $::maintFlags($flag) }
-      .maintWin.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
+      .maintWin.dm.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
     }
     
     # update the custom flags labels
@@ -360,11 +373,12 @@ proc ::maint::Refresh {} {
     set tmp $::tr($maintFlags($maintFlag))
   }
   
-  set flagname "$::tr(Flag): $tmp ($maintFlag)"
+  set flagname "$tmp ($maintFlag)"
   
-  $w.mark.title configure -text $flagname
+  $w.dm.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
   $w.title.desc.text configure -text [sc_base extra $::curr_db description]
+  $w.title.start.text configure -text [sc_base extra $::curr_db autoload]
   
   # Disable buttons if current base is closed or read-only:
   set state disabled
@@ -373,27 +387,26 @@ proc ::maint::Refresh {} {
     set state normal
   }
   foreach spell {player event site round} {
-    $w.spell.$spell configure -state $state
+    $w.dm.spell.$spell configure -state $state
   }
   foreach button {onCurrent offCurrent onAll offAll onFilter offFilter} {
-    $w.delete.$button configure -state $state
-    $w.mark.$button configure -state $state
+    $w.dm.delete.$button configure -state $state
+    $w.dm.mark.$button configure -state $state
   }
-  $w.db.dups configure -state $state
+  $w.dm.db.dups configure -state $state
   $w.title.vicon configure -state $state
   $w.title.desc.edit configure -state $state
   $w.title.cust.edit configure -state $state
-  $w.db.elo configure -state $state
-  $w.db.autoload configure -state $state
-  $w.db.eco configure -state $state
-  $w.db.strip configure -state $state
+  $w.dm.db.elo configure -state $state
+  $w.dm.db.eco configure -state $state
+  $w.dm.db.strip configure -state $state
   
   set state disabled
   if {[baseIsCompactable]} {
     set state normal
   }
-  $w.db.compact configure -state $state
-  $w.db.cleaner configure -state $state
+  $w.dm.db.compact configure -state $state
+  $w.dm.db.cleaner configure -state $state
 }
 
 
