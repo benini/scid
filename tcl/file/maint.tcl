@@ -119,7 +119,7 @@ proc ::maint::OpenClose {} {
   
   ttk::frame $w.title.desc
   ttk::label $w.title.desc.lab -text $::tr(Description:) -font font_SmallBold
-  ttk::label $w.title.desc.text -width 1 -font $font -relief sunken -anchor w
+  ttk::entry $w.title.desc.text -foreground [ttk::style lookup $w.title.desc.text -foreground]
   ttk::button $w.title.desc.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeBaseDescription
   pack $w.title.desc.lab -side left -padx "0 5"
   pack $w.title.desc.edit -side right -pady "0 5"
@@ -130,7 +130,7 @@ proc ::maint::OpenClose {} {
   set ::curr_db [sc_base current]
   for {set i 1} { $i < 7} { incr i} {
     set desc [sc_base extra $::curr_db flag$i]
-    ttk::label $w.title.cust.text$i -width 8 -font $font -relief sunken -anchor w -text $desc
+    ttk::entry $w.title.cust.text$i -width 8 -foreground [ttk::style lookup $w.title.cust.text$i -foreground]
   }
   
   ttk::button $w.title.cust.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeCustomDescription
@@ -141,7 +141,7 @@ proc ::maint::OpenClose {} {
   }
   ttk::frame $w.title.start
   ttk::label $w.title.start.lab -text $::tr(AutoloadGame:) -font font_SmallBold
-  ttk::label $w.title.start.text -width 8 -font $font -relief sunken -anchor e
+  ttk::entry $w.title.start.text -width 8 -justify right -foreground [ttk::style lookup $w.title.start.text -foreground]
   ttk::button $w.title.start.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::SetAutoloadGame
   pack $w.title.start.lab -side left -padx "0 5"
   pack $w.title.start.edit -side right
@@ -330,9 +330,8 @@ proc ::maint::ChangeCustomDescription {} {
     # update the custom flags labels
     for {set i 1} { $i < 7} { incr i} {
       set desc [sc_base extra $::curr_db flag$i]
-      .maintWin.title.cust.text$i configure -text $desc
     }
-    # ::maint::Refresh
+    ::maint::Refresh
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
   pack $w.a -side top -fill x
@@ -377,9 +376,19 @@ proc ::maint::Refresh {} {
   
   $w.dm.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
-  $w.title.desc.text configure -text [sc_base extra $::curr_db description]
-  $w.title.start.text configure -text [sc_base extra $::curr_db autoload]
-  
+  foreach i { desc.text start.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+    $w.title.$i configure -state enable
+    $w.title.$i delete 0 end
+  }
+  $w.title.desc.text insert end [sc_base extra $::curr_db description]
+  $w.title.start.text insert end [sc_base extra $::curr_db autoload]
+  for {set i 1} { $i < 7} { incr i} {
+      set desc [sc_base extra $::curr_db flag$i]
+      .maintWin.title.cust.text$i insert end $desc
+  }
+  foreach i { desc.text start.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+    $w.title.$i configure -state disable
+  }
   # Disable buttons if current base is closed or read-only:
   set state disabled
   set curr_base [sc_base current]
@@ -449,7 +458,7 @@ proc ::maint::SetAutoloadGame {} {
 
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text OK -command \
-      "sc_base extra $::curr_db autoload \$autoloadGame; catch {grab release $w}; destroy $w"
+      "sc_base extra $::curr_db autoload \$autoloadGame; ::maint::Refresh; catch {grab release $w}; destroy $w"
   ttk::button $w.b.cancel -text $::tr(Cancel) -command \
       "catch {grab release $w}; destroy $w"
   packdlgbuttons $w.b.cancel $w.b.ok
