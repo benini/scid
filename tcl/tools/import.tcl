@@ -7,11 +7,12 @@
 
 proc importPgnGame {} {
   if {[winfo exists .importWin]} { return }
-  set w [toplevel .importWin]
+  set w .importWin
+  win::createDialog $w
   wm title $w "Scid: $::tr(ImportPGN)"
   wm minsize $w 50 5
   ttk::frame $w.b
-  pack $w.b -side bottom
+  pack $w.b -side bottom -fill x
   set pane [::utils::pane::Create $w.pane edit err 580 300 0.8]
   pack $pane -side top -expand true -fill both
   set edit $w.pane.edit
@@ -71,9 +72,8 @@ proc importPgnGame {} {
   ttk::button $w.b.cancel -textvar ::tr(Close) -command {
     destroy .importWin; focus .
   }
-  ttk::frame $w.b.space
-  pack $w.b.paste $w.b.clear $w.b.space -side left -padx 2 -pady 2
-  pack $w.b.cancel $w.b.ok -side right -padx 10 -pady 5
+  pack $w.b.paste $w.b.clear -side left -padx 5 -pady "15 5"
+  packdlgbuttons $w.b.cancel $w.b.ok
   # Paste the current selected text automatically:
   # if {[catch {$w.pane.edit.text insert end [selection get]}]} {
   # ?
