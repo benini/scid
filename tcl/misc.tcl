@@ -453,10 +453,14 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
         lappend listbases "$i: $fname"
       }
   }
+  ttk::label $w.label -text "$::tr(Database):"
   ttk::combobox $w.lb -textvariable $varname -values $listbases
   $w.lb current $selected
-  grid $w.lb -sticky news
-  grid columnconfigure $w 0 -weight 1
+  pack $w.label -side left
+  pack $w.lb -fill x -pady 2
+#  grid $w.label -sticky w -row 0 -column 0
+#  grid $w.lb -sticky we -row 0 -column 1
+#  grid columnconfigure $w 0 -weight 1
 }
 
 ################################################################################
