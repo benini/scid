@@ -522,9 +522,9 @@ proc changeBaseType {baseNum} {
   if {$baseNum > [sc_info limit bases]} { return }
   set temp_dbtype [sc_base extra $baseNum type]
   if {$temp_dbtype >= $numBaseTypeIcons} { set temp_dbtype 0 }
-  toplevel .btypeWin
   set w .btypeWin
-  wm title $w "Scid: Choose database icon"
+  win::createDialog $w
+  wm title $w "Scid: $::tr(ChangeIcon)"
 
   text $w.t -yscrollcommand "$w.yscroll set" -font font_Regular \
     -height 25 -width 40 -background white -wrap none \
@@ -532,7 +532,7 @@ proc changeBaseType {baseNum} {
   $w.t tag configure selected -background lightSteelBlue
 
   ttk::scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
-  pack [ttk::frame $w.b] -side bottom -pady 5
+  pack [ttk::frame $w.b] -side bottom -anchor e
   pack $w.yscroll -side right -fill y
   pack $w.t -side left -fill both -expand yes
 
@@ -541,7 +541,7 @@ proc changeBaseType {baseNum} {
      focus .; destroy $w"
 
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
-  pack $w.b.set $w.b.cancel -side left -padx 5
+  packdlgbuttons $w.b.cancel $w.b.set
 
   set numtypes [llength $base_types]
   for {set i  0} {$i < $numtypes} {incr i} {
