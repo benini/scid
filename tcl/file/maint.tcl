@@ -191,25 +191,25 @@ proc ::maint::OpenClose {} {
     incr i
   }
   
-  foreach flag {dm.delete dm.mark} on {Delete Mark} off {Undelete Unmark} {
+  foreach flag {delete mark} on {Delete Mark} off {Undelete Unmark} {
     set row 0
     foreach b {Current Filter All} {
-      ttk::button $w.$flag.on$b -textvar "::tr($on$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 1"
-      ttk::button $w.$flag.off$b -textvar "::tr($off$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 0"
+      ttk::button $w.dm.$flag.on$b -textvar "::tr($on$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 1"
+      ttk::button $w.dm.$flag.off$b -textvar "::tr($off$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 0"
     }
 
-    if { $flag eq "dm.mark" } {
-	grid $w.$flag.title -columnspan 2 -row 0 -column 0 -sticky we -padx 30 -pady "0 5"
+    if { $flag eq "mark" } {
+	grid $w.dm.$flag.title -columnspan 2 -row 0 -column 0 -sticky we -padx 30 -pady "0 5"
 	incr row
     }
-    grid $w.$flag.onCurrent -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
-    grid $w.$flag.offCurrent -row $row -column 1 -sticky we -pady "0 5"
+    grid $w.dm.$flag.onCurrent -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.dm.$flag.offCurrent -row $row -column 1 -sticky we -pady "0 5"
     incr row
-    grid $w.$flag.onFilter -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
-    grid $w.$flag.offFilter -row $row -column 1 -sticky we -pady "0 5"
+    grid $w.dm.$flag.onFilter -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.dm.$flag.offFilter -row $row -column 1 -sticky we -pady "0 5"
     incr row
-    grid $w.$flag.onAll -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
-    grid $w.$flag.offAll -row $row -column 1 -sticky we -pady "0 5"
+    grid $w.dm.$flag.onAll -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
+    grid $w.dm.$flag.offAll -row $row -column 1 -sticky we -pady "0 5"
   }
   
   ttk::button $w.dm.spell.player -textvar ::tr(Players...) -style Small.TButton \
@@ -389,7 +389,12 @@ proc ::maint::Refresh {} {
   foreach spell {player event site round} {
     $w.dm.spell.$spell configure -state $state
   }
-  foreach button {onCurrent offCurrent onAll offAll onFilter offFilter} {
+  set stateCurrent [expr {[sc_game number] ? $state : "disabled"}]
+  $w.dm.delete.onCurrent configure -state $stateCurrent
+  $w.dm.delete.offCurrent configure -state $stateCurrent
+  $w.dm.mark.onCurrent configure -state $stateCurrent
+  $w.dm.mark.offCurrent configure -state $stateCurrent
+  foreach button {onAll offAll onFilter offFilter} {
     $w.dm.delete.$button configure -state $state
     $w.dm.mark.$button configure -state $state
   }

@@ -309,6 +309,7 @@ namespace eval ::notify {
     updateMainGame
     ::notify::PosChanged -pgn
     ::windows::gamelist::Refresh 0
+    ::maint::Refresh
   }
 
   # To be called when the current position changes
