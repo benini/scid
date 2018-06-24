@@ -85,11 +85,11 @@ constexpr unsigned long long init_symbol_map(unsigned elem) {
  * @param ch: character to classify.
  * @returns true if @e ch is a PGN symbol character, false otherwise.
  */
-inline bool is_PGNsymbol(unsigned ch) {
+inline bool is_PGNsymbol(unsigned char ch) {
 	constexpr unsigned long long tok_map[] = {init_symbol_map(0),
 	                                          init_symbol_map(1)};
-	unsigned high = ch / 64;
-	unsigned low = ch % 64;
+	auto high = ch / 64;
+	auto low = ch % 64;
 	return high > 1 ? false : tok_map[high] & (1ULL << low);
 }
 
