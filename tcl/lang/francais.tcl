@@ -1362,9 +1362,7 @@ translate F FindNovelty {Trouver la nouveauté}
 translate F Novelty {Nouveauté}
 translate F NoveltyInterrupt {Recherche de nouveauté interrompue}
 translate F NoveltyNone {Aucune nouveauté n'a été trouvée pour cette partie}
-translate F NoveltyHelp {
-Scid va trouver le premier coup de la partie en cours qui atteint une position qui ne figure ni dans la base sélectionnée ni dans le répertoire d'ouvertures ECO.
-}
+translate F NoveltyHelp {Scid va trouver le premier coup de la partie en cours qui atteint une position qui ne figure ni dans la base sélectionnée ni dans le répertoire d'ouvertures ECO.}
 
 # Sounds configuration:
 translate F SoundsFolder {Répertoire des fichiers sonores}

@@ -1350,9 +1350,7 @@ translate E FindNovelty {Find Novelty}
 translate E Novelty {Novelty}
 translate E NoveltyInterrupt {Novelty search interrupted}
 translate E NoveltyNone {No novelty was found for this game}
-translate E NoveltyHelp {
-Scid will find the first move of the current game that reaches a position not found in the selected database or in the ECO openings book.
-}
+translate E NoveltyHelp {Scid will find the first move of the current game that reaches a position not found in the selected database or in the ECO openings book.}
 
 # Sounds configuration:
 translate E SoundsFolder {Sound Files Folder}

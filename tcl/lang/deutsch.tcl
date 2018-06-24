@@ -1353,9 +1353,7 @@ translate D FindNovelty {Finde Neuerung}
 translate D Novelty {Neuerung}
 translate D NoveltyInterrupt {Neuerungensuche abgebrochen}
 translate D NoveltyNone {In dieser Partie wurde keine Neuerung gefunden}
-translate D NoveltyHelp {
-Scid wird den ersten Zug aus der aktuellen Partie finden, welcher zu einer Position führt, die nicht in der gewählten Datenbank oder in dem ECO-Eröffnungsbuch enthalten ist.
-}
+translate D NoveltyHelp {Scid wird den ersten Zug aus der aktuellen Partie finden, welcher zu einer Position führt, die nicht in der gewählten Datenbank oder in dem ECO-Eröffnungsbuch enthalten ist.}
 
 # Sounds configuration:
 translate D SoundsFolder {Sounddateien-Verzeichnis}

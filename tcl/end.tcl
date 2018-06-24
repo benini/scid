@@ -20,35 +20,24 @@ proc findNovelty {} {
     updateNoveltyWin
     return
   }
-  toplevel $w -background [ttk::style lookup . -background]
+  win::createDialog $w
   wm title $w "Scid: $::tr(FindNovelty)"
   
   pack [ttk::frame $w.help] -side top -fill x
-  text $w.help.text -width 1 -height 5 -wrap word \
-      -relief ridge -cursor top_left_arrow -yscrollcommand "$w.help.ybar set"
-  ttk::scrollbar $w.help.ybar -orient vertical -command "$w.help.text yview" \
-      -takefocus 0
-  pack $w.help.ybar -side right -fill y
+  ttk::label $w.help.text -wraplength 3i -justify left -text $::tr(NoveltyHelp)
   pack $w.help.text -side left -fill x -expand yes
-  $w.help.text insert end [string trim $::tr(NoveltyHelp)]
-  $w.help.text configure -state disabled
-  
-  ttk::label $w.title -text $::tr(Database:) -font font_Bold
-  pack $w.title -side top -fill x
+  ttk::labelframe $w.bases -text $::tr(Database)
+  pack $w.bases -side top -fill x -pady 5
 
-  pack [ttk::frame $w.bases] -side top -fill x
   pack [ttk::frame $w.bases.del]
-  addHorizontalRule $w
   
-  ttk::label $w.which -text $::tr(TwinsWhich:) -font font_Bold
-  pack $w.which -side top -fill x
-  ttk::radiobutton $w.all -text $::tr(SelectAllGames) \
+  ttk::labelframe $w.which -text $::tr(TwinsWhich)
+  pack $w.which -side top -fill x -pady 5
+  ttk::radiobutton $w.which.all -text $::tr(SelectAllGames) \
       -variable noveltyOlder -value 0
-  ttk::radiobutton $w.older -text $::tr(SelectOlderGames) \
+  ttk::radiobutton $w.which.older -text $::tr(SelectOlderGames) \
       -variable noveltyOlder -value 1
-  pack $w.all $w.older -side top -anchor w -fill x
-  
-  addHorizontalRule $w
+  pack $w.which.all $w.which.older -side top -anchor w -fill x
   
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
@@ -74,7 +63,7 @@ proc findNovelty {} {
   dialogbutton $w.b.close -textvar ::tr(Close) -command {
     catch {destroy .noveltyWin}
   }
-  packbuttons right $w.b.close $w.b.go
+  packdlgbuttons $w.b.close $w.b.go
   wm resizable $w 0 0
   focus $w.b.go
   bind $w <KeyPress-1> "$w.b1 invoke"
@@ -87,9 +76,9 @@ proc findNovelty {} {
 proc updateNoveltyWin {} {
   set w .noveltyWin
   if {! [winfo exists $w]} { return }
-  $w.older configure -text "$::tr(SelectOlderGames) (< [sc_game info date])"
+  $w.which.older configure -text "$::tr(SelectOlderGames) (< [sc_game info date])"
   catch { destroy $w.bases.del }
-  pack [frame $w.bases.del]
+  pack [frame $w.bases.del] -anchor w
   foreach i [sc_base list] {
     set name [file tail [sc_base filename $i]]
     set ng [::utils::thousands [sc_base numGames $i]]
