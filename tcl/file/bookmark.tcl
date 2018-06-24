@@ -244,7 +244,7 @@ proc ::bookmarks::Edit {} {
   set w .bmedit
   if {[winfo exists $w]} { return }
   set bookmarks(old) $bookmarks(data)
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr FileBookmarksEdit]"
   # wm transient $w .
   bind $w <F1> {helpWindow Bookmarks}
@@ -283,7 +283,7 @@ proc ::bookmarks::Edit {} {
   }
   pack $w.b1.newFolder $w.b1.newGame $w.b1.delete -side left -padx 2 -pady 2
   pack $w.b2.up $w.b2.down -side left -padx 2 -pady 2
-  pack $w.b2.cancel $w.b2.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.b2.cancel $w.b2.ok
   set bookmarks(edit) ""
 
   wm withdraw $w
