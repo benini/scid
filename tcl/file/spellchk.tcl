@@ -86,7 +86,7 @@ proc stopScanning {} {
     #
     .spellcheckWin.buttons.ambig  configure -state enabled
     .spellcheckWin.buttons.ok     configure -state enabled
-    .spellcheckWin.buttons.cancel configure -text "Cancel"
+    .spellcheckWin.buttons.cancel configure -text $::tr(Cancel)
     bind .spellcheckWin <Alt-c> ".spellcheckWin.buttons.cancel invoke; break"
     if {$spellcheckType == "Player"} {
         .spellcheckWin.buttons.surnames configure -state enabled
@@ -176,18 +176,33 @@ proc openSpellCheckWin {type {parent .}} {
     }
     set spellcheckType $type
 
-    toplevel $w
-    wm title $w "Scid: Spellcheck Results"
-    wm minsize $w 50 10
+    win::createDialog $w
+    wm title $w "Scid: $::tr(Spellchecking) $::tr(Result)"
+    wm minsize $w 0 15
 
     bind $w <F1> { helpWindow Maintenance }
     bind $w <Configure> "recordWinSize $w"
 
-    # Create the button pad at the bottom of the window
+    # Prepare the text pad
     #
-    set f [ttk::frame $w.buttons]
-    pack $f -side bottom -ipady 1 -fill x
+    set f [ttk::frame $w.text]
+    pack $w.text -side top -expand true -fill both
+    ttk::scrollbar $f.ybar -command "$f.text yview"
+    ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
+    text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
+                 -setgrid 1 -width $::winWidth($w) -height $::winHeight($w) \
+                 -background white -wrap none
+    $f.text configure -tabs \
+        [font measure font_Regular  "xxxxxxxxxxxxxxxxxxxxxxxxx"]
+
+    grid $f.text -row 0 -column 0 -sticky nswe
+    grid $f.ybar -row 0 -column 1 -sticky nswe
+    grid $f.xbar -row 1 -column 0 -sticky nswe
+
+    grid rowconfig $w.text 0 -weight 1 -minsize 0
+    grid columnconfig $w.text 0 -weight 1 -minsize 0
   
+    focus $f.text
     # Draw a canvas ("progress") to hold the progress bar
     # and put it above the buttons at the bottom of the window
     #
@@ -195,12 +210,17 @@ proc openSpellCheckWin {type {parent .}} {
     $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
     $w.progress create text 445 10 -anchor e -font font_Regular -tags time \
                                    -fill black -text "0:00 / 0:00"
-    pack $w.progress -side bottom
+    pack $w.progress -side top -pady 5
+
+    # Create the button pad at the bottom of the window
+    #
+    set f [ttk::frame $w.buttons]
+    pack $f -side bottom -fill x
 
     # The ambiguous check mark
     # Hitting it starts a new correction scan
     ttk::checkbutton $f.ambig -variable spellcheckAmbiguous \
-                              -text "Ambiguous" -command "updateSpellCheckWin $type"
+                              -text $::tr(Ambiguous) -command "updateSpellCheckWin $type"
     pack $f.ambig -side left -padx 2 -ipady 2 -ipadx 3
 
     # When correcting player names, we add a surnames option
@@ -210,13 +230,13 @@ proc openSpellCheckWin {type {parent .}} {
         # Hitting it starts a new correction scan
         #
         ttk::checkbutton $f.surnames -variable spellcheckSurnames \
-                                     -text "Surnames" -command "updateSpellCheckWin Player"
+                                     -text $::tr(Surnames) -command "updateSpellCheckWin Player"
         pack $f.surnames -side left -padx 2 -ipady 2 -ipadx 3
     }
 
     # The button to start the correction making...
     #
-    ttk::button $f.ok -text "Make Corrections" -underline 0 -command {
+    ttk::button $f.ok -text $::tr(MakeCorrections) -underline 0 -command {
         busyCursor .
         set spelltext ""
         catch {set spelltext [.spellcheckWin.text.text get 1.0 end-1c]}
@@ -240,10 +260,10 @@ proc openSpellCheckWin {type {parent .}} {
             append msg "[lindex $spell_result 1] \n\n"
             append msg "Number of games corrected: "
             append msg "[lindex $spell_result 2] \n"
-            append msg "NUmber of games _not_ corrected (date < birth or > death): "
-            append msg "[lindex $spell_result 3] \n"
+            append msg "Number of games NOT corrected (date<birth or >death): "
+            append msg "[lindex $spell_result 3]"
             tk_messageBox -type ok -parent .spellcheckWin \
-                -title "Scid: Spellcheck results" -message $msg
+                -title "Scid: $::tr(Spellchecking) $::tr(Result)" -message $msg
         }
         unbusyCursor .
         focus .
@@ -258,7 +278,7 @@ proc openSpellCheckWin {type {parent .}} {
     # While some process is running, it simply stops it
     # In other cases, spell checking is left
     #
-    ttk::button $f.cancel -text "Cancel" -underline 0 -command {
+    ttk::button $f.cancel -text $::tr(Cancel) -underline 0 -command {
         if {$spellstate == "scanning" || $spellstate == "correcting"} {
             progressBarCancel
         } else {
@@ -267,28 +287,8 @@ proc openSpellCheckWin {type {parent .}} {
         }
     }
     bind $w <Alt-c> "$f.cancel invoke; break"
-    pack $f.cancel $f.ok -side right -padx 5
+    pack $f.cancel $f.ok -side right -padx 5 -fill x
 
-    # Prepare the text pad
-    #
-    set f [ttk::frame $w.text]
-    pack $w.text -expand yes -fill both
-    ttk::scrollbar $f.ybar -command "$f.text yview"
-    ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
-    text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
-                 -setgrid 1 -width $::winWidth($w) -height $::winHeight($w) \
-                 -background white -wrap none
-    $f.text configure -tabs \
-        [font measure font_Regular  "xxxxxxxxxxxxxxxxxxxxxxxxx"]
-
-    grid $f.text -row 0 -column 0 -sticky news
-    grid $f.ybar -row 0 -column 1 -sticky news
-    grid $f.xbar -row 1 -column 0 -sticky news
-
-    grid rowconfig $w.text 0 -weight 1 -minsize 0
-    grid columnconfig $w.text 0 -weight 1 -minsize 0
-  
-    focus $f.text
 
     # Start the initial search for spelling corrections
     #

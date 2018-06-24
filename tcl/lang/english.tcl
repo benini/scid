@@ -1736,7 +1736,7 @@ translate E DockRight {Move to right}
 translate E Undock {Undock}
 
 # Switcher window
-translate E ChangeIcon {Change icon...}
+translate E ChangeIcon {Choose database icon...}
 
 # Gamelist window
 translate E ShowHideDB {Show/Hide databases}
@@ -1769,5 +1769,8 @@ translate E ShowHideCoords {Show/Hide Coord.}
 translate E ShowHideMaterial {Show/Hide Material}
 translate E FullScreen {Full Screen}
 translate E FilterStatistic {Filter Statistics}
+translate E MakeCorrections {Make Corrections}
+translate E Surnames {Surnames}
+translate E Ambiguous {Ambiguous}
 }
 # end of english.tcl

@@ -1716,7 +1716,7 @@ translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster lösen}
 #Gamelist
-translate D ChangeIcon {Symbol ändern...}
+translate D ChangeIcon {Datenbank Icon ändern...}
 translate D ShowHideDB {Datenbank anzeigen/verbergen}
 translate D ChangeFilter {Filter ändern}
 translate D ChangeLayout {Sortierkriterien und Spaltenlayout laden/speichern/ändern }
@@ -1747,6 +1747,9 @@ translate D ShowHideCoords {Beschriftung ein/aus}
 translate D ShowHideMaterial {Material ein/aus}
 translate D FullScreen {Vollbild}
 translate D FilterStatistic {Filter Statistik}
+translate D MakeCorrections {Korrigieren}
+translate D Surnames {Nachnamen}
+translate D Ambiguous {Mehrdeutig}
 }
 
 ##########
