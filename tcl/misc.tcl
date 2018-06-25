@@ -457,19 +457,14 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   }
 
   ttk::combobox $w.lb -values $listbases -state readonly
-  $w.lb current $selected
   grid $w.lb -sticky news
   grid columnconfigure $w 0 -weight 1
 
   bind $w.lb <<ComboboxSelected>> "
     set $varname \[ string index \[$w.lb get\] $tr_prefix_len \]
   "
-  global $varname
-  if {$ref_base eq ""} {
-    lassign $listbases $varname
-  } else {
-    set $varname $ref_base
-  }
+  $w.lb current $selected
+  event generate $w.lb <<ComboboxSelected>>
 }
 
 ################################################################################
