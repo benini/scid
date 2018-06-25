@@ -338,7 +338,7 @@ proc ::board::new {w {psize 40} } {
   
   ttk::frame $w -class Board
   canvas $w.bd -width $bsize -height $bsize -cursor crosshair -borderwidth 0 -highlightthickness 0
-  ::setThemeColor_background $w.bd
+  ::applyThemeColor_background $w.bd
   catch { grid anchor $w center }
   
   set startrow 5
@@ -372,7 +372,7 @@ proc ::board::new {w {psize 40} } {
   }
   
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
-  ::setThemeColor_background $w.mat
+  ::applyThemeColor_background $w.mat
   grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5 -padx 5
   grid remove $w.mat
 
@@ -417,7 +417,7 @@ proc ::board::addInfoBar {w varname} {
   set $w.bar.info [ttk::frame $w.bar.info]
   autoscrollframe $w.bar.info text $w.bar.info.t \
     -relief flat -font font_Regular -cursor arrow -state disabled
-  ::setThemeColor_background $w.bar.info.t
+  ::applyThemeColor_background $w.bar.info.t
   $w.bar.info.t tag configure header -font font_Bold
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"

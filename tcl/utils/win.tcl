@@ -245,7 +245,7 @@ proc ::win::manageWindow {wnd title} {
 #   y is used for windows with menu. They do not need a border on the top and call with y=0
 proc ::win::createDialog {w {y 10}} {
 	toplevel $w -padx 10 -pady $y
-	::setThemeColor_background $w
+	::applyThemeColor_background $w
 }
 
 # ::utils::win::Centre

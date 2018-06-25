@@ -337,10 +337,10 @@ option add *Font font_Regular
 option add *Menu*Font font_Menu
 
 # Apply the theme's background color to a widget
-proc setThemeColor_background { widget } {
+proc applyThemeColor_background { widget } {
   set bgcolor [ttk::style lookup . -background "" #d9d9d9]
   $widget configure -background $bgcolor
-  bind $widget <<ThemeChanged>> "::setThemeColor_background $widget"
+  bind $widget <<ThemeChanged>> "::applyThemeColor_background $widget"
 }
 
 proc InitImg {} {

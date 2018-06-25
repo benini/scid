@@ -730,7 +730,7 @@ namespace eval ::glist_Ly {
 		options.save ::glist_Layouts
 		set ::gamelistNewLayout [::glist_Ly::createName_]
 		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0
-		::setThemeColor_background $w.layout.b.c
+		::applyThemeColor_background $w.layout.b.c
 		bind $w.layout.b.c <Configure>  { ::glist_Ly::AdjScrollbar_ %W }
 		::glist_Ly::Update_ $w
 	}

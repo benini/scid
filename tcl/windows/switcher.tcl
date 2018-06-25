@@ -783,7 +783,7 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
   set bottom [expr {$numRows * $iconHeight}]
   set bgcolor [ttk::style lookup Button.label -background]
   $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat
-  ::setThemeColor_background $w.c
+  ::applyThemeColor_background $w.c
 }
 
 proc ::windows::switcher::Refresh {} {
