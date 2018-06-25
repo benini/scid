@@ -445,22 +445,31 @@ proc closeProgressWindow {{force false}} {
 proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   set listbases {}
   if {$ref_base == ""} { set ref_base [sc_base current] }
+  set tr_database [tr Database]
+  set tr_prefix_len [expr {[string length $tr_database] + 1}]
   set selected 0
   foreach i [sc_base list] {
       if {$readOnly || ![sc_base isReadOnly $i]} {
         set fname [file tail [sc_base filename $i]]
         if {$i == $ref_base} { set selected [llength $listbases] }
-        lappend listbases "$i: $fname"
+        lappend listbases "$tr_database $i: $fname"
       }
   }
-  ttk::label $w.label -text "$::tr(Database):"
-  ttk::combobox $w.lb -textvariable $varname -values $listbases
+
+  ttk::combobox $w.lb -values $listbases -state readonly
   $w.lb current $selected
-  pack $w.label -side left
-  pack $w.lb -fill x -pady 2
-#  grid $w.label -sticky w -row 0 -column 0
-#  grid $w.lb -sticky we -row 0 -column 1
-#  grid columnconfigure $w 0 -weight 1
+  grid $w.lb -sticky news
+  grid columnconfigure $w 0 -weight 1
+
+  bind $w.lb <<ComboboxSelected>> "
+    set $varname \[ string index \[$w.lb get\] $tr_prefix_len \]
+  "
+  global $varname
+  if {$ref_base eq ""} {
+    lassign $listbases $varname
+  } else {
+    set $varname $ref_base
+  }
 }
 
 ################################################################################
