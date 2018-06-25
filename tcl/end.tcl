@@ -39,8 +39,6 @@ proc findNovelty {} {
       -variable noveltyOlder -value 1
   pack $w.which.all $w.which.older -side top -anchor w -fill x
   
-  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
-  pack $w.status -side bottom -fill x
   pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.go -text $::tr(FindNovelty) -command {
     destroy .noveltyWin
