@@ -244,7 +244,8 @@ proc ::win::manageWindow {wnd title} {
 #   Standard initialize a toplevel window with unique attributes
 #   y is used for windows with menu. They do not need a border on the top and call with y=0
 proc ::win::createDialog {w {y 10}} {
-    toplevel $w -background [ttk::style lookup . -background] -padx 10 -pady $y
+	toplevel $w -padx 10 -pady $y
+	::setThemeColor_background $w
 }
 
 # ::utils::win::Centre

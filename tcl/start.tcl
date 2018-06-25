@@ -336,6 +336,13 @@ option add *Font font_Regular
 # Use font_Menu for menu entries:
 option add *Menu*Font font_Menu
 
+# Apply the theme's background color to a widget
+proc setThemeColor_background { widget } {
+  set bgcolor [ttk::style lookup . -background "" #d9d9d9]
+  $widget configure -background $bgcolor
+  bind $widget <<ThemeChanged>> "::setThemeColor_background $widget"
+}
+
 proc InitImg {} {
 	global scidImgDir boardStyle boardStyles textureSquare
 

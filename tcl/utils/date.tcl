@@ -36,7 +36,8 @@ proc ::utils::date::chooser {{date "now"}} {
 
   set win .dateChooser
   toplevel $win
-  canvas $win.cal -width 300 -height 220 -background [ttk::style lookup . -background]
+  canvas $win.cal -width 300 -height 220
+  ::setThemeColor_background $win.cal
   pack [ttk::frame $win.b] -side bottom -fill x
   ttk::button $win.b.ok -text "OK" -command "destroy $win"
   ttk::button $win.b.cancel -text $::tr(Cancel) -command "

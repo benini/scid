@@ -142,7 +142,7 @@ proc chooseBoardColors {{choice -1}} {
     return
   }
   
-  toplevel $w -background [ttk::style lookup . -background]
+  ::win::createDialog $w
   wm title $w "Scid: [tr OptionsBoardColors]"
   
   foreach i $colors { set newColors($i) [set $i] }
@@ -335,10 +335,10 @@ proc ::board::new {w {psize 40} } {
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
-  set bgcolor [ttk::style lookup . -background]
   
   ttk::frame $w -class Board
-  canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background $bgcolor -borderwidth 0 -highlightthickness 0
+  canvas $w.bd -width $bsize -height $bsize -cursor crosshair -borderwidth 0 -highlightthickness 0
+  ::setThemeColor_background $w.bd
   catch { grid anchor $w center }
   
   set startrow 5
@@ -371,7 +371,8 @@ proc ::board::new {w {psize 40} } {
     grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
   
-  canvas $w.mat -width 20 -height $bsize -highlightthickness 0 -background $bgcolor
+  canvas $w.mat -width 20 -height $bsize -highlightthickness 0
+  ::setThemeColor_background $w.mat
   grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5 -padx 5
   grid remove $w.mat
 
@@ -414,8 +415,9 @@ proc ::board::addNamesBar {w {varname}} {
 proc ::board::addInfoBar {w varname} {
   ttk::frame $w.bar
   set $w.bar.info [ttk::frame $w.bar.info]
-  autoscrollframe $w.bar.info text $w.bar.info.t -relief flat -bg [ttk::style lookup Button.label -background] \
-                                                 -font font_Regular -cursor arrow -state disabled
+  autoscrollframe $w.bar.info text $w.bar.info.t \
+    -relief flat -font font_Regular -cursor arrow -state disabled
+  ::setThemeColor_background $w.bar.info.t
   $w.bar.info.t tag configure header -font font_Bold
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"

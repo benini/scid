@@ -233,15 +233,14 @@ proc ::game::ConfirmDiscard {} {
   if {[string equal " - \n" $players]} { set players "" }
 
   set w .confirmDiscard
-  set bgcolor [ttk::style lookup Button.label -background]
-  toplevel $w -background $bgcolor
+  ::win::createDialog $w
   wm resizable $w 0 0
   wm title $w "Scid: [tr Save]"
 
   ttk::frame $w.msg
   ttk::label $w.msg.image -image tb_iconSave
   ttk::frame $w.msg.txt
-  ttk::label $w.msg.txt.l1 -text "$players$fname: [tr game] $gnum" -background $bgcolor -relief groove
+  ttk::label $w.msg.txt.l1 -text "$players$fname: [tr game] $gnum" -relief groove
   ttk::label $w.msg.txt.l2 -text $::tr(ClearGameDialog) -wraplength 360 -font font_Bold -justify left
   grid $w.msg.txt.l1 -row 0 -sticky news -pady 4 -padx 2
   grid $w.msg.txt.l2 -row 1 -sticky news

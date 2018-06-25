@@ -498,7 +498,6 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.filter.b -sticky news
 	grid rowconfigure $w.filter 0 -weight 1
 	grid columnconfigure $w.filter 0 -weight 1
-	set bgcolor [ttk::style lookup Button.label -background]
 	ttk::button $w.filter.b.rfilter -image tb_rfilter  \
 		-command "::windows::gamelist::filter_ $w r"
 	ttk::button $w.filter.b.bsearch -image tb_bsearch \
@@ -730,8 +729,8 @@ namespace eval ::glist_Ly {
 		if {! [info exists ::glist_Layouts] } { set ::glist_Layouts {} }
 		options.save ::glist_Layouts
 		set ::gamelistNewLayout [::glist_Ly::createName_]
-		set bgcolor [ttk::style lookup Button.label -background]
-		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0 -background $bgcolor
+		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0
+		::setThemeColor_background $w.layout.b.c
 		bind $w.layout.b.c <Configure>  { ::glist_Ly::AdjScrollbar_ %W }
 		::glist_Ly::Update_ $w
 	}
