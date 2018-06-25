@@ -87,7 +87,6 @@ proc ::maint::OpenClose {} {
   set font font_Small
   set bold font_SmallBold
   win::createDialog $w
-  keyboardShortcuts $w
   wm title $w "Scid: [tr FileMaint]"
   wm resizable $w 0 0
   bind $w <F1> {helpWindow Maintenance}
