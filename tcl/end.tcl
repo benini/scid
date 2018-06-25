@@ -775,7 +775,7 @@ proc gameSave { gnum } {
   win::createDialog $w
   if {$gnum == 0} {
     wm title $w "Scid: [tr GameAdd]"
-    pack [ttk::frame $w.refdb] -side top -fill x
+    pack [ttk::frame $w.refdb] -side top -fill x -pady {0 10}
     CreateSelectDBWidget "$w.refdb" "gameSave_toBase" [sc_base current] 0
   } else {
     wm title $w "Scid: [tr GameReplace]"
@@ -822,8 +822,8 @@ proc gameSave { gnum } {
   if {$emonth == 0} { set emonth "??" }
   if {$eday == 0} { set eday "??" }
   
-  addGameSaveEntry event 2 ::tr(Event:)
-  addGameSaveEntry site 4 ::tr(Site:)
+  addGameSaveEntry event 0 ::tr(Event:)
+  addGameSaveEntry site 1 ::tr(Site:)
   
   ttk::frame $f.dateframe
   ttk::label $f.datelabel -textvar ::tr(Date:)
@@ -832,8 +832,8 @@ proc gameSave { gnum } {
   ttk::entry $f.datemonth -width 3 -textvariable month -justify right
   ttk::label $f.datedot2 -text "."
   ttk::entry $f.dateday -width 3 -textvariable day -justify right
-  grid $f.datelabel -row 0 -column 0 -sticky w
-  grid $f.dateframe -row 0 -column 1 -columnspan 5 -sticky w
+  grid $f.datelabel -row 2 -column 0 -sticky w
+  grid $f.dateframe -row 2 -column 1 -columnspan 5 -sticky w
   ttk::button $f.datechoose -image tb_calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$year-$month-$day"]
     if {[llength $newdate] == 3} {
@@ -861,8 +861,8 @@ proc gameSave { gnum } {
   ttk::entry $f.edatemonth -width 3 -textvariable emonth -justify right
   ttk::label $f.edatedot2 -text "."
   ttk::entry $f.edateday -width 3 -textvariable eday -justify right
-  grid $f.edatelabel -row 1 -column 0 -sticky w
-  grid $f.edateframe -row 1 -column 1 -columnspan 5 -sticky w
+  grid $f.edatelabel -row 3 -column 0 -sticky w
+  grid $f.edateframe -row 3 -column 1 -columnspan 5 -sticky w
   ttk::button $f.edatechoose -image tb_calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$eyear-$emonth-$eday"]
     if {[llength $newdate] == 3} {
@@ -883,7 +883,7 @@ proc gameSave { gnum } {
   }
   pack $f.esame -in $f.edateframe -side left
   
-  addGameSaveEntry round 3 ::tr(Round:)
+  addGameSaveEntry round 4 ::tr(Round:)
   addGameSaveEntry white 5 ::tr(White:)
   addGameSaveEntry black 6 ::tr(Black:)
   
@@ -924,8 +924,8 @@ proc gameSave { gnum } {
   ttk::button $f.ecob -textvar ::tr(ClassifyGame) -command {set eco [sc_eco game]}
   grid $f.ecob -row 10 -column 2 -sticky w
   
-  grid $f.title -row 1 -column 8 -sticky w  -padx "10 0"
-  grid $f.list -row 2 -column 8 -rowspan 9 -sticky nw -padx "10 0"
+  grid $f.title -row 0 -column 8 -sticky w  -padx "10 0"
+  grid $f.list -row 1 -column 8 -rowspan 9 -sticky nw -padx "10 0"
   
   ttk::labelframe .save.extra -text "Extra Tags: (example format: Annotator \"Anand, V\") "
   pack .save.extra -side top -fill both -expand 1
