@@ -112,11 +112,30 @@ proc InitDefaultFonts {} {
   }
 }
 
+proc InitDefaultGListLayouts {} {
+  set ::glist_Layouts {RatingDate DateEvent Full}
+  set ::glist_ColOrder(RatingDate) {{7} {1} {2} {3} {4} {5} {6} {23} {22} {8} {9} {10} {11} {12} {13} {14} {15} {16} {0}}
+  set ::glist_ColWidth(RatingDate) {{50} {50} {50} {120} {40} {120} {40} {80} {200} {30}  {200} {30} {20} {20} {20} {20} {35} {50} {30} {100} {40} {40} {50} {140}}
+  set ::glist_ColAnchor(RatingDate) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e}  {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
+  set ::glist_Sort(RatingDate) { {22} {-} {7} {-} }
+  set ::glist_FindBar(RatingDate) 0
+  set ::glist_ColOrder(DateEvent) {7 3 4 5 6 1 23 8 9 10 0}
+  set ::glist_ColWidth(DateEvent) {50 50 50 120 40 120 40 80 145 30 112 30 20 20 20 20 35 50 30 100 40 40 50 153}
+  set ::glist_ColAnchor(DateEvent) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e}  {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
+  set ::glist_Sort(DateEvent) {7 - 8 - 9 -}
+  set ::glist_FindBar(DateEvent) 0
+  set ::glist_ColOrder(Full) {20 7 3 4 5 6 1 2 23 8 19 10 9 16 17 22 21 18 11 12 13 14 15 0}
+  set ::glist_ColWidth(Full) {50 50 39 120 40 120 40 70 200 30 200 30 20 20 20 20 35 119 30 78 40 40 50 155}
+  set ::glist_ColAnchor(Full) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e}  {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
+  set ::glist_Sort(Full) {0 +}
+  set ::glist_FindBar(Full) 0
+}
+
 InitDefaultFonts
 InitWinsDefaultGeometry
 InitDefaultToolbar
 InitDefaultStats
-
+InitDefaultGListLayouts
 
 #Default textures for lite and dark squares
 set boardfile_dark "LightWood3-d"
@@ -625,7 +644,9 @@ set optionsFile [scidConfigFile options]
 ################################################################################
 #  Load options file. All default values should be set before this point or new saved values will be overwritten by default ones
 ################################################################################
-catch {source $optionsFile}
+if {[file exists $optionsFile] && [catch {source $optionsFile}]} {
+  tk_messageBox -message $::errorInfo
+}
 
 # Now, if the options file was written by Scid 3.5 or older, it has a lot of
 # yucky variable names in the global namespace. So convert them to the new
@@ -790,7 +811,9 @@ proc options.write {} {
       if {[winfo exists $wnd]} {
         ::win::saveWinGeometry $wnd
       }
-      puts $optionF "set ::winGeometry($wnd) $::winGeometry($wnd)"
+      if {$::winGeometry($wnd) ne ""} {
+        puts $optionF "set ::winGeometry($wnd) $::winGeometry($wnd)"
+      }
     }
 
     

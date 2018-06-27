@@ -822,18 +822,16 @@ namespace eval ::glist_Ly {
 proc glist.create {{w} {layout}} {
   # Default values
   if {! [info exists ::glist_ColOrder($layout)] } {
-    set ::glist_ColOrder($layout) {{7} {1} {2} {3} {4} {5} {6} {23} {22} {8} {9} {10} {11} {12} {13} {14} {15} {16} {0}}
+    set ::glist_ColOrder($layout) {7 3 4 5 6 1 2 23 8 10 9 16 17 22 21 18 11 12 13 14 15 0}
   }
   if {! [info exists ::glist_ColWidth($layout)] } {
-    set ::glist_ColWidth($layout) {{50} {50} {50} {120} {40} {120} {40} {80} {200} {30} \
-        {200} {30} {20} {20} {20} {20} {35} {50} {30} {100} {40} {40} {50} {140}}
+    set ::glist_ColWidth($layout) {50 50 39 120 40 120 40 70 200 30 200 30 20 20 20 20 35 119 30 78 40 40 50 155}
   }
   if {! [info exists ::glist_ColAnchor($layout)] } {
-    set ::glist_ColAnchor($layout) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e} \
-        {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
+    set ::glist_ColAnchor($layout) {e c c w c w c w w e w c c c c c c c c c c c c w}
   }
   if {! [info exists ::glist_Sort($layout)] } {
-    set ::glist_Sort($layout) { {22} {-} {7} {-} }
+    set ::glist_Sort($layout) {0 +}
   }
   if {! [info exists ::glist_FindBar($layout)] } {
     set ::glist_FindBar($layout) 0
