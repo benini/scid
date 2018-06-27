@@ -108,8 +108,6 @@ proc ::maint::OpenClose {} {
   ttk::frame $w.stats
   ttk::label $w.stats.games -textvar ::tr(NumOfGames) -font font_SmallBold
   ttk::label $w.stats.vgames -text "0" -font font_SmallBold
-  ttk::label $w.stats.delete -textvar ::tr(NumDeletedGames) -font $font
-  ttk::label $w.stats.vdelete -text "0" -font $font
   ttk::label $w.stats.mark -font $font
   ttk::label $w.stats.vmark -text "0" -font $font
   ttk::label $w.stats.filter -textvar ::tr(NumFilterGames) -font $font
@@ -120,8 +118,8 @@ proc ::maint::OpenClose {} {
   ttk::label $w.stats.vratings -text "0" -font $font
   grid $w.stats.games x x $w.stats.dates x x $w.stats.ratings -row 0 -sticky w
   grid x $w.stats.vgames x x $w.stats.vdates x x $w.stats.vratings -row 0 -sticky e
-  grid $w.stats.delete x x $w.stats.mark x x $w.stats.filter -row 1 -sticky w
-  grid x $w.stats.vdelete x x $w.stats.vmark x x $w.stats.vfilter -row 1 -sticky e
+  grid x x x $w.stats.mark x x $w.stats.filter -row 1 -sticky w
+  grid x x x x $w.stats.vmark x x $w.stats.vfilter -row 1 -sticky e
   grid columnconfigure $w.stats 2 -weight 1
   grid columnconfigure $w.stats 5 -weight 1
   
@@ -176,22 +174,23 @@ proc ::maint::OpenClose {} {
 
   ttk::frame $w.dm
   ttk::labelframe $w.dm.delete -text [tr DeleteFlag]
-  grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
   ttk::labelframe $w.dm.mark -text [tr Flag]
-  grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
   ttk::labelframe $w.dm.spell -text [tr Spellchecking]
-  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
   ttk::labelframe $w.dm.db -text [tr DatabaseOps]
+  grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
+  grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
+  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
   grid $w.dm.db -row 1 -column 1 -sticky snwe
   grid columnconfigure $w.dm 0 -weight 1
   grid columnconfigure $w.dm 1 -weight 1
 
-  foreach grid {dm.delete dm.mark dm.spell dm.db} cols {2 2 2 2} {
+  foreach grid {dm.mark dm.spell dm.db} cols {2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
       grid columnconfigure $w.$grid $i -weight 1
     }
   }
   
+  ttk::label $w.dm.delete.vdelete
   ttk::menubutton $w.dm.mark.title -menu $w.dm.mark.title.m
   menu $w.dm.mark.title.m -font $font
   
@@ -215,9 +214,11 @@ proc ::maint::OpenClose {} {
     }
 
     if { $flag eq "mark" } {
-	grid $w.dm.$flag.title -columnspan 2 -row 0 -column 0 -sticky we -padx 30 -pady "0 5"
-	incr row
+      grid $w.dm.$flag.title -columnspan 2 -row 0 -column 0 -sticky we -padx 30 -pady "0 5"
+    } else {
+      grid $w.dm.$flag.vdelete -columnspan 2 -sticky w
     }
+    incr row
     grid $w.dm.$flag.onCurrent -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
     grid $w.dm.$flag.offCurrent -row $row -column 1 -sticky we -pady "0 5"
     incr row
@@ -227,6 +228,10 @@ proc ::maint::OpenClose {} {
     grid $w.dm.$flag.onAll -row $row -column 0 -sticky we -padx "0 5" -pady "0 5"
     grid $w.dm.$flag.offAll -row $row -column 1 -sticky we -pady "0 5"
   }
+  grid rowconfigure $w.dm.delete 0 -weight 1
+  grid columnconfigure $w.dm.delete 0 -weight 1
+  grid columnconfigure $w.dm.delete 1 -weight 1
+
   
   ttk::button $w.dm.spell.player -textvar ::tr(Players...) -style Small.TButton \
       -command "openSpellCheckWin Player $w"
@@ -313,7 +318,7 @@ proc ::maint::Refresh {} {
   $w.title.vicon configure -image dbt[sc_base extra $::curr_db type]
   $w.title.vname configure -text [file tail [sc_base filename $::curr_db]]
   $w.stats.vgames configure -text [::utils::thousands $ng]
-  $w.stats.vdelete configure -text [::utils::percentFormat $deleted $ng]
+  $w.dm.delete.vdelete configure -text "[tr NumDeletedGames]: [::utils::percentFormat $deleted $ng]"
   $w.stats.vmark configure -text [::utils::percentFormat $marked $ng]
   $w.stats.vfilter configure -text [::utils::percentFormat [sc_filter count] $ng]
   $w.stats.vdates configure \
