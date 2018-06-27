@@ -123,21 +123,20 @@ proc ::maint::OpenClose {} {
   pack $w.title.desc.lab -side left -padx "0 5"
   pack $w.title.desc.edit -side right -pady "0 5"
   pack $w.title.desc.text -side left -fill x -expand yes -padx 5
-  # Custom flags
-  ttk::frame $w.title.cust
-  ttk::label $w.title.cust.lab -text "[::tr CustomFlags]:" -font font_SmallBold
-  set ::curr_db [sc_base current]
-  for {set i 1} { $i < 7} { incr i} {
-    set desc [sc_base extra $::curr_db flag$i]
-    ttk::entry $w.title.cust.text$i -width 8 -foreground [ttk::style lookup $w.title.cust.text$i -foreground]
-  }
-  
-  ttk::button $w.title.cust.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeCustomDescription
-  pack $w.title.cust.lab -side left -padx "0 5"
-  pack $w.title.cust.edit -side right -padx "5 0" -pady "0 5"
-  for {set i 1} { $i < 7} { incr i} {
-    pack $w.title.cust.text$i -side left -fill x -expand yes
-  }
+
+  ttk::frame $w.customFlags
+  ttk::label $w.customFlags.lab -text "[::tr CustomFlags]:" -font font_SmallBold
+  ttk::entry $w.customFlags.text1 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::entry $w.customFlags.text2 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::entry $w.customFlags.text3 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::entry $w.customFlags.text4 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::entry $w.customFlags.text5 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::entry $w.customFlags.text6 -width 8 -validate key -validatecommand "::maint::validateCustomFlag $w %P"
+  ttk::button $w.customFlags.edit -text "[tr Save]" -style Small.TButton -command "::maint::saveCustomFlags $w"
+  grid $w.customFlags.lab $w.customFlags.text1 $w.customFlags.text2 $w.customFlags.text3 \
+       $w.customFlags.text4 $w.customFlags.text5 $w.customFlags.text6 -padx "0 5"
+  grid $w.customFlags.edit -row 0 -column 7 -sticky e
+  grid columnconfigure $w.customFlags 7 -weight 1
 
   ttk::frame $w.autog
   ttk::label $w.autog.lab -text $::tr(AutoloadGame:) -font font_SmallBold
@@ -176,8 +175,6 @@ proc ::maint::OpenClose {} {
   $w.title.vname configure -font font_Bold
   $w.title.vgames configure -font font_SmallBold
   grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
-  incr row
-  grid $w.title.cust -row $row -column 0 -columnspan 5 -sticky we
 
   foreach grid {dm.delete dm.mark dm.spell dm.db} cols {2 2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
@@ -263,7 +260,8 @@ proc ::maint::OpenClose {} {
   packdlgbuttons $w.buttons.close $w.buttons.help
   
   grid $w.title -sticky news
-  grid $w.autog -sticky news
+  grid $w.autog -pady 5 -sticky news
+  grid $w.customFlags -sticky news
   grid $w.dm -pady 10 -sticky news
   grid $w.buttons -sticky news
 
@@ -296,42 +294,17 @@ proc ::maint::ChangeBaseDescription {} {
   wm resizable $w 0 0
   catch {grab $w}
 }
-################################################################################
-#  Change custom flags description
-################################################################################
-proc ::maint::ChangeCustomDescription {} {
-  set w .bcustom
-  if {[winfo exists $w]} { return }
-  win::createDialog $w
-  wm title $w "Scid: $::tr(CustomFlags): [file tail [sc_base filename $::curr_db]]"
-  ttk::frame $w.a
-  ttk::label $w.a.lb -text [::tr CustomFlags]
-  grid $w.a.lb -column 0 -row 0 -columnspan 5 -sticky w
-  set col 0
-  set row 1
-  set ::curr_db [sc_base current]
-  for {set i 1} {$i <7} {incr i} {
-    ttk::label $w.a.lab$i -text "$i:"
-    ttk::entry $w.a.e$i -width 8
-    set desc [sc_base extra $::curr_db flag$i]
-    $w.a.e$i insert end $desc
-    grid $w.a.lab$i -column $col -row $row
-    incr col
-    grid $w.a.e$i -column $col -row $row -padx 5
-    incr col
-    if { $i eq 3 } {
-	incr row
-	set col 0
-    }
-  }
-  ttk::frame $w.b
-  ttk::button $w.b.ok -text OK -command {
+
+proc ::maint::validateCustomFlag {w val} {
+  if {[string length $val] > 8} { return false }
+  $w.customFlags.edit configure -state normal
+  return true
+}
+proc ::maint::saveCustomFlags {w} {
     for {set i 1} {$i <7} {incr i} {
-      set desc [.bcustom.a.e$i get]
+      set desc [$w.customFlags.text$i get]
       sc_base extra $::curr_db flag$i $desc
     }
-    grab release .bcustom
-    destroy .bcustom
     
     # update the drop down menu of maint window and the menu of GameInfo window
     for {set idx 12} {$idx < 18} {incr idx} {
@@ -341,18 +314,7 @@ proc ::maint::ChangeCustomDescription {} {
       .maintWin.dm.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
     }
     
-    # update the custom flags labels
-    for {set i 1} { $i < 7} { incr i} {
-      set desc [sc_base extra $::curr_db flag$i]
-    }
     ::maint::Refresh
-  }
-  ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
-  pack $w.a -side top -fill x
-  pack $w.b -side bottom -fill x
-  packdlgbuttons $w.b.cancel $w.b.ok
-  wm resizable $w 0 0
-  catch {grab $w}
 }
 
 proc ::maint::Refresh {} {
@@ -390,7 +352,7 @@ proc ::maint::Refresh {} {
   
   $w.dm.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
-  foreach i { desc.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+  foreach i { desc.text } {
     $w.title.$i configure -state enable
     $w.title.$i delete 0 end
   }
@@ -401,9 +363,12 @@ proc ::maint::Refresh {} {
 
   for {set i 1} { $i < 7} { incr i} {
       set desc [sc_base extra $::curr_db flag$i]
-      .maintWin.title.cust.text$i insert end $desc
+      .maintWin.customFlags.text$i delete 0 end
+      .maintWin.customFlags.text$i insert end $desc
   }
-  foreach i { desc.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+  $w.customFlags.edit configure -state disabled
+
+  foreach i { desc.text } {
     $w.title.$i configure -state disable
   }
   # Disable buttons if current base is closed or read-only:
@@ -427,7 +392,6 @@ proc ::maint::Refresh {} {
   $w.dm.db.dups configure -state $state
   $w.title.vicon configure -state $state
   $w.title.desc.edit configure -state $state
-  $w.title.cust.edit configure -state $state
   $w.dm.db.elo configure -state $state
   $w.dm.db.eco configure -state $state
   $w.dm.db.strip configure -state $state
