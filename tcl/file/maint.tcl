@@ -116,13 +116,21 @@ proc ::maint::OpenClose {} {
   ttk::label $w.title.ratings -textvar ::tr(RatingRange) -font $font
   ttk::button $w.title.vicon -command {changeBaseType [sc_base current]}
   
-  ttk::frame $w.title.desc
-  ttk::label $w.title.desc.lab -text $::tr(Description:) -font font_SmallBold
-  ttk::entry $w.title.desc.text -foreground [ttk::style lookup $w.title.desc.text -foreground]
-  ttk::button $w.title.desc.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeBaseDescription
-  pack $w.title.desc.lab -side left -padx "0 5"
-  pack $w.title.desc.edit -side right -pady "0 5"
-  pack $w.title.desc.text -side left -fill x -expand yes -padx 5
+  ttk::frame $w.dbdesc
+  ttk::label $w.dbdesc.lab -text $::tr(Description:) -font font_SmallBold
+  ttk::entry $w.dbdesc.text -textvariable ::maint::dbdesc -validate key -validatecommand "
+    $w.dbdesc.edit configure -state normal
+    return true
+  "
+  ttk::button $w.dbdesc.edit -text "[tr Save]" -style Small.TButton -command {
+    if { [catch {sc_base extra $::curr_db description $::maint::dbdesc}] } {
+      ERROR::MessageBox
+    }
+    ::maint::Refresh
+  }
+  grid $w.dbdesc.lab $w.dbdesc.text -padx "0 5" -sticky we
+  grid $w.dbdesc.edit -row 0 -column 2 -sticky e
+  grid columnconfigure $w.dbdesc 1 -weight 1
 
   ttk::frame $w.customFlags
   ttk::label $w.customFlags.lab -text "[::tr CustomFlags]:" -font font_SmallBold
@@ -174,7 +182,6 @@ proc ::maint::OpenClose {} {
   grid [ttk::label $w.title.space -text "   "] -row 0 -column 2
   $w.title.vname configure -font font_Bold
   $w.title.vgames configure -font font_SmallBold
-  grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
 
   foreach grid {dm.delete dm.mark dm.spell dm.db} cols {2 2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
@@ -260,6 +267,7 @@ proc ::maint::OpenClose {} {
   packdlgbuttons $w.buttons.close $w.buttons.help
   
   grid $w.title -sticky news
+  grid $w.dbdesc -sticky news
   grid $w.autog -pady 5 -sticky news
   grid $w.customFlags -sticky news
   grid $w.dm -pady 10 -sticky news
@@ -267,32 +275,6 @@ proc ::maint::OpenClose {} {
 
   bind $w <Alt-h> "$w.buttons.help invoke"
   ::maint::Refresh
-}
-
-proc ::maint::ChangeBaseDescription {} {
-  set w .bdesc
-  if {[winfo exists $w]} { return }
-  win::createDialog $w
-  wm title $w "Scid: $::tr(Description): [file tail [sc_base filename $::curr_db]]"
-  set font font_Small
-  ttk::entry $w.entry -width 50 ;# -relief sunken -background white
-  set ::curr_db [sc_base current]
-  $w.entry insert end [sc_base extra $::curr_db description]
-  pack $w.entry -side top -pady 4
-  ttk::frame $w.b
-  ttk::button $w.b.ok -text OK -command {
-    if { [catch {sc_base extra $::curr_db description [.bdesc.entry get]}] } {
-      ERROR::MessageBox
-    }
-    grab release .bdesc
-    destroy .bdesc
-    ::maint::Refresh
-  }
-  ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
-  pack $w.b -side bottom -fill x
-  packdlgbuttons $w.b.cancel $w.b.ok
-  wm resizable $w 0 0
-  catch {grab $w}
 }
 
 proc ::maint::validateCustomFlag {w val} {
@@ -352,11 +334,9 @@ proc ::maint::Refresh {} {
   
   $w.dm.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
-  foreach i { desc.text } {
-    $w.title.$i configure -state enable
-    $w.title.$i delete 0 end
-  }
-  $w.title.desc.text insert end [sc_base extra $::curr_db description]
+
+  set ::maint::dbdesc [sc_base extra $::curr_db description]
+  $w.dbdesc.edit configure -state disabled
 
   set ::autoloadGame [sc_base extra $::curr_db autoload]
   $w.autog.edit configure -state disabled
@@ -368,9 +348,6 @@ proc ::maint::Refresh {} {
   }
   $w.customFlags.edit configure -state disabled
 
-  foreach i { desc.text } {
-    $w.title.$i configure -state disable
-  }
   # Disable buttons if current base is closed or read-only:
   set state disabled
   set curr_base [sc_base current]
@@ -391,7 +368,6 @@ proc ::maint::Refresh {} {
   }
   $w.dm.db.dups configure -state $state
   $w.title.vicon configure -state $state
-  $w.title.desc.edit configure -state $state
   $w.dm.db.elo configure -state $state
   $w.dm.db.eco configure -state $state
   $w.dm.db.strip configure -state $state
