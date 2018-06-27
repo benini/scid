@@ -98,13 +98,13 @@ proc ::maint::OpenClose {} {
     foreach f {dm.delete dm.mark dm.spell dm.db} t { DeleteFlag Flag Spellchecking DatabaseOps } {
     ttk::labelframe $w.$f -text $::tr($t)
   }
-  pack $w.title -side top -fill x
-  pack $w.dm -side top -fill x -fill y -pady 10
-  pack $w.buttons -side bottom -fill x
+
   grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
   grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
   grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
   grid $w.dm.db -row 1 -column 1 -sticky snwe
+  grid columnconfigure $w.dm 0 -weight 1
+  grid columnconfigure $w.dm 1 -weight 1
   
   ttk::label $w.title.name -textvar ::tr(DatabaseName) -font font_Bold
   ttk::label $w.title.games -textvar ::tr(NumOfGames) -font font_SmallBold
@@ -138,13 +138,25 @@ proc ::maint::OpenClose {} {
   for {set i 1} { $i < 7} { incr i} {
     pack $w.title.cust.text$i -side left -fill x -expand yes
   }
-  ttk::frame $w.title.start
-  ttk::label $w.title.start.lab -text $::tr(AutoloadGame:) -font font_SmallBold
-  ttk::entry $w.title.start.text -width 8 -justify right -foreground [ttk::style lookup $w.title.start.text -foreground]
-  ttk::button $w.title.start.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::SetAutoloadGame
-  pack $w.title.start.lab -side left -padx "0 5"
-  pack $w.title.start.edit -side right
-  pack $w.title.start.text -side left -padx 5
+
+  ttk::frame $w.autog
+  ttk::label $w.autog.lab -text $::tr(AutoloadGame:) -font font_SmallBold
+  ttk::entry $w.autog.text -width 10 -justify right -textvariable autoloadGame -validate key -validatecommand {
+    if {![string is integer %P]} { return false }
+    .maintWin.autog.edit configure -state normal
+    return true
+  }
+  ttk::button $w.autog.current -text $::tr(Current) -style Small.TButton -command {
+    set ::autoloadGame [sc_game number]
+    .maintWin.autog.edit configure -state normal
+  }
+  ttk::button $w.autog.edit -text "[tr Save]" -style Small.TButton -command {
+    sc_base extra $::curr_db autoload $::autoloadGame
+    ::maint::Refresh
+  }
+  grid $w.autog.lab $w.autog.text $w.autog.current -padx "0 5"
+  grid $w.autog.edit -row 0 -column 3 -sticky e
+  grid columnconfigure $w.autog 3 -weight 1
 
   foreach name {name games delete mark filter dates ratings} {
     ttk::label $w.title.v$name -text "0" -font $font
@@ -166,10 +178,8 @@ proc ::maint::OpenClose {} {
   grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
   incr row
   grid $w.title.cust -row $row -column 0 -columnspan 5 -sticky we
-  incr row
-  grid $w.title.start -row $row -column 0 -columnspan 5 -sticky we
-  
-  foreach grid {title dm.delete dm.mark dm.spell dm.db} cols {5 2 2 2 2} {
+
+  foreach grid {dm.delete dm.mark dm.spell dm.db} cols {2 2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
       grid columnconfigure $w.$grid $i -weight 1
     }
@@ -252,6 +262,11 @@ proc ::maint::OpenClose {} {
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
   packdlgbuttons $w.buttons.close $w.buttons.help
   
+  grid $w.title -sticky news
+  grid $w.autog -sticky news
+  grid $w.dm -pady 10 -sticky news
+  grid $w.buttons -sticky news
+
   bind $w <Alt-h> "$w.buttons.help invoke"
   ::maint::Refresh
 }
@@ -375,17 +390,20 @@ proc ::maint::Refresh {} {
   
   $w.dm.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
-  foreach i { desc.text start.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+  foreach i { desc.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
     $w.title.$i configure -state enable
     $w.title.$i delete 0 end
   }
   $w.title.desc.text insert end [sc_base extra $::curr_db description]
-  $w.title.start.text insert end [sc_base extra $::curr_db autoload]
+
+  set ::autoloadGame [sc_base extra $::curr_db autoload]
+  $w.autog.edit configure -state disabled
+
   for {set i 1} { $i < 7} { incr i} {
       set desc [sc_base extra $::curr_db flag$i]
       .maintWin.title.cust.text$i insert end $desc
   }
-  foreach i { desc.text start.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
+  foreach i { desc.text cust.text1 cust.text2 cust.text3 cust.text4 cust.text5 cust.text6 } {
     $w.title.$i configure -state disable
   }
   # Disable buttons if current base is closed or read-only:
@@ -420,54 +438,6 @@ proc ::maint::Refresh {} {
   }
   $w.dm.db.compact configure -state $state
   $w.dm.db.cleaner configure -state $state
-}
-
-
-set autoloadGame 0
-trace variable autoloadGame w {::utils::validate::Integer 9999999 0}
-
-# ::maint::SetAutoloadGame
-#
-#   Creates a dialog for setting the autoload game number of the
-#   current database.
-#
-proc ::maint::SetAutoloadGame {} {
-  global autoloadGame
-  set w .autoload
-  if {[winfo exists $w]} { return }
-  win::createDialog $w
-  wm title $w "Scid"
-  set ::curr_db [sc_base current]
-  set autoloadGame [sc_base extra $::curr_db autoload]
-  
-  pack [ttk::frame $w.f] -side top -fill x -expand 1
-  ttk::label $w.f.label -text $::tr(AutoloadGame:)
-  ttk::entry $w.f.entry -textvar autoloadGame -justify right -width 10
-  pack $w.f.label $w.f.entry -side left
-  
-  pack [ttk::frame $w.set] -side top -fill x
-  ttk::button $w.set.none -text $::tr(None) -command {set autoloadGame 0}
-  ttk::button $w.set.first -text $::tr(First) -command {set autoloadGame 1}
-  ttk::button $w.set.current -text $::tr(Current) \
-      -command {set autoloadGame [sc_game number]}
-  ttk::button $w.set.last -text $::tr(Last) -command {set autoloadGame 9999999}
-  foreach i {none first current last} {$w.set.$i configure -style Small.TButton}
-  pack $w.set.none $w.set.first $w.set.current $w.set.last \
-      -side right -padx 5 -pady 2
-
-  pack [ttk::frame $w.b] -side top -fill x
-  ttk::button $w.b.ok -text OK -command \
-      "sc_base extra $::curr_db autoload \$autoloadGame; ::maint::Refresh; catch {grab release $w}; destroy $w"
-  ttk::button $w.b.cancel -text $::tr(Cancel) -command \
-      "catch {grab release $w}; destroy $w"
-  packdlgbuttons $w.b.cancel $w.b.ok
-  
-  bind $w.f.entry <Return> "$w.b.ok invoke"
-  bind $w.f.entry <Escape> "$w.b.cancel invoke"
-  wm resizable $w 0 0
-  ::utils::win::Centre $w
-  focus $w.f.entry
-  grab $w
 }
 
 # markTwins:
