@@ -1161,7 +1161,7 @@ proc doCleaner {} {
   set answer [tk_messageBox -type yesno -icon question \
       -title $::tr(TwinCriteriaConfirm) \
       -message [string trim $::tr(CleanerConfirm)]]
-  if {$answer == "no"} { return 0 } else { return 1 }
+  if {$answer == "no"} { return }
   
   set w .mtoolStatus
   if {! [winfo exists $w]} {
