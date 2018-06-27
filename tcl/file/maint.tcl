@@ -92,29 +92,35 @@ proc ::maint::OpenClose {} {
   bind $w <F1> {helpWindow Maintenance}
   bind $w <Escape> "destroy $w; break"
   bind $w <Destroy> {set maintWin 0}
-  foreach f {title dm buttons} {
-    ttk::frame $w.$f
-  }
-    foreach f {dm.delete dm.mark dm.spell dm.db} t { DeleteFlag Flag Spellchecking DatabaseOps } {
-    ttk::labelframe $w.$f -text $::tr($t)
-  }
-
-  grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
-  grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
-  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
-  grid $w.dm.db -row 1 -column 1 -sticky snwe
-  grid columnconfigure $w.dm 0 -weight 1
-  grid columnconfigure $w.dm 1 -weight 1
   
-  ttk::label $w.title.name -textvar ::tr(DatabaseName) -font font_Bold
-  ttk::label $w.title.games -textvar ::tr(NumOfGames) -font font_SmallBold
-  ttk::label $w.title.icon -textvar ::tr(TypeIcon)
-  ttk::label $w.title.delete -textvar ::tr(NumDeletedGames) -font $font
-  ttk::label $w.title.mark -font $font
-  ttk::label $w.title.filter -textvar ::tr(NumFilterGames) -font $font
-  ttk::label $w.title.dates -textvar ::tr(YearRange) -font $font
-  ttk::label $w.title.ratings -textvar ::tr(RatingRange) -font $font
+  ttk::frame $w.title
+  ttk::label $w.title.name -text "[tr Database]:"
+  ttk::label $w.title.vname -text "0" -font font_Bold
+  ttk::label $w.title.icon
   ttk::button $w.title.vicon -command {changeBaseType [sc_base current]}
+  grid $w.title.vicon -rowspan 2 -padx "0 10"
+  grid $w.title.name -row 0 -column 1 -sticky w
+  grid $w.title.vname -row 1 -column 1 -sticky nw
+
+  ttk::frame $w.stats
+  ttk::label $w.stats.games -textvar ::tr(NumOfGames) -font font_SmallBold
+  ttk::label $w.stats.vgames -text "0" -font font_SmallBold
+  ttk::label $w.stats.delete -textvar ::tr(NumDeletedGames) -font $font
+  ttk::label $w.stats.vdelete -text "0" -font $font
+  ttk::label $w.stats.mark -font $font
+  ttk::label $w.stats.vmark -text "0" -font $font
+  ttk::label $w.stats.filter -textvar ::tr(NumFilterGames) -font $font
+  ttk::label $w.stats.vfilter -text "0" -font $font
+  ttk::label $w.stats.dates -textvar ::tr(YearRange) -font $font
+  ttk::label $w.stats.vdates -text "0" -font $font
+  ttk::label $w.stats.ratings -textvar ::tr(RatingRange) -font $font
+  ttk::label $w.stats.vratings -text "0" -font $font
+  grid $w.stats.games x x $w.stats.dates x x $w.stats.ratings -row 0 -sticky w
+  grid x $w.stats.vgames x x $w.stats.vdates x x $w.stats.vratings -row 0 -sticky e
+  grid $w.stats.delete x x $w.stats.mark x x $w.stats.filter -row 1 -sticky w
+  grid x $w.stats.vdelete x x $w.stats.vmark x x $w.stats.vfilter -row 1 -sticky e
+  grid columnconfigure $w.stats 2 -weight 1
+  grid columnconfigure $w.stats 5 -weight 1
   
   ttk::frame $w.dbdesc
   ttk::label $w.dbdesc.lab -text $::tr(Description:) -font font_SmallBold
@@ -165,23 +171,17 @@ proc ::maint::OpenClose {} {
   grid $w.autog.edit -row 0 -column 3 -sticky e
   grid columnconfigure $w.autog 3 -weight 1
 
-  foreach name {name games delete mark filter dates ratings} {
-    ttk::label $w.title.v$name -text "0" -font $font
-  }
-  
-  set row 0
-  set col 0
-  foreach name {name icon games filter delete mark dates ratings} {
-    grid $w.title.$name -row $row -column $col -sticky w
-    incr col
-    grid $w.title.v$name -row $row -column $col -sticky e
-    incr col
-    if {$col == 2} { incr col }
-    if {$col >= 5} { set col 0; incr row }
-  }
-  grid [ttk::label $w.title.space -text "   "] -row 0 -column 2
-  $w.title.vname configure -font font_Bold
-  $w.title.vgames configure -font font_SmallBold
+  ttk::frame $w.dm
+  ttk::labelframe $w.dm.delete -text [tr DeleteFlag]
+  grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
+  ttk::labelframe $w.dm.mark -text [tr Flag]
+  grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
+  ttk::labelframe $w.dm.spell -text [tr Spellchecking]
+  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
+  ttk::labelframe $w.dm.db -text [tr DatabaseOps]
+  grid $w.dm.db -row 1 -column 1 -sticky snwe
+  grid columnconfigure $w.dm 0 -weight 1
+  grid columnconfigure $w.dm 1 -weight 1
 
   foreach grid {dm.delete dm.mark dm.spell dm.db} cols {2 2 2 2} {
     for {set i 0} {$i < $cols} {incr i} {
@@ -262,11 +262,13 @@ proc ::maint::OpenClose {} {
   grid $w.dm.db.compact -row 2 -column 0 -sticky we -padx "0 5" -pady "0 5"
   grid $w.dm.db.cleaner -row 2 -column 1 -sticky we -pady "0 5"
   
+  ttk::frame $w.buttons
   dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
   packdlgbuttons $w.buttons.close $w.buttons.help
   
   grid $w.title -sticky news
+  grid $w.stats -pady 5 -sticky news
   grid $w.dbdesc -sticky news
   grid $w.autog -pady 5 -sticky news
   grid $w.customFlags -sticky news
@@ -312,15 +314,15 @@ proc ::maint::Refresh {} {
   set marked [sc_base stats $::curr_db flag $maintFlag]
   set flags [sc_base stats $::curr_db flags]
   set ratings [sc_base stats $::curr_db ratings]
-  $w.title.vgames configure -text [::utils::thousands $ng]
   $w.title.vicon configure -image dbt[sc_base extra $::curr_db type]
   $w.title.vname configure -text [file tail [sc_base filename $::curr_db]]
-  $w.title.vdelete configure -text [::utils::percentFormat $deleted $ng]
-  $w.title.vmark configure -text [::utils::percentFormat $marked $ng]
-  $w.title.vfilter configure -text [::utils::percentFormat [sc_filter count] $ng]
-  $w.title.vdates configure \
+  $w.stats.vgames configure -text [::utils::thousands $ng]
+  $w.stats.vdelete configure -text [::utils::percentFormat $deleted $ng]
+  $w.stats.vmark configure -text [::utils::percentFormat $marked $ng]
+  $w.stats.vfilter configure -text [::utils::percentFormat [sc_filter count] $ng]
+  $w.stats.vdates configure \
       -text "[lindex $dates 0]-[lindex $dates 1] ([lindex $dates 2])"
-  $w.title.vratings configure \
+  $w.stats.vratings configure \
       -text "[lindex $ratings 0]-[lindex $ratings 1] ([lindex $ratings 2])"
   
   if { [lsearch -exact { 1 2 3 4 5 6 } $maintFlag ] != -1 } {
@@ -331,9 +333,9 @@ proc ::maint::Refresh {} {
   }
   
   set flagname "$tmp ($maintFlag)"
+  $w.stats.mark configure -text $flagname
   
   $w.dm.mark.title configure -text $flagname
-  $w.title.mark configure -text $flagname
 
   set ::maint::dbdesc [sc_base extra $::curr_db description]
   $w.dbdesc.edit configure -state disabled
