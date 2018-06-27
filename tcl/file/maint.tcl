@@ -339,48 +339,46 @@ proc ::maint::Refresh {} {
   $w.dm.mark.title configure -text $flagname
 
   set ::maint::dbdesc [sc_base extra $::curr_db description]
-  $w.dbdesc.edit configure -state disabled
 
   set ::autoloadGame [sc_base extra $::curr_db autoload]
-  $w.autog.edit configure -state disabled
 
   for {set i 1} { $i < 7} { incr i} {
       set desc [sc_base extra $::curr_db flag$i]
+      .maintWin.customFlags.text$i configure -state normal
       .maintWin.customFlags.text$i delete 0 end
       .maintWin.customFlags.text$i insert end $desc
   }
-  $w.customFlags.edit configure -state disabled
 
-  # Disable buttons if current base is closed or read-only:
-  set state disabled
-  set curr_base [sc_base current]
-  if {![sc_base isReadOnly $curr_base]} {
-    set state normal
+  # Set widget's states
+  set state [expr {[sc_base isReadOnly $::curr_db] ? "disabled" : "normal"}]
+  foreach frame {title dbdesc autog customFlags} {
+    foreach widget [winfo children $w.$frame] {
+	  if {[winfo class $widget] eq "TLabel"} { continue }
+	  $widget configure -state $state
+	}
   }
-  foreach spell {player event site round} {
-    $w.dm.spell.$spell configure -state $state
+  $w.dbdesc.edit configure -state disabled
+  $w.autog.edit configure -state disabled
+  $w.customFlags.edit configure -state disabled
+  $w.title.help configure -state normal
+
+  set state [expr {$state eq "disabled" || $ng == 0 ? "disabled" : "normal"}]
+  foreach frame {dm.delete dm.mark dm.spell dm.db} {
+    foreach widget [winfo children $w.$frame] {
+	  if {[winfo class $widget] eq "TLabel"} { continue }
+	  $widget configure -state $state
+	}
   }
-  set stateCurrent [expr {[sc_game number] ? $state : "disabled"}]
-  $w.dm.delete.onCurrent configure -state $stateCurrent
-  $w.dm.delete.offCurrent configure -state $stateCurrent
-  $w.dm.mark.onCurrent configure -state $stateCurrent
-  $w.dm.mark.offCurrent configure -state $stateCurrent
-  foreach button {onAll offAll onFilter offFilter} {
-    $w.dm.delete.$button configure -state $state
-    $w.dm.mark.$button configure -state $state
+  if {$state eq "normal" && ![sc_game number]} {
+     $w.dm.delete.onCurrent configure -state disabled
+     $w.dm.delete.offCurrent configure -state disabled
+     $w.dm.mark.onCurrent configure -state disabled
+     $w.dm.mark.offCurrent configure -state disabled
   }
-  $w.dm.db.dups configure -state $state
-  $w.title.vicon configure -state $state
-  $w.dm.db.elo configure -state $state
-  $w.dm.db.eco configure -state $state
-  $w.dm.db.strip configure -state $state
-  
-  set state disabled
-  if {[baseIsCompactable]} {
-    set state normal
+  if {$state eq "normal" && ![baseIsCompactable]} {
+    $w.dm.db.compact configure -state disabled
+    $w.dm.db.cleaner configure -state disabled
   }
-  $w.dm.db.compact configure -state $state
-  $w.dm.db.cleaner configure -state $state
 }
 
 # markTwins:
