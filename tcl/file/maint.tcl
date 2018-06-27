@@ -98,9 +98,12 @@ proc ::maint::OpenClose {} {
   ttk::label $w.title.vname -text "0" -font font_Bold
   ttk::label $w.title.icon
   ttk::button $w.title.vicon -command {changeBaseType [sc_base current]}
+  ttk::button $w.title.help -image tb_help -command {helpWindow Maintenance}
   grid $w.title.vicon -rowspan 2 -padx "0 10"
   grid $w.title.name -row 0 -column 1 -sticky w
   grid $w.title.vname -row 1 -column 1 -sticky nw
+  grid $w.title.help -row 0 -rowspan 2 -column 2 -sticky ne
+  grid columnconfigure $w.title 1 -weight 1
 
   ttk::frame $w.stats
   ttk::label $w.stats.games -textvar ::tr(NumOfGames) -font font_SmallBold
@@ -261,21 +264,14 @@ proc ::maint::OpenClose {} {
   grid $w.dm.db.strip -row 1 -column 1 -sticky we -pady "0 5"
   grid $w.dm.db.compact -row 2 -column 0 -sticky we -padx "0 5" -pady "0 5"
   grid $w.dm.db.cleaner -row 2 -column 1 -sticky we -pady "0 5"
-  
-  ttk::frame $w.buttons
-  dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
-  dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
-  packdlgbuttons $w.buttons.close $w.buttons.help
-  
+
   grid $w.title -sticky news
   grid $w.stats -pady 5 -sticky news
   grid $w.dbdesc -sticky news
   grid $w.autog -pady 5 -sticky news
   grid $w.customFlags -sticky news
-  grid $w.dm -pady 10 -sticky news
-  grid $w.buttons -sticky news
+  grid $w.dm -pady "10 0" -sticky news
 
-  bind $w <Alt-h> "$w.buttons.help invoke"
   ::maint::Refresh
 }
 
