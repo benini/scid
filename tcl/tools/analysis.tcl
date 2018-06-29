@@ -1865,7 +1865,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     # Set up the  analysis window:
     #
     ::createToplevel $w
-    $w configure -background [ttk::style lookup . -background]
     set analysisWin$n 1
     if {$n == 1} {
         ::setTitle $w "Analysis: $analysisName"

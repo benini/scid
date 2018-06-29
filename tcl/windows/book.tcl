@@ -243,7 +243,6 @@ namespace eval book {
     }
     
     ::createToplevel $w
-    $w configure -background [ttk::style lookup . -background]
     ::setTitle $w $::tr(Book)
     # wm resizable $w 0 0
     

@@ -226,7 +226,7 @@ namespace eval Xfcc {
 		set ::Xfcc::showPass  0
 
 		# create the window and buttons
-		toplevel $w -background [ttk::style lookup . -background]
+		toplevel $w
 		wm title $w "\[$xfccrcfile\]"
 		ttk::button $w.bOk     -text OK -command "::Xfcc::xfccsrvstore; ::Xfcc::SaveXfcc; destroy .configXfccSrv"
 		ttk::button $w.bAdd    -text  [::tr "GlistAddField"] -command {
@@ -1428,7 +1428,7 @@ namespace eval CorrespondenceChess {
 			set oldRelays $::CorrespondenceChess::RelayGames
 
 			if {[winfo exists $w]} { return }
-			toplevel $w -background [ttk::style lookup . -background]
+			toplevel $w
 			::setTitle $w [::tr "CCDlgConfigRelay"]
 
 			autoscrollframe $w.desc text $w.desc.text \
@@ -2086,7 +2086,7 @@ namespace eval CorrespondenceChess {
 			raiseWin $w
 			return
 		}
-		toplevel $w -background [ttk::style lookup . -background]
+		toplevel $w
 		wm title $w [::tr "CCDlgConfigureWindowTitle"]
 
 		set ::CorrespondenceChess::sortoptlist [list \

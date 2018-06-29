@@ -490,8 +490,9 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.buttons.boardFilter -row 4
 	grid $w.buttons -row 0 -column 0 -sticky news
 
-	ttk::frame $w.database -padding {0 5 6 2} -borderwidth 1 -relief groove
+	ttk::frame $w.database -padding {0 5 6 2}
 	::windows::switcher::Create $w.database $w
+	$w.database.border configure -borderwidth 2 -relief groove
 
 	ttk::frame $w.filter -padding {4 5 6 0}
 	ttk::frame $w.filter.b
@@ -524,14 +525,14 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.filter.b.crosst
 
 	ttk::frame $w.layout -padding {0 5 6 2}
-	ttk::frame $w.layout.b -borderwidth 1 -relief groove
+	ttk::frame $w.layout.b -borderwidth 2 -relief groove
 	grid $w.layout.b -sticky news
 	grid rowconfigure $w.layout 0 -weight 1
 	grid columnconfigure $w.layout 0 -weight 1
 	::glist_Ly::Create $w
 
 	ttk::frame $w.stats -padding {0 5 6 2}
-	ttk::frame $w.stats.b -borderwidth 1 -relief groove
+	ttk::frame $w.stats.b -borderwidth 2 -relief groove
 	grid $w.stats.b -sticky news
 	grid rowconfigure $w.stats 0 -weight 1
 	grid columnconfigure $w.stats 0 -weight 1

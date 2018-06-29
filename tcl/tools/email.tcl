@@ -94,16 +94,16 @@ proc ::tools::email {} {
 proc ::tools::email::config {} {
   global email
   set w .emailConfig
-  toplevel $w -background [ttk::style lookup . -background]
+  toplevel $w
   wm title $w "Scid"
-  ttk::label $w.use -text "Send email using:" -font font_Bold
+  ttk::label $w.use -text "Send email using:" -font font_Bold -anchor c
   ttk::frame $w.smtp
   ttk::radiobutton $w.smtp.b -text "SMTP server:" -variable email(smtp) -value 1
   ttk::entry $w.smtp.s -width 30 -textvar email(server)
   ttk::frame $w.sm
   ttk::radiobutton $w.sm.b -text "sendmail process:" -variable email(smtp) -value 0
   ttk::entry $w.sm.s -width 30 -textvar email(smproc)
-  pack $w.use -side top
+  pack $w.use -side top -fill x
   pack $w.smtp $w.sm -side top -fill x
   pack $w.smtp.s $w.smtp.b -side right
   pack $w.sm.s $w.sm.b -side right
@@ -497,7 +497,7 @@ proc modifyEmailDetails {i} {
   global emailData emailData_name emailData_addr emailData_glist emailData_subj
   global emailData_sig emailData_index emailData_helpBar ::tools::email::helpBar
 
-  toplevel .emailEditor -background [ttk::style lookup . -background]
+  toplevel .emailEditor
   set w .emailEditor
   bind $w <F1> { helpWindow Email }
   set emailData_index $i
