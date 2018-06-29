@@ -55,7 +55,8 @@ set ignoreColors 0
 set minMoveNum 1
 set maxMoveNum 999
 set minHalfMoves 1
-set oppBishops "Either"
+set oppBishops 0
+set sameBishops 0
 set minMatDiff -40
 set maxMatDiff +40
 
@@ -65,11 +66,12 @@ trace variable minHalfMoves w {::utils::validate::Integer 99 0}
 trace variable minMatDiff w {::utils::validate::Integer -99 0}
 trace variable maxMatDiff w {::utils::validate::Integer -99 0}
 
-set nPatterns 10
+set nPatterns 3
+set nMaxPatterns 10
 
 array set pMin [list wq 0 bq 0 wr 0 br 0 wb 0 bb 0 wn 0 bn 0 wm 0 bm 0 wp 0 bp 0]
 array set pMax [list wq 2 bq 2 wr 2 br 2 wb 2 bb 2 wn 2 bn 2 wm 4 bm 4 wp 8 bp 8]
-for { set i 1 } { $i <= $nPatterns } { incr i } {
+for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
   set pattPiece($i) "?";  set pattFyle($i) "?";  set pattRank($i) "?"
 }
 
@@ -166,21 +168,45 @@ proc ::search::material::any {} {
 }
 
 proc clearPatterns {} {
-  global pattPiece pattFyle pattRank pattBool nPatterns
-  
-  for { set i 1 } { $i <= $nPatterns } { incr i } {
+  global pattPiece pattFyle pattRank pattBool nPatterns nMaxPatterns
+
+  set nPatterns 3
+  for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
     set pattPiece($i) "?";  set pattFyle($i) "?";  set pattRank($i) "?"
     set pattBool($i) "Yes"
+    if { $i > $nPatterns } {
+	foreach j { b p f r } {
+	    grid forget .sm.mp.patt.grid.$j$i
+	}
+    }
   }
+ .sm.mp.patt.b2.pattAdd configure -state enable
   updatePatternImages
 }
 
+proc showPattern { count } {
+  global pattPiece pattFyle pattRank pattBool nPatterns nMaxPatterns
+	set column [expr {6 * (($count - 1) / 6)} ]
+	set row [expr {($count - 1) % 6} ]
+#    set column 0
+#    set row $count
+	set f .sm.mp.patt
+	grid $f.grid.b$count -row $row -column $column -padx 0 -pady 0 ; incr column
+	grid $f.grid.p$count -row $row -column $column -padx 0 -pady 0 ; incr column
+	grid $f.grid.f$count -row $row -column $column -padx 0 -pady 0 ; incr column
+	grid $f.grid.r$count -row $row -column $column -padx "0 10" -pady 0; incr column
+}
+
 proc setPatterns {pattlist} {
-  global pattPiece pattFyle pattRank pattBool nPatterns
+  global pattPiece pattFyle pattRank pattBool nPatterns nMaxPatterns
   
   clearPatterns
   set count 1
   foreach patt $pattlist {
+    if {$count > $nPatterns} {
+	showPattern $count
+	set nPatterns $count
+    }
     if {$count <= $nPatterns  &&  [llength $patt] == 4} {
       set pattPiece($count) [lindex $patt 0]
       set pattFyle($count) [lindex $patt 1]
@@ -196,13 +222,22 @@ set smDisplayed(Material) 1
 set smDisplayed(Patterns) 0
 
 
+proc set1Bishops { } {
+  global pMin pMax oppBishops sameBishops
+    if { $sameBishops || $oppBishops } {
+	set pMin(wb) 1
+	set pMax(wb) 1
+	set pMin(bb) 1
+	set pMax(bb) 1
+    }
+}
 # ::search::material
 #
 #   Opens the window for searching by material or patterns.
 #
 proc ::search::material {{ref_base ""}} {
   global dark pMin pMax ignoreColors minMoveNum maxMoveNum
-  global pattPiece pattFyle pattRank pattBool oppBishops nPatterns
+  global pattPiece pattFyle pattRank pattBool oppBishops sameBishops nPatterns nMaxPatterns
   global minHalfMoves smDisplayed
   
   set w .sm
@@ -213,7 +248,7 @@ proc ::search::material {{ref_base ""}} {
   }
   set small font_Small
   
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(MaterialSearch)"
   #  button $w.piecelabel -font font_Bold -textvar ::tr(Material:) -command {
   #    if {$smDisplayed(Material)} {
@@ -232,13 +267,11 @@ proc ::search::material {{ref_base ""}} {
 
   pack [ttk::frame $w.refdb] -side top -fill x
   CreateSelectDBWidget "$w.refdb" "refDatabaseM" "$ref_base"
-  addHorizontalRule $w
 
-  pack [ttk::frame $w.mp] -side top
-  pack [ttk::frame $w.mp.material] -side left
-  
-  ttk::label $w.mp.material.title -font font_Bold -textvar ::tr(Material:)
-  pack $w.mp.material.title -side top -pady 3
+  ttk::frame $w.mp
+  ttk::labelframe $w.mp.material -text $::tr(Material)
+  pack $w.mp -side top
+  grid $w.mp.material -row 0 -column 0 -rowspan 2 -columnspan 2 -sticky nswe -padx "0 10" -pady 5
   
   foreach piece {q r b n m p} {
     ttk::frame $w.mp.material.$piece
@@ -293,7 +326,7 @@ proc ::search::material {{ref_base ""}} {
   
   # Buttons that manipulate material settings:
   set f $w.mp.material.b1
-  pack [ttk::frame $f] -side top -ipady 2
+  pack [ttk::frame $f] -side top
   
   dialogbuttonsmall $f.zero [ list -textvar ::tr(Zero) -command ::search::material::zero] Pad0.Small.TButton
   dialogbuttonsmall $f.reset [ list -textvar ::tr(Any) -command ::search::material::any ] Pad0.Small.TButton
@@ -381,14 +414,17 @@ proc ::search::material {{ref_base ""}} {
     array set pMax {wq 1 bq 1 wr 2 br 2 wb 2 bn 2 wm 2 bm 2 wp 8 bp 8}
   }
   
-  pack $f.zero $f.reset $f.current $f.common -side left -pady 5 -padx 10
+  pack $f.zero -side left -pady 5 -padx "0 10"
+  pack $f.reset $f.current -side left -pady 5 -padx 10
+  pack $f.common -side left -padx "10 0" -pady 5
   #if {! $smDisplayed(Material)} {
   #  pack forget .sm.q .sm.r .sm.b .sm.n .sm.m .sm.p .sm.b1 .sm.mdiff
   #}
   
+  ttk::frame $w.mp.material.mdiff
   set f $w.mp.material.mdiff
-  pack [ttk::frame $f] -side top
-  ttk::label $f.label -font font_SmallBold -textvar ::tr(MaterialDiff:)
+  pack $f -side left -anchor n -pady 5
+  ttk::label $f.label -text $::tr(MaterialDiff)
   ttk::entry $f.min -width 3 -textvar minMatDiff -font $small -justify right ;#-relief sunken
   bindFocusColors $f.min
   ttk::label $f.sep -text "-" -font $small
@@ -399,17 +435,16 @@ proc ::search::material {{ref_base ""}} {
   ttk::button $f.w1 -text " + " -style Pad0.Small.TButton -command {set minMatDiff +1; set maxMatDiff +40}  -width 0
   ttk::button $f.equal -text " = " -style Pad0.Small.TButton -command {set minMatDiff 0; set maxMatDiff 0}  -width 0
   ttk::button $f.b1 -text " - " -style Pad0.Small.TButton -command {set minMatDiff -40; set maxMatDiff -1}  -width 0
-  pack $f.label $f.min $f.sep $f.max -side left
+  ttk::label $f.explain -font $small -text "$::tr(White) - $::tr(Black) Q=9 R=5 B=3 N=3 P=1"
+
+  pack $f.label -side top -anchor w
+  pack $f.explain -side bottom
+  pack $f.min $f.sep $f.max -side left
   pack $f.sep2 $f.any $f.w1 $f.equal $f.b1 -side left -padx 1 -pady 1
-  set f [ttk::frame $w.mp.material.mdiff2]
-  pack $f -side top
-  ttk::label $f.explan -font $small -text "($::tr(MaterialDiff) = $::tr(White) - $::tr(Black); Q=9 R=5 B=3 N=3 P=1)"
-  pack $f.explan -side top
   
-  addVerticalRule $w.mp
-  
-  set f [ttk::frame $w.mp.patt]
-  pack $f -side top
+  ttk::labelframe $w.mp.patt -text $::tr(Patterns)
+  set f $w.mp.patt
+  grid $w.mp.patt -row 0 -column 2 -sticky nwe -pady 5
   
   #dialogbutton $w.pattl -font font_Bold -textvar ::tr(Patterns:) -command {
   #  if {$smDisplayed(Patterns)} {
@@ -420,36 +455,32 @@ proc ::search::material {{ref_base ""}} {
   #    pack .sm.patt .sm.b2 -after .sm.pattl
   #  }
   #}
-  ttk::label $w.mp.patt.title -textvar ::tr(Patterns:) -font font_Bold
-  pack $w.mp.patt.title -side top -pady 3
-  
-  pack [ttk::frame $f.grid] -side top -fill both -expand 1 -padx 10
-  for { set i 1 } { $i <= $nPatterns } { incr i } {
+
+  ttk::frame $f.grid
+  for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
     tk_optionMenu $f.grid.f$i pattFyle($i) "?" a b c d e f g h
     tk_optionMenu $f.grid.r$i pattRank($i) "?" 1 2 3 4 5 6 7 8
     # $f.grid.b$i configure -style pad0.TMenubutton
     $f.grid.b$i configure -indicatoron 0 ;# -width 4
-    
     $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
-    set column [expr {5 * (($i - 1) / 5)} ]
-    set row [expr {($i - 1) % 5} ]
+    if { $i <= $nPatterns } {
+    set column [expr {6 * (($i - 1) / 6)} ]
+    set row [expr {($i - 1) % 6} ]
+#    set column 0
+#    set row $i
     grid $f.grid.b$i -row $row -column $column -padx 0 -pady 0 ; incr column
     grid $f.grid.p$i -row $row -column $column -padx 0 -pady 0 ; incr column
     grid $f.grid.f$i -row $row -column $column -padx 0 -pady 0 ; incr column
-    grid $f.grid.r$i -row $row -column $column -padx 0 -pady 0; incr column
-    if {$column == 4  ||  $column == 9} {
-      ttk::label $f.grid.sp_$i -text "  "
-      grid $f.grid.sp_$i -row $row -column $column
+    grid $f.grid.r$i -row $row -column $column -padx "0 10" -pady 0; incr column
     }
   }
-  
   updatePatternImages
   
   ### Buttons that manipulate patterns:
-  set f .sm.mp.patt.b2
+  set f $w.mp.patt.b2
   ttk::frame $f
   dialogbutton $f.clearPat -textvar ::tr(Clear) -command clearPatterns
   ttk::menubutton $f.common -textvar ::tr(CommonPatterns...) -menu $f.common.m
@@ -524,29 +555,39 @@ proc ::search::material {{ref_base ""}} {
     setPatterns { {wb b 2 Yes} {wb g 2 Yes} {bb b 7 Yes} {bb g 7 Yes} }
   }
   
-  pack $f -side top
-  pack $f.clearPat $f.common -side left -pady 5 -padx 10
+#  ttk::button $f.pattAdd -text $::tr(GlistAddField) -command {}
+  ttk::button $f.pattAdd -text " + " -command {
+      if { $::nPatterns < $::nMaxPatterns } {
+	  incr ::nPatterns
+	  showPattern $::nPatterns
+	  updatePatternImages
+	  if { $::nPatterns == $::nMaxPatterns } { .sm.mp.patt.b2.pattAdd configure -state disabled }
+      }
+  }
+  pack $f -side top -anchor w
+  pack $f.common -side top -pady "0 5" -anchor w
+  pack $f.pattAdd -side left -pady "0 5" -padx "0 10" -anchor w
+  pack $f.clearPat -side left -anchor w -pady "0 5"
+  pack $w.mp.patt.grid -side top -anchor w ;# -fill both -expand 1
   #if {! $smDisplayed(Patterns)} {
   #  pack forget $w.patt $w.b2
   #}
   updatePatternImages
   
+  ttk::frame $w.mp.material.bishops
+  set f $w.mp.material.bishops
+  pack $f -side right -pady 5
+  ttk::label $f.wb -image wb20
+  ttk::label $f.bb -image bb20
+  ttk::checkbutton $f.same -text $::tr(SameColor) -variable sameBishops -command set1Bishops
+  ttk::checkbutton $f.opp -text $::tr(OppColor) -variable oppBishops -command set1Bishops
+  pack $f.wb $f.bb -side left -anchor w
+  foreach i { same opp } { pack $f.$i -side top -anchor w }
+
   addHorizontalRule $w
   
   ### Now the move counter:
   pack [ ttk::frame $w.fmc ] -side top -expand 1 -fill both
-  
-  set f $w.fmc.bishops
-  pack [ttk::frame $f] -side top ;#-expand 1 -fill both
-  ttk::label $f.t1 -text "1" -font font_Small
-  ttk::label $f.t2 -image wb20
-  ttk::label $f.t3 -text "- 1" -font font_Small -font font_Small
-  ttk::label $f.t4 -image bb20
-  ttk::label $f.t5 -textvar ::tr(squares:) -font font_Small
-  ttk::radiobutton $f.same -textvar ::tr(SameColor) -variable oppBishops -value "Same" -style Small.TRadiobutton ;# -padx 5 -pady 4
-  ttk::radiobutton $f.opp -textvar ::tr(OppColor) -variable oppBishops -value "Opposite" -style Small.TRadiobutton ;# -padx 5 -pady 4
-  ttk::radiobutton $f.either -textvar ::tr(Either) -variable oppBishops -value "Either" -style Small.TRadiobutton ;# -padx 5 -pady 4
-  foreach i {t1 t2 t3 t4 t5 same opp either} { pack $f.$i -side left }
   
   set f $w.fmc.move
   pack [ttk::frame $f] -side top -ipady 5 ;# -expand 1 -fill both
@@ -569,9 +610,9 @@ proc ::search::material {{ref_base ""}} {
   
   ### Progress bar:
   ttk::frame $w.fprogress
-  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
+  canvas $w.fprogress.progress -height 20 -width 500 -bg white -relief solid -border 1
   $w.fprogress.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
-  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  $w.fprogress.progress create text 495 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   
   ### Last of all, the buttons frame:
   
@@ -590,7 +631,11 @@ proc ::search::material {{ref_base ""}} {
     sc_base switch [lindex $refDatabaseM 0]
     .sm.b3.stop configure -state normal
     grab .sm.b3.stop
-    progressBarSet .sm.fprogress.progress 301 21
+    set bishops "Either"
+    if { $sameBishops } { set bishops "Same" }
+    if { $oppBishops } { set bishops "Opposite" }
+    if { $sameBishops && $oppBishops } { set bishops "Either" }
+    progressBarSet .sm.fprogress.progress 501 21
     set str [sc_search material \
         -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
         -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
@@ -600,7 +645,7 @@ proc ::search::material {{ref_base ""}} {
         -wp [list $pMin(wp) $pMax(wp)] -bp [list $pMin(bp) $pMax(bp)] \
         -flip $ignoreColors -filter $::search::filter::operation \
         -range [list $minMoveNum $maxMoveNum] \
-        -length $minHalfMoves -bishops $oppBishops \
+        -length $minHalfMoves -bishops $bishops \
         -diff [list $minMatDiff $maxMatDiff] \
         -patt "$pattBool(1) $pattPiece(1) $pattFyle(1) $pattRank(1)" \
         -patt "$pattBool(2) $pattPiece(2) $pattFyle(2) $pattRank(2)" \
@@ -615,7 +660,8 @@ proc ::search::material {{ref_base ""}} {
     grab release .sm.b3.stop
     .sm.b3.stop configure -state disabled
     sc_base switch $curr_base
-    .sm.status configure -text $str
+    .sm.fprogress.progress itemconfigure time -text $str
+    .sm.fprogress.progress coords bar 0 0 0 0
     unbusyCursor .
     ::notify::DatabaseModified [sc_base current] dbfilter
   }
@@ -628,9 +674,6 @@ proc ::search::material {{ref_base ""}} {
   pack $w.fprogress.progress -side top -pady 2
   pack $w.fprogress -expand 1 -fill both
   
-  label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
-  pack $w.status -side bottom -fill x
-  
   # update
   wm resizable $w 0 0
   ::search::Config
@@ -639,7 +682,7 @@ proc ::search::material {{ref_base ""}} {
 
 proc ::search::material::save {} {
   global pMin pMax ignoreColors minMoveNum maxMoveNum minHalfMoves
-  global pattPiece pattFyle pattRank pattBool oppBishops nPatterns
+  global pattPiece pattFyle pattRank pattBool sameBishops oppBishops nPatterns
   
   set ftype { { "Scid SearchOptions files" {".sso"} } }
   set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]
@@ -663,7 +706,7 @@ proc ::search::material::save {} {
   }
   # Now write other numeric values:
   foreach i {
-    ignoreColors minMoveNum maxMoveNum minHalfMoves oppBishops
+    ignoreColors minMoveNum maxMoveNum minHalfMoves sameBishops oppBishops
     ::search::filter::operation
   } {
     puts $searchF "set $i [set $i]"
