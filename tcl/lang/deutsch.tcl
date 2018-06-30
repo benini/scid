@@ -1674,8 +1674,8 @@ translate D CCEmptyBtn {Postein- und ausgang leeren}
 translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine Hilfe bitte F1!}
 translate D CCDlgServerName {Server Name:}
 translate D CCDlgLoginName  {Login Name:}
-translate D CCDlgPassword   {Paßwort:}
-translate D CCDlgShowPassword {Password anzeigen}
+translate D CCDlgPassword   {Passwort:}
+translate D CCDlgShowPassword {Passwort anzeigen}
 translate D CCDlgURL        {Xfcc-URL:}
 translate D CCDlgRatingType {Wertungszahl:}
 translate D CCDlgDuplicateGame {Nichteindeutige Partie}

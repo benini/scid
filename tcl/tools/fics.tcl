@@ -62,9 +62,11 @@ namespace eval fics {
     set logged 0
     set ::fics::showPass 0
 
-    toplevel $w
+    win::createDialog $w
     ::setTitle $w [::tr "ConfigureFics"]
-    grid [ttk::frame $w.f]
+    ttk::labelframe $w.f -text "Login"
+    ttk::labelframe $w.conf -text $::tr(CCDlgCGeneraloptions)
+    ttk::frame $w.fbuttons
 
     ttk::label $w.f.lLogin -text [::tr "CCDlgLoginName"]
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
@@ -78,79 +80,70 @@ namespace eval fics {
       }
     }
 
-    ttk::button $w.f.connect -text [::tr "FICSConnect"] -state disabled -command {
+    ttk::button $w.fbuttons.connect -text [::tr "FICSConnect"] -state disabled -command {
       ::fics::connect [.ficsConfig.f.login get] [.ficsConfig.f.passwd get]
       destroy .ficsConfig
     }
-    ttk::button $w.f.guest -text [::tr FICSGuest] -state disabled -command {
+    ttk::button $w.fbuttons.guest -text [::tr FICSGuest] -state disabled -command {
       ::fics::connect "guest" ""
       destroy .ficsConfig
     }
-    ttk::button $w.f.cancel -text [::tr "Cancel"] -command { destroy .ficsConfig }
+    ttk::button $w.fbuttons.cancel -text [::tr "Cancel"] -command { destroy .ficsConfig }
 
     set row 0
-    grid $w.f.lLogin -column 0 -row $row
-    grid $w.f.login -column 1 -row $row
+    grid $w.f.lLogin -column 0 -row $row -sticky w -padx "0 5"
+    grid $w.f.login -column 1 -row $row -sticky w
     incr row
-    grid $w.f.lPwd -column 0 -row $row
-    grid $w.f.passwd -column 1 -row $row
+    grid $w.f.lPwd -column 0 -row $row -sticky w -padx "0 5"
+    grid $w.f.passwd -column 1 -row $row -sticky w
     incr row
-    grid $w.f.showPass -column 0 -row $row
+    grid $w.f.showPass -column 1 -row $row -sticky w
     incr row
-
-    # horizontal line
-    ttk::frame $w.f.line$row -height 2 -borderwidth 2 -relief sunken
-    grid $w.f.line$row -pady 5 -column 0 -row $row -columnspan 3 -sticky ew
-    incr row
+    pack $w.f -side top -anchor w -fill x
+    pack $w.conf -side top -anchor w -pady "10 0"
 
     # use default user variables
-    ttk::checkbutton $w.f.cbvars -text [::tr "FICSdefaultuservars"] -variable ::fics::usedefaultvars
-    grid $w.f.cbvars -column 0 -row $row -sticky w
+    ttk::checkbutton $w.conf.cbvars -text [::tr "FICSdefaultuservars"] -variable ::fics::usedefaultvars
+    grid $w.conf.cbvars -column 0 -row $row -sticky w -columnspan 2
     incr row
 
     # enable premove
-    ttk::checkbutton $w.f.premove -text [::tr "FICSpremove"] -variable ::fics::premoveEnabled
-    grid $w.f.premove -column 0 -row $row -sticky w
+    ttk::checkbutton $w.conf.premove -text [::tr "FICSpremove"] -variable ::fics::premoveEnabled
+    grid $w.conf.premove -column 0 -row $row -sticky w -columnspan 2
     incr row
 
     # Time seal configuration
-    ttk::checkbutton $w.f.cbts -text "Time seal" -variable ::fics::use_timeseal -onvalue 1 -offvalue 0
-    grid $w.f.cbts -column 0 -row $row -sticky w
+    ttk::checkbutton $w.conf.cbts -text "Time seal" -variable ::fics::use_timeseal -onvalue 1 -offvalue 0
+    grid $w.conf.cbts -column 0 -row $row -sticky w
     incr row
-    ttk::entry $w.f.eExec -width 30 -textvariable ::fics::timeseal_exec
-    ttk::button $w.f.bExec -text "..." -command { set ::fics::timeseal_exec [tk_getOpenFile] }
-    grid $w.f.eExec -column 0 -row $row -columnspan 2
-    grid $w.f.bExec -column 2 -row $row
+    ttk::entry $w.conf.eExec -textvariable ::fics::timeseal_exec
+    ttk::button $w.conf.bExec -text "..." -command { set ::fics::timeseal_exec [tk_getOpenFile] }
+    grid $w.conf.eExec -column 0 -row $row -columnspan 2 -sticky we -padx "20 10"
+    grid $w.conf.bExec -column 2 -row $row -sticky w
     incr row
-    ttk::label $w.f.lFICS_ip -text [::tr "FICSServerAddress" ]
-    ttk::entry $w.f.ipserver -width 16 -textvariable ::fics::server_ip -state readonly
-    ttk::button $w.f.bRefresh -text [::tr "FICSRefresh" ] -command ::fics::getIP
-    ttk::label $w.f.lFICS_port -text [::tr "FICSServerPort"]
-    ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
-    ttk::label $w.f.ltsport -text [::tr "FICSTimesealPort"]
-    ttk::entry $w.f.portts -width 6 -textvariable ::fics::port_timeseal
+    ttk::label $w.conf.lFICS_ip -text [::tr "FICSServerAddress" ]
+    ttk::entry $w.conf.ipserver -width 16 -textvariable ::fics::server_ip -state readonly
+    ttk::button $w.conf.bRefresh -text [::tr "FICSRefresh" ] -command ::fics::getIP
+    ttk::label $w.conf.lFICS_port -text [::tr "FICSServerPort"]
+    ttk::entry $w.conf.portserver -width 6 -textvariable ::fics::port_fics
+    ttk::label $w.conf.ltsport -text [::tr "FICSTimesealPort"]
+    ttk::entry $w.conf.portts -width 6 -textvariable ::fics::port_timeseal
 
-    grid $w.f.lFICS_ip -column 0 -row $row
-    grid $w.f.ipserver -column 1 -row $row
-    grid $w.f.bRefresh -column 2 -row $row
+    grid $w.conf.lFICS_ip -column 0 -row $row -sticky w -padx "0 5"
+    grid $w.conf.ipserver -column 1 -row $row -sticky w -padx "0 10"
+    grid $w.conf.bRefresh -column 2 -row $row -sticky w
     incr row
-    grid $w.f.lFICS_port -column 0 -row $row
-    grid $w.f.portserver -column 1 -row $row
+    grid $w.conf.lFICS_port -column 0 -row $row -sticky w -padx "0 5"
+    grid $w.conf.portserver -column 1 -row $row -sticky w
     incr row
-    grid $w.f.ltsport -column 0 -row $row
-    grid $w.f.portts -column 1 -row $row
-    incr row
-
-    # horizontal line
-    ttk::separator $w.f.line$row -orient horizontal
-    grid $w.f.line$row -pady 5 -column 0 -row $row -columnspan 3 -sticky ew
+    grid $w.conf.ltsport -column 0 -row $row -sticky w -padx "0 5"
+    grid $w.conf.portts -column 1 -row $row -sticky w
     incr row
 
-    grid $w.f.connect -column 0 -row $row -sticky ew
-    grid $w.f.guest  -column 1 -row $row -sticky ew
-    grid $w.f.cancel -column 2 -row $row -sticky ew
+    pack $w.fbuttons -side top -anchor e
+    packdlgbuttons $w.fbuttons.cancel $w.fbuttons.connect $w.fbuttons.guest
 
-    bind $w <Escape> "$w.f.cancel invoke"
+    bind $w <Escape> "$w.fbuttons.cancel invoke"
     bind $w <F1> { helpWindow FICSLogin}
 
     # Get IP address of server (as Timeseal needs IP address)
@@ -158,15 +151,15 @@ namespace eval fics {
       getIP
     }
 
-    $w.f.connect configure -state normal
-    $w.f.guest configure -state normal
+    $w.fbuttons.connect configure -state normal
+    $w.fbuttons.guest configure -state normal
 
   }
   ################################################################################
   #
   ################################################################################
   proc getIP {} {
-    set b .ficsConfig.f.bRefresh
+    set b .ficsConfig.conf.bRefresh
     $b configure -state disabled
     update
     # First handle the case of a network down
