@@ -1481,9 +1481,9 @@ translate D Lines {Variantenzahl}
 translate D ConfigureUCIengine {UCI Engine konfigurieren}
 translate D SpecificOpening {Ausgewählte Eröffnung}
 translate D StartNewGame {Neue Partie}
-translate D FixedLevel {Festgelegte Stärke}
+translate D FixedLevel {Feste Stärke}
 translate D Opening {Eröffnung}
-translate D RandomLevel {Zufallsniveau}
+translate D RandomLevel {Zufallsstärke}
 translate D StartFromCurrentPosition {Von aktueller Position starten}
 translate D FixedDepth {Feste Tiefe}
 translate D Nodes {Knoten} 

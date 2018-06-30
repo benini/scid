@@ -138,7 +138,7 @@ namespace eval tacgame {
       return
     }
     
-    toplevel $w
+    win::createDialog $w
     wm title $w "$::tr(configurecoachgame)"
     
     bind $w <F1> { helpWindow TacticalGame }
@@ -148,13 +148,13 @@ namespace eval tacgame {
     ttk::frame $w.flevel.diff_fixed
     ttk::frame $w.flevel.diff_random
     ttk::labelframe $w.fopening -text $::tr(Opening)
-    ttk::frame $w.flimit -relief groove -borderwidth 1
+    ttk::labelframe $w.flimit -text $::tr(Time)
     ttk::frame $w.fbuttons
     
     pack $w.flevel -side top -fill x
-    pack $w.flevel.diff_fixed -side top
-    pack $w.flevel.diff_random -side top
-    pack $w.fopening  -side top -fill both -expand 1
+    pack $w.flevel.diff_fixed -side top -anchor w
+    pack $w.flevel.diff_random -side top -anchor w
+    pack $w.fopening  -side top -fill both -expand 1 -pady 10
     pack $w.flimit $w.fbuttons -side top -fill x
     
     ttk::radiobutton $w.flevel.diff_random.cb -text $::tr(RandomLevel) -variable ::tacgame::randomLevel -value 1 -width 15
@@ -164,21 +164,19 @@ namespace eval tacgame {
     ttk::scale $w.flevel.diff_random.lMax -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMax \
         -command { ::utils::validate::roundScale ::tacgame::levelMax 50 }
     ttk::label $w.flevel.diff_random.labelMax -textvariable ::tacgame::levelMax
-    
-    grid $w.flevel.diff_random.cb -row 0 -column 0 -rowspan 2
-    grid $w.flevel.diff_random.labelMin -row 0 -column 1
-    grid $w.flevel.diff_random.lMin -row 1 -column 1
-    grid $w.flevel.diff_random.labelMax -row 0 -column 2
-    grid $w.flevel.diff_random.lMax -row 1 -column 2
-    
     ttk::radiobutton $w.flevel.diff_fixed.cb -text $::tr(FixedLevel) -variable ::tacgame::randomLevel -value 0 -width 15
     ttk::label $w.flevel.diff_fixed.labelFixed -textvariable ::tacgame::levelFixed
     ttk::scale $w.flevel.diff_fixed.scale -orient horizontal -from 1200 -to 2200 -length 200 \
         -variable ::tacgame::levelFixed -command { ::utils::validate::roundScale ::tacgame::levelFixed 50 }
     
     grid $w.flevel.diff_fixed.cb -row 0 -column 0 -rowspan 2
-    grid $w.flevel.diff_fixed.labelFixed -row 0 -column 1 -columnspan 2
-    grid $w.flevel.diff_fixed.scale -row 1 -column 1 -columnspan 2
+    grid $w.flevel.diff_fixed.labelFixed -row 0 -column 1
+    grid $w.flevel.diff_fixed.scale -row 1 -column 1 -padx "10 0" -sticky e
+    grid $w.flevel.diff_random.cb -row 0 -column 0 -rowspan 2
+    grid $w.flevel.diff_random.labelMin -row 0 -column 1
+    grid $w.flevel.diff_random.lMin -row 1 -column 1 -padx "10 0" -sticky e
+    grid $w.flevel.diff_random.labelMax -row 0 -column 2
+    grid $w.flevel.diff_random.lMax -row 1 -column 2 -sticky e
     
     # start new game
     ttk::radiobutton $w.fopening.cbNew -text $::tr(StartNewGame)  -variable ::tacgame::openingType -value new
@@ -189,9 +187,9 @@ namespace eval tacgame {
     # or choose a specific opening
     ttk::radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) -variable ::tacgame::openingType -value specific
     
-    pack $w.fopening.cbNew -anchor w -padx 100
-    pack $w.fopening.cbPosition -anchor w -padx 100
-    pack $w.fopening.cbSpecific -anchor w -padx 100
+    pack $w.fopening.cbNew -anchor w
+    pack $w.fopening.cbPosition -anchor w
+    pack $w.fopening.cbSpecific -anchor w
     
     ttk::frame $w.fopening.fOpeningList
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
@@ -209,11 +207,11 @@ namespace eval tacgame {
     ttk::label $w.flimit.labelsecval -textvariable ::tacgame::analysisTime
     ttk::label $w.flimit.labelsec -text $::tr(seconds)
     ttk::scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -variable ::tacgame::analysisTime \
-        -command { ::utils::validate::roundScale ::tacgame::analysisTime 5 }
-    grid $w.flimit.blimit -column 0 -row 0 -rowspan 2
-    grid $w.flimit.labelsecval  -column 1 -row 0
-    grid $w.flimit.labelsec -column 2 -row 0
-    grid $w.flimit.analysisTime -column 1 -row 1 -columnspan 2
+        -command { ::utils::validate::roundScale ::tacgame::analysisTime 1 }
+    grid $w.flimit.blimit -column 0 -row 0 -columnspan 2 -sticky we
+    grid $w.flimit.labelsecval  -column 0 -row 1 -sticky e
+    grid $w.flimit.labelsec -column 1 -row 1 -sticky w -padx 5
+    grid $w.flimit.analysisTime -column 0 -row 2 -columnspan 2 -sticky we
     # pack $w.flimit.blimit $w.flimit.labelsec $w.flimit.analysisTime  $w.flimit.labelsecval -side left -expand yes -pady 5
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
@@ -224,7 +222,7 @@ namespace eval tacgame {
     }
     ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
-    pack $w.fbuttons.close $w.fbuttons.cancel -expand yes -side left -padx 20 -pady 2
+    packdlgbuttons $w.fbuttons.cancel $w.fbuttons.close
     
     bind $w <Escape> { .configWin.fbuttons.cancel invoke }
     bind $w <Return> { .configWin.fbuttons.close invoke }
