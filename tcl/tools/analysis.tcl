@@ -878,7 +878,7 @@ proc configAnnotation {n} {
     # No book found
     if { [llength $bookList] == 0 } {
         set ::useAnalysisBook 0
-        $f.cbBook configure -state disabled
+        $f.analyse.cbBook configure -state disabled
     }
     
     set tmp {}
