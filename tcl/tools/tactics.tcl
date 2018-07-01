@@ -157,7 +157,7 @@ namespace eval tactics {
             focus $w
             return
         }
-        toplevel $w
+        win::createDialog $w
         wm title $w $::tr(ConfigureTactics)
         wm resizable $w 0 0
 

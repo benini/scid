@@ -1457,7 +1457,7 @@ translate D Success {Erfolgreich}
 translate D DubiousMoves {Zweifelhafte Züge}
 translate D OutOfRepertoire {Nicht im Repertoire}
 translate D ConfigureTactics {Taktik konfigurieren}
-translate D ResetScores {Punkte zurücksetzten}
+translate D ResetScores {"Gelöst" zurücksetzten}
 translate D LoadingBase {Lade Datenbank}
 translate D Tactics {Taktik}
 translate D ShowSolution {Lösung zeigen}
@@ -1465,7 +1465,7 @@ translate D NextExercise {Nächste Aufgabe}
 translate D PrevExercise {Vorherige Aufgabe}
 translate D StopTraining {Training beenden}
 translate D Next {Nächste}
-translate D ResettingScore {Punkte zurücksetzen}
+translate D ResettingScore {"Gelöst" zurücksetzen}
 translate D LoadingGame {Lade Partie}
 translate D MateFound {Matt gefunden}
 translate D BestSolutionNotFound {Beste Lösung NICHT gefunden!}
