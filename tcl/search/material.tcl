@@ -99,9 +99,7 @@ trace variable pMax w checkPieceCounts
 proc makeBoolMenu {w varName} {
   upvar #0 $varName var
   if {![info exists var]} { set var "Yes" }
-  # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -relief raised -bd 2 -highlightthickness 2 -indicatoron 0 -anchor w
-  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 0 -anchor w -image "" -background [ttk::style lookup . -background]
+  ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
   
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
@@ -115,9 +113,7 @@ proc makePieceMenu {w varName} {
   global dark
   upvar #0 $varName var
   if {![info exists var]} { set var "?" }
-  # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -indicatoron 0 -relief raised -bd 2 -highlightthickness 2 -anchor w
-  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 0 -anchor w -image "" -background [ttk::style lookup . -background]
+  ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label " ? " -variable $varName -value "?" \
       -command "$w configure -image e20"  -hidemargin 1
@@ -462,8 +458,6 @@ proc ::search::material {{ref_base ""}} {
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
     tk_optionMenu $f.grid.f$i pattFyle($i) "?" a b c d e f g h
     tk_optionMenu $f.grid.r$i pattRank($i) "?" 1 2 3 4 5 6 7 8
-    # $f.grid.b$i configure -style pad0.TMenubutton
-    $f.grid.b$i configure -indicatoron 0 ;# -width 4
     $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     if { $i <= $nPatterns } {
