@@ -700,7 +700,7 @@ proc ::search::material::save {} {
   }
   # Now write other numeric values:
   foreach i {
-    ignoreColors minMoveNum maxMoveNum minHalfMoves sameBishops oppBishops
+    ignoreColors minMoveNum maxMoveNum minHalfMoves sameBishops oppBishops nPatterns
     ::search::filter::operation
   } {
     puts $searchF "set $i [set $i]"
