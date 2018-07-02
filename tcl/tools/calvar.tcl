@@ -72,16 +72,18 @@ namespace eval calvar {
       return
     }
     
-    toplevel $w
+    win::createDialog $w
     wm title $w [::tr "ConfigureCalvar"]
     
     bind $w <F1> { helpWindow CalVar }
     setWinLocation $w
     
     # builds the list of UCI engines
-    ttk::frame $w.fengines -relief raised -borderwidth 1
+    ttk::frame $w.fengines
+    ttk::label $w.fengines.eng -text $::tr(Engine)
     listbox $w.fengines.lbEngines -yscrollcommand "$w.fengines.ybar set" -height 5 -width 50 -exportselection 0
     ttk::scrollbar $w.fengines.ybar -command "$w.fengines.lbEngines yview"
+    pack $w.fengines.eng -side top -anchor w
     pack $w.fengines.ybar -side right -fill y
     pack $w.fengines.lbEngines -side left -fill both -expand yes
     pack $w.fengines -expand yes -fill both -side top
@@ -107,16 +109,18 @@ namespace eval calvar {
     # parameters setting
     set f $w.parameters
     ttk::frame $w.parameters
-    pack $f -expand yes -fill both
+    pack $f -side top -anchor w -pady 10
     # label $f.lThreshold -text "Threshold"
     # spinbox $f.sbThreshold -background white -width 3 -textvariable ::calvar::blunderThreshold -from 0.1 -to 1.5 -increment 0.1
     # pack $f.lThreshold $f.sbThreshold -side left
-    ttk::label $f.lTime -text "Move thinking time"
+    ttk::label $f.lTime -text $::tr(SecondsPerMove)
     ttk::spinbox $f.sbTime -background white -width 3 -textvariable ::calvar::thinkingTimePerLine -from 5 -to 120 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    pack $f.lTime $f.sbTime -side left
     ttk::label $f.lTime2 -text "Position thinking time"
     ttk::spinbox $f.sbTime2 -background white -width 3 -textvariable ::calvar::thinkingTimePosition -from 5 -to 300 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    pack $f.lTime2 $f.sbTime2 -side left
+    grid $f.lTime -column 0 -row 0 -sticky w
+    grid $f.sbTime -column 1 -row 0 -padx 10 -pady 5
+    grid $f.lTime2 -column 0 -row 1 -sticky w
+    grid $f.sbTime2 -column 1 -row 1 -padx 10
     
     ttk::frame $w.fbuttons
     pack $w.fbuttons -expand yes -fill both
@@ -129,7 +133,7 @@ namespace eval calvar {
     }
     ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
-    pack $w.fbuttons.start $w.fbuttons.cancel -expand yes -side left -padx 20 -pady 2
+    packdlgbuttons $w.fbuttons.cancel $w.fbuttons.start
     
     bind $w <Escape> { .configCalvarWin.fbuttons.cancel invoke }
     bind $w <Return> { .configCalvarWin.fbuttons.start invoke }
