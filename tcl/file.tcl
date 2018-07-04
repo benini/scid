@@ -158,7 +158,7 @@ proc ::file::Open_ {{fName ""} } {
       ::recentFiles::add "$fName"
     }
   } elseif {"$ext" eq ".si4" || "$ext" eq ""} {
-    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..."
+    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..." $::tr(Cancel)
     set err [catch {sc_base open "$fName"} ::file::lastOpened]
     closeProgressWindow
     if {$err} {

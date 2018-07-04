@@ -326,7 +326,7 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   grid $w.f.t -row 0 -columnspan 2 -pady 4 -sticky news
   grid $w.f.cmsg -row 1 -columnspan 2 -pady 4 -sticky news
   grid $w.f.c -row 2 -column 0 -pady 4 -stick w
-  grid $w.f.cancel -row 2 -column 1 -padx 8
+  grid $w.f.cancel -row 2 -column 1 -padx "10 0"
   grid $w.f -sticky news
   grid rowconfigure $w.f 1 -weight 1
   grid columnconfigure $w.f 0 -weight 1
