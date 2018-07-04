@@ -228,6 +228,8 @@ namespace eval Xfcc {
 		# create the window and buttons
 		win::createDialog $w
 		wm title $w "\[$xfccrcfile\]"
+
+		ttk::frame $w.buttons
 		ttk::button $w.bOk     -text OK -command "::Xfcc::xfccsrvstore; ::Xfcc::SaveXfcc; destroy .configXfccSrv"
 		ttk::button $w.bAdd    -text  [::tr "GlistAddField"] -command {
 			::Xfcc::AddServer
@@ -237,6 +239,11 @@ namespace eval Xfcc {
 			::Xfcc::DeleteServer
 		}
 		ttk::button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
+		grid $w.bAdd    -in $w.buttons -row 0 -column 0 -pady "5 0" -sticky nw
+		grid $w.bDelete -in $w.buttons -row 0 -column 1 -padx "10 0" -pady "5 0" -sticky nw
+		grid $w.bOk     -in $w.buttons -row 0 -column 3 -padx 5 -pady "15 5"
+		grid $w.bCancel -in $w.buttons -row 0 -column 4 -padx 5 -pady "15 5"
+		grid columnconfigure $w.buttons 2 -weight 1
 
 		listbox $w.xfccSrvList -height [expr [ array size ::Xfcc::xfccsrv ] / 4 + 1] -width 60 -selectmode single -list ::Xfcc::lsrvname
 		# select the first entry
@@ -278,7 +285,7 @@ namespace eval Xfcc {
 		grid $w.lxfccSrv     -sticky e -columnspan 2 -column  0 -row [expr {$number + 1}]
 		grid $w.lxfccUid     -sticky e -columnspan 2 -column  0 -row [expr {$number + 2}]
 		grid $w.lxfccPas     -sticky e -columnspan 2 -column  0 -row [expr {$number + 3}]
-		grid $w.showPass     -sticky e -columnspan 2 -column  0 -row [expr {$number + 4}]
+		grid $w.showPass     -sticky w -columnspan 4 -column  2 -row [expr {$number + 4}]
 		grid $w.lxfccURI     -sticky e -columnspan 2 -column  0 -row [expr {$number + 5}]
 		grid $w.lxfccrtype   -sticky e -columnspan 2 -column  0 -row [expr {$number + 6}]
 
@@ -289,10 +296,7 @@ namespace eval Xfcc {
 		grid $w.xfccrtype    -sticky w -columnspan 4 -column  2 -row [expr {$number + 6}]
 
 		# Add the buttons to the window
-		grid $w.bOk     -column 2 -row [expr {$number + 6}]
-		grid $w.bAdd    -column 3 -row [expr {$number + 6}]
-		grid $w.bDelete -column 4 -row [expr {$number + 6}]
-		grid $w.bCancel -column 5 -row [expr {$number + 6}]
+		grid $w.buttons -sticky news -columnspan 6 -column  0 -row [expr {$number + 7}]
 
 		bind $w <Escape> "$w.bCancel invoke"
 		bind $w <F1> { helpWindow CCXfccSetupDialog}
