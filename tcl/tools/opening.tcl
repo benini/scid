@@ -44,7 +44,7 @@ namespace eval opening {
     if { [winfo exists $w] } { focus $w ; return  }
     if { [winfo exists ".openingWin"] } { focus ".openingWin" ; return }
     
-    toplevel $w
+    win::createDialog $w
     wm title $w $::tr(Repertoiretrainingconfiguration)
     setWinLocation $w
     ttk::frame $w.f0 -relief groove
@@ -64,7 +64,7 @@ namespace eval opening {
     ttk::frame $w.f2
     ttk::button $w.f2.ok -text $::tr(Continue) -command " destroy $w ; ::opening::openRep"
     ttk::button $w.f2.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
-    pack $w.f2.ok $w.f2.cancel -expand yes -side left -padx 20 -pady 2
+    packdlgbuttons $w.f2.cancel $w.f2.ok
     
     pack $w.f0 $w.f1 $w.f2 -side top -fill both
     
@@ -458,7 +458,7 @@ namespace eval opening {
     set w ".openingWin"
     if {[winfo exists $w]} { focus $w ; return }
     
-    toplevel $w
+    win::createDialog $w
     wm title $w $::tr(Openingtrainer)
     setWinLocation $w
     ttk::frame $w.f1
@@ -471,7 +471,7 @@ namespace eval opening {
         -command "set fenLastUpdate 0 ; ::opening::update_tCM 1"
     ttk::label $w.f1.lCM -textvariable ::opening::tCM
     pack $w.f1.cbDisplayCM $w.f1.cbDisplayCMValue -anchor w -side top
-    pack $w.f1.lCM -side top -anchor center
+    pack $w.f1.lCM -side top -anchor w -pady "0 3" -padx 20
     
     ttk::checkbutton $w.f2.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats \
         -command "::opening::updateStats 1"
@@ -485,7 +485,7 @@ namespace eval opening {
     ttk::label $w.f2.lStats3exp -text $::tr(NumberOfMovesPlayedNotInRepertoire)
     ttk::label $w.f2.lStats4exp -text $::tr(NumberOfTimesPositionEncountered)
     
-    grid $w.f2.cbDisplayStats -row 0 -column 0 -columnspan 2
+    grid $w.f2.cbDisplayStats -row 0 -column 0 -columnspan 2 -pady "3 0" -sticky w -padx 10
     grid $w.f2.lStats4 -row 1 -column 0 -sticky w -padx 5
     grid $w.f2.lStats1 -row 2 -column 0 -sticky w -padx 5
     grid $w.f2.lStats2 -row 3 -column 0 -sticky w -padx 5
@@ -495,12 +495,12 @@ namespace eval opening {
     grid $w.f2.lStats4exp -row 1 -column 1 -sticky w -padx 5
     grid $w.f2.lStats1exp -row 2 -column 1 -sticky w -padx 5
     grid $w.f2.lStats2exp -row 3 -column 1 -sticky w -padx 5
-    grid $w.f2.lStats3exp -row 4 -column 1 -sticky w -padx 5
+    grid $w.f2.lStats3exp -row 4 -column 1 -sticky w -padx 5 -pady "0 5"
     
     ttk::button $w.f3.report -textvar ::tr(ShowReport) -command ::opening::report
     ttk::button $w.f3.close -textvar ::tr(Abort) -command ::opening::endTraining
     
-    pack $w.f3.report $w.f3.close -side top -anchor center -fill x
+    pack $w.f3.report $w.f3.close -side top -anchor center -fill x -pady "5 0"
     pack $w.f1 $w.f2 $w.f3 -fill x
     
     bind $w <F1> { helpWindow OpeningTrainer }
