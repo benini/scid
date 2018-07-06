@@ -229,7 +229,7 @@ namespace eval tactics {
 
         canvas $w.pbar -width 600 -height 10 -bg white -relief solid -border 1
         $w.pbar create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-        grid $w.pbar
+        grid $w.pbar -pady "0 5"
 
 
         #Buttons
@@ -240,9 +240,9 @@ namespace eval tactics {
         ttk::button $w.fbutton.reset -text [tr ResetScores]
         ttk::button $w.fbutton.help -text [tr Help] \
             -command "destroy $w; helpWindow TacticsTrainer"
-        grid $w.fbutton.ok -row 0 -column 2
+        grid $w.fbutton.ok -row 0 -column 2 -padx 10
         grid $w.fbutton.cancel -row 0 -column 3
-        grid $w.fbutton.reset -row 0 -column 1 -sticky w
+        grid $w.fbutton.reset -row 0 -column 1 -sticky w -padx 10
         grid $w.fbutton.help -row 0 -column 0 -sticky w
 
         # Set up geometry for middle of screen:
