@@ -2102,43 +2102,35 @@ namespace eval CorrespondenceChess {
 		]
 
 
+	        ttk::frame $w.buttons
 		ttk::button $w.bOk     -text OK -command {
 				::CorrespondenceChess::saveCCoptions
 				destroy .correspondenceChessConfig
 		}
 		ttk::button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
 
-		ttk::label  $w.lgeneral -text [::tr "CCDlgCGeneraloptions"]
+		ttk::labelframe $w.lgeneral -text [::tr "CCDlgCGeneraloptions"]
 		ttk::label  $w.ldb      -text [::tr "CCDlgDefaultDB"]
 		ttk::label  $w.linbox   -text [::tr "CCDlgInbox"]
 		ttk::label  $w.loutbox  -text [::tr "CCDlgOutbox"]
 
-		ttk::label  $w.lxfccrc  -text [::tr "CCDlgXfcc"]
-
+		ttk::labelframe  $w.lxfccrc  -text [::tr "CCDlgXfcc"]
 		ttk::label  $w.lxfcc    -text [::tr "CCDlgExternalProtocol"]
 		ttk::label  $w.lfetch   -text [::tr "CCDlgFetchTool"]
 		ttk::label  $w.lsend    -text [::tr "CCDlgSendTool"]
 		ttk::label  $w.lsortopt -text [::tr "CCDlgSortOption"]
 
-		ttk::label  $w.lemail   -text [::tr "CCDlgEmailCommunication"]
+		ttk::labelframe  $w.lemail   -text [::tr "CCDlgEmailCommunication"]
 		ttk::label  $w.lmailx   -text [::tr "CCDlgMailPrg"]
 		ttk::label  $w.lbccaddr -text [::tr "CCDlgBCCAddr"]
-
 		ttk::label  $w.lmoderb  -text [::tr "CCDlgMailerMode"]
-		ttk::label  $w.lmoderb1 -text [::tr "CCDlgThunderbirdEg"]
-		ttk::label  $w.lmoderb2 -text [::tr "CCDlgMailUrlEg"]
-		ttk::label  $w.lmoderb3 -text [::tr "CCDlgClawsEg"]
-		ttk::label  $w.lmoderb4 -text [::tr "CCDlgmailxEg"]
-
 		ttk::label  $w.lattache -text [::tr "CCDlgAttachementPar"]
 		ttk::label  $w.lsubject -text [::tr "CCDlgSubjectPar"]
 
 		ttk::checkbutton $w.internalXfcc -text [::tr "CCDlgInternalXfcc"] \
 			-variable ::CorrespondenceChess::XfccInternal
-
 		ttk::checkbutton $w.confirmXfcc -text [::tr "CCDlgConfirmXfcc"] \
 			-variable ::CorrespondenceChess::XfccConfirm
-
 		ttk::checkbutton $w.onlyOwnMove -text [::tr "CCDlgListOnlyOwnMove"] \
 			-variable ::CorrespondenceChess::ListOnlyOwnMove
 
@@ -2170,10 +2162,10 @@ namespace eval CorrespondenceChess {
 		ttk::entry  $w.attache -width 30 -textvariable ::CorrespondenceChess::attache
 		ttk::entry  $w.subject -width 30 -textvariable ::CorrespondenceChess::subject
 
-		ttk::radiobutton $w.moderb1 -text "Mozilla"  -value "mozilla" -variable ::CorrespondenceChess::mailermode
-		ttk::radiobutton $w.moderb2 -text "Mail-URL" -value "mailurl" -variable ::CorrespondenceChess::mailermode
-		ttk::radiobutton $w.moderb3 -text "Claws"    -value "claws"   -variable ::CorrespondenceChess::mailermode
-		ttk::radiobutton $w.moderb4 -text "mailx"    -value "mailx"   -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb1 -text "Mozilla  \($::tr(CCDlgThunderbirdEg)\)" -value "mozilla" -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb2 -text "Mail-URL  \($::tr(CCDlgMailUrlEg)\)"    -value "mailurl" -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb3 -text "Claws  \($::tr(CCDlgClawsEg)\)"         -value "claws"   -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb4 -text "mailx  \($::tr(CCDlgmailxEg)\)"         -value "mailx"   -variable ::CorrespondenceChess::mailermode
 
 		ttk::button $w.bdb     -text "..." -command {::CorrespondenceChess::chooseCorrBase }
 		ttk::button $w.binbox  -text "..." -command {::CorrespondenceChess::chooseInbox    }
@@ -2181,65 +2173,62 @@ namespace eval CorrespondenceChess {
 		ttk::button $w.bfetch  -text "..." -command {::CorrespondenceChess::chooseFetch    }
 		ttk::button $w.bsend   -text "..." -command {::CorrespondenceChess::chooseSend     }
 
-		grid $w.lgeneral                  -column 0 -row  0 -columnspan 3 -pady 10
+	    grid $w.lgeneral -column 0 -row 0 -pady "10 0" -sticky we
+		grid $w.ldb          -in $w.lgeneral -sticky e    -column 0 -row  1
+		grid $w.db           -in $w.lgeneral -sticky we   -column 1 -row  1 -columnspan 2 -padx 5
+		grid $w.bdb          -in $w.lgeneral -sticky w    -column 3 -row  1
+		grid $w.linbox       -in $w.lgeneral -sticky e    -column 0 -row  2
+		grid $w.inbox        -in $w.lgeneral -sticky we   -column 1 -row  2 -columnspan 2 -padx 5
+		grid $w.binbox       -in $w.lgeneral -sticky w    -column 3 -row  2
+		grid $w.loutbox      -in $w.lgeneral -sticky e    -column 0 -row  3
+		grid $w.outbox       -in $w.lgeneral -sticky we   -column 1 -row  3 -columnspan 2 -padx 5
+		grid $w.boutbox      -in $w.lgeneral -sticky w    -column 3 -row  3
 
-		grid $w.ldb          -sticky e    -column 0 -row  1
-		grid $w.db           -sticky w    -column 1 -row  1 -columnspan 2
-		grid $w.bdb          -sticky w    -column 3 -row  1
-		grid $w.linbox       -sticky e    -column 0 -row  2
-		grid $w.inbox        -sticky w    -column 1 -row  2 -columnspan 2
-		grid $w.binbox       -sticky w    -column 3 -row  2
-		grid $w.loutbox      -sticky e    -column 0 -row  3
-		grid $w.outbox       -sticky w    -column 1 -row  3 -columnspan 2
-		grid $w.boutbox      -sticky w    -column 3 -row  3
+            grid $w.lxfccrc -column 0 -row 1 -pady 10 -sticky we
+		grid $w.internalXfcc -in  $w.lxfccrc -sticky w    -column 0 -row 0 -columnspan 2
+		grid $w.xfconf       -in  $w.lxfccrc -sticky w    -column 2 -row 0
+		grid $w.confirmXfcc  -in  $w.lxfccrc -sticky w    -column 0 -row  1
+		grid $w.onlyOwnMove  -in  $w.lxfccrc -sticky w    -column 1 -row  1 -padx 5
+		grid $w.lxfcc        -in  $w.lxfccrc              -column 0 -row  2
+		grid $w.xfccrc       -in  $w.lxfccrc -sticky we   -column 1 -row  2 -columnspan 2 -padx 5
 
-		grid $w.internalXfcc -sticky w    -column 1 -row  4 -pady 10
-		grid $w.xfconf                    -column 2 -row  4 -columnspan 2
-		grid $w.lxfccrc      -sticky e    -column 0 -row  4
-		grid $w.lxfcc                     -column 0 -row  5 -columnspan 3 -pady 10
-		grid $w.xfccrc       -sticky w    -column 1 -row  5 -columnspan 2
+		grid $w.lfetch       -in  $w.lxfccrc -sticky e    -column 0 -row  3
+		grid $w.fetch        -in  $w.lxfccrc -sticky we   -column 1 -row  3 -columnspan 2 -padx 5
+		grid $w.bfetch       -in  $w.lxfccrc -sticky w    -column 3 -row  3
+		grid $w.lsend        -in  $w.lxfccrc -sticky e    -column 0 -row  4
+		grid $w.send         -in  $w.lxfccrc -sticky we   -column 1 -row  4 -columnspan 2 -padx 5
+		grid $w.bsend        -in  $w.lxfccrc -sticky w    -column 3 -row  4
 
-		grid $w.lfetch       -sticky e    -column 0 -row  6
-		grid $w.fetch        -sticky w    -column 1 -row  6 -columnspan 2
-		grid $w.bfetch       -sticky w    -column 3 -row  6
-		grid $w.lsend        -sticky e    -column 0 -row  7
-		grid $w.send         -sticky w    -column 1 -row  7 -columnspan 2
-		grid $w.bsend        -sticky w    -column 3 -row  7
+		grid $w.lsortopt     -in  $w.lxfccrc -sticky e    -column 0 -row  5
+		grid $w.sortopt      -in  $w.lxfccrc -sticky we   -column 1 -row  5 -columnspan 2 -padx "5 0"
+		grid $w.ysc          -in  $w.lxfccrc -sticky wns  -column 3 -row 5
 
+	     grid $w.lemail -column 0 -row 2 -sticky we
+		grid $w.lmailx       -in $w.lemail -sticky e    -column 0 -row 0
+		grid $w.mailx        -in $w.lemail -sticky we   -column 1 -row 0 -padx 5
+		grid $w.lbccaddr     -in $w.lemail -sticky e    -column 0 -row 1
+		grid $w.bccaddr      -in $w.lemail -sticky we   -column 1 -row 1 -padx 5
 
-		grid $w.confirmXfcc  -sticky w    -column 1 -row  8
-		grid $w.onlyOwnMove  -sticky w    -column 2 -row  8
-		grid $w.lsortopt     -sticky e    -column 0 -row  9
-		grid $w.sortopt      -sticky w    -column 1 -row  9 -columnspan 2
-		grid $w.ysc          -sticky wns  -column 3 -row 9
+		grid $w.lmoderb      -in $w.lemail -sticky e    -column 0 -row 2
+		grid $w.moderb1      -in $w.lemail -sticky w    -column 1 -row 2 -padx 5
+		grid $w.moderb2      -in $w.lemail -sticky w    -column 1 -row 3 -padx 5
+		grid $w.moderb3      -in $w.lemail -sticky w    -column 1 -row 4 -padx 5
+		grid $w.moderb4      -in $w.lemail -sticky w    -column 1 -row 5 -padx 5
 
-		grid $w.lemail                    -column 0 -row 10 -columnspan 3 -pady 10
+		grid $w.lattache     -in $w.lemail -sticky e    -column 0 -row 6
+		grid $w.attache      -in $w.lemail -sticky we   -column 1 -row 6 -padx 5
 
-		grid $w.lmailx       -sticky e    -column 0 -row 11
-		grid $w.mailx        -sticky w    -column 1 -row 11 -columnspan 2
-		grid $w.lbccaddr     -sticky e    -column 0 -row 12
-		grid $w.bccaddr      -sticky w    -column 1 -row 12 -columnspan 2
+		grid $w.lsubject     -in $w.lemail -sticky e    -column 0 -row 7
+		grid $w.subject      -in $w.lemail -sticky we   -column 1 -row 7 -padx 5
 
-		grid $w.lmoderb      -sticky e    -column 0 -row 13
-		grid $w.lmoderb1     -sticky w    -column 2 -row 13 -columnspan 2
-		grid $w.lmoderb2     -sticky w    -column 2 -row 14 -columnspan 2
-		grid $w.lmoderb3     -sticky w    -column 2 -row 15 -columnspan 2
-		grid $w.lmoderb4     -sticky w    -column 2 -row 16 -columnspan 2
-		grid $w.moderb1      -sticky w    -column 1 -row 13
-		grid $w.moderb2      -sticky w    -column 1 -row 14
-		grid $w.moderb3      -sticky w    -column 1 -row 15
-		grid $w.moderb4      -sticky w    -column 1 -row 16
-
-		grid $w.lattache     -sticky e    -column 0 -row 18
-		grid $w.attache      -sticky w    -column 1 -row 18 -columnspan 2
-
-		grid $w.lsubject     -sticky e    -column 0 -row 19
-		grid $w.subject      -sticky w    -column 1 -row 19 -columnspan 2
-
+	        grid columnconfigure $w.lgeneral 1 -weight 1
+	        grid columnconfigure $w.lxfccrc 1 -weight 1
+	        grid columnconfigure $w.lemail 1 -weight 1
+	        grid columnconfigure $w 0 -weight 1
 
 		# Buttons and ESC-key
-		grid $w.bOk          -column 0    -row 20 -pady 10 -columnspan 2
-		grid $w.bCancel      -column 1    -row 20 -pady 10
+		packdlgbuttons $w.bCancel $w.bOk -in $w.buttons
+		grid $w.buttons -column 0 -row 3 -sticky news
 		bind $w <Escape> "$w.bCancel invoke"
 
 		bind $w <F1> { helpWindow CCSetupDialog}

@@ -1629,7 +1629,7 @@ translate E CCDlgDefaultDB {Default Database:}
 translate E CCDlgInbox {Inbox (path):}
 translate E CCDlgOutbox {Outbox (path):}
 translate E CCDlgXfcc {Xfcc Configuration:}
-translate E CCDlgExternalProtocol {External Protocol Handler (e.g. Xfcc)}
+translate E CCDlgExternalProtocol {External Protocol\nHandler (e.g. Xfcc)}
 translate E CCDlgFetchTool {Fetch Tool:}
 translate E CCDlgSendTool {Send Tool:}
 translate E CCDlgEmailCommunication {eMail Communication}
@@ -1640,10 +1640,10 @@ translate E CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
 translate E CCDlgMailUrlEg {e.g. Evolution}
 translate E CCDlgClawsEg {e.g Sylpheed Claws}
 translate E CCDlgmailxEg {e.g. mailx, mutt, nail...}
-translate E CCDlgAttachementPar {Attachment parameter:}
+translate E CCDlgAttachementPar {Attachment\nparameter:}
 translate E CCDlgInternalXfcc {Use internal Xfcc support}
 translate E CCDlgConfirmXfcc {Confirm moves}
-translate E CCDlgSubjectPar {Subject parameter:}
+translate E CCDlgSubjectPar {Subject\nparameter:}
 translate E CCDlgDeleteBoxes {Empty In-/Outbox}
 translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess?\nThis requires a new sync to show the last state of your games.}
 translate E CCDlgConfirmMove {Confirm move}

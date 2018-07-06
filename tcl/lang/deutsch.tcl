@@ -1035,7 +1035,7 @@ translate D Zero {Null}
 translate D Any {Irgendeine}
 translate D CurrentBoard {Aktuelle Stellung}
 translate D CommonEndings {Endspiele}
-translate D CommonPatterns {Gleiche Muster}
+translate D CommonPatterns {Häufige Muster}
 translate D MaterialDiff {Materialdifferenz}
 translate D squares {Felder}
 translate D SameColor {Gleichfarbige}
@@ -1629,21 +1629,21 @@ translate D CCDlgDefaultDB {Standarddatenbank:}
 translate D CCDlgInbox {Posteingang (Pfad):}
 translate D CCDlgOutbox {Postausgang (Pfad):}
 translate D CCDlgXfcc {Xfcc Einstellungen:}
-translate D CCDlgExternalProtocol {Externe Protokolle (Xfcc)}
-translate D CCDlgFetchTool {Hilfsprogramm zum Abholen:}
-translate D CCDlgSendTool {Hilfsprogramm zum Senden:}
+translate D CCDlgExternalProtocol {Externe Protokoll\nHandler (Xfcc)}
+translate D CCDlgFetchTool {Programm zum\nEmpfangen:}
+translate D CCDlgSendTool {Programm zum\nSenden:}
 translate D CCDlgEmailCommunication {eMail Kommunikation}
 translate D CCDlgMailPrg {eMail Programm:}
-translate D CCDlgBCCAddr {Adresse für Ausgangskopie:}
+translate D CCDlgBCCAddr {Adresse für\nAusgangskopie:}
 translate D CCDlgMailerMode {Modus:}
-translate D CCDlgThunderbirdEg {z. B. Thunderbird, Mozilla Mail, Icedove...}
-translate D CCDlgMailUrlEg {z. B. Evolution}
-translate D CCDlgClawsEg {z. B. Sylpheed Claws}
-translate D CCDlgmailxEg {z. B. mailx, mutt, nail...}
-translate D CCDlgAttachementPar {Parameter für Anhang:}
+translate D CCDlgThunderbirdEg {z.B. Thunderbird, Mozilla Mail, Icedove...}
+translate D CCDlgMailUrlEg {z.B. Evolution}
+translate D CCDlgClawsEg {z.B. Sylpheed Claws}
+translate D CCDlgmailxEg {z.B. mailx, mutt, nail...}
+translate D CCDlgAttachementPar {Parameter für\nAnhang:}
 translate D CCDlgInternalXfcc {Interne Xfcc-Unterstützung verwenden}
 translate D CCDlgConfirmXfcc {Züge bestätigen}
-translate D CCDlgSubjectPar {Parameter für Betreff:}
+translate D CCDlgSubjectPar {Parameter für\nBetreff:}
 translate D CCDlgDeleteBoxes {Leeren des Postein- und Ausgangs}
 translate D CCDlgDeleteBoxesText {Wollen Sie wirklich Ihren Postein- und Ausgang leeren?\nDies erfordert ein erneutes Synchronisieren zum den aktuellen Zustand Ihrer Partien anzuzeigen.}
 translate D CCDlgConfirmMove {Zug bestätigen}
