@@ -685,7 +685,7 @@ proc configInformant {} {
     destroy $w
   }
   
-  toplevel $w -background [ttk::style lookup . -background]
+  win::createDialog $w
   ::setTitle $w $::tr(ConfigureInformant)
   setWinLocation $w
   ttk::frame $w.spinF
@@ -709,9 +709,9 @@ proc configInformant {} {
     incr idx
   }
   pack $w.spinF
-  addHorizontalRule $w
+#  addHorizontalRule $w
   ttk::button $w.close -textvar ::tr(Close) -command "destroy $w"
-  pack $w.close
+  packdlgbuttons $w.close
   bind $w <Configure> "recordWinSize $w"
 }
 
@@ -723,7 +723,7 @@ proc setAutoplayDelay {} {
     set tempdelay [expr {int($autoplayDelay / 1000.0)}]
     set w .apdialog
     if { [winfo exists $w] } { focus $w ; return }
-    toplevel $w
+    win::createDialog $w
     ::setTitle $w "Scid"
     wm resizable $w 0 0
     ttk::label $w.label -text $::tr(AnnotateTime:)
@@ -744,7 +744,7 @@ proc setAutoplayDelay {} {
         destroy .apdialog
         focus .
     }
-    pack $b.cancel $b.ok -side right -padx 5 -pady 5
+    packdlgbuttons $b.cancel $b.ok
     bind $w <Escape> { .apdialog.buttons.cancel invoke }
     bind $w <Return> { .apdialog.buttons.ok invoke }
     focus $w.spDelay
@@ -759,26 +759,26 @@ proc setTableBaseDir {} {
   set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
 
   set w .tbDialog
-  toplevel $w -background [ttk::style lookup . -background]
+  win::createDialog $w
   ::setTitle $w Scid
   ttk::label $w.title -text "Select up to 4 table base directories:"
-  pack $w.title -side top -fill x -padx 10
+  pack $w.title -side top -fill x
   foreach i {1 2 3 4} {
     set tempDir(tablebase$i) $initialDir(tablebase$i)
-    pack [ttk::frame $w.f$i] -side top -fill x -expand yes -padx 10
+    pack [ttk::frame $w.f$i] -side top -fill x -expand yes
     ttk::entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
     bindFocusColors $w.f$i.e
     ttk::button $w.f$i.b -text "..." -command [list chooseTableBaseDir $i]
     pack $w.f$i.b -side right -padx 2
     pack $w.f$i.e -side left -padx 2 -fill x -expand yes
   }
-  addHorizontalRule $w
+#  addHorizontalRule $w
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text "OK" \
       -command "catch {grab release $w; destroy $w}; openTableBaseDirs"
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w; destroy $w}"
-  pack $w.b.cancel $w.b.ok -side right -padx 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   bind $w <Escape> "$w.b.cancel invoke"
   wm resizable $w 1 0
   grab $w
