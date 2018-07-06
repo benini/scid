@@ -182,8 +182,8 @@ proc clearPatterns {} {
 
 proc showPattern { count } {
   global pattPiece pattFyle pattRank pattBool nPatterns nMaxPatterns
-	set column [expr {6 * (($count - 1) / 6)} ]
-	set row [expr {($count - 1) % 6} ]
+	set column [expr {7 * (($count - 1) / 7)} ]
+	set row [expr {($count - 1) % 7} ]
 #    set column 0
 #    set row $count
 	set f .sm.mp.patt
@@ -461,8 +461,8 @@ proc ::search::material {{ref_base ""}} {
     $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
     if { $i <= $nPatterns } {
-    set column [expr {6 * (($i - 1) / 6)} ]
-    set row [expr {($i - 1) % 6} ]
+    set column [expr {7 * (($i - 1) / 7)} ]
+    set row [expr {($i - 1) % 7} ]
 #    set column 0
 #    set row $i
     grid $f.grid.b$i -row $row -column $column -padx 0 -pady 0 ; incr column
