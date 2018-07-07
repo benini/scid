@@ -357,7 +357,7 @@ menuText D GInfoInformant "Informatorwerte konfigurieren" 0
 
 # General buttons:
 translate D Back {Zurück}
-translate D Browse {Blättern}
+translate D Browse {Auswählen}
 translate D Cancel {Abbrechen}
 translate D Continue {Weiter}
 translate D Clear {Leeren}
@@ -855,7 +855,7 @@ translate D GlistGameNumber {Partie Nummer}
 translate D GlistAverageElo {ELO Durchschnitt}
 translate D GlistRating {Wertungszahl}
 translate D GlistFindText {Text finden}
-translate D GlistMoveField {Verschieben}
+translate D GlistMoveField {Züge}
 translate D GlistEditField {Konfigurieren}
 translate D GlistAddField {Hinzufügen}
 translate D GlistDeleteField {Löschen}
@@ -1145,7 +1145,7 @@ translate D OprepStatAll {Alle Berichtspartien}
 translate D OprepStatBoth {Beide Spieler}
 translate D OprepStatSince {Nach}
 translate D OprepOldest {Älteste Partien}
-translate D OprepNewest {Neueste Partien}
+translate D OprepNewest {Neuste Partien}
 translate D OprepPopular {Popularität}
 translate D OprepFreqAll {Häufigkeit in allen Jahren: }
 translate D OprepFreq1   {im letzten Jahr:            }
@@ -1163,7 +1163,7 @@ translate D OprepWRating {ELO Weiß}
 translate D OprepBRating {ELO Schwarz}
 translate D OprepWPerf {Performance Weiß}
 translate D OprepBPerf {Performance Schwarz}
-translate D OprepHighRating {Spiele mit dem höchsten ELO-Durchschnitt}
+translate D OprepHighRating {Spiele mit höchstem ELO-Durchschnitt}
 translate D OprepTrends {Ergebnistrend}
 translate D OprepResults {Ergebnis nach Längen und Häufigkeiten}
 translate D OprepLength {Partielänge}
@@ -1174,7 +1174,7 @@ translate D OprepDraws {Remis:        }
 translate D OprepWholeDB {ganze Datenbank}
 translate D OprepShortest {Kürzester Sieg}
 translate D OprepMovesThemes {Züge und Themen}
-translate D OprepMoveOrders {Zugfolgen zum Erreichen der Berichtsposition}
+translate D OprepMoveOrders {Zugfolgen zum Erreichen\nder Berichtsposition}
 translate D OprepMoveOrdersOne \
   {Es gab nur eine Zugfolge zur erreichten Position:}
 translate D OprepMoveOrdersAll \
@@ -1202,8 +1202,8 @@ translate D OprepAllGames {Alle Partien}
 translate D OprepEndClass {Materialklassifikation von Endspielstellungen}
 translate D OprepTheoryTable {Theorietabelle}
 translate D OprepTableComment {Erzeugt aus %u Partien mit höchster ELO-Zahl.}
-translate D OprepExtraMoves {Zusätzliche Züge in Anmerkungen zur Theorietabelle}
-translate D OprepMaxGames {Maximum an Partien in Theorietabelle}
+translate D OprepExtraMoves {Zusätzliche Züge in der Theorietabelle}
+translate D OprepMaxGames {Maximale Partien in der Theorietabelle}
 translate D OprepViewHTML {Zeige HTML}
 translate D OprepViewLaTeX {Zeige LaTeX}
 
@@ -1693,7 +1693,7 @@ translate D ExtHWConfigConnection {Hardware Konfigurieren}
 translate D ExtHWPort {Schnittstelle}
 translate D ExtHWEngineCmd {Engine Kommando}
 translate D ExtHWEngineParam {Engine Parameter}
-translate D ExtHWShowButton {Knopf in Werzeugleiste anzeigen}
+translate D ExtHWShowButton {Knopf in Werkzeugleiste anzeigen}
 translate D ExtHWHardware {Hardware}
 translate D ExtHWNovag {Novag Citrine}
 translate D ExtHWInputEngine {Input Engine}
