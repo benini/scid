@@ -110,7 +110,7 @@ namespace eval ExtHardware {
 
     set w .exthardwareConfig
     if { [winfo exists $w]} { return }
-    toplevel $w -background [ttk::style lookup . -background]
+    win::createDialog $w
 
     wm title $w [::tr ExtHWConfigConnection]
 
@@ -146,13 +146,14 @@ namespace eval ExtHardware {
        .exthardwareConfig.eparam  configure -state disabled
     }
 
+    ttk::frame $w.buttons
     ttk::button $w.bOk -text OK -command { ::ExtHardware::saveHardwareOptions
        ::ExtHardware::HWbuttonBind $::ExtHardware::bindbutton
        destroy .exthardwareConfig
        $::ExtHardware::bindbutton
     }
     ttk::button $w.bCancel -text [::tr Cancel] -command "::ExtHardware::HWbuttonImg tb_eng_disconnected ; destroy $w"
-
+    packdlgbuttons $w.bCancel $w.bOk -in $w.buttons
 
     grid $w.options    -stick ew    -row 0 -column 0
     grid $w.novag      -stick w     -row 0 -column 1
@@ -169,9 +170,7 @@ namespace eval ExtHardware {
 
     grid $w.showbutton -stick w     -row 5 -column 1
 
-    grid $w.bOk        -stick e     -row 6 -column 0 
-    grid $w.bCancel    -stick w     -row 6 -column 1
-
+    grid $w.buttons    -sticky news -row 6 -column 0 -columnspan 2
     bind $w <F1> { helpWindow HardwareConfig}
 
   }
