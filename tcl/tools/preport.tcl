@@ -35,7 +35,7 @@ proc ::preport::preportDlg {args} {
   
   set w .preportDlg
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr ToolsPlayerReport]"
   wm resizable $w 0 0
   pack [ttk::frame $w.g] -side top -fill x -expand yes
@@ -101,8 +101,8 @@ proc ::preport::preportDlg {args} {
   if {$blackName != ""  &&  $blackName != "?"} {
     packbuttons right $w.b2.black
   }
-  packbuttons right $w.b.cancel $w.b.ok
-  packbuttons left $w.b.help
+  packbuttons left $w.b.help -pady "15 0"
+  packdlgbuttons $w.b.cancel $w.b.ok
   if {[sc_base current] == $::clipbase_db} {
     $w.g.clipbase configure -state disabled
   }
@@ -288,7 +288,7 @@ proc ::preport::makeReportWin {args} {
 proc ::preport::setOptions {} {
   set w .preportOptions
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   pack [ttk::frame $w.f] -side top -fill x
   set row 0
   foreach i {Stats AvgPerf Results MovesFrom Themes Endgames} {
@@ -303,29 +303,23 @@ proc ::preport::setOptions {} {
       set from 0; set to 500; set tick 100; set res 50
     }
     if {$i == "sep"} {
-      ttk::frame $w.f.fsep$row -height 2 -borderwidth 2 -relief sunken
-      grid $w.f.fsep$row -row $row -column 0 -sticky we -columnspan 4
+      ttk::separator $w.f.fsep$row
+      grid $w.f.fsep$row -row $row -column 0 -sticky we -columnspan 2
 
     } elseif {[info exists yesno($i)]} {
-      ttk::frame $w.f.f$i
-      ttk::radiobutton $w.f.f$i.yes -variable ::preport($i) -value 1 \
-          -text "$::tr(Yes)   "
-      ttk::radiobutton $w.f.f$i.no -variable ::preport($i) -value 0 \
-          -text "$::tr(No)   "
-      pack $w.f.f$i.yes -side left
-      pack $w.f.f$i.no -side right
-      ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
-      grid $w.f.f$i -row $row -column 0 -sticky n
-      grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
+      ttk::checkbutton $w.f.f$i -variable ::preport($i) -offvalue 0 -onvalue 1 -text $::tr(Oprep$i)
+      grid $w.f.f$i -row $row -column 0 -sticky w -columnspan 2
     } else {
-      scale $w.f.s$i -variable ::preport($i) -from $from -to $to \
-          -width 8 -length 200 -tickinterval $tick -orient horizontal \
-          -font font_Small -resolution $res -showvalue 0  -background [ttk::style lookup . -background]
+        set tmpcombo {}
+        for {set x $from} {$x <= $to} {incr x $res} {
+          lappend tmpcombo $x
+        }
+        ttk::combobox $w.f.s$i -textvariable ::preport($i) -width 3 -values $tmpcombo -justify right
       ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
-      grid $w.f.s$i -row $row -column 0 -sticky we
-      grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
+      grid $w.f.s$i -row $row -column 0 -sticky we -padx "0 5"
+      grid $w.f.t$i -row $row -column 1 -sticky w
     }
-    grid rowconfigure $w.f $row -pad 2
+    grid rowconfigure $w.f $row -pad 3
     incr row
   }
   addHorizontalRule $w
@@ -343,11 +337,11 @@ proc ::preport::setOptions {} {
     array set ::preport [array get ::preport::backup]
     destroy .preportOptions
   }
-  pack $w.b.defaults -side left -padx 5 -pady 5
-  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
+  pack $w.b.defaults -side left -padx 5 -pady "15 5"
+  packdlgbuttons $w.b.cancel $w.b.ok
   array set ::preport::backup [array get ::preport]
   wm resizable $w 0 0
-  wm title $w  "Scid: [tr ToolsPlayerReport]: [tr OprepFileOptions]"
+  wm title $w  "Scid: [tr ToolsPlayerReport]: [tr Options]"
   bind $w <Escape> "$w.b.cancel invoke"
 }
 
