@@ -581,15 +581,14 @@ proc nameEditor {} {
     destroy $w
     return
   }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr FileMaintNameEditor]"
   set nameEditorWin 1
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
-  
-  pack [ttk::frame $w.typeButtons] -side top -fill x
-  ttk::label $w.typeButtons.typeLabel -textvar ::tr(NameEditType:) -font font_Bold
-  grid $w.typeButtons.typeLabel -row 0 -column 1 -columnspan 2 -sticky w
+
+  ttk::labelframe $w.typeButtons -text $::tr(NameEditType)
+  pack $w.typeButtons -side top -fill x -anchor w
   foreach i { "Player" "Event" "Site" "Round"} col {0 1 2 3} {
     set j [string tolower $i]
     ttk::radiobutton $w.typeButtons.$j -textvar ::tr($i) -variable editNameType \
@@ -602,7 +601,7 @@ proc nameEditor {} {
           grid .nedit.g.fromE -row 0 -column 2 -sticky w
           grid .nedit.g.toE -row 1 -column 2 -sticky w
         }
-    grid $w.typeButtons.$j -row 1 -column $col -sticky w
+    grid $w.typeButtons.$j -row 1 -column $col -sticky w -padx "0 5"
   }
   ttk::radiobutton $w.typeButtons.rating -textvar ::tr(Rating) -variable editNameType \
       -value rating -command {
@@ -614,7 +613,7 @@ proc nameEditor {} {
         grid .nedit.g.rtype -row 1 -column 0 -columnspan 2 -sticky e
         grid .nedit.g.ratingE -row 1 -column 2 -sticky w
       }
-  grid $w.typeButtons.rating -row 2 -column 2  -columnspan 2 -sticky w
+  grid $w.typeButtons.rating -row 2 -column 0  -columnspan 2 -sticky w
   ttk::radiobutton $w.typeButtons.date -textvar ::tr(Date) -variable editNameType \
       -value date -command {
         grid remove .nedit.g.toE
@@ -625,7 +624,7 @@ proc nameEditor {} {
         grid .nedit.g.toL -row 1 -column 1 -sticky e
         grid .nedit.g.toD -row 1 -column 2 -sticky w
       }
-  grid $w.typeButtons.date -row 2 -column 1 -sticky w
+  grid $w.typeButtons.date -row 2 -column 1 -sticky w -padx "0 5"
   ttk::radiobutton $w.typeButtons.edate -textvar ::tr(EventDate) \
       -variable editNameType -value edate \
       -command {
@@ -637,13 +636,10 @@ proc nameEditor {} {
         grid .nedit.g.toL -row 1 -column 1 -sticky e
         grid .nedit.g.toD -row 1 -column 2 -sticky w
       }
-  grid $w.typeButtons.edate -row 2 -column 0 -sticky w
+  grid $w.typeButtons.edate -row 2 -column 2 -sticky w -columnspan 2
 
-  addHorizontalRule .nedit
-  
-  ttk::label $w.selectLabel -textvar ::tr(NameEditSelect) -font font_Bold
-  ttk::frame $w.selectButtons
-  pack $w.selectLabel $w.selectButtons -side top -fill x
+  ttk::labelframe $w.selectButtons -text $::tr(NameEditSelect)
+  pack $w.selectButtons -side top -fill x -pady 10
   foreach i {all filter crosstable} row {0 1 2} text {
     SelectAllGames
     SelectFilterGames
@@ -654,29 +650,20 @@ proc nameEditor {} {
     grid $w.selectButtons.$i -row $row -column 0 -sticky w
   }
   
-  addHorizontalRule $w
-  
   pack [ttk::frame $w.g] -side top -fill x
-  ttk::label $w.g.space -text "    "
-  grid $w.g.space $w.g.space -row 0 -column 0
   ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
-  entry $w.g.fromE -width 40 -background white -relief sunken \
-      -textvariable editName
-  entry $w.g.fromD -width 15 -background white -relief sunken \
-      -textvariable editDate
+  ttk::entry $w.g.fromE -width 40 -textvariable editName
+  ttk::entry $w.g.fromD -width 15 -textvariable editDate
   grid $w.g.fromL -row 0 -column 1 -sticky e
   grid $w.g.fromE -row 0 -column 2 -sticky we
   
   ttk::label $w.g.toL -textvar ::tr(NameEditWith:) -font font_Bold -anchor e
-  entry $w.g.toE -width 40 -background white -relief sunken \
-      -textvariable editNameNew
-  entry $w.g.toD -width 15 -background white -relief sunken \
-      -textvariable editDateNew
+  ttk::entry $w.g.toE -width 40 -textvariable editNameNew
+  ttk::entry $w.g.toD -width 15 -textvariable editDateNew
   grid $w.g.toL -row 1 -column 1 -sticky e
   grid $w.g.toE -row 1 -column 2 -sticky we
   
-  entry $w.g.ratingE -width 5 -background white -relief sunken \
-      -textvariable editNameRating -justify right
+  ttk::entry $w.g.ratingE -width 5 -textvariable editNameRating -justify right
   set mlist [split [sc_info ratings] " "]
   ttk::menubutton $w.g.rtype -textvariable editNameRType -menu $w.g.rtype.menu
   menu $w.g.rtype.menu
@@ -689,11 +676,8 @@ proc nameEditor {} {
   text $w.g.list -height 9 -width 40 -relief sunken \
       -background grey90 -tabs {2c right 2.5c left} -wrap none
   
-  ttk::label $w.g.padding -text ""
-  grid $w.g.padding -row 2 -column 0
-  
-  grid $w.g.title -row 3 -column 1 -columnspan 2 -sticky n
-  grid $w.g.list -row 4 -column 1 -rowspan 9 -columnspan 2 -sticky n
+  grid $w.g.title -row 2 -column 1 -columnspan 2 -sticky n
+  grid $w.g.list -row 3 -column 1 -rowspan 9 -columnspan 2 -sticky e
   
   updateMatchList $w.g.list "" 9 editName "" w
   
@@ -708,8 +692,6 @@ proc nameEditor {} {
               set %s \$nameMatches(%d)}}; break" $z $j $z ]
     }
   }
-  
-  addHorizontalRule $w
   
   ttk::frame $w.buttons
   ttk::button $w.buttons.replace -textvar ::tr(NameEditReplace) -command {
@@ -732,7 +714,7 @@ proc nameEditor {} {
   
   dialogbutton $w.buttons.cancel -textvar ::tr(Close) -command {focus .; destroy .nedit}
   pack $w.buttons -fill x
-  pack $w.buttons.cancel $w.buttons.replace -side right
+  packdlgbuttons $w.buttons.cancel $w.buttons.replace
   
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
