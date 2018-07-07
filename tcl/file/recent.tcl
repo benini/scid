@@ -187,7 +187,7 @@ proc ::recentFiles::configure {} {
   set recentFiles(temp_menu) $recentFiles(menu)
   set recentFiles(temp_extra) $recentFiles(extra)
   set w .recentFilesDlg
-  toplevel $w -background [ttk::style lookup . -background]
+  win::createDialog $w
   wm title $w "Scid: [tr OptionsRecent]"
   ttk::label $w.lmenu -text $::tr(RecentFilesMenu)
   scale $w.menu -variable recentFiles(temp_menu) -from 0 -to 10 -length 250 -border 0 \
@@ -196,7 +196,7 @@ proc ::recentFiles::configure {} {
   ttk::label $w.lextra -text $::tr(RecentFilesExtra)
   scale $w.extra -variable recentFiles(temp_extra) -from 0 -to 10 -length 250 -border 0 \
       -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small -background [ttk::style lookup . -background]
-  pack $w.lmenu $w.menu $w.lextra $w.extra -side top -fill x -padx 10
+  pack $w.lmenu $w.menu $w.lextra $w.extra -side top -fill x -pady "0 5"
   addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
   ttk::button $w.b.ok -text "OK" -command {
@@ -208,7 +208,7 @@ proc ::recentFiles::configure {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5 -fill x
+  packdlgbuttons $w.b.cancel $w.b.ok
   catch {grab $w}
 }
 
