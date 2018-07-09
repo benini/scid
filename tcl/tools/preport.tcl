@@ -314,7 +314,7 @@ proc ::preport::setOptions {} {
         for {set x $from} {$x <= $to} {incr x $res} {
           lappend tmpcombo $x
         }
-        ttk::combobox $w.f.s$i -textvariable ::preport($i) -width 3 -values $tmpcombo -justify right
+      ttk::combobox $w.f.s$i -textvariable ::preport($i) -width 3 -values $tmpcombo -justify right -state readonly
       ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.s$i -row $row -column 0 -sticky we -padx "0 5"
       grid $w.f.t$i -row $row -column 1 -sticky w

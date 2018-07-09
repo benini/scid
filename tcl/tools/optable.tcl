@@ -367,7 +367,7 @@ proc ::optable::setOptions {} {
         for {set x $from} {$x <= $to} {incr x $res} {
           lappend tmpcombo $x
         }
-        ttk::combobox $w.f.s$i -textvariable ::optable($i) -width 2 -values $tmpcombo -justify right
+        ttk::combobox $w.f.s$i -textvariable ::optable($i) -width 2 -values $tmpcombo -justify right -state readonly
       }
       
       ttk::label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
