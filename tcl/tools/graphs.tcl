@@ -60,7 +60,7 @@ proc configureFilterGraph {} {
     destroy $w
   }
   
-  toplevel $w  -background [ttk::style lookup . -background]
+  win::createDialog $w
   wm title $w $::tr(ConfigureFilter)
   setWinLocation $w
   bind $w <F1> {helpWindow Graphs Filter}
@@ -82,7 +82,7 @@ proc configureFilterGraph {} {
     }
     if { $i == "Elo" } {
       ttk::checkbutton $w.filter.iEloGuess -text $::tr(FilterEstimate) -onvalue 1 -offvalue 0 -variable FilterGuessELO
-      grid $w.filter.iEloGuess -row $row -column $col -sticky w
+      grid $w.filter.iEloGuess -row $row -column $col -sticky w -padx "5 0"
       #	  incr col
     }
     incr row
@@ -112,8 +112,8 @@ proc configureFilterGraph {} {
   }
   
   pack $w.filter
-  pack $w.buttons
-  pack $w.buttons.close $w.buttons.update $w.buttons.standard -side right -padx 2 -pady 2
+  pack $w.buttons -anchor e
+  packdlgbuttons $w.buttons.close $w.buttons.update $w.buttons.standard
   focus $w.filter.iFilterMinYear
   bind $w <Configure> "recordWinSize $w"
 }
@@ -135,9 +135,9 @@ proc tools::graphs::filter::Open {} {
     set filterGraph 0
     return
   }
-  toplevel $w
+  win::createDialog $w 0
   menu $w.menu
-  $w configure -menu $w.menu -background [ttk::style lookup . -background]
+  $w configure -menu $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file
@@ -837,9 +837,9 @@ proc tools::graphs::absfilter::Open {} {
     set absfilterGraph 0
     return
   }
-  toplevel $w
+  win::createDialog $w 0
   menu $w.menu
-  $w configure -menu $w.menu -background [ttk::style lookup . -background]
+  $w configure -menu $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file
@@ -1061,4 +1061,4 @@ proc ::tools::graphs::absfilter::Refresh {} {
   unbusyCursor .
   update
 }
-### End of file: graph.tcl
+### End of file: graphs.tcl

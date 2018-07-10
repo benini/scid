@@ -1301,7 +1301,7 @@ proc InitToolbar {{tb}} {
 
 proc configToolbar {} {
   set w .tbconfig
-  toplevel $w -background [ttk::style lookup . -background]
+  win::createDialog $w
   wm title $w "Scid: [tr OptionsToolbar]"
 
   array set ::toolbar_temp [array get ::toolbar]
@@ -1347,8 +1347,8 @@ proc configToolbar {} {
   }
   ttk::button $w.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  pack $w.cancel $w.ok -side right -padx 2
-  pack $w.on $w.off -side left -padx 2
+  pack $w.cancel $w.ok -side right -padx 2 -pady "5 0"
+  pack $w.on $w.off -side left -padx 2 -pady "5 0"
   catch {grab $w}
 }
 

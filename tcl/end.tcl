@@ -107,7 +107,7 @@ proc mergeGame {base gnum} {
   set merge(base) $base
   set merge(gnum) $gnum
   set w .mergeDialog
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(MergeGame)"
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <F1> {helpWindow GameList Browsing}
@@ -206,7 +206,7 @@ proc setExportText {exportType} {
   
   set w .setExportText$exportType
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $title"
   
   ttk::frame $w.buttons
@@ -248,7 +248,7 @@ proc setExportText {exportType} {
   "
   dialogbutton $w.buttons.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
   pack $w.buttons.default -side left -padx 5 -pady 2
-  pack $w.buttons.cancel $w.buttons.ok -side right -padx 5 -pady 2
+  packdlgbuttons $w.buttons.cancel $w.buttons.ok
   focus $pane.start.text
 }
 

@@ -95,7 +95,7 @@ proc menuConfigDialog {} {
 
   set w .menuOptions
 
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: [tr OptionsMenuColor]"
 
   ttk::label $w.status -text ""
@@ -135,13 +135,13 @@ proc menuConfigDialog {} {
   ttk::button $f.afg -text $::tr(MenuColorForeground) -command { chooseMenuColor afg }
   grid $f.afg -row $r -column 3 -padx 4
   ttk::button $f.abg -text $::tr(MenuColorBackground) -command { chooseMenuColor abg }
-  grid $f.abg -row $r -column 4 -padx 4
+  grid $f.abg -row $r -column 4 -padx 4 -pady 5
   incr r
   addHorizontalRule $w
   dialogbutton $w.b.ok -text OK -command setMenuColors
   dialogbutton $w.b.reset -text $::tr(Defaults) -command { resetMenuColors }
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command [list destroy $w]
-  packbuttons right $w.b.cancel $w.b.ok $w.b.reset
+  packdlgbuttons $w.b.cancel $w.b.ok $w.b.reset
   bind $w <Return> [list $w.b.ok invoke]
   bind $w <Escape> [list $w.b.cancel invoke]
   bind $w.f <Destroy>  { unset ::menuDialog_ }

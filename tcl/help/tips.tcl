@@ -6,7 +6,7 @@ proc ::tip::show {{n -1}} {
   set w .tipsWin
 
   if {! [winfo exists .tipsWin]} {
-    toplevel $w
+    win::createDialog $w
     wm title $w "Scid: [tr HelpTip]"
     pack [ttk::frame $w.b] -side bottom -fill x
     text $w.text -background gray95 -foreground black \
@@ -21,7 +21,7 @@ proc ::tip::show {{n -1}} {
     dialogbuttonsmall $w.b.next [list -text ">" ]
     dialogbuttonsmall $w.b.close [list -textvar ::tr(Close) -command "destroy $w" ]
     pack $w.b.start -side left -padx 2
-    packbuttons right $w.b.close $w.b.next $w.b.prev
+    packdlgbuttons $w.b.close $w.b.next $w.b.prev
 
     bind $w <Up> "$w.text yview scroll -1 units"
     bind $w <Down> "$w.text yview scroll 1 units"

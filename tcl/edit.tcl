@@ -42,17 +42,15 @@ proc setupBoard {} {
   set origFen [sc_pos fen]
 
   set w ".setup"
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(SetupBoard)"
   wm minsize $w 640 450
 
   #Frames
-  ttk::frame $w.spaceTop -height 10
   ttk::frame $w.l
   ttk::frame $w.r
   ttk::frame $w.statusbar
   ttk::frame $w.buttons
-  grid $w.spaceTop -row 0 -column 0 -columnspan 5 -sticky news
   grid $w.l -row 1 -column 0 -sticky news
   grid rowconfigure $w 1 -weight 1
   grid columnconfigure $w 0 -weight 1

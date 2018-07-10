@@ -401,7 +401,7 @@ namespace eval uci {
         
         set w .uciConfigWin
         if { [winfo exists $w]} { return }
-        toplevel $w
+        win::createDialog $w
         wm title $w $::tr(ConfigureUCIengine)
 
         autoscrollframe -bars both $w canvas $w.c -highlightthickness 0 -background [ttk::style lookup Button.label -background]
