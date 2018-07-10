@@ -29,7 +29,7 @@ public:
 	//-2 : the game cannot reach the searched position
 	//-1 : the game can reach the searched position
 	//>=0: the game reach the searched position at the returned ply
-	int match(uint code) {
+	int match(uint code) const {
 		if ((code > 0) && (code < STORED_LINES)) return matches_[code];
 		return -1;
 	}

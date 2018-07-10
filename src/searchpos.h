@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2013-2014  Fulvio Benini
+* Copyright (C) 2013-2018  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -16,137 +16,129 @@
 * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/** @file
+ * Defines the classes used to search for positions.
+ */
+
 #ifndef SEARCHPOS_H
 #define SEARCHPOS_H
 
 #include "common.h"
+#include "fastgame.h"
+#include "matsig.h"
 #include "position.h"
 #include "stored.h"
-#include "fastgame.h"
+#include <algorithm>
+#include <memory>
 
-
+/// Search for an exact position (same material in the same squares).
 class SearchPos {
+	uint8_t nPieces_[2][8];
+	pieceT board_[64];
+	std::unique_ptr<StoredLine> storedLine_;
+	std::pair<uint16_t, uint16_t> hpSig_;
+	matSigT matSig_;
+	colorT toMove_;
+	bool isStdStard_;
+
 public:
-	SearchPos(Position* pos) {
-		for (int i=0; i<8; ++i) {
-			nPieces_[WHITE][i] = 0;
-			nPieces_[BLACK][i] = 0;
-		}
-		const pieceT* board = pos->GetBoard();
-		squareT wkSq = 0;
-		squareT bkSq = 0;
-		for (squareT i = 0; i < 64; ++i) {
-			board_[i] = board[i];
-			if (board[i] != EMPTY) {
-				++nPieces_[piece_Color(board[i])][0];
-				++nPieces_[piece_Color(board[i])][piece_Type(board[i])];
-				if (board[i] == WK) wkSq = i;
-				else if (board[i] == BK) bkSq = i;
+	SearchPos(const Position* pos) {
+		std::copy_n(pos->GetBoard(), 64, board_);
+
+		std::fill_n(nPieces_[WHITE], 8, 0);
+		std::fill_n(nPieces_[BLACK], 8, 0);
+		for (auto piece : board_) {
+			if (piece != EMPTY) {
+				++nPieces_[piece_Color(piece)][0];
+				++nPieces_[piece_Color(piece)][piece_Type(piece)];
 			}
 		}
+
+		hpSig_ = hpSig_make(board_);
+		matSig_ = matsig_Make(pos->GetMaterial());
 		toMove_ = pos->GetToMove();
 		isStdStard_ = pos->IsStdStart();
 
-		if (wkSq != E1 && wkSq != G1 && bkSq != E8 && bkSq != G8) {
-			unusualKingPos_ = true;
-			storedLine_ = 0;
-		} else {
-			unusualKingPos_ = false;
-			storedLine_ = new StoredLine(board, toMove_);
+		if ((board_[E1] == WK || board_[G1] == WK) &&
+		    (board_[E8] == BK || board_[G8] == BK)) {
+			storedLine_ = std::make_unique<StoredLine>(board_, toMove_);
 		}
-
-		//Home Pawn Signature
-		uint16_t hps = ~static_cast<uint16_t>(pos->GetHPSig());
-		hpSig_ = hps;
-		for (ply_count_ = 0; hps != 0; ply_count_++) hps &= hps -1; //popcnt
-
-		//MatSig
-		msig_ = matsig_Make (pos->GetMaterial());
 	}
 
-	~SearchPos() {
-		if (storedLine_) delete storedLine_;
+	/// Disable the stored lines optimization
+	void disableOptStoredLine() { storedLine_ = nullptr; }
+
+	/// Disable the home pawn optimization
+	void disableOptHpSig() { hpSig_ = {0, 0}; }
+
+	/// Search for the position using the optimizations in a game's index.
+	/// @returns
+	/// -2 : the game cannot reach the searched position
+	/// -1 : the game can reach the searched position
+	/// >=0: the game reach the searched position at the returned ply
+	int index_match(const IndexEntry& ie) const {
+		if (!ie.GetStartFlag()) {
+			if (storedLine_) {
+				int ply = storedLine_->match(ie.GetStoredLineCode());
+				if (ply != -1)
+					return ply;
+			}
+			if (!hpSig_match(hpSig_.first, hpSig_.second, ie.GetHomePawnData()))
+				return -2;
+		}
+		if (!matsig_isReachable(matSig_, ie.GetFinalMatSig(),
+		                        ie.GetPromotionsFlag(),
+		                        ie.GetUnderPromoFlag())) {
+			return -2;
+		}
+		return -1;
 	}
 
+	/// Reset @e filter to include only the games that reached the searched
+	/// position in their main line.
 	bool setFilter(scidBaseT* base, HFilter& filter, const Progress& progress) {
-		if (! isStdStard_) {
-			int i=0;
-			if (unusualKingPos_) i += 1;
-			if (toMove_ == BLACK) i += 2;
-			switch (i) {
-				case 0: return SetFilter<WHITE, true> (base, filter, progress);
-				case 1: return SetFilter<WHITE, false>(base, filter, progress);
-				case 2: return SetFilter<BLACK, true> (base, filter, progress);
-				case 3: return SetFilter<BLACK, false>(base, filter, progress);
-			}
-		}
-		for (uint i = 0, n = base->numGames(); i < n; i++) {
-			const IndexEntry* ie = base->getIndexEntry (i);
-			if (! ie->GetStartFlag()) filter.set (i, 1);
-			else {
-				FastGame game = base->getGame(ie);
-				int ply = game.search<WHITE>(board_, nPieces_);
-				filter.set (i, (ply > 255) ? 255 : ply);
-			}
-		}
-		return true;
+		if (toMove_ == BLACK)
+			return SetFilter<BLACK>(base, filter, progress);
+
+		if (!isStdStard_)
+			return SetFilter<WHITE>(base, filter, progress);
+
+		return setFilterStdStart(base, filter);
 	}
 
 private:
-	uint8_t nPieces_[2][8];
-	byte board_[64];
-	StoredLine* storedLine_;
-	uint hpSig_;
-	uint ply_count_;
-	bool isStdStard_;
-	bool unusualKingPos_;
-	matSigT msig_;
-	colorT toMove_;
-
-	SearchPos(const SearchPos&);
-	SearchPos& operator=(const SearchPos&);
-	template <colorT TOMOVE, bool STOREDLINE>
-	bool SetFilter (scidBaseT* base, HFilter& filter, const Progress& prg) {
-		filter->clear();
-		long progress = 0;
-		for (uint i = 0, n = base->numGames(); i < n; i++) {
+	bool setFilterStdStart(scidBaseT* base, HFilter& filter) {
+		filter->includeAll();
+		for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);
-			if (! ie->GetStartFlag()) {
-				if (STOREDLINE) {
-					int ply = storedLine_->match(ie->GetStoredLineCode());
-					if (ply >= 0) {
-						filter.set (i, static_cast<byte> (ply +1));
-						continue;
-					}
-					if (ply < -1) continue;
-				}
-				if (! HPSigCanMatch(ie->GetHomePawnData())) continue;
-			}
-			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
-
-			int ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
-			if (ply != 0) filter.set(i, (ply > 255) ? 255 : ply);
-
-			if ((progress++ % 200) == 0) {
-				if (!prg.report(i, n)) return false;
+			if (ie->GetStartFlag()) {
+				int ply = base->getGame(ie).search<WHITE>(board_, nPieces_);
+				filter.set(i, (ply > 255) ? 255 : ply);
 			}
 		}
 		return true;
 	}
 
-	bool HPSigCanMatch(const byte* v) {
-		if (ply_count_ == 16) return *v == ply_count_;
-//		if (ply_count_ == 0 || *v == 0) return true; //*v == 0 if !ie->GetStartFlag()
-		if (*v++ < ply_count_) return false;
-		uint res = 0;
-		for (uint i = 0; i < ply_count_/2; ++i) {
-			res |= 1 << (*v >> 4);
-			res |= 1 << (*v++ & 0x0F);
+	template <colorT TOMOVE>
+	bool SetFilter(scidBaseT* base, HFilter& filter, const Progress& prg) {
+		filter->clear();
+		long long progress = 0;
+		for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
+			const IndexEntry* ie = base->getIndexEntry(i);
+			int ply = index_match(*ie);
+			if (ply >= 0) {
+				filter.set(i, static_cast<byte>(ply + 1));
+			} else if (ply == -1) {
+				ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
+				if (ply != 0)
+					filter.set(i, (ply > 255) ? 255 : ply);
+
+				if ((progress++ % 256) == 0 && !prg.report(i, n))
+					return false;
+			}
 		}
-		if (ply_count_ & 1) res |= 1 << (*v >> 4);
-		return res == hpSig_;
+		return true;
 	}
 };
-
 
 #endif
