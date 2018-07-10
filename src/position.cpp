@@ -617,9 +617,7 @@ const Position& Position::getStdStart()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsStdStart
 //   Returns true if the position is the standard starting position.
-bool
-Position::IsStdStart ()
-{
+bool Position::IsStdStart() const {
     if (ToMove != WHITE
           ||  Hash != stdStartHash  ||  PawnHash != stdStartPawnHash
           ||  GetCount(WHITE) != 16  ||  GetCount(BLACK) != 16

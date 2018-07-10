@@ -294,7 +294,7 @@ static uint nScoreFull  = 0;
 inline int
 Engine::ScoreWhiteMaterial (void)
 {
-    byte * pieceCount = Pos.GetMaterial();
+    const byte* pieceCount = Pos.GetMaterial();
     return  pieceCount[WQ] * QueenValue   +  pieceCount[WR] * RookValue
          +  pieceCount[WB] * BishopValue  +  pieceCount[WN] * KnightValue
          +  pieceCount[WP] * PawnValue;
@@ -303,7 +303,7 @@ Engine::ScoreWhiteMaterial (void)
 inline int
 Engine::ScoreBlackMaterial (void)
 {
-    byte * pieceCount = Pos.GetMaterial();
+    const byte* pieceCount = Pos.GetMaterial();
     return  pieceCount[BQ] * QueenValue   +  pieceCount[BR] * RookValue
          +  pieceCount[BB] * BishopValue  +  pieceCount[BN] * KnightValue
          +  pieceCount[BP] * PawnValue;
@@ -1015,7 +1015,7 @@ Engine::NoMatingMaterial (void)
     // Check for K vs K, K+N vs K, and K+B vs K:
     if (npieces <= 2) { return true; }
     if (npieces == 3) {
-        byte * material = Pos.GetMaterial();
+        const byte* material = Pos.GetMaterial();
         if (material[WB] == 1  ||  material[WN] == 1) { return true; }
         if (material[BB] == 1  ||  material[BN] == 1) { return true; }
     }

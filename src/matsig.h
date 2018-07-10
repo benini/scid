@@ -222,9 +222,7 @@ matsig_isReachablePawns (matSigT mStart, matSigT mTarget)
 //      Make a material sig, given an array of material counts as
 //      stored in a Position.
 //
-inline matSigT
-matsig_Make (byte * materialCounts)
-{
+inline matSigT matsig_Make(const byte* materialCounts) {
     matSigT m = 0;
     m |= std::min<matSigT>(3, materialCounts[WQ]) << SHIFT_WQ;
     m |= std::min<matSigT>(3, materialCounts[WR]) << SHIFT_WR;

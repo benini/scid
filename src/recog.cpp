@@ -34,7 +34,7 @@ int
 Recognizer::Recognize (Position * pos)
 {
     uint npieces = pos->TotalMaterial();
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
 
     if (npieces > 6) { return UNKNOWN; }
 
@@ -121,7 +121,7 @@ Recognizer::Recognize (Position * pos)
 int
 Recognizer::KPK (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wp;
     colorT stm = pos->GetToMove();
 
@@ -210,7 +210,7 @@ Recognizer::KPK (Position * pos)
 int
 Recognizer::KBBK (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wb1, wb2;
     colorT stm = pos->GetToMove();
 
@@ -262,7 +262,7 @@ Recognizer::KBBK (Position * pos)
 int
 Recognizer::KBNK (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     const pieceT* board = pos->GetBoard();
     squareT wk, bk, wb, wn;
     colorT stm = pos->GetToMove();
@@ -334,7 +334,7 @@ Recognizer::KBNK (Position * pos)
 int
 Recognizer::KBPK (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT /* wk, */ bk;
     fyleT wrongFile = A_FYLE;  // Wrong-color bishop rook-pawn file.
     // Set up piece squares so that White has the bishop and pawn(s),
@@ -368,7 +368,7 @@ Recognizer::KBPK (Position * pos)
 int
 Recognizer::KRKB (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wr, bb;
     colorT stm = pos->GetToMove();
 
@@ -434,7 +434,7 @@ Recognizer::KRKB (Position * pos)
 int
 Recognizer::KRKN (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wr, bn;
     colorT stm = pos->GetToMove();
 
@@ -511,7 +511,7 @@ Recognizer::KRKN (Position * pos)
 int
 Recognizer::KMKP (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wm, bp;
     colorT stm = pos->GetToMove();
 
@@ -547,7 +547,7 @@ Recognizer::KMKP (Position * pos)
 int
 Recognizer::KQKP (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wq, bp;
     colorT stm = pos->GetToMove();
 
@@ -630,7 +630,7 @@ Recognizer::KQKP (Position * pos)
 int
 Recognizer::KRKP (Position * pos)
 {
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     squareT wk, bk, wr, bp;
     colorT stm = pos->GetToMove();
 
@@ -1049,7 +1049,7 @@ Recognizer::KRPKR (Position * pos)
 
     // Incomplete but correct
 
-    byte * material = pos->GetMaterial();
+    const byte* material = pos->GetMaterial();
     const pieceT* board = pos->GetBoard();
     squareT wk, bk, wr, wp, br;
     colorT stm = pos->GetToMove();

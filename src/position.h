@@ -150,12 +150,12 @@ public:
 
     void        Clear();        // No pieces on board
     void        StdStart() { *this = getStdStart(); }
-    bool        IsStdStart();
+    bool        IsStdStart() const;
     errorT      AddPiece (pieceT p, squareT sq);
 
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }
-    byte *      GetMaterial ()           { return Material; }
+    const byte* GetMaterial() const      { return Material; }
     void        SetEPTarget (squareT s)  { EPTarget = s; }
     squareT     GetEPTarget () const     { return EPTarget; }
     void        SetToMove (colorT c)     { ToMove = c; }
@@ -168,7 +168,7 @@ public:
     // decode moves:
     const squareT* GetList(colorT c) const { return List[c]; }
     squareT *   GetList (colorT c)    { return List[c]; }
-    uint        GetCount (colorT c)   { return Count[c]; }
+    uint        GetCount (colorT c) const { return Count[c]; }
     uint        TotalMaterial ()      { return Count[WHITE] + Count[BLACK]; }
     uint        NumNonPawns (colorT c) { 
         return Count[c] - Material[piece_Make(c,PAWN)];
@@ -177,10 +177,10 @@ public:
         return (NumNonPawns(WHITE) == 1  &&  NumNonPawns(BLACK) == 1);
     }
     uint        MaterialValue (colorT c);
-    inline uint FyleCount (pieceT p, fyleT f) {
+    inline uint FyleCount (pieceT p, fyleT f) const {
         return NumOnFyle[p][f];
     }
-    inline uint RankCount (pieceT p, rankT r) {
+    inline uint RankCount (pieceT p, rankT r) const {
         return NumOnRank[p][r];
     }
     inline uint LeftDiagCount (pieceT p, leftDiagT diag) {
