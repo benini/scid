@@ -1596,7 +1596,7 @@ translate D FICSIssueSeek {Partie anbieten}
 translate D FICSChallenge {Herausfordern}
 translate D FICSAccept {Annehmen}
 translate D FICSDecline {Ablehnen}
-translate D FICSColour {Seite wählen:}
+translate D FICSColour {Farbe auswählen}
 translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}

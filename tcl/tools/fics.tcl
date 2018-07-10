@@ -467,44 +467,43 @@ namespace eval fics {
       focus $w
       return
     }
-    toplevel $w
+    win::createDialog $w
     wm title $w [::tr "FICSFindOpponent"]
-    grid [ttk::frame $w.f]
 
+    ttk::frame $w.f
+    pack $w.f -side top -anchor w -fill x
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
     ttk::spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $w.f.linc -text [::tr "FICSIncrement"]
     ttk::spinbox $w.f.sbTime2 -background white -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    grid $w.f.linit -column 0 -row 0 -sticky ew
-    grid $w.f.sbTime1 -column 1 -row 0 -sticky ew
-    grid $w.f.linc -column 0 -row 1 -sticky ew
-    grid $w.f.sbTime2 -column 1 -row 1 -sticky ew
+    grid $w.f.linit -column 0 -row 0 -sticky w
+    grid $w.f.sbTime1 -column 1 -row 0 -sticky w -pady "0 2"
+    grid $w.f.linc -column 0 -row 1 -sticky w
+    grid $w.f.sbTime2 -column 1 -row 1 -sticky w
 
     ttk::checkbutton $w.f.cbrated -text [::tr "FICSRatedGame"] -onvalue "rated" -offvalue "unrated" -variable ::fics::findopponent(rated)
     grid $w.f.cbrated -column 0 -row 2 -columnspan 2 -sticky ew
 
-    ttk::label $w.f.color -text [::tr "FICSColour"]
-    grid $w.f.color -column 0 -row 3 -columnspan 3 -sticky ew
+    ttk::labelframe $w.f.color -text [::tr "FICSColour"]
+    grid $w.f.color -column 0 -row 3 -columnspan 2 -sticky ew
     ttk::radiobutton $w.f.rb1 -text [::tr "FICSAutoColour"] -value "" -variable ::fics::findopponent(color)
     ttk::radiobutton $w.f.rb2 -text [::tr "White"] -value "white" -variable ::fics::findopponent(color)
     ttk::radiobutton $w.f.rb3 -text [::tr "Black"] -value "black" -variable ::fics::findopponent(color)
-    grid $w.f.rb1 -column 0 -row 4 -sticky ew
-    grid $w.f.rb2 -column 1 -row 4 -sticky ew
-    grid $w.f.rb3 -column 2 -row 4 -sticky ew
+    pack $w.f.rb1 $w.f.rb2 $w.f.rb3 -side top -anchor w -in $w.f.color
 
     ttk::checkbutton $w.f.cblimitrating -text [::tr "RatingRange"] -variable ::fics::findopponent(limitrating)
     ttk::spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.f.cblimitrating -column 0 -row 5 -columnspan 2 -sticky ew
-    grid $w.f.sbrating1 -column 0 -row 6 -sticky ew
-    grid $w.f.sbrating2 -column 1 -row 6 -sticky ew
+    grid $w.f.sbrating1 -column 0 -row 6 -sticky w
+    grid $w.f.sbrating2 -column 1 -row 6 -sticky w
 
     ttk::checkbutton $w.f.cbmanual -text [::tr "FICSManualConfirm"] -onvalue "manual" -offvalue "auto" -variable ::fics::findopponent(manual)
     grid $w.f.cbmanual -column 0 -row 7 -columnspan 2 -sticky ew
     ttk::checkbutton $w.f.cbformula -text [::tr "FICSFilterFormula"] -onvalue "formula" -offvalue "" -variable ::fics::findopponent(formula)
     grid $w.f.cbformula -column 0 -row 8 -columnspan 2 -sticky ew
 
-    ttk::button $w.f.seek -text [::tr "FICSIssueSeek"] -command {
+    ttk::button $w.seek -text [::tr "FICSIssueSeek"] -command {
       ::fics::syncProfileVars $::fics::login
 
       set range ""
@@ -516,11 +515,10 @@ namespace eval fics {
       ::fics::writechan $cmd
       destroy .ficsfindopp
     }
-    ttk::button $w.f.cancel -text [::tr "Cancel"] -command "destroy $w"
+    ttk::button $w.cancel -text [::tr "Cancel"] -command "destroy $w"
     bind $w <F1> { helpWindow FICSfindOpp}
 
-    grid $w.f.seek -column 0 -row 9 -sticky ew
-    grid $w.f.cancel -column 1 -row 9 -sticky ew
+    packdlgbuttons $w.cancel $w.seek
   }
   ################################################################################
   #
