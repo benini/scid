@@ -20,7 +20,7 @@ proc ::tools::email {} {
     return
   }
   set emailWin 1
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: Email Manager"
   wm minsize $w 25 10
 
@@ -30,7 +30,6 @@ proc ::tools::email {} {
   ttk::frame $w.f
   ttk::frame $w.b
   pack $w.f -side left -fill y
-  addVerticalRule $w
   pack $w.b -side right -fill y
 
   set f $w.f
@@ -65,11 +64,11 @@ proc ::tools::email {} {
     ::tools::email::refresh
   }
 
-    ttk::button $b.edit -text [tr Edit] -underline 0 -command ::tools::email::EditButton
-  ttk::button $b.delete -text "Delete..." -underline 0 -command ::tools::email::DeleteButton
+  ttk::button $b.edit -text [tr Edit] -underline 0 -command ::tools::email::EditButton
+  ttk::button $b.delete -text "$::tr(Delete)..." -underline 0 -command ::tools::email::DeleteButton
   ttk::button $b.load -text $::tr(LoadGame) -underline 0 -command ::tools::email::LoadButton
   ttk::button $b.send -text "Send email..." -underline 0 -command ::tools::email::SendButton
-  ttk::menubutton $b.time -text "Time" -menu $b.time.m
+  ttk::menubutton $b.time -text $::tr(Time) -menu $b.time.m
   menu $b.time.m
   $b.time.m add command -label "Received today" -underline 0 \
     -command {::tools::email::TimesButton r}
@@ -78,12 +77,12 @@ proc ::tools::email {} {
   $b.time.m add command -label [tr Edit] -underline 0 \
     -command {::tools::email::TimesButton e}
 
-  ttk::button $b.config -text "Settings..." -command ::tools::email::config
+  ttk::button $b.config -text "$::tr(GlistEditField)..." -command ::tools::email::config
   ttk::button $b.help -text $::tr(Help) -command { helpWindow Email }
   ttk::button $b.close -text $::tr(Close) -command { destroy .emailWin }
   pack $b.add $b.edit $b.delete $b.load $b.send $b.time \
-    -side top -pady 1 -padx 5 -fill x
-  pack $b.close $b.help $b.config -side bottom -pady 1 -padx 5  -fill x
+    -side top -pady 2 -padx "10 0" -fill x
+  pack $b.close $b.help $b.config -side bottom -pady 2 -padx "10 0"  -fill x
 
   bind $w <Destroy> { set emailWin 0 }
   set emailData [::tools::email::readOpponentFile]
@@ -94,9 +93,9 @@ proc ::tools::email {} {
 proc ::tools::email::config {} {
   global email
   set w .emailConfig
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid"
-  ttk::label $w.use -text "Send email using:" -font font_Bold -anchor c
+  ttk::labelframe $w.use -text "Send email using"
   ttk::frame $w.smtp
   ttk::radiobutton $w.smtp.b -text "SMTP server:" -variable email(smtp) -value 1
   ttk::entry $w.smtp.s -width 30 -textvar email(server)
@@ -104,21 +103,22 @@ proc ::tools::email::config {} {
   ttk::radiobutton $w.sm.b -text "sendmail process:" -variable email(smtp) -value 0
   ttk::entry $w.sm.s -width 30 -textvar email(smproc)
   pack $w.use -side top -fill x
-  pack $w.smtp $w.sm -side top -fill x
+  pack $w.smtp $w.sm -side top -anchor e -in $w.use
   pack $w.smtp.s $w.smtp.b -side right
   pack $w.sm.s $w.sm.b -side right
-  addHorizontalRule $w
-  ttk::label $w.addr -text "Email address fields:" -font font_Bold
+
+  ttk::labelframe $w.addr -text "Email address fields"
   ttk::frame $w.from
   ttk::label $w.from.lab -text "From:"
   ttk::entry $w.from.e -textvar email(from) -width 30
   ttk::frame $w.bcc
   ttk::label $w.bcc.lab -text "Bcc:"
   ttk::entry $w.bcc.e -textvar email(bcc) -width 30
-  pack $w.addr $w.from $w.bcc -side top -fill x
+  pack $w.addr -side top -fill x -pady "10 0"
+  pack $w.from $w.bcc -side top -fill x -in $w.addr
   pack $w.from.e $w.from.lab -side right
   pack $w.bcc.e $w.bcc.lab -side right
-  addHorizontalRule $w
+
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text [tr OptionsSave] -command {
     options.write
@@ -127,7 +127,7 @@ proc ::tools::email::config {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
     -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   wm resizable $w 1 0
   catch {grab $w}
 }
@@ -208,7 +208,7 @@ proc ::tools::email::TimesButton {type} {
   set emailTimesIdx $idx
   set w .emailTimesWin
   if {[winfo exists $w]} { return }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: Email Times"
   ttk::label $w.title -text "Email Times for [lindex $details 0]"
   ttk::frame $w.t
@@ -234,7 +234,7 @@ proc ::tools::email::TimesButton {type} {
   pack $w.t.ybar -side right -fill y
   pack $w.t.text -side left -fill both -expand yes
   pack $w.b -side bottom -fill x
-  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  packdlgbuttons $w.b.cancel $w.b.ok
   foreach i $timeList {
     $w.t.text insert end "$i\n"
   }
@@ -347,7 +347,7 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   if {$emailCount >= 10000} { set emailCount 1 }
 
   set w ".emailMessageWin$emailCount"
-  toplevel $w
+  win::createDialog $w
   wm title $w "Send email to $name"
   set f [ttk::frame $w.fields]
 
@@ -367,11 +367,6 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   ttk::entry $f.bcc
   $f.bcc insert end $email(bcc)
 
-  ttk::button $f.send -text "Send" -command "::tools::email::processMessage $w $idx"
-  ttk::button $f.cancel -text "Cancel" -command "destroy $w"
-
-  grid $f.send -row 0 -column 3 -rowspan 2 -sticky nesw
-  grid $f.cancel -row 2 -column 3 -rowspan 2 -sticky nesw
   grid $f.fromlab -row 0 -column 0 -sticky e
   grid $f.from -row 0 -column 1 -sticky ew
   grid $f.tolab -row 1 -column 0 -sticky e
@@ -392,8 +387,13 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
     -setgrid 1 -width 72 -height 20 -background white -wrap none
 
   grid $f.text -row 0 -column 0 -sticky news
-  grid $f.ybar -row 0 -column 1 -sticky news
+  grid $f.ybar -row 0 -column 1 -sticky nse
   grid $f.xbar -row 1 -column 0 -sticky news
+  ttk::frame $f.buttons
+  ttk::button $f.send -text " Send " -command "::tools::email::processMessage $w $idx"
+  ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w"
+  grid $f.buttons -row 2 -column 0 -columnspan 2 -sticky e
+  packdlgbuttons $f.cancel $f.send -side right -in $f.buttons
 
   grid rowconfig $w.message 0 -weight 1 -minsize 0
   grid columnconfig $w.message 0 -weight 1 -minsize 0
@@ -497,7 +497,7 @@ proc modifyEmailDetails {i} {
   global emailData emailData_name emailData_addr emailData_glist emailData_subj
   global emailData_sig emailData_index emailData_helpBar ::tools::email::helpBar
 
-  toplevel .emailEditor
+  win::createDialog .emailEditor
   set w .emailEditor
   bind $w <F1> { helpWindow Email }
   set emailData_index $i
@@ -545,7 +545,7 @@ proc modifyEmailDetails {i} {
     set emailData_helpBar {Enter the closing text for each message}"
   bind $f.entry <FocusOut> "$f.entry configure -background white"
 
-  pack $f -side top -fill x
+  pack $f -side top -fill x -pady 5
   pack $f.entry $f.label -side right -anchor n
 
   addHorizontalRule $w
@@ -573,12 +573,12 @@ proc modifyEmailDetails {i} {
     destroy .emailEditor
     ::tools::email::refresh
   }
-  pack $f -side top
-  pack $f.save $f.cancel -side left
 
   ttk::label $w.helpBar -width 1 -textvariable emailData_helpBar \
     -font font_Small -anchor w
-  pack $w.helpBar -side bottom -fill x
+  pack $w.helpBar -side top -fill x
+  pack $f -side top -anchor e
+  packdlgbuttons $f.cancel $f.save
 
   # Set up the initial values in the entry boxes:
   set details [lindex $emailData $emailData_index]
