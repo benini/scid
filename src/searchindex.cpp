@@ -458,12 +458,12 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 
 /**
  * search_index() - search for games using game's IndexEntry info
- * @base:     the scidBaseT to search
- * @filter:   the filter to be modified with the result of the search
- *            (RESET, AND, OR operations can be applied to the filter)
- * @argc:     number of argv elements
- * @argv:     an array of string pairs <criteria,value>
- * @progress: report search progress to UI
+ * @param base:     the scidBaseT to search
+ * @param filter:   the filter to be modified with the result of the search
+ *                  (RESET, AND, OR operations can be applied to the filter)
+ * @param argc:     number of argv elements
+ * @param argv:     an array of string pairs <criteria,value>
+ * @param progress: report search progress to UI
  *
  * This function perform a fast games search using the IndexEntry info.
  * Criteria should start with the char '-' and can include the optional trailing chars

@@ -151,7 +151,7 @@ eco_BasicCode (ecoT eco)
 
 /**
  * ecoReduce() - maps eco to a smaller set
- * @eco: the eco value to convert (must be != 0)
+ * @param eco: the eco value to convert (must be != 0)
  *
  * Scid ECO subcodes use 131 values for each canonical ECO.
  * For example A00 is divided in A00,A00a,A00a1,A00a2,A00a3,A00a4,A00b...A00z4

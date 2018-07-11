@@ -544,7 +544,7 @@ struct GamePos {
  * - the variation ends with:
  *   - a lower RAVdepth or
  *   - an equal RAVdepth but different RAVnum or
- *   - the end of @dest
+ *   - the end of @e dest
  * @param game: reference to the Game object where the positions are read.
  * @param dest: the container where the GamePos objects are appended.
  */

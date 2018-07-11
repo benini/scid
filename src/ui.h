@@ -147,12 +147,11 @@ inline UI_res_t UI_Result(UI_handle_t ti, errorT res, const T& value) {
 
 
 /**
- * class UI_List - create a list of values to be sent to UI
- * @max_size:   currently there is no automatic reallocation in push_back()
- *              so the constructor must know the max number of values that
- *              will be stored in the list
+ * An heterogeneous container used to pass a list of values from c++ to UI.
+ * @param max_size: currently there is no automatic reallocation in push_back()
+ *                  so the constructor must know the max number of values that
+ *                  will be stored in the list.
  *
- * An heterogeneous container used to pass values from c++ to UI
  *
  * Typical usage:
  * UI_List uiList(2);

@@ -60,8 +60,8 @@ public:
 	 * After successfully opening/creating the file, the object is ready for
 	 * parseNext() calls.
 	 * @param filename: full path of the pgn file to be opened.
-	 * @param fMode:    valid file access mode.
-	 * @returns OK in case of success, an @p errorT code otherwise.
+	 * @param fmode:    valid file access mode.
+	 * @returns OK in case of success, an @e errorT code otherwise.
 	 */
 	errorT open(const char* filename, fileModeT fmode) {
 		ASSERT(filename && !file_.is_open());

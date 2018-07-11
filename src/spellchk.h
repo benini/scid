@@ -287,7 +287,7 @@ public:
 	/**
 	 * Create() - Create a new SpellChecker object
 	 *
-	 * Create a new SpellChecker reading from @filename.
+	 * Create a new SpellChecker reading from @e filename.
 	 * It's the caller's responsibility to free the object with "delete".
 	 * Return:
 	 * - OK and a pointer to the new object

@@ -32,8 +32,6 @@
  *                  separated by whitespace.
  * The integers represent the min and max value of a range.
  * If only one integer is provided it will represent both the min and max value.
- *
- * inRange()  :  Return true if @val is >= min and <= max
  */
 class StrRange {
 protected:
@@ -54,6 +52,7 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 	}
 
+	/// @returns true if @e val is >= min_ and <= max_
 	bool inRange(long val) const {
 		if (val < min_ || val > max_) return false;
 		return true;

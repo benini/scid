@@ -72,8 +72,8 @@ public:
 	 * If the name already exists the corresponding ID is returned.
 	 * @param nt:      @e nameT type of the name to add.
 	 * @param name:    the name to add.
-	 * @param MAX_LEN: the max length for names of type @nt
-	 * @param MAX_ID:  the max ID allowed for names of type @nt
+	 * @param MAX_LEN: the max length for names of type @e nt
+	 * @param MAX_ID:  the max ID allowed for names of type @e nt
 	 * @returns
 	 * - on success, a @e std::pair containing OK and the ID.
 	 * - on failure, a @e std::pair containing an error code and 0.
@@ -184,7 +184,7 @@ public:
 	 * Finds an exact full, case-sensitive name.
 	 * @param nt:         @e nameT type of the name to be searched.
 	 * @param str:        name to be be searched.
-	 * @param idPtr[out]: pointer which will receive the ID of the name.
+	 * @param[out] idPtr: pointer which will receive the ID of the name.
 	 * @returns OK or ERROR_NameNotFound if the name does not exists.
 	 */
 	errorT FindExactName(nameT nt, const char* str, idNumberT* idPtr) const {

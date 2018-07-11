@@ -46,12 +46,12 @@ void closeAll();
 
 /**
  * find() - search for a database.
- * @filename: the filename of the wanted database.
- *            Database in native Scid format do not use extension ("example").
- *            Other databases require file extension ("example.pgn").
+ * @param filename: the filename of the wanted database.
+ *                  Database in native Scid format do not use extension ("example").
+ *                  Other databases require file extension ("example.pgn").
  *
- * Return:
- * - the handle of the database corresponding to @filename.
+ * @returns
+ * - the handle of the database corresponding to @e filename.
  * - 0 if not found.
  */
 int find(const char* filename);
@@ -59,11 +59,12 @@ int find(const char* filename);
 
 /**
  * getBase() - get a database from the pool.
- * @baseHandle: the handle of the wanted database.
+ * @param baseHandle: the handle of the wanted database.
  *
- * Return:
- * - a pointer to the scidBaseT object corresponding to @baseHandle.
- * - 0 (nullptr) if @baseHandle is invalid.
+ * @returns
+ * - the handle of the database corresponding to @e filename.
+ * - a pointer to the scidBaseT object corresponding to @e baseHandle.
+ * - 0 (nullptr) if @e baseHandle is invalid.
  */
 scidBaseT* getBase(int baseHandle);
 
@@ -72,7 +73,8 @@ scidBaseT* getBase(int baseHandle);
  * getClipBase() - return the handle of the clipbase
  *
  * The clipbase is a special memory database that is always open and valid.
- * Return:
+ * @returns
+ * - the handle of the database corresponding to @e filename.
  * - the handle of the clipbase.
  */
 int getClipBase();
@@ -81,7 +83,8 @@ int getClipBase();
 /**
  * getFreeSlot() - search for a free database slot.
  *
- * Return:
+ * @returns
+ * - the handle of the database corresponding to @e filename.
  * - a pointer to an available scidBaseT object.
  * - 0 (nullptr) if there are no free slots.
  */
@@ -91,7 +94,8 @@ scidBaseT* getFreeSlot();
 /**
  * getHandles() - get the handles of opened databases.
  *
- * Return:
+ * @returns
+ * - the handle of the database corresponding to @e filename.
  * - a std::vector containing the handles of opened databases.
  */
 std::vector<int> getHandles();
@@ -99,12 +103,13 @@ std::vector<int> getHandles();
 
 /**
  * switchCurrent() - DEPRECATED.
- * @dbase: a pointer to the new "current" database.
- *         If 0 the function just return the "current" database handle.
+ * @param dbase: a pointer to the new "current" database.
+ *               If 0 the function just return the "current" database handle.
  *
  * Some legacy code assume that exist only one database.
  * The hack to use that code is to make a database the "current" one.
- * Return:
+ * @returns
+ * - the handle of the database corresponding to @e filename.
  * - the handle of the new "current" database.
  */
 int switchCurrent(scidBaseT* dbase = 0);

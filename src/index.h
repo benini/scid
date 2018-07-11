@@ -112,11 +112,11 @@ public:
 
     /**
      * calcNameFreq() - calculate the usage of NameBase's names
-     * @nb: the NameBase linked to this Index
-     * @resVec: an array of std::vectors where the stats will be stored.
+     * @param nb: the NameBase linked to this Index
+     * @param resVec: an array of std::vectors where the stats will be stored.
      *
-     * This functions counts how many times every names contained in @nb
-     * is used and store the result into a corresponding record in @resVec
+     * This functions counts how many times every names contained in @e nb
+     * is used and store the result into a corresponding record in @e resVec
      */
     std::array<std::vector<int>, NUM_NAME_TYPES>
     calcNameFreq(const NameBase& nb) const {
