@@ -585,8 +585,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	gamenumT autoloadNew = 1;
 
 	//3) Create the list of games to be copied
-	typedef std::vector< std::pair<byte, uint> > sort_t;
-	sort_t sort;
+	std::vector< std::pair<uint64_t, gamenumT> > sort;
 	uint n_deleted = 0;
 	for (gamenumT i = 0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry(i);
@@ -594,8 +593,14 @@ errorT scidBaseT::compact(const Progress& progress) {
 			n_deleted++;
 			continue;
 		}
-		byte stLine = ie->GetStoredLineCode();
-		sort.push_back(std::make_pair(stLine, i));
+		uint64_t order = static_cast<uint64_t>(ie->GetStoredLineCode()) << 56;
+		const byte* hp = ie->GetHomePawnData();
+		order |= static_cast<uint64_t>(hp[0]) << 48;
+		order |= static_cast<uint64_t>(hp[1]) << 40;
+		order |= static_cast<uint64_t>(hp[2]) << 32;
+		order |= static_cast<uint64_t>(hp[3]) << 24;
+		order |= ie->GetFinalMatSig() & 0xFFFFFF;
+		sort.emplace_back(order, i);
 	}
 	std::stable_sort(sort.begin(), sort.end());
 
@@ -603,8 +608,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 	uint iProgress = 0;
 	bool err_UserCancel = false;
 	errorT err_AddGame = OK;
-	for (sort_t::iterator it = sort.begin(); it != sort.end(); it++) {
-		err_AddGame = tmp.importGameHelper(this, (*it).second);
+	for (auto it = sort.cbegin(); it != sort.cend(); ++it) {
+		err_AddGame = tmp.importGameHelper(this, it->second);
 		if (err_AddGame != OK) break;
 
 		gamenumT oldGnum = it->second + 1;
