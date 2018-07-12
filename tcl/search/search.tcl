@@ -16,16 +16,6 @@ proc ::search::filter::reset {} {
   ::windows::gamelist::FilterReset "" [sc_base current]
 }
 
-# ::search::filter::negate
-#
-#   Negates the filter, to include only excluded games.
-#
-proc ::search::filter::negate {} {
-  ::windows::gamelist::FilterNegate "" [sc_base current]
-}
-
-
-
 # ::search::addFilterOpFrame
 #
 #   Adds a search filter operation selection frame to the window.
@@ -89,11 +79,4 @@ proc ::search::usefile {} {
       default    { return }
     }
   }
-}
-
-# will go to the first game found, except if the Tree of current base is opened (of there will be filter collision)
-proc ::search::loadFirstGame {} {
-  set w ".treeWin[sc_base current]"
-  if {[winfo exists $w]} { return }
-  ::game::Load [sc_filter first]
 }
