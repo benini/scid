@@ -113,8 +113,7 @@ namespace eval book {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
       set ::book::currentBook ""
-      destroy $w
-      ::docking::cleanup $w
+      ::win::closeWindow $w
       return
     }
     
@@ -150,14 +149,13 @@ namespace eval book {
     pack $w.f -expand 1 -fill both
     
     bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
-    bind $w <Destroy> "::book::closeMainBook ; ::docking::cleanup $w"
-    bind $w <Escape> { destroy  .bookWin }
+    bind $w <Destroy> "::book::closeMainBook"
     # we make a redundant check here, another one is done a few line above
     if { [catch {bookSelect} ] } {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
       set ::book::currentBook ""
-      destroy  .bookWin
+      ::win::closeWindow .bookWin
     }
   }
   ################################################################################
@@ -260,8 +258,7 @@ namespace eval book {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
       set ::book::currentBook ""
-      destroy $w
-      ::docking::cleanup $w
+      ::win::closeWindow $w
       return
     }
     
@@ -298,8 +295,7 @@ namespace eval book {
     
     bind $w.fcombo.combo <<ComboboxSelected>> ::book::bookTuningSelect
     
-    bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
-    bind $w <Escape> { destroy  .bookTuningWin }
+    bind $w <Destroy> "if {\[string equal $w %W\]} { ::book::closeTuningBook }"
     bind $w <F1> { helpWindow BookTuning }
     
     bookTuningSelect
@@ -361,7 +357,6 @@ namespace eval book {
     set moves [sc_book moves $::book::bookTuningSlot]
     
     set w .bookTuningWin
-    bind $w <Destroy> "" ;# avoid the closing of the book
     # erase previous children
     set children [winfo children $w.f]
     foreach c $children {
@@ -390,7 +385,6 @@ namespace eval book {
         $w.fbutton.mbAdd.otherMoves add command -label [::trans $move] -command "::book::addBookMove $move"
       }
     }
-    bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
   }
   ################################################################################
   # sends to book the list of moves and probabilities.

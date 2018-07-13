@@ -1398,9 +1398,7 @@ namespace eval fics {
     set ::fics::observedGame -1
     ::close $::fics::sockchan
     if { ! $::windowsOS } { catch { exec -- kill -s INT [ $::fics::timeseal_pid ] }  }
-    destroy .fics
-    # necessary on windows
-    ::docking::cleanup .fics
+    ::win::closeWindow .fics
   }
 }
 ###

@@ -314,21 +314,6 @@ proc ::docking::_cleanup_tabs {srctab} {
   }
 }
 ################################################################################
-# cleans up a window when it was closed without calling the notebook menu
-proc ::docking::cleanup { w { origin "" } } {
-  if {$w == $origin || $origin == ""} {
-    set dockw ".fdock[string range $w 1 end]"
-    set tab [::docking::find_tbn $dockw]
-    if {$tab != ""} {
-      $tab forget $dockw
-      ::docking::_cleanup_tabs $tab
-    }
-    after idle "if {[winfo exists $dockw]} { destroy $dockw }"
-    catch { focus .main }
-  }
-}
-
-################################################################################
 ################################################################################
 ################################################################################
 

@@ -41,14 +41,24 @@ proc createToplevel { {w} {closeto ""} } {
 
 ################################################################################
 # In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up
-# Alternative way : directly call ::docking::cleanup $w when closing window
+# This function is necessary only if does exists a "destroy" command for the win created with createToplevel
 ################################################################################
 proc createToplevelFinalize {w} {
   if { $::docking::USE_DOCKING } {
     bind $w <Destroy> "+if {\[string equal $w %W\]} {
-      ::docking::cleanup $w %W
+      cleanup_todo_remove $w
     }"
   }
+}
+proc cleanup_todo_remove { w } {
+    set dockw ".fdock[string range $w 1 end]"
+    set tab [::docking::find_tbn $dockw]
+    if {$tab != ""} {
+      $tab forget $dockw
+      ::docking::_cleanup_tabs $tab
+    }
+    after idle "if {[winfo exists $dockw]} { destroy $dockw }"
+    catch { focus .main }
 }
 
 # recordWinSize:

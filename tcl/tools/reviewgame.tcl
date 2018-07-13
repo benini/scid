@@ -172,8 +172,7 @@ proc ::reviewgame::endTraining {} {
   ::reviewgame::stopAnalyze
   focus .
   bind $w <Destroy> {}
-  destroy $w
-  ::docking::cleanup $w
+  ::win::closeWindow $w
   ::setPlayMode ""
   
   catch { ::uci::closeUCIengine $::reviewgame::engineSlot }
