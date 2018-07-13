@@ -68,17 +68,18 @@ proc ::file::New {} {
   set file_extension [string tolower [file extension $fName]]
   if {$file_extension == ".si4"} {
     set dbType "SCID4"
-    set fName [file rootname $fName]
+    set dbName [file rootname $fName]
   } elseif {$file_extension == ".pgn"} {
     set dbType "PGN"
+    set dbName $fName
   }
-  if {[catch {sc_base create $dbType $fName} baseId]} {
+  if {[catch {sc_base create $dbType $dbName} baseId]} {
     ERROR::MessageBox "$fName\n"
     return
   }
   set ::curr_db $baseId
   set ::initialDir(base) [file dirname $fName]
-  ::recentFiles::add "$fName.si4"
+  ::recentFiles::add $fName
   ::notify::GameChanged
   ::notify::DatabaseChanged
   return $baseId
