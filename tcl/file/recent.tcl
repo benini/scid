@@ -189,15 +189,19 @@ proc ::recentFiles::configure {} {
   set w .recentFilesDlg
   win::createDialog $w
   wm title $w "Scid: [tr OptionsRecent]"
+  ttk::frame $w.m
+  ttk::frame $w.e
   ttk::label $w.lmenu -text $::tr(RecentFilesMenu)
-  scale $w.menu -variable recentFiles(temp_menu) -from 0 -to 10 -length 250 -border 0 \
-      -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small -background [ttk::style lookup . -background]
-  ttk::frame $w.sep -height 4
+  set tmpcombo {}
+  for {set x 1} {$x <= 10} {incr x} {
+      lappend tmpcombo $x
+  }
+  ttk::combobox $w.menu -textvariable recentFiles(temp_menu) -width 3 -values $tmpcombo -justify right -state readonly
   ttk::label $w.lextra -text $::tr(RecentFilesExtra)
-  scale $w.extra -variable recentFiles(temp_extra) -from 0 -to 10 -length 250 -border 0 \
-      -orient horizontal -showvalue 0 -tickinterval 1 -font font_Small -background [ttk::style lookup . -background]
-  pack $w.lmenu $w.menu $w.lextra $w.extra -side top -fill x -pady "0 5"
-  addHorizontalRule $w
+  ttk::combobox $w.extra -textvariable recentFiles(temp_extra) -width 3 -values $tmpcombo -justify right -state readonly
+  pack $w.m $w.e -side top -anchor e
+  pack $w.lmenu $w.menu -side left -padx "0 5" -pady "0 5" -in $w.m -anchor e
+  pack $w.lextra $w.extra -side left -padx "0 5" -in $w.e -anchor e
   pack [ttk::frame $w.b] -side bottom -fill x
   ttk::button $w.b.ok -text "OK" -command {
     set recentFiles(menu) $recentFiles(temp_menu)
