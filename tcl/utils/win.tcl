@@ -29,10 +29,11 @@ proc ::win::createDockWindow {path} {
 proc ::win::createWindow { {w} {title} {default_geometry ""} } {
 	# Raise window if already exists
 	if { [winfo exists $w] } {
-		if { [::win::isToplevel $w] } {
-			wm deiconify $w
-		} else {
+		lassign [::win::isDocked $w] docked w
+		if {$docked} {
 			[::docking::find_tbn $w] select $w
+		} else {
+			wm deiconify $w
 		}
 		return 0
 	}
@@ -111,7 +112,8 @@ proc setMenu {w m} {
 
 # Save the geometry of an undocked toplevel window.
 proc ::win::saveWinGeometry {w} {
-	if {[::win::isToplevel $w]} {
+	lassign [::win::isDocked $w] docked w
+	if {! $docked} {
 		update idletasks
 		if {[wm state $w] == "zoomed"} {
 			set ::winGeometry($w) "zoomed"
@@ -139,13 +141,9 @@ proc ::win::restoreWinGeometry {w} {
 	return 0
 }
 
-# Return true if is a toplevel undocked window
-proc ::win::isToplevel {wnd} {
-	lassign [::win::isDocked $wnd] docked top
-	return [expr {!$docked && $top eq $wnd}]
-}
-
-# Return true if is a (child of a) docked window
+# Return a list containing:
+# - true if it is a (child of a) docked window
+# - the name of the top parent window
 proc ::win::isDocked {wnd} {
 	# Get the window at the top of the hierarchy (not the toplevel)
 	regexp {[.]\w*} "$wnd" wnd
@@ -232,6 +230,7 @@ proc ::win::manageWindow {wnd title} {
 		if {![info exists dsttab]} {
 			set dsttab [::docking::choose_notebook $wnd]
 		}
+		unset -nocomplain ::docking::notebook_name($wnd)
 		::docking::insert_tab $wnd $dsttab end \
 			[list -text $title -image tb_close -compound left]
 	} else {

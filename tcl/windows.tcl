@@ -15,28 +15,28 @@ set filterGraph 0
 # Creates a toplevel window depending of the docking option
 ################################################################################
 proc createToplevel { {w} {closeto ""} } {
-  set name [string range $w 1 end]
-  set f .fdock$name
-
   # Raise window if already exist
   if { [winfo exists $w] } {
-    if {! $::docking::USE_DOCKING } {
-      tk::PlaceWindow $w
+    lassign [::win::isDocked $w] docked w
+    if {$docked} {
+        [::docking::find_tbn $w] select $w
     } else {
-      if { [::win::isToplevel $f] } {
-        tk::PlaceWindow $f
-      } else {
-        [::docking::find_tbn $f] select $f
-      }
+        wm deiconify $w
     }
     return "already_exists"
   }
 
+  set f ".fdock[string range $w 1 end]"
   frame $f  -container 1
-  toplevel .$name -use [ winfo id $f ]
-  ::win::manageWindow $f ""
-
+  toplevel $w -use [ winfo id $f ]
   keyboardShortcuts $w
+
+  # Set default width and height values, if they do not exists
+  if {![info exists ::winGeometry($f)]} {
+    set ::winGeometry($f) ""
+  }
+
+  ::win::manageWindow $f ""
 }
 
 ################################################################################
