@@ -346,7 +346,7 @@ proc ReplaceIDTags { pinfo } {
 
 proc playerInfo {{player ""}} {
   global playerInfoName
-  if {$player == ""} { set player $playerInfoName }
+  if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
   set playerInfoName $player
   set ::rgraph(player) $player
