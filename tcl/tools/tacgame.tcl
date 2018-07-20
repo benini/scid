@@ -310,33 +310,40 @@ namespace eval tacgame {
     ::notify::GameChanged
     
     createToplevel $w
+    applyThemeColor_background $w
     setTitle $w "$::tr(coachgame) (Elo $level)"
     
-    ttk::frame $w.fdisplay -relief groove -borderwidth 1
-    ttk::frame $w.fthreshold -relief groove -borderwidth 1
-    ttk::frame $w.finformations -relief groove -borderwidth 1
-    ttk::frame $w.fclocks -relief groove -borderwidth 1
-    ttk::frame $w.fbuttons -relief groove -borderwidth 1
-    pack $w.fdisplay $w.fthreshold $w.finformations $w.fclocks $w.fbuttons -side top -expand yes -fill both
+    ttk::frame $w.fdisplay
+    ttk::frame $w.fthreshold
+    ttk::frame $w.finformations
+    ttk::labelframe $w.fclockw -text "$::tr(Time) $::tr(Player)"
+    ttk::labelframe $w.fclockb -text "$::tr(Time) $::tr(Engine)"
+    ttk::frame $w.fbuttons
+    pack $w.fdisplay -side top -fill both -pady 5 -padx 10
+    pack [ttk::separator $w.line1 -orient horizontal] -side top -fill x -padx 10 -pady 5
+    pack $w.fthreshold -side top -fill both -pady 5 -padx 10
+    pack [ttk::separator $w.line2 -orient horizontal] -side top -fill x -padx 10 -pady 5
+    pack $w.finformations $w.fclockb $w.fclockw -side top -fill both -pady 5 -padx 10
+    pack $w.fbuttons -side top -pady "10 15"
     
     ttk::checkbutton $w.fdisplay.b1 -text $::tr(showblunderexists) -variable ::tacgame::showblunder
     ttk::checkbutton $w.fdisplay.b2 -text $::tr(showblundervalue) -variable ::tacgame::showblundervalue
     ttk::checkbutton $w.fdisplay.b5 -text $::tr(showscore) -variable ::tacgame::showevaluation
-    pack $w.fdisplay.b1 $w.fdisplay.b2 $w.fdisplay.b5 -expand yes -anchor w
+    pack $w.fdisplay.b1 $w.fdisplay.b2 $w.fdisplay.b5 -anchor w
     
     ttk::label $w.fthreshold.l -text $::tr(moveblunderthreshold) -wraplength 300
     
     ttk::scale $w.fthreshold.t -orient horizontal -from 0.0 -to 10.0 -length 200 \
         -variable ::tacgame::threshold -command { ::utils::validate::floatScale ::tacgame::threshold 0.1 }
     ttk::label $w.fthreshold.labelt -textvariable ::tacgame::threshold
-    pack $w.fthreshold.l $w.fthreshold.labelt $w.fthreshold.t -side top
-    
+    pack $w.fthreshold.l $w.fthreshold.labelt $w.fthreshold.t -side top -anchor w
+
     ttk::label $w.finformations.l1 -textvariable ::tacgame::blunderWarningLabel -background linen
     ttk::label $w.finformations.l3 -textvariable ::tacgame::scoreLabel -foreground WhiteSmoke -background SlateGray
     pack $w.finformations.l1 $w.finformations.l3 -padx 5 -pady 5 -side top -fill x
     
-    ::gameclock::new $w.fclocks 2 80
-    ::gameclock::new $w.fclocks 1 80
+    ::gameclock::new $w.fclockb 2 80
+    ::gameclock::new $w.fclockw 1 80
     ::gameclock::reset 1
     ::gameclock::start 1
     
@@ -773,6 +780,8 @@ namespace eval tacgame {
       sc_var promote
       sc_move forward 1
     }
+    if { $::tacgame::showevaluation == 1 && [info exists ::uci::uciInfo(score2)] } {
+	  sc_pos setComment "[sc_pos getComment] \[%eval $::uci::uciInfo(score2)\]" }
     
     set analysisCoach(automoveThinking1) 0
     set currentPosHash [sc_pos hash]
@@ -800,7 +809,7 @@ namespace eval tacgame {
       set ::tacgame::scoreLabel ""
       return
     } else {
-      set ::tacgame::scoreLabel "Score : $::uci::uciInfo(score2)"
+      set ::tacgame::scoreLabel "Score: $::uci::uciInfo(score2)"
     }
   }
   

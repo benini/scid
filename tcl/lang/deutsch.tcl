@@ -1395,8 +1395,8 @@ Geben Sie unten eine Liste der bevorzugten Spielernamen ein, ein Name pro Zeile.
 Jedesmal, wenn ein Spiel mit einem aufgelisteten Spielernamen geladen wird, wird das Schachbrett im Hauptfenster erforderlichenfalls gedreht, um das Spiel aus der Sicht des betreffenden Spielers zu zeigen.
 }
 translate D showblunderexists {Enginefehler anzeigen}
-translate D showblundervalue {Fehlerwert anzeigen}
-translate D showscore {Wert anzeigen}
+translate D showblundervalue {Fehlerbewertung anzeigen}
+translate D showscore {Bewertung anzeigen}
 translate D coachgame {Coach Partie}
 translate D configurecoachgame {Trainingspartie konfigurieren}
 translate D configuregame {Spiel konfigurieren}
@@ -1426,8 +1426,8 @@ translate D CoachIsWatching {Coach schaut zu}
 translate D Ponder {Berechnen im Hintergrund}
 translate D LimitELO {Stärke begrenzen (ELO)}
 translate D DubiousMovePlayedTakeBack {Zweifelhafter Zug gespielt, wollen Sie ihn zurücknehmen?}
-translate D WeakMovePlayedTakeBack {Schacher Zug gespielt, wollen Sie ihn zurücknehmen?}
-translate D BadMovePlayedTakeBack {Schlechter Zug gespielt, wollen Sie ihn zurücknehmen?}
+translate D WeakMovePlayedTakeBack {Dies ist kein guter Zug, wollen Sie ihn zurücknehmen?}
+translate D BadMovePlayedTakeBack {Dies ist ein schlechter Zug, wollen Sie ihn zurücknehmen?}
 translate D Iresign {Ich gebe auf}
 translate D yourmoveisnotgood {Ihr Zug ist nicht gut}
 translate D EndOfVar {Variantenende}
