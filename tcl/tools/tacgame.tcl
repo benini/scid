@@ -243,6 +243,10 @@ namespace eval tacgame {
         ::tacgame::openingType ::tacgame::openingList ::tacgame::openingMovesList \
         ::tacgame::openingMovesHash ::tacgame::openingMoves ::tacgame::outOfOpening
     
+    if {$::tacgame::openingType ne "current"} {
+      if {[::game::Clear] eq "cancel"} { return }
+    }
+
     resetEngine 1
     resetEngine 2
     catch { unset ::uci::uciInfo(score2) }
@@ -284,7 +288,6 @@ namespace eval tacgame {
         lappend openingMovesList [string trim [regsub {^[1-9]+\.} $m ""] ]
       }
       
-      sc_game new
       lappend openingMovesHash [sc_pos hash]
       foreach m  $openingMovesList {
         if {[catch {sc_move addSan $m}]} {
@@ -295,7 +298,6 @@ namespace eval tacgame {
     
     # create a new game if a DB is opened
     if {$::tacgame::openingType != "current"} {
-      sc_game new
       sc_game tags set -event "Tactical game"
       if { [::board::isFlipped .main.board] } {
         sc_game tags set -white "Phalanx - $level ELO"
@@ -303,7 +305,6 @@ namespace eval tacgame {
         sc_game tags set -black "Phalanx - $level ELO"
       }
       sc_game tags set -date [::utils::date::today]
-      if {[sc_base inUse [sc_base current]]} { catch {sc_game save 0}  }
     }
     
     ::notify::GameChanged

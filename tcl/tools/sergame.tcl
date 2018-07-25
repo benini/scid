@@ -255,6 +255,10 @@ namespace eval sergame {
     global ::sergame::chosenOpening ::sergame::isOpening ::tacgame::openingList ::sergame::openingMovesList \
         ::sergame::openingMovesHash ::sergame::openingMoves ::sergame::outOfOpening
     
+    if {$::sergame::isOpening || !$::sergame::startFromCurrent} {
+      if {[::game::Clear] eq "cancel"} { return }
+    }
+
     set ::sergame::lFen {}
     
     ::uci::startEngine $::sergame::engineListBox($engine) $n
@@ -293,7 +297,6 @@ namespace eval sergame {
         lappend openingMovesList [string trim [regsub {^[1-9]+\.} $p ""] ]
       }
       
-      sc_game new
       lappend openingMovesHash [sc_pos hash]
       foreach m  $openingMovesList {
         if {[catch {sc_move addSan $m}]} { }
@@ -312,12 +315,10 @@ namespace eval sergame {
 
     if {!$::sergame::startFromCurrent} {
       # create a new game if a DB is opened
-      sc_game new
       sc_game tags set -event "Serious game"
       sc_game tags set -$::sergame::playerColor "Player"
       sc_game tags set -$::sergame::engineColor "$::sergame::engineName"
       sc_game tags set -date [::utils::date::today]
-      if {[sc_base inUse [sc_base current]]} { catch {sc_game save 0}  }
     }
 
     set ::sergame::waitPlayerMove 0
