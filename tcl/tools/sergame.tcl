@@ -19,7 +19,8 @@ namespace eval sergame {
   array set engineListBox {}
   set engineName ""
   set bookSlot 2
-  
+  set storeEval 0
+
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   set lastPlayerMoveUci ""
@@ -50,7 +51,7 @@ namespace eval sergame {
     
     grid $w.fengines -row 0 -column 0 -pady { 0 10 } -sticky we -padx { 0 10 }
     grid $w.fopening -row 0 -column 1 -pady { 0 10 } -sticky nswe -padx { 10 0 }
-    grid $w.ftime -row 1 -column 0 -pady { 10 0 } -sticky we -padx { 0 10 }
+    grid $w.ftime -row 1 -column 0 -pady { 10 0 } -sticky nswe -padx { 0 10 }
     grid $w.fconfig -row 1 -column 1 -pady { 10 0 } -sticky we -padx { 10 0 }
     grid $w.fbuttons -row 2 -column 1 -sticky we
     
@@ -200,6 +201,9 @@ namespace eval sergame {
     # Warn if the user makes weak/bad moves
     ttk::checkbutton $w.fconfig.cbCoach -text $::tr(CoachIsWatching) -variable ::sergame::coachIsWatching
     pack $w.fconfig.cbCoach -side top -anchor w
+    #Should the evaluation of the position stored in the comment?
+    ttk::checkbutton $w.fconfig.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::storeEval
+    pack $w.fconfig.storeEval -side top -anchor w
     
     # choose a specific opening
     ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
@@ -597,6 +601,13 @@ namespace eval sergame {
     ::uci::sc_move_add $::uci::uciInfo(bestmove$n)
     ::utils::sound::AnnounceNewMove $::uci::uciInfo(bestmove$n)
     set ::uci::uciInfo(prevscore$n) $::uci::uciInfo(score$n)
+    if { $::sergame::storeEval == 1 } {
+      #TODO: write a function like "storeTimeComment"
+      # The following hack does not respect the PGN convenction of placing embedded commands
+      # before the comment's text. It also adds a leading space if there is no comment,
+      # and do not consider the possibility that an [%eval] command is already present.
+      sc_pos setComment "[sc_pos getComment] \[%eval $::uci::uciInfo(score$n)\]"
+    }
     updateBoard -pgn -animate
     repetition
     
