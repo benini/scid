@@ -269,8 +269,6 @@ if {[info exists initialDir(tablebase)]} {
   set initialDir(tablebase1) $initialDir(tablebase)
 }
 
-set ::docking::USE_DOCKING $windowsDock
-
 proc createFonts {} {
   foreach name {Regular Menu Small Tiny Fixed} {
     set opts $::fontOptions($name)

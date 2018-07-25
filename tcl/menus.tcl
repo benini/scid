@@ -313,7 +313,7 @@ menu $m.windows
   $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
   $m.windows add checkbutton -label OptionsWindowsRaise -variable autoRaise
   $m.windows add checkbutton -label OptionsWindowsDock -variable windowsDock
-  if {$::docking::USE_DOCKING} {
+
     menu $m.windows.savelayout
     menu $m.windows.restorelayout
     foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
@@ -322,19 +322,11 @@ menu $m.windows
     }
     $m.windows add cascade -label OptionsWindowsSaveLayout -menu $m.windows.savelayout
     $m.windows add cascade -label OptionsWindowsRestoreLayout -menu $m.windows.restorelayout
-  }
+
   menu $m.windows.startup
     $m.windows.startup add checkbutton -label HelpTip -variable startup(tip)
     $m.windows.startup add checkbutton -label FileFinder -variable startup(finder)
     $m.windows.startup add checkbutton -label WindowsStats -variable startup(stats)
-    if {! $::docking::USE_DOCKING} {
-      $m.windows.startup add checkbutton -label ToolsCross -variable startup(crosstable)
-      $m.windows.startup add checkbutton -label WindowsSwitcher -variable startup(switcher)
-      $m.windows.startup add checkbutton -label WindowsGList -variable startup(gamelist)
-      $m.windows.startup add checkbutton -label WindowsPGN -variable startup(pgn)
-      $m.windows.startup add checkbutton -label WindowsTree -variable startup(tree)
-      $m.windows.startup add checkbutton -label WindowsBook -variable startup(book)
-    }
   $m.windows add cascade -label OptionsStartup -menu $m.windows.startup
 $m add cascade -label OptionsWindows -menu $m.windows
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
@@ -574,11 +566,9 @@ proc menuUpdateBoardSizes {} {
   set m .menu.options.board
   $m.bdsize delete 0 end
   set st normal
-  if {$::docking::USE_DOCKING } {
-    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
+  $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
         -command "::resizeMainBoard; menuUpdateBoardSizes"
-    if {$::autoResizeBoard} { set st disabled }
-  }
+  if {$::autoResizeBoard} { set st disabled }
   foreach i $::boardSizes {
     incr count
     if {$count <= 9} {

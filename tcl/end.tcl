@@ -1266,36 +1266,21 @@ proc raiseAllWindows {} {
   }
 }
 
-proc CreateMainWin { mainWin } {
-  createToplevel .main
-  wm minsize $mainWin 0 0
-  wm iconname $mainWin "Scid"
-  wm protocol $mainWin WM_DELETE_WINDOW { ::file::Exit }
-  $mainWin configure -menu .menu
-  setWinLocation $mainWin
-  bind $mainWin <Configure> "recordWinSize $mainWin"
-  CreateGameInfo
-  CreateMainBoard .main
-}
+# Disable ttk default left/right key bindings (they invoke ttk::notebook::CycleTab)
+bind TNotebook <Key-Right> {}
+bind TNotebook <Key-Left>  {}
 
-if { $::docking::USE_DOCKING } {
-  # Disable ttk default left/right key bindings (they invoke ttk::notebook::CycleTab)
-  bind TNotebook <Key-Right> {}
-  bind TNotebook <Key-Left>  {}
-  ::win::createDockWindow .pw
+wm minsize . 0 0
+wm iconname . "Scid"
+wm protocol . WM_DELETE_WINDOW { ::file::Exit }
+setMenu . .menu
+setWinLocation .
+bind . <Configure> "recordWinSize ."
+keyboardShortcuts .
 
-  CreateMainWin .
-  ::docking::layout_restore 1
-  keyboardShortcuts .
-} else {
-  CreateMainWin .main
-  if {$startup(switcher)} { ::windows::switcher::Open }
-  if {$startup(pgn)} { ::pgn::OpenClose }
-  if {$startup(gamelist)} { ::windows::gamelist::Open }
-  if {$startup(tree)} { ::tree::make }
-  if {$startup(crosstable)} { ::crosstab::Open }
-  if {$startup(book)} { ::book::open }
-}
+::win::createDockWindow .pw
+::docking::layout_restore 1
+
 menuUpdateBases
 setLanguageMenus
 

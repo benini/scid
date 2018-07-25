@@ -127,6 +127,7 @@ proc ::win::saveWinGeometry {w} {
 # return true if a stored geometry was available.
 proc ::win::restoreWinGeometry {w} {
 	if {[info exists ::winGeometry($w)]} {
+		update idletasks
 		if {$::winGeometry($w) == "zoomed"} {
 			if { $::windowsOS || $::macOS } {
 				wm state $w zoomed
@@ -618,7 +619,6 @@ array set ::docking::layout_tabs {}
 ################################################################################
 # saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
-  if {! $::docking::USE_DOCKING} { return }
   #TODo: Save FICS window
 
   # on Windows the geometry is false if the window was maximized (x and y offsets are the ones before the maximization)
@@ -690,9 +690,7 @@ proc ::docking::layout_restore_pw { data } {
       break
 
     } elseif {$type == "Toplevel"} {
-        set ::docking::layout_dest_notebook "undocked"
-        ::docking::create_window [lindex $elt 1]
-
+      lappend ::docking::restoring_tabs(undocked) [lindex $elt 1]
     } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
       
@@ -722,13 +720,13 @@ proc ::docking::layout_restore_pw { data } {
 ################################################################################
 # Sash position
 ################################################################################
-proc ::docking::restoreGeometry {} {
+proc ::docking::restore_geometry {} {
   foreach elt $::docking::sashpos {
     set pw [lindex $elt 0]
     set sash [lindex $elt 1]
     set i 0
     foreach pos $sash {
-      update
+      update idletasks
       $pw sashpos $i $pos
       incr i
     }
@@ -750,7 +748,6 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   }
 
   ::docking::insert_notebook_ $pw end $nb
-  lappend ::docking::restoring_nb $nb
   set ::docking::restoring_tabs($nb) $tabs
 }
 
@@ -776,8 +773,9 @@ proc ::docking::create_window {wnd} {
 }
 
 proc ::docking::restore_tabs {} {
-  foreach nb $::docking::restoring_nb {
+  foreach nb [lsort [array names ::docking::restoring_tabs]] {
     foreach d $::docking::restoring_tabs($nb) {
+      update idletasks
       set ::docking::layout_dest_notebook $nb
       if {$d eq ".fdockmain"} {
         $nb add $d -text $::tr(Board)
@@ -785,21 +783,9 @@ proc ::docking::restore_tabs {} {
       } else {
         ::docking::create_window $d
       }
-      update
-      update idletasks
     }
   }
-  unset ::docking::restoring_nb
   array unset ::docking::restoring_tabs
-
-  # Bring the main board to the front
-  set mainboard ".fdockmain"
-  set maintab [::docking::find_tbn $mainboard]
-  if {$maintab != ""} {
-    raise $mainboard
-    $maintab select $mainboard
-  }
-  raise .
 }
 
 ################################################################################
@@ -810,18 +796,34 @@ proc ::docking::layout_restore { slot } {
     return
   }
   
+  if {![winfo exists .main]} {
+    set ::docking::layout_dest_notebook .nb
+    CreateMainBoard .main
+  }
+
   closeAll
   set ::docking::tbcnt 0
   set ::docking::sashpos {}
-  set ::docking::restoring_nb {}
   array unset ::docking::restoring_tabs
 
   foreach mainwnd $::docking::layout_list($slot) {
 	layout_restore_pw $mainwnd
   }
-  ::docking::restoreGeometry
+  ::docking::restore_geometry
+  ::docking::restore_tabs
 
-  after idle ::docking::restore_tabs
+  # Bring the main board to the front
+  lassign [::win::isDocked .main] docked mainboard
+  set maintab [::docking::find_tbn $mainboard]
+  if {$maintab != ""} {
+    raise $mainboard
+    $maintab select $mainboard
+  }
+  set maintop [winfo toplevel $mainboard]
+  raise $maintop
+  wm deiconify $maintop
+  update
+  focus .main
 }
 ################################################################################
 # erase all mapped windows, except .main

@@ -392,9 +392,7 @@ proc showVars {} {
     }
     
     # Needed or the main window loses the focus
-    if { $::docking::USE_DOCKING } {
-        bind .variations <Destroy> { focus -force .main }
-    }
+    bind .variations <Destroy> { focus -force .main }
 
     catch { focus .variations }
     catch { grab $w }
@@ -1040,8 +1038,6 @@ proc setPlayMode { callback } {
 # In docked mode, resize board automatically
 ################################################################################
 proc resizeMainBoard {} {
-  if { ! $::docking::USE_DOCKING } { return }
-
   if { $::autoResizeBoard } {
     update idletasks
     set availw [winfo width .fdockmain]
@@ -1069,7 +1065,10 @@ proc toggleGameInfo {} {
 ################################################################################
 
 proc CreateMainBoard { {w} } {
+  createToplevel $w
   setTitle $w [ ::tr "Board" ]
+
+  CreateGameInfo
 
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board 1
@@ -1130,17 +1129,11 @@ proc CreateMainBoard { {w} } {
 
   bindMouseWheel $w "main_mousewheelHandler"
 
-  if { $::docking::USE_DOCKING} {
-    ttk::frame $w.space
-    grid $w.space -row 4 -column 0 -columnspan 3 -sticky nsew
-    grid rowconfigure $w 3 -weight 0
-    grid rowconfigure $w 4 -weight 1
-  } else {
-    grid rowconfigure $w 3 -weight 1
-    wm resizable $w 0 1
-    wm withdraw .
-    bind $w <Destroy> { destroy . }
-  }
+  ttk::frame $w.space
+  grid $w.space -row 4 -column 0 -columnspan 3 -sticky nsew
+  grid rowconfigure $w 3 -weight 0
+  grid rowconfigure $w 4 -weight 1
+
   grid columnconfigure $w 0 -weight 1
   grid $w.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
 

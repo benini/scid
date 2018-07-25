@@ -389,15 +389,9 @@ array set geometry {}
 
 # startup:
 #   Stores which windows should be opened on startup.
-set startup(pgn) 0
-set startup(switcher) 0
 set startup(tip) 1
-set startup(tree) 0
 set startup(finder) 0
-set startup(crosstable) 0
-set startup(gamelist) 0
 set startup(stats) 0
-set startup(book) 0
 
 
 # Game information area options:
