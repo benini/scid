@@ -8,14 +8,11 @@ proc ::tip::show {{n -1}} {
   if {! [winfo exists .tipsWin]} {
     win::createDialog $w
     wm title $w "Scid: [tr HelpTip]"
-    pack [ttk::frame $w.b] -side bottom -fill x
-    text $w.text -background gray95 -foreground black \
-      -cursor top_left_arrow -width 40 -height 8 -setgrid 1 \
-      -yscrollcommand "$w.ybar set" -wrap word
+    autoscrollText y $w.text_frame $w.text TLabel
+    $w.text configure -width 40 -height 8 -wrap word
     ::htext::init $w.text
-    ttk::scrollbar $w.ybar -command "$w.text yview"
-    pack $w.ybar -side right -fill y
-    pack $w.text -side left -fill both -expand 1
+    pack $w.text_frame -side top -fill both
+    pack [ttk::frame $w.b] -side bottom -fill x
     ttk::checkbutton $w.b.start -textvar ::tr(TipAtStartup) -variable startup(tip) -style Small.TCheckbutton
     dialogbuttonsmall $w.b.prev [list -text "<" ]
     dialogbuttonsmall $w.b.next [list -text ">" ]

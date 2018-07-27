@@ -133,7 +133,6 @@ proc dialogbuttonsmall {w args {style "Small.TButton"} } {
 #      autoscrollframe [-bars none|x|y|both] frame type w args
 #
 proc autoscrollframe {args} {
-  global _autoscroll
   set bars both
   if {[lindex $args 0] == "-bars"} {
     set bars [lindex $args 1]
@@ -162,10 +161,23 @@ proc autoscrollframe {args} {
     }
     $w configure -relief flat -borderwidth 0
   }
+
+  autoscrollBars $bars $frame $w
+  return $retval
+}
+
+proc autoscrollText {bars frame widget style} {
+  ttk::frame $frame
+  text $widget -cursor arrow -state disabled -highlightthickness 0
+  applyThemeStyle $style $widget
+  autoscrollBars $bars $frame $widget
+}
+
+proc autoscrollBars {bars frame w} {
+  global _autoscroll
+
   grid $w -in $frame -row 0 -column 0 -sticky news
-  set setgrid 0
-  catch {set setgrid [$w cget -setgrid]}
-  
+
   if {$bars == "y"  ||  $bars == "both"} {
     ttk::scrollbar $frame.ybar -command [list $w yview] -takefocus 0
     $w configure -yscrollcommand [list _autoscroll $frame.ybar]
@@ -173,9 +185,6 @@ proc autoscrollframe {args} {
     set _autoscroll($frame.ybar) 1
     set _autoscroll(time:$frame.ybar) 0
     bindMouseWheel $w "_autoscrollMouseWheel $w $frame.ybar"
-    if {! $setgrid} {
-      # bind $frame.ybar <Map> [list _autoscrollMap $frame]
-    }
   }
   if {$bars == "x"  ||  $bars == "both"} {
     ttk::scrollbar $frame.xbar -command [list $w xview] -takefocus 0 -orient horizontal
@@ -183,15 +192,11 @@ proc autoscrollframe {args} {
     grid $frame.xbar -row 1 -column 0 -sticky we
     set _autoscroll($frame.xbar) 1
     set _autoscroll(time:$frame.xbar) 0
-    if {! $setgrid} {
-      # bind $frame.xbar <Map> [list _autoscrollMap $frame]
-    }
   }
   grid rowconfigure $frame 0 -weight 1
   grid columnconfigure $frame 0 -weight 1
   grid rowconfigure $frame 1 -weight 0
   grid columnconfigure $frame 1 -weight 0
-  return $retval
 }
 
 proc _autoscrollMouseWheel {{w} {bar} {direction}} {

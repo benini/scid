@@ -414,15 +414,11 @@ proc ::board::addNamesBar {w {varname}} {
 
 proc ::board::addInfoBar {w varname} {
   ttk::frame $w.bar
-  set $w.bar.info [ttk::frame $w.bar.info]
-  autoscrollframe $w.bar.info text $w.bar.info.t \
-    -relief flat -font font_Regular -cursor arrow -state disabled
-  ::applyThemeColor_background $w.bar.info.t
+  autoscrollText y $w.bar.info $w.bar.info.t TLabel
   $w.bar.info.t tag configure header -font font_Bold
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
   grid propagate $w.bar.info 0
-  grid $w.bar.info.t -sticky news
   ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
   ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
   set menu [::board::newToolBar_ $w $varname]

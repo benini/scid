@@ -28,7 +28,7 @@ proc ::search::addFilterOpFrame {w {small 0}} {
   set f $w.filterop
   pack $f -side top -fill x
   
-  set regular Regular.TRadiobutton
+  set regular TRadiobutton
   set bold Bold.TRadiobutton
   if {$small} {
     set regular Small.TRadiobutton

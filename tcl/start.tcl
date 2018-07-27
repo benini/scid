@@ -322,7 +322,6 @@ ttk::style configure Bold.TButton -font font_Bold
 ttk::style configure Pad0.Small.TButton -padding 0
 
 ttk::style configure Small.TRadiobutton -font font_Small
-ttk::style configure Regular.TRadiobutton -font font_Regular
 ttk::style configure Bold.TRadiobutton -font font_Bold
 ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
@@ -339,6 +338,15 @@ proc applyThemeColor_background { widget } {
   set bgcolor [ttk::style lookup . -background "" #d9d9d9]
   $widget configure -background $bgcolor
   bind $widget <<ThemeChanged>> "::applyThemeColor_background $widget"
+}
+
+# Apply a ttk style to a tk widget
+proc applyThemeStyle {style widget} {
+  $widget configure -background [ttk::style lookup $style -background "" #d9d9d9]
+  $widget configure -foreground [ttk::style lookup $style -foreground "" black]
+  $widget configure -relief [ttk::style lookup $style -relief "" flat]
+  $widget configure {*}[ttk::style configure $style]
+  bind $widget <<ThemeChanged>> "::applyThemeStyle $style $widget"
 }
 
 proc InitImg {} {
