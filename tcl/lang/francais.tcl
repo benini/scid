@@ -405,7 +405,7 @@ translate F Year {Année}
 translate F Month {Mois}
 translate F Months {Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Décembre}
 translate F Days {Dim Lun Mar Mer Jeu Ven Sam}
-translate F YearToToday {Année jusqu'à aujourd'hui}
+translate F YearToToday {-1A}
 translate F Result {Résultat}
 translate F Round {Ronde}
 translate F Length {Longueur}

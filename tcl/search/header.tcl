@@ -35,16 +35,24 @@ proc checkDates {} {
   if {[string length $sDateMax] == 7} { append sDateMax ".31" }
 }
 
+proc ::search::header::initTrace {} {
+  #initialize the *_old in validate.tcl
+  set ::sWhiteEloMinEntry 0; set ::sWhiteEloMaxEntry 0
+  set ::sBlackEloMinEntry 0; set ::sBlackEloMaxEntry 0
+  set ::sEloDiffMinEntry 0; set ::sEloDiffMaxEntry 0
+  set ::sGlMin 0; set ::sGlMax 999
+  set ::sGnumMin 1; set ::sGnumMax -1
+}
+
 proc ::search::header::defaults {} {
   set ::sWhite "";  set ::sBlack ""
   set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotator ""; set ::sAnnotated 0
-  set ::sWhiteEloMin 0; set ::sWhiteEloMax [sc_info limit elo]
-  set ::sBlackEloMin 0; set ::sBlackEloMax [sc_info limit elo]
-  set ::sEloDiffMin "-[sc_info limit elo]"
-  set ::sEloDiffMax "+[sc_info limit elo]"
-  set ::sGlMin 0; set ::sGlMax 999
+  set ::sWhiteEloMinEntry ""; set ::sWhiteEloMaxEntry ""
+  set ::sBlackEloMinEntry ""; set ::sBlackEloMaxEntry ""
+  set ::sEloDiffMinEntry ""; set ::sEloDiffMaxEntry ""
+  set ::sGlMinEntry ""; set ::sGlMaxEntry ""
   set ::sEcoMin "A00";  set ::sEcoMax "E99"; set ::sEco Yes
-  set ::sGnumMin 1; set ::sGnumMax -1
+  set ::sGnumMinEntry ""; set ::sGnumMaxEntry ""
   set ::sDateMin "0000.00.00"; set ::sDateMax "[sc_info limit year].12.31"
   set ::sResWin ""; set ::sResLoss ""; set ::sResDraw ""; set ::sResOther ""
   set ::sIgnoreCol No
@@ -57,22 +65,24 @@ proc ::search::header::defaults {} {
   }
 }
 
+::search::header::initTrace
+foreach i {sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry} {
+  trace variable $i w [list ::utils::validate::Integer [sc_info limit elo] 0]
+}
+trace variable sEloDiffMinEntry w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
+trace variable sEloDiffMaxEntry w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
+
 ::search::header::defaults
 
 trace variable sDateMin w ::utils::validate::Date
 trace variable sDateMax w ::utils::validate::Date
 
-foreach i {sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax} {
-  trace variable $i w [list ::utils::validate::Integer [sc_info limit elo] 0]
-}
-trace variable sEloDiffMin w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
-trace variable sEloDiffMax w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
 
-trace variable sGlMin w {::utils::validate::Integer 9999 0}
-trace variable sGlMax w {::utils::validate::Integer 9999 0}
+trace variable sGlMinEntry w {::utils::validate::Integer 9999 0}
+trace variable sGlMaxEntry w {::utils::validate::Integer 9999 0}
 
-trace variable sGnumMin w {::utils::validate::Integer -9999999 0}
-trace variable sGnumMax w {::utils::validate::Integer -9999999 0}
+trace variable sGnumMinEntry w {::utils::validate::Integer -9999999 0}
+trace variable sGnumMaxEntry w {::utils::validate::Integer -9999999 0}
 
 # Forcing ECO entry to be valid ECO codes:
 foreach i {sEcoMin sEcoMax} {
@@ -85,115 +95,90 @@ set sHeaderFlagFrame 0
 #
 #   Opens the window for searching by header information.
 #
-proc search::header {{ref_base ""} {ref_filter ""}} {
+proc search::headerCreateFrame { w } {
   global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+  global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
   global sEloDiffMin sEloDiffMax sSideToMove
-  global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
+  global sEco sEcoMin sEcoMax sHeaderFlags sGlMinEntry sGlMaxEntry sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  set w .sh
-  if {[winfo exists $w]} {
-    wm deiconify $w
-    raiseWin $w
-    return
-  }
-  
-  toplevel $w
-  wm title $w "Scid: $::tr(HeaderSearch)"
   foreach frame {cWhite cBlack ignore tw tb eventsite dateround res ano gl ends eco} {
     ttk::frame $w.$frame
   }
   
-  raise $w
-  
-  bind $w <F1> { helpWindow Searches Header }
-  bind $w <Escape> "$w.b.cancel invoke"
-  bind $w <Return> "$w.b.search invoke"
-  
-  if {$ref_base != ""} {
-    set ::refDatabaseH $ref_base
-    set ::refFilterH $ref_filter
-  } else {
-    pack [ttk::frame $w.refdb] -side top -fill x
-    CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
-    addHorizontalRule $w
-    set ::refFilterH ""
-  }
-
   set regular font_Small
-  set bold font_SmallBold
-  
+  ttk::labelframe $w.player -text $::tr(Player)
+  pack $w.player -side top -fill x -pady 5
   foreach color {White Black} {
-    pack $w.c$color -side top -fill x
-    ttk::label $w.c$color.lab -textvar ::tr($color:) -font $bold -width 9 -anchor w
+    pack $w.c$color -side top -fill x -in $w.player
+    ttk::label $w.c$color.lab -textvar ::tr($color:) -width 9 -anchor w
     ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
     bind $w.c$color.e <Return> { .sh.b.search invoke; break }
     
     ttk::label $w.c$color.space
-    ttk::label $w.c$color.elo1 -textvar ::tr(Rating:) -font $bold
-    ttk::entry $w.c$color.elomin -textvar s${color}EloMin -width 6 -justify right \
-        -font $regular
-    ttk::label $w.c$color.elo2 -text "-" -font $regular
-    ttk::entry $w.c$color.elomax -textvar s${color}EloMax -width 6 -justify right \
-        -font $regular
+    ttk::label $w.c$color.elo1 -textvar ::tr(Rating:)
+    ttk::entry $w.c$color.elomin -textvar s${color}EloMinEntry -width 6 -justify right
+    ttk::label $w.c$color.elo2 -text "-"
+    ttk::entry $w.c$color.elomax -textvar s${color}EloMaxEntry -width 6 -justify right
     bindFocusColors $w.c$color.e
     bindFocusColors $w.c$color.elomin
     bindFocusColors $w.c$color.elomax
     pack $w.c$color.lab $w.c$color.e $w.c$color.space -side left
-    pack $w.c$color.elomax $w.c$color.elo2 $w.c$color.elomin $w.c$color.elo1 \
-        -side right
+    pack $w.c$color.elomax $w.c$color.elo2 $w.c$color.elomin $w.c$color.elo1 -side right
   }
-  
-  pack $w.ignore -side top -fill x
-  ttk::label $w.ignore.l -textvar ::tr(IgnoreColors:) -font $bold
-  ttk::radiobutton $w.ignore.yes -variable sIgnoreCol -value Yes -textvar ::tr(Yes) -style Small.TRadiobutton
-  ttk::radiobutton $w.ignore.no  -variable sIgnoreCol -value No -textvar ::tr(No) -style Small.TRadiobutton
-  pack $w.ignore.l $w.ignore.yes $w.ignore.no -side left
-  ttk::label $w.ignore.rdiff -textvar ::tr(RatingDiff:) -font $bold
-  ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMin -justify right -font $regular
-  ttk::label $w.ignore.rdto -text "-" -font $regular
-  ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMax -justify right -font $regular
+
+  pack $w.ignore -side top -fill x -in $w.player
+  ttk::checkbutton $w.ignore.yes -variable sIgnoreCol -onvalue Yes -offvalue No -textvar ::tr(IgnoreColors)
+  pack $w.ignore.yes -side left
+  ttk::label $w.ignore.rdiff -textvar ::tr(RatingDiff:)
+  ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMinEntry -justify right
+  ttk::label $w.ignore.rdto -text "-"
+  ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMaxEntry -justify right
   bindFocusColors $w.ignore.rdmin
   bindFocusColors $w.ignore.rdmax
-  pack $w.ignore.rdmax $w.ignore.rdto $w.ignore.rdmin $w.ignore.rdiff \
-      -side right
-  
+  pack $w.ignore.rdmax $w.ignore.rdto $w.ignore.rdmin $w.ignore.rdiff -side right
+
+  pack [ttk::separator $w.sep] -side top -fill x -in $w.player
   set spellstate normal
   if {[lindex [sc_name read] 0] == 0} { set spellstate disabled }
   foreach c {w b} name {White Black} {
-    pack $w.t$c -side top -fill x
-    ttk::label $w.t$c.label -text "$::tr($name) FIDE:" -font $bold -width 14 -anchor w
+    pack $w.t$c -side top -fill x -in $w.player
+    ttk::label $w.t$c.label -text "$::tr($name) FIDE:" -width 14 -anchor w
     pack $w.t$c.label -side left
     foreach i $sTitleList {
       set name [string toupper $i]
       if {$i == "none"} { set name "-" }
-      ttk::checkbutton $w.t$c.b$i -text $name -width 5 -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
-      pack $w.t$c.b$i -side left -padx 1
+      ttk::checkbutton $w.t$c.b$i -text $name -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
+      pack $w.t$c.b$i -side left -padx "0 10"
     }
   }
   
-  addHorizontalRule $w
+  lower $w.player
   
+  ttk::labelframe $w.tournement -text $::tr(Event)
+  pack $w.tournement -side top -fill x -pady 5
   set f $w.eventsite
-  pack $f -side top -fill x
+  pack $f -side top -fill x -in $w.tournement -pady "0 3"
   foreach i {Event Site} {
-    ttk::label $f.l$i -textvar ::tr(${i}:) -font $bold
+    ttk::label $f.l$i -textvar ::tr(${i}:)
     ttk::combobox $f.e$i -textvariable s$i -width 30
     bind $f.e$i <Return> { .sh.b.search invoke ; break }
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
     bindFocusColors $f.e$i
   }
   pack $f.lEvent $f.eEvent -side left
-  pack $f.eSite $f.lSite -side right
+  pack $f.eSite -side right
+  pack $f.lSite -side right -padx "10 0"
   
   set f $w.dateround
-  pack $f -side top -fill x
-  ttk::label $f.l1 -textvar ::tr(Date:) -font $bold
-  ttk::label $f.l2 -text "-" -font $regular
-  ttk::label $f.l3 -text " " -font $regular
-  ttk::entry $f.emin -textvariable sDateMin -width 10 -font $regular
+  pack $f -side top -fill x -in $w.tournement
+  lower $w.tournement
+  ttk::label $f.l1 -textvar ::tr(Date:)
+  ttk::label $f.l2 -text "-"
+  ttk::label $f.l3 -text " "
+  ttk::entry $f.emin -textvariable sDateMin -width 10
   button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
     regsub -all {[.]} $sDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -201,7 +186,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
       set sDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.emax -textvariable sDateMax -width 10 -font $regular
+  ttk::entry $f.emax -textvariable sDateMax -width 10
   button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
     regsub -all {[.]} $sDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -217,62 +202,58 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     set sDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
     set sDateMax [::utils::date::today]
   }
-  
+  ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
+
   pack $f.l1 $f.emin $f.eminCal $f.l2 $f.emax $f.emaxCal $f.l3 $f.lyear -side left
   
-  ttk::label $f.lRound -textvar ::tr(Round:) -font $bold
-  ttk::entry $f.eRound -textvariable sRound -width 10 -font $regular
+  ttk::label $f.lRound -textvar ::tr(Round:)
+  ttk::entry $f.eRound -textvariable sRound -width 10
   bindFocusColors $f.eRound
   pack $f.eRound $f.lRound -side right
   
-  addHorizontalRule $w
-  
-  pack .sh.res -side top -fill x
-  ttk::label $w.res.l1 -textvar ::tr(Result:) -font $bold
-  pack $w.res.l1 -side left
+  ttk::labelframe $w.result -text $::tr(Result)
+  pack $w.result -side top -fill x -pady 5
+  pack $w.res -side top -fill x -in $w.result
+  ttk::label $w.res.l1 -textvar ::tr(Result:)
   ttk::checkbutton $w.res.ewin -text "1-0 " -variable sResWin -offvalue "1" -onvalue ""
   ttk::checkbutton $w.res.edraw -text "1/2-1/2 " -variable sResDraw -offvalue "=" -onvalue ""
   ttk::checkbutton $w.res.eloss -text "0-1 " -variable sResLoss -offvalue "0" -onvalue ""
   ttk::checkbutton $w.res.eother -text "* " -variable sResOther -offvalue "*" -onvalue ""
-  pack $w.res.ewin $w.res.edraw $w.res.eloss $w.res.eother -side left
-  
-  ttk::label $w.gl.l1 -textvar ::tr(GameLength:) -font $bold
-  ttk::label $w.gl.l2 -text "-" -font $regular
-  ttk::label $w.gl.l3 -textvar ::tr(HalfMoves) -font $regular
-  ttk::entry $w.gl.emin -textvariable sGlMin -justify right -width 4 -font $regular
-  ttk::entry $w.gl.emax -textvariable sGlMax -justify right -width 4 -font $regular
+  pack $w.res.l1 $w.res.ewin $w.res.edraw $w.res.eloss $w.res.eother -side left
+  lower $w.result
+
+  ttk::label $w.gl.l1 -textvar ::tr(GameLength:)
+  ttk::label $w.gl.l2 -text "-"
+  ttk::label $w.gl.l3 -textvar ::tr(HalfMoves)
+  ttk::entry $w.gl.emin -textvariable sGlMinEntry -justify right -width 4
+  ttk::entry $w.gl.emax -textvariable sGlMaxEntry -justify right -width 4
   bindFocusColors $w.gl.emin
   bindFocusColors $w.gl.emax
   pack $w.gl -in $w.res -side right -fill x
   pack $w.gl.l1 $w.gl.emin $w.gl.l2 $w.gl.emax $w.gl.l3 -side left
   
-  ttk::label $w.ends.label -textvar ::tr(EndSideToMove:) -font $bold
-  ttk::frame $w.ends.sep1 -width 5
-  ttk::frame $w.ends.sep2 -width 5
+  ttk::label $w.ends.label -textvar ::tr(EndSideToMove)
   ttk::radiobutton $w.ends.white -textvar ::tr(White) -variable sSideToMove -value w
   ttk::radiobutton $w.ends.black -textvar ::tr(Black) -variable sSideToMove -value b
   ttk::radiobutton $w.ends.both -textvar ::tr(Both) -variable sSideToMove -value wb
-  pack $w.ends.label $w.ends.white $w.ends.sep1 $w.ends.black $w.ends.sep2 $w.ends.both -side left
-  pack $w.ends -side top -fill x
+  pack $w.ends.label $w.ends.white $w.ends.black $w.ends.both -side left -padx "0 5"
+  pack $w.ends -side top -fill x -in $w.result
   
-  addHorizontalRule $w
-  
-  pack .sh.ano -side top -fill x
-  ttk::label $w.ano.a1 -textvar ::tr(Annotations:) -font $bold
-  ttk::label $w.ano.a2 -textvar ::tr(Annotator:) -font $bold
-  ttk::checkbutton $w.ano.an -textvar ::tr(Cmnts:) -variable sAnnotated -offvalue 0 -onvalue 1
-  ttk::entry $w.ano.aname -textvariable sAnnotator -width 20 -font $regular
-  pack $w.ano.a1 $w.ano.an -side left
-  pack $w.ano.aname $w.ano.a2 -side right
+  pack $w.ano -side top -fill x
+  ttk::label $w.ano.a1 -textvar ::tr(Annotations:)
+  ttk::label $w.ano.a2 -textvar ::tr(Annotator:)
+  ttk::checkbutton $w.ano.an -textvar ::tr(Cmnts) -variable sAnnotated -offvalue 0 -onvalue 1
+  ttk::entry $w.ano.aname -textvariable sAnnotator -width 20
+  pack $w.ano.a1 $w.ano.an -side left -padx "0 5"
+  pack $w.ano.aname $w.ano.a2 -side right -padx "5 0"
 
   addHorizontalRule $w
   
-  ttk::label $w.eco.l1 -textvar ::tr(ECOCode:) -font $bold
-  ttk::label $w.eco.l2 -text "-" -font $regular
-  ttk::label $w.eco.l3 -text " " -font $regular
-  ttk::label $w.eco.l4 -textvar ::tr(GamesWithNoECO:) -font $bold
-  ttk::entry $w.eco.emin -textvariable sEcoMin -width 5 -font $regular
-  ttk::entry $w.eco.emax -textvariable sEcoMax -width 5 -font $regular
+  ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
+  ttk::label $w.eco.l2 -text "-"
+  ttk::label $w.eco.l3 -text " "
+  ttk::entry $w.eco.emin -textvariable sEcoMin -width 5
+  ttk::entry $w.eco.emax -textvariable sEcoMax -width 5
   bindFocusColors $w.eco.emin
   bindFocusColors $w.eco.emax
   ttk::button $w.eco.range -text "..." -style  Pad0.Small.TButton -width 0 -command {
@@ -283,46 +264,47 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     }
     unset tempResult
   }
-  ttk::radiobutton $w.eco.yes -variable sEco -value Yes -textvar ::tr(Yes) -style Small.TRadiobutton
-  ttk::radiobutton $w.eco.no -variable sEco -value No -textvar ::tr(No) -style Small.TRadiobutton
-  pack $w.eco -side top -fill x
-  pack $w.eco.l1 $w.eco.emin $w.eco.l2 $w.eco.emax $w.eco.range $w.eco.l3 $w.eco.l4 $w.eco.yes $w.eco.no -side left
+  ttk::checkbutton $w.eco.yes -variable sEco -onvalue Yes -offvalue No -textvar ::tr(GamesWithNoECO)
+  pack $w.eco -side top -fill x -pady "5 0"
+  pack $w.eco.l1 $w.eco.emin $w.eco.l2 $w.eco.emax -side left
+  pack $w.eco.range -side left -padx "5 10"
+  pack $w.eco.l3 $w.eco.yes -side left
   
   set f [ttk::frame $w.gnum]
   pack $f -side top -fill x
-  ttk::label $f.l1 -textvar ::tr(GlistGameNumber:) -font $bold
-  ttk::entry $f.emin -textvariable sGnumMin -width 8 -justify right -font $regular
+  ttk::label $f.l1 -textvar ::tr(GlistGameNumber:)
+  ttk::entry $f.emin -textvariable sGnumMinEntry -width 8 -justify right
   ttk::label $f.l2 -text "-" -font $regular
-  ttk::entry $f.emax -textvariable sGnumMax -width 8 -justify right -font $regular
+  ttk::entry $f.emax -textvariable sGnumMaxEntry -width 8 -justify right
   pack $f.l1 $f.emin $f.l2 $f.emax -side left
   bindFocusColors $f.emin
   bindFocusColors $f.emax
-  ttk::label $f.l3 -text " " -font $regular
+  ttk::label $f.l3 -text " "
   ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin 1; set sGnumMax -1}
   ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
   ttk::menubutton $f.last -style pad0.TMenubutton -textvar ::tr(Last...) -menu $f.last.m
-  menu $f.first.m -font $regular
-  menu $f.last.m -font $regular
+  menu $f.first.m
+  menu $f.last.m
   foreach x {10 50 100 500 1000 5000 10000} {
     $f.first.m add command -label $x \
-        -command "set sGnumMin 1; set sGnumMax $x"
+        -command "set sGnumMinEntry 1; set sGnumMaxEntry $x"
     $f.last.m add command -label $x \
-        -command "set sGnumMin -$x; set sGnumMax -1"
+        -command "set sGnumMinEntry -$x; set sGnumMaxEntry -1"
   }
   pack $f.l3 $f.all $f.first $f.last -side left -padx 2
   
   set f [ttk::frame $w.pgntext]
   pack $f -side top -fill x
-  ttk::label $f.l1 -textvar ::tr(PgnContains:) -font $bold
-  ttk::entry $f.e1 -textvariable sPgntext(1) -width 15 -font $regular
+  ttk::label $f.l1 -textvar ::tr(PgnContains:)
+  ttk::entry $f.e1 -textvariable sPgntext(1) -width 15
   ttk::label $f.l2 -text "+" -font $regular
-  ttk::entry $f.e2 -textvariable sPgntext(2) -width 15 -font $regular
+  ttk::entry $f.e2 -textvariable sPgntext(2) -width 15
   ttk::label $f.l3 -text "+" -font $regular
-  ttk::entry $f.e3 -textvariable sPgntext(3) -width 15 -font $regular
+  ttk::entry $f.e3 -textvariable sPgntext(3) -width 15
   bindFocusColors $f.e1
   bindFocusColors $f.e2
   bindFocusColors $f.e3
-  pack $f.l1 $f.e1 $f.l2 $f.e2 $f.l3 $f.e3 -side left
+  pack $f.l1 $f.e1 $f.l2 $f.e2 $f.l3 $f.e3 -side left -pady "0 5"
   
   addHorizontalRule $w
   
@@ -332,14 +314,15 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
       pack forget .sh.flags
     } else {
       set sHeaderFlagFrame 1
+      ##TODO when used from searchframework
       pack .sh.flags -side top -after .sh.flagslabel
     }
   }
-  pack $w.flagslabel -side top -fill x
-  
+  pack $w.flagslabel -side top -fill x -pady "5 5"
+
   ttk::frame $w.flags
   if {$::sHeaderFlagFrame} {
-    pack $w.flags -side top
+    pack $w.flags -side top -pady 5
   }
   
   set count 0
@@ -382,28 +365,44 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     incr count
     if {$count == 4} { set col 0; set row 8 }
   }
+}
+
+proc search::header {{ref_base ""} {ref_filter ""}} {
+  set w .sh
+  if {[winfo exists $w]} {
+    wm deiconify $w
+    raiseWin $w
+    return
+  }
   
-  grid [ttk::label $w.flags.space -text "" -font $regular] -row 0 -column 4
-  grid [ttk::label $w.flags.space2 -text "" -font $regular] -row 0 -column 9
-  
+  win::createDialog $w
+  wm title $w "Scid: $::tr(HeaderSearch)"
+  if {$ref_base != ""} {
+    set ::refDatabaseH $ref_base
+    set ::refFilterH $ref_filter
+  } else {
+    pack [ttk::frame $w.refdb] -side top -fill x
+    CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
+    set ::refFilterH ""
+  }
+  bind $w <F1> { helpWindow Searches Header }
+  bind $w <Escape> "$w.b.cancel invoke"
+  bind $w <Return> "$w.b.search invoke"
+
+  headerCreateFrame $w
   addHorizontalRule $w
   ::search::addFilterOpFrame $w 1
   addHorizontalRule $w
   
   ### Header search: search/cancel buttons
-  
   ttk::frame $w.b
-  pack $w.b -side top -fill both
-  ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults ;# -padx 20
-  ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save ;# -padx 20
+  pack $w.b -side top -fill both -pady 5
+  ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults
+  ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save
   ttk::button $w.b.stop -textvar ::tr(Stop) -command progressBarCancel
   ttk::button $w.b.new_search -text "[tr Search] ([tr GlistNewSort] [tr Filter])" -command {::search::header::do_search 1 }
   ttk::button $w.b.search -textvar ::tr(Search) -command {::search::header::do_search 0 }
-  ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20
-
-  foreach i {defaults save cancel new_search search stop} {
-    $w.b.$i configure -style Small.TButton
-  }
+  ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh}
 
   pack $w.b.defaults $w.b.save -side left -padx 5
   pack $w.b.cancel $w.b.new_search $w.b.search -side right -padx 5
@@ -422,6 +421,27 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   focus $w.cWhite.e
 }
 
+### Copy values from header search dialog to search variables. Use empty string as "all"
+proc getSearchEntries {} {
+  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+  global sGlMin sGlMax sGlMinEntry sGlMaxEntry
+  global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
+  global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry
+  global sGnumMin sGnumMax sGnumMinEntry sGnumMaxEntry
+
+  set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
+  set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
+  set ::sEloDiffMin "-[sc_info limit elo]"
+  set ::sEloDiffMax "+[sc_info limit elo]"
+  set ::sGlMin 0; set ::sGlMax 999
+  set ::sGnumMin 1; set ::sGnumMax -1
+  foreach i { sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax sGnumMin sGnumMax } {
+     set j $i
+     append j Entry
+     if { [set $j] != "" } { set $i [set $j] }
+  }
+}
+
 proc ::search::header::do_search {new_filter} {
     set dbase [string index $::refDatabaseH 0]
     if {$::refFilterH ne ""} {
@@ -438,7 +458,8 @@ proc ::search::header::do_search {new_filter} {
 
     global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
     global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-    global sEloDiffMin sEloDiffMax sSideToMove
+    global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
+    global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sSideToMove
     global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
     global sResWin sResLoss sResDraw sResOther sPgntext
 
@@ -508,6 +529,7 @@ proc ::search::header::do_search {new_filter} {
     append results $sResDraw
     append results $sResLoss
     append results $sResOther
+    getSearchEntries
 
     progressBarSet .sh.fprogress.progress 301 21
     sc_filter search $dbase $filter header \
@@ -607,7 +629,8 @@ proc ::search::header::save {} {
   }
   puts $searchF "\# SearchOptions File created by Scid $::scidVersion"
   puts $searchF "set searchType Header"
-  
+  getSearchEntries
+
   # First write the regular variables:
   foreach i {sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sResWin
     sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
@@ -738,7 +761,6 @@ proc chooseEcoRange {} {
   tkwait window $w
   return $scid_ecoRangeChosen
 }
-
 
 ###
 ### End of file: search.tcl

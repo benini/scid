@@ -419,7 +419,8 @@ translate D Year {Jahr}
 translate D Month {Monat}
 translate D Months {Januar Februar März April Mai Juni Juli August September Oktober November Dezember}
 translate D Days {Son Mon Die Mit Don Fre Sam}
-translate D YearToToday {Ein Jahr zurück}
+translate D YearToToday {-1J}
+translate D YearToTodayTooltip {Setze das Datum 1 Jahr zurück bis heute}
 translate D Result {Ergebnis}
 translate D Round {Runde}
 translate D Length {Länge}
@@ -1016,9 +1017,9 @@ translate D Diagram {Diagramm}
 # Board search:
 translate D BoardSearch {Brettsuchen}
 translate D FilterOperation {Suche im aktuellen Filter:}
-translate D FilterAnd {UND (Beschränke Filter)}
-translate D FilterOr {ODER (Zum Filter hinzufügen)}
-translate D FilterIgnore {IGNORIERE (Filter zurücksetzen)}
+translate D FilterAnd {UND\nBeschränke Filter}
+translate D FilterOr {ODER\nZum Filter hinzufügen}
+translate D FilterIgnore {IGNORIEREN\nFilter zurücksetzen}
 translate D SearchType {Suche nach Typ:}
 translate D SearchBoardExact {Exakte Position (alle Steine auf gleichen Feldern)}
 translate D SearchBoardPawns {Bauern (gleiche Figuren, alle Bauern auf gleichen Feldern)}

@@ -432,7 +432,8 @@ translate E Year {Year}
 translate E Month {Month}
 translate E Months {January February March April May June July August September October November December}
 translate E Days {Sun Mon Tue Wed Thu Fri Sat}
-translate E YearToToday {Year to today}
+translate E YearToToday {-1Y}
+translate E YearToTodayTooltip {Set date from 1 year back to today}
 translate E Result {Result}
 translate E Round {Round}
 translate E Length {Length}
