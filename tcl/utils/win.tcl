@@ -146,7 +146,6 @@ proc ::win::saveWinGeometry {w} {
 # return true if a stored geometry was available.
 proc ::win::restoreWinGeometry {w} {
 	if {[info exists ::winGeometry($w)]} {
-		update idletasks
 		if {$::winGeometry($w) == "zoomed"} {
 			if { $::windowsOS || $::macOS } {
 				wm state $w zoomed
@@ -185,13 +184,14 @@ proc ::win::undockWindow {wnd {srctab ""}} {
 	wm manage $wnd
 	wm title $wnd "Scid: $title"
 	wm protocol $wnd WM_DELETE_WINDOW "::win::closeWindow $wnd"
-	::win::restoreWinGeometry $wnd
 
 	lassign [::win::getMenu $wnd] menu wmenu
 	if {$menu ne ""} { ::setMenu $wmenu $menu }
 
 	# Remember the source notebook
 	set ::docking::notebook_name($wnd) $srctab
+
+	::win::restoreWinGeometry $wnd
 }
 
 # Dock a toplevel window
