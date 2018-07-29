@@ -288,7 +288,7 @@ menu $m.fonts
   $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
   $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
 $m add cascade -label OptionsFonts -menu $m.fonts
-$m add command -label OptionsMenuColor -command { menuConfigDialog }
+$m add command -label OptionsMenuColor -command { ::appearance::menuConfigDialog }
 if { $::macOS } { $m entryconfigure end -state disabled }
 menu $m.numbers
   foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \

@@ -333,6 +333,11 @@ option add *Font font_Regular
 # Use font_Menu for menu entries:
 option add *Menu*Font font_Menu
 
+# Use custom menu colors (if they exists)
+foreach col [array names ::menuColor] {
+  option add *Menu.$col $::menuColor($col)
+}
+
 # Apply the theme's background color to a widget
 proc applyThemeColor_background { widget } {
   set bgcolor [ttk::style lookup . -background "" #d9d9d9]

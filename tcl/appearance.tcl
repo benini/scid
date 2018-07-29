@@ -14,69 +14,65 @@
 # You should have received a copy of the GNU General Public License
 # along with SCID. If not, see <http://www.gnu.org/licenses/>.
 
-# Set Menu colors for Linux and Windows, if customized
-proc initMenuColor {} {
-  # create fake menu to get the standard colors
-  menu .xmenu
-  set ::menuColorStandard(activeBackground) [.xmenu cget -activebackground]
-  set ::menuColorStandard(background) [.xmenu cget  -background]
-  set ::menuColorStandard(selectColor) [.xmenu cget -selectcolor]
-  set ::menuColorStandard(activeForeground) [.xmenu cget -activeforeground]
-  set ::menuColorStandard(foreground) [.xmenu cget  -foreground]
-  set ::menuColorStandard(disabledforeground) [.xmenu cget  -disabledforeground]
-  destroy .xmenu
-  foreach c [array names ::menuColorStandard] {
-    if { [info exists ::menuColor($c)] } {
-      option add *Menu.$c $::menuColor($c)
-    }
-  }
-}
-if { ! $::macOS } {
-  initMenuColor
-}
+namespace eval ::appearance {}
 
-proc chooseMenuColor {c} {
-  global menuDialog_
+proc ::appearance::chooseMenuColor {c} {
   set col [ tk_chooseColor -initialcolor $::menuDialog_($c) -title "Scid"]
   if { $col != "" } {
-      set menuDialog_($c) $col
-      .menuOptions.f.menuline0 configure -background $menuDialog_(bg) -foreground $menuDialog_(dfg)
-      .menuOptions.f.menuline1 configure -background $menuDialog_(bg) -foreground $menuDialog_(fg)
-      .menuOptions.f.menuline2 configure -background $menuDialog_(abg) -foreground $menuDialog_(afg)
-      .menuOptions.f.select configure -foreground $menuDialog_(sc)
+      set ::menuDialog_($c) $col
+      ::appearance::Refresh
   }
   raiseWin .menuOptions
   focus .menuOptions.f.bg
 }
 
-proc setNewMenuColors { m bg fg abg afg sc dfg } {
-  $m configure -background $bg -foreground $fg -selectcolor $sc -activebackground $abg -activeforeground $afg -disabledforeground $dfg
+proc ::appearance::setNewMenuColors { m configure_cmd } {
+  $m configure {*}$configure_cmd
   foreach child [winfo children $m] {
-    setNewMenuColors $child $bg $fg $abg $afg $sc $dfg
+    setNewMenuColors $child $configure_cmd
   }
 }
 
-proc setMenuColors {} {
-  global menuDialog_
-  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
-    if { $menuDialog_($newc) != $::menuColorStandard($c) } {
-      set ::menuColor($c) $menuDialog_($newc)
-    } else {
-      unset -nocomplain ::menuColor($c)
-    }
-    option add *Menu.$c $::menuDialog_($newc)
+proc ::appearance::updateMenuColors {} {
+  foreach {col value} [array get ::menuDialog_] {
+    lappend configure_cmd "-[string tolower $col]"
+    lappend configure_cmd $value
   }
-  setNewMenuColors .menu $menuDialog_(bg) $menuDialog_(fg) $menuDialog_(abg) $menuDialog_(afg) $menuDialog_(sc) $menuDialog_(dfg)
+  set toplevel_wins [::win::getWindows]
+  lappend toplevel_wins "."
+  foreach wnd $toplevel_wins {
+    lassign [::win::getMenu $wnd] menu
+    if {$menu ne ""} {
+      setNewMenuColors $menu $configure_cmd
+    }
+  }
+}
+
+proc ::appearance::setMenuColors {} {
+  foreach {col value} [array get ::menuDialog_] {
+    set config [.menu configure -[string tolower $col]]
+    set default_value [lindex $config 3]
+    if { $value ne $default_value } {
+      set ::menuColor($col) $value
+    } else {
+      unset -nocomplain ::menuColor($col)
+    }
+    option add *Menu.$col $value
+  }
+
+  updateMenuColors
 
   set w .menuOptions
   catch {grab release $w}
   destroy $w
 }
 
-proc resetMenuColors {} {
+proc ::appearance::resetMenuColors {} {
   global menuDialog_
-  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
-      set menuDialog_($newc) $::menuColorStandard($c)
+  foreach col [array names menuDialog_] {
+    set config [.menu configure -[string tolower $col]]
+    set default_value [lindex $config 3]
+    set menuDialog_($col) $default_value
   }
   setMenuColors
 }
@@ -84,17 +80,10 @@ proc resetMenuColors {} {
 # Menu Color Config
 #
 #   Dialog window for configuring Menu colors
-proc menuConfigDialog {} {
+proc ::appearance::menuConfigDialog {} {
   global menuDialog_
-  set menuDialog_(bg)  [.menu cget -background]
-  set menuDialog_(fg)  [.menu cget -foreground]
-  set menuDialog_(abg) [.menu cget -activebackground]
-  set menuDialog_(afg) [.menu cget -activeforeground]
-  set menuDialog_(sc)  [.menu cget -selectcolor]
-  set menuDialog_(dfg) [.menu cget -disabledforeground]
 
   set w .menuOptions
-
   win::createDialog $w
   wm title $w "Scid: [tr OptionsMenuColor]"
 
@@ -106,45 +95,46 @@ proc menuConfigDialog {} {
   set f $w.f
   set r 0
 
-  foreach c { background foreground activeBackground activeForeground selectColor disabledforeground } newc  {bg fg abg afg sc dfg} {
-      if { [info exists ::menuColor($c)] } {
-        set menuDialog_($newc) $::menuColor($c)
+  foreach col { background foreground activeBackground activeForeground selectColor disabledForeground } {
+      if { [info exists ::menuColor($col)] } {
+        set menuDialog_($col) $::menuColor($col)
       } else {
-        set menuDialog_($newc) $::menuColorStandard($c)
+        set menuDialog_($col) [.menu cget -[string tolower $col]]
       }
   }
 
-  ttk::label $f.menuline0 -text "Disabled"  -background $menuDialog_(bg) -foreground $menuDialog_(dfg)
+  ttk::label $f.menuline0 -text "Disabled"
   grid $f.menuline0 -row $r -column 2 -padx 4
-  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command { chooseMenuColor dfg }
+  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor disabledForeground }
   grid $f.dfg -row $r -column 3 -padx 4
   incr r
-  ttk::button $f.sel -text $::tr(MenuColorSelect) -command { chooseMenuColor sc }
+  ttk::button $f.sel -text $::tr(MenuColorSelect) -command { ::appearance::chooseMenuColor selectColor }
   grid $f.sel -row $r -column 0 -padx 4
-  ttk::label $f.select -text "x" -background $menuDialog_(bg) -foreground $menuDialog_(sc)
+  ttk::label $f.select -text "x"
   grid $f.select -row $r -column 1
-  ttk::label $f.menuline1 -text "Menu1" -background $menuDialog_(bg) -foreground $menuDialog_(fg)
+  ttk::label $f.menuline1 -text "Menu1"
   grid $f.menuline1 -row $r -column 2 -padx 4
-  ttk::button $f.fg -text $::tr(MenuColorForeground) -command { chooseMenuColor fg }
+  ttk::button $f.fg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor foreground }
   grid $f.fg -row $r -column 3 -padx 4 -pady 5
-  ttk::button $f.bg -text $::tr(MenuColorBackground) -command { chooseMenuColor bg }
+  ttk::button $f.bg -text $::tr(MenuColorBackground) -command { ::appearance::chooseMenuColor background }
   grid $f.bg -row $r -column 4 -padx 4
   incr r
-  ttk::label $f.menuline2 -text "Menu2"  -background $menuDialog_(abg) -foreground $menuDialog_(afg)
+  ttk::label $f.menuline2 -text "Menu2"
   grid $f.menuline2 -row $r -column 2 -padx 4
-  ttk::button $f.afg -text $::tr(MenuColorForeground) -command { chooseMenuColor afg }
+  ttk::button $f.afg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor activeForeground }
   grid $f.afg -row $r -column 3 -padx 4
-  ttk::button $f.abg -text $::tr(MenuColorBackground) -command { chooseMenuColor abg }
+  ttk::button $f.abg -text $::tr(MenuColorBackground) -command { ::appearance::chooseMenuColor activeBackground }
   grid $f.abg -row $r -column 4 -padx 4 -pady 5
   incr r
   addHorizontalRule $w
-  dialogbutton $w.b.ok -text OK -command setMenuColors
-  dialogbutton $w.b.reset -text $::tr(Defaults) -command { resetMenuColors }
-  dialogbutton $w.b.cancel -text $::tr(Cancel) -command [list destroy $w]
+  dialogbutton $w.b.ok -text OK -command ::appearance::setMenuColors
+  dialogbutton $w.b.reset -text $::tr(Defaults) -command { ::appearance::resetMenuColors }
+  dialogbutton $w.b.cancel -text $::tr(Cancel) -command "::win::closeWindow $w"
   packdlgbuttons $w.b.cancel $w.b.ok $w.b.reset
   bind $w <Return> [list $w.b.ok invoke]
   bind $w <Escape> [list $w.b.cancel invoke]
   bind $w.f <Destroy>  { unset ::menuDialog_ }
+  ::appearance::Refresh
   ::utils::win::Centre $w
   wm resizable $w 0 0
   raiseWin $w
@@ -152,3 +142,11 @@ proc menuConfigDialog {} {
   focus $w.f.bg
 }
 
+proc ::appearance::Refresh {} {
+  global menuDialog_
+  set w .menuOptions
+  $w.f.menuline0 configure -background $menuDialog_(background) -foreground $menuDialog_(disabledForeground)
+  $w.f.menuline1 configure -background $menuDialog_(background) -foreground $menuDialog_(foreground)
+  $w.f.menuline2 configure -background $menuDialog_(activeBackground) -foreground $menuDialog_(activeForeground)
+  $w.f.select configure -foreground $menuDialog_(selectColor)
+}
