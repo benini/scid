@@ -381,10 +381,7 @@ proc MoveTimeList {color add} {
     set mainline { }
     set base [sc_base current]
     set gnum [sc_game number]
-    set game ""
-    if { $gnum > 0 } {
-	set game [sc_base getGame $base $gnum live]
-    }
+    set game [sc_base getGame $base $gnum live]
     set n [llength $game]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {
@@ -470,10 +467,7 @@ proc MoveScoreList { invw invb } {
     set mainline { }
     set base [sc_base current]
     set gnum [sc_game number]
-    set game ""
-    if { $gnum > 0 } {
-	set game [sc_base getGame $base $gnum live]
-    }
+    set game [sc_base getGame $base $gnum live]
     set n [llength $game]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {

@@ -480,17 +480,14 @@ UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc,
 		return UI_Result(ti, ERROR_BadArg, usage);
 
 	gamenumT gNum = strGetUnsigned(argv[3]);
-	if (!gNum)
-		return UI_Result(ti, ERROR_BadArg, usage);
-
-	if (live && dbase->gameNumber == static_cast<int64_t>(gNum - 1)) {
+	if (live && dbase->gameNumber == (static_cast<long long>(gNum) - 1)) {
 		auto location = dbase->game->currentLocation();
 		auto res = sc_base_getGameHelper(ti, *(dbase->game));
 		dbase->game->restoreLocation(location);
 		return res;
 	}
 
-	const IndexEntry* ie = dbase->getIndexEntry_bounds(gNum - 1);
+	auto ie = (gNum > 0) ? dbase->getIndexEntry_bounds(gNum - 1) : nullptr;
 	if (!ie)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
