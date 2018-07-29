@@ -61,7 +61,26 @@ proc ::win::closeWindow {w} {
 	} else {
 		::win::saveWinGeometry $w
 	}
-	destroy $w
+	# Do not destroy the main board
+	if {$w ne ".fdockmain"} {
+		destroy $w
+	}
+}
+
+# Returns a list containing the names of the opened windows:
+proc ::win::getWindows {} {
+	set res {}
+	foreach undocked [array names ::docking::notebook_name] {
+		if {[winfo exists $undocked]} {
+			 lappend res $undocked
+		}
+	}
+	foreach noteb [array names ::docking::tbs] {
+		foreach docked [$noteb tabs] {
+			 lappend res $docked
+		}
+	}
+	return $res
 }
 
 # if undocked window : sets the title of the toplevel window.
@@ -801,7 +820,11 @@ proc ::docking::layout_restore { slot } {
     CreateMainBoard .main
   }
 
-  closeAll
+  # closeAll
+  foreach wnd [::win::getWindows] {
+	::win::closeWindow $wnd
+  }
+
   set ::docking::tbcnt 0
   set ::docking::sashpos {}
   array unset ::docking::restoring_tabs
@@ -824,23 +847,4 @@ proc ::docking::layout_restore { slot } {
   wm deiconify $maintop
   update
   focus .main
-}
-################################################################################
-# erase all mapped windows, except .main
-proc ::docking::closeAll {} {
-	foreach undocked [array names ::docking::notebook_name] {
-		if {[winfo exists $undocked]} {
-			::win::closeWindow $undocked
-		}
-	}
-	foreach noteb [array names ::docking::tbs] {
-		foreach docked [$noteb tabs] {
-			if {$docked eq ".fdockmain"} {
-				$noteb forget $docked
-				_cleanup_tabs $noteb
-			} else {
-				::win::closeWindow $docked
-			}
-		}
-	}
 }
