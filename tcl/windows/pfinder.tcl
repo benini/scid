@@ -28,54 +28,37 @@ trace variable ::plist::maxGames w [list ::utils::validate::Integer 9999 0]
 proc ::plist::toggle {} {
   set w .plist
   if {[winfo exists $w]} {
-    destroy $w
+    ::win::closeWindow $w
   } else {
     ::plist::Open
   }
 }
 
 proc ::plist::Open {} {
-  global plistWin
   set w .plist
   if {[winfo exists .plist]} { return }
-  set plistWin 1
+  set ::plistWin 1
 
   ::createToplevel $w
-  $w configure -background [ttk::style lookup . -background]
   ::setTitle $w "Scid: [tr WindowsPList]"
-  wm title $w "Scid: [tr WindowsPList]"
-
-  bind $w <F1> {helpWindow PList}
-  bind $w <Escape> "$w.b.close invoke"
-  bind $w <Return> ::plist::refresh
-  bind $w <Destroy> { set plistWin 0 }
-  bind $w <Up> "$w.t.text yview scroll -1 units"
-  bind $w <Down> "$w.t.text yview scroll 1 units"
-  bind $w <Prior> "$w.t.text yview scroll -1 pages"
-  bind $w <Next> "$w.t.text yview scroll 1 pages"
-  bind $w <Key-Home> "$w.t.text yview moveto 0"
-  bind $w <Key-End> "$w.t.text yview moveto 0.99"
 
   menu $w.menu
-  ::setMenu $w $w.menu
-  $w.menu add cascade -label PListFile -menu $w.menu.file
   menu $w.menu.file
   $w.menu.file add command -label Update -command ::plist::refresh
-  $w.menu.file add command -label Close -command "destroy $w"
-  $w.menu add cascade -label PListSort -menu $w.menu.sort
+  $w.menu.file add command -label Close -command "::win::closeWindow $w"
+  $w.menu add cascade -label PListFile -menu $w.menu.file
   menu $w.menu.sort
   foreach name {Name Elo Games Oldest Newest} {
     $w.menu.sort add radiobutton -label $name -variable ::plist::sort \
       -value $name -command ::plist::refresh
   }
+  $w.menu add cascade -label PListSort -menu $w.menu.sort
+  ::setMenu $w $w.menu
 
-  foreach i {t o1 o2 o3 b} {ttk::frame $w.$i}
-  $w.t configure -relief sunken -borderwidth 1
+  ttk::frame $w.t -relief sunken -borderwidth 1
   text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
-    -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
-    -cursor top_left_arrow -xscrollcommand "$w.t.xbar set" -borderwidth 0
-  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
-  ttk::scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
+    -fg black -bg white -cursor top_left_arrow -borderwidth 0
+  autoscrollBars both $w.t $w.t.text
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {4 r 10 r 18 r 24 r 32 r 35 l} {
@@ -93,6 +76,7 @@ proc ::plist::Open {} {
   set fbold font_SmallBold
 
   set f $w.o1
+  ttk::frame $f
   ttk::label $f.nlabel -text $::tr(Player:) -font $fbold
   ttk::combobox $f.name -textvariable ::plist::name -width 20
   ::utils::history::SetCombobox ::plist::name $f.name
@@ -105,10 +89,13 @@ proc ::plist::Open {} {
   # foreach n {50 100 200 500 1000} {
     # $f.esize list insert end $n
   # }
-  pack $f.esize $f.size -side right
-  pack $f.nlabel $f.name -side left
+  pack $f.esize -side right -padx "0 8" -pady 8
+  pack $f.size -side right -pady 8
+  pack $f.nlabel -side left -padx "8 0" -pady 8
+  pack $f.name -side left -pady 8
 
   set f $w.o2
+  ttk::frame $f
   ttk::label $f.elo -text "[tr PListSortElo]:" -font $fbold
   ttk::entry $f.emin -textvariable ::plist::minElo
   ttk::label $f.eto -text "-"
@@ -130,28 +117,28 @@ proc ::plist::Open {} {
     bind $f.$entry <FocusOut> +::plist::check
   }
   
-  pack $f.elo $f.emin $f.eto $f.emax -side left
-  pack $f.gmax $f.gto $f.gmin $f.games -side right
+  pack $f.elo -side left -padx "8 0"
+  pack $f.emin $f.eto $f.emax -side left
+  pack $f.gmax -side right -padx "0 8"
+  pack $f.gto $f.gmin $f.games -side right
 
+  ttk::frame $w.b
   dialogbutton $w.b.defaults -text $::tr(Defaults) -command ::plist::defaults
   dialogbutton $w.b.update -text $::tr(Update) -command ::plist::refresh
-  dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
+  dialogbutton $w.b.close -text $::tr(Close) -command "::win::closeWindow $w"
   packbuttons left $w.b.defaults
   packbuttons right $w.b.close $w.b.update
 
-  pack $w.b -side bottom -fill x
-  pack $w.o3 -side bottom -fill x -padx 2 -pady 2
-  pack $w.o2 -side bottom -fill x -padx 2 -pady 2
-  pack $w.o1 -side bottom -fill x -padx 2 -pady 2
+  grid $w.t  -sticky news
+  grid $w.o1 -sticky news
+  grid $w.o2 -sticky news
+  grid $w.b  -sticky news -ipady 8
+  grid rowconfigure $w 0 -weight 1
+  grid columnconfigure $w 0 -weight 1
 
-  pack $w.t -side top -fill both -expand yes
-  grid $w.t.text -row 0 -column 0 -sticky news
-  grid $w.t.ybar -row 0 -column 1 -sticky news
-  grid $w.t.xbar -row 1 -column 0 -sticky news
-  grid rowconfig $w.t 0 -weight 1 -minsize 0
-  grid columnconfig $w.t 0 -weight 1 -minsize 0
-
-  ::createToplevelFinalize $w
+  bind $w <F1> {helpWindow PList}
+  bind $w.t <Destroy> { set plistWin 0 }
+  bind $w <Return> ::plist::refresh
 
   ::plist::ConfigMenus
   ::plist::refresh
