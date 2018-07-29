@@ -412,6 +412,9 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 	if (param == "date") return std::partition(itB, itE,
 		SearchRangeDate(base, param.getValue(), &IndexEntry::GetDate)
 	);
+	if (param == "eventdate") return std::partition(itB, itE,
+		SearchRangeDate(base, param.getValue(), &IndexEntry::GetEventDate)
+	);
 	if (param == "elo") return std::partition(itB, itE,
 		SearchRangeElo(base, param.getValue(), &IndexEntry::GetWhiteElo, &IndexEntry::GetBlackElo)
 	);

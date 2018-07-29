@@ -598,9 +598,7 @@ proc ::search::material {{ref_base ""}} {
   bindFocusColors $f.hmoves
   pack $f.fromlab $f.from $f.tolab $f.to $f.space $f.label1 $f.hmoves $f.label2 -side left
   
-  addHorizontalRule $w
   ::search::addFilterOpFrame $w 1
-  addHorizontalRule $w
   
   ### Progress bar:
   ttk::frame $w.fprogress

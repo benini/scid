@@ -26,13 +26,15 @@ set sPgntext(3) ""
 #    Checks minimum/maximum search dates in header search window and
 #    extends them if necessary.
 proc checkDates {} {
-  global sDateMin sDateMax
-  if {[string length $sDateMin] == 0} { set sDateMin "0000" }
-  if {[string length $sDateMax] == 0} { set sDateMax [sc_info limit year]}
-  if {[string length $sDateMin] == 4} { append sDateMin ".??.??" }
-  if {[string length $sDateMax] == 4} { append sDateMax ".12.31" }
-  if {[string length $sDateMin] == 7} { append sDateMin ".??" }
-  if {[string length $sDateMax] == 7} { append sDateMax ".31" }
+  global sDateMinEntry sDateMaxEntry sEventDateMinEntry sEventDateMaxEntry
+  if {[string length $sDateMinEntry] == 4} { append sDateMinEntry ".??.??" }
+  if {[string length $sDateMaxEntry] == 4} { append sDateMaxEntry ".12.31" }
+  if {[string length $sDateMinEntry] == 7} { append sDateMinEntry ".??" }
+  if {[string length $sDateMaxEntry] == 7} { append sDateMaxEntry ".31" }
+  if {[string length $sEventDateMinEntry] == 4} { append sDateMinEntry ".??.??" }
+  if {[string length $sEventDateMaxEntry] == 4} { append sDateMaxEntry ".12.31" }
+  if {[string length $sEventDateMinEntry] == 7} { append sDateMinEntry ".??" }
+  if {[string length $sEventDateMaxEntry] == 7} { append sDateMaxEntry ".31" }
 }
 
 proc ::search::header::initTrace {} {
@@ -40,8 +42,11 @@ proc ::search::header::initTrace {} {
   set ::sWhiteEloMinEntry 0; set ::sWhiteEloMaxEntry 0
   set ::sBlackEloMinEntry 0; set ::sBlackEloMaxEntry 0
   set ::sEloDiffMinEntry 0; set ::sEloDiffMaxEntry 0
-  set ::sGlMin 0; set ::sGlMax 999
-  set ::sGnumMin 1; set ::sGnumMax -1
+  set ::sGlMinEntry 0; set ::sGlMaxEntry 999
+  set ::sGnumMinEntry 1; set ::sGnumMaxEntry -1
+  set ::sEcoMinEntry "A00";  set ::sEcoMaxEntry "E99"
+  set ::sDateMinEntry "0000.00.00"; set ::sDateMaxEntry "[sc_info limit year].12.31"
+  set ::sEventDateMinEntry "0000.00.00"; set ::sEventDateMaxEntry "[sc_info limit year].12.31"
 }
 
 proc ::search::header::defaults {} {
@@ -51,12 +56,14 @@ proc ::search::header::defaults {} {
   set ::sBlackEloMinEntry ""; set ::sBlackEloMaxEntry ""
   set ::sEloDiffMinEntry ""; set ::sEloDiffMaxEntry ""
   set ::sGlMinEntry ""; set ::sGlMaxEntry ""
-  set ::sEcoMin "A00";  set ::sEcoMax "E99"; set ::sEco Yes
+  set ::sEcoMinEntry "";  set ::sEcoMaxEntry ""; set ::sEco Yes
   set ::sGnumMinEntry ""; set ::sGnumMaxEntry ""
-  set ::sDateMin "0000.00.00"; set ::sDateMax "[sc_info limit year].12.31"
+  set ::sDateMinEntry ""; set ::sDateMaxEntry ""
+  set ::sEventDateMinEntry ""; set ::sEventDateMaxEntry ""
   set ::sResWin ""; set ::sResLoss ""; set ::sResDraw ""; set ::sResOther ""
   set ::sIgnoreCol No
-  set ::sSideToMove wb
+  set ::sSideToMoveW "w"
+  set ::sSideToMoveB "b"
   foreach flag  [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] { set ::sHeaderFlags($flag) both }
   foreach i [array names ::sPgntext] { set ::sPgntext($i) "" }
   foreach i $::sTitleList {
@@ -74,8 +81,10 @@ trace variable sEloDiffMaxEntry w [list ::utils::validate::Integer "-[sc_info li
 
 ::search::header::defaults
 
-trace variable sDateMin w ::utils::validate::Date
-trace variable sDateMax w ::utils::validate::Date
+trace variable sDateMinEntry w ::utils::validate::Date
+trace variable sDateMaxEntry w ::utils::validate::Date
+trace variable sEventDateMinEntry w ::utils::validate::Date
+trace variable sEventDateMaxEntry w ::utils::validate::Date
 
 
 trace variable sGlMinEntry w {::utils::validate::Integer 9999 0}
@@ -85,7 +94,7 @@ trace variable sGnumMinEntry w {::utils::validate::Integer -9999999 0}
 trace variable sGnumMaxEntry w {::utils::validate::Integer -9999999 0}
 
 # Forcing ECO entry to be valid ECO codes:
-foreach i {sEcoMin sEcoMax} {
+foreach i {sEcoMinEntry sEcoMaxEntry} {
   trace variable $i w {::utils::validate::Regexp {^$|^[A-Ea-e]$|^[A-Ea-e][0-9]$|^[A-Ea-e][0-9][0-9]$|^[A-Ea-e][0-9][0-9][a-z]$|^[A-Ea-e][0-9][0-9][a-z][1-4]$}}
 }
 
@@ -96,14 +105,13 @@ set sHeaderFlagFrame 0
 #   Opens the window for searching by header information.
 #
 proc search::headerCreateFrame { w } {
-  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
-  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sEventDateMinEntry sEventDateMaxEntry sIgnoreCol
   global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
-  global sEloDiffMin sEloDiffMax sSideToMove
+  global sEloDiffMin sEloDiffMax sSideToMoveW sSideToMoveB
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMinEntry sGlMaxEntry sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  foreach frame {cWhite cBlack ignore tw tb eventsite dateround res ano gl ends eco} {
+  foreach frame {cWhite cBlack ignore tw tb eventsite eventdate round res ano gl ends eco} {
     ttk::frame $w.$frame
   }
   
@@ -172,26 +180,59 @@ proc search::headerCreateFrame { w } {
   pack $f.eSite -side right
   pack $f.lSite -side right -padx "10 0"
   
-  set f $w.dateround
+  set f $w.eventdate
   pack $f -side top -fill x -in $w.tournement
   lower $w.tournement
-  ttk::label $f.l1 -textvar ::tr(Date:)
-  ttk::label $f.l2 -text "-"
-  ttk::label $f.l3 -text " "
-  ttk::entry $f.emin -textvariable sDateMin -width 10
-  button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sDateMin "-" newdate
+  ## Setup date of Event
+  ttk::label $f.dl1 -text "$::tr(Event)\n$::tr(Date:)"
+  ttk::label $f.dl2 -text "-"
+  ttk::label $f.dl3 -text " "
+  ttk::entry $f.demin -textvariable sEventDateMinEntry -width 10
+  button $f.deminCal -image tb_calendar -padx 0 -pady 0 -command {
+    regsub -all {[.]} $sEventDateMinEntry "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sEventDateMinEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.emax -textvariable sDateMax -width 10
-  button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sDateMax "-" newdate
+  ttk::entry $f.demax -textvariable sEventDateMaxEntry -width 10
+  button $f.demaxCal -image tb_calendar -padx 0 -pady 0 -command {
+    regsub -all {[.]} $sEventDateMaxEntry "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sDateMax "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sEventDateMaxEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+    }
+  }
+  bindFocusColors $f.demin
+  bindFocusColors $f.demax
+  bind $f.demin <FocusOut> +checkDates
+  bind $f.demax <FocusOut> +checkDates
+  ttk::button $f.dlyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
+    set sEventDateMinEntry "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
+    set sEventDateMaxEntry [::utils::date::today]
+  }
+  ::utils::tooltip::Set $f.dlyear $::tr(YearToTodayTooltip)
+
+  pack $f.dl1 $f.demin $f.deminCal $f.dl2 $f.demax $f.demaxCal $f.dl3 $f.dlyear -side left
+
+  ## Setup Date of Game
+  ttk::label $f.l1 -text "$::tr(game)\n$::tr(Date:)"
+  ttk::label $f.l2 -text "-"
+  ttk::label $f.l3 -text " "
+  ttk::entry $f.emin -textvariable sDateMinEntry -width 10
+  button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
+    regsub -all {[.]} $sDateMinEntry "-" newdate
+    set ndate [::utils::date::chooser $newdate]
+    if {[llength $ndate] == 3} {
+      set sDateMinEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+    }
+  }
+  ttk::entry $f.emax -textvariable sDateMaxEntry -width 10
+  button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
+    regsub -all {[.]} $sDateMaxEntry "-" newdate
+    set ndate [::utils::date::chooser $newdate]
+    if {[llength $ndate] == 3} {
+      set sDateMaxEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
   bindFocusColors $f.emin
@@ -199,17 +240,20 @@ proc search::headerCreateFrame { w } {
   bind $f.emin <FocusOut> +checkDates
   bind $f.emax <FocusOut> +checkDates
   ttk::button $f.lyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
-    set sDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
-    set sDateMax [::utils::date::today]
+    set sDateMinEntry "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
+    set sDateMaxEntry [::utils::date::today]
   }
   ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
 
-  pack $f.l1 $f.emin $f.eminCal $f.l2 $f.emax $f.emaxCal $f.l3 $f.lyear -side left
-  
+  pack $f.lyear $f.l3 $f.emax $f.emaxCal $f.l2 $f.emin $f.eminCal -side right
+  pack $f.l1 -side right -padx "5 0"
+
+  set f $w.round
+  pack $f -side top -fill x -in $w.tournement -pady "0 3"
   ttk::label $f.lRound -textvar ::tr(Round:)
   ttk::entry $f.eRound -textvariable sRound -width 10
   bindFocusColors $f.eRound
-  pack $f.eRound $f.lRound -side right
+  pack $f.lRound $f.eRound -side left
   
   ttk::labelframe $w.result -text $::tr(Result)
   pack $w.result -side top -fill x -pady 5
@@ -233,10 +277,9 @@ proc search::headerCreateFrame { w } {
   pack $w.gl.l1 $w.gl.emin $w.gl.l2 $w.gl.emax $w.gl.l3 -side left
   
   ttk::label $w.ends.label -textvar ::tr(EndSideToMove)
-  ttk::radiobutton $w.ends.white -textvar ::tr(White) -variable sSideToMove -value w
-  ttk::radiobutton $w.ends.black -textvar ::tr(Black) -variable sSideToMove -value b
-  ttk::radiobutton $w.ends.both -textvar ::tr(Both) -variable sSideToMove -value wb
-  pack $w.ends.label $w.ends.white $w.ends.black $w.ends.both -side left -padx "0 5"
+  ttk::checkbutton $w.ends.white -textvar ::tr(White) -variable sSideToMoveW -offvalue "" -onvalue w
+  ttk::checkbutton $w.ends.black -textvar ::tr(Black) -variable sSideToMoveB -offvalue "" -onvalue b
+  pack $w.ends.label $w.ends.white $w.ends.black -side left -padx "0 5"
   pack $w.ends -side top -fill x -in $w.result
   
   pack $w.ano -side top -fill x
@@ -252,15 +295,15 @@ proc search::headerCreateFrame { w } {
   ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
   ttk::label $w.eco.l2 -text "-"
   ttk::label $w.eco.l3 -text " "
-  ttk::entry $w.eco.emin -textvariable sEcoMin -width 5
-  ttk::entry $w.eco.emax -textvariable sEcoMax -width 5
+  ttk::entry $w.eco.emin -textvariable sEcoMinEntry -width 5
+  ttk::entry $w.eco.emax -textvariable sEcoMaxEntry -width 5
   bindFocusColors $w.eco.emin
   bindFocusColors $w.eco.emax
   ttk::button $w.eco.range -text "..." -style  Pad0.Small.TButton -width 0 -command {
     set tempResult [chooseEcoRange]
     if {[scan $tempResult "%\[A-E0-9a-z\]-%\[A-E0-9a-z\]" sEcoMin_tmp sEcoMax_tmp] == 2} {
-      set sEcoMin $sEcoMin_tmp
-      set sEcoMax $sEcoMax_tmp
+      set sEcoMinEntry $sEcoMin_tmp
+      set sEcoMaxEntry $sEcoMax_tmp
     }
     unset tempResult
   }
@@ -390,9 +433,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   bind $w <Return> "$w.b.search invoke"
 
   headerCreateFrame $w
-  addHorizontalRule $w
   ::search::addFilterOpFrame $w 1
-  addHorizontalRule $w
   
   ### Header search: search/cancel buttons
   ttk::frame $w.b
@@ -426,16 +467,19 @@ proc getSearchEntries {} {
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sGlMin sGlMax sGlMinEntry sGlMaxEntry
   global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
-  global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry
-  global sGnumMin sGnumMax sGnumMinEntry sGnumMaxEntry
-
+  global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sEventDateMin sEventDateMax
+  global sGnumMin sGnumMax sGnumMinEntry sGnumMaxEntry sEventDateMinEntry sEventDateMaxEntry
+  global sEcoMin sEcoMax sDateMin sDateMax sEcoMinEntry sEcoMaxEntry sDateMinEntry sDateMaxEntry
   set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
   set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
   set ::sEloDiffMin "-[sc_info limit elo]"
   set ::sEloDiffMax "+[sc_info limit elo]"
   set ::sGlMin 0; set ::sGlMax 999
   set ::sGnumMin 1; set ::sGnumMax -1
-  foreach i { sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax sGnumMin sGnumMax } {
+  set ::sEcoMin "A00";  set ::sEcoMax "E99"
+  set ::sDateMin "0000.00.00"; set ::sDateMax "[sc_info limit year].12.31"
+  set ::sEventDateMin "0000.00.00"; set ::sEventDateMax "[sc_info limit year].12.31"
+  foreach i { sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax sGnumMin sGnumMax sDateMin sDateMax sEcoMin sEcoMax sEventDateMin sEventDateMax} {
      set j $i
      append j Entry
      if { [set $j] != "" } { set $i [set $j] }
@@ -443,6 +487,12 @@ proc getSearchEntries {} {
 }
 
 proc ::search::header::do_search {new_filter} {
+    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
+    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sEventDateMin sEventDateMax
+    global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sSideToMoveW sSideToMoveB
+    global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
+    global sResWin sResLoss sResDraw sResOther sPgntext
+
     set dbase [string index $::refDatabaseH 0]
     if {$::refFilterH ne ""} {
         set ::refFilterH [sc_filter compose $dbase $::refFilterH ""]
@@ -455,13 +505,6 @@ proc ::search::header::do_search {new_filter} {
         set ::refFilterH $tmp_filter
     }
     set filter $::refFilterH
-
-    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
-    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-    global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
-    global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sSideToMove
-    global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
-    global sResWin sResLoss sResDraw sResOther sPgntext
 
     ::utils::history::AddEntry HeaderSearchWhite $sWhite
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
@@ -536,6 +579,7 @@ proc ::search::header::do_search {new_filter} {
           -filter RESET \
           -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \
+          -eventdate [list $sEventDateMin $sEventDateMax] \
           -date [list $sDateMin $sDateMax] \
           -result! $results \
           -welo [list $sWhiteEloMin $sWhiteEloMax] \
@@ -543,7 +587,7 @@ proc ::search::header::do_search {new_filter} {
           -delo [list $sEloDiffMin $sEloDiffMax] \
           -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
-          -toMove $sSideToMove \
+          -toMove "$sSideToMoveW$sSideToMoveB" \
           -gnum [list $::sGnumMin $::sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
@@ -562,6 +606,7 @@ proc ::search::header::do_search {new_filter} {
           -filter RESET \
           -white $sBlack -black $sWhite \
           -event $sEvent -site $sSite -round $sRound \
+          -eventdate [list $sEventDateMin $sEventDateMax] \
           -date [list $sDateMin $sDateMax] \
           -result! $results \
           -welo [list $sBlackEloMin $sBlackEloMax] \
@@ -611,7 +656,7 @@ proc ::search::header::save {} {
   global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sGlMin sGlMax
-  global sEco sEcoMin sEcoMax sHeaderFlags sSideToMove
+  global sEco sEcoMin sEcoMax sHeaderFlags sSideToMoveW sSideToMoveB
   global sResWin sResLoss sResDraw sResOther sPgntext
   
   set ftype { { "Scid SearchOptions files" {".sso"} } }
@@ -635,7 +680,7 @@ proc ::search::header::save {} {
   foreach i {sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sResWin
     sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
     sBlackEloMax sEcoMin sEcoMax sEloDiffMin sEloDiffMax
-    sIgnoreCol sSideToMove sGlMin sGlMax ::search::filter::operation} {
+    sIgnoreCol sSideToMoveW sSideToMoveB sGlMin sGlMax ::search::filter::operation} {
     puts $searchF "set $i [list [set $i]]"
   }
   # Now write the array values:
