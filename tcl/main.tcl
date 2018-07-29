@@ -807,6 +807,7 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
                 ::fics::writechan "promote $promoletter"
             }
             ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
+            ::fics::storeTime
         }
     }
 

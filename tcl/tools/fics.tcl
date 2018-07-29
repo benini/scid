@@ -230,6 +230,14 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
+  proc storeTime { } {
+      set side 1
+      if { [sc_pos side] == "white" } {set side 2 }
+      ::gameclock::storeTimeComment $side
+  }
+  ################################################################################
+  #
+  ################################################################################
   proc connect { login passwd } {
     global ::fics::sockchan ::fics::seeklist ::fics::width ::fics::height ::fics::off
     variable isGuestLogin
@@ -280,7 +288,7 @@ namespace eval fics {
     ttk::frame $w.f.bottom
 
     $w.f add $w.f.top -weight 1
-    $w.f add $w.f.bottom -weight 1
+    $w.f add $w.f.bottom -weight 0
 
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
@@ -757,6 +765,8 @@ namespace eval fics {
     if { $::fics::waitForMoves != "" } {
       set m1 ""
       set m2 ""
+      set t2 ""
+      set t4 ""
       set line [string trim $line]
 
       # Because some free text may be in the form (".)
@@ -772,8 +782,14 @@ namespace eval fics {
         return
       }
       catch { sc_move addSan $m1 }
+      if {$t2 != ""} {
+	  storeEmtComment 0 $t2 $t3
+      }
       if {$m2 != ""} {
         catch { sc_move addSan $m2 }
+      }
+      if {$t4 != ""} {
+	  storeEmtComment 0 $t4 $t5
       }
 
       if {[sc_pos fen] == $::fics::waitForMoves } {
@@ -1020,6 +1036,7 @@ namespace eval fics {
         if { [catch { sc_move addSan $moveSan } err ] } {
           puts "error $err"
         } else {
+          ::fics::storeTime
           if { $::novag::connected } {
             set m $verbose_move
             if { [string index $m 1] == "/" } { set m [string range $m 2 end] }

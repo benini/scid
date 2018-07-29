@@ -471,6 +471,24 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   $w.lb current $selected
   event generate $w.lb <<ComboboxSelected>>
 }
+proc storeEmtComment { h m s } {
+    set time "[format "%d" $h]:[format "%02d" $m]:[format "%02d" $s]"
+
+    #Replace %emt if present, otherwise prepend it
+    if {[regsub {\[%emt\s*.*?\]} [sc_pos getComment] "\[%emt $time\]" comment]} {
+      sc_pos setComment "$comment"
+    } else {
+      sc_pos setComment "\[%emt $time\]$comment"
+    }
+  }
+proc storeEvalComment { value } {
+    #Replace %eval if present, otherwise prepend it
+    if {[regsub {\[%eval\s*.*?\]} [sc_pos getComment] "\[%eval $value\]" comment]} {
+      sc_pos setComment "$comment"
+    } else {
+      sc_pos setComment "\[%eval $value\]$comment"
+    }
+  }
 
 ################################################################################
 # clock widget
