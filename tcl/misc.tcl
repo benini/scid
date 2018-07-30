@@ -612,7 +612,7 @@ namespace eval gameclock {
   ################################################################################
   proc storeTimeComment { color } {
     set sec [::gameclock::getSec $color]
-    set h [format "%02d" [expr abs($sec) / 60 / 60] ]
+    set h [format "%d" [expr abs($sec) / 60 / 60] ]
     set m [format "%02d" [expr (abs($sec) / 60) % 60] ]
     set s [format "%02d" [expr abs($sec) % 60] ]
     set time "$h:$m:$s"

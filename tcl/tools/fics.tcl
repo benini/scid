@@ -686,6 +686,7 @@ namespace eval fics {
       sc_game tags set -whiteElo $whiteElo
       sc_game tags set -black $black
       sc_game tags set -blackElo $blackElo
+      sc_game tags set -date "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
 
       sc_game tags set -event "FICS [lrange $line 5 end]"
       if { [::board::isFlipped .main.board] } {
@@ -1036,7 +1037,14 @@ namespace eval fics {
         if { [catch { sc_move addSan $moveSan } err ] } {
           puts "error $err"
         } else {
-          ::fics::storeTime
+	    if {  $::fics::playing == 1 } {
+		::fics::storeTime
+	    } else {
+		set t1 ""; set t2 ""
+		if { [scan $moveTime "(%d:%d)" t1 t2] == 2} {
+		    storeEmtComment 0 $t1 $t2
+		}
+	    }
           if { $::novag::connected } {
             set m $verbose_move
             if { [string index $m 1] == "/" } { set m [string range $m 2 end] }
@@ -1072,6 +1080,7 @@ namespace eval fics {
       set ::fics::waitForRating ""
 
       sc_game tags set -event "FICS game $gameNumber $initialTime/$increment"
+      sc_game tags set -date "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
 
       # try to get first moves of game
       writechan "moves $gameNumber"
