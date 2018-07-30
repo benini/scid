@@ -42,19 +42,6 @@ proc ::plist::Open {} {
   ::createToplevel $w
   ::setTitle $w "Scid: [tr WindowsPList]"
 
-  menu $w.menu
-  menu $w.menu.file
-  $w.menu.file add command -label Update -command ::plist::refresh
-  $w.menu.file add command -label Close -command "::win::closeWindow $w"
-  $w.menu add cascade -label PListFile -menu $w.menu.file
-  menu $w.menu.sort
-  foreach name {Name Elo Games Oldest Newest} {
-    $w.menu.sort add radiobutton -label $name -variable ::plist::sort \
-      -value $name -command ::plist::refresh
-  }
-  $w.menu add cascade -label PListSort -menu $w.menu.sort
-  ::setMenu $w $w.menu
-
   ttk::frame $w.t -relief sunken -borderwidth 1
   text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
     -fg black -bg white -cursor top_left_arrow -borderwidth 0
@@ -125,9 +112,8 @@ proc ::plist::Open {} {
   ttk::frame $w.b
   dialogbutton $w.b.defaults -text $::tr(Defaults) -command ::plist::defaults
   dialogbutton $w.b.update -text $::tr(Update) -command ::plist::refresh
-  dialogbutton $w.b.close -text $::tr(Close) -command "::win::closeWindow $w"
   packbuttons left $w.b.defaults
-  packbuttons right $w.b.close $w.b.update
+  packbuttons right $w.b.update
 
   grid $w.t  -sticky news
   grid $w.o1 -sticky news
@@ -140,24 +126,7 @@ proc ::plist::Open {} {
   bind $w.t <Destroy> { set plistWin 0 }
   bind $w <Return> ::plist::refresh
 
-  ::plist::ConfigMenus
   ::plist::refresh
-}
-
-proc ::plist::ConfigMenus {{lang ""}} {
-  set w .plist
-  if {! [winfo exists $w]} { return }
-  if {$lang == ""} { set lang $::language }
-  set m $w.menu
-  foreach idx {0 1} tag {File Sort} {
-    configMenuText $m $idx PList$tag $lang
-  }
-  foreach idx {0 2} tag {Update Close} {
-    configMenuText $m.file $idx PListFile$tag $lang
-  }
-  foreach idx {0 1 2 3 4} tag {Name Elo Games Oldest Newest } {
-    configMenuText $m.sort $idx PListSort$tag $lang
-  }
 }
 
 proc ::plist::refresh {} {
