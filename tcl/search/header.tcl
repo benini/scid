@@ -111,7 +111,7 @@ proc search::headerCreateFrame { w } {
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMinEntry sGlMaxEntry sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  foreach frame {cWhite cBlack ignore tw tb eventsite eventdate round res ano gl ends eco} {
+  foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res ano gl ends eco} {
     ttk::frame $w.$frame
   }
   
@@ -180,7 +180,7 @@ proc search::headerCreateFrame { w } {
   pack $f.eSite -side right
   pack $f.lSite -side right -padx "10 0"
   
-  set f $w.eventdate
+  set f $w.eventround
   pack $f -side top -fill x -in $w.tournement
   lower $w.tournement
   ## Setup date of Event
@@ -215,6 +215,13 @@ proc search::headerCreateFrame { w } {
 
   pack $f.dl1 $f.demin $f.deminCal $f.dl2 $f.demax $f.demaxCal $f.dl3 $f.dlyear -side left
 
+  ttk::label $f.lRound -textvar ::tr(Round:)
+  ttk::entry $f.eRound -textvariable sRound -width 10
+  bindFocusColors $f.eRound
+  pack $f.eRound $f.lRound -side right
+
+  set f $w.date
+  pack $f -side top -fill x -in $w.tournement -pady "0 3"
   ## Setup Date of Game
   ttk::label $f.l1 -text "$::tr(game)\n$::tr(Date:)"
   ttk::label $f.l2 -text "-"
@@ -245,15 +252,7 @@ proc search::headerCreateFrame { w } {
   }
   ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
 
-  pack $f.lyear $f.l3 $f.emax $f.emaxCal $f.l2 $f.emin $f.eminCal -side right
-  pack $f.l1 -side right -padx "5 0"
-
-  set f $w.round
-  pack $f -side top -fill x -in $w.tournement -pady "0 3"
-  ttk::label $f.lRound -textvar ::tr(Round:)
-  ttk::entry $f.eRound -textvariable sRound -width 10
-  bindFocusColors $f.eRound
-  pack $f.lRound $f.eRound -side left
+  pack $f.l1 $f.emin $f.eminCal $f.l2 $f.emax $f.emaxCal $f.l3 $f.lyear -side left
   
   ttk::labelframe $w.result -text $::tr(Result)
   pack $w.result -side top -fill x -pady 5

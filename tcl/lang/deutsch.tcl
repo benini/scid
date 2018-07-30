@@ -801,7 +801,7 @@ menuText D OprepHelpReport "Eröffnungsbericht-Hilfe" 0
 menuText D OprepHelpIndex "Index" 0
 
 # Header search:
-translate D HeaderSearch {Partiedatensuche}
+translate D HeaderSearch {Partiedaten suchen}
 translate D EndSideToMove {Wer ist beim Partieende am Zug?}
 translate D GamesWithNoECO {Partien ohne ECO}
 translate D GameLength {Partielänge}
