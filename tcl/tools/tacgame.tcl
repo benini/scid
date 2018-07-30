@@ -781,7 +781,8 @@ namespace eval tacgame {
       sc_move forward 1
     }
     if { $::tacgame::showevaluation == 1 && [info exists ::uci::uciInfo(score2)] } {
-	  sc_pos setComment "[sc_pos getComment] \[%eval $::uci::uciInfo(score2)\]" }
+      storeEvalComment $::uci::uciInfo(score2)
+    }
     
     set analysisCoach(automoveThinking1) 0
     set currentPosHash [sc_pos hash]

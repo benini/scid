@@ -602,11 +602,7 @@ namespace eval sergame {
     ::utils::sound::AnnounceNewMove $::uci::uciInfo(bestmove$n)
     set ::uci::uciInfo(prevscore$n) $::uci::uciInfo(score$n)
     if { $::sergame::storeEval == 1 } {
-      #TODO: write a function like "storeTimeComment"
-      # The following hack does not respect the PGN convenction of placing embedded commands
-      # before the comment's text. It also adds a leading space if there is no comment,
-      # and do not consider the possibility that an [%eval] command is already present.
-      sc_pos setComment "[sc_pos getComment] \[%eval $::uci::uciInfo(score$n)\]"
+      storeEvalComment $::uci::uciInfo(score$n)
     }
     updateBoard -pgn -animate
     repetition
