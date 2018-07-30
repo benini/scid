@@ -184,12 +184,19 @@ proc ::win::undockWindow {wnd {srctab ""}} {
 	wm protocol $wnd WM_DELETE_WINDOW "::win::closeWindow $wnd"
 
 	lassign [::win::getMenu $wnd] menu wmenu
-	if {$menu ne ""} { ::setMenu $wmenu $menu }
+	if {$menu ne ""} {
+		#HACK: In Linux (tk8.6.8) without "update idletasks"
+		#      sometimes the menu is not shown.
+		update idletasks
+		::setMenu $wmenu $menu
+	}
 
 	# Remember the source notebook
 	set ::docking::notebook_name($wnd) $srctab
 
-	::win::restoreWinGeometry $wnd
+	#HACK: In Linux (tk8.6.8) without "after idle after 1"
+	#      sometimes the geometry is not restored correctly.
+	after idle after 1 "::win::restoreWinGeometry $wnd"
 }
 
 # Dock a toplevel window
