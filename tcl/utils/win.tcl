@@ -29,9 +29,9 @@ proc ::win::createDockWindow {path} {
 proc ::win::createWindow { {w} {title} {default_geometry ""} } {
 	# Raise window if already exists
 	if { [winfo exists $w] } {
-		lassign [::win::isDocked $w] docked w
-		if {$docked} {
-			[::docking::find_tbn $w] select $w
+		lassign [::win::isDocked $w] docked_nb w
+		if {$docked_nb ne ""} {
+			$docked_nb select $w
 		} else {
 			wm deiconify $w
 		}
@@ -55,9 +55,9 @@ proc ::win::createWindow { {w} {title} {default_geometry ""} } {
 # Close a window, independently of its docked state.
 # If the window is undocked the window geometry is saved.
 proc ::win::closeWindow {w} {
-	lassign [::win::isDocked $w] docked w
-	if {$docked} {
-		::docking::remove_tab $w [::docking::find_tbn $w]
+	lassign [::win::isDocked $w] docked_nb w
+	if {$docked_nb ne ""} {
+		::docking::remove_tab $w $docked_nb
 	} else {
 		::win::saveWinGeometry $w
 	}
@@ -87,14 +87,13 @@ proc ::win::getWindows {} {
 # if docked : sets the name of the tab.
 # TODO: ::win::setTitle
 proc setTitle { w title } {
-	lassign [::win::isDocked $w] docked w
-	if {$docked} {
+	lassign [::win::isDocked $w] docked_nb w
+	if {$docked_nb ne ""} {
 		# in docked mode trim down title to spare space
 		if {[string equal -length 6 $title "Scid: "]} {
 			set title [string range $title 6 end]
 		}
-		set nb [ ::docking::find_tbn $w ]
-		$nb tab $w -text $title
+		$docked_nb tab $w -text $title
 	} else {
 		wm title $w $title
 	}
@@ -104,7 +103,7 @@ proc setTitle { w title } {
 # and the name of the corresponding toplevel window
 # param w: the (child) widget
 proc ::win::getMenu {w} {
-	lassign [::win::isDocked $w] docked wnd
+	lassign [::win::isDocked $w] docked_nb wnd
 	if {[string equal -length 6 $wnd ".fdock"]} {
 		set w [string replace $wnd 1 5]
 	}
@@ -119,10 +118,9 @@ proc ::win::getMenu {w} {
 # param w: the (child) widget
 # TODO: ::win::setMenu
 proc setMenu {w m} {
-	lassign [::win::isDocked $w] docked wnd
-	if {$docked} {
-		set nb [ ::docking::find_tbn $wnd ]
-		$nb tab $wnd -image tb_tabmenu -compound left
+	lassign [::win::isDocked $w] docked_nb wnd
+	if {$docked_nb ne ""} {
+		$docked_nb tab $wnd -image tb_tabmenu -compound left
 	} else {
 		$w configure -menu $m
 	}
@@ -131,8 +129,8 @@ proc setMenu {w m} {
 
 # Save the geometry of an undocked toplevel window.
 proc ::win::saveWinGeometry {w} {
-	lassign [::win::isDocked $w] docked w
-	if {! $docked} {
+	lassign [::win::isDocked $w] docked_nb w
+	if {$docked_nb eq ""} {
 		update idletasks
 		if {[wm state $w] == "zoomed"} {
 			set ::winGeometry($w) "zoomed"
@@ -161,7 +159,7 @@ proc ::win::restoreWinGeometry {w} {
 }
 
 # Return a list containing:
-# - true if it is a (child of a) docked window
+# - the name of the notebook containing the window ("" if undocked)
 # - the name of the top parent window
 proc ::win::isDocked {wnd} {
 	# Get the window at the top of the hierarchy (not the toplevel)
@@ -169,8 +167,8 @@ proc ::win::isDocked {wnd} {
 	set f ".fdock[string range $wnd 1 end]"
 	if {[winfo exists $f]} { set wnd $f }
 
-	set docked [catch {wm title $wnd}]
-	return [list $docked $wnd]
+	set docked_nb [ ::docking::find_tbn $wnd ]
+	return [list $docked_nb $wnd]
 }
 
 # Undock a toplevel window
@@ -223,16 +221,15 @@ proc ::win::dockWindow {wnd} {
 # Toggle the docked/undocked status of a window
 # param wnd: the (child) widget
 proc ::win::toggleDocked {wnd} {
-	lassign [::win::isDocked $wnd] docked wnd
+	lassign [::win::isDocked $wnd] docked_nb wnd
 
 	# Check if the window can be docked/undocked
 	if {$wnd eq ".fdockmain" || [winfo class $wnd] ne "Frame"} {
 		return
 	}
 
-	if {$docked} {
-		set srctab [::docking::find_tbn $wnd]
-		::win::undockWindow $wnd $srctab
+	if {$docked_nb ne ""} {
+		::win::undockWindow $wnd $docked_nb
 	} else {
 		::win::dockWindow $wnd
 	}
@@ -836,9 +833,8 @@ proc ::docking::layout_restore { slot } {
   ::docking::restore_tabs
 
   # Bring the main board to the front
-  lassign [::win::isDocked .main] docked mainboard
-  set maintab [::docking::find_tbn $mainboard]
-  if {$maintab != ""} {
+  lassign [::win::isDocked .main] maintab mainboard
+  if {$maintab ne ""} {
     raise $mainboard
     $maintab select $mainboard
   }

@@ -17,9 +17,9 @@ set filterGraph 0
 proc createToplevel { {w} {closeto ""} } {
   # Raise window if already exist
   if { [winfo exists $w] } {
-    lassign [::win::isDocked $w] docked w
-    if {$docked} {
-        [::docking::find_tbn $w] select $w
+    lassign [::win::isDocked $w] docked_nb w
+    if {$docked_nb ne ""} {
+        $docked_nb select $w
     } else {
         wm deiconify $w
     }
