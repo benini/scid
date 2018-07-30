@@ -100,8 +100,8 @@ proc setTitle { w title } {
 }
 
 # Return a list containing the name of the menu (or "" if a menu do not exists)
-# and the name of the corresponding toplevel window
-# param w: the (child) widget
+# and the unadultered window's name (no fdock)
+# param w: the window's name (with or without fdock)
 proc ::win::getMenu {w} {
 	lassign [::win::isDocked $w] docked_nb wnd
 	if {[string equal -length 6 $wnd ".fdock"]} {
@@ -115,7 +115,7 @@ proc ::win::getMenu {w} {
 
 # if undocked window : sets the menu of the toplevel window.
 # if docked : displays a menu icon in the tab.
-# param w: the (child) widget
+# param w: the window's name (without fdock)
 # TODO: ::win::setMenu
 proc setMenu {w m} {
 	lassign [::win::isDocked $w] docked_nb wnd
@@ -194,6 +194,7 @@ proc ::win::undockWindow {wnd {srctab ""}} {
 
 # Dock a toplevel window
 proc ::win::dockWindow {wnd} {
+	::win::saveWinGeometry $wnd
 	# in docked mode trim down title to spare space
 	set title [wm title $wnd]
 	if {[string equal -length 6 $title "Scid: "]} {
@@ -203,7 +204,6 @@ proc ::win::dockWindow {wnd} {
 	lassign [::win::getMenu $wnd] menu wmenu
 	$wmenu configure -menu {}
 
-	::win::saveWinGeometry $wnd
 	wm forget $wnd
 
 	if {[winfo exists $::docking::notebook_name($wnd)]} {
@@ -215,7 +215,7 @@ proc ::win::dockWindow {wnd} {
 	::docking::insert_tab $wnd $dsttab end \
 		[list -text $title -image tb_close -compound left]
 
-	if {$menu ne ""} { ::setMenu $wnd $menu }
+	if {$menu ne ""} { ::setMenu $wmenu $menu }
 }
 
 # Toggle the docked/undocked status of a window
