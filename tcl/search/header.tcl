@@ -453,8 +453,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
       -fill black -text "0:00 / 0:00"
   pack $w.fprogress.progress -side top -pady 2
-  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
-  pack $w.status -side bottom -fill x
   # update
   wm resizable $w 0 0
   ::search::Config
@@ -638,8 +636,8 @@ proc ::search::header::do_search {new_filter} {
     }
 
     foreach {filterSz gameSz mainSz} [sc_filter sizes $dbase $filter] {}
-    set str "[::utils::thousands $mainSz] / [::utils::thousands $gameSz]"
-    .sh.status configure -text $str
+    set str [::windows::gamelist::formatFilterText $filterSz $gameSz]
+    .sh.filterop configure -text "$::tr(FilterOperation) ($str)"
     
     grab release .sh.b.stop
     pack forget .sh.b.stop

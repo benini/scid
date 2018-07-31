@@ -656,6 +656,9 @@ proc ::search::material {{ref_base ""}} {
     .sm.fprogress.progress coords bar 0 0 0 0
     unbusyCursor .
     ::notify::DatabaseModified [sc_base current] dbfilter
+    foreach {filterSz gameSz mainSz} [sc_filter sizes $curr_base dbfilter] {}
+    set str [::windows::gamelist::formatFilterText $filterSz $gameSz]
+    .sm.filterop configure -text "$::tr(FilterOperation) ($str)"
   }
   
   dialogbutton $f.cancel -textvar ::tr(Close) \
