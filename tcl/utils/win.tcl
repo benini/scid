@@ -125,6 +125,8 @@ proc setMenu {w m} {
 		$w configure -menu $m
 	}
 	set ::win::menu_($wnd) $m
+
+	::appearance::applyMenuBarColor $m $docked_nb
 }
 
 # Save the geometry of an undocked toplevel window.
