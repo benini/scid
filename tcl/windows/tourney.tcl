@@ -52,19 +52,6 @@ proc ::tourney::Open {} {
   bind $w <Key-Home> "$w.t.text yview moveto 0"
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
 
-  menu $w.menu
-  ::setMenu $w $w.menu
-  $w.menu add cascade -label TmtFile -menu $w.menu.file
-  menu $w.menu.file
-  $w.menu.file add command -label TmtFileUpdate -command ::tourney::refresh
-  $w.menu.file add command -label TmtFileClose -command "destroy $w"
-  $w.menu add cascade -label TmtSort -menu $w.menu.sort
-  menu $w.menu.sort
-  foreach name {Date Players Games Elo Site Event} {
-    $w.menu.sort add radiobutton -label TmtSor$name \
-      -variable ::tourney::sort -value $name -command {::tourney::refresh}
-  }
-
   foreach i {t o1 o2 o3 b} {ttk::frame $w.$i}
   text $w.t.text -width 75 -height 22 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
@@ -185,24 +172,7 @@ proc ::tourney::Open {} {
   grid columnconfig $w.t 0 -weight 1 -minsize 0
 
   ::createToplevelFinalize $w
-  ::tourney::ConfigMenus
   ::tourney::refresh
-}
-
-proc ::tourney::ConfigMenus {{lang ""}} {
-  set w .tourney
-  if {! [winfo exists $w]} { return }
-  if {$lang == ""} { set lang $::language }
-  set m $w.menu
-  foreach idx {0 1} tag {File Sort} {
-    configMenuText $m $idx Tmt$tag $lang
-  }
-  foreach idx {0 2} tag {Update Close} {
-    configMenuText $m.file $idx TmtFile$tag $lang
-  }
-  foreach idx {0 1 2 3 4 5} tag {Date Players Games Elo Site Event} {
-    configMenuText $m.sort $idx TmtSort$tag $lang
-  }
 }
 
 proc ::tourney::defaults {} {
