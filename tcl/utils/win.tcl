@@ -174,15 +174,14 @@ proc ::win::isDocked {wnd} {
 }
 
 # Undock a toplevel window
-proc ::win::undockWindow {wnd {srctab ""}} {
-	set title ""
+proc ::win::undockWindow { wnd srctab {title ""} } {
 	if {$srctab ne "" } {
 		set old_options [::docking::remove_tab $wnd $srctab]
-		set title [dict get $old_options -text]
+		set title "Scid: [dict get $old_options -text]"
 	}
 
 	wm manage $wnd
-	wm title $wnd "Scid: $title"
+	wm title $wnd $title
 	wm protocol $wnd WM_DELETE_WINDOW "::win::closeWindow $wnd"
 
 	lassign [::win::getMenu $wnd] menu wmenu
@@ -245,6 +244,9 @@ proc ::win::toggleDocked {wnd} {
 }
 
 proc ::win::manageWindow {wnd title} {
+	unset -nocomplain ::win::menu_($wnd)
+	unset -nocomplain ::docking::notebook_name($wnd)
+
 	if { [info exists ::docking::layout_dest_notebook]} {
 		set dsttab $::docking::layout_dest_notebook
 		unset ::docking::layout_dest_notebook
@@ -256,12 +258,10 @@ proc ::win::manageWindow {wnd title} {
 		if {![info exists dsttab]} {
 			set dsttab [::docking::choose_notebook $wnd]
 		}
-		unset -nocomplain ::docking::notebook_name($wnd)
 		::docking::insert_tab $wnd $dsttab end \
 			[list -text $title -image tb_close -compound left]
 	} else {
-		::win::undockWindow $wnd
-		setTitle $wnd "$title"
+		::win::undockWindow $wnd "" $title
 	}
 }
 
