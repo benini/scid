@@ -22,7 +22,7 @@ proc ::file::finder::Open {} {
   bind $w <Configure> "recordWinSize $w"
   
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   
   $w.menu add cascade -label FinderFile -menu $w.menu.file
   menu $w.menu.file

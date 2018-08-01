@@ -25,7 +25,7 @@ proc ::windows::stats::Open {} {
   bind $w <Configure> "recordWinSize $w"
 
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label StatsFile -menu $w.menu.file
   $w.menu add cascade -label StatsOpt -menu $w.menu.opt
   menu $w.menu.file

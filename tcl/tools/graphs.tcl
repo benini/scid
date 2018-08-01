@@ -137,7 +137,7 @@ proc tools::graphs::filter::Open {} {
   }
   win::createDialog $w 0
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file
@@ -710,7 +710,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   if {! [winfo exists $w]} {
     toplevel $w
     menu $w.menu
-    $w configure -menu $w.menu -background [ttk::style lookup . -background]
+    ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
     menu $w.menu.file
     $w.menu.file add command -label GraphFileColor \
@@ -833,7 +833,7 @@ proc tools::graphs::absfilter::Open {} {
   }
   win::createDialog $w 0
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
   menu $w.menu.file

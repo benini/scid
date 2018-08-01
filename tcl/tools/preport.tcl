@@ -217,7 +217,7 @@ proc ::preport::makeReportWin {args} {
     toplevel $w
     wm title $w "Scid: $::tr(PReportTitle)"
     menu $w.menu
-    $w configure -menu $w.menu
+    ::setMenu $w $w.menu
     $w.menu add cascade -label OprepFile -menu $w.menu.file
     $w.menu add cascade -label OprepHelp -menu $w.menu.helpmenu
     foreach i {file helpmenu} {

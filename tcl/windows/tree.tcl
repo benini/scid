@@ -837,7 +837,7 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     bind $w <F1> {helpWindow Tree Graph}
     
     menu $w.menu
-    $w configure -menu $w.menu
+    ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
     menu $w.menu.file
     $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
