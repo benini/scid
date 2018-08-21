@@ -98,6 +98,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 
 	if {! [::win::createWindow $w_ [tr {Comment editor}] 530x220]} {
 		if { $focus_if_exists } {
+			::win::makeVisible $w_
 			focus $w_.cf.txtframe.text
 		} else {
 			::win::closeWindow $w_

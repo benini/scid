@@ -59,6 +59,7 @@ proc ::crosstab::Open {} {
   global crosstab
   set w $::crosstab::win
   if {![win::createWindow $w [tr ToolsCross] ]} {
+    ::win::makeVisible $w
     ::crosstab::Refresh
     return
   }

@@ -27,14 +27,7 @@ proc ::win::createDockWindow {path} {
 
 # Creates a docked/undocked window.
 proc ::win::createWindow { {w} {title} {default_geometry ""} } {
-	# Raise window if already exists
 	if { [winfo exists $w] } {
-		lassign [::win::isDocked $w] docked_nb w
-		if {$docked_nb ne ""} {
-			$docked_nb select $w
-		} else {
-			wm deiconify $w
-		}
 		return 0
 	}
 
@@ -271,6 +264,17 @@ proc ::win::manageWindow {wnd title} {
 proc ::win::createDialog {w {y 10}} {
 	toplevel $w -padx 10 -pady $y
 	::applyThemeColor_background $w
+}
+
+# Make sure that a window is visible
+proc ::win::makeVisible { wnd } {
+	lassign [::win::isDocked $wnd] wnd_nb wnd_top
+	if {$wnd_nb ne ""} {
+		$wnd_nb select $wnd_top
+		set wnd_top [winfo toplevel $wnd_top]
+	}
+	::raise $wnd_top
+	wm deiconify $wnd_top
 }
 
 # ::utils::win::Centre
