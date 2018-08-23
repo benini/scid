@@ -687,8 +687,10 @@ namespace eval fics {
       sc_game tags set -black $black
       sc_game tags set -blackElo $blackElo
       sc_game tags set -date "[::utils::date::today year].[::utils::date::today month].[::utils::date::today day]"
+      sc_game tags set -site "FICS freechess.org"
+      sc_game tags set -event "FICS played [lrange $line 5 6] game"
+      sc_game tags set -extra [list "Timecontrol \"[lindex $line 7]+[lindex $line 8]\""]
 
-      sc_game tags set -event "FICS [lrange $line 5 end]"
       if { [::board::isFlipped .main.board] } {
         if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
       } else {
@@ -709,6 +711,12 @@ namespace eval fics {
     if {[string match "\{Game *" $line]} {
       set num [lindex [lindex $line 0] 1]
       set res [lindex $line end]
+      set comment [lrange [lindex $line 0] 2 end]
+      set n [string first {)} $comment]
+	if {$n > -1} {
+	  set comment [string range $comment $n+2 end]
+	}
+      sc_pos setComment "[sc_pos getComment]$comment"
       if {$num == $::fics::observedGame} {
         if {[string match "1/2*" $res]} {
           tk_messageBox -title [::tr "Result"] -icon info -type ok -message "Draw"
@@ -1079,7 +1087,9 @@ namespace eval fics {
 
       set ::fics::waitForRating ""
 
-      sc_game tags set -event "FICS game $gameNumber $initialTime/$increment"
+      sc_game tags set -site "FICS freechess.org"
+      sc_game tags set -event "FICS observed game"
+      sc_game tags set -extra [list "Timecontrol \"$initialTime+$increment\""]
       sc_game tags set -date "[::utils::date::today year].[::utils::date::today month].[::utils::date::today day]"
 
       # try to get first moves of game
