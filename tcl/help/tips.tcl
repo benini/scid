@@ -267,5 +267,10 @@ set tips(E) {
     Tabs can be dragged and dropped from one notebook to another and layed out
     by right clicking on the tab widget.
   }
+  {
+    Scid GUI can be customized by TTK-Themes. This allow different look and feels
+    according the favorite preference of the user. Use "Options - Load Theme" and
+    look in the <a Appearance>help section</a>.
+  }
 }
 

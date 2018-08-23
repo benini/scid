@@ -30,7 +30,7 @@ set helpText(Contents) {<h1>Scid Help Contents</h1>
   <li><a GameList><b>Game List</b> window</a></li>
   <li><a Import><b>Import game</b> window</a></li>
   <li><a OpeningTrainer><b>Opening Trainer</b> window </a></li>
-  <li><a Reports><b>Reports</b></a> <red>(updated!)</red></li>
+  <li><a Reports><b>Reports</b></a></li>
   <li><a PGN><b>PGN</b> (game text) window</a></li>
   <li><a PTracker><b>Piece Tracker</b></a></li>
   <li><a PList><b>Player Finder</b> window</a></li>
@@ -102,6 +102,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Author>Contact information</a></li>
   <li><a Contents>Contents</a></li>
   <li><a Crosstable>Crosstable</a> window</li>
+  <li><a Appearance>Customize Appearance</a></li>
   </ul>
   
   <h3>D</h3>
@@ -3626,7 +3627,7 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   <a Tree Graph>Tree</a> help page.
   </p>
   
-  <p><footer>(Updated: Scid 4.6.5, June 2018)</footer></p>
+  <p><footer>(Updated: Scid 4.7, June 2018)</footer></p>
 }
 
 ####################
@@ -4444,21 +4445,16 @@ set helpText(Author) {<h1>Contact Information</h1>
   reader and an interface for Internet chess servers. His site also has
   good information on Crafty, GNUchess and other free chess programs.</li>
   
-  <li><url ftp://ftp.cis.uab.edu/pub/hyatt/>ftp://ftp.cis.uab.edu/pub/hyatt/</url> --
-  the strong chess-playing program Crafty.
-  The subdirectory there named <b>TB</b> has many Nalimov-format tablebase
-  files that you can use in several chess programs and in Scid.</li>
-  
-  <li><url http://www.chesscenter.com/twic/>http://www.chesscenter.com/twic/</url> --
+  <li><url http://theweekinchess.com/twic>http://theweekinchess.com/twic</url> --
   TWIC (the week in chess), an excellent weekly bulletin of international
   chess games in available in <a PGN>PGN</a> format.</li>
   
-  <li><url http://scid.sourceforge.net/doc/standard.txt>http://scid.sourceforge.net/doc/standard.txt</url> --
+  <li><url http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm>http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm</url> --
   the <b>PGN Standard</b>, created by Steven J. Edwards in 1994.
-  This text file explains the <a PGN>PGN</a> and EPD formats in detail.</li>
+  This file explains the <a PGN>PGN</a> and EPD formats in detail.</li>
   </ul>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 4.7, August 2018)</footer></p>
 }
 
 # Book window help
@@ -4503,7 +4499,7 @@ set helpText(TacticalGame) {<h1>Tactical game window</h1>
   <p>
   Play a tactical game against an engine simulating an opponent with a
   given Elo rating.  The opponent is played by Phalanx and the coach
-  by Toga II. The right engines are automatically selected by their
+  by Toga or an UCI-Engine. The right engines are automatically selected by their
   names, and should be correctly configured (this is the default when
   Scid is installed).
   </p>
@@ -4533,13 +4529,14 @@ set helpText(TacticalGame) {<h1>Tactical game window</h1>
   coach to check the players moves for errors. If this time is not
   limited the coach is allowed to think in the background.</li>
   </ul>
+  <p>Tip: If you switch on the <a Graphs>score graph</a>, you can see the use of time and the rating of the position during the game.</p>
   <p>To start a tactical game press <term>Play</term></p> 
 
   <p><b>Note</b> a similar function can be achieved by playing a
   <a SeriousGame>serious game</a> against any UCI engine that allows
   for limiting its strength.
   </p>
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.7, August 2018)</footer></p>
 }
 
 # Opening Trainer window help
@@ -6523,3 +6520,41 @@ set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
   <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
 }
 
+set helpTitle(Appearance) "Customize Scid-GUI"
+set helpText(Appearance) {<h1>Customize Scid-GUI</h1>
+  <p>
+ <p>
+  Scid has some options to customize the GUI.
+  </p>
+  <h3><name Themes>Configure TTK-Themes</name></h3>
+  <p>
+    Starting with version 4.7, new GUI themes can be installed and selected.
+    With the TTK themes, different appearances of the SCID user interface can be realized.<br>
+    The scid repository provides a multicolored set of themes for direct use:
+    <li><url https://sourceforge.net/projects/scid/files/Scid/Additional Files/>https://sourceforge.net/projects/scid/files/Scid/Additional Files</url> -- Home / Scid / Additional Files</li><br><br>
+    Further themes can also be downloaded from the following addresses:
+    <li><url https://wiki.tcl.tk/48689>https://wiki.tcl.tk/48689</url> -- wiki.tcl.tk List of ttk Themes</li>
+    <li><url https://github.com/RedFantom/ttkthemes/tree/master/ttkthemes/themes>https://github.com/RedFantom/ttkthemes</url> -- RedFantom Collection of ttk Topics</li><br><br>
+    To install the themes, proceed as follows:<br>
+    <li>Extract the scidthemes files to any directory.</li>
+    <li>Load themes: With the menu item <b>Options - Theme - Load Theme(s)</b> select the file pkgIndex.tcl from the directory,
+    in which the themes are stored.</li>
+    <li>Select theme: Using the menu item <b>Options - Theme - "Theme name"</b>, e.g. scidblue scidmint scidpurple scidpurple scidpurple scidsand scidpink,
+    select the theme to use.</li>
+    <li><b>Note:</b> pkgIndex.tcl are files that load additional tcl packages. Use only pkgIndex.tcl files that contain TTK-Themes.</li>
+    </p>
+  <h3><name MenuColors>Set menu colors</name></h3>
+  <p>
+    TTK-Themes have technically no adapted properties and colours for menus. The colors for menus must therefore be adjusted separately and matched to the colors of themes.<br>
+    Under <b>Options - Setup menu colors</b> you can configure the colors for the menu:<br>
+    <li>Background color of the main menu</li>
+    <li>Foreground and background color of all menus</li>
+    <li>Foreground and background color of the selected menu item</li>
+    <li>Color of a selected option in the menu</li>
+    <li><b>Note:</b> WINDOWS and MACOS ignore the configured colors for the main menu bar and use the system settings.</li>
+  </p>
+  <p>
+  After configuring the theme and menu colors, save the settings with <b>Options - Save options</b>.
+  </p>
+  <p><footer>(Updated: Scid 4.7, August 2018)</footer></p>
+}

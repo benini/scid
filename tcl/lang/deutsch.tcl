@@ -640,8 +640,8 @@ menuText D TmtSortElo "Elo" 0
 menuText D TmtSortSite "Ort" 0
 menuText D TmtSortEvent "Turnier" 1
 menuText D TmtSortWinner "Gewinner" 0
-translate D TmtLimit "Listengrenze"
-translate D TmtMeanElo "Unterster Elo-Durchschnitt"
+translate D TmtLimit "Anzeigelimit"
+translate D TmtMeanElo "Elo-Durchschnitt"
 translate D TmtNone "Keine zutreffenden Turniere gefunden."
 
 # Graph windows:
@@ -1971,7 +1971,7 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Guide><b>Kurzanleitung</b> Benutzung von Scid</a> <red>(Zuerst lesen!)</red></li>
 <li><a Hints><b>Hinweise</b> zum effizienteren Arbeiten mit Scid</a></li>
 <li><a MainWindow>Das Scid-<b>Hauptfenster</b></a></li>
-<li><a Menus>Die Scid-<b>Menüs</b></a><red>(Aktualisiert!)</red></li>
+<li><a Menus>Die Scid-<b>Menüs</b></a></li>
 <li><a Moves><b>Züge</b> eingeben</a></li>
 <li><a Searches><b>Suchen</b> in Scid</a></li>
 <li><a Clipbase>Die <b>Ablage</b>-Datenbank</a></li>
@@ -1982,13 +1982,13 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <ul>
 <li><a Analysis><b>Analyse</b>-Fenster</a></li>
 <li><a Reports><b>Berichte</b></a> </li>
-<li><a Book><b>Buch</b>-Fenster</a><red>(Neu!)</red></li>
+<li><a Book><b>Buch</b>-Fenster</a></li>
 <li><a Finder><b>Dateifinder</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
 <li><a Email><b>E-Mail</b>-Schach-Manager</a></li>
 <li><a TB><b>Endspieltabellen</b> in Scid verwenden</a> </li>
 <li><a PTracker><b>Figurenverteilung</b></a></li>
-<li><a Graphs><b>Grafik</b>-Fenster</a><red>(Aktualisiert!)</red></li>
+<li><a Graphs><b>Grafik</b>-Fenster</a></li>
 <li><a Comment><b>Kommentareditor</b></a></li>
 <li><a Crosstable><b>Kreuztabellen</b>-Fenster</a></li>
 <li><a GameList><b>Partieliste</b>-Fenster</a></li>
@@ -1997,9 +1997,10 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Repertoire><b>Repertoire-Editor</b></a></li>
 <li><a PList><b>Spielerfinder</b></a></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
-<li><a TacticalGame><b>Trainingspartie</b>-Fenster</a><red>(Neu!)</red></li>
-<li><a CalVar><b>Training Varianten berechnen</b>-Fenster</a><red>(Neu!)</red></li>
-<li><a OpeningTrainer><b>Eröffnungstrainer</b>-Fenster</a><red>(Neu!)</red></li>
+<li><a TacticalGame><b>Trainingspartie</b>-Fenster</a></li>
+<li><a SeriousGame><b>Ernste Partie</b></a></li>
+<li><a CalVar><b>Training Varianten berechnen</b>-Fenster</a></li>
+<li><a OpeningTrainer><b>Eröffnungstrainer</b>-Fenster</a></li>
 <li><a Tmt><b>Turnierfinder</b></a></li>
 <li><a Tree><b>Zugbaum</b>-Fenster</a></red></li>
 </ul>
@@ -2024,7 +2025,7 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Author>Kontakt-Information</a></li>
 </ul>
 
-<p><footer>(Aktualisiert: Scid 3.6.23, März 2008)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, August 2018)</footer></p>
 }
 
 
@@ -2072,9 +2073,10 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a ECO Codes>ECO-Codesystem</a></li>
 <li><a ECO>ECO-Eröffnungsklassifikation</a></li>
 <li><a Email>E-Mail</a></li>
-<li><a CCeMailChess>Email Schach</li>
+<li><a CCeMailChess>Email Schach</a></li>
 <li><a TB>Endspieltabellen</a></li>
 <li><a EPD>EPD-Dateien</a></li>
+<li><a SeriousGame>Ernste Partie spielen</a></li>
 <li><a Reports Opening>Eröffnungsbericht</a></li>
 <li><a ECO>Eröffnungsklassifizierung (ECO)</a></li>
 <li><a Repertoire>Eröffnungsrepertoire</a></li>
@@ -2147,6 +2149,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <h3>O</h3>
 <ul>
 <li><a Options>Optionen</a></li>
+<li><a Appearance>Oberfläche anpassen</a></li>
 </ul>
 
 <h3>P</h3>
@@ -2225,7 +2228,7 @@ set helpText(D,Guide) {<h1>Kurzanleitung zur Benutzung von Scid</h1>
 <p>
 Scid ist eine Schachdatenbank, mit welcher man Partiesammlungen
 nach einer Vielzahl von Kriterien durchsuchen kann, Partien editieren
-und mit Hilfe von Xboard/Winboard-kompatiblen Schachprogrammen
+und mit Hilfe von Winboard- und UCI-kompatiblen Schachprogrammen
 analysieren kann.
 </p>
 <p>
@@ -2243,12 +2246,12 @@ der Tastatur oder der Maus. Mehr Details unter der Hilfeseite für
 <p>
 Man kann mit Scid auch <a PGN>PGN</a> - Partiesammlungen bearbeiten:
 durch Import der PGN-Datei in Scids - <a Import>Import</a> Fenster
-oder direkt durch öffnen von PGN-Dateien in Scid. Jedoch: PGN - Dateien
-können nicht in Scid bearbeitet werden (sie werden schreibgeschützt
-geöffnet), und außerdem benutzen sie mehr Speicher und
-werden langsamer geladen. Für große PGN - Partiesammlungen
+oder direkt durch öffnen von PGN-Dateien in Scid. Jedoch: PGN-Dateien
+bennötigen mehr Speicher und werden langsamer geladen. Für große PGN - Partiesammlungen
 wird empfohlen, sie mit Hilfe des Scid-Programms <a Pgnscid>pgnscid</a>
 in eine Scid-Datenbank umzuwandeln (dabei bleibt die PGN-Datei erhalten).
+Die Bearbeitung von PGN-Datei ist eingeschränkt. Man kann Partien hinzufügen
+und löschen, aber keine Partien überschreiben.
 </p>
 <p>
 Das <a MainWindow>Hauptfenster</a> von Scid (mit dem grafischen
@@ -2269,7 +2272,7 @@ Hilfe-Seiten, die im <a Index>Index</a> aufgeführt sind.
 der entsprechenden Hilfeseite.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.1, Dezember 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, August 2018)</footer></p>
 }
 
 
@@ -4596,7 +4599,7 @@ aktuellen Position. Weitere Informationen finden Sie auf der
 <a Tree Graph>Zugbaum</a>-Hilfeseite.
 </p>
 
-<p><footer>(Aktualisiert: Scid 4.6.5, Juni 2018)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, Juni 2018)</footer></p>
 }
 
 
@@ -5973,7 +5976,7 @@ zusätzlichen und nützlichen Dateien.
 <p>
 Bitte senden Sie Ihre Kommentare, Fragen, Vorschläge oder Fehlerberichte
 an den Autor von Scid, Shane Hudson, an folgende E-Mail-Adresse: <br>
-<b>sgh@users.sourceforge.net</b>
+<b>scid-users@lists.sourceforge.net</b>
 </p>
 
 <h3><name Related>Links</name></h3>
@@ -5988,21 +5991,16 @@ Oberfläche für Schachprogramme und Schnittstelle für Internet Schach
 Server. Sie hat auch gute Informationen über Crafty, GNUchess und
 andere Schachprogramme.</li>
 
-<li><url ftp://ftp.cis.uab.edu/pub/hyatt/>ftp://ftp.cis.uab.edu/pub/hyatt/</url> --
-das starke Schachprogram Crafty. Das <b>TB</b> -
-Unterverzeichnis beinhaltet fast alle Nalimov-Endspieltabellen, welche
-von einigen Schachprogrammen und auch von Scid benutzt werden.</li>
-
-<li><url http://www.chesscenter.com/twic/>http://www.chesscenter.com/twic/</url> --
+<li><url http://theweekinchess.com/twic>http://theweekinchess.com/twic</url> --
 TWIC (the week in chess), ein hervorragendes Wochenmagazin für
 internationale Schachpartien, verfügbar im PGN-Format. </li>
 
-<li><url http://scid.sourceforge.net/standard.txt>http://scid.sourceforge.net/standard.txt</url> --
+<li><url http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm>http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm</url> --
 der <b>PGN-Standard</b>, geschaffen von Steven J. Edwards im Jahre 1994.
-Die Textdatei erklärt das PGN- und EPD-Format im Detail.</li>
+Die Seite erklärt das PGN- und EPD-Format im Detail.</li>
 </ul>
 
-<p><footer>(Aktualisiert: Scid 2.6, August 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, August 2018)</footer></p>
 }
 
 # Book window help
@@ -6025,17 +6023,26 @@ set helpTitle(D,TacticalGame) "Trainingspartie-Fenster"
 set helpText(D,TacticalGame) {<h1>Trainingspartie-Fenster</h1>
   <p>
   Hier kann eine Trainingspartie gegene eine Engine gespielt werden, die einen Gegner mit einer bestimmten ELO-Zahl simuliert.  
-  Der Gegner wird von Phalanx gespielt, als Coach wird Crafty eingesetzt. Diese Engines werden automatisch über ihre Namen ausgewählt und sollten korrekt konfiguriert sein. Standardmäßig werden diese Engines bei der Installation von Scid eingerichtet. 
+  Der Gegner wird von Phalanx gespielt, als Coach wird eine UCI-Engine eingesetzt. Diese Engines werden automatisch über ihre Namen ausgewählt und sollten korrekt konfiguriert sein. Standardmäßig werden diese Engines bei der Installation von Scid eingerichtet. 
   </p>
   <p>
   Folgende Parameter sind einzustellen:
   <ul>
-  <li>Schwierigkeit : ELO-Zahl des Gegners</li>
-  <li>Auswahl der Eröffnung : Der Gegner wird die ausgewählte Eröffnung spielen (nützlich für das Training von Eröffnungen).</li>
-  <li>Analysezeit der Engine: Die Züge des Spielers werden duch eine Coach-Engine überprüft. Die Zeit zur Überprüfung des Zuges um zu Bewerten, ob der Zug gut oder schlecht war, kann eingestellt werden.</li>
+  <li><term>Feste Stärke</term>: setzt eine feste Elo-Bewertung für den Gegner</li>.
+  <li><term>Zufallsstärke</term>: Wählt eine zufällige Stärke zwischen der
+  minimalen und maximalen Stärke, der durch den linken und rechten Schieberegler festgelegt wird, aus.
+  </li>
+  <li><term>Eröffnung:</term>
+  <ul>
+     <li><term>Neue Partie</term>: startet ein neues Spiel mit einer zufälligen Eröffnung.</li>
+     <li><term>Von aktueller Position starten</term>: das Spiel bei der aktuellen Position fortsetzen.</li>
+     <li><term>Ausgewählte Eröffnung</term>: der Gegner spielt eine Öffnung, die aus der Liste ausgewählt werden kann. Das ist nützlich für das Eröffnungstraining.</li>
   </ul>
+  <li><term>Analysezeit der Engine begrenzen</term> erlaubt es, die vom Coach verwendete Zeit, um die Züge der Spieler auf Fehler zu überprüfen, zu begrenzen. Wenn dies nicht der Fall ist, darf der Coach im Hintergrund rechnen.</li><br>
+  <p>Tipp: Schalten Sie die <a Graphs>Partiebewertung</a> ein, dann können Sie während der Partie den Verlauf der Zeit und die Bewertung der Stellung sehen.</p>
+  <p>Eine ähnliche Funktion kann bei einer <a SeriousGame>Ernsten Partie</a> durch das limitieren der Spielstärke einer UCI-Engine erreicht werden.</p>
   <p>Zum Starten der Partie "Spielen" drücken.</p> 
-  <p><footer>(Aktualisiert: Scid 3.6.21, Dezember 2007)</footer></p>
+  <p><footer>(Aktualisiert: Scid 4.7, August 2018)</footer></p>
 }
 
 # Opening Trainer window help
@@ -6361,9 +6368,9 @@ zu spielen.
    </li>
 </ul>
 <p>
-Sobald eine der Fernschachfunktionen aus dem Menue aufgerufen werden
+Sobald eine der Fernschachfunktionen aus dem Menü aufgerufen werden
 öffnet sich das Fernschachfenster. Dieses Fenster kann auch aus dem
-Fenster-Menue aus geöffnet werden. Das Fernschachfenster enthält die
+Fenster-Menü aus geöffnet werden. Das Fernschachfenster enthält die
 nötigen Knöpfe zur Navigation durch laufende Partien, um Partien via
 Xfcc abzuholen und eMail-Partien zu synchronisieren. Außerdem bietet
 es eine einfache Konsole zur Anzeige der gesendeten und Empfangenen
@@ -6639,7 +6646,7 @@ allgemeine Informationen.
 </p>
 
 
-<p><footer>(Updated: Scid 3.7b4, February 2009)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.7b4, Februar 2009)</footer></p>
 }
 
 set helpTitle(D,CCXfcc) "Fernschach-Server"
@@ -7313,7 +7320,126 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 <p><footer>(Updated: Scid 3.6.24, May 2008)</footer></p>
 }
 
+set helpTitle(D,Appearance) "SCID-Oberfläche anpassen"
+set helpText(D,Appearance) {<h1>Scid-Oberfläche anpassen</h1>
+  <p>
+  Scid hat einige Optionen um die Oberfläche anzupassen.
+  </p>
+  <h3><name Themes>TTK-Designs konfigurieren</name></h3>
+  <p>
+    Ab Version 4.7 können neue Oberflächen-Designs installiert und ausgewählt
+    werden. Mit den TTK-Designs können verschiedene Erscheinungsbilder der
+    SCID-Oberfläche realisiert werden.<br>
+    Im Scid-Repository steht ein mehrfarbiges Set von Designs zur direkten Nutzung zur Verfügung:
+    <li><url https://sourceforge.net/projects/scid/files/Scid/Additional Files/>https://sourceforge.net/projects/scid/files/Scid/Additional Files</url> -- Home / Scid / Additional Files</li><br><br>
+    Weitere Designs können auch unter folgenden Adressen heruntergeladen werden:
+    <li><url https://wiki.tcl.tk/48689>https://wiki.tcl.tk/48689</url> -- wiki.tcl.tk List of ttk Themes</li>
+    <li><url https://github.com/RedFantom/ttkthemes/tree/master/ttkthemes/themes>https://github.com/RedFantom/ttkthemes</url>
+    -- RedFantom Sammlung von ttk-Themen</li><br><br>
+    Zur Installation der Designs gehen Sie wie folgt vor:<br>
+    <li>Entpacken Sie die scidthemes-Dateien in ein beliebiges Verzeichnis.</li>
+    <li>Designs laden: Über den Menüpunkt <b>Optionen - Design - Design(s) laden</b> wählen Sie die Datei pkgIndex.tcl aus dem Verzeichnis,
+    in dem die Designs abgelegt sind.</li>
+    <li>Design auswählen: Über den Menüpunkt <b>Optionen - Design - "Designname"</b>, z.b. scidblue scidmint scidpurple scidpurple scidsand scidpink,
+    wählen Sie das zu verwendendte Design aus.</li>
+    <li><b>Hinweis:</b> pkgIndex.tcl sind Dateien, die zusätzlichen tcl-Pakete nachladen. Verwenden Sie nur pkgIndex.tcl Dateien, die auch TTK-Designs enthalten.</li>
+    </p>
+  <h3><name MenuColors>Farben der Menüs einstellen</name></h3>
+  <p>
+    TTK-Designs besitzen technischbedingt keine angepassten Eigenschaften und
+    Farben für Menüs. Die Farben für Menüs müssen daher gesondert angepasst
+    und auf die Farben von Designs abgestimmt werden.<br>
+    Unter <b>Optionen - Menüfarben einstellen</b> können die Farben für das Menü konfiguriert werden:<br>
+    <li>Hintergrundfarbe des Hauptmenüs</li>
+    <li>Vorder- und Hintergrundfarbe aller Menüs</li>
+    <li>Vorder- und Hintergrundfarbe des ausgewählten Menüeintrages</li>
+    <li>Farbe einer ausgewählten Option im Menü</li>
+    <li><b>Hinweis:</b> Unter WINDOWS und MACOS wird für die Hauptmenüleiste die
+    Systemeinstellungen verwendet und die konfigurierten Farben ignoriert.</li>
+  </p>
+  <p>
+  Nach dem Konfigurieren des Design und der Menüfarben die Einstellungen mit <b>Optionen - Optionen speichern</b> speichern.
+  </p>
+  <p><footer>(Erstellt: Scid 4.7, August 2018)</footer></p>
+}
 
-
-
+set helpTitle(D,SeriousGame) "Ernste Partie"
+set helpText(D,SeriousGame) {<h1>Ernste Partie</h1>
+  <p>
+  Ernste Spiele können gegen jede <term>UCI</term> Engine gespielt werden.
+  Eine Liste aller möglichen Gegner ist im Fenster <term>Spiel konfigurieren</term> angegeben. Die
+  Schaltfläche <term>UCI-Engine konfigurieren</term> bietet zusätzlich Zugriff auf
+  die Motorparameter. Standardmäßig wird die Einstellungen der <a Analyseliste>Analyseliste</a> verwendet.
+  </p>
+  <p>
+  Es kann das Eröffnungsbuch und die Eröffnung ausgewählt werden.
+  Das Kontrollkästchen <term>Buch benutzen</term> de/aktiviert die Verwendung eines Eröffnungsbuchs.
+  </p>
+  <p>
+  Die Sektion <term>Zeitmodus</term> erlaubt die Einstellung der Zeit für Spieler und Engine.
+  Hier sind verschiedene Einstellungen möglich:
+  <ul>
+     <li><term>Zeit + Bonus</term> gibt die Zeit für das gesamte Spiel an und eine mögliche
+     Bonuszeit pro Zug (Fisher-Uhr). Die
+     Standardeinstellung ist 5 Minuten pro Spiel und 10 Sekunden Inkrement pro Spiel.
+     Beachten Sie, dass die
+     Zeiten für Schwarz und Weiß unabhängig voneinander eingestellen können. Dies ermöglicht
+     eine kurze Zeitspanne für den Motor einzustellen und eine längere
+     Zeit des Denkens für den Spieler.
+     </li>
+     <li><term>Feste Tiefe</term> setzt die Zeit pro Spiel nicht, sondern
+     die Tiefe, die der Motor in halben Zügen berechnet. Da dies der Engine
+     die Möglichkeit nimmt, bei Bedarf tiefer zu rechnen, wird der
+     Computer bestimmte Kombinationen nicht sehen, der Motor
+     kann schwächer spielen und somit einen besseren Trainingspartner bieten.
+     </li><p>
+     <b>Tipp</b>: Einige, Engines bieten auch an
+     ihre Stärke in Elo-Einheiten einzustellen. Dies ist höchstwahrscheinlich ein
+     geeigneterer Algorithmus als die Begrenzung der Suchtiefe.
+     </p>
+     <li><term>Knoten</term> ist eine ähnlich Einschränkung der Suchtiefe,
+     aber hier stoppt der Motor nach der Auswertung eines bestimmten
+     Anzahl der Positionen seine Berechnungen. (Die Vorgabe ist 10.000.)
+     </li>
+     <li><term>Sekunden pro Zug</term> erlaubt dem Motor, eine
+     maximale Zeit für die Berechnung eines Zuges. Einige
+     Engines ziehen unter bestimmten Umständen schneller, aber sie werden
+     das hier eingestellte Zeitlimit nicht überschreiten. Wie <Term>Feste Tiefe</Term>Term
+     und <term>Knoten</term> schränkt auch dies die Spielstärke der Engine ein.
+     </li>
+  </ul>
+  </p>
+  <p>
+  Ernste Partien können ab der aktuellen Brettposition beginnen, wenn die Box
+  <term>Von aktueller Position starten</term> aktiviert ist. Dies ermöglicht
+  z.B. zum Ausspielen von definierten Mittelspielpositionen, die sich aus einer
+  Eröffnung ergeben haben.
+  </p>
+  <p>
+  <term>Berechnung im Hintergrund</term> (manchmal auch Ponder genannt)
+  erlaubt es der Engine, während der Spieler am Zug ist zu Rechnen. Wenn das Spiel
+  auf eine feste Zeit pro Zug eingestellt ist, schwächt das den
+  Motor.
+  </p>
+  <p>
+  <term>Coach schaut zu</term> öffnet ein Dialogangebot, um
+  einen Zug zurück, wenn der Spieler einen Fehler gemacht hat (aufgrund der Motoren
+  Auswertung seines letzten Zuges).
+  </p>
+  <p>
+  <term>Bewertung hinzufügen</term> fügt im Kommentar der Partie für jeden Zug der Engine
+  die Stellungsbewertung der Engine hinzu.
+  </p>
+  <p>
+  Für das Training von Eröffnungen kann die Option <term>Ausgewählte Eröffnung</term>
+  verwendet werden. In der Liste kann man die zu spielende Eröffnung auswählen. Der
+  Spieler sollte dann der gewählten Eröffnung folgen, ansonsten fragt Scid
+  ob der Zug zurückgenommen werden soll.
+  </p>
+  <p>
+  Nach der Einstellung aller Parameter des Spiels und dem Drücken des Knopfes Spielen wird die Partie gestartet.
+  Beachten Sie, dass es einige Zeit dauern kann, bis die Schachengine startet und richtig initialisiert ist.
+  </p>
+  <p><footer>(Erstellt: Scid 4.7, August 2018)</footer></p>
+}
 ### End of file: deutsch.tcl

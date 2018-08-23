@@ -158,16 +158,19 @@ proc ::appearance::menuConfigDialog {} {
   grid $f.abg -row $r -column 4 -padx 4 -pady 5
   incr r
   addHorizontalRule $w
+  ttk::button $w.b.help -image tb_help -command {grab release .menuOptions; helpWindow Appearance }
+  ::utils::tooltip::Set $w.b.help $::tr(Help)
   dialogbutton $w.b.ok -text OK -command ::appearance::setMenuColors
   dialogbutton $w.b.reset -text $::tr(Defaults) -command {
     ::appearance::defaultColors
     ::appearance::setMenuColors
   }
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command "::win::closeWindow $w"
-  packdlgbuttons $w.b.cancel $w.b.ok $w.b.reset
+  packdlgbuttons $w.b.cancel $w.b.ok $w.b.reset $w.b.help
   bind $w <Return> [list $w.b.ok invoke]
   bind $w <Escape> [list $w.b.cancel invoke]
   bind $w.f <Destroy>  { unset ::menuDialog_ }
+  bind $w <F1> { grab release .menuOptions; helpWindow Appearance }
   ::appearance::Refresh
   ::utils::win::Centre $w
   wm resizable $w 0 0
