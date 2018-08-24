@@ -25,7 +25,7 @@ menuText D FileNew "Neu..." 0 {Neue Scid-Datenbank anlegen}
 menuText D FileOpen "Öffnen..." 0 {Existierende Scid-Datenbank öffnen}
 menuText D FileClose "Schließen" 0 {Aktive Scid-Datenbank schließen}
 menuText D FileFinder "Finder" 0 {Dateifinderfenster öffnen}
-menuText D FileBookmarks "Lesezeichen" 0 {Lesezeichenmenü (Tasten: Strg+B)}
+menuText D FileBookmarks "Lesezeichen" 0 {Lesezeichenmenü}
 menuText D FileBookmarksAdd "Lesezeichen zur Liste hinzufügen" 0 \
   {Lesezeichen für die aktuelle Partie und Datenbank}
 menuText D FileBookmarksFile "Lesezeichen hinzufügen in Verzeichnis" 26 \

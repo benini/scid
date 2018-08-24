@@ -1243,6 +1243,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.finder -image tb_finder -command ::file::finder::Open -padding {2 0}
 	ttk::menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
 	menu .main.tb.bkm.menu
+	::bookmarks::RefreshMenu .main.tb.bkm.menu
 
 	ttk::frame .main.tb.space1 -width 4
 	ttk::button .main.tb.cut -image tb_cut -command ::game::Clear -padding {2 0}
@@ -1287,8 +1288,7 @@ proc InitToolbar {{tb}} {
 	  maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
 	  engine ToolsAnalysis
 	} {
-	  set helpMessage(.main.tb.$b) $m
-	  ::utils::tooltip::Set $tb.$b $m
+	  ::utils::tooltip::Set $tb.$b $::helpMessage($::language,$m)
 	}
 	redrawToolbar
 }
