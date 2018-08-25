@@ -11,10 +11,10 @@ set ::plist::sort Name
 
 proc ::plist::defaults {} {
   set ::plist::name ""
-  set ::plist::minGames 0
-  set ::plist::maxGames 9999
-  set ::plist::minElo 0
-  set ::plist::maxElo [sc_info limit elo]
+  set ::plist::minGames ""
+  set ::plist::maxGames ""
+  set ::plist::minElo ""
+  set ::plist::maxElo ""
   set ::plist::size 50
 }
 
@@ -150,12 +150,10 @@ proc ::plist::refresh {} {
   }
   $t insert end "\n" title
 
+  #TODO: check if this update is necessary
   update
-  set err [catch {sc_name plist -name $::plist::name -size $::plist::size \
-            -minGames $::plist::minGames -maxGames $::plist::maxGames \
-            -minElo $::plist::minElo -maxElo $::plist::maxElo \
-                -sort [string tolower $::plist::sort]} pdata]
-  if {$err} {
+
+  if {[catch { sc_name plist {*}[::plist::getSearchOptions] } pdata]} {
     $t insert end "\n$pdata\n"
     unbusyCursor .
     return
@@ -202,4 +200,29 @@ proc ::plist::check {} {
     set ::plist::maxElo $::plist::minElo
   }
 }
-### End of file pfinder.tcl: part of Scid.
+
+proc ::plist::getSearchOptions {} {
+	set options {}
+	if {$::plist::name ne ""} {
+		lappend options "-name" $::plist::name
+	}
+	if {$::plist::size ne ""} {
+		lappend options "-size" $::plist::size
+	}
+	if {$::plist::minGames ne ""} {
+		lappend options "-minGames" $::plist::minGames
+	}
+	if {$::plist::maxGames ne ""} {
+		lappend options "-maxGames" $::plist::maxGames
+	}
+	if {$::plist::minElo ne ""} {
+		lappend options "-minElo" $::plist::minElo
+	}
+	if {$::plist::maxElo ne ""} {
+		lappend options "-maxElo" $::plist::maxElo
+	}
+	if {$::plist::sort ne ""} {
+		lappend options "-sort" [string tolower $::plist::sort]
+	}
+	return $options
+}
