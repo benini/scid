@@ -17,14 +17,6 @@
 
 namespace eval ::win {}
 
-# Create a container panedwindow for docking
-proc ::win::createDockWindow {path} {
-	ttk::panedwindow $path -orient vertical
-	::docking::create_notebook_ .nb
-	::docking::insert_notebook_ $path end .nb
-	pack $path -fill both -expand true
-}
-
 # Creates a docked/undocked window.
 proc ::win::createWindow { {w} {title} {default_geometry ""} } {
 	if { [winfo exists $w] } {
@@ -54,10 +46,7 @@ proc ::win::closeWindow {w} {
 	} else {
 		::win::saveWinGeometry $w
 	}
-	# Do not destroy the main board
-	if {$w ne ".fdockmain"} {
-		destroy $w
-	}
+	destroy $w
 }
 
 # Returns a list containing the names of the opened windows:
@@ -242,7 +231,6 @@ proc ::win::manageWindow {wnd title} {
 
 	if { [info exists ::docking::layout_dest_notebook]} {
 		set dsttab $::docking::layout_dest_notebook
-		unset ::docking::layout_dest_notebook
 		set docked [expr { $dsttab ne "undocked" }]
 	} else  {
 		set docked $::windowsDock
@@ -305,8 +293,6 @@ proc ::utils::win::Centre {w} {
 namespace eval docking {
   # associates notebook to paned window
   variable tbs
-  variable tbcnt 0
-
 }
 
 ################################################################################
@@ -646,12 +632,6 @@ proc ::docking::manage_rightclick_ {noteb x y localX localY} {
 # Layout management
 ################################################################################
 
-# associates pw -> notebook list
-array set ::docking::layout_notebook {}
-
-# associates notebook -> list of tabs
-array set ::docking::layout_tabs {}
-
 ################################################################################
 # saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
@@ -712,83 +692,40 @@ proc ::docking::layout_save_pw {pw} {
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw { data } {
   foreach elt $data {
-    set type [lindex $elt 0]
-    
-    if {$type == "MainWindowGeometry"} {
-      wm geometry . [lindex $data 1]
-      if {[lindex $data 2]  == "zoomed"} {
-        if { $::windowsOS || $::macOS } {
-          wm state . zoomed
-        } else {
-          wm attributes . -zoomed
-        }
-      }
-      break
+    lassign $elt type pathName
+    if {$type == "Toplevel"} {
+      lappend ::docking::restore_wnds [list "undocked" $pathName ]
 
-    } elseif {$type == "Toplevel"} {
-      lappend ::docking::restoring_tabs(undocked) [lindex $elt 1]
     } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
       
     } elseif {$type == "TNotebook"} {
-      set name [lindex $elt 1]
-      set tabs [lindex $elt 2]
-      ::docking::layout_restore_nb $pw $name $tabs
+      ::docking::create_notebook_ $pathName
+      ::docking::insert_notebook_ $pw end $pathName
+      foreach wnd [lindex $elt 2] {
+        lappend ::docking::restore_wnds [list $pathName $wnd]
+      }
       
     } else {
-      set pw [lindex $elt 0]
-      set orient [lindex $elt 1]
-      # we have sash geometry
-      if {[llength $elt] > 2} {
-        lappend ::docking::sashpos [ list $pw [lindex $elt 2] ]
+      lassign $elt pw orient sash_positions
+      if {$sash_positions ne ""} {
+        lappend ::docking::restore_sashpos [ list $pw $sash_positions ]
       }
-      if { $pw == ".pw"} { continue }
       # build a new pw
       ttk::panedwindow $pw -orient $orient
-      
       set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
-      ::docking::insert_pane_ $parent end $pw
-    }
-    
-  }
-  
-}
-################################################################################
-# Sash position
-################################################################################
-proc ::docking::restore_geometry {} {
-  foreach elt $::docking::sashpos {
-    set pw [lindex $elt 0]
-    set sash [lindex $elt 1]
-    set i 0
-    foreach pos $sash {
-      update idletasks
-      $pw sashpos $i $pos
-      incr i
+      if { $parent eq "" } {
+        pack $pw -fill both -expand true
+      } else {
+        ::docking::insert_pane_ $parent end $pw
+      }
     }
   }
-}
-################################################################################
-# restores a notebook in a pre-existing panedwindow
-# panewindow -> pw
-# widget name -> name
-# data to make tabs -> data (list of names which can be used to trigger the correct windows)
-proc ::docking::layout_restore_nb { pw name tabs} {
-  variable tbcnt
-  
-  set nb [create_notebook_ $name]
-  if {[scan $name ".tb%d" tmp] == 1} {
-    if {$tmp >= $tbcnt} {
-      set tbcnt [ expr $tmp +1]
-    }
-  }
-
-  ::docking::insert_notebook_ $pw end $nb
-  set ::docking::restoring_tabs($nb) $tabs
 }
 
 proc ::docking::create_window {wnd} {
       switch -regexp -matchvar regmatch -- $wnd {
+      "\.(fdock)?main"                { ::docking::insert_tab $wnd $::docking::layout_dest_notebook end [list -text $::tr(Board)] }
       "\.(fdock)?pgnWin"              { ::pgn::OpenClose
                                         ::pgn::Refresh 1 }
       "\.(fdock)?baseWin"             { ::windows::switcher::Open }
@@ -808,59 +745,81 @@ proc ::docking::create_window {wnd} {
       }
 }
 
-proc ::docking::restore_tabs {} {
-  foreach nb [lsort [array names ::docking::restoring_tabs]] {
-    foreach d $::docking::restoring_tabs($nb) {
-      update idletasks
-      set ::docking::layout_dest_notebook $nb
-      if {$d eq ".fdockmain"} {
-        $nb add $d -text $::tr(Board)
-        raise $d
-      } else {
-        ::docking::create_window $d
-      }
-    }
-  }
-  array unset ::docking::restoring_tabs
-}
-
-################################################################################
 proc ::docking::layout_restore { slot } {
   # if no layout recorded, retry with the last used
   if { $::docking::layout_list($slot) == {} } {
     if { $slot != "auto" } { ::docking::layout_restore "auto" }
     return
   }
-  
-  if {![winfo exists .main]} {
-    set ::docking::layout_dest_notebook .nb
-    CreateMainBoard .main
-  }
 
   # closeAll
   foreach wnd [::win::getWindows] {
-	::win::closeWindow $wnd
+    ::win::closeWindow $wnd
+  }
+  foreach wnd [winfo children .] {
+    if { [winfo class $wnd] ne "Menu" } {
+      destroy $wnd
+    }
   }
 
-  set ::docking::tbcnt 0
-  set ::docking::sashpos {}
-  array unset ::docking::restoring_tabs
-
-  foreach mainwnd $::docking::layout_list($slot) {
-	layout_restore_pw $mainwnd
+  # Parse geometry, sashpos and windows; create paned windows and notebooks
+  set restore_geometry {}
+  set ::docking::restore_sashpos {}
+  set ::docking::restore_wnds {}
+  foreach data $::docking::layout_list($slot) {
+    if {[lindex $data 0] eq "MainWindowGeometry"} {
+      lappend restore_geometry [list "." [lindex $data 1] [lindex $data 2]]
+    } else {
+      ::docking::layout_restore_pw $data
+    }
   }
-  ::docking::restore_geometry
-  ::docking::restore_tabs
 
-  # Bring the main board to the front
-  lassign [::win::isDocked .main] maintab mainboard
-  if {$maintab ne ""} {
-    raise $mainboard
-    $maintab select $mainboard
+  # Restore geometry
+  foreach geom $restore_geometry {
+    lassign $geom wnd size_pos zoomed
+    wm geometry $wnd $size_pos
+    if {$zoomed eq "zoomed"} {
+      if { $::windowsOS || $::macOS } {
+        wm state $wnd zoomed
+      } else {
+        wm attributes $wnd -zoomed
+      }
+    }
   }
-  set maintop [winfo toplevel $mainboard]
-  raise $maintop
-  wm deiconify $maintop
-  update
-  focus .main
+
+  # Restore paned windows' sash positions
+  foreach sashpos $::docking::restore_sashpos {
+    # It is necessary to process all the events beforehand because
+    # "sashpos" will query the panedwindow's available space.
+    update
+
+    lassign $sashpos pw sash
+    set i 0
+    foreach pos $sash {
+      $pw sashpos $i $pos
+      incr i
+    }
+  }
+  unset -nocomplain ::docking::restore_sashpos
+
+  # Create .main beforehand because some other windows depend on it
+  # TODO: remove the dependencies
+  ::CreateMainBoard .main
+  lassign [::win::isDocked .main] docked_nb w
+  $docked_nb forget $w
+
+  # Restore windows
+  foreach pair $::docking::restore_wnds {
+    lassign $pair ::docking::layout_dest_notebook wnd
+    ::docking::create_window $wnd
+
+    # Needed for ttk::notebooks with multiple tabs (e.g., .baseWin and. main)
+    # that are not displayed correctly otherwise (due to "notebook select").
+    update
+  }
+  unset -nocomplain ::docking::layout_dest_notebook
+  unset -nocomplain ::docking::restore_wnds
+
+  ::win::makeVisible .main.board
+  ::focus .main.board
 }

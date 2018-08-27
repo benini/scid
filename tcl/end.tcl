@@ -1275,7 +1275,6 @@ wm protocol . WM_DELETE_WINDOW { ::file::Exit }
 setMenu . .menu
 keyboardShortcuts .
 
-::win::createDockWindow .pw
 ::docking::layout_restore 1
 
 menuUpdateBases

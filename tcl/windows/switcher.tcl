@@ -660,7 +660,6 @@ proc ::windows::switcher::Open {{w .baseWin}} {
     return
   }
   
-  setWinLocation $w
   ::setTitle $w "Scid: [tr WindowsSwitcher]"
   ::windows::switcher::Create $w
   bind $w <Escape> "focus .; destroy $w"
