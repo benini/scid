@@ -457,6 +457,14 @@ proc ::docking::remove_tab {wnd src_noteb} {
 	return $options
 }
 
+proc ::docking::generate_unique_path_ { prefix } {
+	set tmp 0
+	while {[winfo exists $prefix$tmp]} {
+		incr tmp
+	}
+	return "$prefix$tmp"
+}
+
 # Move a window between two different notebooks
 proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 	set options [::docking::remove_tab $wnd $src_noteb]
@@ -466,7 +474,8 @@ proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 			incr idx
 		}
 		set pw $::docking::tbs($src_noteb)
-		set dest_noteb [create_notebook_ [winfo toplevel $pw].tb$::docking::tbcnt]
+		set dest_noteb [::docking::generate_unique_path_ $pw.tb]
+		::docking::create_notebook_ $dest_noteb
 		::docking::insert_notebook_ $pw $idx $dest_noteb
 	}
 	::docking::insert_tab $wnd $dest_noteb $dest_pos $options
@@ -475,7 +484,6 @@ proc ::docking::move_tab_ {wnd src_noteb dest_noteb {dest_pos "end"} } {
 # Given a notebook, orient its paned window so that a new notebook can be added
 # in the wanted direction. Return the idx of the notebook.
 proc ::docking::orient_pw_ {tbn anchor} {
-	variable tbcnt
 	variable tbs
 
 	if {$anchor=="w" || $anchor=="e"} {
@@ -490,8 +498,8 @@ proc ::docking::orient_pw_ {tbn anchor} {
 	if {[$pw cget -orient] ne $orient} {
 		# create new paned window
 		set old_pw $pw
-		set pw [ttk::panedwindow $pw.pw$tbcnt -orient $orient]
-		incr tbcnt
+		set pw [::docking::generate_unique_path_ $pw.pw]
+		ttk::panedwindow $pw -orient $orient
 		# move old notebook
 		$old_pw forget $tbn
 		::docking::insert_notebook_ $pw end $tbn
@@ -518,7 +526,6 @@ proc ::docking::insert_notebook_ {pw idx noteb} {
 # Create a new notebook
 proc ::docking::create_notebook_ {path} {
 	set noteb [ttk::notebook $path -width 1 -height 1]
-	incr ::docking::tbcnt
 	bind $noteb <B1-Motion> {
 		if {[info exists ::docking::motion_]} { continue }
 		set ::docking::motion_ [::docking::identify_tab_ %W %x %y]
