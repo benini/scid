@@ -233,7 +233,6 @@ proc _autoscroll {bar args} {
         set _autoscroll($bar) 0
       }
     }
-    # update idletasks
   }
   eval $bar set $args
 }

@@ -1270,12 +1270,9 @@ proc raiseAllWindows {} {
 bind TNotebook <Key-Right> {}
 bind TNotebook <Key-Left>  {}
 
-wm minsize . 0 0
 wm iconname . "Scid"
 wm protocol . WM_DELETE_WINDOW { ::file::Exit }
 setMenu . .menu
-setWinLocation .
-bind . <Configure> "recordWinSize ."
 keyboardShortcuts .
 
 ::win::createDockWindow .pw
@@ -1283,9 +1280,6 @@ keyboardShortcuts .
 
 menuUpdateBases
 setLanguageMenus
-
-update
-update idletasks
 
 if {$startup(stats)} { ::windows::stats::Open }
 if {$startup(finder)} { ::file::finder::Open }

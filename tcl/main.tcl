@@ -1061,7 +1061,6 @@ proc toggleGameInfo {} {
     grid forget .main.gameInfo
   }
   updateGameInfo
-  update idletasks
 }
 ################################################################################
 
