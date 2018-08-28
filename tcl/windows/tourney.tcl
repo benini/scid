@@ -177,17 +177,15 @@ proc ::tourney::Open {} {
 
 proc ::tourney::defaults {} {
   set ::tourney::_defaults 1
-  set year [::utils::date::today year]
-  #set ::tourney::start "$year.??.??"
-  set ::tourney::start "1800.??.??"
-  set ::tourney::end "$year.12.31"
+  set ::tourney::start ""
+  set ::tourney::end ""
   set ::tourney::size 50
-  set ::tourney::minPlayers 2
-  set ::tourney::maxPlayers 999
-  set ::tourney::minGames 1
-  set ::tourney::maxGames 9999
-  set ::tourney::minElo 0
-  set ::tourney::maxElo 4000
+  set ::tourney::minPlayers ""
+  set ::tourney::maxPlayers ""
+  set ::tourney::minGames ""
+  set ::tourney::maxGames ""
+  set ::tourney::minElo ""
+  set ::tourney::maxElo ""
   set ::tourney::country ""
   set ::tourney::site ""
   set ::tourney::event ""
@@ -210,19 +208,17 @@ proc ::tourney::refresh {{option ""}} {
 
   set ::curr_db [sc_base current]
   set filter [sc_filter new $::curr_db]
+  set start $::tourney::start
+  set end $::tourney::end
+  if { $start eq "" } { set start "1800.01.01" }
+  if { $end eq "" } { set year [::utils::date::today year]; set start "$year.12.31" }
   sc_filter search $::curr_db $filter header \
       -filter RESET \
-      -date [list $::tourney::start $::tourney::end] \
+      -date [list $start $end] \
       -site $::tourney::site \
       -sitecountry [string toupper $::tourney::country] \
       -event $::tourney::event
-  set err [catch {sc_base tournaments $::curr_db $filter $::tourney::size \
-      -n_players [list $::tourney::minPlayers $::tourney::maxPlayers] \
-      -n_games [list $::tourney::minGames $::tourney::maxGames] \
-      -avgelo [list $::tourney::minElo $::tourney::maxElo] \
-      -player $::tourney::player \
-      -sort $::tourney::sort \
-  } tlist]
+  set err [catch {sc_base tournaments $::curr_db $filter {*}[::tourney::getSearchOptions]  } tlist]
   sc_filter release $::curr_db $filter
   unbusyCursor .
 
@@ -315,18 +311,12 @@ proc ::tourney::refresh {{option ""}} {
 proc ::tourney::check {} {
   set start $::tourney::start
   set end $::tourney::end
-  if {[string length $start] == 0} { set start "0000" }
-  if {[string length $end] == 0} { set end [sc_info limit year]}
   if {[string length $start] == 4} { append start ".??.??" }
   if {[string length $end] == 4} { append end ".12.31" }
   if {[string length $start] == 7} { append start ".??" }
   if {[string length $end] == 7} { append end ".31" }
   set ::tourney::start $start
   set ::tourney::end $end
-  if {$::tourney::minPlayers < 2} {set ::tourney::minPlayers 2}
-  if {$::tourney::minPlayers > $::tourney::maxPlayers} {
-    set ::tourney::maxPlayers $::tourney::minPlayers
-  }
   set s $::tourney::country
   set s [string toupper [string trim $s]]
   if {[string length $s] > 3} { set s [string range $s 0 2] }
@@ -346,3 +336,46 @@ proc ::tourney::select {gnum} {
   ::crosstab::Open
 }
 
+proc ::tourney::getSearchOptions {} {
+    set options [list $::tourney::size]
+    if {$::tourney::player ne ""} {
+        lappend options "-player" $::tourney::player
+    }
+    if {$::tourney::sort ne ""} {
+        lappend options "-sort" $::tourney::sort
+    }
+    if {$::tourney::minPlayers ne "" || $::tourney::maxPlayers ne ""} {
+        set minp 2
+        set maxp 999
+        if {$::tourney::minPlayers ne ""} {
+            set minp $::tourney::minPlayers
+        }
+        if {$::tourney::maxPlayers ne ""} {
+            set maxp $::tourney::maxPlayers
+        }
+        lappend options "-n_players" [list $minp $maxp]
+    }
+    if {$::tourney::minGames ne "" || $::tourney::maxGames ne ""} {
+        set ming 1
+        set maxg 9999
+        if {$::tourney::minGames ne ""} {
+            set ming $::tourney::minGames
+        }
+        if {$::tourney::maxGames ne ""} {
+            set maxg $::tourney::maxGames
+        }
+        lappend options "-n_games" [list $ming $maxg]
+    }
+    if {$::tourney::minElo ne "" || $::tourney::maxElo ne ""} {
+        set mine 0
+        set maxe 4000
+        if {$::tourney::minElo ne ""} {
+            set mine $::tourney::minElo
+        }
+        if {$::tourney::maxElo ne ""} {
+            set maxe $::tourney::maxElo
+        }
+        lappend options "-avgelo" [list $mine $maxe]
+    }
+    return $options
+}
