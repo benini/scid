@@ -78,11 +78,9 @@ proc ::tourney::Open {} {
   ttk::label $f.from -text "[tr TmtSortDate]:" -font $fbold
   ttk::entry $f.efrom -textvariable ::tourney::start -width 10 -font $font
   bindFocusColors $f.efrom
-  bind $f.efrom <FocusOut> +::tourney::check
   ttk::label $f.to -text "-" -font $font
   ttk::entry $f.eto -textvariable ::tourney::end -width 10 -font $font
   bindFocusColors $f.eto
-  bind $f.eto <FocusOut> +::tourney::check
   pack $f.from $f.efrom $f.to $f.eto -side left
 
   ttk::label $f.cn -text "  $::tr(Country):" -font $fbold
@@ -90,7 +88,6 @@ proc ::tourney::Open {} {
         SCG SUI SWE USA YUG}
   
   bindFocusColors $f.ecn
-  bind $f.ecn <FocusOut> +::tourney::check
   pack $f.cn $f.ecn -side left
 
   ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
@@ -105,24 +102,20 @@ proc ::tourney::Open {} {
   ttk::entry $f.pmin -textvariable ::tourney::minPlayers \
     -width 3 -justify right -font $font
   bindFocusColors $f.pmin
-  bind $f.pmin <FocusOut> +::tourney::check
   ttk::label $f.pto -text "-"
   ttk::entry $f.pmax -textvariable ::tourney::maxPlayers \
     -width 3 -justify right -font $font
   bindFocusColors $f.pmax
-  bind $f.pmax <FocusOut> +::tourney::check
   pack $f.players $f.pmin $f.pto $f.pmax -side left
 
   ttk::label $f.games -text "   [tr TmtSortGames]:" -font $fbold
   ttk::entry $f.gmin -textvariable ::tourney::minGames \
     -width 4 -justify right -font $font
   bindFocusColors $f.gmin
-  bind $f.gmin <FocusOut> +::tourney::check
   ttk::label $f.gto -text "-" -font $font
   ttk::entry $f.gmax -textvariable ::tourney::maxGames \
     -width 4 -justify right -font $font
   bindFocusColors $f.gmax
-  bind $f.gmax <FocusOut> +::tourney::check
   pack $f.games $f.gmin $f.gto $f.gmax -side left
   ttk::label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
   ttk::entry $f.elomin -textvariable ::tourney::minElo \
@@ -204,6 +197,7 @@ proc ::tourney::refresh {{option ""}} {
   set t $w.t.text
   $t configure -state normal
   $t delete 1.0 end
+  ::tourney::check
   update
 
   set ::curr_db [sc_base current]
@@ -323,6 +317,21 @@ proc ::tourney::check {} {
   set ::tourney::country $s
   if {$::tourney::country == "---"} {
     set ::tourney::country ""
+  }
+  if { $::tourney::maxGames ne "" && $::tourney::minGames > $::tourney::maxGames} {
+    set help $::tourney::maxGames
+    set ::tourney::maxGames $::tourney::minGames
+    set ::tourney::minGames $help
+  }
+  if {$::tourney::maxElo ne "" && $::tourney::minElo > $::tourney::maxElo} {
+    set help $::tourney::maxElo
+    set ::tourney::maxElo $::tourney::minElo
+    set ::tourney::minElo $help
+  }
+  if {$::tourney::maxPlayers ne "" && $::tourney::minPlayers > $::tourney::maxPlayers} {
+    set help $::tourney::maxPlayers
+    set ::tourney::maxPlayers $::tourney::minPlayers
+    set ::tourney::minPlayers $help
   }
 }
 

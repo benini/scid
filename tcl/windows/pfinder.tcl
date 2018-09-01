@@ -95,13 +95,11 @@ proc ::plist::Open {} {
   foreach entry {emin emax} {
     $f.$entry configure -width 4 -justify right -font $font
     bindFocusColors $f.$entry
-    bind $f.$entry <FocusOut> +::plist::check
   }
 
   foreach entry {gmin gmax} {
     $f.$entry configure -width 6 -justify right -font $font
     bindFocusColors $f.$entry
-    bind $f.$entry <FocusOut> +::plist::check
   }
   
   pack $f.elo -side left -padx "8 0"
@@ -150,6 +148,7 @@ proc ::plist::refresh {} {
   }
   $t insert end "\n" title
 
+  ::plist::check
   #TODO: check if this update is necessary
   update
 
@@ -193,11 +192,15 @@ proc ::plist::refresh {} {
 }
 
 proc ::plist::check {} {
-  if {$::plist::minGames > $::plist::maxGames} {
+  if { $::plist::maxGames ne "" && $::plist::minGames > $::plist::maxGames} {
+    set help $::plist::maxGames
     set ::plist::maxGames $::plist::minGames
+    set ::plist::minGames $help
   }
-  if {$::plist::minElo > $::plist::maxElo} {
+  if {$::plist::maxElo ne "" && $::plist::minElo > $::plist::maxElo} {
+    set help $::plist::maxElo
     set ::plist::maxElo $::plist::minElo
+    set ::plist::minElo $help
   }
 }
 
