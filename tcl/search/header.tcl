@@ -26,40 +26,28 @@ set sPgntext(3) ""
 #    Checks minimum/maximum search dates in header search window and
 #    extends them if necessary.
 proc checkDates {} {
-  global sDateMinEntry sDateMaxEntry sEventDateMinEntry sEventDateMaxEntry
-  if {[string length $sDateMinEntry] == 4} { append sDateMinEntry ".??.??" }
-  if {[string length $sDateMaxEntry] == 4} { append sDateMaxEntry ".12.31" }
-  if {[string length $sDateMinEntry] == 7} { append sDateMinEntry ".??" }
-  if {[string length $sDateMaxEntry] == 7} { append sDateMaxEntry ".31" }
-  if {[string length $sEventDateMinEntry] == 4} { append sDateMinEntry ".??.??" }
-  if {[string length $sEventDateMaxEntry] == 4} { append sDateMaxEntry ".12.31" }
-  if {[string length $sEventDateMinEntry] == 7} { append sDateMinEntry ".??" }
-  if {[string length $sEventDateMaxEntry] == 7} { append sDateMaxEntry ".31" }
-}
-
-proc ::search::header::initTrace {} {
-  #initialize the *_old in validate.tcl
-  set ::sWhiteEloMinEntry 0; set ::sWhiteEloMaxEntry 0
-  set ::sBlackEloMinEntry 0; set ::sBlackEloMaxEntry 0
-  set ::sEloDiffMinEntry 0; set ::sEloDiffMaxEntry 0
-  set ::sGlMinEntry 0; set ::sGlMaxEntry 999
-  set ::sGnumMinEntry 1; set ::sGnumMaxEntry -1
-  set ::sEcoMinEntry "A00";  set ::sEcoMaxEntry "E99"
-  set ::sDateMinEntry "0000.00.00"; set ::sDateMaxEntry "[sc_info limit year].12.31"
-  set ::sEventDateMinEntry "0000.00.00"; set ::sEventDateMaxEntry "[sc_info limit year].12.31"
+  global sDateMin sDateMax sEventDateMin sEventDateMax
+  if {[string length $sDateMin] == 4} { append sDateMin ".??.??" }
+  if {[string length $sDateMax] == 4} { append sDateMax ".12.31" }
+  if {[string length $sDateMin] == 7} { append sDateMin ".??" }
+  if {[string length $sDateMax] == 7} { append sDateMax ".31" }
+  if {[string length $sEventDateMin] == 4} { append sDateMin ".??.??" }
+  if {[string length $sEventDateMax] == 4} { append sDateMax ".12.31" }
+  if {[string length $sEventDateMin] == 7} { append sDateMin ".??" }
+  if {[string length $sEventDateMax] == 7} { append sDateMax ".31" }
 }
 
 proc ::search::header::defaults {} {
   set ::sWhite "";  set ::sBlack ""
   set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotator ""; set ::sAnnotated 0
-  set ::sWhiteEloMinEntry ""; set ::sWhiteEloMaxEntry ""
-  set ::sBlackEloMinEntry ""; set ::sBlackEloMaxEntry ""
-  set ::sEloDiffMinEntry ""; set ::sEloDiffMaxEntry ""
-  set ::sGlMinEntry ""; set ::sGlMaxEntry ""
-  set ::sEcoMinEntry "";  set ::sEcoMaxEntry ""; set ::sEco Yes
-  set ::sGnumMinEntry ""; set ::sGnumMaxEntry ""
-  set ::sDateMinEntry ""; set ::sDateMaxEntry ""
-  set ::sEventDateMinEntry ""; set ::sEventDateMaxEntry ""
+  set ::sWhiteEloMin ""; set ::sWhiteEloMax ""
+  set ::sBlackEloMin ""; set ::sBlackEloMax ""
+  set ::sEloDiffMin ""; set ::sEloDiffMax ""
+  set ::sGlMin ""; set ::sGlMax ""
+  set ::sEcoMin "";  set ::sEcoMax ""; set ::sEco Yes
+  set ::sGnumMin ""; set ::sGnumMax ""
+  set ::sDateMin ""; set ::sDateMax ""
+  set ::sEventDateMin ""; set ::sEventDateMax ""
   set ::sResWin ""; set ::sResLoss ""; set ::sResDraw ""; set ::sResOther ""
   set ::sIgnoreCol No
   set ::sSideToMoveW "w"
@@ -72,29 +60,28 @@ proc ::search::header::defaults {} {
   }
 }
 
-::search::header::initTrace
-foreach i {sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry} {
+foreach i {sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax} {
   trace variable $i w [list ::utils::validate::Integer [sc_info limit elo] 0]
 }
-trace variable sEloDiffMinEntry w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
-trace variable sEloDiffMaxEntry w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
+trace variable sEloDiffMin w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
+trace variable sEloDiffMax w [list ::utils::validate::Integer "-[sc_info limit elo]" 0]
 
 ::search::header::defaults
 
-trace variable sDateMinEntry w ::utils::validate::Date
-trace variable sDateMaxEntry w ::utils::validate::Date
-trace variable sEventDateMinEntry w ::utils::validate::Date
-trace variable sEventDateMaxEntry w ::utils::validate::Date
+trace variable sDateMin w ::utils::validate::Date
+trace variable sDateMax w ::utils::validate::Date
+trace variable sEventDateMin w ::utils::validate::Date
+trace variable sEventDateMax w ::utils::validate::Date
 
 
-trace variable sGlMinEntry w {::utils::validate::Integer 9999 0}
-trace variable sGlMaxEntry w {::utils::validate::Integer 9999 0}
+trace variable sGlMin w {::utils::validate::Integer 9999 0}
+trace variable sGlMax w {::utils::validate::Integer 9999 0}
 
-trace variable sGnumMinEntry w {::utils::validate::Integer -9999999 0}
-trace variable sGnumMaxEntry w {::utils::validate::Integer -9999999 0}
+trace variable sGnumMin w {::utils::validate::Integer -9999999 0}
+trace variable sGnumMax w {::utils::validate::Integer -9999999 0}
 
 # Forcing ECO entry to be valid ECO codes:
-foreach i {sEcoMinEntry sEcoMaxEntry} {
+foreach i {sEcoMin sEcoMax} {
   trace variable $i w {::utils::validate::Regexp {^$|^[A-Ea-e]$|^[A-Ea-e][0-9]$|^[A-Ea-e][0-9][0-9]$|^[A-Ea-e][0-9][0-9][a-z]$|^[A-Ea-e][0-9][0-9][a-z][1-4]$}}
 }
 
@@ -105,10 +92,10 @@ set sHeaderFlagFrame 0
 #   Opens the window for searching by header information.
 #
 proc search::headerCreateFrame { w } {
-  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sEventDateMinEntry sEventDateMaxEntry sIgnoreCol
-  global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
+  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sEventDateMin sEventDateMax sIgnoreCol
+  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMoveW sSideToMoveB
-  global sEco sEcoMin sEcoMax sHeaderFlags sGlMinEntry sGlMaxEntry sTitleList sTitles
+  global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
   foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res ano gl ends eco} {
@@ -127,9 +114,9 @@ proc search::headerCreateFrame { w } {
     
     ttk::label $w.c$color.space
     ttk::label $w.c$color.elo1 -textvar ::tr(Rating:)
-    ttk::entry $w.c$color.elomin -textvar s${color}EloMinEntry -width 6 -justify right
+    ttk::entry $w.c$color.elomin -textvar s${color}EloMin -width 6 -justify right
     ttk::label $w.c$color.elo2 -text "-"
-    ttk::entry $w.c$color.elomax -textvar s${color}EloMaxEntry -width 6 -justify right
+    ttk::entry $w.c$color.elomax -textvar s${color}EloMax -width 6 -justify right
     bindFocusColors $w.c$color.e
     bindFocusColors $w.c$color.elomin
     bindFocusColors $w.c$color.elomax
@@ -141,9 +128,9 @@ proc search::headerCreateFrame { w } {
   ttk::checkbutton $w.ignore.yes -variable sIgnoreCol -onvalue Yes -offvalue No -textvar ::tr(IgnoreColors)
   pack $w.ignore.yes -side left
   ttk::label $w.ignore.rdiff -textvar ::tr(RatingDiff:)
-  ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMinEntry -justify right
+  ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMin -justify right
   ttk::label $w.ignore.rdto -text "-"
-  ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMaxEntry -justify right
+  ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMax -justify right
   bindFocusColors $w.ignore.rdmin
   bindFocusColors $w.ignore.rdmax
   pack $w.ignore.rdmax $w.ignore.rdto $w.ignore.rdmin $w.ignore.rdiff -side right
@@ -187,20 +174,20 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.dl1 -text "$::tr(Event)\n$::tr(Date:)"
   ttk::label $f.dl2 -text "-"
   ttk::label $f.dl3 -text " "
-  ttk::entry $f.demin -textvariable sEventDateMinEntry -width 10
+  ttk::entry $f.demin -textvariable sEventDateMin -width 10
   button $f.deminCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sEventDateMinEntry "-" newdate
+    regsub -all {[.]} $sEventDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sEventDateMinEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sEventDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.demax -textvariable sEventDateMaxEntry -width 10
+  ttk::entry $f.demax -textvariable sEventDateMax -width 10
   button $f.demaxCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sEventDateMaxEntry "-" newdate
+    regsub -all {[.]} $sEventDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sEventDateMaxEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sEventDateMax "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
   bindFocusColors $f.demin
@@ -208,8 +195,8 @@ proc search::headerCreateFrame { w } {
   bind $f.demin <FocusOut> +checkDates
   bind $f.demax <FocusOut> +checkDates
   ttk::button $f.dlyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
-    set sEventDateMinEntry "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
-    set sEventDateMaxEntry [::utils::date::today]
+    set sEventDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
+    set sEventDateMax [::utils::date::today]
   }
   ::utils::tooltip::Set $f.dlyear $::tr(YearToTodayTooltip)
 
@@ -226,20 +213,20 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.l1 -text "$::tr(game)\n$::tr(Date:)"
   ttk::label $f.l2 -text "-"
   ttk::label $f.l3 -text " "
-  ttk::entry $f.emin -textvariable sDateMinEntry -width 10
+  ttk::entry $f.emin -textvariable sDateMin -width 10
   button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sDateMinEntry "-" newdate
+    regsub -all {[.]} $sDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sDateMinEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.emax -textvariable sDateMaxEntry -width 10
+  ttk::entry $f.emax -textvariable sDateMax -width 10
   button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
-    regsub -all {[.]} $sDateMaxEntry "-" newdate
+    regsub -all {[.]} $sDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
-      set sDateMaxEntry "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
+      set sDateMax "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
   bindFocusColors $f.emin
@@ -247,8 +234,8 @@ proc search::headerCreateFrame { w } {
   bind $f.emin <FocusOut> +checkDates
   bind $f.emax <FocusOut> +checkDates
   ttk::button $f.lyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
-    set sDateMinEntry "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
-    set sDateMaxEntry [::utils::date::today]
+    set sDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
+    set sDateMax [::utils::date::today]
   }
   ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
 
@@ -268,8 +255,8 @@ proc search::headerCreateFrame { w } {
   ttk::label $w.gl.l1 -textvar ::tr(GameLength:)
   ttk::label $w.gl.l2 -text "-"
   ttk::label $w.gl.l3 -textvar ::tr(HalfMoves)
-  ttk::entry $w.gl.emin -textvariable sGlMinEntry -justify right -width 4
-  ttk::entry $w.gl.emax -textvariable sGlMaxEntry -justify right -width 4
+  ttk::entry $w.gl.emin -textvariable sGlMin -justify right -width 4
+  ttk::entry $w.gl.emax -textvariable sGlMax -justify right -width 4
   bindFocusColors $w.gl.emin
   bindFocusColors $w.gl.emax
   pack $w.gl -in $w.res -side right -fill x
@@ -294,15 +281,15 @@ proc search::headerCreateFrame { w } {
   ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
   ttk::label $w.eco.l2 -text "-"
   ttk::label $w.eco.l3 -text " "
-  ttk::entry $w.eco.emin -textvariable sEcoMinEntry -width 5
-  ttk::entry $w.eco.emax -textvariable sEcoMaxEntry -width 5
+  ttk::entry $w.eco.emin -textvariable sEcoMin -width 5
+  ttk::entry $w.eco.emax -textvariable sEcoMax -width 5
   bindFocusColors $w.eco.emin
   bindFocusColors $w.eco.emax
   ttk::button $w.eco.range -text "..." -style  Pad0.Small.TButton -width 0 -command {
     set tempResult [chooseEcoRange]
     if {[scan $tempResult "%\[A-E0-9a-z\]-%\[A-E0-9a-z\]" sEcoMin_tmp sEcoMax_tmp] == 2} {
-      set sEcoMinEntry $sEcoMin_tmp
-      set sEcoMaxEntry $sEcoMax_tmp
+      set sEcoMin $sEcoMin_tmp
+      set sEcoMax $sEcoMax_tmp
     }
     unset tempResult
   }
@@ -315,23 +302,23 @@ proc search::headerCreateFrame { w } {
   set f [ttk::frame $w.gnum]
   pack $f -side top -fill x
   ttk::label $f.l1 -textvar ::tr(GlistGameNumber:)
-  ttk::entry $f.emin -textvariable sGnumMinEntry -width 8 -justify right
+  ttk::entry $f.emin -textvariable sGnumMin -width 8 -justify right
   ttk::label $f.l2 -text "-" -font $regular
-  ttk::entry $f.emax -textvariable sGnumMaxEntry -width 8 -justify right
+  ttk::entry $f.emax -textvariable sGnumMax -width 8 -justify right
   pack $f.l1 $f.emin $f.l2 $f.emax -side left
   bindFocusColors $f.emin
   bindFocusColors $f.emax
   ttk::label $f.l3 -text " "
-  ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin 1; set sGnumMax -1}
+  ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin ""; set sGnumMax ""}
   ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
   ttk::menubutton $f.last -style pad0.TMenubutton -textvar ::tr(Last...) -menu $f.last.m
   menu $f.first.m
   menu $f.last.m
   foreach x {10 50 100 500 1000 5000 10000} {
     $f.first.m add command -label $x \
-        -command "set sGnumMinEntry 1; set sGnumMaxEntry $x"
+        -command "set sGnumMin 1; set sGnumMax $x"
     $f.last.m add command -label $x \
-        -command "set sGnumMinEntry -$x; set sGnumMaxEntry -1"
+        -command "set sGnumMin -$x; set sGnumMax -1"
   }
   pack $f.l3 $f.all $f.first $f.last -side left -padx 2
   
@@ -459,28 +446,136 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   focus $w.cWhite.e
 }
 
-### Copy values from header search dialog to search variables. Use empty string as "all"
-proc getSearchEntries {} {
-  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-  global sGlMin sGlMax sGlMinEntry sGlMaxEntry
-  global sWhiteEloMinEntry sWhiteEloMaxEntry sBlackEloMinEntry sBlackEloMaxEntry
-  global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sEventDateMin sEventDateMax
-  global sGnumMin sGnumMax sGnumMinEntry sGnumMaxEntry sEventDateMinEntry sEventDateMaxEntry
-  global sEcoMin sEcoMax sDateMin sDateMax sEcoMinEntry sEcoMaxEntry sDateMinEntry sDateMaxEntry
-  set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
-  set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
-  set ::sEloDiffMin "-[sc_info limit elo]"
-  set ::sEloDiffMax "+[sc_info limit elo]"
-  set ::sGlMin 0; set ::sGlMax 999
-  set ::sGnumMin 1; set ::sGnumMax -1
-  set ::sEcoMin "A00";  set ::sEcoMax "E99"
-  set ::sDateMin "0000.00.00"; set ::sDateMax "[sc_info limit year].12.31"
-  set ::sEventDateMin "0000.00.00"; set ::sEventDateMax "[sc_info limit year].12.31"
-  foreach i { sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax sGnumMin sGnumMax sDateMin sDateMax sEcoMin sEcoMax sEventDateMin sEventDateMax} {
-     set j $i
-     append j Entry
-     if { [set $j] != "" } { set $i [set $j] }
-  }
+### Read values from header search dialog. Use empty string as "all"
+proc ::search::header::getSearchOptions { wb } {
+    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax
+    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sEventDateMin sEventDateMax
+    global sEloDiffMin sEloDiffMax sGnumMin sGnumMax sEcoMin sEcoMax sGlMin sGlMax sEco
+    global sSideToMoveW sSideToMoveB sHeaderFlags sTitleList sTitles
+    global sResWin sResLoss sResDraw sResOther sPgntext
+
+    set sWhiteEloMinSearch 0; set sWhiteEloMaxSearch [sc_info limit elo]
+    set sBlackEloMinSearch 0; set sBlackEloMaxSearch [sc_info limit elo]
+    set sEloDiffMinSearch "-[sc_info limit elo]"
+    set sEloDiffMaxSearch "+[sc_info limit elo]"
+    set sGlMinSearch 0; set sGlMaxSearch 999
+    set sWhiteSearch ""; set sBlackSearch ""
+    set sGnumMinSearch 1; set sGnumMaxSearch -1
+    set sEcoMinSearch "A00";  set sEcoMaxSearch "E99"
+    set sDateMinSearch "1800.01.01"; set sDateMaxSearch "[sc_info limit year].12.31"
+    set sEventDateMinSearch "1800.01.01"; set sEventDateMaxSearch "[sc_info limit year].12.31"
+    set sAnnotatorSearch ""; set sRoundSearch ""
+    set sEventSearch ""; set sSiteSearch ""
+    #if value in dialog ne "" copy it to search variable
+    foreach i { sDateMin sDateMax sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax \
+		    sGnumMin sGnumMax sEcoMin sEcoMax sEventDateMin sEventDateMax sWhite sBlack sRound sAnnotator \
+		    sEvent sSite } {
+	set j $i
+	append j Search
+	if { [set $i] ne "" } {
+	    set $j [set $i]
+	}
+    }
+    if { $wb != "wb" } { ;#Swap Black - White for ignore Colors
+        set sEloDiffMinSearch [ expr { $sEloDiffMaxSearch * -1 }]
+        set sEloDiffMaxSearch [ expr { $sEloDiffMinSearch * -1 }]
+	set help $sWhiteSearch; set sWhiteSearch $sBlackSearch; set sBlackSearch $help
+	set help $sWhiteEloMinSearch; set sWhiteEloMinSearch $sBlackEloMinSearch; set sBlackEloMinSearch $help
+	set help $sWhiteEloMaxSearch; set sWhiteEloMaxSearch $sBlackEloMaxSearch; set sBlackEloMaxSearch $help
+
+	set help $sEloDiffMin; set sEloDiffMin $sEloDiffMax; set sEloDiffMax $help
+	set help $sWhite; set sWhite $sBlack; set sBlack $help
+	set help $sWhiteEloMin;	set sWhiteEloMin $sBlackEloMin;	set sBlackEloMin $help
+	set help $sWhiteEloMax;	set sWhiteEloMax $sBlackEloMax;	set sBlackEloMax $help
+    }
+    set search {}
+    #generate search options when value ne ""
+    foreach { i j k } {  -date sDateMin sDateMax -eventdate sEventDateMin sEventDateMax \
+			 -length sGlMin sGlMax -delo sEloDiffMin sEloDiffMax \
+			 -eco sEcoMin sEcoMax -gnum sGnumMin sGnumMax \
+			 -belo sBlackEloMin sBlackEloMax -welo sWhiteEloMin sWhiteEloMax } {
+	if { [set $j] ne "" || [set $k] ne "" } {
+	    set min $j
+	    append l Search
+	    set max $k
+	    append m Search
+	    lappend search $i [list [set $min] [set $max]]
+	}
+    }
+    foreach { i j } { -white sWhite -black sBlack -event sEvent -site sSite -round sRound -annotator sAnnotator } {
+	if { [set $j] ne "" } {
+	    set value $j
+	    append value Search
+	    lappend search $i [set $value]
+	}
+    }
+    if { $wb != "wb" } { ;#Reswap only the values in dialog, others are not used anymore
+	set help $sEloDiffMin; set sEloDiffMin $sEloDiffMax; set sEloDiffMax $help
+	set help $sWhite; set sWhite $sBlack; set sBlack $help
+	set help $sWhiteEloMin;	set sWhiteEloMin $sBlackEloMin;	set sBlackEloMin $help
+	set help $sWhiteEloMax;	set sWhiteEloMax $sBlackEloMax;	set sBlackEloMax $help
+    }
+    set noEco "-eco!"
+    if {$sEco == "Yes"} {
+	set noEco "-eco|"
+    }
+    if { $sEcoMin ne "" || $sEcoMax ne "" } { lappend search $noEco [list 0 0] }
+    if { $sAnnotated } {
+	lappend search -annotated $sAnnotated
+    }
+    set sPgnlist {}
+    foreach i {1 2 3} {
+      set temp [string trim $sPgntext($i)]
+      if {$temp != ""} { lappend sPgnlist $temp }
+    }
+    set wtitles {}
+    set btitles {}
+    foreach i $sTitleList {
+      if $sTitles(w:$i) { lappend wtitles $i }
+      if $sTitles(b:$i) { lappend btitles $i }
+    }
+
+    set flagsYes ""
+    set flagsNo ""
+    set idx -1
+    foreach i [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] {
+        incr idx
+        if {$i == "Comments"} { continue }
+        if {$i == "Variations"} { continue }
+        if {$i == "Annotations"} { continue }
+
+        if  { $sHeaderFlags($i) == "yes" } {
+            append flagsYes [lindex $::sHeaderFlagChars $idx]
+        } elseif  { $sHeaderFlags($i) == "no" } {
+            append flagsNo [lindex $::sHeaderFlagChars $idx]
+        }
+    }
+
+    set results ""
+    append results $sResWin $sResDraw $sResLoss $sResOther
+    foreach { i j} { -result! results -flag flagsYes -flag! flagsNo -pgn sPgnlist -wtitles wtitles -btitles btitles } {
+	if { [llength [set $j]] > 0 } {
+	    lappend search $i [set $j]
+	}
+    }
+    set fCounts(Variations) "-n_variations"
+    set fCountsV(Variations) ""
+    set fCounts(Comments) "-n_comments"
+    set fCountsV(Comments) ""
+    set fCounts(Annotations) "-n_nags"
+    set fCountsV(Annotations) ""
+    foreach i {"Variations" "Comments" "Annotations"} {
+        if  { $sHeaderFlags($i) == "yes" } {
+             append fCounts($i) "!"
+             set fCountsV($i) "0"
+	     lappend search $fCounts($i) $fCountsV($i)
+        } elseif  { $sHeaderFlags($i) == "no" } {
+             set fCountsV($i) "0"
+	     lappend search $fCounts($i) $fCountsV($i)
+        }
+    }
+    lappend search -toMove "$sSideToMoveW$sSideToMoveB"
+    return $search
 }
 
 proc ::search::header::do_search {new_filter} {
@@ -507,119 +602,24 @@ proc ::search::header::do_search {new_filter} {
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
     ::utils::history::AddEntry HeaderSearchEvent $sEvent
     ::utils::history::AddEntry HeaderSearchSite $sSite
-    
-    set sPgnlist {}
-    foreach i {1 2 3} {
-      set temp [string trim $sPgntext($i)]
-      if {$temp != ""} { lappend sPgnlist $temp }
-    }
+
     pack .sh.b.stop -side right -padx 5
     grab .sh.b.stop
-    set wtitles {}
-    set btitles {}
-    foreach i $sTitleList {
-      if $sTitles(w:$i) { lappend wtitles $i }
-      if $sTitles(b:$i) { lappend btitles $i }
-    }
-
-    if {$sEco == "Yes"} {
-        set noEco "-eco|"
-    } else {
-        set noEco "-eco!"
-    }
 
     if {$::search::filter::operation != "2" } {
         set fOrig [sc_filter new $dbase]
         sc_filter copy $dbase $fOrig $filter
     }
 
-    set flagsYes ""
-    set flagsNo ""
-    set idx -1
-    foreach i [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] {
-        incr idx
-        if {$i == "Comments"} { continue }
-        if {$i == "Variations"} { continue }
-        if {$i == "Annotations"} { continue }
-
-        if  { $sHeaderFlags($i) == "yes" } {
-            append flagsYes [lindex $::sHeaderFlagChars $idx]
-        } elseif  { $sHeaderFlags($i) == "no" } {
-            append flagsNo [lindex $::sHeaderFlagChars $idx]
-        }
-    }
-
-    set fCounts(Variations) "-n_variations"
-    set fCountsV(Variations) ""
-    set fCounts(Comments) "-n_comments"
-    set fCountsV(Comments) ""
-    set fCounts(Annotations) "-n_nags"
-    set fCountsV(Annotations) ""
-    foreach i {"Variations" "Comments" "Annotations"} {
-        if  { $sHeaderFlags($i) == "yes" } {
-             append fCounts($i) "!"
-             set fCountsV($i) "0"
-        } elseif  { $sHeaderFlags($i) == "no" } {
-             set fCountsV($i) "0"
-        }
-    }
-
-    set results ""
-    append results $sResWin
-    append results $sResDraw
-    append results $sResLoss
-    append results $sResOther
-    getSearchEntries
-
     progressBarSet .sh.fprogress.progress 301 21
     sc_filter search $dbase $filter header \
-          -filter RESET \
-          -white $sWhite -black $sBlack \
-          -event $sEvent -site $sSite -round $sRound \
-          -eventdate [list $sEventDateMin $sEventDateMax] \
-          -date [list $sDateMin $sDateMax] \
-          -result! $results \
-          -welo [list $sWhiteEloMin $sWhiteEloMax] \
-          -belo [list $sBlackEloMin $sBlackEloMax] \
-          -delo [list $sEloDiffMin $sEloDiffMax] \
-          -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
-          -length [list $sGlMin $sGlMax] \
-          -toMove "$sSideToMoveW$sSideToMoveB" \
-          -gnum [list $::sGnumMin $::sGnumMax] \
-          -annotated $sAnnotated \
-          -annotator $sAnnotator \
-          -flag $flagsYes -flag! $flagsNo \
-          $fCounts(Variations) $fCountsV(Variations) \
-          $fCounts(Comments) $fCountsV(Comments) \
-          $fCounts(Annotations) $fCountsV(Annotations) \
-          -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
+          -filter RESET {*}[getSearchOptions wb]
 
     if {$sIgnoreCol == "Yes"} {
         set fIgnore [sc_filter new $dbase]
-        set deloMin [ expr { $sEloDiffMax * -1 }]
-        set deloMax [ expr { $sEloDiffMin * -1 }]
         progressBarSet .sh.fprogress.progress 301 21
         sc_filter search $dbase $fIgnore header \
-          -filter RESET \
-          -white $sBlack -black $sWhite \
-          -event $sEvent -site $sSite -round $sRound \
-          -eventdate [list $sEventDateMin $sEventDateMax] \
-          -date [list $sDateMin $sDateMax] \
-          -result! $results \
-          -welo [list $sBlackEloMin $sBlackEloMax] \
-          -belo [list $sWhiteEloMin $sWhiteEloMax] \
-          -delo [list $deloMin $deloMax] \
-          -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
-          -length [list $sGlMin $sGlMax] \
-          -toMove $sSideToMove \
-          -gnum [list $::sGnumMin $::sGnumMax] \
-          -annotated $sAnnotated \
-          -annotator $sAnnotator \
-          -flag $flagsYes -flag! $flagsNo \
-          $fCounts(Variations) $fCountsV(Variations) \
-          $fCounts(Comments) $fCountsV(Comments) \
-          $fCounts(Annotations) $fCountsV(Annotations) \
-          -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
+          -filter RESET {*}[getSearchOptions bw]
 
         sc_filter or $dbase $filter $fIgnore
         sc_filter release $dbase $fIgnore
