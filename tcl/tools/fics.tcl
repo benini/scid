@@ -719,9 +719,9 @@ namespace eval fics {
       sc_pos setComment "[sc_pos getComment]$comment"
       if {$num == $::fics::observedGame} {
         if {[string match "1/2*" $res]} {
-          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "Draw"
+          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "Draw\n$comment"
         } else {
-          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "$res"
+          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "$res\n$comment"
         }
         sc_game tags set -result $res
         set ::fics::playing 0
