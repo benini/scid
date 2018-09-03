@@ -710,13 +710,6 @@ translate D EngineNew {Neu}
 translate D EngineEdit {Bearbeiten}
 translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
 
-
-# Stats window menus:
-menuText D StatsFile "Datei" 0
-menuText D StatsFilePrint "Drucken in Datei..." 0
-menuText D StatsFileClose "Fenster schlieﬂen" 0
-menuText D StatsOpt "Optionen" 0
-
 # PGN window menus:
 menuText D PgnFile "Datei" 0
 menuText D PgnFileCopy "Kopiere Spiel in Zwischenablage" 0

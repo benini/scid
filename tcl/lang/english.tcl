@@ -719,12 +719,6 @@ translate E EngineNew {New}
 translate E EngineEdit {Edit}
 translate E EngineRequired {Fields in bold are required; others are optional}
 
-# Stats window menus:
-menuText E StatsFile "File" 0
-menuText E StatsFilePrint "Print to File..." 0
-menuText E StatsFileClose "Close Window" 0
-menuText E StatsOpt "Options" 0
-
 # PGN window menus:
 menuText E PgnFile "File" 0
 menuText E PgnFileCopy "Copy Game to Clipboard" 0

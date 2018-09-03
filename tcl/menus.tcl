@@ -618,7 +618,6 @@ proc setLanguageMenus {} {
   }
 
   ::pgn::ConfigMenus
-  ::windows::stats::ConfigMenus
   ::tree::ConfigMenus
   ::crosstab::ConfigMenus
   ::optable::ConfigMenus

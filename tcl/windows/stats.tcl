@@ -24,12 +24,13 @@ proc ::windows::stats::Open {} {
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
 
-  menu $w.menu
-  ::setMenu $w $w.menu
-  $w.menu add cascade -label StatsFile -menu $w.menu.file
-  $w.menu add cascade -label StatsOpt -menu $w.menu.opt
-  menu $w.menu.file
-  $w.menu.file add command -label StatsFilePrint -command {
+#  use autoscrollframe to display large infos
+  autoscrollframe $w.statsasb text $w.stats -width 80 -height 40\
+      -foreground black -background white -font font_Fixed\
+       -wrap none
+
+  ttk::frame $w.fbuttons
+  ttk::button $w.fbuttons.print -image tb_save -command {
     set ftype {
       { "Text files" {".txt"} }
       { "All files"  {"*"}    }
@@ -45,36 +46,6 @@ proc ::windows::stats::Open {} {
       }
     }
   }
-  $w.menu.file add separator
-  $w.menu.file add command -label StatsFileClose -accelerator Esc \
-      -command "destroy $w"
-
-  menu $w.menu.opt
-  $w.menu.opt add cascade -label $::tr(OprepStatBoth) -menu $w.menu.opt.elo
-  menu $w.menu.opt.elo
-  foreach i [lsort -decreasing [array names ::windows::stats::display r*]] {
-    set elo [string range $i 1 end]
-    $w.menu.opt.elo add checkbutton -label "$::tr(OprepStatBoth) $elo+" \
-      -variable ::windows::stats::display($i) -command ::windows::stats::Refresh
-  }
-  $w.menu.opt add separator
-  $w.menu.opt add cascade -label $::tr(OprepStatSince) \
-    -menu $w.menu.opt.year
-  menu $w.menu.opt.year
-  foreach i [lsort [array names ::windows::stats::display y*]] {
-    set year [string range $i 1 end]
-    $w.menu.opt.year add checkbutton \
-      -label "$::tr(OprepStatSince) $year.01.01" \
-      -variable ::windows::stats::display($i) -command ::windows::stats::Refresh
-  }
-
-
-#  use autoscrollframe to display large infos
-  autoscrollframe $w.statsasb text $w.stats -width 80 -height 40\
-      -foreground black -background white -font font_Fixed\
-       -wrap none 
-
-  ttk::frame $w.fbuttons
   ttk::checkbutton $w.fbuttons.graphyear -text $::tr(Year) \
       -variable ::windows::stats::like_graphyear -command ::windows::stats::Refresh
   ttk::checkbutton $w.fbuttons.graphelo  -text $::tr(Rating) \
@@ -83,7 +54,7 @@ proc ::windows::stats::Open {} {
       -variable ::windows::stats::statelo -command ::windows::stats::Refresh
   ttk::checkbutton $w.fbuttons.statyear -text "StatYear" \
       -variable ::windows::stats::stat_year -command ::windows::stats::Refresh
-  ttk::checkbutton $w.fbuttons.old_elo -text "Old_Elo" \
+  ttk::checkbutton $w.fbuttons.old_elo -text "OldElo" \
       -variable ::windows::stats::old_elo -command ::windows::stats::Refresh
   ttk::checkbutton $w.fbuttons.oldyear -text "OldYear" \
       -variable ::windows::stats::old_year -command ::windows::stats::Refresh
@@ -92,7 +63,7 @@ proc ::windows::stats::Open {} {
   ttk::button $w.fbuttons.setup -image tb_CC_engine -command configureFilterGraph
   pack $w.fbuttons -side top -fill x
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
-  pack $w.fbuttons.setup -side right
+  pack $w.fbuttons.setup $w.fbuttons.print -side right -padx "5 0" -pady 2
   set ::windows::stats::isOpen 1
   bind $w <Control-q> "destroy $w"
   bind $w <Escape> "destroy $w"
@@ -102,7 +73,6 @@ proc ::windows::stats::Open {} {
   }
 # enable Resize vertical
   wm resizable $w 0 1
-  ::windows::stats::ConfigMenus
   ::windows::stats::Refresh
 }
 
@@ -304,16 +274,4 @@ proc ::windows::stats::Refresh {} {
   $w tag add red 2.0 3.0
   $w configure -height $height
   $w configure -state disabled
-}
-
-proc ::windows::stats::ConfigMenus {{lang ""}} {
-  if {! [winfo exists .statsWin]} { return }
-  if {$lang == ""} { set lang $::language }
-  set m .statsWin.menu
-  foreach idx {0 1} tag {File Opt} {
-    configMenuText $m $idx Stats$tag $lang
-  }
-  foreach idx {0 2} tag {Print Close} {
-    configMenuText $m.file $idx StatsFile$tag $lang
-  }
 }

@@ -64,31 +64,54 @@ proc configureFilterGraph {} {
   wm title $w $::tr(ConfigureFilter)
   setWinLocation $w
   bind $w <F1> {helpWindow Graphs Filter}
-  ttk::frame $w.filter
+  ttk::labelframe $w.filternew -text "Config $::tr(Year) $::tr(Rating)"
   set col 0
   set row 0
   #Create input for each configurationvalue
   foreach { i n } { Year Year Elo Rating Moves moves} {
-    ttk::label $w.filter.label$i -text $::tr($n): -font font_Bold
-    grid $w.filter.label$i -row $row -column $col -sticky w
+    ttk::label $w.filternew.label$i -text $::tr($n): -font font_Bold
+    grid $w.filternew.label$i -row $row -column $col -sticky w
     incr col
     foreach {j k} { FilterMin "  " FilterMax " - " FilterStep "  Interval:"} {
-      ttk::label $w.filter.label$j$i -text $k
-      ttk::entry $w.filter.i$j$i -textvariable $j$i -justify right -width 5 -validate all -validatecommand { regexp {^[0-9]{0,4}$} %P }
-      grid $w.filter.label$j$i -row $row -column $col -sticky w
+      ttk::label $w.filternew.label$j$i -text $k
+      ttk::entry $w.filternew.i$j$i -textvariable $j$i -justify right -width 5 -validate all -validatecommand { regexp {^[0-9]{0,4}$} %P }
+      grid $w.filternew.label$j$i -row $row -column $col -sticky w
       incr col
-      grid $w.filter.i$j$i -row $row -column $col -sticky w
+      grid $w.filternew.i$j$i -row $row -column $col -sticky w
       incr col
     }
     if { $i == "Elo" } {
-      ttk::checkbutton $w.filter.iEloGuess -text $::tr(FilterEstimate) -onvalue 1 -offvalue 0 -variable FilterGuessELO
-      grid $w.filter.iEloGuess -row $row -column $col -sticky w -padx "5 0"
-      #	  incr col
+      ttk::checkbutton $w.filternew.iEloGuess -text $::tr(FilterEstimate) -onvalue 1 -offvalue 0 -variable FilterGuessELO
+      grid $w.filternew.iEloGuess -row $row -column $col -sticky w -padx "5 0"
     }
     incr row
     set col 0
   }
-  
+  if { [winfo exists .statsWin]} {
+      ttk::labelframe $w.filterold -text "Config StatYear StatElo OldYear OldElo"
+      foreach { i h v s } { Elo OprepStatBoth r* "+" Year OprepStatSince y* ".01.01" } {
+	  ttk::frame $w.filterold.old$i
+	  ttk::label $w.filterold.old$i.label -textvariable ::tr($h) -font font_Bold
+	  ttk::scrollbar $w.filterold.old$i.ybar -command "$w.filterold.old$i.list yview"
+	  listbox $w.filterold.old$i.list -yscrollcommand "$w.filterold.old$i.ybar set" \
+	      -height 7 -width 10 -selectmode multiple -exportselection 0
+	  pack $w.filterold.old$i.label -side top -anchor w
+	  pack $w.filterold.old$i.ybar -side right -fill y
+	  pack $w.filterold.old$i.list -side left -fill both -expand 1
+	  set j 0
+	  foreach y [lsort -decreasing [array names ::windows::stats::display $v]] {
+	      set value [string range $y 1 end]
+	      $w.filterold.old$i.list insert end "$value$s"
+	      if { $::windows::stats::display($y) } {
+	      $w.filterold.old$i.list selection set $j
+	      }
+	      incr j
+	  }
+      }
+      pack $w.filterold.oldElo -side left -expand 1 -in $w.filterold -fill both -padx "0 10"
+      pack $w.filterold.oldYear -side left -expand 1 -fill both -in $w.filterold
+  }
+
   ttk::frame $w.buttons
   ttk::button $w.buttons.close -textvar ::tr(Close) -command {
     checkConfigFilterGraph; ::tools::graphs::filter::Refresh
@@ -105,16 +128,37 @@ proc configureFilterGraph {} {
     set FilterStepMoves 1
     set FilterGuessELO 1
   }
-  ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
-    ::tools::graphs::absfilter::Refresh;
-    ::tools::graphs::filter::Refresh
-    ::windows::stats::Refresh
+  if { [winfo exists .statsWin]} {
+     ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
+	  set j 0
+	  foreach i [lsort -decreasing [array names ::windows::stats::display y*]] {
+	      set ::windows::stats::display($i) [.configFilterGraph.filterold.oldYear.list selection includes $j]
+	      incr j
+	  }
+	  set j 0
+	  foreach i [lsort -decreasing [array names ::windows::stats::display r*]] {
+	      set ::windows::stats::display($i) [.configFilterGraph.filterold.oldElo.list selection includes $j]
+	      incr j
+	  }
+	 ::tools::graphs::absfilter::Refresh;
+	 ::tools::graphs::filter::Refresh
+	 ::windows::stats::Refresh
+     }
+  } else {
+     ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
+	 ::tools::graphs::absfilter::Refresh;
+	 ::tools::graphs::filter::Refresh
+	 ::windows::stats::Refresh
+     }
   }
   
-  pack $w.filter
+  pack $w.filternew -side top -fill x
+  if { [winfo exists .statsWin]} {
+      pack $w.filterold -side top -fill both -expand 1 -pady "10 0"
+  }
   pack $w.buttons -anchor e
   packdlgbuttons $w.buttons.close $w.buttons.update $w.buttons.standard
-  focus $w.filter.iFilterMinYear
+  focus $w.filternew.iFilterMinYear
   bind $w <Configure> "recordWinSize $w"
 }
 
@@ -185,9 +229,8 @@ proc tools::graphs::filter::Open {} {
     pack $w.b.$name -side left -padx 1 -pady 2
   }
   ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
-  dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
-  pack $w.b.close $w.b.setup -side right -padx 2 -pady 2
+  pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes
   
   ::tools::graphs::filter::Refresh
@@ -880,9 +923,8 @@ proc tools::graphs::absfilter::Open {} {
     pack $w.b.$name -side left -padx 1 -pady 2
   }
   ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
-  dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
-  pack $w.b.close $w.b.setup -side right -padx 2 -pady 2
+  pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes
   
   ::tools::graphs::absfilter::Refresh
