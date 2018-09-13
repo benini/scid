@@ -1914,10 +1914,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     
     ttk::button $w.b1.showinfo -image tb_engineinfo -command "toggleEngineInfo $n"
     ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
-    if {!$analysis(uci$n)} {
-        $w.b1.showinfo configure -state disabled
-        $w.b1.alllines configure -state disabled
-    }
     
     if {$n == 1} {
         ttk::button $w.b1.annotate -image tb_annotate -command "configAnnotation $n"
@@ -1926,24 +1922,27 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     ttk::button $w.b1.priority -image tb_cpu_hi -command "setAnalysisPriority $w $n"
     ::utils::tooltip::Set $w.b1.priority $::tr(LowPriority)
     
-    if {$analysis(uci$n)} {
-        set state disabled
-    } else  {
-        set state normal
-    }
-    
-    ttk::button $w.b1.update -image tb_update -state $state -command "if {$analysis(uci$n)} {sendToEngine $n .}" ;# UCI does not support . command
+    ttk::button $w.b1.update -image tb_update -command "if {$analysis(uci$n)} {sendToEngine $n .}" ;# UCI does not support . command
     ::utils::tooltip::Set $w.b1.update $::tr(Update)
     
     ttk::button $w.b1.help -image tb_help -command { helpWindow Analysis }
     ::utils::tooltip::Set $w.b1.help $::tr(Help)
     
-    if {$n ==1} {
-        pack $w.b1.bStartStop $w.b1.lockengine $w.b1.move $w.b1.line $w.b1.alllines $w.b1.multipv $w.b1.annotate $w.b1.automove $w.b1.bFinishGame -side left
-    } else  {
-        pack $w.b1.bStartStop $w.b1.lockengine $w.b1.move $w.b1.line $w.b1.alllines $w.b1.multipv $w.b1.automove -side left
+    pack $w.b1.bStartStop $w.b1.lockengine $w.b1.move $w.b1.line -side left
+    if {$analysis(uci$n)} {
+	pack $w.b1.alllines -side left
     }
-    pack $w.b1.help $w.b1.priority $w.b1.update $w.b1.showboard $w.b1.showinfo -side right
+    if {$n ==1} {
+        pack $w.b1.multipv $w.b1.annotate $w.b1.automove $w.b1.bFinishGame -side left
+    } else  {
+        pack $w.b1.multipv $w.b1.automove -side left
+    }
+    pack $w.b1.help $w.b1.priority $w.b1.showboard -side right
+    if {! $analysis(uci$n)} {
+	pack $w.b1.update -side right
+    } else {
+	pack $w.b1.showinfo -side right
+    }
     if {$analysis(uci$n)} {
         text $w.text -width 60 -height 1 -fg black -bg white -font font_Bold -wrap word -setgrid 1 ;# -spacing3 2
     } else {
