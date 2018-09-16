@@ -546,11 +546,11 @@ proc openURL {url} {
     # On Mac OS X use the "open" command:
     catch {exec open $url &}
   } else {
-    # On Unix systems, there is no standard for invoking favorite
-    # web browser, so just try starting Mozilla or Netscape.
-    
-    # First, check if Mozilla seems to be available:
-    if {[file executable [auto_execok firefox]]} {
+    # First, check if xdg-open works:
+    if {! [catch {exec xdg-open $url &}] } {
+	#lauch default browser seems ok, nothing more to do
+    } elseif {[file executable [auto_execok firefox]]} {
+      # Mozilla seems to be available:
       # First, try -remote mode:
       if {[catch {exec /bin/sh -c "$::auto_execs(firefox) -remote 'openURL($url)'"}]} {
         # Now try a new Mozilla process:
