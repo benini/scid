@@ -564,8 +564,8 @@ translate D SearchMask {Suche in einer Maske}
 translate D DisplayMask {Maske als Zugbaum}
 translate D Nag {NAG Code}
 translate D Marker {Marker}
-translate D Include {Einbezogene Variante}
-translate D Exclude {Ausgeschlossene Variante}
+translate D Include {Enthalten}
+translate D Exclude {Ausgeschlossen}
 translate D MainLine {Hauptvariante}
 translate D Bookmark {Lesezeichen}
 translate D NewLine {Neue Variante}
@@ -1709,6 +1709,8 @@ translate D DockRight {Nach rechts}
 translate D Undock {Fenster lösen}
 #Gamelist
 translate D ChangeIcon {Datenbank Icon ändern...}
+translate D NewGameListWindow {Neue Partieliste}
+translate D LoadatStartup {Beim Starten laden}
 translate D ShowHideDB {Datenbank anzeigen/verbergen}
 translate D ChangeFilter {Filter ändern}
 translate D ChangeLayout {Sortierkriterien und Spaltenlayout laden/speichern/ändern }

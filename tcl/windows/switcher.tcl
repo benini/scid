@@ -614,7 +614,7 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
 
 proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
   $w.menu delete 0 end
-  $w.menu add command -label "New Game List Window" -command "::windows::gamelist::Open $baseIdx"
+  $w.menu add command -label "[tr NewGameListWindow]" -command "::windows::gamelist::Open $baseIdx"
   $w.menu add separator
   $w.menu add command -label [tr FileOpen] -command ::file::Open
   if {![sc_base isReadOnly $baseIdx]} {
@@ -630,11 +630,11 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
     $w.menu add command -label $::tr(CompactDatabase) -command "compactDB $baseIdx"
     if { [::file::autoLoadBases.find $baseIdx] == "-1" } {
       set ::sw_DummyCheckbutton 0
-      $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
+      $w.menu add checkbutton -label "[tr LoadatStartup]" -variable ::sw_DummyCheckbutton \
         -command "::file::autoLoadBases.add $baseIdx"
     } else {
       set ::sw_DummyCheckbutton 1
-      $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
+      $w.menu add checkbutton -label "[tr LoadatStartup]" -variable ::sw_DummyCheckbutton \
         -command "::file::autoLoadBases.remove $baseIdx"
     }
   } else {

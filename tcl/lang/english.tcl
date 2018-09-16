@@ -1730,6 +1730,8 @@ translate E Undock {Undock}
 
 # Switcher window
 translate E ChangeIcon {Choose database icon...}
+translate E NewGameListWindow {New Game List Window}
+translate E LoadatStartup {Load at startup}
 
 # Gamelist window
 translate E ShowHideDB {Show/Hide databases}
