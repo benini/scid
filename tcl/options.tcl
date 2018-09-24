@@ -16,11 +16,11 @@
 proc InitDefaultToolbar {} {
   global toolbar
   foreach {tbicon status}  {
-    new 0 open 0 save 0 close 0
+    newdb 0 open 0 save 0 closedb 0
     finder 0 bkm 0 gprev 0 gnext 0
-    cut 0 copy 0 paste 0
-    rfilter 0 bsearch 0 hsearch 0 msearch 0
-    switcher 0 glist 0 pgn 0 tmt 0 maint 0 eco 0 tree 0 crosst 0 engine 0
+    newgame 0 copy 0 paste 0
+    boardsearch 0 headersearch 0 materialsearch 0
+    switcher 0 glist 0 pgn 0 tmt 0 maint 0 eco 0 tree 0 crosstab 0 engine 0
   } {
     set toolbar($tbicon) $status
   }

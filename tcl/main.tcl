@@ -1226,7 +1226,7 @@ proc CreateGameInfo {} {
 
 proc InitToolbar {{tb}} {
 	ttk::frame $tb -relief raised -border 1
-	ttk::button $tb.new -image tb_new -command ::file::New -padding {2 0}
+	ttk::button $tb.newdb -image tb_newdb -command ::file::New -padding {2 0}
 	ttk::button .main.tb.open -image tb_open -command ::file::Open -padding {2 0}
 	ttk::button .main.tb.save -image tb_save  -padding {2 0} -command {
 	  if {[sc_game number] != 0} {
@@ -1238,14 +1238,14 @@ proc InitToolbar {{tb}} {
 		gameAdd
 	  }
 	}
-	ttk::button .main.tb.close -image tb_close -command ::file::Close -padding {2 0}
+	ttk::button .main.tb.closedb -image tb_closedb -command ::file::Close -padding {2 0}
 	ttk::button .main.tb.finder -image tb_finder -command ::file::finder::Open -padding {2 0}
 	ttk::menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
 	menu .main.tb.bkm.menu
 	::bookmarks::RefreshMenu .main.tb.bkm.menu
 
 	ttk::frame .main.tb.space1 -width 4
-	ttk::button .main.tb.cut -image tb_cut -command ::game::Clear -padding {2 0}
+	ttk::button .main.tb.newgame -image tb_newgame -command ::game::Clear -padding {2 0}
 	ttk::button .main.tb.copy -image tb_copy -command ::gameAddToClipbase -padding {2 0}
 	ttk::button .main.tb.paste -image tb_paste \
 		-command {catch {sc_clipbase paste}; updateBoard -pgn} -padding {2 0}
@@ -1253,10 +1253,9 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous} -padding {2 0}
 	ttk::button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next} -padding {2 0}
 	ttk::frame .main.tb.space3 -width 4
-	ttk::button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset -padding {2 0}
-	ttk::button .main.tb.bsearch -image tb_bsearch -command ::search::board -padding {2 0}
-	ttk::button .main.tb.hsearch -image tb_hsearch -command ::search::header -padding {2 0}
-	ttk::button .main.tb.msearch -image tb_msearch -command ::search::material -padding {2 0}
+	ttk::button .main.tb.boardsearch -image tb_boardsearch -command ::search::board -padding {2 0}
+	ttk::button .main.tb.headersearch -image tb_headersearch -command ::search::header -padding {2 0}
+	ttk::button .main.tb.materialsearch -image tb_materialsearch -command ::search::material -padding {2 0}
 	ttk::frame .main.tb.space4 -width 4
 	ttk::button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open -padding {2 0}
 	ttk::button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open -padding {2 0}
@@ -1265,26 +1264,26 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.maint -image tb_maint -command ::maint::OpenClose -padding {2 0}
 	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
 	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
-	ttk::button .main.tb.crosst -image tb_crosst -command ::crosstab::OpenClose -padding {2 0}
+	ttk::button .main.tb.crosstab -image tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
 	ttk::button .main.tb.engine -image tb_engine -command makeAnalysisWin -padding {2 0}
 	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
 
-	foreach i {new open save close finder bkm cut copy paste gprev gnext \
-		  rfilter bsearch hsearch msearch \
-		  switcher glist pgn tmt maint eco tree crosst engine help} {
+	foreach i {newdb open save closedb finder bkm newgame copy paste gprev gnext \
+		  boardsearch headersearch materialsearch \
+		  switcher glist pgn tmt maint eco tree crosstab engine help} {
 	  .main.tb.$i configure -takefocus 0
 	}
 
 	# Set toolbar help status messages:
 	foreach {b m} {
-	  new FileNew open FileOpen finder FileFinder
-	  save GameReplace close FileClose bkm FileBookmarks
+	  newdb FileNew open FileOpen finder FileFinder
+	  save GameReplace closedb FileClose bkm FileBookmarks
 	  gprev GamePrev gnext GameNext
-	  cut GameNew copy EditCopy paste EditPaste
-	  bsearch SearchCurrent
-	  hsearch SearchHeader msearch SearchMaterial
+	  newgame GameNew copy EditCopy paste EditPaste
+	  boardsearch SearchCurrent
+	  headersearch SearchHeader materialsearch SearchMaterial
 	  switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
-	  maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
+	  maint WindowsMaint eco WindowsECO tree WindowsTree crosstab ToolsCross
 	  engine ToolsAnalysis
 	} {
 	  ::utils::tooltip::Set $tb.$b $::helpMessage($::language,$m)
@@ -1299,9 +1298,9 @@ proc configToolbar {} {
 
   array set ::toolbar_temp [array get ::toolbar]
   pack [ttk::frame $w.f1] -side top -fill x
-  foreach i {new open save close finder bkm} {
+  foreach i {newdb open closedb finder save bkm} {
     ttk::checkbutton $w.f1.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f1.$i -side left -ipadx 1 -ipady 1
+    pack $w.f1.$i -side left -ipadx 4 -ipady 1
   }
   pack [ttk::frame $w.f2] -side top -fill x
   foreach i {gprev gnext} {
@@ -1309,17 +1308,17 @@ proc configToolbar {} {
     pack $w.f2.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f3] -side top -fill x
-  foreach i {cut copy paste} {
+  foreach i {newgame copy paste} {
     ttk::checkbutton $w.f3.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f3.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f4] -side top -fill x
-  foreach i {bsearch hsearch msearch} {
+  foreach i {boardsearch headersearch materialsearch} {
     ttk::checkbutton $w.f4.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f4.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f5] -side top -fill x
-  foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
+  foreach i {switcher glist pgn tmt maint eco tree crosstab engine} {
     ttk::checkbutton $w.f5.$i -image tb_$i -variable toolbar_temp($i)
     pack $w.f5.$i -side left -ipadx 1 -ipady 1
   }
@@ -1350,7 +1349,7 @@ proc redrawToolbar {} {
   foreach i [winfo children .main.tb] { pack forget $i }
   set seenAny 0
   set seen 0
-  foreach i {new open save close finder bkm} {
+  foreach i {newdb open closedb finder save bkm} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
@@ -1366,7 +1365,7 @@ proc redrawToolbar {} {
   }
   if {$seen} { pack .main.tb.space2 -side left }
   set seen 0
-  foreach i {cut copy paste} {
+  foreach i {newgame copy paste} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
@@ -1374,7 +1373,7 @@ proc redrawToolbar {} {
   }
   if {$seen} { pack .main.tb.space3 -side left }
   set seen 0
-  foreach i {bsearch hsearch msearch} {
+  foreach i {boardsearch headersearch materialsearch} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
@@ -1382,7 +1381,7 @@ proc redrawToolbar {} {
   }
   if {$seen} { pack .main.tb.space4 -side left }
   set seen 0
-  foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
+  foreach i {switcher glist pgn tmt maint eco tree crosstab engine} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
