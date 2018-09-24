@@ -127,8 +127,7 @@ menuText E EditPasteBoard "Paste Start Board" 12 \
 
 # Game menu:
 menuText E Game "Game" 0
-menuText E GameNew "New Game" 0 \
-  {Reset to an empty game, discarding any changes}
+menuText E GameNew "New Game" 0 {Reset to an empty game}
 menuText E GameFirst "Load First Game" 5 {Load the first filtered game}
 menuText E GamePrev "Load Previous Game" 5 {Load the previous filtered game}
 menuText E GameReload "Re-Load Current Game" 3 \
@@ -1087,7 +1086,7 @@ translate E ClearFen {Clear FEN}
 translate E PasteFen {Paste FEN}
 
 translate E SaveAndContinue {Save and continue}
-translate E DiscardChangesAndContinue {Discard changes\nand continue}
+translate E DiscardChangesAndContinue {Discard changes and continue}
 translate E GoBack {Go back}
 
 # Replace move dialog:

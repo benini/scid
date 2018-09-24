@@ -24,7 +24,7 @@ menuText D File "Datei" 0
 menuText D FileNew "Neu..." 0 {Neue Scid-Datenbank anlegen}
 menuText D FileOpen "Öffnen..." 0 {Existierende Scid-Datenbank öffnen}
 menuText D FileClose "Schließen" 0 {Aktive Scid-Datenbank schließen}
-menuText D FileFinder "Finder" 0 {Dateifinderfenster öffnen}
+menuText D FileFinder "Dateisuche" 0 {Dateisuchfenster öffnen}
 menuText D FileBookmarks "Lesezeichen" 0 {Lesezeichenmenü}
 menuText D FileBookmarksAdd "Lesezeichen zur Liste hinzufügen" 0 \
   {Lesezeichen für die aktuelle Partie und Datenbank}
@@ -97,7 +97,7 @@ menuText D EditReset "Ablage leeren" 0 \
 menuText D EditCopy "Partie in Ablage kopieren" 17 \
   {Diese Partie in die Ablage-Datenbank kopieren}
 menuText D EditPaste "Partie aus Ablage einfügen" 19 \
-  {Aktive Partie aus der Ablage hier einfügen}
+  {Die aktuele Partie aus der Ablagedatenbank hier einfügen}
 menuText D EditPastePGN "PGN-Partie aus Ablage einfügen..." 1 \
   {Interpretiere den Inhalt der Zwischenablage als PGN-Notation und füge ihn hier ein}
 menuText D EditSetup "Stellungseingabe..." 0 \
@@ -109,8 +109,7 @@ menuText D EditPasteBoard "Stellung einfügen" 12 \
 
 # Game menu:
 menuText D Game "Partie" 0
-menuText D GameNew "Neue Partie" 5 \
-  {Neue Partie beginnen, dabei alle Änderungen verwerfen}
+menuText D GameNew "Neue Partie" 5 {Neue Partie beginnen}
 menuText D GameFirst "Erste Partie laden" 0 {Erste Partie im Filter laden}
 menuText D GamePrev "Vorherige Partie laden" 0 \
   {Vorherige Partie im Filter laden}
@@ -153,8 +152,8 @@ menuText D Windows "Fenster" 0
 menuText D WindowsComment "Kommentareditor" 0 {Kommentareditor öffnen/schließen}
 menuText D WindowsGList "Partieliste" 6 {Partieliste öffnen/schließen}
 menuText D WindowsPGN "PGN-Fenster" 0 {PGN-Fenster (Partienotation) öffnen/schließen}
-menuText D WindowsPList "Spielersuche" 0 {Spielerfinder öffnen/schließen}
-menuText D WindowsTmt "Turniersuche" 0 {Turnierfinder öffnen/schließen}
+menuText D WindowsPList "Spielersuche" 0 {Spielersuche öffnen/schließen}
+menuText D WindowsTmt "Turniersuche" 0 {Turniersuche öffnen/schließen}
 menuText D WindowsSwitcher "Datenbank-Umschalter" 0 \
   {Datenbank-Umschalter öffnen/schließen}
 menuText D WindowsMaint "Wartungsfenster" 0 {(Datenbank-)Wartungsfenster öffnen/schließen}
@@ -590,7 +589,7 @@ translate D Moves {Züge}
 # Finder window:
 menuText D FinderFile "Datei" 0
 menuText D FinderFileSubdirs "Unterverzeichnisse beachten" 0
-menuText D FinderFileClose "Dateifinder schließen" 0
+menuText D FinderFileClose "Dateisuche schließen" 0
 menuText D FinderSort "Sortieren" 0
 menuText D FinderSortType "Typ" 0
 menuText D FinderSortSize "Größe" 0
@@ -604,9 +603,9 @@ menuText D FinderTypesPGN "PGN-Dateien" 0
 menuText D FinderTypesEPD "EPD-Dateien" 0
 menuText D FinderTypesRep "Repertoiredateien" 0
 menuText D FinderHelp "Hilfe" 0
-menuText D FinderHelpFinder "Dateifinderhilfe" 0
+menuText D FinderHelpFinder "Hilfe für Dateisuche" 0
 menuText D FinderHelpIndex "Index" 0
-translate D FileFinder {Dateifinder}
+translate D FileFinder {Dateisuche}
 translate D FinderDir {Verzeichnis}
 translate D FinderDirs {Verzeichnisse}
 translate D FinderFiles {Dateien}
@@ -620,7 +619,7 @@ translate D FinderCtxDelete {Löschen}
 # Player finder:
 menuText D PListFile "Datei" 0
 menuText D PListFileUpdate "Aktualisieren" 0
-menuText D PListFileClose "Spielerfinder schließen" 7
+menuText D PListFileClose "Spielersuche schließen" 7
 menuText D PListSort "Sortieren" 0
 menuText D PListSortName "Name" 0
 menuText D PListSortElo "Elo" 0
@@ -631,7 +630,7 @@ menuText D PListSortNewest "Neueste" 0
 # Tournament finder:
 menuText D TmtFile "Datei" 0
 menuText D TmtFileUpdate "Aktualisieren" 0
-menuText D TmtFileClose "Turnierfinder schließen" 0
+menuText D TmtFileClose "Turniersuche schließen" 0
 menuText D TmtSort "Sortieren" 0
 menuText D TmtSortDate "Datum" 0
 menuText D TmtSortPlayers "Spieler" 0
@@ -1083,7 +1082,7 @@ translate D Castling {Rochade}
 translate D EnPassantFile {EnPassant-Linie}
 translate D ClearFen {FEN löschen}
 translate D PasteFen {FEN einfügen}
-translate D SaveAndContinue {Speichern und Weiter}
+translate D SaveAndContinue {Speichern und weiter}
 translate D DiscardChangesAndContinue {Verwerfen und weiter}
 translate D GoBack {Zurück}
 
@@ -1708,9 +1707,9 @@ translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster lösen}
 #Gamelist
-translate D ChangeIcon {Datenbank Icon ändern...}
 translate D NewGameListWindow {Neue Partieliste}
 translate D LoadatStartup {Beim Starten laden}
+translate D ChangeIcon {Datenbank Icon ändern...}
 translate D ShowHideDB {Datenbank anzeigen/verbergen}
 translate D ChangeFilter {Filter ändern}
 translate D ChangeLayout {Sortierkriterien und Spaltenlayout laden/speichern/ändern }
@@ -1978,7 +1977,7 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Analysis><b>Analyse</b>-Fenster</a></li>
 <li><a Reports><b>Berichte</b></a> </li>
 <li><a Book><b>Buch</b>-Fenster</a></li>
-<li><a Finder><b>Dateifinder</b>-Fenster</a></li>
+<li><a Finder><b>Dateisuche</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
 <li><a Email><b>E-Mail</b>-Schach-Manager</a></li>
 <li><a TB><b>Endspieltabellen</b> in Scid verwenden</a> </li>
@@ -1990,13 +1989,13 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
 <li><a Repertoire><b>Repertoire-Editor</b></a></li>
-<li><a PList><b>Spielerfinder</b></a></li>
+<li><a PList><b>Spielersuche</b></a></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
 <li><a TacticalGame><b>Trainingspartie</b>-Fenster</a></li>
 <li><a SeriousGame><b>Ernste Partie</b></a></li>
 <li><a CalVar><b>Training Varianten berechnen</b>-Fenster</a></li>
 <li><a OpeningTrainer><b>Eröffnungstrainer</b>-Fenster</a></li>
-<li><a Tmt><b>Turnierfinder</b></a></li>
+<li><a Tmt><b>Turniersuche</b></a></li>
 <li><a Tree><b>Zugbaum</b>-Fenster</a></red></li>
 </ul>
 
@@ -2051,7 +2050,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>D</h3>
 <ul>
-<li><a Finder>Dateifinder</a></li>
+<li><a Finder>Dateisuche</a></li>
 <li><a Formats>Dateiformate</a></li>
 <li><a Menus File>Datei-Menü</a></li>
 <li><a Formats>Datenbank-Dateiformate</a></li>
@@ -2179,7 +2178,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <h3>T</h3>
 <ul>
 <li><a Moves Trial>Testmodus</a></li>
-<li><a Tmt>Turnierfinder</a></li>
+<li><a Tmt>Turniersuche</a></li>
 <li>Training</li>
 <ul>
 <li><a OpeningTrainer>Eröffnungstrainer</a></li>
@@ -2523,7 +2522,7 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <li><menu>Neu</menu>: Legt eine neue, leere Scid-Datenbank an.</li>
 <li><menu>Öffnen</menu>: Öffnet eine existierende Scid-Datenbank.</li>
 <li><menu>Schließen</menu>: Schließt die aktive Scid-Datenbank.</li>
-<li><menu>Finder</menu>: Öffnet das <a Finder>Dateifinder</a>-Fenster.</li>
+<li><menu>Finder</menu>: Öffnet das <a Finder>Dateisuche</a>-Fenster.</li>
 <li><menu>Lesezeichen</menu>: Das <a Bookmarks>Lesezeichen</a>-Menü mit
      einigen Lesezeichen-Funktionen.</li>
 <li><menu>Wartung</menu>: Datenbank-<a Maintenance>Wartungs</a>-Funktionen.
@@ -2624,8 +2623,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     <a GameList>Partielistenfenster</a>.</li>
 <li><menu>PGN-Fenster</menu>: Öffnet/schließt das
     <a PGN>PGN-Fenster</a>.</li>
-<li><menu>Turnierfinder</menu>: Öffnet/schließt den
-    <a Tmt>Turnierfinder</a>.</li>
+<li><menu>Turniersuche</menu>: Öffnet/schließt den
+    <a Tmt>Turniersuche</a>.</li>
 <br>
 <li><menu>Datenbank-Umschalter</menu>: Öffnet/schließt den
     <a Switcher>Datenbank-Umschalter</a>, mit dem man auf einfache Weise zu einer
@@ -3613,15 +3612,15 @@ mit demselben Namen wie die Datenbank und der Endung "<b>.sem</b>".
 ############################
 ### File Finder window help:
 
-set helpTitle(D,Finder) "Dateifinder"
-set helpText(D,Finder) {<h1>Das Dateifinderfenster</h1>
+set helpTitle(D,Finder) "Dateisuche"
+set helpText(D,Finder) {<h1>Der Dateisuche Dialog</h1>
 <p>
-Der <term>Dateifinder</term> hilft Ihnen, Dateien jedes von Scid
+Die <term>Dateisuche</term> hilft Ihnen, Dateien jedes von Scid
 benutzten Typs zu finden:  Datenbanken, <a PGN>PGN</a>-Dateien,
 <a EPD>EPD</a>-Dateien und <a Repertoire>Repertoire</a>-Dateien.
 </p>
 <p>
-Der Finder zeigt Ihnen nützliche Informationen zu jeder Datei, wie
+Die Dateisuche zeigt Ihnen nützliche Informationen zu jeder Datei, wie
 etwa ihre Größe (siehe unten) und Datum der letzten Modifikation.
 Sie können jede angezeigte Datei durch einen linken Mausklick öffnen.
 </p>
@@ -3639,21 +3638,18 @@ tun. Sie können die Dateisuche mit dem <b>Stop</b>-Schalter unterbrechen.
 
 <h3>Dateigrößen</h3>
 <p>
-Die Bedeutung der vom Finder angegebenen Dateigröße hängt vom Typ der
+Die Bedeutung der angegebenen Dateigröße hängt vom Typ der
 Datei ab. Für Scid-Datenbanken und -PGN-Dateien ist es die Anzahl der
 Partien. Für EPD-Dateien ist es die Anzahl der Positionen. Für
 Repertoiredateien ist es die Anzahl der (gewählten oder ausgeschlossenen)
 Varianten.
 </p>
 <p>
-Für alle Dateitypen mit Ausnahme von Scid-Datenbanken ist die Dateigröße
-eine Schätzung durch Auswertung lediglich der ersten 64 Kilobytes der
-Datei, die Größe ist daher für Dateien größer als 64 Kilobytes
-möglicherweise nicht korrekt. Geschätzte Größen werden mit einer Tilde
-(~) angezeigt zum Zeichen dafür, daß sie nicht exakt sind.
+Für Scid-Datenbanken entspricht die Größe der Anzahl gespeicherter Partien.
+Für alle anderern Datenbanken (z.B. pgn-Dateien) wird die Dateigröße angegeben.
 </p>
 
-<p><footer>(Aktualisiert: Scid 2.7, September 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, September 2018)</footer></p>
 }
 
 
@@ -4080,9 +4076,9 @@ lang rochiert oder einen Bauernkeil bis d5 oder e5 treibt.
 ### Player List help:
 
 set helpTitle(D,PList) "Spielersuche"
-set helpText(D,PList) {<h1>Der Spielerfinder</h1>
+set helpText(D,PList) {<h1>Die Spielersuche</h1>
 <p>
-Der <term>Spielerfinder</term> gibt eine Namensliste von Spielern
+Die <term>Spielersuche</term> gibt eine Namensliste von Spielern
 aus der aktuellen Datenbank aus. Die Auswahl eines Spielers öffnet
 das <a PInfo>Spieler-Informations</a>-Fenster mit detaillierteren
 Informationen über diesen Spieler.
@@ -4102,7 +4098,7 @@ wird ignoriert, z.B. sucht "ada" nach "Adams") sowie den
 Elozahlen-Bereich oder die Anzahl der gespielten Partien eingrenzen.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.4, August 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, September 2018)</footer></p>
 }
 
 #####################
@@ -4274,12 +4270,11 @@ sie von Scid nicht geladen oder gesucht werden.
 ##################################
 ### Tournament Finder window help:
 
-set helpTitle(D,Tmt) "Turnierfinder"
-set helpText(D,Tmt) {<h1>Der Turnierfinder</h1>
+set helpTitle(D,Tmt) "Turniersuche"
+set helpText(D,Tmt) {<h1>Die Turniersuche</h1>
 <p>
-Der <term>Turnierfinder</term> ermöglicht es Ihnen, Turniere in der
-aktuellen Datenbank zu finden. Er untersucht alle Datenbankpartien und
-vergleicht Daten mit den gefundenen Turnieren. Es wird angenommen, daß
+Die <term>Turniersuche</term> ermöglicht es, Turniere in der
+aktuellen Datenbank zu finden. Es wird angenommen, daß
 zwei Partien zum selben Turnier gehören, wenn sie denselben Turnier-
 und Ortseintrag haben und innerhalb von drei Monaten gespielt wurden.
 </p>
@@ -4315,7 +4310,7 @@ der Konstruktion von Turnieren aus den Partien berücksichtigen muß,
 außerordentlich verringert.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, September 2018)</footer></p>
 }
 
 
@@ -5436,7 +5431,7 @@ König verwenden, für Figurenangriffe auf den König oder auch für
 Endspiele mit allen Bauern auf dem Königsflügel.
 </p>
 
-<p><footer>(Aktualisiert: Scid 4.6, Juni 2018)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, Juni 2018)</footer></p>
 }
 
 
@@ -6044,6 +6039,7 @@ set helpText(D,TacticalGame) {<h1>Trainingspartie-Fenster</h1>
 set helpTitle(D,OpeningTrainer) "Eröffnungstrainer"
 set helpText(D,OpeningTrainer) {<h1>Eröffnungstrainer</h1>
   <p>
+   Eine SCID-Datenbank kann als Repertoire verwendet werden, wobei jedes Spiel eine Eröffnungslinie darstellt. Die Spiele können Varianten enthalten. Auch NAG-Werte können angegeben werden, um so bevorzugte oder zweifelhafte Zeilen zu markieren. Eine Datenbank für den Eröffnungstrainer muss auch vom richtigen Typ sein: Das heißt, wenn Öffnungen für Weiß trainiert werden sollen, muss die Datenbank vom Typ Öffnungen für Weiß sein (ähnlich für Schwarz und beide Farben). Der Typ kann über das Fenster Wartung durch Auswahl des Symbols oder über das Kontextmenü des Datenbankumschalters eingestellt werden. 
   Eine Scid Datenbank kann als Repertoire genutzt werden, wenn sie mit dem entsprechenden Typ/Icon markiert wurde. Die Datenbank muss einer der folgenen Typen sein:
   <li>Openings for White</li>
   <li>Openings for Black</li>
@@ -6227,10 +6223,10 @@ set tips(D) {
     zweiten Datenbank.
   }
   {
-    Der <a Tmt>Turnierfinder</a> ist nicht nur zum Auffinden eines
+    Die <a Tmt>Turniersuche</a> ist nicht nur zum Auffinden eines
     bestimmten Turniers nützlich, sondern auch um zu sehen, an welchen
     Turnieren ein bestimmter Spieler vor kurzem teilgenommen hat,
-    oder um die Spitzenturniere in einem bestimmten Land zu betrachten.
+    oder um die Spitzenturniere in einem bestimmten Land anzuzeigen.
   }
   {
     Es gibt eine Reihe häufiger Stellungsmuster, die im Fenster
@@ -6284,8 +6280,8 @@ set tips(D) {
   }
   {
     Wenn Sie vor dem Öffnen einer Datei ihre Größe oder das Datum ihrer
-    letzten Modifikation überprüfen wollen, öffnen Sie sie mit dem
-    <a Finder>Dateifinder</a>.
+    letzten Modifikation überprüfen wollen, öffnen Sie sie mit der
+    <a Finder>Dateisuche</a>.
   }
   {
     Eine <a Repertoire>Repertoire</a>-Datei ist eine ausgezeichnete

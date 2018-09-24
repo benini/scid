@@ -253,8 +253,7 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::label $w.saveTxt -text [tr SaveAndContinue]
-  ttk::button $w.saveBtn -image tb_BD_Save -command {
+  ttk::button $w.saveBtn -text [tr SaveAndContinue] -image tb_BD_Save -compound left -command {
     set gnum [sc_game number]
     if {[catch {sc_game save $gnum $::curr_db}]} {
       ERROR::MessageBox
@@ -265,8 +264,7 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::label $w.clipbaseTxt -text [tr EditCopy]
-  ttk::button $w.clipbaseBtn -image tb_BD_SaveAs -command {
+  ttk::button $w.clipbaseBtn -text [tr EditCopy] -image tb_BD_SaveAs -compound left -command {
     if {[catch {sc_game save 0 $::clipbase_db}]} {
       ERROR::MessageBox
       set ::game::answer 0
@@ -277,21 +275,16 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::label $w.discardTxt -text [tr DiscardChangesAndContinue]
-  ttk::button $w.discardBtn -image tb_BD_VarDelete -command {
+  ttk::button $w.discardBtn -text [tr DiscardChangesAndContinue] -image tb_BD_VarDelete   -compound left -command {
     set ::game::answer 3
     destroy .confirmDiscard
   }
 
-  grid $w.msg         -row 0 -columnspan 3
-  grid $w.saveBtn     -row 1 -sticky w -padx 10 -pady 4
-  grid $w.saveTxt     -row 1 -column 1 -sticky w
-  grid $w.clipbaseBtn -row 2 -sticky w -padx 10 -pady 4
-  grid $w.clipbaseTxt -row 2 -column 1 -sticky w
-  grid $w.discardBtn  -row 3 -sticky w -padx 10 -pady 4
-  grid $w.discardTxt  -row 3 -column 1 -sticky w
-  grid $w.backBtn     -row 3 -column 2 -sticky e -padx 10 -pady 4
-  grid [ttk::frame $w.pad] -row 4 -columnspan 3 -pady 3
+  grid $w.msg         -row 0 -columnspan 2
+  grid $w.saveBtn     -row 1 -sticky nwe -padx 10 -pady 4 -columnspan 2
+  grid $w.clipbaseBtn -row 2 -sticky nwe -padx 10 -pady 4 -columnspan 2
+  grid $w.discardBtn  -row 3 -sticky nwe -padx 10 -pady 4 -columnspan 2
+  grid $w.backBtn     -row 4 -column 1 -sticky e -padx 10 -pady 4
   grid columnconfigure $w 2 -weight 1
 
   tk::PlaceWindow $w
