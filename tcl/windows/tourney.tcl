@@ -37,7 +37,7 @@ proc ::tourney::Open {} {
   if {! [info exists ::tourney::_defaults]} { ::tourney::defaults }
 
   ::createToplevel $w
-  $w configure -background [ttk::style lookup . -background]
+#  $w configure -background [ttk::style lookup . -background]
   ::setTitle $w "Scid: [tr WindowsTmt]"
   wm title $w "Scid: [tr WindowsTmt]"
 
@@ -95,7 +95,7 @@ proc ::tourney::Open {} {
   trace variable ::tourney::size w {::utils::validate::Integer 1000 0}
   bindFocusColors $f.esize
 
-  pack $f.esize $f.size -side right
+  pack $f.esize $f.size -side right -pady "2 0"
 
   set f $w.o2
   ttk::label $f.players -text "[tr TmtSortPlayers]:" -font $fbold
@@ -106,7 +106,7 @@ proc ::tourney::Open {} {
   ttk::entry $f.pmax -textvariable ::tourney::maxPlayers \
     -width 3 -justify right -font $font
   bindFocusColors $f.pmax
-  pack $f.players $f.pmin $f.pto $f.pmax -side left
+  pack $f.players $f.pmin $f.pto $f.pmax -side left -pady "2 0"
 
   ttk::label $f.games -text "   [tr TmtSortGames]:" -font $fbold
   ttk::entry $f.gmin -textvariable ::tourney::minGames \
@@ -116,7 +116,7 @@ proc ::tourney::Open {} {
   ttk::entry $f.gmax -textvariable ::tourney::maxGames \
     -width 4 -justify right -font $font
   bindFocusColors $f.gmax
-  pack $f.games $f.gmin $f.gto $f.gmax -side left
+  pack $f.games $f.gmin $f.gto $f.gmax -side left -pady "2 0"
   ttk::label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
   ttk::entry $f.elomin -textvariable ::tourney::minElo \
     -width 5 -justify right -font $font
@@ -138,7 +138,7 @@ proc ::tourney::Open {} {
   ttk::combobox $f.event -textvariable ::tourney::event -width 12
   ::utils::history::SetCombobox ::tourney::event $f.event
   bindFocusColors $f.event
-  pack $f.eventlab $f.event -side left
+  pack $f.eventlab $f.event -side left -pady "2 0"
 
   ttk::label $f.playerlab -text "$::tr(Player):" -font $fbold
   ttk::combobox $f.player -textvariable ::tourney::player -width 12
@@ -149,15 +149,14 @@ proc ::tourney::Open {} {
 
   dialogbutton $w.b.defaults -textvar ::tr(Defaults) -command ::tourney::defaults
   dialogbutton $w.b.help -textvar ::tr(Help) -command {helpWindow Tmt}
-  dialogbutton $w.b.update -textvar ::tr(Update) -command ::tourney::refresh
-  dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
-  pack $w.b -side bottom -fill x
-  packbuttons right $w.b.close $w.b.update $w.b.help
+  dialogbutton $w.b.update -textvar ::tr(Search) -command ::tourney::refresh
+  packbuttons right $w.b.update $w.b.help
   packbuttons left $w.b.defaults
-  pack $w.o3 -side bottom -fill x -padx 2 -pady 2
-  pack $w.o2 -side bottom -fill x -padx 2 -pady 2
-  pack $w.o1 -side bottom -fill x -padx 2 -pady 2
-  pack $w.t -side top -fill both -expand yes
+  pack $w.t -side bottom -fill both -expand yes
+  pack $w.b -side bottom -fill x
+  pack $w.o3 -side bottom -fill x -padx 2
+  pack $w.o2 -side bottom -fill x -padx 2
+  pack $w.o1 -side bottom -fill x -padx 2
   grid $w.t.text -row 0 -column 0 -sticky news
   grid $w.t.ybar -row 0 -column 1 -sticky news
   grid $w.t.xbar -row 1 -column 0 -sticky news

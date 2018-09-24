@@ -76,10 +76,10 @@ proc ::plist::Open {} {
   # foreach n {50 100 200 500 1000} {
     # $f.esize list insert end $n
   # }
-  pack $f.esize -side right -padx "0 8" -pady 8
-  pack $f.size -side right -pady 8
-  pack $f.nlabel -side left -padx "8 0" -pady 8
-  pack $f.name -side left -pady 8
+  pack $f.esize -side right -padx "0 8" -pady 2
+  pack $f.size -side right -pady 2
+  pack $f.nlabel -side left -padx "8 0" -pady 2
+  pack $f.name -side left -pady 2
 
   set f $w.o2
   ttk::frame $f
@@ -109,15 +109,15 @@ proc ::plist::Open {} {
 
   ttk::frame $w.b
   dialogbutton $w.b.defaults -text $::tr(Defaults) -command ::plist::defaults
-  dialogbutton $w.b.update -text $::tr(Update) -command ::plist::refresh
+  dialogbutton $w.b.update -text $::tr(Search) -command ::plist::refresh
   packbuttons left $w.b.defaults
   packbuttons right $w.b.update
 
-  grid $w.t  -sticky news
   grid $w.o1 -sticky news
   grid $w.o2 -sticky news
-  grid $w.b  -sticky news -ipady 8
-  grid rowconfigure $w 0 -weight 1
+  grid $w.b  -sticky news
+  grid $w.t  -sticky news
+  grid rowconfigure $w 3 -weight 1
   grid columnconfigure $w 0 -weight 1
 
   bind $w <F1> {helpWindow PList}
