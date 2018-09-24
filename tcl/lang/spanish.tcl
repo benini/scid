@@ -448,6 +448,8 @@ translate S Month {Mes}
 translate S Months {enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre}
 translate S Days {dom lun mar mié jue vie sáb}
 translate S YearToToday {Último año hasta hoy}
+# ====== TODO To be translated ======
+translate S YearToTodayTooltip {Set date from 1 year back to today}
 translate S Result {Resultado}
 translate S Round {Ronda}
 translate S Length {Longitud}
@@ -1770,6 +1772,10 @@ translate S DockRight {Mover a la derecha}
 translate S Undock {Ventana flotante}
 translate S ChangeIcon {Cambiar icono...}
 # ====== TODO To be translated ======
+translate S NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate S LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate S ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate S ChangeFilter {Change filter}
@@ -1827,6 +1833,12 @@ translate S ShowHideMaterial {Show/Hide Material}
 translate S FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate S FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate S MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate S Surnames {Surnames}
+# ====== TODO To be translated ======
+translate S Ambiguous {Ambiguous}
 
 }
 # end of spanish.tcl

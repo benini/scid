@@ -411,6 +411,8 @@ translate H Month {Hónap}
 translate H Months {január február március április május június július augusztus szeptember október november december}
 translate H Days {vasárnap hétfõ kedd szerda csütörtök péntek szombat}
 translate H YearToToday {Az utolsó egy évben}
+# ====== TODO To be translated ======
+translate H YearToTodayTooltip {Set date from 1 year back to today}
 translate H Result {Eredmény}
 translate H Round {Forduló}
 translate H Length {Hossz}
@@ -1775,6 +1777,10 @@ translate H Undock {Feloldás}
 # ====== TODO To be translated ======
 translate H ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
+translate H NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate H LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate H ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate H ChangeFilter {Change filter}
@@ -1832,6 +1838,12 @@ translate H ShowHideMaterial {Show/Hide Material}
 translate H FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate H FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate H MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate H Surnames {Surnames}
+# ====== TODO To be translated ======
+translate H Ambiguous {Ambiguous}
 }
 
 # Tips of the day in Hungarian

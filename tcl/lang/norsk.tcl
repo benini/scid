@@ -469,6 +469,8 @@ translate O Month {Måned}
 translate O Months {Januar Februar Mars April Mai Juni Juli August September Oktober November Desember}
 translate O Days {Søn Man Tir Ons Tor Fre Lør}
 translate O YearToToday {År til i dag}
+# ====== TODO To be translated ======
+translate O YearToTodayTooltip {Set date from 1 year back to today}
 translate O Result {Utfall}
 translate O Round {Runde}
 translate O Length {Lengde}
@@ -2223,6 +2225,10 @@ translate O Undock {Undock}
 # ====== TODO To be translated ======
 translate O ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
+translate O NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate O LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate O ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate O ChangeFilter {Change filter}
@@ -2280,6 +2286,12 @@ translate O ShowHideMaterial {Show/Hide Material}
 translate O FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate O FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate O MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate O Surnames {Surnames}
+# ====== TODO To be translated ======
+translate O Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
 }
 

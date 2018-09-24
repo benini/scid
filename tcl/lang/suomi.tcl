@@ -438,6 +438,8 @@ translate U Month {Kuukausi}
 translate U Months {Tammikuu Helmikuu Maaliskuu Huhtikuu Toukokuu Kesäkuu Heinäkuu Elokuu Syyskuu Lokakuu Marraskuu Joulukuu}
 translate U Days {Su Ma Ti Ke To Pe La}
 translate U YearToToday {Vuoden alusta}
+# ====== TODO To be translated ======
+translate U YearToTodayTooltip {Set date from 1 year back to today}
 translate U Result {Tulos}
 translate U Round {Kierros}
 translate U Length {Pituus}
@@ -1741,6 +1743,10 @@ translate U Undock {Vapauta lukitus}
 # Switcher window
 translate U ChangeIcon {Vaihda kuvake...}
 # ====== TODO To be translated ======
+translate U NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate U LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate U ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate U ChangeFilter {Change filter}
@@ -1798,6 +1804,12 @@ translate U ShowHideMaterial {Show/Hide Material}
 translate U FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate U FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate U MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate U Surnames {Surnames}
+# ====== TODO To be translated ======
+translate U Ambiguous {Ambiguous}
 
 }
 # end of suomi.tcl

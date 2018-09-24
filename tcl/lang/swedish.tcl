@@ -404,6 +404,8 @@ translate W Month {Månad}
 translate W Months {Januari Februari Mars April Maj Juni Juli Augusti September Oktober November December}
 translate W Days {Sön Mån Tis Ons Tor Fre Lör}
 translate W YearToToday {Idag}
+# ====== TODO To be translated ======
+translate W YearToTodayTooltip {Set date from 1 year back to today}
 translate W Result {Resultat}
 translate W Round {Rond}
 translate W Length {Längd}
@@ -1680,6 +1682,10 @@ translate W DockRight {Drag till höger}
 translate W Undock {Avdocka}
 translate W ChangeIcon {Ändra ikon...}
 # ====== TODO To be translated ======
+translate W NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate W LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate W ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate W ChangeFilter {Change filter}
@@ -1737,6 +1743,12 @@ translate W ShowHideMaterial {Show/Hide Material}
 translate W FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate W FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate W MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate W Surnames {Surnames}
+# ====== TODO To be translated ======
+translate W Ambiguous {Ambiguous}
 }
 
 ############################################################

@@ -398,6 +398,8 @@ translate C Month {Mìsíc}
 translate C Months {Leden Únor Bøezen Duben Kvìten Èerven Èervenec Srpen Záøí Øíjen Listopad Prosinec}
 translate C Days {Ned Pon Úte Stø Ètv Pát Sob}
 translate C YearToToday {Rok zpìt}
+# ====== TODO To be translated ======
+translate C YearToTodayTooltip {Set date from 1 year back to today}
 translate C Result {Výsledek}
 translate C Round {Kolo}
 translate C Length {Délka}
@@ -1730,6 +1732,10 @@ translate C DockRight {Pøesunout doprava}
 translate C Undock {Undock}
 translate C ChangeIcon {Zmìnit ikonu...}
 # ====== TODO To be translated ======
+translate C NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate C LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate C ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate C ChangeFilter {Change filter}
@@ -1787,6 +1793,12 @@ translate C ShowHideMaterial {Show/Hide Material}
 translate C FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate C FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate C MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate C Surnames {Surnames}
+# ====== TODO To be translated ======
+translate C Ambiguous {Ambiguous}
 }
 
 

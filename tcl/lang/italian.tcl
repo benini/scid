@@ -402,6 +402,8 @@ translate I Month {Mese}
 translate I Months {Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio Agosto Settembre Ottobre Novembre Dicembre}
 translate I Days {Dom Lun Mar Mer Gio Ven Sab}
 translate I YearToToday {Anno ad oggi}
+# ====== TODO To be translated ======
+translate I YearToTodayTooltip {Set date from 1 year back to today}
 translate I Result {Risultato}
 translate I Round {Turno}
 translate I Length {Lunghezza}
@@ -1679,6 +1681,10 @@ translate I DockRight {Sposta a destra}
 translate I Undock {Sgancia}
 translate I ChangeIcon {Cambia icona...}
 # ====== TODO To be translated ======
+translate I NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate I LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate I ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate I ChangeFilter {Change filter}
@@ -1736,6 +1742,12 @@ translate I ShowHideMaterial {Show/Hide Material}
 translate I FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate I FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate I MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate I Surnames {Surnames}
+# ====== TODO To be translated ======
+translate I Ambiguous {Ambiguous}
 }
 
 ############################################################

@@ -401,6 +401,8 @@ translate B Month {Mes}
 translate B Months {Janeiro Fevereiro Marco Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro}
 translate B Days {Dom Seg Ter Qua Qui Sex Sab}
 translate B YearToToday {Anos ate hoje}
+# ====== TODO To be translated ======
+translate B YearToTodayTooltip {Set date from 1 year back to today}
 translate B Result {Resultado}
 translate B Round {Rodada}
 translate B Length {Tamanho}
@@ -1677,6 +1679,10 @@ translate B DockRight {Mover para a direita}
 translate B Undock {Desacoplar}
 translate B ChangeIcon {Alterar icone...}
 # ====== TODO To be translated ======
+translate B NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate B LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate B ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate B ChangeFilter {Change filter}
@@ -1734,6 +1740,12 @@ translate B ShowHideMaterial {Show/Hide Material}
 translate B FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate B FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate B MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate B Surnames {Surnames}
+# ====== TODO To be translated ======
+translate B Ambiguous {Ambiguous}
 }
 
 # end of portbr.tcl

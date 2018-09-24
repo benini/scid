@@ -427,6 +427,8 @@ translate N Month {Maand}
 translate N Months {Januari Februari Maart April Mei Juni Juli Augustus September October November December}
 translate N Days {Zon Maa Din Woe Don Vri Zat}
 translate N YearToToday {Een jaar geleden}
+# ====== TODO To be translated ======
+translate N YearToTodayTooltip {Set date from 1 year back to today}
 translate N Result {Uitslag}
 translate N Round {Ronde}
 translate N Length {Lengte}
@@ -1871,6 +1873,10 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 # ====== TODO To be translated ======
+translate N NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate N LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate N ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate N ChangeFilter {Change filter}
@@ -1928,5 +1934,11 @@ translate N ShowHideMaterial {Show/Hide Material}
 translate N FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate N FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate N MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate N Surnames {Surnames}
+# ====== TODO To be translated ======
+translate N Ambiguous {Ambiguous}
 }
 # End of nederlan.tcl

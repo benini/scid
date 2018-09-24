@@ -429,6 +429,8 @@ translate K Month {Mes}
 translate K Months {gener febrer març abril maig juny juliol agost setembre octubre novembre desembre}
 translate K Days {diu dil dim dic dij div dis}
 translate K YearToToday {Any fins avui}
+# ====== TODO To be translated ======
+translate K YearToTodayTooltip {Set date from 1 year back to today}
 translate K Result {Resultat}
 translate K Round {Ronda}
 translate K Length {Longitut}
@@ -1794,6 +1796,10 @@ translate K Undock {Finestra flotant}
 # ====== TODO To be translated ======
 translate K ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
+translate K NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate K LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate K ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate K ChangeFilter {Change filter}
@@ -1851,6 +1857,12 @@ translate K ShowHideMaterial {Show/Hide Material}
 translate K FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate K FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate K MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate K Surnames {Surnames}
+# ====== TODO To be translated ======
+translate K Ambiguous {Ambiguous}
 
 }
 # end of catalan.tcl

@@ -434,6 +434,8 @@ translate G Month {Μήνας}
 translate G Months {Ιανουάριος Φεβρουάριος Μάρτιος Απρίλιος Μάιος Ιούνιος Ιούλιος Αύγουστος Σεπτέμβριος Οκτώβριος Νοέμβριος Δεκέμβριος}
 translate G Days {Κυρ Δευ Τρ Τε Πε Πα Σα}
 translate G YearToToday {Τρέχον έτος}
+# ====== TODO To be translated ======
+translate G YearToTodayTooltip {Set date from 1 year back to today}
 translate G Result {Αποτέλεσμα}
 translate G Round {Περίοδος}
 translate G Length {Έκταση}
@@ -1781,6 +1783,10 @@ translate G Undock {Αποκόληση}
 # Switcher window
 translate G ChangeIcon {Αλλαγή εικονιδίου...}
 # ====== TODO To be translated ======
+translate G NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate G LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate G ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate G ChangeFilter {Change filter}
@@ -1838,6 +1844,12 @@ translate G ShowHideMaterial {Show/Hide Material}
 translate G FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate G FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate G MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate G Surnames {Surnames}
+# ====== TODO To be translated ======
+translate G Ambiguous {Ambiguous}
 
 }
 # end of greek.tcl

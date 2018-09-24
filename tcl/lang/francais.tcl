@@ -406,6 +406,8 @@ translate F Month {Mois}
 translate F Months {Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Décembre}
 translate F Days {Dim Lun Mar Mer Jeu Ven Sam}
 translate F YearToToday {-1A}
+# ====== TODO To be translated ======
+translate F YearToTodayTooltip {Set date from 1 year back to today}
 translate F Result {Résultat}
 translate F Round {Ronde}
 translate F Length {Longueur}
@@ -1722,6 +1724,10 @@ translate F DockLeft {Déplacer à gauche}
 translate F DockRight {Déplacer à droite}
 translate F Undock {Détacher}
 translate F ChangeIcon {Changer icone...}
+# ====== TODO To be translated ======
+translate F NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate F LoadatStartup {Load at startup}
 translate F ShowHideDB {Afficher/Masquer les bases de données}
 translate F ChangeFilter {Remplacer le filtre}
 translate F ChangeLayout {Charger/Enregistrer/Modifier les critères de tri et la disposition des colonnes.}
@@ -1760,6 +1766,12 @@ translate F ShowHideMaterial {Show/Hide Material}
 translate F FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate F FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate F MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate F Surnames {Surnames}
+# ====== TODO To be translated ======
+translate F Ambiguous {Ambiguous}
 
 ##########
 #

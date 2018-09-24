@@ -467,6 +467,8 @@ translate Y Month {Mesec}
 translate Y Months {Januar Februar Mart April Maj Jun Jul Avgust Septembar Oktobar Novembar Decembar}
 translate Y Days {Ned Pon Uto Sre Èet Pet Sub}
 translate Y YearToToday {Godina do danas}
+# ====== TODO To be translated ======
+translate Y YearToTodayTooltip {Set date from 1 year back to today}
 translate Y Result {Rezultat}
 translate Y Round {Kolo}
 translate Y Length {Du¾ina}
@@ -2227,6 +2229,10 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
+translate Y NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate Y LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate Y ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate Y ChangeFilter {Change filter}
@@ -2284,6 +2290,12 @@ translate Y ShowHideMaterial {Show/Hide Material}
 translate Y FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate Y FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate Y MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate Y Surnames {Surnames}
+# ====== TODO To be translated ======
+translate Y Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl

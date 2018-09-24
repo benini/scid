@@ -405,6 +405,8 @@ translate R Month {Месяц}
 translate R Months {Январь Февраль Март Апрель Май Июнь Июль Август Сентябрь Октябрь Ноябрь Декабрь}
 translate R Days {Вс Пн Вт Ср Чт Пт Сб}
 translate R YearToToday {Текущий год}
+# ====== TODO To be translated ======
+translate R YearToTodayTooltip {Set date from 1 year back to today}
 translate R Result {Результат}
 translate R Round {Раунд}
 translate R Length {Длина}
@@ -1720,6 +1722,10 @@ translate R Undock {Расстыковать}
 # Switcher window
 translate R ChangeIcon {Сменить иконку...}
 # ====== TODO To be translated ======
+translate R NewGameListWindow {New Game List Window}
+# ====== TODO To be translated ======
+translate R LoadatStartup {Load at startup}
+# ====== TODO To be translated ======
 translate R ShowHideDB {Show/Hide databases}
 # ====== TODO To be translated ======
 translate R ChangeFilter {Change filter}
@@ -1777,6 +1783,12 @@ translate R ShowHideMaterial {Show/Hide Material}
 translate R FullScreen {Full Screen}
 # ====== TODO To be translated ======
 translate R FilterStatistic {Filter Statistics}
+# ====== TODO To be translated ======
+translate R MakeCorrections {Make Corrections}
+# ====== TODO To be translated ======
+translate R Surnames {Surnames}
+# ====== TODO To be translated ======
+translate R Ambiguous {Ambiguous}
 
 }
 # end of russian.tcl
