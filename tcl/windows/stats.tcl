@@ -60,7 +60,7 @@ proc ::windows::stats::Open {} {
       -variable ::windows::stats::old_year -command ::windows::stats::Refresh
 
   pack $w.statsasb -side top -fill both -expand yes
-  ttk::button $w.fbuttons.setup -image tb_CC_engine -command configureFilterGraph
+  ttk::button $w.fbuttons.setup -image tb_config -command configureFilterGraph
   pack $w.fbuttons -side top -fill x
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
   pack $w.fbuttons.setup $w.fbuttons.print -side right -padx "5 0" -pady 2
@@ -80,7 +80,7 @@ proc ::windows::stats::Refresh {} {
   global FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO
   variable display
   if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
-  ::windows::gamelist::Refresh
+#  ::windows::gamelist::Refresh
   ::maint::Refresh
   updateStatusBar
   ::tools::graphs::filter::Refresh
