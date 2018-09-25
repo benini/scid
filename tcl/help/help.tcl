@@ -2912,7 +2912,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   To temporarily interrupt the calculation process one can use the
-  stop engine button (<button tb_pause>). Once pressed, this button
+  stop engine button (<button tb_eng_off>). Once pressed, this button
   changes to the start engine button (<button tb_play>) which will
   restart the engines analysis. Note, however, that most engines will
   restart the whole analysis again, forgetting all results that where

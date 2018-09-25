@@ -2551,7 +2551,7 @@ proc startEngineAnalysis { {n 1} {force 0} } {
         set b ".analysisWin$n.b1.bStartStop"
         
         startAnalyzeMode $n $force
-        $b configure -image tb_pause
+        $b configure -image tb_eng_off
         ::utils::tooltip::Set $b "$::tr(StopEngine)(a)"
         # enable lock button
         .analysisWin$n.b1.lockengine configure -state normal
