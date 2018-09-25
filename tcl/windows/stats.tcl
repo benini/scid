@@ -80,7 +80,6 @@ proc ::windows::stats::Refresh {} {
   global FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO
   variable display
   if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
-#  ::windows::gamelist::Refresh
   ::maint::Refresh
   updateStatusBar
   ::tools::graphs::filter::Refresh

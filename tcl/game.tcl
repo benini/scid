@@ -284,7 +284,7 @@ proc ::game::ConfirmDiscard {} {
   grid $w.saveBtn     -row 1 -sticky nwe -padx 10 -pady 4 -columnspan 2
   grid $w.clipbaseBtn -row 2 -sticky nwe -padx 10 -pady 4 -columnspan 2
   grid $w.discardBtn  -row 3 -sticky nwe -padx 10 -pady 4 -columnspan 2
-  grid $w.backBtn     -row 4 -column 1 -sticky e -padx 10 -pady 4
+  grid $w.backBtn     -row 4 -column 1 -sticky e -padx 10 -pady "14 4"
   grid columnconfigure $w 2 -weight 1
 
   tk::PlaceWindow $w
