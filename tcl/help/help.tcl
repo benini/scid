@@ -2415,7 +2415,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
      <li> <img tb_new> New line</li>
      <li> <img tb_rfilter> To be verified by further analysis</li>
      <li> <img tb_msearch> To train</li>
-     <li> <img tb_help> Dubious line</li>
+     <li> <img tb_help_small> Dubious line</li>
      <li> <img tb_cut> To remove</li>
      </ul>
 	  To remove a marker just select the item <menu>No marker</menu>.
@@ -2913,7 +2913,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   To temporarily interrupt the calculation process one can use the
   stop engine button (<button tb_eng_off>). Once pressed, this button
-  changes to the start engine button (<button tb_play>) which will
+  changes to the start engine button (<button tb_eng_on>) which will
   restart the engines analysis. Note, however, that most engines will
   restart the whole analysis again, forgetting all results that where
   achieved in an earlier run. Only few engines are able to reuse the

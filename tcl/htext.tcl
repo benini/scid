@@ -486,7 +486,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       set imgName [string range $tagName 4 end]
       set winName $w.$imgName
       while {[winfo exists $winName]} { append winName a }
-      label $winName -image $imgName -relief flat -borderwidth 0 -background white
+      ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
       $w window create end -window $winName
     }
     if {[strIsPrefix "button " $tagName]} {
@@ -500,7 +500,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       }
       set winName $w.$imgName
       while {[winfo exists $winName]} { append winName a }
-      button $winName -image $imgName -command $cmd
+      ttk::button $winName -image $imgName -command $cmd
       $w window create end -window $winName
     }
     if {[strIsPrefix "window " $tagName]} {
