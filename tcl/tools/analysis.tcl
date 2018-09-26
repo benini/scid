@@ -2366,6 +2366,7 @@ proc toggleFinishGame { { n 1 } } {
     if {! [info exists ::finishGameCmd2] } { set ::finishGameCmd2 "movetime" }
     if {! [info exists ::finishGameCmdVal2] } { set ::finishGameCmdVal2 5 }
     if {! [info exists ::finishGameAnnotate] } { set ::finishGameAnnotate 1 }
+    if {! [info exists ::finishGameAnnotateShort] } { set ::finishGameAnnotateShort 1 }
     # On exit save values in options.dat
     options.save ::finishGameEng1
     options.save ::finishGameEng2
@@ -2374,7 +2375,8 @@ proc toggleFinishGame { { n 1 } } {
     options.save ::finishGameCmd2
     options.save ::finishGameCmdVal2
     options.save ::finishGameAnnotate
-	
+    options.save ::finishGameAnnotateShort
+
     if {$::finishGameMode} {
         set ::finishGameMode 0
         sendToEngine 1 "stop"
@@ -2404,7 +2406,7 @@ proc toggleFinishGame { { n 1 } } {
 	ttk::label $w.wh_f.p -image wk$::board::_size(.main.board)
         grid $w.wh_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.wh_f.e1 -text $analysis(name1) -variable ::finishGameEng1 -value 1 
-	if {[winfo exists .analysisWin2] } {
+	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
 		ttk::radiobutton $w.wh_f.e2 -text $analysis(name2) -variable ::finishGameEng1 -value 2 	
 	} else {
 		set ::finishGameEng1 1
@@ -2425,7 +2427,7 @@ proc toggleFinishGame { { n 1 } } {
 	ttk::label $w.bk_f.p -image bk$::board::_size(.main.board)
         grid $w.bk_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.bk_f.e1 -text $analysis(name1) -variable ::finishGameEng2 -value 1 
-	if {[winfo exists .analysisWin2] } {
+	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
 		ttk::radiobutton $w.bk_f.e2 -text $analysis(name2) -variable ::finishGameEng2 -value 2 	
 	} else {
 		set ::finishGameEng2 1
@@ -2442,7 +2444,9 @@ proc toggleFinishGame { { n 1 } } {
 	grid columnconfigure $w.bk_f 2 -weight 1		
 
 	ttk::checkbutton $w.annotate -text $::tr(Annotate) -variable ::finishGameAnnotate
-	grid $w.annotate -column 0 -row 2 -columnspan 2 -sticky w -padx 5 -pady 8
+	grid $w.annotate -column 0 -row 2 -sticky w -padx 5 -pady 8
+	ttk::checkbutton $w.annotateShort -text $::tr(ShortAnnotations) -variable ::finishGameAnnotateShort
+ 	grid $w.annotateShort -column 1 -row 2 -sticky w -padx 5 -pady 8
 
         ttk::frame $w.fbuttons
 	ttk::button $w.fbuttons.cancel -text $::tr(Cancel) -command { destroy .configFinishGame }
@@ -2452,6 +2456,8 @@ proc toggleFinishGame { { n 1 } } {
    		} else {
    			set ::finishGameMode 2
    		}		      
+	    set tmp [sc_pos getComment]
+	    sc_pos setComment "$tmp $::tr(FinishGame) $::tr(White): $analysis(name$::finishGameEng1) $::tr(Black): $analysis(name$::finishGameEng2)"
 	    destroy .configFinishGame		      	
         }
         packbuttons right $w.fbuttons.cancel $w.fbuttons.ok
@@ -2508,13 +2514,23 @@ proc toggleFinishGame { { n 1 } } {
         if { ! [sc_pos isAt vend] } { sc_var create }
 		if {$::finishGameAnnotate} {
 			set moves [ lindex [ lindex $analysis(multiPV$current_engine) 0 ] 2 ]
-			set text [format "%+.2f %s - %s  Depth: %d  Time:%6.2f s" \
-    			$analysis(score$current_engine) \
-    			[addMoveNumbers $current_engine [::trans $moves]] \
-    			$analysis(name$current_engine) \
-    			$analysis(depth$current_engine) \
-    			$analysis(time$current_engine) ]
+		if {$::finishGameAnnotateShort} {
+		    set text [format "%d:%+.2f" \
+				  $analysis(depth$current_engine) \
+				  $analysis(score$current_engine) ]
+		    makeAnalysisMove $current_engine $text
+		} else {
+		    set text [format "%d:%+.2f" \
+				  $analysis(depth$current_engine) \
+				  $analysis(score$current_engine) ]
     		makeAnalysisMove $current_engine $text
+		    sc_var create
+		    set moves $analysis(moves$current_engine)
+		    sc_move_add $moves $current_engine
+		    sc_var exit
+		    sc_move forward
+		}
+		storeEmtComment 0 0 [expr {int($analysis(time$current_engine))}]
     	} else {
             makeAnalysisMove $current_engine
         }		
