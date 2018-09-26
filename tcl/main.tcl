@@ -1224,6 +1224,22 @@ proc CreateGameInfo {} {
   storeMenuLabels .main.gameInfo.menu
 }
 
+# Set toolbar help status messages:
+proc setToolbarHelp { tb } {
+    foreach {b m} {
+	newdb FileNew open FileOpen finder FileFinder
+	save GameReplace closedb FileClose bkm FileBookmarks
+	gprev GamePrev gnext GameNext
+	newgame GameNew copy EditCopy paste EditPaste
+	boardsearch SearchCurrent
+	headersearch SearchHeader materialsearch SearchMaterial
+	switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
+	maint WindowsMaint eco WindowsECO tree WindowsTree crosstab ToolsCross
+	engine ToolsAnalysis } {
+	::utils::tooltip::Set $tb.$b $::helpMessage($::language,$m)
+    }
+}
+
 proc InitToolbar {{tb}} {
 	ttk::frame $tb -relief raised -border 1
 	ttk::button $tb.newdb -image tb_newdb -command ::file::New -padding {2 0}
@@ -1274,21 +1290,18 @@ proc InitToolbar {{tb}} {
 	  .main.tb.$i configure -takefocus 0
 	}
 
-	# Set toolbar help status messages:
-	foreach {b m} {
-	  newdb FileNew open FileOpen finder FileFinder
-	  save GameReplace closedb FileClose bkm FileBookmarks
-	  gprev GamePrev gnext GameNext
-	  newgame GameNew copy EditCopy paste EditPaste
-	  boardsearch SearchCurrent
-	  headersearch SearchHeader materialsearch SearchMaterial
-	  switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
-	  maint WindowsMaint eco WindowsECO tree WindowsTree crosstab ToolsCross
-	  engine ToolsAnalysis
-	} {
-	  ::utils::tooltip::Set $tb.$b $::helpMessage($::language,$m)
-	}
+        setToolbarHelp $tb
 	redrawToolbar
+}
+
+proc toggleToolbarButton { b i } {
+    if { $::toolbar_temp($i) } {
+	set ::toolbar_temp($i) 0
+	$b.$i state !pressed
+    } else {
+	set ::toolbar_temp($i) 1
+	$b.$i state pressed
+    }
 }
 
 proc configToolbar {} {
@@ -1297,39 +1310,26 @@ proc configToolbar {} {
   wm title $w "Scid: [tr OptionsToolbar]"
 
   array set ::toolbar_temp [array get ::toolbar]
-  pack [ttk::frame $w.f1] -side top -fill x
-  foreach i {newdb open closedb finder save bkm} {
-    ttk::checkbutton $w.f1.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f1.$i -side left -ipadx 4 -ipady 1
+  pack [ttk::frame $w.f] -side top -fill x
+  set col 0
+  set row 0
+  foreach i {newdb open closedb finder save bkm row gprev gnext row newgame copy paste row boardsearch headersearch \
+		 materialsearch row switcher glist pgn tmt maint eco tree crosstab engine } {
+      if { $i eq "row" } { incr row; set col 0 } else {
+	  ttk::button $w.f.$i -image tb_$i -command "toggleToolbarButton $w.f $i"
+	  if { $::toolbar_temp($i) } { $w.f.$i state pressed }
+	  grid $w.f.$i -row $row -column $col -sticky news -padx 4 -pady "0 8"
+	  incr col
+      }
   }
-  pack [ttk::frame $w.f2] -side top -fill x
-  foreach i {gprev gnext} {
-    ttk::checkbutton $w.f2.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f2.$i -side left -ipadx 1 -ipady 1
-  }
-  pack [ttk::frame $w.f3] -side top -fill x
-  foreach i {newgame copy paste} {
-    ttk::checkbutton $w.f3.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f3.$i -side left -ipadx 1 -ipady 1
-  }
-  pack [ttk::frame $w.f4] -side top -fill x
-  foreach i {boardsearch headersearch materialsearch} {
-    ttk::checkbutton $w.f4.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f4.$i -side left -ipadx 1 -ipady 1
-  }
-  pack [ttk::frame $w.f5] -side top -fill x
-  foreach i {switcher glist pgn tmt maint eco tree crosstab engine} {
-    ttk::checkbutton $w.f5.$i -image tb_$i -variable toolbar_temp($i)
-    pack $w.f5.$i -side left -ipadx 1 -ipady 1
-  }
-
+  setToolbarHelp $w.f
   addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
   ttk::button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
-    foreach i [array names toolbar_temp] { set toolbar_temp($i) 1 }
+      foreach i [array names toolbar_temp] { set toolbar_temp($i) 1; catch { .tbconfig.f.$i state pressed } }
   }
   ttk::button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
-    foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 }
+      foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 ; catch { .tbconfig.f.$i state !pressed } }
   }
   ttk::button $w.ok -text "OK" -command {
     array set toolbar [array get toolbar_temp]
