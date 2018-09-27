@@ -56,8 +56,7 @@ proc ::tourney::Open {} {
   text $w.t.text -width 75 -height 22 -font font_Small -wrap none \
     -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
     -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
-  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
-  ttk::scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
+  autoscrollBars both $w.t $w.t.text
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {3 r 4 l 18 r 23 r 30 r 32 l 55 l} {
@@ -152,16 +151,13 @@ proc ::tourney::Open {} {
   dialogbutton $w.b.update -textvar ::tr(Search) -command ::tourney::refresh
   packbuttons right $w.b.update $w.b.help
   packbuttons left $w.b.defaults
-  pack $w.t -side bottom -fill both -expand yes
-  pack $w.b -side bottom -fill x
-  pack $w.o3 -side bottom -fill x -padx 2
-  pack $w.o2 -side bottom -fill x -padx 2
-  pack $w.o1 -side bottom -fill x -padx 2
-  grid $w.t.text -row 0 -column 0 -sticky news
-  grid $w.t.ybar -row 0 -column 1 -sticky news
-  grid $w.t.xbar -row 1 -column 0 -sticky news
-  grid rowconfig $w.t 0 -weight 1 -minsize 0
-  grid columnconfig $w.t 0 -weight 1 -minsize 0
+  grid $w.o1 -sticky news
+  grid $w.o2 -sticky news
+  grid $w.o3 -sticky news
+  grid $w.b  -sticky news
+  grid $w.t  -sticky news
+  grid rowconfigure $w 4 -weight 1
+  grid columnconfigure $w 0 -weight 1
 
   ::createToplevelFinalize $w
   ::tourney::refresh
