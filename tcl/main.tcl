@@ -1225,7 +1225,7 @@ proc CreateGameInfo {} {
 }
 
 # Set toolbar help status messages:
-proc setToolbarHelp { tb } {
+proc setToolbarTooltips { tb } {
     foreach {b m} {
 	newdb FileNew open FileOpen finder FileFinder
 	save GameReplace closedb FileClose bkm FileBookmarks
@@ -1290,7 +1290,7 @@ proc InitToolbar {{tb}} {
 	  .main.tb.$i configure -takefocus 0
 	}
 
-        setToolbarHelp $tb
+    setToolbarTooltips $tb
 	redrawToolbar
 }
 
@@ -1309,7 +1309,7 @@ proc configToolbar {} {
   win::createDialog $w
   wm title $w "Scid: [tr OptionsToolbar]"
 
-  array set ::toolbar_temp [array get ::toolbar]
+  array set ::toolbar_temp [array get ::toolbar_state]
   pack [ttk::frame $w.f] -side top -fill x
   set col 0
   set row 0
@@ -1322,17 +1322,17 @@ proc configToolbar {} {
 	  incr col
       }
   }
-  setToolbarHelp $w.f
+  setToolbarTooltips $w.f
   addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
   ttk::button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
-      foreach i [array names toolbar_temp] { set toolbar_temp($i) 1; catch { .tbconfig.f.$i state pressed } }
+      foreach i [array names toolbar_temp] { set toolbar_temp($i) 1; .tbconfig.f.$i state pressed }
   }
   ttk::button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
-      foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 ; catch { .tbconfig.f.$i state !pressed } }
+      foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 ; .tbconfig.f.$i state !pressed }
   }
   ttk::button $w.ok -text "OK" -command {
-    array set toolbar [array get toolbar_temp]
+    array set ::toolbar_state [array get toolbar_temp]
     catch {grab release .tbconfig}
     destroy .tbconfig
     redrawToolbar
@@ -1345,12 +1345,11 @@ proc configToolbar {} {
 }
 
 proc redrawToolbar {} {
-  global toolbar
   foreach i [winfo children .main.tb] { pack forget $i }
   set seenAny 0
   set seen 0
   foreach i {newdb open closedb finder save bkm} {
-    if {$toolbar($i)} {
+    if {$::toolbar_state($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
@@ -1358,7 +1357,7 @@ proc redrawToolbar {} {
   if {$seen} { pack .main.tb.space1 -side left }
   set seen 0
   foreach i {gprev gnext} {
-    if {$toolbar($i)} {
+    if {$::toolbar_state($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
@@ -1366,7 +1365,7 @@ proc redrawToolbar {} {
   if {$seen} { pack .main.tb.space2 -side left }
   set seen 0
   foreach i {newgame copy paste} {
-    if {$toolbar($i)} {
+    if {$::toolbar_state($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
@@ -1374,7 +1373,7 @@ proc redrawToolbar {} {
   if {$seen} { pack .main.tb.space3 -side left }
   set seen 0
   foreach i {boardsearch headersearch materialsearch} {
-    if {$toolbar($i)} {
+    if {$::toolbar_state($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
@@ -1382,7 +1381,7 @@ proc redrawToolbar {} {
   if {$seen} { pack .main.tb.space4 -side left }
   set seen 0
   foreach i {switcher glist pgn tmt maint eco tree crosstab engine} {
-    if {$toolbar($i)} {
+    if {$::toolbar_state($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }

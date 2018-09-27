@@ -14,7 +14,6 @@
 # Set default values
 
 proc InitDefaultToolbar {} {
-  global toolbar
   foreach {tbicon status}  {
     newdb 0 open 0 save 0 closedb 0
     finder 0 bkm 0 gprev 0 gnext 0
@@ -22,7 +21,7 @@ proc InitDefaultToolbar {} {
     boardsearch 0 headersearch 0 materialsearch 0
     switcher 0 glist 0 pgn 0 tmt 0 maint 0 eco 0 tree 0 crosstab 0 engine 0
   } {
-    set toolbar($tbicon) $status
+    set ::toolbar_state($tbicon) $status
   }
 }
 
@@ -755,8 +754,8 @@ proc options.write {} {
     foreach i [lsort [array names startup]] {
       puts $optionF "set startup($i) [list $startup($i)]"
     }
-    foreach i [lsort [array names toolbar]] {
-      puts $optionF "set toolbar($i) [list $toolbar($i)]"
+    foreach i [lsort [array names toolbar_state]] {
+      puts $optionF "set toolbar_state($i) [list $toolbar_state($i)]"
     }
     foreach i [lsort [array names twinSettings]] {
       puts $optionF "set twinSettings($i) [list $twinSettings($i)]"
