@@ -197,7 +197,7 @@ proc tools::graphs::filter::Open {} {
   bind $w <Destroy> {set filterGraph 0}
   
   ttk::frame $w.b
-  pack $w.b -side bottom -fill x
+  pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
   canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
@@ -228,7 +228,7 @@ proc tools::graphs::filter::Open {} {
         -command ::tools::graphs::filter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_config -command configureFilterGraph
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes
@@ -892,7 +892,7 @@ proc tools::graphs::absfilter::Open {} {
   bind $w <Destroy> {set absfilterGraph 0}
   
   ttk::frame $w.b
-  pack $w.b -side bottom -fill x
+  pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
   canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
@@ -922,7 +922,7 @@ proc tools::graphs::absfilter::Open {} {
         -command ::tools::graphs::absfilter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_CC_engine -command configureFilterGraph
+  ttk::button $w.b.setup -image tb_config -command configureFilterGraph
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes

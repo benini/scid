@@ -18,14 +18,15 @@ proc ::windows::stats::Open {} {
     set ::windows::stats::isOpen 0
     return
   }
-  toplevel $w
+  win::createDialog $w
+#  toplevel $w
   keyboardShortcuts $w
   wm title $w "Scid: $::tr(FilterStatistic)"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
 
 #  use autoscrollframe to display large infos
-  autoscrollframe $w.statsasb text $w.stats -width 80 -height 40\
+  autoscrollframe $w.statsasb text $w.stats -width 64 -height 40\
       -foreground black -background white -font font_Fixed\
        -wrap none
 
@@ -59,11 +60,11 @@ proc ::windows::stats::Open {} {
   ttk::checkbutton $w.fbuttons.oldyear -text "OldYear" \
       -variable ::windows::stats::old_year -command ::windows::stats::Refresh
 
-  pack $w.statsasb -side top -fill both -expand yes
   ttk::button $w.fbuttons.setup -image tb_config -command configureFilterGraph
-  pack $w.fbuttons -side top -fill x
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
   pack $w.fbuttons.setup $w.fbuttons.print -side right -padx "5 0" -pady 2
+  pack $w.fbuttons -side top -fill x
+  pack $w.statsasb -side top -fill both -expand yes
   set ::windows::stats::isOpen 1
   bind $w <Control-q> "destroy $w"
   bind $w <Escape> "destroy $w"
@@ -123,7 +124,7 @@ proc ::windows::stats::Refresh {} {
   set stat ""
   append s " [::utils::string::Pad $stat [expr $len - 4]] [::utils::string::PadRight $games 10]"
   append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
-  append s "------------------------------------------------------------------------"
+  append s "--------------------------------------------------------------"
   append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
 # New Statistic: Count the games in intervalls "start elo  - end elo"
 #         if elo is deselected in option menu, then enlarge the intervall to next selectet elo.
@@ -226,9 +227,9 @@ proc ::windows::stats::Refresh {} {
   set stat ""
   if { $::windows::stats::old_elo || $::windows::stats::old_year} {
       append s "\n\n"
-      append s " [::utils::string::Pad $stat [expr $len - 4]] [::utils::string::PadRight $games 10]"
+      append s "OldYear/OldElo[::utils::string::Pad $stat [expr $len - 17]] [::utils::string::PadRight $games 10]"
       append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
-      append s "------------------------------------------------------------------------"
+      append s "--------------------------------------------------------------"
       append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
   }
   if {$ratings && $::windows::stats::old_elo} {
