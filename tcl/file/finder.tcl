@@ -15,62 +15,45 @@ proc ::file::finder::Open {} {
   set w .finder
   if {[winfo exists $w]} { return }
   
-  win::createDialog $w 0
+  win::createDialog $w
   wm title $w "Scid: $::tr(FileFinder)"
   bind $w <F1> {helpWindow Finder}
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
   
-  menu $w.menu
-  ::setMenu $w $w.menu
-  
-  $w.menu add cascade -label FinderFile -menu $w.menu.file
-  menu $w.menu.file
-  $w.menu.file add checkbutton -label FinderFileSubdirs \
-      -variable ::file::finder::data(recurse) -onvalue 1 -offvalue 0 \
-      -command ::file::finder::Refresh
-  $w.menu.file add separator
-  $w.menu.file add command -label FinderFileClose -command "destroy $w"
-  
-  $w.menu add cascade -label FinderSort -menu $w.menu.sort
-  menu $w.menu.sort
-  foreach {name value} {Type type Size size Mod mod Filename name Path path} {
-    $w.menu.sort add radiobutton -label FinderSort$name \
-        -variable ::file::finder::data(sort) -value $value \
-        -command {::file::finder::Refresh -fast}
-  }
-  
-  $w.menu add cascade -label FinderTypes -menu $w.menu.types
-  menu $w.menu.types
+  ttk::frame $w.p
+  ttk::labelframe $w.p.label -text $::menuLabel($::language,FinderSortType)
   foreach type {Scid Old PGN Rep EPD} {
-    $w.menu.types add checkbutton -label FinderTypes$type \
+    ttk::checkbutton $w.p.label.[string tolower $type] -text $type \
         -variable ::file::finder::data($type) -onvalue 1 -offvalue 0 \
         -command ::file::finder::Refresh
+    ::utils::tooltip::Set $w.p.label.[string tolower $type] $::menuLabel($::language,FinderTypes$type)
+    pack $w.p.label.[string tolower $type] -side left -anchor w -padx 2 -fill x
   }
-  
-  $w.menu add cascade -label FinderHelp -menu $w.menu.helpmenu
-  menu $w.menu.helpmenu
-  $w.menu.helpmenu add command -label FinderHelpFinder \
-      -accelerator F1 -command {helpWindow Finder}
-  $w.menu.helpmenu add command -label FinderHelpIndex -command {helpWindow Index}
-  
-  pack [ttk::frame $w.d] -side top -fill x
+  ttk::button $w.p.stop -textvar ::tr(Stop) -command {set finder(stop) 1 }
+  ttk::checkbutton $w.p.sub -text [tr FinderFileSubdirs] \
+      -variable ::file::finder::data(recurse) -onvalue 1 -offvalue 0 \
+      -command ::file::finder::Refresh
+  pack $w.p.stop -side right -padx "5 0"
+  pack $w.p.label $w.p.sub -side left -padx "0 5" -pady "0 4"
+
+  ttk::frame $w.d
   ttk::label $w.d.label -text "$::tr(FinderDir):" -font font_Small
   set ::file::finder::data(menu) [tk_optionMenu $w.d.mb ::file::finder::data(dir) ""]
   # use ttk instead of tk_optionbutton, but use the menu
   ttk::menubutton $w.d.mbn -text $::file::finder::data(dir) -menu $::file::finder::data(menu)
 
   ttk::button $w.d.up -image tb_updir -command {::file::finder::Refresh ..}
-  pack $w.d.label -side left -padx 5
-  pack $w.d.up -side right -padx 5
+  ttk::button $w.d.help -image tb_help_small -command {helpWindow Finder}
+  pack $w.d.label -side left
+  pack $w.d.help $w.d.up -side right -padx "5 0"
   pack $w.d.mbn -side left -fill x -expand yes
   
   ttk::frame $w.t
-  ttk::frame $w.b
   text $w.t.text -width 65 -height 25 -font font_Small -wrap none \
       -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
-      -cursor top_left_arrow
-  ttk::scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
+      -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
+  autoscrollBars both $w.t $w.t.text
   $w.t.text tag configure Dir -foreground brown
   $w.t.text tag configure Vol -foreground gray25
   $w.t.text tag configure PGN -foreground blue
@@ -88,18 +71,12 @@ proc ::file::finder::Open {} {
   }
   $w.t.text configure -tabs $tablist
   
-  ttk::checkbutton $w.b.sub -text [tr FinderFileSubdirs] \
-      -variable ::file::finder::data(recurse) -onvalue 1 -offvalue 0 \
-      -command ::file::finder::Refresh
-  dialogbutton $w.b.stop -textvar ::tr(Stop) -command {set finder(stop) 1 }
-  dialogbutton $w.b.help -textvar ::tr(Help) -command {helpWindow Finder}
-  dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
   bind $w <Escape> {
     if {[winfo exists .finder.t.text.ctxtMenu]} {
       destroy .finder.t.text.ctxtMenu
       focus .finder
     } else {
-      .finder.b.stop invoke
+      .finder.p.stop invoke
     }
   }
   # Bind left button to close ctxt menu:
@@ -109,13 +86,12 @@ proc ::file::finder::Open {} {
       focus .finder
     }
   }
-  pack $w.b -side bottom -fill x
-  packbuttons right $w.b.close $w.b.help $w.b.stop
-  packbuttons left $w.b.sub
-  pack $w.t -side top -fill both -expand yes
-  pack $w.t.ybar -side right -fill y
-  pack $w.t.text -side left -fill both -expand yes
-  ::file::finder::ConfigMenus
+
+  grid $w.d -sticky we
+  grid $w.p -sticky we
+  grid $w.t -sticky nswe
+  grid rowconfigure $w 2 -weight 1
+  grid columnconfigure $w 0 -weight 1
   ::file::finder::Refresh
 }
 
@@ -136,11 +112,10 @@ proc ::file::finder::Refresh {{newdir ""}} {
   
   busyCursor .
   set data(stop) 0
-  $w.b.close configure -state disabled
-  $w.b.help configure -state disabled
-  $w.b.sub configure -state disabled
-  $w.b.stop configure -state normal
-  catch {grab $w.b.stop}
+  $w.d.help configure -state disabled
+  $w.p.sub configure -state disabled
+  $w.p.stop configure -state normal
+  catch {grab $w.p.stop}
   $t configure -state normal
   update
   
@@ -290,11 +265,10 @@ proc ::file::finder::Refresh {{newdir ""}} {
   
   #store actual directory string in menubutton
   .finder.d.mbn configure -text [lindex $mlist [ expr { [llength $mlist] - 1}]]
-  catch {grab release $w.b.stop}
-  $w.b.stop configure -state disabled
-  $w.b.help configure -state normal
-  $w.b.close configure -state normal
-  $w.b.sub configure -state normal
+  catch {grab release $w.p.stop}
+  $w.p.stop configure -state disabled
+  $w.p.sub configure -state normal
+  $w.d.help configure -state normal
   unbusyCursor .
   
 }
@@ -410,29 +384,6 @@ proc ::file::finder::delete { f } {
     file delete $f
   }
   ::file::finder::Refresh
-}
-################################################################################
-#
-################################################################################
-proc ::file::finder::ConfigMenus {{lang ""}} {
-  if {! [winfo exists .finder]} { return }
-  if {$lang == ""} { set lang $::language }
-  set m .finder.menu
-  foreach idx {0 1 2 3} tag {File Sort Types Help} {
-    configMenuText $m $idx Finder$tag $lang
-  }
-  foreach idx {0 2} tag {Subdirs Close} {
-    configMenuText $m.file $idx FinderFile$tag $lang
-  }
-  foreach idx {0 1 2 3 4} tag {Type Size Mod Name Path} {
-    configMenuText $m.sort $idx FinderSort$tag $lang
-  }
-  foreach idx {0 1 2 3 4} tag {Scid Old PGN Rep EPD} {
-    configMenuText $m.types $idx FinderTypes$tag $lang
-  }
-  foreach idx {0 1} tag {Finder Index} {
-    configMenuText $m.helpmenu $idx FinderHelp$tag $lang
-  }
 }
 
 proc ::file::finder::GetFiles {dir {len -1}} {

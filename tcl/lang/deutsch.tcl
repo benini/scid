@@ -588,7 +588,7 @@ translate D Moves {Züge}
 
 # Finder window:
 menuText D FinderFile "Datei" 0
-menuText D FinderFileSubdirs "Unterverzeichnisse beachten" 0
+menuText D FinderFileSubdirs "mit Unterverzeichnissen" 0
 menuText D FinderFileClose "Dateisuche schließen" 0
 menuText D FinderSort "Sortieren" 0
 menuText D FinderSortType "Typ" 0
@@ -601,7 +601,7 @@ menuText D FinderTypesScid "Scid-Datenbanken" 0
 menuText D FinderTypesOld "Datenbanken im alten Format" 0
 menuText D FinderTypesPGN "PGN-Dateien" 0
 menuText D FinderTypesEPD "EPD-Dateien" 0
-menuText D FinderTypesRep "Repertoiredateien" 0
+menuText D FinderTypesRep "Repertoire-Dateien" 0
 menuText D FinderHelp "Hilfe" 0
 menuText D FinderHelpFinder "Hilfe für Dateisuche" 0
 menuText D FinderHelpIndex "Index" 0
@@ -3613,7 +3613,7 @@ mit demselben Namen wie die Datenbank und der Endung "<b>.sem</b>".
 ### File Finder window help:
 
 set helpTitle(D,Finder) "Dateisuche"
-set helpText(D,Finder) {<h1>Der Dateisuche Dialog</h1>
+set helpText(D,Finder) {<h1>Die Dateisuche</h1>
 <p>
 Die <term>Dateisuche</term> hilft Ihnen, Dateien jedes von Scid
 benutzten Typs zu finden:  Datenbanken, <a PGN>PGN</a>-Dateien,
