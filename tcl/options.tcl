@@ -255,21 +255,6 @@ if {$windowsOS} {
   set analysisChoices {crafty}
 }
 
-set comp(timecontrol) pergame
-set comp(seconds) 180
-set comp(minutes) 1
-set comp(incr) 0
-set comp(timeout) 0 ;# disabled by default
-set comp(name) "Engine tournament"
-set comp(rounds) 2
-set comp(showclock) 0
-set comp(debug) 1 ; # print info to console
-set comp(animate) 1
-set comp(firstonly) 0
-set comp(ponder) 0
-set comp(usebook) 0
-set comp(book) {}
-
 # Default Tree sort method:
 set tree(order) frequency
 
