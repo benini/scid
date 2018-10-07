@@ -385,7 +385,7 @@ proc ::enginelist::choose {} {
     win::createDialog $w
     ::setTitle $w "Scid: [tr ToolsAnalysis]"
     ttk::label $w.flabel -text $::tr(EngineList:) -font font_Bold -anchor center
-    pack $w.flabel -side top -expand 1 -fill both
+    pack $w.flabel -side top -fill x
     pack [ttk::frame $w.buttons] -side bottom -fill x
     
     # Set up title frame for sorting the list:
