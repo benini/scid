@@ -1502,7 +1502,7 @@ sc_eco_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 break;
             case ']':
                 dstr->AddChar (ch);
-                dstr->Append ("<blue><run importMoveListTrans {");
+                dstr->Append ("<blue><run importMoveList {");
                 inMoveList = true;
                 temp->Clear();
                 break;
