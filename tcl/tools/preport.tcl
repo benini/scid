@@ -280,8 +280,8 @@ proc ::preport::makeReportWin {args} {
   ::htext::display $w.text $report
   $w.text configure -state disabled
   unbusyCursor .
-  ::windows::gamelist::Refresh
-  ::windows::stats::Refresh
+
+  ::notify::DatabaseModified $::curr_db dbfilter
 }
 
 
@@ -514,7 +514,7 @@ proc ::preport::report {fmt {withTable 1}} {
   }
   append r " ("
   if {$fmt == "ctext"} {
-    append r "<darkblue><run sc_report player select all 0; ::windows::stats::Refresh>"
+    append r "<darkblue><run sc_report player select all 0; ::notify::DatabaseModified $::curr_db dbfilter>"
   }
   append r "$rgames"
   if {$fmt == "ctext"} { append r "</run></darkblue>"; }

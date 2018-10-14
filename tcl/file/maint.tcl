@@ -1091,7 +1091,7 @@ proc findStripTags {} {
   progressWindow "Scid" "Finding games with the PGN tag $stripTagChoice..." $::tr(Cancel) 
   set err [catch {sc_base tag find $stripTagChoice} result]
   closeProgressWindow
-  ::windows::stats::Refresh
+  ::notify::DatabaseModified $::curr_db dbfilter
 }
 
 

@@ -273,10 +273,9 @@ proc ::optable::makeReportWin {args} {
   ::htext::display $w.text $report
   $w.text configure -state disabled
   unbusyCursor .
-  ::windows::gamelist::Refresh
-  ::windows::stats::Refresh
   set ::gameInfo(showMaterial) $old_showMaterial
-  
+
+  ::notify::DatabaseModified $::curr_db dbfilter
 }
 ################################################################################
 # merges the N best games up to P plies to current game
