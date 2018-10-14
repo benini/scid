@@ -247,8 +247,6 @@ proc ::optable::makeReportWin {args} {
   
   catch {destroy $w.text.bd}
   
-  set old_showMaterial $::gameInfo(showMaterial)
-  set ::gameInfo(showMaterial) 0
   ::board::new $w.text.bd 30
   
   if {$::optable::_flip} { ::board::flip $w.text.bd }
@@ -273,7 +271,6 @@ proc ::optable::makeReportWin {args} {
   ::htext::display $w.text $report
   $w.text configure -state disabled
   unbusyCursor .
-  set ::gameInfo(showMaterial) $old_showMaterial
 
   ::notify::DatabaseModified $::curr_db dbfilter
 }
@@ -307,11 +304,8 @@ proc ::optable::mergeGames { {game_count 50} {ply 999} } {
 ################################################################################
 
 proc ::optable::flipBoard {} {
-  set old_showMaterial $::gameInfo(showMaterial)
-  set ::gameInfo(showMaterial) 0
   ::board::flip .oprepWin.text.bd
   set ::optable::_flip [::board::isFlipped .oprepWin.text.bd]
-  set ::gameInfo(showMaterial) $old_showMaterial
 }
 
 proc ::optable::resizeBoard {} {
