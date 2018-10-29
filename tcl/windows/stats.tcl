@@ -48,17 +48,17 @@ proc ::windows::stats::Open {} {
     }
   }
   ttk::checkbutton $w.fbuttons.graphyear -text $::tr(Year) \
-      -variable ::windows::stats::like_graphyear -command ::windows::stats::Refresh
+      -variable ::windows::stats::like_graphyear -command ::windows::stats::refresh_wnd
   ttk::checkbutton $w.fbuttons.graphelo  -text $::tr(Rating) \
-      -variable ::windows::stats::like_graphelo -command ::windows::stats::Refresh
+      -variable ::windows::stats::like_graphelo -command ::windows::stats::refresh_wnd
   ttk::checkbutton $w.fbuttons.statelo -text "StatElo" \
-      -variable ::windows::stats::statelo -command ::windows::stats::Refresh
+      -variable ::windows::stats::statelo -command ::windows::stats::refresh_wnd
   ttk::checkbutton $w.fbuttons.statyear -text "StatYear" \
-      -variable ::windows::stats::stat_year -command ::windows::stats::Refresh
+      -variable ::windows::stats::stat_year -command ::windows::stats::refresh_wnd
   ttk::checkbutton $w.fbuttons.old_elo -text "OldElo" \
-      -variable ::windows::stats::old_elo -command ::windows::stats::Refresh
+      -variable ::windows::stats::old_elo -command ::windows::stats::refresh_wnd
   ttk::checkbutton $w.fbuttons.oldyear -text "OldYear" \
-      -variable ::windows::stats::old_year -command ::windows::stats::Refresh
+      -variable ::windows::stats::old_year -command ::windows::stats::refresh_wnd
 
   ttk::button $w.fbuttons.setup -image tb_config -command configureFilterGraph
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
@@ -72,20 +72,21 @@ proc ::windows::stats::Open {} {
   bind $w <Destroy> {
     set ::windows::stats::isOpen 0
   }
-# enable Resize vertical
+
   wm resizable $w 0 1
-  ::windows::stats::Refresh
+
+  ::windows::stats::refresh_wnd
 }
 
+# TODO: remove this function
 proc ::windows::stats::Refresh {} {
+  ::notify::DatabaseModified $::curr_db dbfilter
+}
+
+proc ::windows::stats::refresh_wnd {} {
   global FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO
   variable display
-  if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
-  ::maint::Refresh
-  updateStatusBar
-  ::tools::graphs::filter::Refresh
-  # Update Absfilter window
-  ::tools::graphs::absfilter::Refresh
+
   if {! [winfo exists .statsWin]} { return }
 
   # Set up variables for translated phrases:

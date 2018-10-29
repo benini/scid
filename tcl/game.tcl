@@ -357,7 +357,11 @@ namespace eval ::notify {
   proc DatabaseChanged {} {
     set ::curr_db [sc_base current]
     ::windows::switcher::Refresh
-    ::windows::stats::Refresh
+    ::windows::stats::refresh_wnd
+    ::maint::Refresh
+    updateStatusBar
+    ::tools::graphs::filter::Refresh
+    ::tools::graphs::absfilter::Refresh
     set ::treeWin [winfo exists .treeWin$::curr_db]
     menuUpdateBases
     if {[winfo exists .ecograph]} { ::windows::eco::update }
@@ -368,7 +372,11 @@ namespace eval ::notify {
   proc DatabaseModified {{dbase} {filter -1}} {
     ::windows::gamelist::DatabaseModified $dbase $filter
     ::windows::switcher::Refresh
-    ::windows::stats::Refresh
+    ::windows::stats::refresh_wnd
+    ::maint::Refresh
+    updateStatusBar
+    ::tools::graphs::filter::Refresh
+    ::tools::graphs::absfilter::Refresh
     if {[winfo exists .ecograph]} { ::windows::eco::update }
   }
 }

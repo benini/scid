@@ -406,9 +406,6 @@ proc playerInfo {{player ""}} {
   ::htext::display $w.text $pinfo
 
   $w.text configure -state disabled
-  ::windows::gamelist::Refresh
-  ::maint::Refresh
-  #raiseWin $w
 }
 
 # Call in the idlink config file.

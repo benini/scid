@@ -142,13 +142,12 @@ proc configureFilterGraph {} {
 	  }
 	 ::tools::graphs::absfilter::Refresh;
 	 ::tools::graphs::filter::Refresh
-	 ::windows::stats::Refresh
+	 ::windows::stats::refresh_wnd
      }
   } else {
      ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
 	 ::tools::graphs::absfilter::Refresh;
 	 ::tools::graphs::filter::Refresh
-	 ::windows::stats::Refresh
      }
   }
   
