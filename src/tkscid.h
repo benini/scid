@@ -76,6 +76,7 @@ int sc_move_pgn       (TCL_ARGS);
 int sc_name_correct   (TCL_ARGS);
 int sc_name_edit      (TCL_ARGS);
 int sc_name_info      (TCL_ARGS);
+int sc_name_elo       (TCL_ARGS);
 int sc_name_match     (TCL_ARGS);
 int sc_name_plist     (TCL_ARGS);
 int sc_name_read      (TCL_ARGS);

@@ -732,6 +732,7 @@ proc ::tools::graphs::score::Move {xc} {
 
 set ::tools::graphs::rating::year 1900
 set ::tools::graphs::rating::type both
+set ::tools::graphs::rating::elo info
 set ::tools::graphs::rating::player ""
 
 proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
@@ -768,6 +769,9 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
           -variable ::tools::graphs::rating::type -value $j \
           -command "::tools::graphs::rating::Refresh"
     }
+    $w.menu.options add checkbutton -label GraphOptionsSpellCheckElo \
+          -variable ::tools::graphs::rating::elo -offvalue info -onvalue elo \
+          -command "::tools::graphs::rating::Refresh"
     $w.menu.options add separator
     foreach i {1900 1980 1985 1990 1995 2000 2005 2010 2015 } {
       $w.menu.options add radiobutton -label "Since $i" \
@@ -807,12 +811,15 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   update
   
   set title "[tr ToolsRating]: "
-  set year $::tools::graphs::rating::year
+  set args $::tools::graphs::rating::year
+  if {$::tools::graphs::rating::elo == "info"} {
+	set args -ratings:$::tools::graphs::rating::year
+  }
   if {$type == "player"} {
     append title $player
     catch {::utils::graph::data ratings d -color $whiteColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $whiteColor \
-          -coords [sc_name info -ratings:$year $player]}
+          -coords [sc_name $::tools::graphs::rating::elo $args $player]}
   }
   if {$type == "white"  ||  $type == "both"} {
     set key ""
@@ -820,7 +827,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     append title $white
     catch {::utils::graph::data ratings d -color $whiteColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $whiteColor \
-          -key $key -coords [sc_name info -ratings:$year $white]}
+          -key $key -coords [sc_name $::tools::graphs::rating::elo $args $white]}
   }
   if {$type == "both"} { append title " - " }
   if {$type == "black"  ||  $type == "both"} {
@@ -829,7 +836,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     append title $black
     catch {::utils::graph::data ratings d2 -color $blackColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $blackColor \
-          -key $key -coords [sc_name info -ratings:$year $black]}
+          -key $key -coords [sc_name $::tools::graphs::rating::elo $args $black]}
   }
   set minYear [expr {int([::utils::graph::cget ratings axmin])} ]
   set maxYear [expr {int([::utils::graph::cget ratings axmax])} ]
@@ -850,7 +857,7 @@ proc ::tools::graphs::rating::ConfigMenus {{lang ""}} {
   foreach idx {0 1 3} tag {Color Grey Close} {
     configMenuText $m.file $idx GraphFile$tag $lang
   }
-  foreach idx {0 1 2 3} tag {White Black Both PInfo} {
+  foreach idx {0 1 2 3 4} tag {White Black Both PInfo SpellCheckElo} {
     configMenuText $m.options $idx GraphOptions$tag $lang
   }
 }

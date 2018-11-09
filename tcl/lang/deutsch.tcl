@@ -653,6 +653,7 @@ menuText D GraphOptionsWhite "Weiß" 0
 menuText D GraphOptionsBlack "Schwarz" 0
 menuText D GraphOptionsBoth "Beide" 0
 menuText D GraphOptionsPInfo "Spielerinfo Spieler" 1
+menuText D GraphOptionsSpellCheckElo "Elo von Rating-Datei" 0
 translate D GraphFilterTitle "Filtergrafik: Häufigkeit pro 1000 Partien"
 translate D GraphAbsFilterTitle "Filtergrafik: Häufigkeit der Partien"
 translate D ConfigureFilter "X-Achse für Jahr, Elo und Züge konfigurieren"
@@ -1007,7 +1008,7 @@ translate D Unclear {Unklar}
 translate D Diagram {Diagramm}
 
 # Board search:
-translate D BoardSearch {Brettsuchen}
+translate D BoardSearch {Brettsuche}
 translate D FilterOperation {Suche im aktuellen Filter:}
 translate D FilterAnd {UND\nBeschränke Filter}
 translate D FilterOr {ODER\nZum Filter hinzufügen}
@@ -1021,7 +1022,7 @@ translate D SearchInRefDatabase { In folgender Datenbank suchen }
 translate D LookInVars {Schaue in Varianten}
 
 # Material search:
-translate D MaterialSearch {Materialsuchen}
+translate D MaterialSearch {Materialsuche}
 translate D Material {Material}
 translate D Patterns {Muster}
 translate D Zero {Null}

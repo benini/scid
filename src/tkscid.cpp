@@ -5984,12 +5984,12 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "correct", "edit", "info", "match", "plist",
-        "ratings", "read", "spellcheck", "retrievename",
+        "ratings", "read", "spellcheck", "retrievename", "elo",
         NULL
     };
     enum {
         OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH, OPT_PLIST,
-        OPT_RATINGS, OPT_READ, OPT_SPELLCHECK, OPT_RETRIEVENAME
+        OPT_RATINGS, OPT_READ, OPT_SPELLCHECK, OPT_RETRIEVENAME, OPT_ELO
     };
 
     int index = -1;
@@ -6040,6 +6040,9 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case OPT_SPELLCHECK:
         return sc_name_spellcheck(ti, *db, *spellChk, argc, argv);
+
+    case OPT_ELO:
+        return sc_name_elo (cd, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_name", options);
@@ -6325,6 +6328,49 @@ UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc,
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_name_elo:
+//    Search for Elo-Ratings in spellcheck file.
+int
+sc_name_elo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usageStr = "Usage: sc_name elo <year> <player>";
+    uint startYear = 1900;
+
+    if (argc != 3  &&  argc != 4) { return errorResult (ti, usageStr); }
+    if (argc == 4) {
+        const char * opt = argv[2];
+        startYear = strGetUnsigned (opt);
+    }
+    // Set up player name:
+    const char * playerName = argv[argc-1];
+
+    // Try to find player name in this database:
+    idNumberT id = 0;
+    if (db->getNameBase()->FindExactName (NAME_PLAYER, playerName, &id) != OK) {
+        return TCL_OK;
+    }
+    if (spellChk != NULL) {
+        // Read Elo data from spellcheck file data
+        const PlayerElo* vElo = spellChk->getPlayerElo(playerName);
+        eloT elo = 0;
+        if ( vElo ) {
+            char temp [500];
+            for (uint year=startYear; year < YEAR_MAX; year++) {
+                for (uint month=1; month < 13; month++) {
+                    dateT date = DATE_MAKE (year, month, 15);
+                    elo = vElo->getElo(date);
+                    if ( elo != 0 ) {
+                        sprintf (temp, "%4u.%02u", year, (month - 1) * 100 / 12);
+                        Tcl_AppendElement (ti, temp);
+                        sprintf (temp, "    %4u", elo);
+                        Tcl_AppendElement (ti, temp);
+                    }
+                }
+            }
+        }
+    }
+    return TCL_OK;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_info:
@@ -7018,7 +7064,6 @@ sc_name_match (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             appendUintElement (ti, db->getNameBase()->GetElo (nameID));
         }
     }
-
     return TCL_OK;
 }
 

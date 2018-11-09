@@ -660,6 +660,7 @@ menuText E GraphOptionsWhite "White" 0
 menuText E GraphOptionsBlack "Black" 0
 menuText E GraphOptionsBoth "Both" 1
 menuText E GraphOptionsPInfo "Player Info player" 0
+menuText E GraphOptionsSpellCheckElo "Elo from rating file" 0
 translate E GraphFilterTitle "Filter Graph: frequency per 1000 games"
 translate E GraphAbsFilterTitle "Filter Graph: frequency of the games"
 translate E ConfigureFilter "Configure X-Axes for Year, Rating and Moves"
