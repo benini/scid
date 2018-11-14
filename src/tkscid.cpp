@@ -6253,46 +6253,30 @@ UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc,
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_elo:
 //    Search for Elo-Ratings in spellcheck file.
-int
-sc_name_elo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usageStr = "Usage: sc_name elo <year> <player>";
-    uint startYear = 1900;
+static UI_res_t sc_name_elo(UI_handle_t ti, const SpellChecker& sp, int argc,
+                            const char** argv) {
+	auto usage = "Usage: sc_name elo [year] <player>";
+	if (argc < 3 || argc > 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
 
-    if (argc != 3  &&  argc != 4) { return errorResult (ti, usageStr); }
-    if (argc == 4) {
-        const char * opt = argv[2];
-        startYear = strGetUnsigned (opt);
-    }
-    // Set up player name:
-    const char * playerName = argv[argc-1];
+	const char* playerName = argv[argc - 1];
+	uint startYear = (argc == 4) ? strGetUnsigned(argv[2]) : 1900;
 
-    // Try to find player name in this database:
-    idNumberT id = 0;
-    if (db->getNameBase()->FindExactName (NAME_PLAYER, playerName, &id) != OK) {
-        return TCL_OK;
-    }
-    if (spellChk != NULL) {
-        // Read Elo data from spellcheck file data
-        const PlayerElo* vElo = spellChk->getPlayerElo(playerName);
-        eloT elo = 0;
-        if ( vElo ) {
-            char temp [500];
-            for (uint year=startYear; year < YEAR_MAX; year++) {
-                for (uint month=1; month < 13; month++) {
-                    dateT date = DATE_MAKE (year, month, 15);
-                    elo = vElo->getElo(date);
-                    if ( elo != 0 ) {
-                        sprintf (temp, "%4u.%02u", year, (month - 1) * 100 / 12);
-                        Tcl_AppendElement (ti, temp);
-                        sprintf (temp, "    %4u", elo);
-                        Tcl_AppendElement (ti, temp);
-                    }
-                }
-            }
-        }
-    }
-    return TCL_OK;
+	UI_List res(YEAR_MAX * 12 * 2);
+	if (auto vElo = sp.getPlayerElo(playerName)) {
+		for (uint year = startYear; year < YEAR_MAX; year++) {
+			for (uint month = 1; month < 13; month++) {
+				if (eloT elo = vElo->getElo(DATE_MAKE(year, month, 15))) {
+					char temp[500];
+					sprintf(temp, "%4u.%02u", year, (month - 1) * 100 / 12);
+					res.push_back(temp);
+					sprintf(temp, "    %4u", elo);
+					res.push_back(temp);
+				}
+			}
+		}
+	}
+	return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7528,7 +7512,7 @@ UI_res_t sc_name(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
         return sc_name_spellcheck(ti, *db, *spellChk, argc, argv);
 
     case OPT_ELO:
-        return sc_name_elo (cd, ti, argc, argv);
+        return sc_name_elo (ti, *spellChk, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_name", options);
