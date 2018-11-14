@@ -154,4 +154,4 @@ matrix:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-8
+          - g++-7
