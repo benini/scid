@@ -5974,83 +5974,6 @@ sc_pos_setComment (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 //////////////////////////////////////////////////////////////////////
 //   NAME commands
 
-UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
-UI_res_t sc_name_retrievename (UI_handle_t ti, const SpellChecker& sp, int argc, const char ** argv);
-UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& sp, int argc, const char ** argv);
-
-
-int
-sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = {
-        "correct", "edit", "info", "match", "plist",
-        "ratings", "read", "spellcheck", "retrievename", "elo",
-        NULL
-    };
-    enum {
-        OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH, OPT_PLIST,
-        OPT_RATINGS, OPT_READ, OPT_SPELLCHECK, OPT_RETRIEVENAME, OPT_ELO
-    };
-
-    int index = -1;
-    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    if (!db->inUse) {
-        return errorResult (ti, ERROR_FileNotOpen, errMsgNotOpen(ti));
-    }
-
-    switch (index) {
-    case OPT_INFO:
-        return sc_name_info (cd, ti, argc, argv);
-
-    case OPT_MATCH:
-        return sc_name_match (cd, ti, argc, argv);
-
-    case OPT_PLIST:
-        return sc_name_plist (cd, ti, argc, argv);
-
-    case OPT_READ:
-        return sc_name_read (cd, ti, argc, argv);
-    }
-
-    if (db->isReadOnly() && index != OPT_RETRIEVENAME) {
-        return errorResult (ti, ERROR_FileReadOnly);
-    }
-
-    switch (index) {
-    case OPT_CORRECT:
-        return sc_name_correct (cd, ti, argc, argv);
-
-    case OPT_EDIT:
-        return sc_name_edit (cd, ti, argc, argv);
-    };
-
-    if (spellChk == NULL) {
-        return UI_Result(ti, ERROR,
-            "A spellcheck file has not been loaded.\n\n"
-            "You can load one from the Options menu.");
-    }
-
-    switch (index) {
-    case OPT_RATINGS:
-        return sc_name_ratings(ti, *db, *spellChk, argc, argv);
-
-    case OPT_RETRIEVENAME:
-        return sc_name_retrievename(ti, *spellChk, argc, argv);
-
-    case OPT_SPELLCHECK:
-        return sc_name_spellcheck(ti, *db, *spellChk, argc, argv);
-
-    case OPT_ELO:
-        return sc_name_elo (cd, ti, argc, argv);
-
-    default:
-        return InvalidCommand (ti, "sc_name", options);
-    }
-
-    return TCL_OK;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_correct:
 //    Corrects specified names in the database.
@@ -7371,7 +7294,6 @@ sc_name_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return UI_Result(ti, OK, res);
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_spellcheck:
 //   Scan the current database for spelling corrections.
@@ -7545,7 +7467,75 @@ UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecke
     return UI_Result(ti, OK, res);
 }
 
+UI_res_t sc_name(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
+	static const char * options [] = {
+        "correct", "edit", "info", "match", "plist",
+        "ratings", "read", "spellcheck", "retrievename", "elo",
+        NULL
+    };
+    enum {
+        OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH, OPT_PLIST,
+        OPT_RATINGS, OPT_READ, OPT_SPELLCHECK, OPT_RETRIEVENAME, OPT_ELO
+    };
 
+    int index = -1;
+    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
+
+    if (!db->inUse) {
+        return errorResult (ti, ERROR_FileNotOpen, errMsgNotOpen(ti));
+    }
+
+    switch (index) {
+    case OPT_INFO:
+        return sc_name_info (cd, ti, argc, argv);
+
+    case OPT_MATCH:
+        return sc_name_match (cd, ti, argc, argv);
+
+    case OPT_PLIST:
+        return sc_name_plist (cd, ti, argc, argv);
+
+    case OPT_READ:
+        return sc_name_read (cd, ti, argc, argv);
+    }
+
+    if (db->isReadOnly() && index != OPT_RETRIEVENAME) {
+        return errorResult (ti, ERROR_FileReadOnly);
+    }
+
+    switch (index) {
+    case OPT_CORRECT:
+        return sc_name_correct (cd, ti, argc, argv);
+
+    case OPT_EDIT:
+        return sc_name_edit (cd, ti, argc, argv);
+    };
+
+    if (spellChk == NULL) {
+        return UI_Result(ti, ERROR,
+            "A spellcheck file has not been loaded.\n\n"
+            "You can load one from the Options menu.");
+    }
+
+    switch (index) {
+    case OPT_RATINGS:
+        return sc_name_ratings(ti, *db, *spellChk, argc, argv);
+
+    case OPT_RETRIEVENAME:
+        return sc_name_retrievename(ti, *spellChk, argc, argv);
+
+    case OPT_SPELLCHECK:
+        return sc_name_spellcheck(ti, *db, *spellChk, argc, argv);
+
+    case OPT_ELO:
+        return sc_name_elo (cd, ti, argc, argv);
+
+    default:
+        return InvalidCommand (ti, "sc_name", options);
+    }
+
+    return TCL_OK;
+}
 
 //////////////////////////////////////////////////////////////////////
 //  OPENING/PLAYER REPORT functions
