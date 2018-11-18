@@ -6270,7 +6270,7 @@ static UI_res_t sc_name_elo(UI_handle_t ti, const SpellChecker& sp, int argc,
 					char temp[500];
 					sprintf(temp, "%4u.%02u", year, (month - 1) * 100 / 12);
 					res.push_back(temp);
-					sprintf(temp, "    %4u", elo);
+					sprintf(temp, "%4u", elo);
 					res.push_back(temp);
 				}
 			}
@@ -6283,17 +6283,14 @@ static UI_res_t sc_name_elo(UI_handle_t ti, const SpellChecker& sp, int argc,
 // sc_name_info:
 //    Prints information given a player name. Reports on the players
 //    success rate with white and black, common openings by ECO code,
-//    and Elo rating history.
 int
 sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static char * lastPlayerName = NULL;
-    const char * usageStr = "Usage: sc_name info [-ratings|-htext] <player>";
-    uint startYear = 1900;
+    const char * usageStr = "Usage: sc_name info [-htext] <player>";
 
     if (argc != 3  &&  argc != 4) { return errorResult (ti, usageStr); }
 
-    bool ratingsOnly = false;
     bool htextOutput = false;
     bool setFilter = false;   // Set filter to games by this player
     bool setOpponent = false; // Set filter to games vs this opponent
@@ -6305,12 +6302,7 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (argc == 4) {
         const char * opt = argv[2];
-        if (strIsPrefix ("-r", opt)) {
-            ratingsOnly = true;
-            if (strIsPrefix ("-ratings:", opt)) {
-                startYear = strGetUnsigned (opt + 9);
-            }
-        } else if (strIsPrefix ("-h", opt)  &&  strIsPrefix (opt, "-htext")) {
+        if (strIsPrefix ("-h", opt)  &&  strIsPrefix (opt, "-htext")) {
             htextOutput = true;
         } else if (opt[0] == '-'  &&  (opt[1] == 'f' || opt[1] == 'o')) {
             if (opt[1] == 'f') {
@@ -6375,10 +6367,8 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Try to find player name in this database:
     idNumberT id = 0;
     if (db->getNameBase()->FindExactName (NAME_PLAYER, playerName, &id) != OK) {
-        if (! ratingsOnly) {
-            Tcl_AppendResult (ti, "The name \"", playerName,
-                              "\" does not exist in this database.", NULL);
-        }
+        Tcl_AppendResult (ti, "The name \"", playerName,
+                          "\" does not exist in this database.", NULL);
         return TCL_OK;
     }
 
@@ -6423,17 +6413,10 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     dateT firstGameDate = ZERO_DATE;
     dateT lastGameDate = ZERO_DATE;
 
-    bool seenRating = false;
-    const uint monthMax = YEAR_MAX * 12;
-    const uint monthMin = startYear * 12;
-    eloT * eloByMonth = new eloT [monthMax];
-    for (uint month=0; month < monthMax; month++) { eloByMonth[month] = 0; }
-
     if (setFilter || setOpponent) db->dbFilter->Fill(0);
 
     for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
-        eloT elo = 0;
         ecoT ecoCode = ie->GetEcoCode();
         int ecoClass = -1;
         if (ecoCode != ECO_None) {
@@ -6453,7 +6436,6 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         // Track statistics as white and black:
         if (whiteId == id) {
             date = ie->GetDate();
-            elo = ie->GetWhiteElo();
             if (ecoClass >= 0) {
                 ecoCount[WHITE][ecoClass]++;
                 ecoScore[WHITE][ecoClass] += RESULT_SCORE[result];
@@ -6482,7 +6464,6 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             }
         } else if (blackId == id) {
             date = ie->GetDate();
-            elo = ie->GetBlackElo();
             result = RESULT_OPPOSITE[result];
             if (ecoClass >= 0) {
                 ecoCount[BLACK][ecoClass]++;
@@ -6521,18 +6502,6 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 lastGameDate = date;
             }
         }
-
-        // Track Elo ratings by month:
-        if (elo != 0) {
-            uint year = date_GetYear (date);
-            if (year > YEAR_MAX) { year = 0; }
-            uint month = date_GetMonth (date);
-            if (month > 0) { month--; }
-            if (month > 11) { month = 0; }
-            ASSERT ((year * 12 + month) < monthMax);
-            eloByMonth [year * 12 + month] = elo;
-            seenRating = true;
-        }
     }
 
     char temp [500];
@@ -6553,7 +6522,6 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
      "%s  %-*s %3u%c%02u%%   +%s%3u%s  =%s%3u%s  -%s%3u%s  %4u%c%c /%s%4u%s";
     SpellChecker* spChecker = spellChk;
 
-    if (ratingsOnly) { goto doRatings; }
     Tcl_AppendResult (ti, startBold, playerName, endBold, newline, NULL);
 
     // Show title, country, etc if listed in player spellcheck file:
@@ -6884,42 +6852,6 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-  doRatings:
-    if (seenRating) {
-        if (! ratingsOnly) {
-            Tcl_AppendResult (ti, newline, newline, startHeading,
-                              translate (ti, "PInfoRating"), ":",
-                              endHeading, NULL);
-        }
-        eloT previousElo = 0;
-        uint count = 0;
-        for (uint i = monthMin; i < monthMax; i++) {
-            eloT elo = eloByMonth [i];
-            if (elo != 0) {
-                uint year = i / 12;
-                uint month = 1 + (i % 12);
-                if (ratingsOnly) {
-                    sprintf (temp, "%4u.%02u", year, (month - 1) * 100 / 12);
-                    Tcl_AppendElement (ti, temp);
-                    sprintf (temp, "%4u", elo);
-                    Tcl_AppendElement (ti, temp);
-                } else {
-                    if (previousElo != elo) {
-                        previousElo = elo;
-                        count++;
-                        if (count % 2) {
-                            Tcl_AppendResult (ti, newline, NULL);
-                        } else {
-                            Tcl_AppendResult (ti, "   ", NULL);
-                        }
-                        sprintf (temp, "    %4u.%02u   %4u", year, month, elo);
-                        Tcl_AppendResult (ti, temp, NULL);
-                    }
-                }
-            }
-        }
-    }
-    delete[] eloByMonth;
     return TCL_OK;
 }
 

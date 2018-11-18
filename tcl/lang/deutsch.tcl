@@ -467,6 +467,7 @@ translate D PInfoMostBlack {Häufigste Eröffnungen als Schwarzer}
 translate D PInfoRating {ELO-Historie}
 translate D PInfoBio {Biographie}
 translate D PInfoEditRatings {Editiere Ratings}
+translate D PInfoEloFile {Datei}
 
 # Tablebase information:
 translate D Draw {Remis}
@@ -653,7 +654,8 @@ menuText D GraphOptionsWhite "Weiß" 0
 menuText D GraphOptionsBlack "Schwarz" 0
 menuText D GraphOptionsBoth "Beide" 0
 menuText D GraphOptionsPInfo "Spielerinfo Spieler" 1
-menuText D GraphOptionsSpellCheckElo "Elo von Rating-Datei" 0
+menuText D GraphOptionsEloFile "Elo von Rating-Datei" 0
+menuText D GraphOptionsEloDB "Elo von Datenbank" 0
 translate D GraphFilterTitle "Filtergrafik: Häufigkeit pro 1000 Partien"
 translate D GraphAbsFilterTitle "Filtergrafik: Häufigkeit der Partien"
 translate D ConfigureFilter "X-Achse für Jahr, Elo und Züge konfigurieren"
@@ -4114,9 +4116,16 @@ Schachbretts) oder im <a Crosstable>Kreuztabellen</a>-Fenster mit der
 linken Maustaste auf einen Spielernamen klicken.
 </p>
 <p>
-Es gibt (hoffentlich) nützliche Informationen über die Spieler aus,
+Es gibt nützliche Informationen über die Spieler aus,
 einschließlich ihrer Erfolgsrate mit Weiß und Schwarz, ihrer bevorzugten
-Eröffnungen (nach <a ECO>ECO-Code</a>) und ihrer Elo-Entwicklung.
+Eröffnungen (nach <a ECO>ECO-Code</a>) und ihrer Elo-Entwicklung.<br>
+Die Daten für den Elo-Verlauf können wahlweise aus der aktuellen Datenbank
+oder aus der Schreibkorrekturdatei/Ratingdatei gelesen werden. Wenn Sie ein
+gepflegte Rating-Datei verwenden, können auch die Zeiträume dargestellt werden,
+für die in der Datenbank keine Spiele vorhanden sind.<br>
+Eine Ratingdatei mit aktuellen ELO-Zahlen von über 300.000 registrierten
+FIDE-Spieler kann unter <url https://sourceforge.net/projects/scid/files/Player Data/>
+https://sourceforge.net/projects/scid/files/Player Data/</url> heruntergeladen werden.
 </p>
 <p>
 Jede Prozentangabe ist das Ergebnis, das man aus Sicht des Spielers
@@ -4133,7 +4142,7 @@ um den <a Searches Filter>Filter</a> so einzustellen, daß er die
 entsprechenden Partien enthält.
 </p>
 
-<p><footer>(Aktualisiert: Scid 2.5, Juni 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, November 2018)</footer></p>
 }
 
 

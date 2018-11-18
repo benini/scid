@@ -4,6 +4,7 @@
 
 namespace eval pinfo {
 set playerInfoName ""
+set ::eloFromRating 0
 
 # the following icons are used as buttons with PND as input, this has
 # to be handled specially and they involve some technicalities. All
@@ -343,11 +344,27 @@ proc ReplaceIDTags { pinfo } {
   return $pinfo
 }
 
-
 proc playerInfo {{player ""}} {
-  global playerInfoName
+  global playerInfoName eloFromRating
   if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
+  # append Elo History
+  append pinfo "<br><br><darkblue>$::tr(PInfoRating):</darkblue><br>"
+  if { $::eloFromRating } {
+      set eloList [sc_name elo $player]
+  } else {
+      set eloList [sc_base player_elo [sc_base current] $player]
+  }
+  set i 0
+  foreach { date elo } $eloList {
+      set d [string range $date 0 4]
+      scan [string range $date 5 6] %d m
+      set m [format "%02d" [expr {round( ($m+1) * 12 / 100 )+1 } ]]
+      append pinfo "$d$m  $elo     "
+      incr i
+      if { $i == 3 } { append pinfo "<br>"; set i 0 }
+  }
+
   set playerInfoName $player
   set ::rgraph(player) $player
   set w .playerInfoWin
@@ -358,6 +375,9 @@ proc playerInfo {{player ""}} {
     wm minsize $w 40 5
     pack [ttk::frame $w.b2] -side bottom -fill x
     pack [ttk::frame $w.b] -side bottom -fill x
+    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
+    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
+    ttk::label $w.b.eloT  -text "$::tr(Rating):"
     ttk::button $w.b.graph -text [tr ToolsRating] \
       -command {::tools::graphs::rating::Refresh player $playerInfoName}
     ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
@@ -372,6 +392,7 @@ proc playerInfo {{player ""}} {
     dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo $playerInfoName}
     dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
     packbuttons right $w.b2.close $w.b2.update $w.b2.help
+    pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
     packbuttons left $w.b.graph $w.b.edit
     packbuttons left $w.b2.report
 

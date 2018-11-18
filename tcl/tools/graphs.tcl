@@ -735,6 +735,15 @@ set ::tools::graphs::rating::type both
 set ::tools::graphs::rating::elo info
 set ::tools::graphs::rating::player ""
 
+proc ::tools::graphs::rating::GetElo { player } {
+    if {$::tools::graphs::rating::elo == "elo"} {
+	set eloList [sc_name elo  $::tools::graphs::rating::year $player]
+    } else {
+	set eloList [sc_base player_elo [sc_base current] $player -start $::tools::graphs::rating::year]
+    }
+    return $eloList
+}
+
 proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   set white [sc_game info white]
   set black [sc_game info black]
@@ -769,9 +778,12 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
           -variable ::tools::graphs::rating::type -value $j \
           -command "::tools::graphs::rating::Refresh"
     }
-    $w.menu.options add checkbutton -label GraphOptionsSpellCheckElo \
-          -variable ::tools::graphs::rating::elo -offvalue info -onvalue elo \
-          -command "::tools::graphs::rating::Refresh"
+    $w.menu.options add separator
+    foreach i { EloDB EloFile } j {info elo} {
+      $w.menu.options add radiobutton -label GraphOptions$i \
+	  -variable ::tools::graphs::rating::elo -value $j \
+	  -command "::tools::graphs::rating::Refresh"
+    }
     $w.menu.options add separator
     foreach i {1900 1980 1985 1990 1995 2000 2005 2010 2015 } {
       $w.menu.options add radiobutton -label "Since $i" \
@@ -811,15 +823,11 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   update
   
   set title "[tr ToolsRating]: "
-  set args $::tools::graphs::rating::year
-  if {$::tools::graphs::rating::elo == "info"} {
-	set args -ratings:$::tools::graphs::rating::year
-  }
   if {$type == "player"} {
     append title $player
     catch {::utils::graph::data ratings d -color $whiteColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $whiteColor \
-          -coords [sc_name $::tools::graphs::rating::elo $args $player]}
+          -coords [GetElo $player] }
   }
   if {$type == "white"  ||  $type == "both"} {
     set key ""
@@ -827,7 +835,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     append title $white
     catch {::utils::graph::data ratings d -color $whiteColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $whiteColor \
-          -key $key -coords [sc_name $::tools::graphs::rating::elo $args $white]}
+          -key $key -coords [GetElo $white] }
   }
   if {$type == "both"} { append title " - " }
   if {$type == "black"  ||  $type == "both"} {
@@ -836,7 +844,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     append title $black
     catch {::utils::graph::data ratings d2 -color $blackColor -points 1 -lines 1 \
           -linewidth $lwidth -radius $psize -outline $blackColor \
-          -key $key -coords [sc_name $::tools::graphs::rating::elo $args $black]}
+          -key $key -coords [GetElo $black]}
   }
   set minYear [expr {int([::utils::graph::cget ratings axmin])} ]
   set maxYear [expr {int([::utils::graph::cget ratings axmax])} ]
@@ -857,7 +865,7 @@ proc ::tools::graphs::rating::ConfigMenus {{lang ""}} {
   foreach idx {0 1 3} tag {Color Grey Close} {
     configMenuText $m.file $idx GraphFile$tag $lang
   }
-  foreach idx {0 1 2 3 4} tag {White Black Both PInfo SpellCheckElo} {
+  foreach idx {0 1 2 3 5 6} tag {White Black Both PInfo EloDB EloFile} {
     configMenuText $m.options $idx GraphOptions$tag $lang
   }
 }

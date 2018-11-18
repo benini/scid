@@ -3485,7 +3485,13 @@ set helpText(PInfo) {<h1>The Player Info window</h1>
   <p>
   It displays (hopefully) useful information about the player, including their
   success with White and Black, favorite openings (by <a ECO>ECO code</a>),
-  and rating history.
+  and rating history.<br>
+  The data for the Elo history can optionally be taken from the current database
+  or from the spelling file/rating file. If you use a actual rating file the time
+  periods can also be displayed, for which there are no games in the database.<br>
+  Download a rating file with over 300.000 registered FIDE player with their
+  ELO ratings from <url https://sourceforge.net/projects/scid/files/Player Data/>
+  https://sourceforge.net/projects/scid/files/Player Data/</url>.
   </p>
   <p>
   All percentages displayed are an expected score (success rate), from the
@@ -3526,7 +3532,7 @@ set helpText(PInfo) {<h1>The Player Info window</h1>
   player in the contributing national libraries.</li>
   </ul>
   
-  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
+  <p><footer>(Updated: Scid 4.7, November 2018)</footer></p>
 }
 
 ####################
