@@ -938,15 +938,10 @@ UI_res_t sc_base_player_elo(const scidBaseT* dbase, UI_handle_t ti, int argc,
 
 	UI_List res(eloCount * 2);
 	for (uint i = monthMin; i < monthMax; i++) {
-		eloT elo = eloByMonth[i];
-		if (elo != 0) {
-			char temp[100];
-			uint year = i / 12;
-			uint month = 1 + (i % 12);
-			sprintf(temp, "%4u.%02u", year, (month - 1) * 100 / 12);
-			res.push_back(temp);
-			sprintf(temp, "%4u", elo);
-			res.push_back(temp);
+		if (eloT elo = eloByMonth[i]) {
+			double year = i / 12.0;
+			res.push_back(year);
+			res.push_back(elo);
 		}
 	}
 	delete[] eloByMonth;
