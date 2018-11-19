@@ -353,7 +353,9 @@ proc playerInfo {{player ""}} {
   if { $::eloFromRating } {
     set eloList [sc_name elo $player]
   } else {
-    set eloList [sc_base player_elo [sc_base current] $player]
+    set filter [sc_filter new $::curr_db]
+    set eloList [sc_base player_elo $::curr_db $filter $player]
+    sc_filter release $::curr_db $filter
   }
   set i 0
   foreach { date elo } $eloList {

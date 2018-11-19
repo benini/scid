@@ -739,7 +739,10 @@ proc ::tools::graphs::rating::GetElo { player } {
   if {$::tools::graphs::rating::elo == "elo"} {
     set eloList [sc_name elo  $::tools::graphs::rating::year $player]
   } else {
-    set eloList [sc_base player_elo [sc_base current] $player -start $::tools::graphs::rating::year]
+    set filter [sc_filter new $::curr_db]
+    sc_filter search $::curr_db $filter header -date "$::tools::graphs::rating::year 2047"
+    set eloList [sc_base player_elo $::curr_db $filter $player]
+    sc_filter release $::curr_db $filter
   }
   return $eloList
 }

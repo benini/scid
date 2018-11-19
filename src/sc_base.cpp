@@ -846,106 +846,54 @@ UI_res_t sc_base_tournaments(const scidBaseT* dbase, UI_handle_t ti, int argc, c
 
 /**
  * sc_base_player_elo() - return a list of elo values of a player
- *
- * The returned list can be reduced to:
- * - "start"    : start date
- * - "end"      : end date
- *
  * Return:
  *   On success, return a list of years (the month is added in the fractional
  *   part: 2018.00 ==> gen 2018, 2018.75 ==> oct 2018, etc..) and elos.
  */
-UI_res_t sc_base_player_elo(const scidBaseT* dbase, UI_handle_t ti, int argc,
+UI_res_t sc_base_player_elo(const scidBaseT& dbase, UI_handle_t ti, int argc,
                             const char** argv) {
-	const char* usage = "Usage: sc_base player_elo baseId player [-start startyear] [-end endyear]";
-	if (argc < 4)
+	const char* usage = "Usage: sc_base player_elo baseId filterName playerName";
+	if (argc != 5)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	static const char* options[] = {"-start", "-end", NULL};
-	enum { STARTDATE, ENDDATE };
-	uint startYear = 1900;
-	uint endYear = YEAR_MAX;
-	const char* playerName = argv[3];
+	const HFilter filter = dbase.getFilter(argv[3]);
+	if (filter == nullptr)
+		return UI_Result(ti, ERROR_BadArg, usage);
 
-	// Try to find player name in this database:
 	idNumberT id = 0;
-	if (dbase->getNameBase()->FindExactName(NAME_PLAYER, playerName, &id) !=
-	    OK) {
-		return UI_Result(ti, ERROR_BadArg, "Player not found.");
-	}
-	for (int i = 4; (i + 1) < argc; i += 2) {
-		int index = strUniqueMatch(argv[i], options);
-		const char* value = argv[i + 1];
-		if (*value == 0)
-			continue;
-		switch (index) {
-		case STARTDATE:
-			startYear = strGetUnsigned(value);
-			if (startYear < 1900)
-				startYear = 1900;
-			if (startYear > YEAR_MAX)
-				startYear = YEAR_MAX;
-			break;
-		case ENDDATE:
-			endYear = strGetUnsigned(value);
-			if (endYear < 1900)
-				endYear = 1900;
-			if (endYear > YEAR_MAX)
-				endYear = YEAR_MAX;
-			break;
-		default:
-			return UI_Result(ti, ERROR_BadArg, value);
-		}
-	}
-	const uint monthMax = (endYear + 1) * 12;
-	const uint monthMin = startYear * 12;
-	uint eloCount = 1;
-	eloT* eloByMonth = new eloT[monthMax];
-	dateT date = ZERO_DATE;
-	for (uint month = 0; month < monthMax; month++) {
-		eloByMonth[month] = 0;
-	}
+	if (dbase.getNameBase()->FindExactName(NAME_PLAYER, argv[4], &id) != OK)
+		return UI_Result(ti, OK);
 
-	for (uint i = 0, n = dbase->numGames(); i < n; i++) {
-		const IndexEntry* ie = dbase->getIndexEntry(i);
-		eloT elo = 0;
-		// Track Elo ratings by month:
-		idNumberT whiteId = ie->GetWhite();
-		idNumberT blackId = ie->GetBlack();
-		date = ie->GetDate();
-		if (whiteId == id) {
-			elo = ie->GetWhiteElo();
-		} else if (blackId == id) {
-			elo = ie->GetBlackElo();
-		}
-		if (elo != 0) {
-			uint year = date_GetYear(date);
-			if (year >= startYear && year <= endYear) {
-				uint month = date_GetMonth(date);
-				if (month > 0) {
-					month--;
-				}
-				if (month > 11) {
-					month = 0;
-				}
-				ASSERT((year * 12 + month) < monthMax);
-				if (eloByMonth[year * 12 + month] == 0)
-					eloCount++;
-				eloByMonth[year * 12 + month] = elo;
+	std::map<unsigned, eloT> eloByMonth;
+	auto getPlayerElo = [](auto idx_entry, auto player_id) -> eloT {
+		ASSERT(idx_entry);
+		if (idx_entry->GetWhite() == player_id)
+			return idx_entry->GetWhiteElo();
+		if (idx_entry->GetBlack() == player_id)
+			return idx_entry->GetBlackElo();
+		return 0;
+	};
+	for (auto gnum : filter) {
+		const IndexEntry* ie = dbase.getIndexEntry(gnum);
+		if (auto elo = getPlayerElo(ie, id)) {
+			auto date = ie->GetDate();
+			auto year = date_GetYear(date);
+			auto month = date_GetMonth(date);
+			if (month > 0) {
+				month--;
 			}
+			if (month > 11) {
+				month = 0;
+			}
+			eloByMonth[year * 12 + month] = elo;
 		}
 	}
 
-	UI_List res(eloCount * 2);
-	for (uint i = monthMin; i < monthMax; i++) {
-		if (eloT elo = eloByMonth[i]) {
-			double year = i / 12.0;
-			res.push_back(year);
-			res.push_back(elo);
-		}
+	UI_List res(eloByMonth.size() * 2);
+	for (auto& e : eloByMonth) {
+		res.push_back(e.first / 12.0); // year
+		res.push_back(e.second);       // elo
 	}
-	delete[] eloByMonth;
-
 	return UI_Result(ti, OK, res);
 }
 
@@ -1060,7 +1008,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 		return sc_base_numGames (dbase, ti, argc, argv);
 
 	case BASE_PLAYER_ELO:
-		return sc_base_player_elo(dbase, ti, argc, argv);
+		return sc_base_player_elo(*dbase, ti, argc, argv);
 
 	case BASE_SORTCACHE:
 		return sc_base_sortcache(dbase, ti, argc, argv);
