@@ -959,8 +959,8 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    "export",          "extra",           "filename",        "gameflag",
 	    "gamelocation",    "gameslist",       "getGame",         "import",
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
-	    "piecetrack",      "slot",            "sortcache",       "stats",
-	    "switch",          "tag",             "tournaments",     "type", "player_elo",
+	    "piecetrack",      "player_elo",      "slot",            "sortcache",       "stats",
+	    "switch",          "tag",             "tournaments",     "type",
 	    NULL
 	};
 	enum {
@@ -969,8 +969,8 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,     BASE_GAMEFLAG,
 	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
-	    BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
-	    BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE, BASE_PLAYER_ELO
+	    BASE_PTRACK,       BASE_PLAYER_ELO,   BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
+	    BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE
 	};
 
 	if (argc <= 1) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd>");
@@ -1045,11 +1045,14 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	case BASE_IMPORT:
 		return sc_base_import (dbase, ti, argc, argv);
 
+	case BASE_ISREADONLY:
+		return UI_Result(ti, OK, dbase->isReadOnly());
+
 	case BASE_NUMGAMES:
 		return sc_base_numGames (dbase, ti, argc, argv);
 
-	case BASE_ISREADONLY:
-		return UI_Result(ti, OK, dbase->isReadOnly());
+	case BASE_PLAYER_ELO:
+		return sc_base_player_elo(dbase, ti, argc, argv);
 
 	case BASE_SORTCACHE:
 		return sc_base_sortcache(dbase, ti, argc, argv);
@@ -1062,9 +1065,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_TOURNAMENTS:
 		return sc_base_tournaments (dbase, ti, argc, argv);
-
-	case BASE_PLAYER_ELO:
-		return sc_base_player_elo(dbase, ti, argc, argv);
 	}
 
 	std::string res = "sc_base\nInvalid minor command: ";
