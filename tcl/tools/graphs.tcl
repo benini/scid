@@ -736,12 +736,12 @@ set ::tools::graphs::rating::elo info
 set ::tools::graphs::rating::player ""
 
 proc ::tools::graphs::rating::GetElo { player } {
-    if {$::tools::graphs::rating::elo == "elo"} {
-	set eloList [sc_name elo  $::tools::graphs::rating::year $player]
-    } else {
-	set eloList [sc_base player_elo [sc_base current] $player -start $::tools::graphs::rating::year]
-    }
-    return $eloList
+  if {$::tools::graphs::rating::elo == "elo"} {
+    set eloList [sc_name elo  $::tools::graphs::rating::year $player]
+  } else {
+    set eloList [sc_base player_elo [sc_base current] $player -start $::tools::graphs::rating::year]
+  }
+  return $eloList
 }
 
 proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
@@ -781,8 +781,8 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     $w.menu.options add separator
     foreach i { EloDB EloFile } j {info elo} {
       $w.menu.options add radiobutton -label GraphOptions$i \
-	  -variable ::tools::graphs::rating::elo -value $j \
-	  -command "::tools::graphs::rating::Refresh"
+        -variable ::tools::graphs::rating::elo -value $j \
+        -command "::tools::graphs::rating::Refresh"
     }
     $w.menu.options add separator
     foreach i {1900 1980 1985 1990 1995 2000 2005 2010 2015 } {
