@@ -78,15 +78,79 @@ public:
 	}
 };
 
+/// Store the type and position of the pieces compatibly with the SCID4 coding.
+class PieceList {
+	struct {
+		squareT sq;
+		pieceT piece_type;
+	} pieces_[2][16];
+
+public:
+	/// SCID4 encoded games must use index 0 for kings.
+	int8_t getKingIdx() const { return 0; }
+
+	/// Return the type of the piece with index @e idx
+	pieceT getPieceType(colorT color, int idx) const {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(idx >= 0 && idx < 16);
+
+		return pieces_[color][idx].piece_type;
+	}
+
+	/// Return the square position of the piece with index @e idx
+	squareT getSquare(colorT color, int idx) const {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(idx >= 0 && idx < 16);
+
+		return pieces_[color][idx].sq;
+	}
+
+	/// Change the square position of the piece with index @e idx
+	void move(colorT color, int idx, squareT to) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(idx >= 0 && idx < 16);
+
+		pieces_[color][idx].sq = to;
+	}
+
+	/// Change the type of the piece with index @e idx
+	void promote(colorT color, int idx, pieceT piece_type) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(idx >= 0 && idx < 16);
+
+		pieces_[color][idx].piece_type = piece_type;
+	}
+
+	/// Remove the piece with index @e removed_idx.
+	/// Piece's indexes are important for decoding SCID4 moves:  when a piece is
+	/// removed it's index is used by the last valid index @e lastvalid_idx.
+	/// Return the square of the new piece with index @e removed_idx.
+	squareT remove(colorT color, int removed_idx, int lastvalid_idx) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(removed_idx >= 0 && removed_idx < 16);
+		ASSERT(lastvalid_idx >= 0 && lastvalid_idx < 16);
+
+		pieces_[color][removed_idx] = pieces_[color][lastvalid_idx];
+		return pieces_[color][lastvalid_idx].sq;
+	}
+
+	/// Set the type and square of the piece with index @e idx
+	void set(colorT color, int idx, squareT sq, pieceT piece_type) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(idx >= 0 && idx < 16);
+		ASSERT(piece_type != KING || idx == getKingIdx());
+
+		pieces_[color][idx].sq = sq;
+		pieces_[color][idx].piece_type = piece_type;
+	}
+};
+
 class FastBoard {
 	uint8_t board_[64];
 	MaterialCount mt_;
-	struct P_LIST {
-		squareT sq;
-		pieceT piece;
-	} list[2][16];
+	PieceList pieces_;
 
-	enum { KING_IDX_ = 0, EMPTY_SQ_ = 0xFF };
+	enum { EMPTY_SQ_ = 0xFF };
 
 public:
 	FastBoard() {}
@@ -101,24 +165,20 @@ public:
 	void Init(Position& pos) {
 		std::fill_n(board_, 64, EMPTY_SQ_);
 
-		for (uint8_t i = 0, n = pos.GetCount(WHITE); i < n; ++i) {
-			squareT sq = pos.GetList(WHITE)[i];
-			pieceT piece = piece_Type(pos.GetPiece(sq));
-			ASSERT(piece != KING || i == KING_IDX_);
-			list[WHITE][i].sq = sq;
-			list[WHITE][i].piece = piece;
-			board_[sq] = i;
-			mt_.incr(WHITE, piece);
-		}
-
-		for (uint8_t i = 0, n = pos.GetCount(BLACK); i < n; ++i) {
-			squareT sq = pos.GetList(BLACK)[i];
-			pieceT piece = piece_Type(pos.GetPiece(sq));
-			ASSERT(piece != KING || i == KING_IDX_);
-			list[BLACK][i].sq = sq;
-			list[BLACK][i].piece = piece;
-			board_[sq] = i;
-			mt_.incr(BLACK, piece);
+		for (auto color : {WHITE, BLACK}) {
+			const auto pos_count = pos.GetCount(color);
+			const auto pos_list = pos.GetList(color);
+			for (uint8_t idx = 0; idx < 16; ++idx) {
+				if (idx < pos_count) {
+					const squareT sq = pos_list[idx];
+					const pieceT piece_type = piece_Type(pos.GetPiece(sq));
+					pieces_.set(color, idx, sq, piece_type);
+					board_[sq] = idx;
+					mt_.incr(color, piece_type);
+				} else {
+					pieces_.set(color, idx, 0, INVALID_PIECE);
+				}
+			}
 		}
 	}
 
@@ -126,25 +186,27 @@ public:
 		if (mt_ != mt_count)
 			return false;
 
-		for (int i=0, n = mt_.count(WHITE); i < n; i++) {
-			const P_LIST* p = & list[WHITE][i];
-			if (board[p->sq] != piece_Make(WHITE, p->piece)) return false;
+		for (int idx = 0, n = mt_.count(WHITE); idx < n; ++idx) {
+			const auto sq = pieces_.getSquare(WHITE, idx);
+			const auto pt = pieces_.getPieceType(WHITE, idx);
+			if (board[sq] != piece_Make(WHITE, pt))
+				return false;
 		}
-		for (int i=0, n = mt_.count(BLACK); i < n; i++) {
-			const P_LIST* p = & list[BLACK][i];
-			if (board[p->sq] != piece_Make(BLACK, p->piece)) return false;
+		for (int idx = 0, n = mt_.count(BLACK); idx < n; ++idx) {
+			const auto sq = pieces_.getSquare(BLACK, idx);
+			const auto pt = pieces_.getPieceType(BLACK, idx);
+			if (board[sq] != piece_Make(BLACK, pt))
+				return false;
 		}
 		return true;
 	}
 
-	template <colorT color>
-	squareT getSquare(uint8_t idx) const {
-		return list[color][idx].sq;
+	squareT getSquare(colorT color, int idx) const {
+		return pieces_.getSquare(color, idx);
 	}
 
-	template <colorT color>
-	pieceT getPiece(uint8_t idx) const {
-		return list[color][idx].piece;
+	pieceT getPiece(colorT color, int idx) const {
+		return pieces_.getPieceType(color, idx);
 	}
 
 	template <colorT color>
@@ -161,11 +223,12 @@ public:
 	template <colorT color>
 	void castle(squareT king_to, squareT rook_from, squareT rook_to) {
 		const uint8_t rook_idx = board_[rook_from];
-		const squareT king_from = list[color][KING_IDX_].sq;
-		list[color][rook_idx].sq = rook_to;
-		list[color][KING_IDX_].sq = king_to;
+		const auto king_idx = pieces_.getKingIdx();
+		const squareT king_from = pieces_.getSquare(color, king_idx);
+		pieces_.move(color, rook_idx, rook_to);
+		pieces_.move(color, king_idx, king_to);
 		board_[rook_to] = rook_idx;
-		board_[king_to] = KING_IDX_;
+		board_[king_to] = king_idx;
 		board_[rook_from] = EMPTY_SQ_;
 		board_[king_from] = EMPTY_SQ_;
 	}
@@ -173,12 +236,13 @@ public:
 	template <colorT color>
 	pieceT move(uint8_t idx, squareT to, pieceT promo) {
 		if (promo != INVALID_PIECE) {
-			list[color][idx].piece = promo;
+			pieces_.promote(color, idx, promo);
 			mt_.incr(color, promo);
 			mt_.decr(color, PAWN);
 		}
-		board_[list[color][idx].sq] = EMPTY_SQ_;
-		list[color][idx].sq = to;
+		const auto from = pieces_.getSquare(color, idx);
+		board_[from] = EMPTY_SQ_;
+		pieces_.move(color, idx, to);
 		return remove<1 - color>(to, idx);
 	}
 
@@ -189,13 +253,12 @@ public:
 		if (oldIdx == EMPTY_SQ_)
 			return INVALID_PIECE;
 
-		pieceT removed_pt = list[color][oldIdx].piece;
+		pieceT removed_pt =  pieces_.getPieceType(color, oldIdx);
 		mt_.decr(color, removed_pt);
 		int lastvalid_idx = mt_.count(color);
 		if (oldIdx != lastvalid_idx) {
-			list[color][oldIdx] = list[color][lastvalid_idx];
-			ASSERT(list[color][oldIdx].sq != sq);
-			board_[list[color][oldIdx].sq] = oldIdx;
+			squareT moved_sq = pieces_.remove(color, oldIdx, lastvalid_idx);
+			board_[moved_sq] = oldIdx;
 		}
 		return removed_pt;
 	}
@@ -224,14 +287,12 @@ public:
 		// Look for checks
 		ASSERT(mt_.count(WHITE) >= 1 && mt_.count(BLACK) >= 1);
 
-		squareT enemyKingSq = list[color_Flip(lastCol)][0].sq;
-		const P_LIST* piecesEnd = list[lastCol] + mt_.count(lastCol);
+		const squareT enemyKingSq = getKingSquare(color_Flip(lastCol));
 		bool direct_check = lastPt != KING && movegen::attack<uint8_t>(
 		                                          lastTo, enemyKingSq, lastCol,
 		                                          lastPt, board_, EMPTY_SQ_);
 		if (direct_check || // Look for a discovered check
-		    find_attacker_slider(enemyKingSq, list[lastCol] + 1, piecesEnd) !=
-		        piecesEnd) {
+		    find_attacker_slider(enemyKingSq, lastCol) >= 0) {
 			lastmove.setCheck();
 
 			// TODO: Find if it's mate:
@@ -242,17 +303,21 @@ public:
 	}
 
 private:
+	squareT getKingSquare(colorT color) {
+		return pieces_.getSquare(color, pieces_.getKingIdx());
+	}
+
 	int ambiguousMove(squareT lastFrom, squareT lastTo, colorT lastCol,
 	                  pieceT lastPt) {
 		int ambiguity = 0;
 
-		squareT kingSq = list[lastCol][0].sq;
-		colorT enemyCol = color_Flip(lastCol);
-		for (size_t i = 1, n = mt_.count(lastCol); i < n; i++) {
-			if (list[lastCol][i].piece != lastPt)
+		const squareT kingSq = getKingSquare(lastCol);
+		const colorT enemyCol = color_Flip(lastCol);
+		for (int i = 1, n = mt_.count(lastCol); i < n; i++) {
+			if (getPiece(lastCol, i) != lastPt)
 				continue; // Skip: different type
 
-			squareT sq = list[lastCol][i].sq;
+			const squareT sq = getSquare(lastCol, i);
 			if (sq == lastTo)
 				continue; // Skip: this is the analyzed piece
 
@@ -275,8 +340,8 @@ private:
 			if (pin.first != INVALID_PIECE) {
 				uint8_t idx = board_[pin.second];
 				if (idx != EMPTY_SQ_ && idx < mt_.count(enemyCol) &&
-				    list[enemyCol][idx].sq == pin.second) {
-					pieceT pt = list[enemyCol][idx].piece;
+				    getSquare(enemyCol, idx) == pin.second) {
+					const pieceT pt = getPiece(enemyCol, idx);
 					if (pt == QUEEN || pt == pin.first)
 						continue; // Skip: pinned piece
 				}
@@ -298,19 +363,19 @@ private:
 		return ambiguity;
 	}
 
-	const P_LIST* find_attacker_slider(squareT destSq, const P_LIST* pieces,
-	                                   const P_LIST* piecesEnd) {
-		for (; pieces != piecesEnd; ++pieces) {
-			pieceT pt = (*pieces).piece;
+	int find_attacker_slider(squareT destSq, colorT color) {
+		for (int idx = 0, n = mt_.count(color); idx < n; ++idx) {
+			const pieceT pt = getPiece(color, idx);
 			if (pt != QUEEN && pt != ROOK && pt != BISHOP)
 				continue;
 
-			if (movegen::attack_slider<uint8_t>((*pieces).sq, destSq, pt,
-			                                    board_, EMPTY_SQ_)) {
-				break;
+			const squareT sq = getSquare(color, idx);
+			if (movegen::attack_slider<uint8_t>(sq, destSq, pt, board_,
+			                                    EMPTY_SQ_)) {
+				return idx;
 			}
 		}
-		return pieces;
+		return -1;
 	}
 };
 
@@ -454,8 +519,8 @@ private:
 	inline bool doPly(byte v, P1& lastMove, const P2& minPieces) {
 		byte idx_piece_moving = v >> 4;
 		byte move = v & 0x0F;
-		pieceT moving_piece = board_.getPiece<toMove>(idx_piece_moving);
-		squareT from = board_.getSquare<toMove>(idx_piece_moving);
+		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
+		squareT from = board_.getSquare(toMove, idx_piece_moving);
 		squareT to;
 		pieceT promo = INVALID_PIECE;
 		bool enPassant = false;
@@ -487,7 +552,8 @@ private:
 						rook_to = black + D1;
 					}
 					const byte king_idx = 0;
-					lastMove.resetCastle(toMove, board_.getSquare<toMove>(king_idx), rook_from);
+					const squareT king_from = board_.getSquare(toMove, king_idx);
+					lastMove.resetCastle(toMove, king_from, rook_from);
 					board_.castle<toMove>(king_to, rook_from, rook_to);
 					// ClearCastlingRights;
 					return true;
