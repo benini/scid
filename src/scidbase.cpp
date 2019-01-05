@@ -504,9 +504,8 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 
 		const IndexEntry* ie = getIndexEntry(gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
-		if (move.isNull()) {
+		if (!move)
 			move = getGame(ie).getMove(ply);
-		}
 
 		size_t i = 0;
 		while (i < v.size() && v[i] != move) i++;
@@ -518,7 +517,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 	}
 
 	for (size_t i = 0, n = v.size(); i < n; i++) {
-		res[i].SAN = (v[i].isNull()) ? "[end]" : v[i].getSAN(&(res[i].toMove));
+		res[i].SAN = !v[i] ? "[end]" : v[i].getSAN(&(res[i].toMove));
 	}
 
 	std::sort(res.begin(), res.end());

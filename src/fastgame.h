@@ -420,13 +420,12 @@ public:
 	}
 
 	FullMove getMove(int ply_to_skip) {
-		FullMove move;
 		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
-			if (cToMove_ == WHITE) {
-				if (DecodeNextMove <WHITE>(move) < 0) break;
-			} else {
-				if (DecodeNextMove <BLACK>(move) < 0) break;
-			}
+			auto move = (cToMove_ == WHITE)
+			                ? DecodeNextMove<FullMove, WHITE>()
+			                : DecodeNextMove<FullMove, BLACK>();
+			if (!move)
+				break;
 
 			if (ply == ply_to_skip) {
 				board_.fillSANInfo(move);
@@ -434,7 +433,7 @@ public:
 				return move;
 			}
 		}
-		return FullMove();
+		return {};
 	}
 
 	std::string getMoveSAN(int ply_to_skip, int count) {
@@ -442,12 +441,16 @@ public:
 		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
-				if (DecodeNextMove <WHITE>(move) < 0) break;
+				move = DecodeNextMove <FullMove, WHITE>();
+				if (!move)
+					break;
 				if (ply < ply_to_skip) continue;
 				if (ply > ply_to_skip) res << "  ";
 				res << (1 + ply/2) << ".";
 			} else {
-				if (DecodeNextMove <BLACK>(move) < 0) break;
+				move = DecodeNextMove <FullMove, BLACK>();
+				if (!move)
+					break;
 				if (ply < ply_to_skip) continue;
 				if (ply == ply_to_skip) res << (1 + ply/2) << "...";
 				else res << " ";
@@ -461,38 +464,44 @@ public:
 	template <colorT toMove>
 	int search(const byte* board, const MaterialCount& mt_count) {
 		int ply = 1;
-		Dummy dummy;
 		auto less_material = [](const MaterialCount& a, const MaterialCount& b,
-		                        colorT color, pieceT piece_type) {
+		                        const colorT color, const auto move) {
+			if (!move)
+				return true;
+
+			const auto captured_pt = move.getCaptured();
+			if (captured_pt == INVALID_PIECE)
+				return false;
+
 			if (a.count(color) < b.count(color))
 				return true;
 
-			return a.count(color, PAWN) + a.count(color, piece_type) <
-			       b.count(color, PAWN) + b.count(color, piece_type);
+			return a.count(color, PAWN) + a.count(color, captured_pt) <
+			       b.count(color, PAWN) + b.count(color, captured_pt);
 		};
 
 		if (cToMove_ != toMove) {
-			if (DecodeNextMove<1 - toMove>(dummy) < 0) return 0;
+			const auto move = DecodeNextMove<FullMove, 1 - toMove>();
+			if (!move)
+				return 0;
 			ply += 1;
 		}
 		for (;;) {
-			if (board_.isEqual(board, mt_count)) return ply;
+			if (board_.isEqual(board, mt_count))
+				return ply;
 
-			int captured_pt = DecodeNextMove<toMove>(dummy);
-			if (captured_pt < 0)
-				return 0;
-			if (captured_pt != INVALID_PIECE &&
-			    less_material(board_.materialCount(), mt_count, 1 - toMove,
-			                  captured_pt))
-				return 0;
-
-			captured_pt = DecodeNextMove<1 - toMove>(dummy);
-			if (captured_pt < 0)
-				return 0;
-			if (captured_pt != INVALID_PIECE &&
-			    less_material(board_.materialCount(), mt_count, toMove,
-			                  captured_pt))
-				return 0;
+			{
+				const auto move = DecodeNextMove<FullMove, toMove>();
+				if (less_material(board_.materialCount(), mt_count, 1 - toMove,
+				                  move))
+					return 0;
+			}
+			{
+				const auto move = DecodeNextMove<FullMove, 1 - toMove>();
+				if (less_material(board_.materialCount(), mt_count, toMove,
+				                  move))
+					return 0;
+			}
 
 			ply += 2;
 		}
@@ -513,34 +522,33 @@ private:
 		cToMove_ = StartPos.GetToMove();
 	}
 
-	template <colorT toMove, typename P1>
-	inline int DecodeNextMove(P1& p1) {
+	template <typename TResult, colorT toMove>
+	TResult DecodeNextMove() {
 		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER, ENCODE_END_GAME };
 		enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
 
 		while (v_it_ < v_end_) {
 			byte b = *v_it_++;
-			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, p1);
-			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return -1;
+			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<TResult, toMove>(b);
+			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return {};
 			if (b == ENCODE_NAG) {v_it_++; continue; }
 			if (b == ENCODE_START_MARKER) {
-				uint nestCount = 1;
+				int nestCount = 1;
 				do {
-					if (v_it_ >= v_end_) return -1;
+					if (v_it_ >= v_end_) return {};
 					switch (*v_it_++) {
 					case ENCODE_NAG: v_it_++; break;
 					case ENCODE_START_MARKER: nestCount++; break;
 					case ENCODE_END_MARKER: nestCount--; break;
-					case ENCODE_END_GAME: return -1;
+					case ENCODE_END_GAME: return {};
 					}
 				} while (nestCount > 0);
 			}
 		}
-		return -1;
+		return {};
 	}
 
-	template <colorT toMove, typename P1>
-	inline int doPly(byte v, P1& lastMove) {
+	template <typename TResult, colorT toMove> TResult doPly(byte v) {
 		byte idx_piece_moving = v >> 4;
 		byte move = v & 0x0F;
 		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
@@ -561,7 +569,7 @@ private:
 		case QUEEN:
 			if (move == square_Fyle(from)) { // 2 BYTES MOVE
 				if (v_it_ >= v_end_)
-					return -1; // decode error
+					return {}; // decode error
 
 				to = decodeQueen2byte(*v_it_++);
 				break;
@@ -572,8 +580,7 @@ private:
 			break;
 		case KING:
 			if (move == 0) { // NULL MOVE
-				lastMove.reset(toMove, KING, 0, 0);
-				return INVALID_PIECE;
+				return TResult(toMove, 0, 0, KING);
 			}
 			if (move <= 8) {
 				to = decodeKing(from, move);
@@ -581,28 +588,29 @@ private:
 			}
 			if (move <= 10) { // CASTLE
 				const squareT rook_from = board_.castle<toMove>(move == 10);
-				lastMove.resetCastle(toMove, from, rook_from);
-				return INVALID_PIECE;
+				return TResult(toMove, from, rook_from);
 			}
-			return -1; // decode error
+			return {}; // decode error
 
 		default:
-			return -1; // decode error
+			return {}; // decode error
 		}
 
 		if (to < 0 || to > 63)
-			return -1; // decode error
+			return {}; // decode error
 
 		pieceT captured = board_.move<toMove>(idx_piece_moving, to, promo);
-		lastMove.reset(toMove, moving_piece, from, to, promo);
+		TResult res(toMove, from, to, moving_piece);
+		if (promo != INVALID_PIECE)
+			res.setPromo(promo);
 		if (captured != INVALID_PIECE) {
-			lastMove.setCapture(captured, false);
+			res.setCapture(captured, false);
 		} else if (enPassant) {
 			squareT sq = (toMove == WHITE) ? to - 8 : to + 8;
 			captured = board_.remove<1 - toMove>(0x3F & sq);
-			lastMove.setCapture(captured, true);
+			res.setCapture(captured, true);
 		}
-		return captured;
+		return res;
 	}
 
 	/**
@@ -658,12 +666,6 @@ private:
 		return (color == WHITE) ? from + sqdiff[val] //
 		                        : from - sqdiff[val];
 	}
-
-	struct Dummy {
-		void reset(colorT, pieceT, squareT, squareT, pieceT = 0) {}
-		void resetCastle(colorT, squareT, squareT) {}
-		void setCapture(pieceT, bool) {}
-	};
 };
 
 

@@ -128,17 +128,19 @@ TEST(Test_movegen, UCItoSAN) {
 		pieceT pt = piece_Type(sm.movingPiece);
 		int castle = (pt == KING) ? sm.isCastle() : 0;
 		if (!castle) {
-			fullmove.reset(col, pt, sm.from, sm.to,
-			               (sm.promote != EMPTY) ? piece_Type(sm.promote) : 0);
+			fullmove = FullMove(col, sm.from, sm.to, pt);
+			if (sm.promote != EMPTY) {
+				fullmove.setPromo(piece_Type(sm.promote));
+			}
 			if (sm.capturedPiece != EMPTY) {
 				fullmove.setCapture(sm.capturedPiece,
 				                    pos.GetBoard()[sm.to] == EMPTY);
 			}
 		} else {
 			if (col == WHITE)
-				fullmove.resetCastle(WHITE, E1, (castle == 1) ? H1 : A1);
+				fullmove = FullMove(WHITE, E1, (castle == 1) ? H1 : A1);
 			else
-				fullmove.resetCastle(BLACK, E8, (castle == 1) ? H8 : A8);
+				fullmove = FullMove(BLACK, E8, (castle == 1) ? H8 : A8);
 		}
 		pos.DoSimpleMove(&sm);
 		FastBoard fastboard(pos);

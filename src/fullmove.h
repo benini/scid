@@ -46,9 +46,20 @@ class FullMove {
 	uint32_t m_;
 
 public:
-	FullMove(uint32_t m = 0) : m_(m) {};
+	constexpr FullMove(uint32_t m = 0) : m_(m){};
+
+	FullMove(colorT c, squareT kingSq, squareT rookSq)
+	    // Castle: encoding as king to rook allows the undoing of chess360 moves
+	    : FullMove(c, kingSq, rookSq, KING) {
+		m_ |= (3 << 14);
+	}
+
+	FullMove(colorT c, squareT from, squareT to, pieceT pt) {
+		m_ = to | (from << 6) | (pt << 24) | (c << 27);
+	}
+
+	operator bool() const { return m_ != 0; }
 	bool operator!=(const FullMove& f) const { return m_ != f.m_; }
-	bool    isNull()      const { return (m_ & 0xFFFF) == 0; }
 	bool    isPromo()     const { return (m_ & (3 << 14)) == (1 << 14); }
 	bool    isEnpassant() const { return (m_ & (3 << 14)) == (2 << 14); }
 	bool    isCastle()    const { return (m_ & (3 << 14)) == (3 << 14); }
@@ -102,14 +113,10 @@ public:
 		return res;
 	}
 
-	void reset(colorT c, pieceT p, squareT from, squareT to, pieceT promo = 0) {
-		m_ = to | (from << 6) | (p << 24) | (c << 27);
-		if (promo >= 2)
-			m_ |= ((promo - 2) << 12) | (1 << 14);
-	}
-	void resetCastle(colorT c, squareT kingSq, squareT rookSq) {
-		//Encoding as king to rook allow undoing of chess360 moves
-		m_ = rookSq | (kingSq << 6) | (3 << 14) | (KING << 24) | (c << 27);
+	void setPromo(pieceT promo) {
+		ASSERT(promo == QUEEN || promo == ROOK || promo == BISHOP ||
+		       promo == KNIGHT);
+		m_ |= ((promo - 2) << 12) | (1 << 14);
 	}
 	void setCapture(pieceT piece, bool enPassant) {
 		m_ |= ((piece & 0x07) << 21);

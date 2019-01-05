@@ -3394,7 +3394,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
                 moveT* gameMove = FirstMove->next;
                 uint matchLength = 0;
                 FullMove m = StoredLine::getMove(i, matchLength);
-                while (!m.isNull()) {
+                while (m) {
                     if (gameMove->marker == END_MARKER
                         ||  gameMove->moveData.from != m.getFrom()
                         ||  gameMove->moveData.to != m.getTo())

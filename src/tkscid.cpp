@@ -8081,7 +8081,7 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (ply < -1) { skipcount++; continue; }
             if (ply >= 0) {
                 FullMove m = StoredLine::getMove(ie->GetStoredLineCode(), ply);
-                if (!m.isNull()) {
+                if (m) {
                     sm.from = m.getFrom();
                     sm.to = m.getTo();
                     if (m.isCastle()) sm.to = sm.from + ((sm.to > sm.from) ? 2 : -2);

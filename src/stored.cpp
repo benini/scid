@@ -82,7 +82,7 @@ public:
 	}
 };
 
-FullMove fm[] = {
+constexpr FullMove fm[] = {
  // "1.b3"
  0x6000251,
  // "1.c4"
