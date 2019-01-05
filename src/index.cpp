@@ -22,9 +22,10 @@
 #include "namebase.h"
 #include <cstring>
 
+static constexpr char INDEX_MAGIC[8] = "Scid.si";
+
 void Index::Init ()
 {
-    strCopy (Header.magic, INDEX_MAGIC);
     Header.numGames  = 0;
     Header.version   = SCID_VERSION;
     Header.baseType = 0;
@@ -92,9 +93,10 @@ Index::Open (const char* filename, fileModeT fmode)
         return ERROR_FileOpen;
     }
 
-    FilePtr->sgetn(Header.magic, 8);
-    Header.magic[8] = 0;
-    if (strCompare (Header.magic, INDEX_MAGIC) != 0) {
+    char magic[8];
+    FilePtr->sgetn(magic, 8);
+    if (!std::equal(std::begin(magic), std::end(magic), std::begin(INDEX_MAGIC),
+                    std::end(INDEX_MAGIC))) {
         delete FilePtr;
         FilePtr = NULL;
         return ERROR_BadMagic;
@@ -141,7 +143,7 @@ Index::WriteHeader ()
 
     seqWrite_ = 0;
     std::streamsize n = 0;
-    n += FilePtr->sputn(Header.magic, 8);
+    n += FilePtr->sputn(INDEX_MAGIC, 8);
     n += FilePtr->WriteTwoBytes (Header.version);
     n += FilePtr->WriteFourBytes (Header.baseType);
     n += FilePtr->WriteThreeBytes (Header.numGames);

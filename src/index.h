@@ -39,7 +39,6 @@ class NameBase;
 
 const char         INDEX_SUFFIX[]     = ".si4";
 const char         OLD_INDEX_SUFFIX[] = ".si3";
-const char         INDEX_MAGIC[8]     = "Scid.si";
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
@@ -70,7 +69,6 @@ private:
     gamenumT seqWrite_;
 
     struct { // one at the start of the index file.
-        char        magic[9];    // 8-byte identifier for Scid index files.
         versionT    version;     // version number. 2 bytes.
         uint        baseType;    // Type, e.g. tournament, theory, etc.
         gamenumT    numGames;    // number of games in file.
