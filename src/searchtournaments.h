@@ -168,7 +168,47 @@ class SearchTournaments {
 	std::vector<Tourney> tourney_;
 
 public:
-	SearchTournaments(const scidBaseT* dbase, const HFilter& filter);
+	SearchTournaments(const scidBaseT* dbase, const HFilter& filter)
+	    : dbase_(dbase) {
+		ASSERT(dbase != 0);
+		ASSERT(filter != 0);
+
+		games_.reserve(filter->size());
+		for (auto gnum : filter) {
+			games_.emplace_back(dbase->getIndexEntry(gnum), gnum);
+		}
+
+		std::sort(games_.begin(), games_.end(),
+		          [](const TourneyGame& a, const TourneyGame& b) {
+			          if (a.eventID_ != b.eventID_)
+				          return a.eventID_ < b.eventID_;
+			          if (a.siteID_ != b.siteID_)
+				          return a.siteID_ < b.siteID_;
+			          dateT d1 = a.eventDate_ != 0 ? a.eventDate_ : a.date_;
+			          dateT d2 = b.eventDate_ != 0 ? b.eventDate_ : b.date_;
+			          return d1 < d2;
+		          });
+
+		auto it = games_.begin();
+		const auto it_end = games_.end();
+		while (it != it_end) {
+			const auto start = it;
+			it = std::find_if(it, it_end, [start](const TourneyGame& g) {
+				if (start->eventID_ != g.eventID_ ||
+				    start->siteID_ != g.siteID_)
+					return true;
+
+				if (start->eventDate_ != 0 && g.eventDate_ == 0)
+					return start->eventDate_ > g.date_;
+
+				if (start->eventDate_ == 0 && g.eventDate_ != 0)
+					return g.eventDate_ > start->date_;
+
+				return start->eventDate_ != g.eventDate_;
+			});
+			tourney_.emplace_back(start, it);
+		}
+	}
 
 	typedef std::vector<Tourney>::const_iterator Iter;
 	Iter begin() const { return tourney_.begin(); }
@@ -206,36 +246,6 @@ public:
 	bool sort(const char* criteria, size_t max);
 
 private:
-	struct GameSort {
-		bool operator()(const TourneyGame& a, const TourneyGame& b) {
-			if (a.eventID_ != b.eventID_) return a.eventID_ < b.eventID_;
-			if (a.siteID_ != b.siteID_) return a.siteID_ < b.siteID_;
-			dateT d1 = a.eventDate_ != 0 ? a.eventDate_ : a.date_;
-			dateT d2 = b.eventDate_ != 0 ? b.eventDate_ : b.date_;
-			return d1 < d2;
-		}
-	};
-
-	class FindNewTourney {
-		const TourneyGame& g_;
-	public:
-		FindNewTourney(const TourneyGame& start) : g_(start) {}
-
-		bool operator()(const TourneyGame& g) {
-			if (g_.eventID_ != g.eventID_ || g_.siteID_ != g.siteID_)
-				return true;
-
-			if (g_.eventDate_ != 0 && g.eventDate_ == 0)
-				return g_.eventDate_ > g.date_;
-
-			if (g_.eventDate_ == 0 && g.eventDate_ != 0)
-				return g.eventDate_ > g_.date_;
-
-			return g_.eventDate_ != g.eventDate_;
-		}
-	};
-
-
 	template <uint (Tourney::* f)() const>
 	class Filter {
 		const StrRange& range_;
@@ -291,28 +301,6 @@ private:
 		}
 	};
 };
-
-inline SearchTournaments::SearchTournaments(const scidBaseT* dbase, const HFilter& filter)
-: dbase_(dbase) {
-	ASSERT(dbase != 0);
-	ASSERT(filter != 0);
-	games_.reserve(filter->size());
-	for (uint i=0, n = dbase->numGames(); i < n; i++) {
-		if (filter.get(i) == 0) continue;
-		games_.push_back( TourneyGame(dbase->getIndexEntry(i), i) );
-	}
-
-	std::sort(games_.begin(), games_.end(), GameSort());
-
-	typedef std::vector<TourneyGame>::const_iterator GameIt;
-	GameIt it = games_.begin();
-	GameIt it_end = games_.end();
-	while (it !=  it_end) {
-		GameIt start = it;
-		it = std::find_if(it, it_end, FindNewTourney(*start));
-		tourney_.push_back(Tourney(start, it));
-	}
-}
 
 inline bool SearchTournaments::sort(const char* criteria, size_t nOrdered) {
 	static const char* criterions [] = {
