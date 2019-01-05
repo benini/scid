@@ -164,8 +164,6 @@ uint strGetRatingType (const char * name);
 //////////////////////////////////////////////////////////////////////
 //  Game:  Class Definition
 
-static Position staticPosition;
-
 class Game {
     // Header data: tag pairs
     std::vector<std::pair<std::string, std::string> > extraTags_;
