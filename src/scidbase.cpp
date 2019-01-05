@@ -119,7 +119,6 @@ errorT scidBaseT::Close () {
 	}
 	sortCaches_.clear();
 
-	errorT errGFile = codec_->flush();
 	errorT errIdx = idx->Close();
 	nb_->Clear();
 	codec_ = nullptr;
@@ -136,7 +135,7 @@ errorT scidBaseT::Close () {
 	filters_.clear();
 	inUse = false;
 
-	return (errIdx != OK) ? errIdx : errGFile;
+	return errIdx;
 }
 
 
