@@ -105,7 +105,7 @@ UI_res_t sc_base_compact(scidBaseT* dbase, UI_handle_t ti, int argc,
 		errorT res = dbase->compact(UI_CreateProgress(ti));
 		return UI_Result(ti, res);
 	} else if (argc == 4 && std::strcmp("stats", argv[3]) == 0) {
-		uint n_deleted, n_unused, n_sparse, n_badNameId;
+		unsigned long long n_deleted, n_unused, n_sparse, n_badNameId;
 		errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse,
 		                                   &n_badNameId);
 		UI_List val(4);

@@ -524,10 +524,10 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 	return res;
 }
 
-errorT scidBaseT::getCompactStat(uint* n_deleted,
-                                 uint* n_unused,
-                                 uint* n_sparse,
-                                 uint* n_badNameId) {
+errorT scidBaseT::getCompactStat(unsigned long long* n_deleted,
+                                 unsigned long long* n_unused,
+                                 unsigned long long* n_sparse,
+                                 unsigned long long* n_badNameId) {
 	std::vector<uint> nbFreq[NUM_NAME_TYPES];
 	for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
 		nbFreq[n].resize(getNameBase()->GetNumNames(n), 0);

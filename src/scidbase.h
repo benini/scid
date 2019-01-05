@@ -187,10 +187,10 @@ struct scidBaseT {
 		return nameFreq_[nt][id];
 	}
 
-	errorT getCompactStat(uint* n_deleted,
-	                      uint* n_unused,
-	                      uint* n_sparse,
-	                      uint* n_badNameId);
+	errorT getCompactStat(unsigned long long* n_deleted,
+	                      unsigned long long* n_unused,
+	                      unsigned long long* n_sparse,
+	                      unsigned long long* n_badNameId);
 	errorT compact(const Progress& progress);
 
 
