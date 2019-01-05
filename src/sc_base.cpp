@@ -361,10 +361,10 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		std::string eloStr;
 		eloT welo = ie->GetWhiteElo();
 		if (welo != 0) {
-			eloStr = to_string(welo);
+			eloStr = std::to_string(welo);
 		} else {
 			welo = ie->GetWhiteElo(nb);
-			eloStr = to_string(welo);
+			eloStr = std::to_string(welo);
 			if (welo != 0) {
 				eloStr.insert(eloStr.begin(), '(');
 				eloStr.insert(eloStr.end(), ')');
@@ -374,10 +374,10 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		ginfo.push_back(ie->GetBlackName(nb));
 		eloT belo = ie->GetBlackElo();
 		if (belo != 0) {
-			eloStr = to_string(belo);
+			eloStr = std::to_string(belo);
 		} else {
 			belo = ie->GetBlackElo(nb);
-			eloStr = to_string(belo);
+			eloStr = std::to_string(belo);
 			if (belo != 0) {
 				eloStr.insert(eloStr.begin(), '(');
 				eloStr.insert(eloStr.end(), ')');
@@ -416,7 +416,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		FastGame game = dbase->getGame(ie);
 		ginfo.push_back(game.getMoveSAN(ply, 10));
 
-		res.push_back(to_string(idx+1) + "_" + to_string(ply));
+		res.push_back(std::to_string(idx+1) + "_" + std::to_string(ply));
 		res.push_back(ginfo);
 		res.push_back(deleted);
 	}

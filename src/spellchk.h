@@ -210,7 +210,8 @@ public:
 			auto n = count(y);
 			if (n == 0) continue;
 			if (n != expected(y))
-				return to_string(y) + ": " + to_string(n) + "(" + to_string(expected(y)) + ")";
+				return std::to_string(y) + ": " + std::to_string(n) + "(" +
+				       std::to_string(expected(y)) + ")";
 		}
 
 		return std::string();

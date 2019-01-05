@@ -179,9 +179,9 @@ errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) con
 	if (tagname == "description") {
 		*res = idx->GetDescription();
 	} else if (tagname == "autoload") {
-		*res = to_string(idx->GetAutoLoad());
+		*res = std::to_string(idx->GetAutoLoad());
 	} else if (tagname == "type") {
-		*res = to_string(idx->GetType());
+		*res = std::to_string(idx->GetType());
 	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
 		uint flagType = IndexEntry::CharToFlag(tagname[4]);
 		if (flagType == 0) return ERROR_BadArg;

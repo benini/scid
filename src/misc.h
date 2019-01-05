@@ -85,9 +85,6 @@ private:
 };
 
 
-using std::to_string;
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strGetFilterOp:
 //    Converts a string value to a filter operation value.

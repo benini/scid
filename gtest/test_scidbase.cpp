@@ -158,7 +158,7 @@ std::string encodePgn(const TCont& game)
 				if (lastCol == WHITE) {
 					endMoveNum = token.MoveNumEndB;
 					int temp = atoi(num.c_str());
-					num = to_string(--temp);
+					num = std::to_string(--temp);
 				}
 				line += token.sep;
 				line += num;
@@ -171,7 +171,7 @@ std::string encodePgn(const TCont& game)
 			for (auto& e : pos.NAGs) {
 				line += token.sep;
 				line += '$';
-				line += to_string(e);
+				line += std::to_string(e);
 				forceMoveNum = true;
 			}
 		}
