@@ -46,13 +46,13 @@ class CodecSCID4 : public CodecNative<CodecSCID4> {
 	};
 
 public: // ICodecDatabase interface
-	Codec getType() final { return ICodecDatabase::SCID4; }
+	Codec getType() const final { return ICodecDatabase::SCID4; }
 
 	/**
 	 * Returns the full path of the three files (index, namebase and gamefile)
 	 * used by the database.
 	 */
-	std::vector<std::string> getFilenames() final { return filenames_; };
+	std::vector<std::string> getFilenames() const final { return filenames_; };
 
 	const byte* getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())

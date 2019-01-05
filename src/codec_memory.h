@@ -43,9 +43,9 @@ class CodecMemory : public CodecNative<CodecMemory> {
 	};
 
 public: // ICodecDatabase interface
-	Codec getType() override { return ICodecDatabase::MEMORY; }
+	Codec getType() const override { return ICodecDatabase::MEMORY; }
 
-	std::vector<std::string> getFilenames() override {
+	std::vector<std::string> getFilenames() const override {
 		return std::vector<std::string>();
 	}
 

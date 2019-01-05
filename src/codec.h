@@ -65,14 +65,14 @@ public:
 	/**
 	 * Returns the Codec type.
 	 */
-	virtual Codec getType() = 0;
+	virtual Codec getType() const = 0;
 
 	/**
 	 * Returns the full path of the files used by the database.
 	 * The order of the filenames must be consistent for objects of the same
 	 * Codec type.
 	 */
-	virtual std::vector<std::string> getFilenames() = 0;
+	virtual std::vector<std::string> getFilenames() const = 0;
 
 	/**
 	 * Fetches the data of a game (excluding index info), encoded in native
