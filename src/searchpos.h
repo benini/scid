@@ -27,62 +27,41 @@
 #include "fastgame.h"
 #include "matsig.h"
 #include "position.h"
+#include "scidbase.h"
 #include "stored.h"
 #include <algorithm>
 #include <memory>
 
-/// Store the number of pieces for each type and color.
-class MaterialCount {
-	uint8_t nPieces_[2][8];
+/// Return true if there is a piece's count in @e a which is less than its
+/// counterpart in @e b.
+/// @param promo: pawns' difference is considered when comparing queen.
+/// @param upromo: minor pieces' count is not compared.
+template <typename TMaterialCount>
+bool less_mat(const TMaterialCount& a, matSigT b, bool promo, bool upromo) {
+	int wp_diff = a.count(WHITE, PAWN) - static_cast<int>(MATSIG_Count_WP(b));
+	int bp_diff = a.count(BLACK, PAWN) - static_cast<int>(MATSIG_Count_BP(b));
+	if (wp_diff < 0 || bp_diff < 0)
+		return true;
 
-public:
-	MaterialCount() {
-		std::fill_n(nPieces_[WHITE], 8, 0);
-		std::fill_n(nPieces_[BLACK], 8, 0);
+	int wq_diff = a.count(WHITE, QUEEN) - static_cast<int>(MATSIG_Count_WQ(b));
+	int bq_diff = a.count(BLACK, QUEEN) - static_cast<int>(MATSIG_Count_BQ(b));
+	if (promo) {
+		wq_diff += wp_diff;
+		bq_diff += bp_diff;
 	}
+	if (wq_diff < 0 || bq_diff < 0)
+		return true;
 
-	const auto& data() const {
-		return nPieces_;
-	}
+	if (upromo)
+		return false;
 
-	/// Add one piece.
-	void incr(pieceT piece) {
-		++nPieces_[piece_Color(piece)][0];
-		++nPieces_[piece_Color(piece)][piece_Type(piece)];
-	}
-
-	/// Return true if there is a piece's count which is greater than its
-	/// counterpart in @e end_material.
-	/// @param promo: pawns' difference is considered when comparing queen.
-	/// @param upromo: minor pieces' count is not compared.
-	bool extraMaterial(matSigT end_material, bool promo, bool upromo) const {
-		auto extra_wpawn = static_cast<int>(MATSIG_Count_WP(end_material)) -
-		                   nPieces_[WHITE][PAWN];
-		auto extra_bpawn = static_cast<int>(MATSIG_Count_BP(end_material)) -
-		                   nPieces_[BLACK][PAWN];
-		if (extra_wpawn > 0 || extra_bpawn > 0)
-			return true;
-
-		auto extra_wqueen = static_cast<int>(MATSIG_Count_WQ(end_material)) -
-		                    nPieces_[WHITE][QUEEN];
-		auto extra_bqueen = static_cast<int>(MATSIG_Count_BQ(end_material)) -
-		                    nPieces_[BLACK][QUEEN];
-		if (promo) {
-			extra_wqueen += extra_wpawn;
-			extra_bqueen += extra_bpawn;
-		}
-		if (extra_wqueen > 0 || extra_bqueen > 0)
-			return true;
-
-		return !upromo &&
-		       (MATSIG_Count_WR(end_material) > nPieces_[WHITE][ROOK] ||
-		        MATSIG_Count_WB(end_material) > nPieces_[WHITE][BISHOP] ||
-		        MATSIG_Count_WN(end_material) > nPieces_[WHITE][KNIGHT] ||
-		        MATSIG_Count_BR(end_material) > nPieces_[BLACK][ROOK] ||
-		        MATSIG_Count_BB(end_material) > nPieces_[BLACK][BISHOP] ||
-		        MATSIG_Count_BN(end_material) > nPieces_[BLACK][KNIGHT]);
-	}
-};
+	return a.count(WHITE, ROOK) < static_cast<int>(MATSIG_Count_WR(b)) ||
+	       a.count(WHITE, BISHOP) < static_cast<int>(MATSIG_Count_WB(b)) ||
+	       a.count(WHITE, KNIGHT) < static_cast<int>(MATSIG_Count_WN(b)) ||
+	       a.count(BLACK, ROOK) < static_cast<int>(MATSIG_Count_BR(b)) ||
+	       a.count(BLACK, BISHOP) < static_cast<int>(MATSIG_Count_BB(b)) ||
+	       a.count(BLACK, KNIGHT) < static_cast<int>(MATSIG_Count_BN(b));
+}
 
 /// Search for an exact position (same material in the same squares).
 class SearchPos {
@@ -94,12 +73,12 @@ class SearchPos {
 	bool isStdStard_;
 
 public:
-	SearchPos(const Position* pos) {
+	explicit SearchPos(const Position* pos) {
 		std::copy_n(pos->GetBoard(), 64, board_);
 
 		for (auto piece : board_) {
 			if (piece != EMPTY) {
-				nPieces_.incr(piece);
+				nPieces_.incr(piece_Color(piece), piece_Type(piece));
 			}
 		}
 
@@ -134,8 +113,8 @@ public:
 			if (!hpSig_match(hpSig_.first, hpSig_.second, ie.GetHomePawnData()))
 				return -2;
 		}
-		if (nPieces_.extraMaterial(ie.GetFinalMatSig(), ie.GetPromotionsFlag(),
-		                           ie.GetUnderPromoFlag())) {
+		if (less_mat(nPieces_, ie.GetFinalMatSig(), ie.GetPromotionsFlag(),
+		             ie.GetUnderPromoFlag())) {
 			return -2;
 		}
 		return -1;
@@ -159,7 +138,7 @@ private:
 		for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);
 			if (ie->GetStartFlag()) {
-				int ply = base->getGame(ie).search<WHITE>(board_, nPieces_.data());
+				int ply = base->getGame(ie).search<WHITE>(board_, nPieces_);
 				filter.set(i, (ply > 255) ? 255 : ply);
 			}
 		}
@@ -176,7 +155,7 @@ private:
 			if (ply >= 0) {
 				filter.set(i, static_cast<byte>(ply + 1));
 			} else if (ply == -1) {
-				ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_.data());
+				ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
 				if (ply != 0)
 					filter.set(i, (ply > 255) ? 255 : ply);
 

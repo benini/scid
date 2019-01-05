@@ -16,6 +16,7 @@
 
 #include "fastgame.h"
 #include "position.h"
+#include "searchpos.h"
 #include <cstring>
 #include <gtest/gtest.h>
 
@@ -31,22 +32,21 @@ TEST(Test_movegen, attack) {
 	board[33] = !empty;
 	board[52] = !empty;
 
-	EXPECT_TRUE (movegen::attack(31, 29, WHITE, QUEEN, board, empty));
+	EXPECT_TRUE(movegen::attack(31, 29, WHITE, QUEEN, board, empty));
 	EXPECT_FALSE(movegen::attack(31, 27, WHITE, QUEEN, board, empty));
-	EXPECT_TRUE (movegen::attack(52, 28, BLACK, ROOK, board, empty));
+	EXPECT_TRUE(movegen::attack(52, 28, BLACK, ROOK, board, empty));
 	EXPECT_FALSE(movegen::attack(52, 20, BLACK, ROOK, board, empty));
-	EXPECT_TRUE (movegen::attack(1, 11, WHITE, KNIGHT, board, empty));
+	EXPECT_TRUE(movegen::attack(1, 11, WHITE, KNIGHT, board, empty));
 	EXPECT_FALSE(movegen::attack(1, 6, WHITE, KNIGHT, board, empty));
-	EXPECT_TRUE (movegen::attack(33, 19, BLACK, BISHOP, board, empty));
+	EXPECT_TRUE(movegen::attack(33, 19, BLACK, BISHOP, board, empty));
 	EXPECT_FALSE(movegen::attack(33, 12, BLACK, BISHOP, board, empty));
-	EXPECT_TRUE (movegen::attack(12, 19, WHITE, PAWN, board, empty));
+	EXPECT_TRUE(movegen::attack(12, 19, WHITE, PAWN, board, empty));
 	EXPECT_FALSE(movegen::attack(12, 20, WHITE, PAWN, board, empty));
-	EXPECT_TRUE (movegen::attack(19, 12, BLACK, PAWN, board, empty));
+	EXPECT_TRUE(movegen::attack(19, 12, BLACK, PAWN, board, empty));
 	EXPECT_FALSE(movegen::attack(12, 19, BLACK, PAWN, board, empty));
-	EXPECT_TRUE (movegen::attack(12, 3, WHITE, KING, board, empty));
+	EXPECT_TRUE(movegen::attack(12, 3, WHITE, KING, board, empty));
 	EXPECT_FALSE(movegen::attack(12, 14, WHITE, KING, board, empty));
 }
-
 
 TEST(Test_movegen, opens_ray) {
 	const int empty = 7777;
@@ -146,4 +146,119 @@ TEST(Test_movegen, UCItoSAN) {
 		fastboard.fillSANInfo(fullmove);
 		EXPECT_STREQ(*it, fullmove.getSAN().c_str());
 	}
+}
+
+TEST(Test_MaterialCount, material_count) {
+	MaterialCount mt;
+	MaterialCount mt_ref;
+
+	EXPECT_TRUE(mt == mt_ref);
+	EXPECT_FALSE(mt != mt_ref);
+	EXPECT_EQ(0, mt.count(WHITE));
+	EXPECT_EQ(0, mt.count(BLACK));
+	EXPECT_EQ(0, mt.count(WHITE, BISHOP));
+	EXPECT_EQ(0, mt.count(BLACK, BISHOP));
+	EXPECT_EQ(0, mt.count(WHITE, KING));
+	EXPECT_EQ(0, mt.count(BLACK, KING));
+	EXPECT_EQ(0, mt.count(WHITE, KNIGHT));
+	EXPECT_EQ(0, mt.count(BLACK, KNIGHT));
+	EXPECT_EQ(0, mt.count(WHITE, PAWN));
+	EXPECT_EQ(0, mt.count(BLACK, PAWN));
+	EXPECT_EQ(0, mt.count(WHITE, QUEEN));
+	EXPECT_EQ(0, mt.count(BLACK, QUEEN));
+	EXPECT_EQ(0, mt.count(WHITE, ROOK));
+	EXPECT_EQ(0, mt.count(BLACK, ROOK));
+
+	auto change_count = [](auto& obj) {
+		obj.incr(BLACK, ROOK);
+		obj.incr(BLACK, ROOK);
+
+		obj.incr(WHITE, QUEEN);
+		obj.incr(WHITE, QUEEN);
+		obj.decr(WHITE, QUEEN);
+		obj.incr(WHITE, QUEEN);
+		obj.incr(WHITE, QUEEN);
+
+		obj.incr(WHITE, PAWN);
+
+		obj.incr(BLACK, BISHOP);
+		obj.decr(BLACK, BISHOP);
+	};
+
+	change_count(mt);
+	EXPECT_FALSE(mt == mt_ref);
+	EXPECT_TRUE(mt != mt_ref);
+	EXPECT_EQ(4, mt.count(WHITE));
+	EXPECT_EQ(2, mt.count(BLACK));
+	EXPECT_EQ(0, mt.count(WHITE, BISHOP));
+	EXPECT_EQ(0, mt.count(BLACK, BISHOP));
+	EXPECT_EQ(0, mt.count(WHITE, KING));
+	EXPECT_EQ(0, mt.count(BLACK, KING));
+	EXPECT_EQ(0, mt.count(WHITE, KNIGHT));
+	EXPECT_EQ(0, mt.count(BLACK, KNIGHT));
+	EXPECT_EQ(1, mt.count(WHITE, PAWN));
+	EXPECT_EQ(0, mt.count(BLACK, PAWN));
+	EXPECT_EQ(3, mt.count(WHITE, QUEEN));
+	EXPECT_EQ(0, mt.count(BLACK, QUEEN));
+	EXPECT_EQ(0, mt.count(WHITE, ROOK));
+	EXPECT_EQ(2, mt.count(BLACK, ROOK));
+
+	change_count(mt_ref);
+	EXPECT_TRUE(mt == mt_ref);
+	EXPECT_FALSE(mt != mt_ref);
+	EXPECT_EQ(mt_ref.count(WHITE), mt.count(WHITE));
+	EXPECT_EQ(mt_ref.count(BLACK), mt.count(BLACK));
+	EXPECT_EQ(mt_ref.count(WHITE, BISHOP), mt.count(WHITE, BISHOP));
+	EXPECT_EQ(mt_ref.count(BLACK, BISHOP), mt.count(BLACK, BISHOP));
+	EXPECT_EQ(mt_ref.count(WHITE, KING), mt.count(WHITE, KING));
+	EXPECT_EQ(mt_ref.count(BLACK, KING), mt.count(BLACK, KING));
+	EXPECT_EQ(mt_ref.count(WHITE, KNIGHT), mt.count(WHITE, KNIGHT));
+	EXPECT_EQ(mt_ref.count(BLACK, KNIGHT), mt.count(BLACK, KNIGHT));
+	EXPECT_EQ(mt_ref.count(WHITE, PAWN), mt.count(WHITE, PAWN));
+	EXPECT_EQ(mt_ref.count(BLACK, PAWN), mt.count(BLACK, PAWN));
+	EXPECT_EQ(mt_ref.count(WHITE, QUEEN), mt.count(WHITE, QUEEN));
+	EXPECT_EQ(mt_ref.count(BLACK, QUEEN), mt.count(BLACK, QUEEN));
+	EXPECT_EQ(mt_ref.count(WHITE, ROOK), mt.count(WHITE, ROOK));
+	EXPECT_EQ(mt_ref.count(BLACK, ROOK), mt.count(BLACK, ROOK));
+}
+
+TEST(Test_MaterialCount, less_mat) {
+	auto count_pieces = [](const pieceT* board) {
+		MaterialCount mt_count;
+		for (int i = 0; i < 64; ++i) {
+			if (board[i] != EMPTY) {
+				mt_count.incr(piece_Color(board[i]), piece_Type(board[i]));
+			}
+		}
+		return mt_count;
+	};
+
+	Position pos;
+	ASSERT_EQ(OK, pos.ReadFromFEN(
+	                  "2k4r/ppprnp1p/5pq1/1P2b3/P1R1P3/Q1N2N2/5PPP/4K1R1 b"));
+	auto mt_count = count_pieces(pos.GetBoard());
+	auto matSig = matsig_Make(pos.GetMaterial());
+	EXPECT_FALSE(less_mat(mt_count, matSig, true, true));
+	EXPECT_FALSE(less_mat(mt_count, matSig, true, false));
+	EXPECT_FALSE(less_mat(mt_count, matSig, false, true));
+	EXPECT_FALSE(less_mat(mt_count, matSig, false, false));
+
+	mt_count.decr(WHITE, QUEEN);
+	EXPECT_TRUE(less_mat(mt_count, matSig, true, true));
+	EXPECT_TRUE(less_mat(mt_count, matSig, true, false));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, true));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, false));
+
+	mt_count.incr(WHITE, PAWN);
+	EXPECT_FALSE(less_mat(mt_count, matSig, true, true));
+	EXPECT_FALSE(less_mat(mt_count, matSig, true, false));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, true));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, false));
+
+	mt_count.incr(BLACK, PAWN);
+	mt_count.decr(BLACK, KNIGHT);
+	EXPECT_FALSE(less_mat(mt_count, matSig, true, true));
+	EXPECT_TRUE(less_mat(mt_count, matSig, true, false));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, true));
+	EXPECT_TRUE(less_mat(mt_count, matSig, false, false));
 }

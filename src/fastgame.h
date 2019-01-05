@@ -29,9 +29,58 @@
 #include <sstream>
 #include <string>
 
+/// Store the number of pieces for each type and color.
+class MaterialCount {
+	int8_t n_[2][8] = {};
+
+public:
+	/// Add one piece.
+	void incr(colorT color, pieceT piece_type) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(piece_type > 0 && piece_type < 8);
+
+		++n_[color][0];
+		++n_[color][piece_type];
+	}
+
+	/// Subtract one piece.
+	void decr(colorT color, pieceT piece_type) {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(piece_type > 0 && piece_type < 8);
+
+		--n_[color][0];
+		--n_[color][piece_type];
+	}
+
+	/// Return the total number of pieces of the specified color.
+	int8_t count(colorT color) const {
+		ASSERT(color == 0 || color == 1);
+
+		return n_[color][0];
+	}
+
+	/// Return the number of pieces of the specified color and type.
+	int8_t count(colorT color, pieceT piece_type) const {
+		ASSERT(color == 0 || color == 1);
+		ASSERT(piece_type > 0 && piece_type < 8);
+
+		return n_[color][piece_type];
+	}
+
+	bool operator==(const MaterialCount& b) const {
+		const int8_t* a = n_[0];
+		const int8_t* b_ptr = b.n_[0];
+		return std::equal(a, a + 16, b_ptr);
+	}
+
+	bool operator!=(const MaterialCount& b) const {
+		return !operator==(b);
+	}
+};
+
 class FastBoard {
 	uint8_t board_[64];
-	uint8_t nPieces_[2][8];
+	MaterialCount mt_;
 	struct P_LIST {
 		squareT sq;
 		pieceT piece;
@@ -51,43 +100,37 @@ public:
 
 	void Init(Position& pos) {
 		std::fill_n(board_, 64, EMPTY_SQ_);
-		std::fill_n(nPieces_[WHITE], 8, 0);
-		std::fill_n(nPieces_[BLACK], 8, 0);
 
-		nPieces_[WHITE][0] = pos.GetCount(WHITE);
-		for (uint8_t i = 0, n = nPieces_[WHITE][0]; i < n; ++i) {
+		for (uint8_t i = 0, n = pos.GetCount(WHITE); i < n; ++i) {
 			squareT sq = pos.GetList(WHITE)[i];
-			pieceT piece = piece_Type(pos.GetBoard()[sq]);
+			pieceT piece = piece_Type(pos.GetPiece(sq));
 			ASSERT(piece != KING || i == KING_IDX_);
 			list[WHITE][i].sq = sq;
 			list[WHITE][i].piece = piece;
 			board_[sq] = i;
-			nPieces_[WHITE][piece] += 1;
+			mt_.incr(WHITE, piece);
 		}
 
-		nPieces_[BLACK][0] = pos.GetCount(BLACK);
-		for (uint8_t i = 0, n = nPieces_[BLACK][0]; i < n; ++i) {
+		for (uint8_t i = 0, n = pos.GetCount(BLACK); i < n; ++i) {
 			squareT sq = pos.GetList(BLACK)[i];
-			pieceT piece = piece_Type(pos.GetBoard()[sq]);
+			pieceT piece = piece_Type(pos.GetPiece(sq));
 			ASSERT(piece != KING || i == KING_IDX_);
 			list[BLACK][i].sq = sq;
 			list[BLACK][i].piece = piece;
 			board_[sq] = i;
-			nPieces_[BLACK][piece] += 1;
+			mt_.incr(BLACK, piece);
 		}
 	}
 
-	bool isEqual(const pieceT* board, const uint8_t* nPiecesW, const uint8_t* nPiecesB) const {
-		if (!std::equal(nPiecesW, nPiecesW + 8, nPieces_[WHITE]))
-			return false;
-		if (!std::equal(nPiecesB, nPiecesB + 8, nPieces_[BLACK]))
+	bool isEqual(const pieceT* board, const MaterialCount& mt_count) const {
+		if (mt_ != mt_count)
 			return false;
 
-		for (int i=0, n = nPieces_[WHITE][0]; i < n; i++) {
+		for (int i=0, n = mt_.count(WHITE); i < n; i++) {
 			const P_LIST* p = & list[WHITE][i];
 			if (board[p->sq] != piece_Make(WHITE, p->piece)) return false;
 		}
-		for (int i=0, n = nPieces_[BLACK][0]; i < n; i++) {
+		for (int i=0, n = mt_.count(BLACK); i < n; i++) {
 			const P_LIST* p = & list[BLACK][i];
 			if (board[p->sq] != piece_Make(BLACK, p->piece)) return false;
 		}
@@ -105,9 +148,14 @@ public:
 	}
 
 	template <colorT color>
-	uint8_t getCount(pieceT p = 0) const {
+	uint8_t getCount() const {
+		return mt_.count(color);
+	}
+
+	template <colorT color>
+	uint8_t getCount(pieceT p) const {
 		ASSERT(p < 8);
-		return nPieces_[color][p];
+		return mt_.count(color, p);
 	}
 
 	template <colorT color>
@@ -126,8 +174,8 @@ public:
 	pieceT move(uint8_t idx, squareT to, pieceT promo) {
 		if (promo != INVALID_PIECE) {
 			list[color][idx].piece = promo;
-			nPieces_[color][PAWN] -= 1;
-			nPieces_[color][promo] += 1;
+			mt_.incr(color, promo);
+			mt_.decr(color, PAWN);
 		}
 		board_[list[color][idx].sq] = EMPTY_SQ_;
 		list[color][idx].sq = to;
@@ -141,15 +189,15 @@ public:
 		if (oldIdx == EMPTY_SQ_)
 			return INVALID_PIECE;
 
-		pieceT res = list[color][oldIdx].piece;
-		nPieces_[color][res] -= 1;
-		nPieces_[color][0] -= 1;
-		if (oldIdx != nPieces_[color][0]) {
-			list[color][oldIdx] = list[color][nPieces_[color][0]];
+		pieceT removed_pt = list[color][oldIdx].piece;
+		mt_.decr(color, removed_pt);
+		int lastvalid_idx = mt_.count(color);
+		if (oldIdx != lastvalid_idx) {
+			list[color][oldIdx] = list[color][lastvalid_idx];
 			ASSERT(list[color][oldIdx].sq != sq);
 			board_[list[color][oldIdx].sq] = oldIdx;
 		}
-		return res;
+		return removed_pt;
 	}
 
 	/**
@@ -167,17 +215,17 @@ public:
 		if (lastPt == PAWN) {
 			if (lastmove.isPromo())
 				lastPt = lastmove.getPromo();
-		} else if (nPieces_[lastCol][lastPt] > 1) {
+		} else if (mt_.count(lastCol, lastPt) > 1) {
 			int ambiguity = ambiguousMove(lastFrom, lastTo, lastCol, lastPt);
 			if (ambiguity)
 				lastmove.setAmbiguity(ambiguity != 5, ambiguity >= 5);
 		}
 
 		// Look for checks
-		ASSERT(nPieces_[WHITE][0] >= 1 && nPieces_[BLACK][0] >= 1);
+		ASSERT(mt_.count(WHITE) >= 1 && mt_.count(BLACK) >= 1);
 
 		squareT enemyKingSq = list[color_Flip(lastCol)][0].sq;
-		const P_LIST* piecesEnd = list[lastCol] + nPieces_[lastCol][0];
+		const P_LIST* piecesEnd = list[lastCol] + mt_.count(lastCol);
 		bool direct_check = lastPt != KING && movegen::attack<uint8_t>(
 		                                          lastTo, enemyKingSq, lastCol,
 		                                          lastPt, board_, EMPTY_SQ_);
@@ -200,7 +248,7 @@ private:
 
 		squareT kingSq = list[lastCol][0].sq;
 		colorT enemyCol = color_Flip(lastCol);
-		for (size_t i = 1, n = nPieces_[lastCol][0]; i < n; i++) {
+		for (size_t i = 1, n = mt_.count(lastCol); i < n; i++) {
 			if (list[lastCol][i].piece != lastPt)
 				continue; // Skip: different type
 
@@ -226,7 +274,7 @@ private:
 
 			if (pin.first != INVALID_PIECE) {
 				uint8_t idx = board_[pin.second];
-				if (idx != EMPTY_SQ_ && idx < nPieces_[enemyCol][0] &&
+				if (idx != EMPTY_SQ_ && idx < mt_.count(enemyCol) &&
 				    list[enemyCol][idx].sq == pin.second) {
 					pieceT pt = list[enemyCol][idx].piece;
 					if (pt == QUEEN || pt == pin.first)
@@ -344,17 +392,17 @@ public:
 	}
 
 	template <colorT toMove>
-	int search(const byte* board, const uint8_t (&nPieces) [2][8]) {
+	int search(const byte* board, const MaterialCount& mt_count) {
 		int ply = 1;
 		Dummy dummy;
-		MinPieces minP(nPieces);
+		MinPieces minP(mt_count);
 
 		if (cToMove_ != toMove) {
 			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
 			ply += 1;
 		}
 		for (;;) {
-			if (board_.isEqual(board, nPieces[WHITE], nPieces[BLACK])) return ply;
+			if (board_.isEqual(board, mt_count)) return ply;
 			if (! DecodeNextMove<toMove>(dummy, minP)) return 0;
 			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
 			ply += 2;
@@ -534,11 +582,12 @@ private:
 	};
 
 	class MinPieces{
-		const uint8_t (&m_)[2][8];
+		const MaterialCount& mt_;
 	public:
-		MinPieces(const uint8_t (&m)[2][8]) : m_(m) {}
+		MinPieces(const MaterialCount& mt) : mt_(mt) {}
 		bool operator()(colorT col, pieceT p, uint8_t tot, uint8_t p_count) const {
-			return (tot >= m_[col][0] && p_count >= (m_[col][PAWN] + m_[col][p]));
+			return (tot >= mt_.count(col) &&
+			        p_count >= (mt_.count(col, PAWN) + mt_.count(col, p)));
 		}
 	};
 

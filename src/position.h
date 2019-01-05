@@ -199,6 +199,11 @@ public:
         return Board;
     }
 
+    pieceT GetPiece(squareT sq) const {
+        ASSERT(sq < 64);
+        return Board[sq];
+    }
+
     // Other one-line methods
     squareT     GetKingSquare (colorT c)  { return List[c][0]; }
     squareT     GetKingSquare ()          { return List[ToMove][0]; }
