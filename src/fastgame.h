@@ -201,6 +201,10 @@ public:
 		return true;
 	}
 
+	const MaterialCount& materialCount() const {
+		return mt_;
+	}
+
 	squareT getSquare(colorT color, int idx) const {
 		return pieces_.getSquare(color, idx);
 	}
@@ -209,19 +213,19 @@ public:
 		return pieces_.getPieceType(color, idx);
 	}
 
-	template <colorT color>
-	uint8_t getCount() const {
-		return mt_.count(color);
-	}
-
-	template <colorT color>
-	uint8_t getCount(pieceT p) const {
-		ASSERT(p < 8);
-		return mt_.count(color, p);
-	}
-
-	template <colorT color>
-	void castle(squareT king_to, squareT rook_from, squareT rook_to) {
+	// TODO: error detection
+	template <colorT color> squareT castle(bool king_side) {
+		const squareT black = (color == WHITE) ? 0 : 56;
+		squareT king_to, rook_from, rook_to;
+		if (king_side) { // King Side
+			king_to = black + G1;
+			rook_from = black + H1;
+			rook_to = black + F1;
+		} else { // Queen Side
+			king_to = black + C1;
+			rook_from = black + A1;
+			rook_to = black + D1;
+		}
 		const uint8_t rook_idx = board_[rook_from];
 		const auto king_idx = pieces_.getKingIdx();
 		const squareT king_from = pieces_.getSquare(color, king_idx);
@@ -231,6 +235,7 @@ public:
 		board_[king_to] = king_idx;
 		board_[rook_from] = EMPTY_SQ_;
 		board_[king_from] = EMPTY_SQ_;
+		return rook_from;
 	}
 
 	template <colorT color>
@@ -416,13 +421,11 @@ public:
 
 	FullMove getMove(int ply_to_skip) {
 		FullMove move;
-		Dummy dummy;
-
 		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
 			if (cToMove_ == WHITE) {
-				if (! DecodeNextMove <WHITE>(move, dummy)) break;
+				if (DecodeNextMove <WHITE>(move) < 0) break;
 			} else {
-				if (! DecodeNextMove <BLACK>(move, dummy)) break;
+				if (DecodeNextMove <BLACK>(move) < 0) break;
 			}
 
 			if (ply == ply_to_skip) {
@@ -436,16 +439,15 @@ public:
 
 	std::string getMoveSAN(int ply_to_skip, int count) {
 		std::stringstream res;
-		Dummy dummy;
 		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
-				if (! DecodeNextMove <WHITE>(move, dummy)) break;
+				if (DecodeNextMove <WHITE>(move) < 0) break;
 				if (ply < ply_to_skip) continue;
 				if (ply > ply_to_skip) res << "  ";
 				res << (1 + ply/2) << ".";
 			} else {
-				if (! DecodeNextMove <BLACK>(move, dummy)) break;
+				if (DecodeNextMove <BLACK>(move) < 0) break;
 				if (ply < ply_to_skip) continue;
 				if (ply == ply_to_skip) res << (1 + ply/2) << "...";
 				else res << " ";
@@ -460,16 +462,38 @@ public:
 	int search(const byte* board, const MaterialCount& mt_count) {
 		int ply = 1;
 		Dummy dummy;
-		MinPieces minP(mt_count);
+		auto less_material = [](const MaterialCount& a, const MaterialCount& b,
+		                        colorT color, pieceT piece_type) {
+			if (a.count(color) < b.count(color))
+				return true;
+
+			return a.count(color, PAWN) + a.count(color, piece_type) <
+			       b.count(color, PAWN) + b.count(color, piece_type);
+		};
 
 		if (cToMove_ != toMove) {
-			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
+			if (DecodeNextMove<1 - toMove>(dummy) < 0) return 0;
 			ply += 1;
 		}
 		for (;;) {
 			if (board_.isEqual(board, mt_count)) return ply;
-			if (! DecodeNextMove<toMove>(dummy, minP)) return 0;
-			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
+
+			int captured_pt = DecodeNextMove<toMove>(dummy);
+			if (captured_pt < 0)
+				return 0;
+			if (captured_pt != INVALID_PIECE &&
+			    less_material(board_.materialCount(), mt_count, 1 - toMove,
+			                  captured_pt))
+				return 0;
+
+			captured_pt = DecodeNextMove<1 - toMove>(dummy);
+			if (captured_pt < 0)
+				return 0;
+			if (captured_pt != INVALID_PIECE &&
+			    less_material(board_.materialCount(), mt_count, toMove,
+			                  captured_pt))
+				return 0;
+
 			ply += 2;
 		}
 		return 0;
@@ -489,91 +513,96 @@ private:
 		cToMove_ = StartPos.GetToMove();
 	}
 
-	template <colorT toMove, typename P1, typename P2>
-	inline bool DecodeNextMove(P1& p1, const P2& p2) {
+	template <colorT toMove, typename P1>
+	inline int DecodeNextMove(P1& p1) {
 		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER, ENCODE_END_GAME };
 		enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
 
 		while (v_it_ < v_end_) {
 			byte b = *v_it_++;
-			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, p1, p2);
-			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return false;
+			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, p1);
+			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return -1;
 			if (b == ENCODE_NAG) {v_it_++; continue; }
 			if (b == ENCODE_START_MARKER) {
 				uint nestCount = 1;
 				do {
-					if (v_it_ >= v_end_) return false;
+					if (v_it_ >= v_end_) return -1;
 					switch (*v_it_++) {
 					case ENCODE_NAG: v_it_++; break;
 					case ENCODE_START_MARKER: nestCount++; break;
 					case ENCODE_END_MARKER: nestCount--; break;
-					case ENCODE_END_GAME: return false;
+					case ENCODE_END_GAME: return -1;
 					}
 				} while (nestCount > 0);
 			}
 		}
-		return false;
+		return -1;
 	}
 
-	template <colorT toMove, typename P1, typename P2>
-	inline bool doPly(byte v, P1& lastMove, const P2& minPieces) {
+	template <colorT toMove, typename P1>
+	inline int doPly(byte v, P1& lastMove) {
 		byte idx_piece_moving = v >> 4;
 		byte move = v & 0x0F;
 		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
 		squareT from = board_.getSquare(toMove, idx_piece_moving);
-		squareT to;
+		int to;
 		pieceT promo = INVALID_PIECE;
 		bool enPassant = false;
 		switch (moving_piece) {
-			case PAWN: 	 to = decodePawn<toMove>(from, move, promo, enPassant); break;
-			case BISHOP: to = decodeBishop(from, move); break;
-			case KNIGHT: to = decodeKnight(from, move); break;
-			case ROOK:   to = decodeRook(from, move); break;
-			case QUEEN:
-				if (move != square_Fyle(from)) to = decodeRook(from, move);
-				else if (v_it_ < v_end_) to = decodeQueen2byte(*v_it_++);
-				else return false;
+		case PAWN:
+			to = decodePawn<toMove>(from, move, promo, enPassant);
+			break;
+		case BISHOP:
+			to = decodeBishop(from, move);
+			break;
+		case KNIGHT:
+			to = decodeKnight(from, move);
+			break;
+		case QUEEN:
+			if (move == square_Fyle(from)) { // 2 BYTES MOVE
+				if (v_it_ >= v_end_)
+					return -1; // decode error
+
+				to = decodeQueen2byte(*v_it_++);
 				break;
-			default: // Default to KING
-				if (move == 0) { // NULL MOVE
-					lastMove.reset(toMove, KING, 0, 0);
-					return true;
-				}
-				if (move > 8) { // CASTLE
-					const squareT black = (toMove == WHITE) ? 0 : 56;
-					squareT king_to, rook_from, rook_to;
-					if (move == 10) { // King Side
-						king_to = black + G1;
-						rook_from = black + H1;
-						rook_to = black + F1;
-					} else { // Queen Side
-						king_to = black + C1;
-						rook_from = black + A1;
-						rook_to = black + D1;
-					}
-					const byte king_idx = 0;
-					const squareT king_from = board_.getSquare(toMove, king_idx);
-					lastMove.resetCastle(toMove, king_from, rook_from);
-					board_.castle<toMove>(king_to, rook_from, rook_to);
-					// ClearCastlingRights;
-					return true;
-				}
+			}
+			/* FALLTHRU */
+		case ROOK:
+			to = decodeRook(from, move);
+			break;
+		case KING:
+			if (move == 0) { // NULL MOVE
+				lastMove.reset(toMove, KING, 0, 0);
+				return INVALID_PIECE;
+			}
+			if (move <= 8) {
 				to = decodeKing(from, move);
+				break;
+			}
+			if (move <= 10) { // CASTLE
+				const squareT rook_from = board_.castle<toMove>(move == 10);
+				lastMove.resetCastle(toMove, from, rook_from);
+				return INVALID_PIECE;
+			}
+			return -1; // decode error
+
+		default:
+			return -1; // decode error
 		}
 
+		if (to < 0 || to > 63)
+			return -1; // decode error
+
+		pieceT captured = board_.move<toMove>(idx_piece_moving, to, promo);
 		lastMove.reset(toMove, moving_piece, from, to, promo);
-		const colorT enemy = 1 - toMove;
-		pieceT captured = board_.move<toMove> (idx_piece_moving, to, promo);
-		if (captured == INVALID_PIECE) {
-			if (!enPassant) return true;
-			captured = PAWN;
+		if (captured != INVALID_PIECE) {
+			lastMove.setCapture(captured, false);
+		} else if (enPassant) {
 			squareT sq = (toMove == WHITE) ? to - 8 : to + 8;
-			board_.remove<enemy>(0x3F & sq);
+			captured = board_.remove<1 - toMove>(0x3F & sq);
+			lastMove.setCapture(captured, true);
 		}
-		lastMove.setCapture(captured, enPassant);
-
-		return minPieces(enemy, captured, board_.getCount<enemy>(),
-			board_.getCount<enemy>(PAWN) + board_.getCount<enemy>(captured));
+		return captured;
 	}
 
 	/**
@@ -591,72 +620,50 @@ private:
 	 * - Release code will force the returned valid to be a valid [0-63] square
 	 *   but, for performance reasons, do not report invalid encoded moves.
 	 */
-	static inline squareT square_forceValid(int sq) {
-		ASSERT(sq >= 0 && sq <= 63);
-		return 0x3F & static_cast<squareT>(sq);
-	}
-	static inline squareT decodeKing(squareT from, byte val) {
+	static inline int decodeKing(squareT from, byte val) {
 		ASSERT(val <= 8);
-		static const int sqdiff[] = {0, -9, -8, -7, -1, 1, 7, 8, 9};
-		int to = static_cast<int>(from) + sqdiff[val];
-		return square_forceValid(to);
+		static const int8_t sqdiff[] = {0, -9, -8, -7, -1, 1, 7, 8, 9};
+		return from + sqdiff[val];
 	}
-	static inline squareT decodeQueen2byte(byte val) {
-		int to = static_cast<int>(val) - 64;
-		return square_forceValid(to);
+	static inline int decodeQueen2byte(byte val) {
+		return val - 64;
 	}
-	static inline squareT decodeBishop(squareT from, byte val) {
-		int fylediff = static_cast<int>(square_Fyle(val)) -
-		               static_cast<int>(square_Fyle(from));
-		int to = (val >= 8) ? static_cast<int>(from) - 7 * fylediff
-		                    : static_cast<int>(from) + 9 * fylediff;
-		return square_forceValid(to);
+	static inline int decodeBishop(squareT from, byte val) {
+		int fylediff = square_Fyle(val) - square_Fyle(from);
+		return (val >= 8) ? from - 7 * fylediff //
+		                  : from + 9 * fylediff;
 	}
-	static inline squareT decodeKnight(squareT from, byte val) {
+	static inline int decodeKnight(squareT from, byte val) {
 		ASSERT(val <= 16);
-		static const int sqdiff[] = {0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0};
-		int to = static_cast<int>(from) + sqdiff[val];
-		return square_forceValid(to);
+		static const int8_t sqdiff[] = {0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0};
+		return from + sqdiff[val];
 	}
-	static inline squareT decodeRook(squareT from, byte val) {
+	static inline int decodeRook(squareT from, byte val) {
 		ASSERT(val <= 16);
-		if (val >= 8)
+		if (val >= 8) // vertical move
 			return square_Make(square_Fyle(from), (val - 8));
-		else
+		else // horizontal move
 			return square_Make(val, square_Rank(from));
 	}
 	template <colorT color>
-	static inline squareT decodePawn(squareT from, byte val, pieceT& promo,
-	                                 bool& enPassant) {
+	static inline int decodePawn(squareT from, byte val, pieceT& promo,
+	                             bool& enPassant) {
 		ASSERT(val <= 16);
-		static const int sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
+		static const int8_t sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
 		static const pieceT promoPieceFromVal [] = {
 			0,0,0,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK, BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,0
 		};
 		promo = promoPieceFromVal[val];
 		enPassant = (val == 0 || val == 2);
-		int to = (color == WHITE) ? static_cast<int>(from) + sqdiff[val]
-		                          : static_cast<int>(from) - sqdiff[val];
-		return square_forceValid(to);
+		return (color == WHITE) ? from + sqdiff[val] //
+		                        : from - sqdiff[val];
 	}
 
 	struct Dummy {
 		void reset(colorT, pieceT, squareT, squareT, pieceT = 0) {}
 		void resetCastle(colorT, squareT, squareT) {}
 		void setCapture(pieceT, bool) {}
-		bool operator()(colorT, pieceT, uint8_t, uint8_t) const { return true; }
 	};
-
-	class MinPieces{
-		const MaterialCount& mt_;
-	public:
-		MinPieces(const MaterialCount& mt) : mt_(mt) {}
-		bool operator()(colorT col, pieceT p, uint8_t tot, uint8_t p_count) const {
-			return (tot >= mt_.count(col) &&
-			        p_count >= (mt_.count(col, PAWN) + mt_.count(col, p)));
-		}
-	};
-
 };
 
 
