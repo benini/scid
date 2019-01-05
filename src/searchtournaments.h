@@ -1,5 +1,5 @@
 /*
-# Copyright (C) 2015 Fulvio Benini
+* Copyright (C) 2015-2019 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -21,9 +21,9 @@
 
 #include "common.h"
 #include "misc.h"
-#include <vector>
 #include <algorithm>
-
+#include <numeric>
+#include <vector>
 
 /**
  * class TourneyGame - Private class used by Tourney and SearchTournaments
@@ -40,8 +40,7 @@ struct TourneyGame {
 	gamenumT  gnum_;
 	resultT   result_;
 
-	TourneyGame(const IndexEntry* ie, gamenumT gnum)
-	: gnum_ (gnum) {
+	TourneyGame(const IndexEntry* ie, gamenumT gnum) {
 		siteID_ = ie->GetSite();
 		eventID_ = ie->GetEvent();
 		eventDate_ = ie->GetEventDate();
@@ -49,11 +48,11 @@ struct TourneyGame {
 		blackID_ = ie->GetBlack();
 		wElo_ = ie->GetWhiteElo();
 		bElo_ = ie->GetBlackElo();
-		result_ = ie->GetResult();
 		date_ = ie->GetDate();
+		gnum_ = gnum;
+		result_ = ie->GetResult();
 	}
 };
-
 
 /**
  * class Tourney - Calculate information about a tournament
@@ -64,54 +63,53 @@ struct TourneyGame {
  *     the range of TourneyGame refs should not be empty
  */
 class Tourney {
-	typedef std::vector<TourneyGame>::const_iterator Iter;
-
 public:
+	template <typename Iter>
 	Tourney(Iter begin, Iter end)
-	: begin_(begin), end_(end), minDateGame_(begin) {
-		ASSERT(begin_ != end_);
+	    : begin_(begin), minDateGame_(begin) {
+		ASSERT(begin != end);
 
-		for (Iter it = begin_; it != end_; it++) {
-			size_t idxW = addPlayer(it->whiteID_);
-			size_t idxB = addPlayer(it->blackID_);
-			players_[idxW].elo = std::max(players_[idxW].elo, it->wElo_);
-			players_[idxB].elo = std::max(players_[idxB].elo, it->bElo_);
-			switch (it->result_) {
-				case RESULT_White:
-					players_[idxW].score += 2;
-					break;
-				case RESULT_Black:
-					players_[idxB].score += 2;
-					break;
-				case RESULT_Draw:
-					players_[idxW].score++;
-					players_[idxB].score++;
-					break;
-			}
+		n_games_ = static_cast<gamenumT>(std::distance(begin, end));
+
+		for (auto it = begin; it != end; it++) {
+			auto& white = add_player(it->whiteID_, it->wElo_);
+			white.score += RESULT_SCORE[it->result_];
+			auto& black = add_player(it->blackID_, it->bElo_);
+			black.score += RESULT_SCORE[RESULT_OPPOSITE[it->result_]];
 
 			if (it->date_ < minDateGame_->date_) minDateGame_ = it;
 		}
+		std::sort(players_.begin(), players_.end(), // SortScoreDesc
+		          [](auto& a, auto& b) { return a.score > b.score; });
 
-		std::sort(players_.begin(), players_.end(), SortScoreDesc());
-
-		avgElo_ = calcAvgElo();
+		const auto eloSum = std::accumulate(players_.begin(), players_.end(),
+		                                    std::make_pair(0ull, gamenumT{0}),
+		                                    [](auto res, const auto& player) {
+			                                    if (player.elo != 0) {
+				                                    res.first += player.elo;
+				                                    ++res.second;
+			                                    }
+			                                    return res;
+		                                    });
+		avgElo_ = (eloSum.second == 0)
+		              ? 0
+		              : static_cast<unsigned>(eloSum.first / eloSum.second);
 	}
 
 	idNumberT getEventId() const { return begin_->eventID_; }
 	idNumberT getSiteId() const { return begin_->siteID_; }
-	dateT     getStartDate() const { return minDateGame_->date_; }
-	gamenumT  getStartGameNum() const { return minDateGame_->gnum_; }
-	uint      getAvgElo() const { return avgElo_; }
-	uint      nGames() const { return std::distance(begin_, end_); }
-	uint      nPlayers() const { return players_.size(); }
+	dateT getStartDate() const { return minDateGame_->date_; }
+	gamenumT getStartGameNum() const { return minDateGame_->gnum_; }
+	unsigned getAvgElo() const { return avgElo_; }
+	gamenumT nGames() const { return n_games_; }
+	unsigned nPlayers() const { return static_cast<unsigned>(players_.size()); }
 
 	struct Player {
 		idNumberT nameId;
 		uint16_t score;
 		eloT elo;
 
-		explicit Player(idNumberT id) : nameId(id), score(0), elo(0) {}
-		bool operator==(idNumberT id) {	return nameId == id; }
+		bool operator==(idNumberT id) const { return nameId == id; }
 	};
 	const Player& getPlayer(size_t position) const {
 		ASSERT(position < players_.size());
@@ -120,38 +118,20 @@ public:
 
 private:
 	std::vector<TourneyGame>::const_iterator begin_;
-	std::vector<TourneyGame>::const_iterator end_;
 	std::vector<TourneyGame>::const_iterator minDateGame_;
 	std::vector<Player> players_;
-	eloT avgElo_;
+	gamenumT n_games_;
+	unsigned avgElo_;
 
-	size_t addPlayer(idNumberT playerID) {
-		std::vector<Player>::iterator it_begin = players_.begin();
-		std::vector<Player>::iterator it_end = players_.end();
-		std::vector<Player>::iterator it = std::find(it_begin, it_end, playerID);
-		size_t res = std::distance(it_begin, it);
-		if (it == it_end) players_.push_back(Player(playerID));
-		return res;
-	};
-
-	uint calcAvgElo() const {
-		uint sum = 0;
-		uint n = 0;
-		std::vector<Player>::const_iterator it = players_.begin();
-		std::vector<Player>::const_iterator it_end = players_.end();
-		for (; it != it_end; it++) {
-			if (it->elo != 0) {
-				sum += it->elo;
-				n++;
-			}
+	Player& add_player(idNumberT nameID, eloT elo) {
+		auto it = std::find(players_.begin(), players_.end(), nameID);
+		if (it != players_.end()) {
+			if (elo > it->elo)
+				it->elo = elo;
+			return *it;
 		}
-		return (n != 0) ? sum / n : 0;
-	}
-
-	struct SortScoreDesc {
-		bool operator()(const Tourney::Player& a, const Tourney::Player& b) {
-			return a.score > b.score;
-		}
+		players_.push_back({nameID, 0, elo});
+		return players_.back();
 	};
 };
 
