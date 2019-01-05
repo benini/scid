@@ -65,10 +65,17 @@ namespace eval tactics {
                 sc_filter search $baseId $filter header -filter AND -site "\"$::tactics::solved\""
                 set solvedCount [sc_filter count $baseId $filter]
 
-                set line [list [file tail $fname] [sc_base extra $baseId description] $solvedCount $nTactics]
+                set desc {}
+                foreach {tagname tagvalue} [sc_base extra $baseId] {
+                    if {$tagname eq "description"} {
+                        set desc $tagvalue
+                        break
+                    }
+                }
+                set line [list [file tail $fname] $desc $solvedCount $nTactics]
 
                 set pos "end"
-                if {[sc_base extra $baseId type] == 15} {
+                if {[getBaseType $baseId] == 15} {
                     if {![info exists nTactBases]} {
                         set nTactBases -1
                         set valid $fname

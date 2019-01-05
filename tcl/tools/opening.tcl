@@ -91,7 +91,7 @@ namespace eval opening {
     set typeWB [lsearch $base_types {Openings for either color} ]
     
     foreach x [sc_base list] {
-      set type [sc_base extra $x type]
+      set type [getBaseType $x]
       if {$type == $typeW && $repColor == "w" || $type == $typeB && $repColor == "b" || $type == $typeWB && $repColor == "wb"} {
         set repBase  $x
         break
@@ -106,7 +106,7 @@ namespace eval opening {
     
     set prevBase [sc_base current]
     if {$prevBase != $repBase} { sc_base switch $repBase }
-    loadRep "$repBase - [sc_base filename $repBase]" "[sc_base extra $repBase description]"
+    loadRep "$repBase - [sc_base filename $repBase]"
     if {$prevBase != $repBase} {
       sc_base switch $prevBase
     } else  {
@@ -138,7 +138,7 @@ namespace eval opening {
   # Go through all games and variations and build a tree of positions encountered
   #
   ################################################################################
-  proc loadRep { name desc } {
+  proc loadRep { name } {
     global ::opening::repBase ::opening::fenMovesEvalList ::opening::allLinesFenList \
         ::opening::allLinesHashList ::opening::hashList ::opening::onlyFlaggedLines \
         ::opening::movesLoaded ::opening::cancelLoadRepertoire
@@ -158,7 +158,7 @@ namespace eval opening {
       set fenMovesEvalList {}
       set hashList  {}
       sc_game load $g
-      changeProgressWindow "$::tr(Loadingrepertoire)...\n$name\n$desc\n$::tr(Movesloaded) $movesLoaded"
+      changeProgressWindow "$::tr(Loadingrepertoire)...\n$name\n$::tr(Movesloaded) $movesLoaded"
       updateProgressWindow $g [sc_base numGames $::curr_db]
       parseGame
       lappend allLinesFenList $fenMovesEvalList

@@ -95,8 +95,12 @@ proc ::file::Open {{fName ""}} {
     set ::curr_db $::file::lastOpened
     ::windows::gamelist::Open $::curr_db
     ::notify::DatabaseChanged
-    set g [sc_base extra $::curr_db autoload]
-    if {$g != 0} { ::game::Load $g 0 }
+    foreach {tagname tagvalue} [sc_base extra $::curr_db] {
+      if {$tagname eq "autoload" && $tagvalue != 0} {
+        ::game::Load $tagvalue 0
+        break
+      }
+    }
     ::notify::GameChanged
   }
   return $err

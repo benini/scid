@@ -497,6 +497,15 @@ set numBaseTypeIcons [llength $::windows::switcher::base_types]
 
 set temp_dbtype 0
 
+proc getBaseType {baseId} {
+  foreach {tagname tagvalue} [sc_base extra $baseId] {
+    if {$tagname eq "type"} {
+      return $tagvalue
+    }
+  }
+  return 0
+}
+
 proc selectBaseType {type} {
   global temp_dbtype
   set w .btypeWin
@@ -520,7 +529,7 @@ proc clickBaseType {x y} {
 proc changeBaseType {baseNum} {
   global temp_dbtype ::windows::switcher::base_types numBaseTypeIcons
   if {$baseNum > [sc_info limit bases]} { return }
-  set temp_dbtype [sc_base extra $baseNum type]
+  set temp_dbtype [getBaseType $baseNum]
   if {$temp_dbtype >= $numBaseTypeIcons} { set temp_dbtype 0 }
   set w .btypeWin
   win::createDialog $w
@@ -729,7 +738,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
 
 #      $w.c.f$i configure -background $color
       if {$icons} {
-        set dbtype [sc_base extra $i type]
+        set dbtype [getBaseType $i]
         if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }
         $w.c.f$i.img configure -image dbt$dbtype -background $color
 		grid $w.c.f$i.img -row 0 -column 0 -rowspan 2

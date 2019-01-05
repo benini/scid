@@ -49,6 +49,13 @@ public: // ICodecDatabase interface
 		return std::vector<std::string>();
 	}
 
+	std::vector<std::pair<const char*, std::string>>
+	getExtraInfo() const override {
+		std::vector<std::pair<const char*, std::string>> res;
+		res.emplace_back("type", std::to_string(idx_->GetType()));
+		return res;
+	}
+
 	const byte* getGameData(uint64_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);

@@ -98,11 +98,9 @@ proc ::maint::OpenClose {} {
   ttk::label $w.title.vname -text "0" -font font_Bold
   ttk::label $w.title.icon
   ttk::button $w.title.vicon -command {changeBaseType [sc_base current]}
-  ttk::button $w.title.help -image tb_help -command {helpWindow Maintenance}
   grid $w.title.vicon -rowspan 2 -padx "0 10"
   grid $w.title.name -row 0 -column 1 -sticky w
   grid $w.title.vname -row 1 -column 1 -sticky nw
-  grid $w.title.help -row 0 -rowspan 2 -column 2 -sticky ne
   grid columnconfigure $w.title 1 -weight 1
 
   ttk::frame $w.stats
@@ -194,16 +192,8 @@ proc ::maint::OpenClose {} {
   ttk::menubutton $w.dm.mark.title -menu $w.dm.mark.title.m
   menu $w.dm.mark.title.m -font $font
   
-  set i 0
   foreach flag $maintFlaglist  {
-    if {$i < 12} {
-      $w.dm.mark.title.m add command -label "$::tr($maintFlags($flag)) ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
-    } else  {
-      set tmp [sc_base extra $::curr_db flag$flag]
-      if {$tmp == "" } { set tmp $maintFlags($flag) }
-      $w.dm.mark.title.m add command -label "$tmp ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
-    }
-    incr i
+      $w.dm.mark.title.m add command -label $flag -command "set maintFlag $flag; ::maint::Refresh"
   }
   
   foreach flag {delete mark} on {Delete Mark} off {Undelete Unmark} {
@@ -290,15 +280,6 @@ proc ::maint::saveCustomFlags {w} {
       set desc [$w.customFlags.text$i get]
       sc_base extra $::curr_db flag$i $desc
     }
-    
-    # update the drop down menu of maint window and the menu of GameInfo window
-    for {set idx 12} {$idx < 18} {incr idx} {
-      set flag [ lindex $::maintFlaglist $idx]
-      set tmp [sc_base extra $::curr_db flag$flag]
-      if {$tmp == "" } { set tmp $::maintFlags($flag) }
-      .maintWin.dm.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
-    }
-    
     ::maint::Refresh
 }
 
@@ -315,7 +296,7 @@ proc ::maint::Refresh {} {
   set marked [sc_base stats $::curr_db flag $maintFlag]
   set flags [sc_base stats $::curr_db flags]
   set ratings [sc_base stats $::curr_db ratings]
-  $w.title.vicon configure -image dbt[sc_base extra $::curr_db type]
+  $w.title.vicon configure -image dbt0
   $w.title.vname configure -text [file tail [sc_base filename $::curr_db]]
   $w.stats.vgames configure -text [::utils::thousands $ng]
   $w.dm.delete.vdelete configure -text "[tr NumDeletedGames]: [::utils::percentFormat $deleted $ng]"
@@ -326,27 +307,40 @@ proc ::maint::Refresh {} {
   $w.stats.vratings configure \
       -text "[lindex $ratings 0]-[lindex $ratings 1] ([lindex $ratings 2])"
   
-  if { [lsearch -exact { 1 2 3 4 5 6 } $maintFlag ] != -1 } {
-    set tmp [sc_base extra $::curr_db flag$maintFlag]
-    if {$tmp == "" } { set tmp $maintFlags($maintFlag) }
-  } else  {
-    set tmp $::tr($maintFlags($maintFlag))
+  set i 0
+  foreach flag $::maintFlaglist  {
+      $w.dm.mark.title.m entryconfigure $i -label "[tr $maintFlags($flag)] ($flag)"
+      incr i
   }
-  
-  set flagname "$tmp ($maintFlag)"
-  $w.stats.mark configure -text $flagname
-  
-  $w.dm.mark.title configure -text $flagname
 
-  set ::maint::dbdesc [sc_base extra $::curr_db description]
+  grid remove $w.dbdesc
+  grid remove $w.autog
+  grid remove $w.customFlags
+  foreach {tagname tagvalue} [sc_base extra $::curr_db] {
+    if {$tagname eq "type"} {
+      catch { $w.title.vicon configure -image dbt$tagvalue }
+    } elseif {$tagname eq "description"} {
+      set ::maint::dbdesc $tagvalue
+      grid $w.dbdesc
+    } elseif {$tagname eq "autoload" } {
+      set ::autoloadGame $tagvalue
+      grid $w.autog
+    } elseif { [regexp {flag([1-6])} $tagname -> i] } {
+      $w.customFlags.text$i configure -state normal
+      $w.customFlags.text$i delete 0 end
+      $w.customFlags.text$i insert end $tagvalue
+      grid $w.customFlags
+      if {$tagvalue ne ""} {
+        $w.dm.mark.title.m entryconfigure [expr $i + 11] -label "$tagvalue ($i)"
+      }
+    }
+  }
 
-  set ::autoloadGame [sc_base extra $::curr_db autoload]
-
-  for {set i 1} { $i < 7} { incr i} {
-      set desc [sc_base extra $::curr_db flag$i]
-      .maintWin.customFlags.text$i configure -state normal
-      .maintWin.customFlags.text$i delete 0 end
-      .maintWin.customFlags.text$i insert end $desc
+  set idx [lsearch -exact $::maintFlaglist $::maintFlag ]
+  if { $idx != -1 } {
+    set flagname [$w.dm.mark.title.m entrycget $idx -label]
+    $w.stats.mark configure -text $flagname
+    $w.dm.mark.title configure -text $flagname
   }
 
   # Set widget's states
@@ -360,7 +354,6 @@ proc ::maint::Refresh {} {
   $w.dbdesc.edit configure -state disabled
   $w.autog.edit configure -state disabled
   $w.customFlags.edit configure -state disabled
-  $w.title.help configure -state normal
 
   set state [expr {$state eq "disabled" || $ng == 0 ? "disabled" : "normal"}]
   foreach frame {dm.delete dm.mark dm.spell dm.db} {

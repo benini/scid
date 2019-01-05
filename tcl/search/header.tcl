@@ -344,55 +344,41 @@ proc search::headerCreateFrame { w } {
     } else {
       set sHeaderFlagFrame 1
       ##TODO when used from searchframework
-      pack .sh.flags -side top -after .sh.flagslabel
+      pack .sh.flags -side top -after .sh.flagslabel -pady 5 -fill x
     }
   }
   pack $w.flagslabel -side top -fill x -pady "5 5"
 
   ttk::frame $w.flags
   if {$::sHeaderFlagFrame} {
-    pack $w.flags -side top -pady 5
+    pack $w.flags -side top -pady 5 -fill x
   }
   
-  set count 0
   set row 0
   set col 0
-  foreach var $::sHeaderFlagList {   
-    set lab [ttk::label $w.flags.l$var -text  [ ::tr $var ] -font font_Small]
-    grid $lab -row $row -column $col -sticky e
+  foreach var [concat $::sHeaderFlagList $::sHeaderCustomFlagList] {
+    grid [ttk::label $w.flags.l$var -text [::tr $var] -font font_Small] -row $row -column $col -sticky w
     incr col
     grid [ttk::radiobutton $w.flags.yes$var -variable sHeaderFlags($var) -value yes -text $::tr(Yes)] -row $row -column $col
     incr col
     grid [ttk::radiobutton $w.flags.no$var -variable sHeaderFlags($var) -value no -text $::tr(No)] -row $row -column $col
     incr col
     grid [ttk::radiobutton $w.flags.both$var -variable sHeaderFlags($var) -value both -text $::tr(Both)] -row $row -column $col
-    incr count
     incr col -3
     incr row
-    if {$count == 6} { set col 5; set row 0 }
-    if {$count == 12} { set col 10; set row 0 }
+    if {$row == 12} {
+      set col 5
+      set row 0
+    }
   }
-  
+  grid columnconfigure $w.flags 4 -weight 1
+
+  #TODO: ref_base should be used instead of curr_db
   set ::curr_db [sc_base current]
-  set count 1
-  set col 0
-  set row 7
-  foreach var $::sHeaderCustomFlagList {
-    
-    set lb [sc_base extra $::curr_db flag$count]
-    if { $lb == ""  } {  set lb $var  }
-    
-    set lab [ttk::label $w.flags.l$var -text $lb -font font_Small]
-    grid $lab -row $row -column $col -sticky e
-    incr col
-    grid [ttk::radiobutton $w.flags.yes$var -variable sHeaderFlags($var) -value yes -text $::tr(Yes)] -row $row -column $col
-    incr col
-    grid [ttk::radiobutton $w.flags.no$var -variable sHeaderFlags($var) -value no -text $::tr(No)] -row $row -column $col
-    incr col
-    grid [ttk::radiobutton $w.flags.both$var -variable sHeaderFlags($var) -value both -text $::tr(Both)] -row $row -column $col
-    incr col 2
-    incr count
-    if {$count == 4} { set col 0; set row 8 }
+  foreach {tagname tagvalue} [sc_base extra $::curr_db] {
+    if { $tagvalue ne "" && [regexp {flag([1-6])} $tagname -> i] } {
+      $w.flags.lCustomFlag$i configure -text $tagvalue
+    }
   }
 }
 

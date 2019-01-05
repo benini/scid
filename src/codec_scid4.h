@@ -54,6 +54,27 @@ public: // ICodecDatabase interface
 	 */
 	std::vector<std::string> getFilenames() const final { return filenames_; };
 
+	std::vector<std::pair<const char*, std::string>>
+	getExtraInfo() const final {
+		std::vector<std::pair<const char*, std::string>> res;
+		res.emplace_back("type", std::to_string(idx_->GetType()));
+		res.emplace_back("description", idx_->GetDescription());
+		res.emplace_back("autoload", std::to_string(idx_->GetAutoLoad()));
+		res.emplace_back("flag1",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM1));
+		res.emplace_back("flag2",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM2));
+		res.emplace_back("flag3",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM3));
+		res.emplace_back("flag4",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM4));
+		res.emplace_back("flag5",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM5));
+		res.emplace_back("flag6",
+		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM6));
+		return res;
+	}
+
 	const byte* getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())
 			return NULL;

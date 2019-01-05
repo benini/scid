@@ -2425,7 +2425,7 @@ namespace eval CorrespondenceChess {
 
 			set typeCorr [lsearch $base_types {Correspondence chess} ]
 			foreach x [sc_base list] {
-					set type [sc_base extra $x type]
+					set type [getBaseType $x]
 					if {$type == $typeCorr} {
 						.ccWindow.top.openDB configure -state disabled
 						set CorrSlot $x

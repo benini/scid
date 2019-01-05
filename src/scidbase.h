@@ -97,8 +97,36 @@ struct scidBaseT {
 	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }
 	gamenumT numGames() const { return idx->GetNumGames(); }
-	errorT getExtraInfo(const std::string& tagname, std::string* res) const;
-	errorT setExtraInfo(const std::string& tagname, const char* new_value);
+
+	/// Returns a vector of tag pairs containing extra information about the
+	/// database (type, description, autoload, etc..)
+	std::vector<std::pair<const char*, std::string> > getExtraInfo() const {
+		return codec_->getExtraInfo();
+	}
+
+	/// Store an extra information about the database (type, description, etc..)
+	errorT setExtraInfo(const char* tagname, const char* new_value) {
+		// TODO: move the code to CodecMemory and CodecSCID4
+		if (std::strcmp(tagname, "type") == 0)
+			return idx->SetType(strGetUnsigned(new_value));
+
+		if (codec_->getType() == ICodecDatabase::SCID4) {
+			if (std::strcmp(tagname, "description") == 0)
+				return idx->SetDescription(new_value);
+
+			if (std::strcmp(tagname, "autoload") == 0)
+				return idx->SetAutoLoad(strGetUnsigned(new_value));
+
+			auto len = std::strlen(tagname);
+			if (len == 5 && std::equal(tagname, tagname + 4, "flag")) {
+				uint flagType = IndexEntry::CharToFlag(tagname[4]);
+				if (flagType != 0 &&
+				    idx->GetCustomFlagDesc(flagType) != nullptr)
+					return idx->SetCustomFlagDesc(flagType, new_value);
+			}
+		}
+		return ERROR_CodecUnsupFeat;
+	}
 
 	const IndexEntry* getIndexEntry(gamenumT g) const {
 		return idx->GetEntry(g);

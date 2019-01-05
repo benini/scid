@@ -174,41 +174,6 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 	return res;
 }
 
-errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {
-	if (tagname == "description") {
-		*res = idx->GetDescription();
-	} else if (tagname == "autoload") {
-		*res = std::to_string(idx->GetAutoLoad());
-	} else if (tagname == "type") {
-		*res = std::to_string(idx->GetType());
-	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
-		uint flagType = IndexEntry::CharToFlag(tagname[4]);
-		if (flagType == 0) return ERROR_BadArg;
-		const char* desc = idx->GetCustomFlagDesc(flagType);;
-		if (desc == 0) return ERROR_BadArg;
-		*res = desc;
-	} else {
-		return ERROR_BadArg;
-	}
-	return OK;
-}
-
-errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value) {
-	if (tagname == "description") {
-		return idx->SetDescription(new_value);
-	} else if (tagname == "autoload") {
-		return idx->SetAutoLoad(strGetUnsigned(new_value));
-	} else if (tagname == "type") {
-		return idx->SetType(strGetUnsigned(new_value));
-	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
-		uint flagType = IndexEntry::CharToFlag(tagname[4]);
-		if (flagType == 0) return ERROR_BadArg;
-		if (idx->GetCustomFlagDesc(flagType) == 0) return ERROR_BadArg;
-		return idx->SetCustomFlagDesc(flagType, new_value);
-	}
-	return ERROR_BadArg;
-}
-
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
 	beginTransaction();
 	errorT err1 = saveGameHelper(game, replacedGameId);

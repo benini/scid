@@ -75,6 +75,13 @@ public:
 	virtual std::vector<std::string> getFilenames() const = 0;
 
 	/**
+	 * Returns a vector of tag pairs containing extra information about the
+	 * database (type, description, autoload, etc..)
+	 */
+	virtual std::vector<std::pair<const char*, std::string>>
+	getExtraInfo() const = 0;
+
+	/**
 	 * Fetches the data of a game (excluding index info), encoded in native
 	 * format.
 	 * @param offset: offset of the requested game.

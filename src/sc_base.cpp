@@ -186,13 +186,18 @@ UI_res_t sc_base_create(UI_handle_t ti, int argc, const char** argv) {
  */
 UI_res_t sc_base_extra(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
 {
-	const char* usage = "Usage: sc_base extra baseId tagname [new_value]";
-  
-	if (argc == 4) {
-		std::string res;
-		errorT err = dbase->getExtraInfo(argv[3], &res);
-		return UI_Result(ti, err, res);
-	} else if (argc == 5) {
+	const char* usage = "Usage: sc_base extra baseId [tagname new_value]";
+
+	if (argc == 3) {
+		auto list = dbase->getExtraInfo();
+		UI_List res(list.size() * 2);
+		for (const auto& e : list) {
+			res.push_back(e.first);
+			res.push_back(e.second.c_str());
+		}
+		return UI_Result(ti, OK, res);
+	}
+	if (argc == 5) {
 		return UI_Result(ti, dbase->setExtraInfo(argv[3], argv[4]));
 	}
 

@@ -1199,25 +1199,7 @@ proc CreateGameInfo {} {
       ::notify::DatabaseModified [sc_base current]
   }
   
-  menu .main.gameInfo.menu.mark
-  .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
-
   bind .main.gameInfo.text <ButtonPress-$::MB3> {
-    .main.gameInfo.menu.mark delete 0 end
-    set ::curr_db [sc_base current]
-    set ::curr_game [sc_game number]
-    set i 0
-    foreach flag $::maintFlaglist {
-      if {$i < 12} {
-        set tmp "$::tr($::maintFlags($flag)) ($flag)"
-      } else  {
-        set tmp [sc_base extra $::curr_db flag$flag]
-        if {$tmp == "" } { set tmp $::maintFlags($flag) }
-      }
-      incr i
-      .main.gameInfo.menu.mark add command -label "$tmp" \
-      -command "sc_base gameflag $::curr_db $::curr_game invert $flag; ::notify::DatabaseModified $::curr_db"
-    }
     tk_popup .main.gameInfo.menu %X %Y
   }
 
