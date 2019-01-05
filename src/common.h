@@ -16,12 +16,6 @@
 #ifndef SCID_COMMON_H
 #define SCID_COMMON_H
 
-#if __cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__) || _MSC_VER > 1600
-	#define CPP11_SUPPORT 1
-#else
-	#define CPP11_SUPPORT 0
-#endif
-
 #include <cstddef>
 #if defined(_MSC_VER) && _MSC_VER <= 1600
 typedef unsigned __int8   uint8_t;

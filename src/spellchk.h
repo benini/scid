@@ -191,7 +191,6 @@ public:
 			if (elo_[i].first < elo_[i -1].first) return "unsorted";
 		}
 
-		#if CPP11_SUPPORT
 		auto count = [this](uint year) {
 			return std::count_if(this->elo_.begin(), this->elo_.end(),
 				[&](const std::pair<uint16_t, eloT>& e) { return e.first == year; });
@@ -213,7 +212,6 @@ public:
 			if (n != expected(y))
 				return to_string(y) + ": " + to_string(n) + "(" + to_string(expected(y)) + ")";
 		}
-		#endif
 
 		return std::string();
 	}

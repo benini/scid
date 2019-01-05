@@ -291,7 +291,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 		validate.checkEloData();
 	}
 
-	#if CPP11_SUPPORT
 	// Free unused memory
 	char* shrink = (char*) realloc(staticStrings_, 1 + std::distance(staticStrings_,line));
 	if (shrink != NULL && shrink != staticStrings_) {
@@ -309,7 +308,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 			}
 		}
 	}
-	#endif
 
 	// Sort the index
 	for (nameT i=0; i < NUM_NAME_TYPES; i++) {

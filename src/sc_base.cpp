@@ -295,7 +295,6 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 		const char* text = argv[6];
 		size_t start = strGetUnsigned(argv[7]);
 		const NameBase* nb = dbase->getNameBase();
-#if CPP11_SUPPORT
 		auto contains = [dbase, nb, text](gamenumT g) {
 			const IndexEntry* ie = dbase->getIndexEntry(g);
 			return strAlphaContains(ie->GetWhiteName(nb), text) ||
@@ -317,7 +316,6 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 			if (it != buf.rend())
 				location = std::distance(it, buf.rend()) - 1;
 		}
-#endif
 	} else {
 		location = dbase->sortedPosition(sort, filter, gnumber - 1);
 	}
