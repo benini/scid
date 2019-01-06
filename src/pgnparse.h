@@ -38,7 +38,7 @@
  */
 class PgnVisitor {
 	Game& game;
-	std::vector<std::pair<size_t, std::string> > errors_;
+	std::vector<std::pair<size_t, std::string>> errors_;
 	size_t linenum_ = 0;
 	int nErrorsAllowed_ = 2;
 

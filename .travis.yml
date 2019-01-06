@@ -64,6 +64,23 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
+    env: Clang_Format=_
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-6.0
+        packages:
+          - clang-format-6.0
+    script:
+      - clang-format-6.0 -i src/pgn*
+      - |
+        if [[ -n $(git diff) ]]; then
+          git diff
+          exit -1
+        fi
+
+  - os: linux
     env: Count_Lines_Of_Code=_
     addons:
       apt:
