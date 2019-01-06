@@ -375,6 +375,7 @@ namespace eval ::notify {
     ::windows::stats::refresh_wnd
     ::maint::Refresh
     updateStatusBar
+    ::search::DatabaseModified $dbase $filter
     ::tools::graphs::filter::Refresh
     ::tools::graphs::absfilter::Refresh
     if {[winfo exists .ecograph]} { ::windows::eco::update }

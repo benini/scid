@@ -1725,6 +1725,12 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc > 5) {
             if (strCompare("header", argv[4]) == 0)
                 return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
+
+            if (strCompare("board", argv[4]) == 0 && argc == 10) {
+                const char* args[7] = {argv[3], argv[4], argv[9], argv[5],
+                                       argv[6], argv[7], argv[2]};
+                return sc_search_board(cd, ti, 7, args);
+            }
         }
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Fulvio Benini
+# Copyright (C) 2018-2019 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 #
@@ -24,6 +24,7 @@ namespace eval ::search {}
 #                       evaluated returns a list of the search's options.
 proc ::search::Open {ref_base ref_filter title create_subwnd} {
 	set w ".wnd_$title"
+	if {[winfo exists $w]} { destroy $w }
 	::win::createDialog $w
 	::setTitle $w [::tr $title]
 
@@ -45,24 +46,38 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 
 	grid [ttk::frame $w.buttons] -sticky news
 	ttk::button $w.buttons.save -text [::tr Save] -command "::search::save_ $options_cmd"
+	ttk::button $w.buttons.reset_values -text [::tr Defaults]
 	ttk::button $w.buttons.search_new -text "[tr Search] ([tr GlistNewSort] [tr Filter])" \
-		-command "::search::start_newflt_ $w $options_cmd"
-	ttk::button $w.buttons.search -text [::tr Search] -command "::search::start_ $w $options_cmd"
-	grid $w.buttons.save x $w.buttons.search_new $w.buttons.search -sticky w -padx "0 5"
-	grid columnconfigure $w.buttons 1 -weight 1
+		-command "::search::start_ 1 $w $options_cmd"
+	ttk::button $w.buttons.search -text [::tr Search] -command "::search::start_ 0 $w $options_cmd"
+	grid $w.buttons.save $w.buttons.reset_values x $w.buttons.search_new $w.buttons.search -sticky w -padx "0 5"
+	grid columnconfigure $w.buttons 2 -weight 1
 
 	ttk::button $w.buttons.stop -text [::tr Stop] -command progressBarCancel
 	canvas $w.progressbar -width 300 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
 	$w.progressbar create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
 	$w.progressbar create text 295 10 -anchor e -font font_Regular -tags time
 	grid $w.buttons.stop -row 0 -column 0
-	grid $w.progressbar -in $w.buttons -row 0 -column 1 -columnspan 3 -sticky w
+	grid $w.progressbar -in $w.buttons -row 0 -column 1 -columnspan 4
 	progressbar_ $w hide
 
-	::search::Refresh $w
+	bind $w <Return> "$w.buttons.search invoke"
+	bind $w.buttons.search <Destroy> "unset ::search::dbase_($w)"
+
+	::search::refresh_ $w
 }
 
-proc ::search::Refresh {w} {
+proc ::search::DatabaseModified {{dbase} {filter -1}} {
+	foreach {w w_base} [array get ::search::dbase_] {
+		if {$dbase == $w_base} {
+			if {$filter == -1 || $filter eq $::search::filter_($w)} {
+				::search::refresh_ $w
+			}
+		}
+	}
+}
+
+proc ::search::refresh_ {w} {
 	# TODO:
 	# Update CreateSelectDBWidget
 	# set filter to "dbfilter" if the filter no longer exists because the gamelist was closed
@@ -71,7 +86,7 @@ proc ::search::Refresh {w} {
 	$w.buttons.save configure -state disabled
 
 	# TODO:
-	$w.buttons.search_new configure -state disabled
+	$w.buttons.reset_values configure -state disabled
 
 	lassign [sc_filter sizes $::search::dbase_($w) $::search::filter_($w)] filterSz gameSz
 	set n_games [::windows::gamelist::formatFilterText $filterSz $gameSz]
@@ -81,6 +96,7 @@ proc ::search::Refresh {w} {
 proc ::search::progressbar_ {w show_hide} {
 	if {$show_hide eq "show"} {
 		grid remove $w.buttons.save
+		grid remove $w.buttons.reset_values
 		grid remove $w.buttons.search_new
 		grid remove $w.buttons.search
 		grid $w.progressbar
@@ -92,6 +108,7 @@ proc ::search::progressbar_ {w show_hide} {
 		grid remove $w.buttons.stop
 		grid remove $w.progressbar
 		grid $w.buttons.save
+		grid $w.buttons.reset_values
 		grid $w.buttons.search_new
 		grid $w.buttons.search
 	}
@@ -101,32 +118,53 @@ proc ::search::save_ {options_cmd} {
 	# TODO:
 }
 
-proc ::search::start_ {w options_cmd} {
-	::search::progressbar_ $w show
-	::search::do_search_ $::search::dbase_($w) $::search::filter_($w) $::search::filterOp_($w) [$options_cmd]
-	::search::progressbar_ $w hide
-
-	::notify::DatabaseModified $::search::dbase_($w) $::search::filter_($w)
-	::search::Refresh $w
-}
-
-proc ::search::start_newflt_ {w options_cmd} {
+proc ::search::start_ {new_filter w options_cmd} {
 	set dbase $::search::dbase_($w)
-	set filter [sc_filter new $dbase]
-	sc_filter copy $dbase $filter $::search::filter_($w)
+	set src_filter $::search::filter_($w)
+	set src_op $::search::filterOp_($w)
+
+	if {$new_filter} {
+		set dest_filter [sc_filter new $dbase]
+	} else {
+		set dest_filter [sc_filter compose $dbase $src_filter ""]
+	}
+	if {$dest_filter ne $src_filter && $src_op ne "reset"} {
+		sc_filter copy $dbase $dest_filter $src_filter
+	}
+
+	lassign [$options_cmd] options ignore_color_hack
+	if {$ignore_color_hack ne ""} {
+		set filter_hack [sc_filter new $dbase]
+		sc_filter copy $dbase $filter_hack $dest_filter
+	}
 
 	::search::progressbar_ $w show
-	::search::do_search_ $dbase $filter $::search::filterOp_($w) [$options_cmd]
+	set err [catch {::search::do_search_ $dbase $dest_filter $src_op $options}]
 	::search::progressbar_ $w hide
+	if {$err} {
+		if {$::errorCode != $::ERROR::UserCancel} { ERROR::MessageBox }
+	}
 
-	# TODO:
-	# if interrupted
-	#     delete filter
-	#     return
+	if {!$err && $ignore_color_hack ne ""} {
+		::search::progressbar_ $w show
+		set err [catch {::search::do_search_ $dbase $filter_hack $src_op $ignore_color_hack}]
+		::search::progressbar_ $w hide
+		if {$err} {
+			if {$::errorCode != $::ERROR::UserCancel} { ERROR::MessageBox }
+		} else {
+			sc_filter or $dbase $dest_filter $filter_hack
+		}
+	}
+	if {$ignore_color_hack ne ""} {
+		sc_filter release $dbase $filter_hack
+	}
 
-	set ::search::filter_($w) $filter
-	::windows::gamelist::Open $dbase $filter
-	::search::Refresh $w
+	set ::search::filter_($w) $dest_filter
+	::notify::DatabaseModified $dbase $dest_filter
+
+	if {$new_filter} {
+		::windows::gamelist::Open $dbase $dest_filter
+	}
 }
 
 proc ::search::do_search_ {dbase filter filter_op options} {
@@ -143,8 +181,7 @@ proc ::search::do_search_ {dbase filter filter_op options} {
 		}
 	}
 
-	# TODO: sc_filter search $dbase $filter {*}$options
-	sc_search board 0 {*}$options $dbase
+	sc_filter search $dbase $filter {*}$options -filter AND
 
 	if {[info exists or_filter]} {
 		sc_filter or $dbase $filter $or_filter
@@ -156,8 +193,8 @@ proc ::search::do_search_ {dbase filter filter_op options} {
 # ::search::board
 #   Opens the search window for the current board position.
 #
-proc ::search::board {{ref_base ""}} {
-	::search::Open $ref_base dbfilter BoardSearch ::search::boardCreateFrame
+proc ::search::board {{ref_base ""} {ref_filter "dbfilter"}} {
+	::search::Open $ref_base $ref_filter BoardSearch ::search::boardCreateFrame
 }
 
 proc ::search::boardCreateFrame {w} {
@@ -192,9 +229,9 @@ proc ::search::boardCreateFrame {w} {
 }
 
 proc ::search::boardGetOptions {} {
-	set options {}
+	set options {board}
 	lappend options $::search::boardOptType_
 	lappend options $::search::boardOptInVars_
 	lappend options $::search::boardOptIgnoreCol_
-	return $options
+	return [list $options]
 }

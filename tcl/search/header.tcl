@@ -91,6 +91,10 @@ set sHeaderFlagFrame 0
 #
 #   Opens the window for searching by header information.
 #
+proc ::search::header {{ref_base ""} {ref_filter "dbfilter"}} {
+  ::search::Open $ref_base $ref_filter HeaderSearch ::search::headerCreateFrame
+}
+
 proc search::headerCreateFrame { w } {
   global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sEventDateMin sEventDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
@@ -110,7 +114,6 @@ proc search::headerCreateFrame { w } {
     ttk::label $w.c$color.lab -textvar ::tr($color:) -width 9 -anchor w
     ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
-    bind $w.c$color.e <Return> { .sh.b.search invoke; break }
     
     ttk::label $w.c$color.space
     ttk::label $w.c$color.elo1 -textvar ::tr(Rating:)
@@ -159,7 +162,6 @@ proc search::headerCreateFrame { w } {
   foreach i {Event Site} {
     ttk::label $f.l$i -textvar ::tr(${i}:)
     ttk::combobox $f.e$i -textvariable s$i -width 30
-    bind $f.e$i <Return> { .sh.b.search invoke ; break }
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
     bindFocusColors $f.e$i
   }
@@ -337,16 +339,15 @@ proc search::headerCreateFrame { w } {
   
   addHorizontalRule $w
   
-  ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command {
-    if {$sHeaderFlagFrame} {
-      set sHeaderFlagFrame 0
-      pack forget .sh.flags
+  ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command "
+    if {\$::sHeaderFlagFrame} {
+      set ::sHeaderFlagFrame 0
+      pack forget $w.flags
     } else {
-      set sHeaderFlagFrame 1
-      ##TODO when used from searchframework
-      pack .sh.flags -side top -after .sh.flagslabel -pady 5 -fill x
+      set ::sHeaderFlagFrame 1
+      pack $w.flags -side top -after $w.flagslabel -pady 5 -fill x
     }
-  }
+  "
   pack $w.flagslabel -side top -fill x -pady "5 5"
 
   ttk::frame $w.flags
@@ -380,60 +381,27 @@ proc search::headerCreateFrame { w } {
       $w.flags.lCustomFlag$i configure -text $tagvalue
     }
   }
+
+  return "::search::headerGetOptions"
 }
 
-proc search::header {{ref_base ""} {ref_filter ""}} {
-  set w .sh
-  if {[winfo exists $w]} {
-    wm deiconify $w
-    raiseWin $w
-    return
-  }
-  
-  win::createDialog $w
-  wm title $w "Scid: $::tr(HeaderSearch)"
-  if {$ref_base != ""} {
-    set ::refDatabaseH $ref_base
-    set ::refFilterH $ref_filter
-  } else {
-    pack [ttk::frame $w.refdb] -side top -fill x
-    CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
-    set ::refFilterH ""
-  }
-  bind $w <F1> { helpWindow Searches Header }
-  bind $w <Escape> "$w.b.cancel invoke"
-  bind $w <Return> "$w.b.search invoke"
+proc ::search::headerGetOptions {} {
+	::utils::history::AddEntry HeaderSearchWhite $::sWhite
+	::utils::history::AddEntry HeaderSearchBlack $::sBlack
+	::utils::history::AddEntry HeaderSearchEvent $::sEvent
+	::utils::history::AddEntry HeaderSearchSite $::sSite
 
-  headerCreateFrame $w
-  ::search::addFilterOpFrame $w 1
-  
-  ### Header search: search/cancel buttons
-  ttk::frame $w.b
-  pack $w.b -side top -fill both -pady 5
-  ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults
-  ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save
-  ttk::button $w.b.stop -textvar ::tr(Stop) -command progressBarCancel
-  ttk::button $w.b.new_search -text "[tr Search] ([tr GlistNewSort] [tr Filter])" -command {::search::header::do_search 1 }
-  ttk::button $w.b.search -textvar ::tr(Search) -command {::search::header::do_search 0 }
-  ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh}
-
-  pack $w.b.defaults $w.b.save -side left -padx 5
-  pack $w.b.cancel $w.b.new_search $w.b.search -side right -padx 5
-
-  pack [ ttk::frame $w.fprogress ] -fill both
-  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
-  $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
-  pack $w.fprogress.progress -side top -pady 2
-  # update
-  wm resizable $w 0 0
-  ::search::Config
-  focus $w.cWhite.e
+	set res [list [::search::getSearchOptions wb]]
+	if {$::sIgnoreCol == "Yes"} {
+		lappend res [::search::getSearchOptions bw]
+	}
+	return $res
 }
 
 ### Read values from header search dialog. Use empty string as "all"
-proc ::search::header::getSearchOptions { wb } {
+proc ::search::getSearchOptions { wb } {
+    set search {header}
+
     global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax
     global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sEventDateMin sEventDateMax
     global sEloDiffMin sEloDiffMax sGnumMin sGnumMax sEcoMin sEcoMax sGlMin sGlMax sEco
@@ -474,7 +442,7 @@ proc ::search::header::getSearchOptions { wb } {
 	set help $sWhiteEloMin;	set sWhiteEloMin $sBlackEloMin;	set sBlackEloMin $help
 	set help $sWhiteEloMax;	set sWhiteEloMax $sBlackEloMax;	set sBlackEloMax $help
     }
-    set search {}
+
     #generate search options when value ne ""
     foreach { i j k } {  -date sDateMin sDateMax -eventdate sEventDateMin sEventDateMax \
 			 -length sGlMin sGlMax -delo sEloDiffMin sEloDiffMax \
@@ -562,77 +530,6 @@ proc ::search::header::getSearchOptions { wb } {
     }
     lappend search -toMove "$sSideToMoveW$sSideToMoveB"
     return $search
-}
-
-proc ::search::header::do_search {new_filter} {
-    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
-    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sEventDateMin sEventDateMax
-    global sEloDiffMin sEloDiffMax sEloDiffMinEntry sEloDiffMaxEntry sSideToMoveW sSideToMoveB
-    global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
-    global sResWin sResLoss sResDraw sResOther sPgntext
-
-    set dbase [string index $::refDatabaseH 0]
-    if {$::refFilterH ne ""} {
-        set ::refFilterH [sc_filter compose $dbase $::refFilterH ""]
-    } else {
-        set ::refFilterH "dbfilter"
-    }
-    if {$new_filter} {
-        set tmp_filter [sc_filter new $dbase]
-        sc_filter copy $dbase $tmp_filter $::refFilterH
-        set ::refFilterH $tmp_filter
-    }
-    set filter $::refFilterH
-
-    ::utils::history::AddEntry HeaderSearchWhite $sWhite
-    ::utils::history::AddEntry HeaderSearchBlack $sBlack
-    ::utils::history::AddEntry HeaderSearchEvent $sEvent
-    ::utils::history::AddEntry HeaderSearchSite $sSite
-
-    pack .sh.b.stop -side right -padx 5
-    grab .sh.b.stop
-
-    if {$::search::filter::operation != "2" } {
-        set fOrig [sc_filter new $dbase]
-        sc_filter copy $dbase $fOrig $filter
-    }
-
-    progressBarSet .sh.fprogress.progress 301 21
-    sc_filter search $dbase $filter header \
-          -filter RESET {*}[getSearchOptions wb]
-
-    if {$sIgnoreCol == "Yes"} {
-        set fIgnore [sc_filter new $dbase]
-        progressBarSet .sh.fprogress.progress 301 21
-        sc_filter search $dbase $fIgnore header \
-          -filter RESET {*}[getSearchOptions bw]
-
-        sc_filter or $dbase $filter $fIgnore
-        sc_filter release $dbase $fIgnore
-    }
-
-    if {[info exists fOrig]} {
-        if {$::search::filter::operation == "0" } {
-            sc_filter and $dbase $filter $fOrig
-        } else {
-            sc_filter or $dbase $filter $fOrig
-        }
-        sc_filter release $dbase $fOrig
-        unset fOrig
-    }
-
-    foreach {filterSz gameSz mainSz} [sc_filter sizes $dbase $filter] {}
-    set str [::windows::gamelist::formatFilterText $filterSz $gameSz]
-    .sh.filterop configure -text "$::tr(FilterOperation) ($str)"
-    
-    grab release .sh.b.stop
-    pack forget .sh.b.stop
-
-    if {$new_filter} {
-        ::windows::gamelist::Open $dbase $::refFilterH
-    } else {
-        ::notify::DatabaseModified $dbase $::refFilterH
-    }
 }
 
 proc ::search::header::save {} {
@@ -771,10 +668,9 @@ proc chooseEcoRange {} {
       set scid_ecoRangeChosen [lindex $ecoCommonRanges [lindex $sel 0]]
       set ::sEco No
     }
-    focus .sh
     destroy .ecoRangeWin
   }
-  ttk::button $w.b.cancel -text $::tr(Cancel) -command "focus .sh; destroy $w"
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command "destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 2
   bind $w <Escape> "
   set scid_ecoRangeChosen {}
