@@ -53,12 +53,13 @@ public: // ICodecDatabase interface
 	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
 	               const byte* srcData, size_t dataLen) override {
 		IndexEntry ie = *srcIe;
-		errorT err = addGameHelper(&ie, srcData, dataLen,
-		                  srcNb->GetName(NAME_PLAYER, srcIe->GetWhite()),
-		                  srcNb->GetName(NAME_PLAYER, srcIe->GetBlack()),
-		                  srcNb->GetName(NAME_EVENT, srcIe->GetEvent()),
-		                  srcNb->GetName(NAME_SITE, srcIe->GetSite()),
-		                  srcNb->GetName(NAME_ROUND, srcIe->GetRound()));
+		errorT err = addGameHelper(
+		    &ie, srcData, dataLen,
+		    srcNb->GetName(NAME_PLAYER, srcIe->GetWhite()),
+		    srcNb->GetName(NAME_PLAYER, srcIe->GetBlack()),
+		    srcNb->GetName(NAME_EVENT, srcIe->GetEvent()),
+		    srcNb->GetName(NAME_SITE, srcIe->GetSite()),
+		    srcNb->GetName(NAME_ROUND, srcIe->GetRound()));
 		if (err != OK)
 			return err;
 
@@ -110,8 +111,7 @@ private:
 	                     const char* white, const char* black,
 	                     const char* event, const char* site,
 	                     const char* round) {
-		std::pair<errorT, idNumberT> id =
-		    derived()->dyn_addName(NAME_PLAYER, white);
+		auto id = derived()->dyn_addName(NAME_PLAYER, white);
 		if (id.first != OK)
 			return id.first;
 		ie->SetWhite(id.second);

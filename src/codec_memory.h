@@ -63,14 +63,14 @@ public: // ICodecDatabase interface
 		return &v_[offset];
 	}
 
-	errorT flush() override {
-		return OK;
-	}
+	errorT flush() override { return OK; }
 
 	errorT dyn_open(fileModeT fMode, const char*, const Progress&, Index* idx,
 	                NameBase* nb) override {
-		if (idx == 0 || nb == 0) return ERROR;
-		if (fMode != FMODE_Memory) return ERROR;
+		if (idx == 0 || nb == 0)
+			return ERROR;
+		if (fMode != FMODE_Memory)
+			return ERROR;
 		idx_ = idx;
 		nb_ = nb;
 		return OK;

@@ -45,8 +45,7 @@
  * This class provides an interface that encapsulates the codecs, requiring only
  * the ability to exchange @e Game objects.
  */
-template <typename Derived>
-class CodecProxy : public CodecMemory {
+template <typename Derived> class CodecProxy : public CodecMemory {
 	Derived* getDerived() { return static_cast<Derived*>(this); }
 
 public:
@@ -67,9 +66,7 @@ public:
 	 * - ERROR_NotFound if there are no more games to be read.
 	 * - OK otherwise.
 	 */
-	errorT parseNext(Game&) {
-		return ERROR_NotFound;
-	}
+	errorT parseNext(Game&) { return ERROR_NotFound; }
 
 	/**
 	 * Returns info about the parsing progress.
@@ -83,18 +80,14 @@ public:
 	/**
 	 * Returns the list of errors produced by parseNext() calls.
 	 */
-	const char* parseErrors() {
-		return NULL;
-	}
+	const char* parseErrors() { return NULL; }
 
 	/**
 	 * Adds a game into the database.
 	 * @param Game*: valid pointer to a Game object with the new data.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT gameAdd(Game*) {
-		return ERROR_CodecUnsupFeat;
-	}
+	errorT gameAdd(Game*) { return ERROR_CodecUnsupFeat; }
 
 	/**
 	 * Replaces a game in the database.
@@ -102,22 +95,21 @@ public:
 	 * @param gamenumT: valid gamenumT of the game to be replaced.
 	 * @returns OK in case of success, an @p errorT code otherwise.
 	 */
-	errorT gameSave(Game*, gamenumT) {
-		return ERROR_CodecUnsupFeat;
-	}
-
+	errorT gameSave(Game*, gamenumT) { return ERROR_CodecUnsupFeat; }
 
 private:
 	errorT addGame(Game* game) final {
 		errorT err = getDerived()->gameAdd(game);
-		if (err != OK) return err;
+		if (err != OK)
+			return err;
 
 		return CodecMemory::addGame(game);
 	}
 
 	errorT saveGame(Game* game, gamenumT replaced) final {
 		errorT err = getDerived()->gameSave(game, replaced);
-		if (err != OK) return err;
+		if (err != OK)
+			return err;
 
 		return CodecMemory::saveGame(game, replaced);
 	}
@@ -130,10 +122,12 @@ private:
 		errorT err = game.Decode(&buf, GAME_DECODE_ALL);
 		if (err == OK)
 			err = game.LoadStandardTags(srcIe, srcNb);
-		if (err != OK) return err;
+		if (err != OK)
+			return err;
 
 		err = getDerived()->gameAdd(&game);
-		if (err != OK) return err;
+		if (err != OK)
+			return err;
 
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
@@ -155,11 +149,14 @@ private:
 		if (filename == 0)
 			return ERROR;
 
-		errorT err = CodecMemory::dyn_open(FMODE_Memory, filename, progress, idx, nb);
-		if (err != OK) return err;
+		errorT err = CodecMemory::dyn_open(FMODE_Memory, filename, progress,
+		                                   idx, nb);
+		if (err != OK)
+			return err;
 
 		err = getDerived()->open(filename, fMode);
-		if (err != OK) return err;
+		if (err != OK)
+			return err;
 
 		return parseGames(progress, *getDerived(), [&](Game& game) {
 			return this->CodecMemory::addGame(&game);
@@ -237,7 +234,8 @@ public:
 			}
 
 			err = destFn(game[slot]);
-			if (err != OK) break;
+			if (err != OK)
+				break;
 
 			sync[slot].store(sy_free, std::memory_order_release);
 		}
@@ -253,7 +251,8 @@ public:
 		uint64_t nImported = 0;
 		while (src.parseNext(g) != ERROR_NotFound) {
 			err = destFn(g);
-			if (err != OK) break;
+			if (err != OK)
+				break;
 
 			if (++nImported % 1024 == 0) {
 				std::pair<size_t, size_t> count = src.parseProgress();
