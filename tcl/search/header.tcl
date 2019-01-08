@@ -391,102 +391,111 @@ proc ::search::headerGetOptions {} {
 	::utils::history::AddEntry HeaderSearchEvent $::sEvent
 	::utils::history::AddEntry HeaderSearchSite $::sSite
 
-	set res [list [::search::getSearchOptions wb]]
-	if {$::sIgnoreCol == "Yes"} {
-		lappend res [::search::getSearchOptions bw]
+	set options {header}
+	::search::headerPlayerOptions options -white -welo -black -belo
+
+	set invert_col 0
+	if {$::sIgnoreCol == "Yes" && [llength $options] > 1} { set invert_col 1 }
+
+	::search::getSearchOptions options
+	if {! $invert_col } {
+		return [list $options]
 	}
-	return $res
+
+	set options2 {header}
+	::search::headerPlayerOptions options2 -black -belo -white -welo
+	::search::getSearchOptions options2
+	return [list $options $options2]
+}
+
+proc ::search::getRange {var_min var_max cmd_min cmd_max} {
+	if {[set $var_min] ne ""} {
+		if {[set $var_max] ne ""} {
+			return [list [set $var_min] [set $var_max]]
+		}
+		return [list [set $var_min] [subst $cmd_max]]
+	} elseif {[set $var_max] ne ""} {
+		return [list [subst $cmd_min] [set $var_max]]
+	}
+	return {}
+}
+
+proc ::search::headerPlayerOptions {dest_list white welo black belo} {
+	upvar $dest_list options
+
+	if {$::sWhite ne ""} { lappend options $white $::sWhite }
+
+	if {$::sBlack ne ""} { lappend options $black $::sBlack	}
+
+	set range [::search::getRange ::sWhiteEloMin ::sWhiteEloMax 0 "\[sc_info limit elo\]"]
+	if {$range ne ""} { lappend options $welo $range }
+
+	set range [::search::getRange ::sBlackEloMin ::sBlackEloMax 0 "\[sc_info limit elo\]"]
+	if {$range ne ""} { lappend options $belo $range }
 }
 
 ### Read values from header search dialog. Use empty string as "all"
-proc ::search::getSearchOptions { wb } {
-    set search {header}
+proc ::search::getSearchOptions {dest_list} {
+	upvar $dest_list search
 
-    global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax
-    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sEventDateMin sEventDateMax
-    global sEloDiffMin sEloDiffMax sGnumMin sGnumMax sEcoMin sEcoMax sGlMin sGlMax sEco
-    global sSideToMoveW sSideToMoveB sHeaderFlags sTitleList sTitles
+	if {$::sEvent ne ""} { lappend search "-event" $::sEvent }
+
+	if {$::sSite ne ""} { lappend search "-site" $::sSite }
+
+	if {$::sRound ne ""} { lappend search "-round" $::sRound }
+
+	set range [::search::getRange ::sGnumMin ::sGnumMax 0 -1]
+	if {$range ne ""} { lappend search "-gnum" $range }
+
+	set range [::search::getRange ::sGlMin ::sGlMax 0 999]
+	if {$range ne ""} { lappend search "-length" $range }
+
+	set range [::search::getRange ::sDateMin ::sDateMax "1800.01.01" "\[sc_info limit year\].12.31"]
+	if {$range ne ""} { lappend search "-date" $range }
+
+	set range [::search::getRange ::sEventDateMin ::sEventDateMax "1800.01.01" "\[sc_info limit year\].12.31"]
+	if {$range ne ""} { lappend search "-eventdate" $range }
+
+	set range [::search::getRange ::sEloDiffMin ::sEloDiffMax "-\[sc_info limit elo\]" "\[sc_info limit elo\]"]
+	if {$range ne ""} {
+		lappend search "-delo" $range
+		if {$::sIgnoreCol == "Yes"} {
+			lassign $range elo_min elo_max
+			lappend search "-delo|" [list [expr -1 * $elo_max] [expr -1 * $elo_min]]
+		}
+	}
+
+	set range [::search::getRange ::sEcoMin ::sEcoMax A00 E99]
+	if {$range ne ""} {
+		lappend search "-eco" $range
+		if {$::sEco eq "Yes"} { lappend search "-eco|" [list 0 0] }
+	}
+	if {$::sEco ne "Yes"} { lappend search "-eco!" [list 0 0] }
+
+	set wtitles {}
+	set btitles {}
+	foreach i $::sTitleList {
+	  if $::sTitles(w:$i) { lappend wtitles $i }
+	  if $::sTitles(b:$i) { lappend btitles $i }
+	}
+	if {[llength $wtitles] != 8} { lappend search -wtitles $wtitles }
+	if {[llength $btitles] != 8} { lappend search -btitles $btitles }
+
+	if {$::sSideToMoveW eq "" || $::sSideToMoveB eq ""} {
+		lappend search -toMove "$::sSideToMoveW$::sSideToMoveB"
+	}
+
+	if {$::sAnnotated} { lappend search "-annotated" $::sAnnotated }
+
+	if {$::sAnnotator ne ""} { lappend search "-annotator" $::sAnnotator }
+
+    global sHeaderFlags
     global sResWin sResLoss sResDraw sResOther sPgntext
 
-    set sWhiteEloMinSearch 0; set sWhiteEloMaxSearch [sc_info limit elo]
-    set sBlackEloMinSearch 0; set sBlackEloMaxSearch [sc_info limit elo]
-    set sEloDiffMinSearch "-[sc_info limit elo]"
-    set sEloDiffMaxSearch "+[sc_info limit elo]"
-    set sGlMinSearch 0; set sGlMaxSearch 999
-    set sWhiteSearch ""; set sBlackSearch ""
-    set sGnumMinSearch 1; set sGnumMaxSearch -1
-    set sEcoMinSearch "A00";  set sEcoMaxSearch "E99"
-    set sDateMinSearch "1800.01.01"; set sDateMaxSearch "[sc_info limit year].12.31"
-    set sEventDateMinSearch "1800.01.01"; set sEventDateMaxSearch "[sc_info limit year].12.31"
-    set sAnnotatorSearch ""; set sRoundSearch ""
-    set sEventSearch ""; set sSiteSearch ""
-    #if value in dialog ne "" copy it to search variable
-    foreach i { sDateMin sDateMax sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax sGlMin sGlMax sEloDiffMin sEloDiffMax \
-		    sGnumMin sGnumMax sEcoMin sEcoMax sEventDateMin sEventDateMax sWhite sBlack sRound sAnnotator \
-		    sEvent sSite } {
-	set j $i
-	append j Search
-	if { [set $i] ne "" } {
-	    set $j [set $i]
-	}
-    }
-    if { $wb != "wb" } { ;#Swap Black - White for ignore Colors
-        set sEloDiffMinSearch [ expr { $sEloDiffMaxSearch * -1 }]
-        set sEloDiffMaxSearch [ expr { $sEloDiffMinSearch * -1 }]
-	set help $sWhiteSearch; set sWhiteSearch $sBlackSearch; set sBlackSearch $help
-	set help $sWhiteEloMinSearch; set sWhiteEloMinSearch $sBlackEloMinSearch; set sBlackEloMinSearch $help
-	set help $sWhiteEloMaxSearch; set sWhiteEloMaxSearch $sBlackEloMaxSearch; set sBlackEloMaxSearch $help
-
-	set help $sEloDiffMin; set sEloDiffMin $sEloDiffMax; set sEloDiffMax $help
-	set help $sWhite; set sWhite $sBlack; set sBlack $help
-	set help $sWhiteEloMin;	set sWhiteEloMin $sBlackEloMin;	set sBlackEloMin $help
-	set help $sWhiteEloMax;	set sWhiteEloMax $sBlackEloMax;	set sBlackEloMax $help
-    }
-
-    #generate search options when value ne ""
-    foreach { i j k } {  -date sDateMin sDateMax -eventdate sEventDateMin sEventDateMax \
-			 -length sGlMin sGlMax -delo sEloDiffMin sEloDiffMax \
-			 -eco sEcoMin sEcoMax -gnum sGnumMin sGnumMax \
-			 -belo sBlackEloMin sBlackEloMax -welo sWhiteEloMin sWhiteEloMax } {
-	if { [set $j] ne "" || [set $k] ne "" } {
-	    set min $j
-	    append l Search
-	    set max $k
-	    append m Search
-	    lappend search $i [list [set $min] [set $max]]
-	}
-    }
-    foreach { i j } { -white sWhite -black sBlack -event sEvent -site sSite -round sRound -annotator sAnnotator } {
-	if { [set $j] ne "" } {
-	    set value $j
-	    append value Search
-	    lappend search $i [set $value]
-	}
-    }
-    if { $wb != "wb" } { ;#Reswap only the values in dialog, others are not used anymore
-	set help $sEloDiffMin; set sEloDiffMin $sEloDiffMax; set sEloDiffMax $help
-	set help $sWhite; set sWhite $sBlack; set sBlack $help
-	set help $sWhiteEloMin;	set sWhiteEloMin $sBlackEloMin;	set sBlackEloMin $help
-	set help $sWhiteEloMax;	set sWhiteEloMax $sBlackEloMax;	set sBlackEloMax $help
-    }
-    set noEco "-eco!"
-    if {$sEco == "Yes"} {
-	set noEco "-eco|"
-    }
-    if { $sEcoMin ne "" || $sEcoMax ne "" } { lappend search $noEco [list 0 0] }
-    if { $sAnnotated } {
-	lappend search -annotated $sAnnotated
-    }
     set sPgnlist {}
     foreach i {1 2 3} {
       set temp [string trim $sPgntext($i)]
       if {$temp != ""} { lappend sPgnlist $temp }
-    }
-    set wtitles {}
-    set btitles {}
-    foreach i $sTitleList {
-      if $sTitles(w:$i) { lappend wtitles $i }
-      if $sTitles(b:$i) { lappend btitles $i }
     }
 
     set flagsYes ""
@@ -507,7 +516,7 @@ proc ::search::getSearchOptions { wb } {
 
     set results ""
     append results $sResWin $sResDraw $sResLoss $sResOther
-    foreach { i j} { -result! results -flag flagsYes -flag! flagsNo -pgn sPgnlist -wtitles wtitles -btitles btitles } {
+    foreach { i j} { -result! results -flag flagsYes -flag! flagsNo -pgn sPgnlist} {
 	if { [llength [set $j]] > 0 } {
 	    lappend search $i [set $j]
 	}
@@ -528,8 +537,6 @@ proc ::search::getSearchOptions { wb } {
 	     lappend search $fCounts($i) $fCountsV($i)
         }
     }
-    lappend search -toMove "$sSideToMoveW$sSideToMoveB"
-    return $search
 }
 
 proc ::search::header::save {} {

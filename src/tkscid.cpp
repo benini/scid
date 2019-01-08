@@ -9397,6 +9397,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         const IndexEntry* ie = base->getIndexEntry(i);
 
 		auto matchGameHeader = [&]() {
+			//TODO: this trick does not work if there is a custom start position
 			uint halfmoves = ie->GetNumHalfMoves();
 			if ((halfmoves % 2) == 0) { // This game ends with White to move
 				if (!wToMove) {
