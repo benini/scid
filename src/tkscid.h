@@ -103,7 +103,7 @@ int sc_var_first      (TCL_ARGS);
 int sc_var_list       (TCL_ARGS);
 
 errorT search_index(const scidBaseT* base, HFilter& filter, int argc, const char ** argv, const Progress& progress);
-int sc_search_board   (TCL_ARGS);
+int sc_search_board   (Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter, int argc, const char** argv);
 int sc_search_material (TCL_ARGS);
 int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filter, int argc, const char ** argv);
 int sc_search_rep_add (TCL_ARGS);

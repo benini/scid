@@ -1727,9 +1727,9 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
 
             if (strCompare("board", argv[4]) == 0 && argc == 10) {
-                const char* args[7] = {argv[3], argv[4], argv[9], argv[5],
-                                       argv[6], argv[7], argv[2]};
-                return sc_search_board(cd, ti, 7, args);
+                const char* args[6] = {argv[3], argv[4], argv[9], argv[5],
+                                       argv[6], argv[7]};
+                return sc_search_board(ti, dbase, filter, 6, args);
             }
         }
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
@@ -8468,7 +8468,7 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case OPT_BOARD:
-        ret = sc_search_board (cd, ti, argc, argv);
+        ret = sc_search_board (ti, db, db->getFilter("dbfilter"), argc, argv);
         break;
 
     case OPT_HEADER: {
@@ -8494,13 +8494,16 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Searches for exact match for the current position.
 //    if <base> is present, search for current position in base <base>,
 //    and sets <base> filter accordingly
-int
-sc_search_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usageStr =
-        "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip> [<base>]";
+int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
+                    int argc, const char** argv) {
+	ASSERT(dbase != nullptr && filter != nullptr);
 
-    if (argc < 6  ||  argc > 7) { return errorResult (ti, usageStr); }
+	const char* usageStr =
+	    "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip>";
+
+	if (argc != 6)
+		return errorResult(ti, usageStr);
+
     filterOpT filterOp = strGetFilterOp (argv[2]);
 
     bool useHpSigSpeedup = false;
@@ -8531,12 +8534,6 @@ sc_search_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     Position * pos = db->game->GetCurrentPos();
     
-    const scidBaseT* dbase = db;
-    if (argc == 7) {
-        dbase = DBasePool::getBase(strGetUnsigned(argv[6]));
-        if (dbase == 0) return UI_Result(ti, ERROR_FileNotOpen);
-    }
-    
     Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
     Position * posFlip =  NULL;
@@ -8554,7 +8551,6 @@ sc_search_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         msigFlip = matsig_Make (posFlip->GetMaterial());
     }
 
-    HFilter filter = dbase->getFilter("dbfilter");
     uint skipcount = 0;
 
     // If filter operation is to reset the filter, reset it:

@@ -566,7 +566,7 @@ proc ::windows::gamelist::filter_ {{w} {type}} {
 	if {$type == "r"} {
 		::windows::gamelist::FilterReset $w $::gamelistBase($w)
 	} elseif {$type == "b"} {
-		::search::board $::gamelistBase($w)
+		::search::board $::gamelistBase($w) $::gamelistFilter($w)
 	} elseif {$type == "h"} {
 		::search::header $::gamelistBase($w) $::gamelistFilter($w)
 	} elseif {$type == "m"} {
