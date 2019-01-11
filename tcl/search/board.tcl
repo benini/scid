@@ -80,16 +80,17 @@ proc ::search::DatabaseModified {{dbase} {filter -1}} {
 
 proc ::search::refresh_ {w} {
 	# TODO:
-	# Update CreateSelectDBWidget
-	# set filter to "dbfilter" if the filter no longer exists because the gamelist was closed
-
-	# TODO:
 	$w.buttons.save configure -state disabled
 
 	# TODO:
 	$w.buttons.reset_values configure -state disabled
 
-	lassign [sc_filter sizes $::search::dbase_($w) $::search::filter_($w)] filterSz gameSz
+	if {[catch {
+		lassign [sc_filter sizes $::search::dbase_($w) $::search::filter_($w)] filterSz gameSz
+	}]} {
+		destroy $w
+		return
+	}
 	set n_games [::windows::gamelist::formatFilterText $filterSz $gameSz]
 	$w.filterOp configure -text "[::tr FilterOperation] ($n_games)"
 }

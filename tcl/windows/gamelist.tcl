@@ -616,7 +616,10 @@ proc ::windows::gamelist::filterRelease_ {{base} {filter}} {
 			incr used
 		}
 	}
-	if {! $used} { catch {sc_filter release $base $filter} }
+	if {! $used} {
+		catch {sc_filter release $base $filter}
+		::notify::DatabaseModified $base $filter
+	}
 }
 
 proc ::windows::gamelist::updateStats_ { {w} } {
