@@ -30,6 +30,7 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 
 	grid [ttk::frame $w.refdb] -sticky news
 	CreateSelectDBWidget "$w.refdb" "::search::dbase_($w)" "$ref_base"
+	trace add variable ::search::dbase_($w) write ::search::use_dbfilter_
 	set ::search::filter_($w) $ref_filter
 
 	grid [ttk::frame $w.options] -sticky news
@@ -91,6 +92,10 @@ proc ::search::refresh_ {w} {
 	lassign [sc_filter sizes $::search::dbase_($w) $::search::filter_($w)] filterSz gameSz
 	set n_games [::windows::gamelist::formatFilterText $filterSz $gameSz]
 	$w.filterOp configure -text "[::tr FilterOperation] ($n_games)"
+}
+
+proc ::search::use_dbfilter_ { unused1 w {unused2 ""} } {
+	set ::search::filter_($w) dbfilter
 }
 
 proc ::search::progressbar_ {w show_hide} {
