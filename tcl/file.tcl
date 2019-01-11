@@ -246,6 +246,8 @@ proc ::file::Close {{base -1}} {
   # Close Tree window whenever a base is closed/switched:
   if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
 
+  ::search::CloseAll
+
   # If base to close was the current one, reset to clipbase
   if { $current == $base } { set current 9 }
 

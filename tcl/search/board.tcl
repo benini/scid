@@ -68,6 +68,12 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 	::search::refresh_ $w
 }
 
+proc ::search::CloseAll {} {
+	foreach {w} [array names ::search::dbase_] {
+		destroy $w
+	}
+}
+
 proc ::search::DatabaseModified {{dbase} {filter -1}} {
 	foreach {w w_base} [array get ::search::dbase_] {
 		if {$dbase == $w_base} {
