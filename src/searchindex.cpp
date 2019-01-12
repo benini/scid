@@ -388,67 +388,67 @@ std::vector<gamenumT> collectGames(HFilter& filter, filterOpT& filterOp) {
  */
 template<typename I>
 I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
-	if (param == "player") return std::partition(itB, itE,
+	if (param == "player") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_PLAYER, &IndexEntry::GetWhite, &IndexEntry::GetBlack)
 	);
-	if (param == "white") return std::partition(itB, itE,
+	if (param == "white") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_PLAYER, &IndexEntry::GetWhite)
 	);
-	if (param == "black") return std::partition(itB, itE,
+	if (param == "black") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_PLAYER, &IndexEntry::GetBlack)
 	);
-	if (param == "event") return std::partition(itB, itE,
+	if (param == "event") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_EVENT, &IndexEntry::GetEvent)
 	);
-	if (param == "site") return std::partition(itB, itE,
+	if (param == "site") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_SITE, &IndexEntry::GetSite)
 	);
-	if (param == "sitecountry") return std::partition(itB, itE,
+	if (param == "sitecountry") return std::stable_partition(itB, itE,
 		SearchSiteCountry(base, param.getValue())
 	);
-	if (param == "round") return std::partition(itB, itE,
+	if (param == "round") return std::stable_partition(itB, itE,
 		SearchName(base, param.getValue(), NAME_ROUND, &IndexEntry::GetRound)
 	);
-	if (param == "date") return std::partition(itB, itE,
+	if (param == "date") return std::stable_partition(itB, itE,
 		SearchRangeDate(base, param.getValue(), &IndexEntry::GetDate)
 	);
-	if (param == "eventdate") return std::partition(itB, itE,
+	if (param == "eventdate") return std::stable_partition(itB, itE,
 		SearchRangeDate(base, param.getValue(), &IndexEntry::GetEventDate)
 	);
-	if (param == "elo") return std::partition(itB, itE,
+	if (param == "elo") return std::stable_partition(itB, itE,
 		SearchRangeElo(base, param.getValue(), &IndexEntry::GetWhiteElo, &IndexEntry::GetBlackElo)
 	);
-	if (param == "welo") return std::partition(itB, itE,
+	if (param == "welo") return std::stable_partition(itB, itE,
 		SearchRangeElo(base, param.getValue(), &IndexEntry::GetWhiteElo)
 	);
-	if (param == "belo") return std::partition(itB, itE,
+	if (param == "belo") return std::stable_partition(itB, itE,
 		SearchRangeElo(base, param.getValue(), &IndexEntry::GetBlackElo)
 	);
-	if (param == "delo") return std::partition(itB, itE,
+	if (param == "delo") return std::stable_partition(itB, itE,
 		SearchRangeEloDiff(base, param.getValue(), &IndexEntry::GetWhiteElo, &IndexEntry::GetBlackElo)
 	);
-	if (param == "eco") return std::partition(itB, itE,
+	if (param == "eco") return std::stable_partition(itB, itE,
 		SearchRangeEco(base, param.getValue(), &IndexEntry::GetEcoCode)
 	);
-	if (param == "gnum") return std::partition(itB, itE,
+	if (param == "gnum") return std::stable_partition(itB, itE,
 		SearchRangeGamenum(base, param.getValue())
 	);
-	if (param == "length") return std::partition(itB, itE,
+	if (param == "length") return std::stable_partition(itB, itE,
 		SearchRange<ushort>(base, param.getValue(), &IndexEntry::GetNumHalfMoves)
 	);
-	if (param == "n_variations") return std::partition(itB, itE,
+	if (param == "n_variations") return std::stable_partition(itB, itE,
 		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetVariationCount)
 	);
-	if (param == "n_comments") return std::partition(itB, itE,
+	if (param == "n_comments") return std::stable_partition(itB, itE,
 		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetCommentCount)
 	);
-	if (param == "n_nags") return std::partition(itB, itE,
+	if (param == "n_nags") return std::stable_partition(itB, itE,
 		SearchRange<uint>(base, param.getValue(), &IndexEntry::GetNagCount)
 	);
-	if (param == "flag") return std::partition(itB, itE,
+	if (param == "flag") return std::stable_partition(itB, itE,
 		SearchFlag(base, param.getValue())
 	);
-	if (param == "result") return std::partition(itB, itE,
+	if (param == "result") return std::stable_partition(itB, itE,
 		SearchResult(base, param.getValue())
 	);
 
