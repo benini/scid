@@ -46,11 +46,14 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 	grid $w.filterOp.and $w.filterOp.or $w.filterOp.reset -ipadx 8
 
 	grid [ttk::frame $w.buttons] -sticky news
-	ttk::button $w.buttons.save -text [::tr Save] -command "::search::save_ $options_cmd"
-	ttk::button $w.buttons.reset_values -text [::tr Defaults]
+	ttk::button $w.buttons.save -text [::tr Save] -state disabled \
+		-command "::search::save_ $options_cmd"
+	ttk::button $w.buttons.reset_values -text [::tr Defaults] \
+		-command "set ::search::filterOp_($w) reset; $options_cmd reset"
 	ttk::button $w.buttons.search_new -text "[tr Search] ([tr GlistNewSort] [tr Filter])" \
 		-command "::search::start_ 1 $w $options_cmd"
-	ttk::button $w.buttons.search -text [::tr Search] -command "::search::start_ 0 $w $options_cmd"
+	ttk::button $w.buttons.search -text [::tr Search] \
+		-command "::search::start_ 0 $w $options_cmd"
 	grid $w.buttons.save $w.buttons.reset_values x $w.buttons.search_new $w.buttons.search -sticky w -padx "0 5"
 	grid columnconfigure $w.buttons 2 -weight 1
 
@@ -85,12 +88,6 @@ proc ::search::DatabaseModified {{dbase} {filter -1}} {
 }
 
 proc ::search::refresh_ {w} {
-	# TODO:
-	$w.buttons.save configure -state disabled
-
-	# TODO:
-	$w.buttons.reset_values configure -state disabled
-
 	if {[catch {
 		lassign [sc_filter sizes $::search::dbase_($w) $::search::filter_($w)] filterSz gameSz
 	}]} {
@@ -210,12 +207,14 @@ proc ::search::board {{ref_base ""} {ref_filter "dbfilter"}} {
 }
 
 proc ::search::boardCreateFrame {w} {
+	if {![info exists ::search::boardOptType_]} {
+		::search::boardOptions reset
+	}
+
 	ttk::labelframe $w.pos -text [::tr SearchType]
 	grid $w.pos -sticky news -pady 6
 	grid columnconfigure $w 0 -weight 1
-	if {![info exists ::search::boardOptType_]} {
-		set ::search::boardOptType_ Exact
-	}
+
 	ttk::radiobutton $w.pos.exact -textvar ::tr(SearchBoardExact)  -variable ::search::boardOptType_ -value Exact
 	ttk::radiobutton $w.pos.pawns -textvar ::tr(SearchBoardPawns)  -variable ::search::boardOptType_ -value Pawns
 	ttk::radiobutton $w.pos.files -textvar ::tr(SearchBoardFiles)  -variable ::search::boardOptType_ -value Fyles
@@ -225,22 +224,23 @@ proc ::search::boardCreateFrame {w} {
 	grid $w.pos.files -sticky w
 	grid $w.pos.material -sticky w
 
-	if {![info exists ::search::boardOptInVars_]} {
-		set ::search::boardOptInVars_ 0
-	}
 	ttk::checkbutton $w.vars -text [::tr LookInVars] -variable ::search::boardOptInVars_ -onvalue 1 -offvalue 0
 	grid $w.vars -sticky w
 
-	if {![info exists ::search::boardOptIgnoreCol_]} {
-		set ::search::boardOptIgnoreCol_ 0
-	}
 	ttk::checkbutton $w.flip -text [::tr IgnoreColors] -variable ::search::boardOptIgnoreCol_ -onvalue 1 -offvalue 0
 	grid $w.flip -sticky w
 
-	return "::search::boardGetOptions"
+	return "::search::boardOptions"
 }
 
-proc ::search::boardGetOptions {} {
+proc ::search::boardOptions {{cmd ""}} {
+	if {$cmd eq "reset"} {
+		set ::search::boardOptType_ Exact
+		set ::search::boardOptInVars_ 0
+		set ::search::boardOptIgnoreCol_ 0
+		return
+	}
+
 	set options {board}
 	lappend options $::search::boardOptType_
 	lappend options $::search::boardOptInVars_

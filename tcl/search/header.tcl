@@ -385,7 +385,12 @@ proc search::headerCreateFrame { w } {
   return "::search::headerGetOptions"
 }
 
-proc ::search::headerGetOptions {} {
+proc ::search::headerGetOptions {{cmd ""}} {
+	if {$cmd eq "reset"} {
+		::search::header::defaults
+		return
+	}
+
 	::utils::history::AddEntry HeaderSearchWhite $::sWhite
 	::utils::history::AddEntry HeaderSearchBlack $::sBlack
 	::utils::history::AddEntry HeaderSearchEvent $::sEvent
