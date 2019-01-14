@@ -841,11 +841,9 @@ proc glist.create {{w} {layout}} {
     set ::glist_FindBar($layout) 0
   }
 
-  ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
+  ttk::treeview $w.glist -style Gamelist.Treeview -columns $::glist_Headers -show headings -selectmode browse
   $w.glist tag configure current -background lightSteelBlue
   $w.glist tag configure fsmall -font font_Small
-  set lineH [expr { round(1.4 * [font metrics font_Small -linespace]) }]
-  ttk::style configure Treeview -rowheight $lineH
   $w.glist tag configure deleted -foreground #a5a2ac
   menu $w.glist.header_menu
   menu $w.glist.header_menu.addcol
@@ -854,9 +852,7 @@ proc glist.create {{w} {layout}} {
     set hWin [winfo height %W]
     set hHeading 18
     set space [expr double($hWin - $hHeading)]
-    set hRow [expr {int(1.8*[font metrics font_Small -ascent])} ]
-    ttk::style configure Treeview -rowheight $hRow
-    set ::glistVisibleLn(%W) [expr int(ceil($space / $hRow)) ]
+    set ::glistVisibleLn(%W) [expr int(ceil($space / $::glistRowHeight)) ]
     after 100 "glist.loadvalues_ %W"
   }
   if {$::windowsOS} {

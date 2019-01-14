@@ -303,6 +303,7 @@ catch { if { [file exists $::ThemePackageFile] } {
       }
 catch { ttk::style theme use $::lookTheme }
 
+#TODO: all the style configurations should be re-applied when the theme is changed
 # Use default font everywhere
 ttk::style configure TLabel -font font_Regular
 ttk::style configure TButton -font font_Regular
@@ -326,6 +327,10 @@ ttk::style configure Bold.TRadiobutton -font font_Bold
 ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
 ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
+
+#TODO: recalculate the value if font_Small is changed
+set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
+ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
 
 # font_Regular is the default font for widgets:
 option add *Font font_Regular
