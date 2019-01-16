@@ -79,8 +79,7 @@ Position::RemoveFromBoard (pieceT p, squareT sq)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // initHashValues:
 //    Initialises the table of Zobrist hash values.
-void
-initHashValues (void)
+static void initHashValues (void)
 {
     // Ensure we set up the hash values only once:
     static int firstCall = 1;
@@ -126,6 +125,39 @@ initHashValues (void)
     stdStartHash = h;
 }
 
+
+///////////////////////////////////////////////////////////////////////////
+// sqDir[][]: Array listing the direction between any two squares.
+//    For example, sqDir[A1][B2] == UP_RIGHT, and sqDir[A1][C2] == NULL_DIR.
+directionT sqDir[66][66];
+struct sqDir_Init
+{
+    sqDir_Init() {
+        // Initialise the sqDir[][] array of directions between every pair
+        // of squares.
+        squareT i, j;
+        directionT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
+                                  DOWN_LEFT, DOWN_RIGHT, NULL_DIR };
+        // First, set everything to NULL_DIR:
+        for (i=A1; i <= NS; i++) {
+            for (j=A1; j <= NS; j++) {
+                sqDir[i][j] = NULL_DIR;
+            }
+        }
+        // Now fill in the valid directions:
+        for (i=A1; i <= H8; i++) {
+            directionT * dirptr = dirArray;
+            while (*dirptr != NULL_DIR) {
+                j = square_Move (i, *dirptr);
+                while (j != NS) {
+                    sqDir[i][j] = *dirptr;
+                    j = square_Move (j, *dirptr);
+                }
+                dirptr++;
+            }
+        }
+    }
+} sqDir_Init_singleton;
 
 ///////////////////////////////////////////////////////////////////////////
 //  PRIVATE FUNCTIONS -- small ones are inline for speed

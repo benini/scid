@@ -14,41 +14,9 @@
 
 #include "common.h"
 #include "misc.h"
-#include "sqmove.h"
 #include <stdio.h>
 #include <ctype.h>     // For isspace() function.
 #include <cmath>
-
-// Table of direction between any two chessboard squares
-directionT sqDir[66][66];
-struct sqDir_Init
-{
-    sqDir_Init() {
-        // Initialise the sqDir[][] array of directions between every pair
-        // of squares.
-        squareT i, j;
-        directionT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
-                                  DOWN_LEFT, DOWN_RIGHT, NULL_DIR };
-        // First, set everything to NULL_DIR:
-        for (i=A1; i <= NS; i++) {
-            for (j=A1; j <= NS; j++) {
-                sqDir[i][j] = NULL_DIR;
-            }
-        }
-        // Now fill in the valid directions:
-        for (i=A1; i <= H8; i++) {
-            directionT * dirptr = dirArray;
-            while (*dirptr != NULL_DIR) {
-                j = square_Move (i, *dirptr);
-                while (j != NS) {
-                    sqDir[i][j] = *dirptr;
-                    j = square_Move (j, *dirptr);
-                }
-                dirptr++;
-            }
-        }
-    }
-} sqDir_Init_singleton;
 
 //////////////////////////////////////////////////////////////////////
 //   ECO Code Routines

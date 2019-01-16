@@ -2820,7 +2820,8 @@ encodeQueen (ByteBuffer * buf, simpleMoveT * sm)
 
     } else {
         // Diagonal move:
-        ASSERT (dirIsDiagonal [sqDir [sm->from][sm->to]]);
+        ASSERT(std::abs(sm->to / 8 - sm->from / 8) ==
+               std::abs(sm->to % 8 - sm->from % 8));
 
         // First, we put a rook-horizontal move to the from square (which
         // is illegal of course) to indicate it is NOT a rooklike move:
