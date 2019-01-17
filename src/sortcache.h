@@ -95,8 +95,6 @@ public:
 	 * @param criteria: the list of fields by which games will be ordered.
 	 *                  Each field should be followed by '+' to indicate an
 	 *                  ascending order or by '-' for a descending order.
-	 * @param fullSort: start a background thread to asynchronously sort all
-	 *                  games, making subsequent uses of this object faster.
 	 * @returns a pointer to the new object in case of success, NULL otherwise.
 	 */
 	static SortCache* create(const Index* idx, const NameBase* nb,

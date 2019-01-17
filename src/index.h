@@ -109,12 +109,9 @@ public:
     int GetBadNameIdCount() const { return nInvalidNameId_; }
 
     /**
-     * calcNameFreq() - calculate the usage of NameBase's names
+     * Counts how many times every names contained in @e nb is used.
      * @param nb: the NameBase linked to this Index
-     * @param resVec: an array of std::vectors where the stats will be stored.
-     *
-     * This functions counts how many times every names contained in @e nb
-     * is used and store the result into a corresponding record in @e resVec
+     * @returns an array of std::vectors containing the count of each name.
      */
     std::array<std::vector<int>, NUM_NAME_TYPES>
     calcNameFreq(const NameBase& nb) const {

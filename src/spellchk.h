@@ -104,7 +104,7 @@ public:
 	 * add*fix() - add a general correction
 	 *
 	 * Adds a general prefix, infix or suffix correction.
-	 * Syntax for @s is:
+	 * Syntax for @e s is:
 	 * %Suffix "wrong suffix" "correct suffix"
 	 * Return: OK if successful
 	 */

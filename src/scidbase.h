@@ -168,7 +168,7 @@ struct scidBaseT {
 	/**
 	 * Add or replace a game into the database.
 	 * @param game: valid pointer to a Game object with the data of the game.
-	 * @param replacedgameId: id of the game to replace.
+	 * @param replacedGameId: id of the game to replace.
 	 *                        If >= numGames(), a new game will be added.
 	 * @returns OK if successful or an error code.
 	 */
@@ -186,13 +186,10 @@ struct scidBaseT {
 	errorT invertFlag(uint flag, const HFilter& filter);
 
 	/**
-	 * Filters
-	 * @filterId: unique identifier of a Filter
-	 *
 	 * A Filter is a selection of games, usually obtained searching the
 	 * database. A new Filter is created calling the function newFilter()
 	 * and must be released calling the function deleteFilter().
-	 * A composed Filter is a special contruct created combining two Filters
+	 * A composed Filter is a special construct created combining two Filters
 	 * and includes only the games contained in both Filters.
 	 * A composed Filter should NOT be released.
 	 */
@@ -286,8 +283,8 @@ struct scidBaseT {
 	}
 
 	/**
-	 * Apply a transform operator to games' IndexEntry included in @e hfilter.
-	 * The @entry_op must accept a IndexEntry& parameter and return true when
+	 * Transform the IndexEntries of the games included in @e hfilter.
+	 * The @e entry_op must accept a IndexEntry& parameter and return true when
 	 * the IndexEntry was modified.
 	 * @param hfilter:  HFilter containing the games to be transformed.
 	 * @param progress: a Progress object used for GUI communications.
@@ -316,7 +313,7 @@ struct scidBaseT {
 	 * @param newNames: optional vector of names to be added to the database.
 	 * @param fnInit:   function that is invoked before beginning the
 	 *                  transformation; must accept a vector that contains the
-	 *                  idNumberTs of the names in @newNames.
+	 *                  idNumberTs of the names in @e newNames.
 	 * @param getID:    function that maps the old idNumberTs to the new ones.
 	 * @returns a std::pair containing OK (or an error code) and the number of
 	 * games modified.

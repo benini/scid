@@ -270,7 +270,7 @@ public:
 
 	/**
 	 * Given the actual board position, find if the last move needs to be made
-	 * unambiguous and if it gives check (or <TODO> mate), and then sets the
+	 * unambiguous and if it gives check (or TODO mate), and then sets the
 	 * appropriate bits in @e lastmove.
 	 * @param lastmove: the last move played.
 	 */

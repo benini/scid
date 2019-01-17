@@ -99,7 +99,7 @@ UI_res_t sc_var         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 
 /**
  * UI_Main() - Init the UI
- * @exit:      clean up function to be called when closing UI
+ * @param exit: clean up function to be called when closing UI
  */
 inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
 	return UI_impl::Main(argc, argv, exit);
@@ -129,8 +129,8 @@ inline Progress UI_CreateProgressPosMask(UI_handle_t ti) {
 
 /**
  * UI_Result() - pass the result of an operation from c++ to UI
- * @res:   OK for success or an error code (error.h)
- * @value: a value (or a list of values, see UI_List) to pass to UI
+ * @param res:   OK for success or an error code (error.h)
+ * @param value: a value (or a list of values, see UI_List) to pass to the UI
  *
  * Typical usage:
  * UI_Result(ti, OK);
