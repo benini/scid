@@ -18,7 +18,18 @@
 
 // The Recognizer class provides score bound information for chess
 // endgames.
-
+namespace Recognizer {
+static int KPK(Position* pos);
+static int KBBK(Position* pos);
+static int KBNK(Position* pos);
+static int KBPK(Position* pos);
+static int KRKB(Position* pos);
+static int KRKN(Position* pos);
+static int KMKP(Position* pos);
+static int KQKP(Position* pos);
+static int KRKP(Position* pos);
+static int KRPKR(Position* pos);
+} // namespace Recognizer
 
 static const int DRAW = recogValue (SCORE_EXACT, 0);
 static const int UNKNOWN = recogValue (SCORE_NONE, 0);
