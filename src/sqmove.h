@@ -15,11 +15,111 @@
 #ifndef SCID_SQMOVE_H
 #define SCID_SQMOVE_H
 
+#include "common.h"
+
+constexpr uint MAX_SQUARELIST = 65; // 64 squares plus null square
+
+class SquareList {
+	uint ListSize;
+	squareT Squares[MAX_SQUARELIST];
+
+public:
+	SquareList() { ListSize = 0; }
+
+	void Init() { ListSize = 0; }
+	void Clear() { ListSize = 0; }
+	void Add(squareT sq) {
+		Squares[ListSize] = sq;
+		ListSize++;
+	}
+	uint Size() { return ListSize; }
+
+	squareT Get(uint index) {
+		ASSERT(index < ListSize);
+		return Squares[index];
+	}
+
+	bool Contains(squareT sq) {
+		for (uint i = 0; i < ListSize; i++) {
+			if (Squares[i] == sq) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Remove(uint index) {
+		ASSERT(index < ListSize);
+		ListSize--;
+		if (index != ListSize) {
+			Squares[index] = Squares[ListSize];
+		}
+	}
+};
+
+class SquareSet {
+	uint Bits_a1h4;
+	uint Bits_a5h8;
+
+public:
+	SquareSet() { Bits_a1h4 = Bits_a5h8 = 0; }
+	SquareSet(squareT* squares) {
+		Bits_a1h4 = Bits_a5h8 = 0;
+		AddAll(squares);
+	}
+
+	void Clear(void) { Bits_a1h4 = Bits_a5h8 = 0; }
+	void AddAll(void) { Bits_a1h4 = Bits_a5h8 = 0xFFFFFFFFu; }
+
+	void Add(squareT sq) {
+		ASSERT(sq <= H8);
+		if (sq <= H4) {
+			Bits_a1h4 |= (1 << sq);
+		} else {
+			Bits_a5h8 |= (1 << (sq & 31));
+		}
+	}
+
+	void AddAll(squareT* squares) {
+		while (true) {
+			squareT sq = *squares;
+			if (sq == NULL_SQUARE) {
+				break;
+			}
+			ASSERT(sq <= H8);
+			squares++;
+			if (sq <= H4) {
+				Bits_a1h4 |= (1 << sq);
+			} else {
+				Bits_a5h8 |= (1 << (sq & 31));
+			}
+		}
+	}
+
+	bool Contains(squareT sq) {
+		ASSERT(sq <= H8);
+		if (sq <= H4) {
+			return (Bits_a1h4 & (1 << sq)) != 0;
+		} else {
+			return (Bits_a5h8 & (1 << (sq & 31))) != 0;
+		}
+	}
+
+	void Remove(squareT sq) {
+		ASSERT(sq <= H8);
+		if (sq <= H4) {
+			Bits_a1h4 &= ~(1 << sq);
+		} else {
+			Bits_a5h8 &= ~(1 << (sq & 31));
+		}
+	}
+};
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sqMove
 //   Array indexed by square value and direction, giving the square
 //   obtained by moving from the square in that direction.
-  const squareT
+constexpr squareT
 sqMove[66][11] = {
                 /* UP DOWN    LEFT UL  DL    RIGHT UR  DR */
    { /* A1 */  NS, A2, NS, NS, NS, NS, NS, NS, B1, B2, NS   },
@@ -96,7 +196,7 @@ sqMove[66][11] = {
 //   square reached by moving from the square in that direction.
 //   The last square is the same as the original square if moving
 //   in the specified direction would move off the board.
-  const squareT
+constexpr squareT
 sqLast[66][11] = {
                 /* UP DOWN    LEFT UL  DL    RIGHT UR  DR */
    { /* A1 */  NS, A8, A1, NS, A1, A1, A1, NS, H1, H8, A1   },
@@ -169,7 +269,7 @@ sqLast[66][11] = {
 
 // square_Move(): Return the new square resulting from moving in
 //      direction d from x.
-  inline squareT
+constexpr squareT
 square_Move(squareT sq, directionT dir)
 {
     return sqMove[sq][dir];
@@ -182,7 +282,7 @@ square_Move(squareT sq, directionT dir)
 //   a valid on-board square; the result will be the same as the
 //   input square if moving in the specified direction would end
 //   up off the board.
-  inline squareT
+constexpr squareT
 square_Last (squareT sq, directionT dir)
 {
     return sqLast[sq][dir];

@@ -16,8 +16,6 @@
 #include "position.h"
 #include "attacks.h"
 #include "misc.h"
-#include "sqlist.h"
-#include "sqset.h"
 #include "hash.h"
 #include "sqmove.h"
 #include "dstring.h"
