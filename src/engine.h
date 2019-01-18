@@ -208,7 +208,7 @@ public:
         NumGameMoves = 0;
         RootPos.StdStart();
         Pos.StdStart();
-        PV[0].length = 0;
+        for (auto& e : PV) { e.length = 0; }
     }
 #ifdef WINCE
     ~Engine()  { my_Tcl_Free((char*) TranTable);  my_Tcl_Free((char*) PawnTable); }
