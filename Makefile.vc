@@ -136,12 +136,15 @@ TCL_INCLUDES	= -I"$(TCL_DIR)\include"
 
 SCID_INCLUDES	= $(TCL_INCLUDES)
 
-!if !exist("$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib")
+!if exist("$(TCL_DIR)\lib\tcl$(TCL_VERSION)t.lib")
+TCL_LIB		= "$(TCL_DIR)\lib\tcl$(TCL_VERSION)t.lib"
+!elseif exist("$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib")
+TCL_LIB		= "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
+!else
 MSG =^
 *** The file tcl$(TCL_VERSION).lib appears to be missing or the wrong version.
 !error $(MSG)
 !endif
-TCL_LIB		= "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
 
 ##	SCID_TB: Tablebase support.
 #	for no tablebase reading capability.
