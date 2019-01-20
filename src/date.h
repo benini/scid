@@ -46,10 +46,6 @@ const uint YEAR_MAX = 2047;  // 2^11 - 1
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// PUBLIC FUNCTIONS
-bool   date_ValidString (const char * str);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // date_GetYear():
 //      Get the year from a date.
 inline uint
