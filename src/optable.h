@@ -16,9 +16,8 @@
 #define SCID_OPTABLE_H
 
 #include "common.h"
-#include "namebase.h"
-#include "index.h"
 #include "game.h"
+#include "indexentry.h"
 #include <string>
 class PBook;
 
