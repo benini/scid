@@ -1,7 +1,35 @@
 ﻿             Changelog 
             ===========
 
-[xxx 2014]
+[February 2019]
+scid-4.7.0
+==========
+- New features:
+	* Faster PGN parser with unlimited line length.
+	* Ability to open very large PGN files, up to 4 billion games and 268 million unique names for each type (player, event, etc...)
+	* Games can be copied or added to PGN databases. Replacing a game of a PGN database is disabled (previously the game was saved in memory).
+	* Consistent use of ttk's widgets with a more uniform look (thanks to Uwe Klimmek).
+	* Increased ability to customize the GUI with custom menu colors and custom ttk themes (thanks to Uwe Klimmek).
+	* The graph window includes engine evalutations (thanks to Uwe Klimmek).
+	* Saved windows layouts include undocked windows (even if they are on a different screens).
+	* Undocked windows can be docked (F9).
+	* Search dialogs have a new button to directly store the search into a new filter.
+	* ECO and opening name are displayed in the statusbar under the board.
+	* Re-written comment window.
+
+- New features for developers:
+	* CMake build
+	* Doxygen documentation
+	* Googletest framework
+	* c++14 standard
+
+- Fixes :
+	https://sourceforge.net/p/scid/bugs/search/?q=status%3Aclosed-accepted+or+status%3Awont-fix+or+status%3Aclosed-fixed+or+status%3Aclosed
+
+- Removed features:
+	* Compressed *.gz files cannot be opened directly.
+
+[May 2015]
 scid-4.6.0
 ==========
 - New features:
