@@ -1,4 +1,4 @@
-﻿             Changelog 
+             Changelog
             ===========
 
 [February 2019]
@@ -10,7 +10,13 @@ scid-4.7.0
 	* Games can be copied or added to PGN databases. Replacing a game of a PGN database is disabled (previously the game was saved in memory).
 	* Consistent use of ttk's widgets with a more uniform look (thanks to Uwe Klimmek).
 	* Increased ability to customize the GUI with custom menu colors and custom ttk themes (thanks to Uwe Klimmek).
-	* The graph window includes engine evalutations (thanks to Uwe Klimmek).
+	* Redesigned icons for toolbar buttons and analysis-window (thanks to Uwe Klimmek).
+	* High resolution piece sets (thanks to Uwe Klimmek).
+	* The graph window includes time information and bars for engine evaluations (thanks to Uwe Klimmek).
+	* Elo graph and player info window can use data from spellcheck file (thanks to Uwe Klimmek).
+	* Store time information in observed and played FICS games (thanks to Uwe Klimmek).
+	* New evaluations for statistic window (thanks to Uwe Klimmek).
+	* Additional crosstab info: percent (thanks to Uwe Klimmek).
 	* Saved windows layouts include undocked windows (even if they are on a different screens).
 	* Undocked windows can be docked (F9).
 	* Search dialogs have a new button to directly store the search into a new filter.
