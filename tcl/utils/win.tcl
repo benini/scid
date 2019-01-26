@@ -804,6 +804,7 @@ proc ::docking::layout_restore { slot } {
 
   # Create .main beforehand because some other windows depend on it
   # TODO: remove the dependencies
+  set ::docking::layout_dest_notebook [::docking::choose_notebook $wnd]
   ::CreateMainBoard .main
   lassign [::win::isDocked .main] docked_nb w
   $docked_nb forget $w
