@@ -566,11 +566,7 @@ set ::utils::sound::announceForward 0
 set ::utils::sound::announceBack 0
 
 # Spell-checking file: default is "spelling.ssp".
-if {$windowsOS} {
-  set spellCheckFile [file join $scidExeDir "spelling.ssp"]
-} else {
-  set spellCheckFile "/usr/local/share/scid/spelling.ssp"
-}
+set spellCheckFile [file join $scidShareDir "spelling.ssp"]
 
 # book configuration
 set ::book::lastBook "" ; # book name without extension (.bin)
