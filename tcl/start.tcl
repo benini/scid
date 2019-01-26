@@ -262,6 +262,15 @@ proc safeSet {i args} {
 # Use a ::safe::interp to evaluate a file containing ttk::style and image commands.
 # The evaluated script can only read the files inside its directory or direct subdirectories.
 # @param filename:  the absolute path to the file
+
+# recursiv identify all subdirs
+proc safeAddSubDirsToAccessPath { safeInterp dir } {
+  foreach subdir [glob -nocomplain -directory $dir -type d *] {
+    ::safe::interpAddToAccessPath $safeInterp $subdir
+    safeAddSubDirsToAccessPath $safeInterp $subdir
+  }
+}
+
 proc safeSourceStyle {filename} {
   set filename [file nativename "$filename"]
   set dir [file dirname $filename]
@@ -269,11 +278,10 @@ proc safeSourceStyle {filename} {
   set safeInterp [::safe::interpCreate]
 
   set vdir [::safe::interpAddToAccessPath $safeInterp $dir]
-  foreach subdir [glob -directory $dir -type d *] {
-    ::safe::interpAddToAccessPath $safeInterp $subdir
-  }
+  safeAddSubDirsToAccessPath $safeInterp $dir
 
   interp alias $safeInterp pwd {} ::safePwd
+  interp alias $safeInterp package {} ::safePackage $safeInterp
   interp alias $safeInterp image {} ::safeImage $safeInterp [list $vdir $dir]
   interp alias $safeInterp ttk::style {} ::safeStyle $safeInterp
 
@@ -283,6 +291,17 @@ proc safeSourceStyle {filename} {
 }
 
 proc safePwd {} {}
+
+proc safePackage { interp args } {
+    set args [lassign $args command]
+    catch {
+	switch -- $command {
+	    "require" { package require $args }
+	    "vsatisfies" { package vsatisfies $args }
+	    "provide" { package provide $args }
+	}
+    }
+}
 
 proc safeImage {interp dir_map args} {
 	set filename [lsearch -exact $args -file]
