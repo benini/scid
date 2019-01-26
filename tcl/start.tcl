@@ -259,6 +259,67 @@ proc safeSet {i args} {
   interp invokehidden $i set {*}$args
 }
 
+# Use a ::safe::interp to evaluate a file containing ttk::style and image commands.
+# The evaluated script can only read the files inside its directory or direct subdirectories.
+# @param filename:  the absolute path to the file
+proc safeSourceStyle {filename} {
+  set filename [file nativename "$filename"]
+  set dir [file dirname $filename]
+
+  set safeInterp [::safe::interpCreate]
+
+  set vdir [::safe::interpAddToAccessPath $safeInterp $dir]
+  foreach subdir [glob -directory $dir -type d *] {
+    ::safe::interpAddToAccessPath $safeInterp $subdir
+  }
+
+  interp alias $safeInterp pwd {} ::safePwd
+  interp alias $safeInterp image {} ::safeImage $safeInterp [list $vdir $dir]
+  interp alias $safeInterp ttk::style {} ::safeStyle $safeInterp
+
+  $safeInterp eval [list set vdir $vdir]
+  $safeInterp eval "source \$vdir/[file tail $filename]"
+  ::safe::interpDelete $safeInterp
+}
+
+proc safePwd {} {}
+
+proc safeImage {interp dir_map args} {
+	set filename [lsearch -exact $args -file]
+	if {$filename != -1} {
+		incr filename
+		set real_filename [string map $dir_map [lindex $args $filename]]
+		set args [lreplace $args $filename $filename $real_filename]
+	}
+	return [image {*}$args]
+}
+
+# Evaluate ttk::style commands invoked inside the restricted script.
+# If the command includes a script (ttk::style theme settings or ttk::style theme create)
+# it is evaluated using the safe interpreter.
+proc safeStyle {interp args} {
+	lassign $args theme settings themeName script
+	if {$theme eq "theme"} {
+		if { $settings eq "settings"} {
+			set curr_theme [ttk::style theme use]
+			ttk::style theme use $themeName
+			$interp eval $script
+			ttk::style theme use $curr_theme
+			return
+		}
+
+		set script_i [lsearch -exact $args -settings]
+		if {$script_i != -1} {
+			set script_j [expr $script_i + 1]
+			ttk::style {*}[lreplace $args $script_i $script_j]
+			$interp eval [list ttk::style theme settings $themeName [lindex $args $script_j]]
+			return
+		}
+	}
+
+	return [ttk::style {*}$args]
+}
+
 ####################################################
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
