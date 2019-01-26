@@ -137,8 +137,7 @@ proc updateTitle {} {
 #   Updates the main Scid window status bar.
 #
 proc updateStatusBar {} {
-    # Check if translations have not been set up yet:
-    if {! [info exists ::tr(Database)]} { return }
+    if {! [winfo exists .main]} { return }
 
     if {$::menuHelpMessage != ""} {
         ::board::setInfoAlert .main.board "[tr Help]:" "$::menuHelpMessage" "black" ""
