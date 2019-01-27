@@ -304,7 +304,7 @@ menu $m.theme -tearoff 1
 $m.theme add command -label OptionsThemeDir -command setThemePkgFile
 $m.theme add separator
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
-  foreach i [ttk::style theme names] {
+  foreach i [lsort [ttk::style theme names]] {
       $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
           -command {ttk::style theme use $::lookTheme}
   }
@@ -852,7 +852,7 @@ proc setThemePkgFile {} {
       catch { source -encoding utf-8 [file nativename $f ] }
       set m .menu.options.theme
       $m delete $::menuThemeListIdx end
-      foreach i [ttk::style theme names] {
+      foreach i [lsort [ttk::style theme names]] {
 	  $m add radiobutton -label "$i" -value $i -variable ::lookTheme \
 	      -command {ttk::style theme use $::lookTheme}
       }
