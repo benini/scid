@@ -304,10 +304,6 @@ menu $m.theme -tearoff 1
 $m.theme add command -label OptionsThemeDir -command setThemePkgFile
 $m.theme add separator
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
-  foreach i [lsort [ttk::style theme names]] {
-      $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
-          -command {ttk::style theme use $::lookTheme}
-  }
 $m add cascade -label OptionsTheme -menu $m.theme
 menu $m.windows
   $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
@@ -591,6 +587,14 @@ proc menuUpdatePieces {} {
   }
 }
 
+proc menuUpdateThemes {} {
+  set m .menu.options.theme
+  $m delete $::menuThemeListIdx end
+  foreach i [lsort [ttk::style theme names]] {
+      $m add radiobutton -label "$i" -value $i -variable ::lookTheme \
+      -command {ttk::style theme use $::lookTheme}
+  }
+}
 
 ##############################
 # Multiple-language menu support functions.
@@ -849,13 +853,8 @@ proc setThemePkgFile {} {
   set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialfile $::ThemePackageFile \
 	       -filetypes { {Theme "pkgIndex.tcl"} }]
   if {$f ne ""} {
-      catch { source -encoding utf-8 [file nativename $f ] }
-      set m .menu.options.theme
-      $m delete $::menuThemeListIdx end
-      foreach i [lsort [ttk::style theme names]] {
-	  $m add radiobutton -label "$i" -value $i -variable ::lookTheme \
-	      -command {ttk::style theme use $::lookTheme}
-      }
+      source -encoding utf-8 [file nativename $f ]
+      menuUpdateThemes
       set ::ThemePackageFile $f
   }
 }

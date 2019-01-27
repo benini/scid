@@ -1278,6 +1278,7 @@ keyboardShortcuts .
 ::docking::layout_restore 1
 
 menuUpdateBases
+menuUpdateThemes
 setLanguageMenus
 
 if {$startup(stats)} { ::windows::stats::Open }
