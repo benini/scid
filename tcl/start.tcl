@@ -296,9 +296,9 @@ proc safePackage { interp args } {
     set args [lassign $args command]
     catch {
 	switch -- $command {
-	    "require" { package require $args }
-	    "vsatisfies" { package vsatisfies $args }
-	    "provide" { package provide $args }
+	    "require" { package require {*}$args }
+	    "vsatisfies" { package vsatisfies {*}$args }
+	    "provide" { package provide {*}$args }
 	}
     }
 }
