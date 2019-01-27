@@ -378,9 +378,9 @@ proc createFonts {} {
 createFonts
 
 # Load theme
-catch { if { [file exists $::ThemePackageFile] } {
-	  source -encoding utf-8 [file nativename $::ThemePackageFile] }
-      }
+if { [file exists $::ThemePackageFile] } {
+  catch { ::safeSourceStyle $::ThemePackageFile }
+}
 catch { ttk::style theme use $::lookTheme }
 
 #TODO: all the style configurations should be re-applied when the theme is changed

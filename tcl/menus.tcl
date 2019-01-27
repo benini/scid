@@ -853,7 +853,7 @@ proc setThemePkgFile {} {
   set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialfile $::ThemePackageFile \
 	       -filetypes { {Theme "pkgIndex.tcl"} }]
   if {$f ne ""} {
-      source -encoding utf-8 [file nativename $f ]
+      ::safeSourceStyle $f
       menuUpdateThemes
       set ::ThemePackageFile $f
   }
