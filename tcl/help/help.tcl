@@ -1664,8 +1664,6 @@ set helpText(Finder) {<h1>The File Finder window</h1>
    These functions are especially helpful for Scid databases as these
    consist of several files.
   </p>
-  
-  <p><footer>(Updated: Scid 4.6.5, June 2018)</footer></p>
 }
 
 ####################

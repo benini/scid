@@ -163,7 +163,7 @@ matrix:
       coverity_scan:
         project:
           name: "benini/scid"
-          description: "SCID v.4.6.5"
+          description: "SCID chess"
         notification_email: fulvioscid@users.sourceforge.net
         build_command_prepend: "cmake . -DCMAKE_CXX_COMPILER=g++-7 && cov-configure --comptype gcc --compiler gcc-7 --template"
         build_command:   "make scid"
