@@ -144,7 +144,7 @@ proc tr {tag {lang ""}} {
 #
 ################################################################################
 proc setLanguage {} {
-  global menuLabel menuUnder helpTitle helpText
+  global menuLabel menuUnder helpTitle helpText tips
   set lang $::language
   
   if { $::translatePieces } {
