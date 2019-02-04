@@ -963,7 +963,7 @@ proc gameSave { gnum } {
       ERROR::MessageBox
     }
   }
-  # bind .save <Alt-s> { .save.buttons.save invoke; break }
+  bind .save <Alt-s> { .save.buttons.save invoke; break }
   
   dialogbutton .save.buttons.cancel -textvar ::tr(Cancel) -command {destroy .save}
   pack .save.buttons -side bottom -padx 10 -fill both -expand 1
