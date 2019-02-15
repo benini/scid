@@ -42,7 +42,6 @@ proc ::tourney::Open {} {
   wm title $w "Scid: [tr WindowsTmt]"
 
   bind $w <F1> {helpWindow Tmt}
-  bind $w <Escape> "$w.b.close invoke"
   bind $w <Return> ::tourney::refresh
   bind $w <Destroy> { set tourneyWin 0 }
   bind $w <Up> "$w.t.text yview scroll -1 units"
