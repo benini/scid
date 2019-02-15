@@ -107,7 +107,7 @@ inline bool is_PGNdigit(unsigned char ch) { return ch >= '0' && ch <= '9'; }
  * @returns true if the character is a white space, false otherwise.
  */
 inline bool is_PGNwhitespace(unsigned char ch) {
-	return (ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v');
+	return (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\v' || ch == '\n');
 }
 
 /**
