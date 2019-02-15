@@ -398,4 +398,4 @@ TEST_P(Test_Codec, rename) {
 	}
 }
 
-INSTANTIATE_TEST_CASE_P(CodecDatabase, Test_Codec, ::testing::ValuesIn(codecs));
+INSTANTIATE_TEST_SUITE_P(CodecDatabase, Test_Codec, ::testing::ValuesIn(codecs));

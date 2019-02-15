@@ -403,5 +403,5 @@ TEST_P(Test_FilebufGetline, filesize) {
 	}
 }
 
-INSTANTIATE_TEST_CASE_P(smallbuf, Test_FilebufGetline,
-                        ::testing::Values(1000, 100, 10));
+INSTANTIATE_TEST_SUITE_P(smallbuf, Test_FilebufGetline,
+                         ::testing::Values(1000, 100, 10));

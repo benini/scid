@@ -384,4 +384,4 @@ TEST_P(Test_HFilter, hfilter_nonconstFunc) {
 	}
 }
 
-INSTANTIATE_TEST_CASE_P(HFilter, Test_HFilter, ::testing::ValuesIn(test_cases));
+INSTANTIATE_TEST_SUITE_P(HFilter, Test_HFilter, ::testing::ValuesIn(test_cases));
