@@ -388,9 +388,9 @@ const char *
 PlayerInfo::getTitle() const
 {
     static const char * titles[] = {
-        "gm", "im", "fm",
-        "wgm", "wim", "wfm", "w",
-        "cgm", "cim", "hgm",
+        "GM", "IM", "FM",
+        "WGM", "WIM", "WFM", "W",
+        "CGM", "CIM", "HGM",
         NULL
     };
     const char ** titlePtr = titles;
@@ -399,7 +399,7 @@ PlayerInfo::getTitle() const
     if (*comment == 0) { return ""; }
 
     while (*titlePtr != NULL) {
-        if (strIsPrefix (*titlePtr, comment)) { return *titlePtr; }
+        if (strIsCasePrefix (*titlePtr, comment)) { return *titlePtr; }
         titlePtr++;
     }
     return "";
