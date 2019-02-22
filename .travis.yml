@@ -18,13 +18,13 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure && make && size tkscid
 
   - os: linux
-    env: CXX=g++-4.9 CC=gcc-4.9
+    env: CXX=g++-5 CC=gcc-5
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
         packages:
-          - g++-4.9
+          - g++-5
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
