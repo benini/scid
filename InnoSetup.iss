@@ -121,7 +121,7 @@ begin
       lines[8]  := '  Time 0'
       lines[9]  := '  URL  {}'
       lines[10] := '  UCI 1'
-      lines[11] := '  UCIoptions {}'
+      lines[11] := '  UCIoptions {{{Analysis Contempt} Off}}'
       lines[12] := '}'
       lines[13]  := ''
       lines[14]  := 'engine {'
@@ -133,7 +133,7 @@ begin
       lines[20]  := '  Time 0'
       lines[21]  := '  URL  {}'
       lines[22] := '  UCI 1'
-      lines[23] := '  UCIoptions {{Threads 2}}'
+      lines[23] := '  UCIoptions {{{Analysis Contempt} Off} {Threads 2}}'
       lines[24] := '}'
       lines[25]  := ''
       lines[26]  := 'engine {'
@@ -145,7 +145,7 @@ begin
       lines[32]  := '  Time 0'
       lines[33]  := '  URL  {}'
       lines[34] := '  UCI 1'
-      lines[35] := '  UCIoptions {{Threads 4}}'
+      lines[35] := '  UCIoptions {{{Analysis Contempt} Off} {Threads 4}}'
       lines[36] := '}'
       SaveStringsToFile(filename,lines,true);
   end
