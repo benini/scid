@@ -1613,7 +1613,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
     // Probe the hash table:
     int hashscore = alpha;
-    simpleMoveT hashmove;
+    simpleMoveT hashmove{};
     bool isOnlyMove = 0;
     scoreFlagT hashflag = ProbeHash (depth, &hashscore, &hashmove, &isOnlyMove);
 
