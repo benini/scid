@@ -108,7 +108,6 @@ proc ::preport::preportDlg {args} {
   }
   bind $w <Return> [list $w.b.ok invoke]
   bind $w <Escape> [list $w.b.cancel invoke]
-  ::utils::win::Centre $w
   grab $w
   focus $w.g.player
 }
@@ -270,7 +269,6 @@ proc ::preport::makeReportWin {args} {
     }
     pack $w.b.opts -side left -padx 2 -pady 2
     ::preport::ConfigMenus
-    ::utils::win::Centre $w
   }
   
   busyCursor .

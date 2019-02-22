@@ -380,15 +380,6 @@ proc exportOptions {exportType} {
   }
   packbuttons right $w.b.cancel $w.b.ok
   
-  wm withdraw $w
-  update idletasks
-  set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-        - [winfo vrootx [winfo parent $w]]}]
-  set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-        - [winfo vrooty [winfo parent $w]]}]
-  wm geom $w +$x+$y
-  wm deiconify $w
-  
   grab $w
   tkwait variable exportFlags(ok)
   grab release $w
@@ -973,7 +964,6 @@ proc gameSave { gnum } {
   packdlgbuttons .save.buttons.cancel .save.buttons.save
   
   bind .save <Escape> { focus .; destroy .save; }
-  ::utils::win::Centre .save
   focus .save.g.entryevent
   .save.g.entryevent selection range 0 end
   if {$gnum > 0} { focus .save.buttons.save }

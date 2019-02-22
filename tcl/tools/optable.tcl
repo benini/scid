@@ -1281,15 +1281,7 @@ proc ::optable::editFavoritesDlg {} {
   packdlgbuttons $w.b.cancel $w.b.ok
   set editFavoritesName ""
   
-  wm withdraw $w
-  update idletasks
-  set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-        - [winfo vrootx .]}]
-  set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-        - [winfo vrooty .]}]
-  wm geom $w +$x+$y
   wm protocol $w WM_DELETE_WINDOW [list $w.b.cancel invoke]
-  wm deiconify $w
   update
   catch {grab $w}
 }
@@ -1468,7 +1460,6 @@ proc ::optable::reportFavoritesOK {} {
   bind $w <Visibility> "raiseWin $w"
   pack [ttk::label $w.t -width 40 -text "Generating reports. Please wait..." -font font_Bold] -side top -pady 5
   pack [ttk::label $w.report] -side top -pady 5
-  ::utils::win::Centre $w
   wm deiconify $w
   grab $w
   update

@@ -27,7 +27,6 @@ proc ::tip::show {{n -1}} {
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
     bind $w <Escape> "$w.b.close invoke"
-    ::utils::win::Centre $w
     raiseWin $w
     focus $w
   }

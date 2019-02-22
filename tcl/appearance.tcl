@@ -172,7 +172,6 @@ proc ::appearance::menuConfigDialog {} {
   bind $w.f <Destroy>  { unset ::menuDialog_ }
   bind $w <F1> { grab release .menuOptions; helpWindow Appearance }
   ::appearance::Refresh
-  ::utils::win::Centre $w
   wm resizable $w 0 0
   raiseWin $w
   grab $w

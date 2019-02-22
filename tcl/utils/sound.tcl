@@ -258,7 +258,6 @@ proc ::utils::sound::OptionsDialog {} {
   packbuttons right $w.b.cancel $w.b.ok
   bind $w <Return> [list $w.b.ok invoke]
   bind $w <Escape> [list $w.b.cancel invoke]
-  ::utils::win::Centre $w
   wm resizable $w 0 0
   raiseWin $w
   grab $w

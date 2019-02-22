@@ -446,7 +446,6 @@ proc ::enginelist::choose {} {
     pack $f.add $f.edit $f.delete -side left -padx 1
     
     ::enginelist::sort
-    ::utils::win::Centre $w
     focus $w.list.list
     wm protocol $w WM_DELETE_WINDOW "destroy $w"
     bind $w <F1> { helpWindow Analysis List }

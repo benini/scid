@@ -286,14 +286,6 @@ proc ::bookmarks::Edit {} {
   packdlgbuttons $w.b2.cancel $w.b2.ok
   set bookmarks(edit) ""
 
-  wm withdraw $w
-  update idletasks
-  set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-                 - [winfo vrootx .]}]
-  set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-                 - [winfo vrooty .]}]
-  wm geom $w +$x+$y
-  wm deiconify $w
   update
   catch {grab .bmedit}
 }
