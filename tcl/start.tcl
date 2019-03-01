@@ -241,10 +241,12 @@ proc safeSource {filename args} {
   set f [file nativename "$filename"]
   set d [file dirname $f]
   set n [file tail $f]
+  set vdir [::safe::interpAddToAccessPath $::safeInterp $d]
+  interp alias $::safeInterp image {} ::safeImage $::safeInterp [list $vdir $d]
   foreach {varname value} $args {
     $::safeInterp eval [list set $varname $value]
   }
-  $::safeInterp eval [list set vdir [::safe::interpAddToAccessPath $::safeInterp $d]]
+  $::safeInterp eval [list set vdir $vdir]
   $::safeInterp eval "source \$vdir/$n"
   foreach {varname value} $args {
     $::safeInterp eval [list unset $varname]
