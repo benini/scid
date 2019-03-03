@@ -6,39 +6,6 @@ namespace eval pinfo {
 set playerInfoName ""
 set ::eloFromRating 0
 
-# the following icons are used as buttons with PND as input, this has
-# to be handled specially and they involve some technicalities. All
-# other icons and link resolvers come from the config file
-image create photo wikiplnk -data {
-   R0lGODlhEAAQAIQQAAQCBBkYGSgoKDw6PEhHSFdYV2lqaXp7eoSDhJiYmKmoqbm6ucjHyNjZ2Ono
-   6fz9/P///////////////////////////////////////////////////////////////yH+EUNy
-   ZWF0ZWQgd2l0aCBHSU1QACH5BAEKABAALAAAAAAQABAAAAV24COOZGmeaDouBbE8CnE0z1E0jVE8
-   iPA+BEHDgUg8HAZjI2BwPBIBBcMgQo4KAcajEUQoRIsvOIAQJQC7I+InIhBojQFB1DiUEIBv3Pc0
-   lgQFDgoGA1QITncDBwp1AgllJgoCAl8Lk1onbjQPBgIpC5hbbConIQA7
-}
-image create photo dnblnk -data {
-   R0lGODlhFAAUALMAAAAAAGZmZld/u8zMzP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-   AAAAACH5BAEAAAQALAAAAAAUABQAAARkkMg5BaA4SxHs1RknjB5YdSQJfCGapismvjRLzDTM4vkI
-   BB9e7ze4CHPEIsDT8wUGUAsHuKw9o8YAIUCFXQeWzbNQ4K4s37BkOSCTzWkb4dx2x0F0N9a0ZhfA
-   ciZnanwYMSARAAA7
-}
-image create photo seealsolnk -data {
-   R0lGODlhFQAVAMZ5AAAAAAEBAAICAQQGAhEXCSEtECMwESouJjw8PDJFGEJcH0xpJGFhYVRuMVV1
-   KF6CLH2IbmuVM4+Pj5SUlHysO4imYYGwQYK0PaKiooa6QIe7QKioqIi8Qoq9RIq9RYu9R4y+SI2+
-   SY2+SqysrI/ATZDAT62urK6urpHBUJLBUa+vr7GxsZXDVrKyspXEV5bEWJfEWrOzs7W1tZrGX7a2
-   tre3t57IZbm5ubq6uru7u6TLbry8vL29vajOdanOdsDAwMHBwavQecLCwqzQe63QfMPDw8TExLDS
-   gbDSgsXFxbHTg8bGxsfHx7LUhbTUh8jIyLXVicnJycrKyrfWjcvLy8zMzM3Nzc7OztDQ0L/bmdHR
-   0dLS0sbfpNbW1s/ks9bovdbovtrqxNrqxdvqxd3syN3syeLv0ePv0ubx1+jy2urz3fL46vP47Pf3
-   9/T57vb68Pn89vv7+/r8+Pz9+v3++/3+/P7+/f7+/v///v///////////////////////////yH+
-   EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAFQAVAAAH/oAjKi00Nzs/QEJFi4tAPzw3NC0qJy01O0BJ
-   T1RWV55XVlVRS0A7NS0rNDt5rK15LxqxsrE7NDE3QHlsRCIcJTaws7JCODI8S3k+GmJzaEMvIXJ5
-   cB+ySzw1P1J5HhpsrS9NrUeyUkA3RVZ5KRooUF5sL2R5aXljsldFOUtYeWHssTq4qENnhh06JGJp
-   WbKDiRZWdc5wgaEBhD0NZfJMibWFScMtrvKs0eAhDxINSvKY4fjkYx4dYNyYOKAhCKs4NfLgYaFh
-   S0uHeXq8sDCAgJM3XzQ4CAAhT5aeTPb1Y9UFAAMqVCpEiGAAwAQ1GhaiU8fqDgIAaNOmvaDhipFs
-   TdtatcEgocGCuwUAJMigwZwxZCFfxXogYG+sa7dyBQ5GQQHfWMRSrVosTFatSqoyReH0CZQoUqZa
-   CCJkCJEiRkUcQZKkYoPr17Bjyw4EADs=
-}
-
 proc setupDefaultResolvers { } {
    set optionF ""
    if {[catch {open [scidConfigFile resolvers] w} optionF]} {
@@ -54,47 +21,49 @@ proc setupDefaultResolvers { } {
       puts $optionF "# Define how to interpret IDs stored in ssp files. Each ID has to"
       puts $optionF "# have a unique page to link to. It is currently not possible to link"
       puts $optionF "# to more than one page by means of a single ID, or to get more"
-      puts $optionF "# than one button by any ID. Therefore, PND is handled specially"
-      puts $optionF "# and within pinfo.tcl"
+      puts $optionF "# than one button by any ID. FIDEID is an exception, see below"
       puts $optionF "#"
       puts $optionF "# Syntax of the following array's list entries:"
       puts $optionF "#"
-      puts $optionF "# IDName: the tag to search for e.g. VIAF searches for"
-      puts $optionF "#         %Bio VIAF-lines and so on"
-      puts $optionF "# link target url: %ID% is replaced by the ID"
+      puts $optionF "# IDName: the tag to search for e.g. FIDEID searches for"
+      puts $optionF "#         %Bio FIDEID -lines in the spellcheck file"
+      puts $optionF "#      special IDNames:"
+      puts $optionF "#         useFIDEID : Use the FIDEID"
+      puts $optionF "#         useNAMEF: Use the name of the player as ID in the order First Name Last Namee.q. Magnus Carlsen"
+      puts $optionF "#         useNAMEL: Use the name of the player as ID in the order Last Name,First Name e.q. Carlsen,Magnus"
+      puts $optionF "#                 add an additional sign after the F/L to select a delimiter, see examples below "
+      puts $optionF "# link target url: %ID% is replaced by the ID, %LANG% is replaced with the selected language code"
       puts $optionF "# icon name: the icons are specified below as base64 encoded images"
-      puts $optionF "#            They must not live in ::pinfo-namespace!"
       puts $optionF "# Link text: what to display in pinfo window"
-      puts $optionF "set ::pinfo::idlink(0) {{VIAF} {http://viaf.org/%ID%} {viaflnk} {VIAF}}"
-      puts $optionF "set ::pinfo::idlink(1) {{FIDEID} {http://ratings.fide.com/card.phtml?event=%ID%} {fidelnk} {FIDE}}"
-      puts $optionF "set ::pinfo::idlink(2) {{ICCFID} {http://www.iccf-webchess.com/PlayerDetails.aspx?id=%ID%} {iccflnk} {ICCF}}"
-      puts $optionF "set ::pinfo::idlink(3) {{DSB} {http://www.schachbund.de/dwz/db/spieler.html?zps=%ID%} {dsblnk} {DSB}}"
-      puts $optionF "set ::pinfo::idlink(4) {{BCF} {http://grading.bcfservices.org.uk/getref.php?ref=%ID%} {bcflnk} {BCF}}"
-      puts $optionF "set ::pinfo::idlink(5) {{SchemingMind} {http://www.schemingmind.com/plyrprofile.aspx?profile_id=%ID%} {smlnk} {SchemingMind}}"
+      puts $optionF ""
+      puts $optionF "#resolver without icons"
+      puts $optionF "set idlink(0) {{VIAF} {http://viaf.org/%ID%} {} {VIAF}}"
+      puts $optionF "set idlink(1) {{FIDEID} {http://ratings.fide.com/card.phtml?event=%ID%} {} {FIDE}}"
+      puts $optionF "set idlink(2) {{ICCFID} {https://www.iccf.com/player?id=%ID%} {} {ICCF}}"
+      puts $optionF "set idlink(3) {{PND} {https://portal.dnb.de/opac.htm?query=%ID%\\&method=simpleSearch} {} {PND}}"
+      puts $optionF "set idlink(4) {{BCF} {http://ecfgrading.org.uk/new/menu.php?ref=%ID%} {} {ECF}}"
+      puts $optionF "#set idlink(5) {{useFIDEID} {https://chess-db.com/public/pinfo.jsp?id=%ID%} {} {chess-db.com}}"
+      puts $optionF "#set idlink(6) {{useNAMEF+} {https://tools.wmflabs.org/persondata/index.php?name=%ID%} {} {PS}}"
+      puts $optionF "#set idlink(7) {{useNAMEF_} {http://%LANG%.wikipedia.org/wiki/%ID%} {} {Wikipedia}}"
+      puts $optionF "#set idlink(8) {{useNAMEF_} {https://www.365chess.com/players/%ID%} {} {365Chess}}"
+      puts $optionF "#set idlink(9) {{useNAMEF-} {https://chess24.com/en/read/players/%ID%} {} {Chess24}}"
+      puts $optionF ""
+      puts $optionF "#resolver with icons"
+      puts $optionF "#set idlink(0) {{VIAF} {http://viaf.org/%ID%} {VIAF} viaflnk }"
+      puts $optionF "#set idlink(1) {{FIDEID} {http://ratings.fide.com/card.phtml?event=%ID%} fidelnk {FIDE}}"
+      puts $optionF "#set idlink(2) {{ICCFID} {https://www.iccf.com/player?id=%ID%} iccflnk {ICCF}}"
+      puts $optionF "#set idlink(3) {{PND} {https://portal.dnb.de/opac.htm?query=%ID%\\&method=simpleSearch} dnblnk {PND}}"
+      puts $optionF "#set idlink(4) {{BCF} {http://ecfgrading.org.uk/new/menu.php?ref=%ID%} bcflnk {ECF}}"
+      puts $optionF "#set idlink(5) {{useFIDEID} {https://chess-db.com/public/pinfo.jsp?id=%ID%} chessdblnk {chess-db.com}}"
+      puts $optionF "#set idlink(6) {{useNAMEF+} {https://tools.wmflabs.org/persondata/index.php?name=%ID%} pslnk {PS}}"
+      puts $optionF "#set idlink(7) {{useNAMEF_} {http://%LANG%.wikipedia.org/wiki/%ID%} wikiplnk {Wikipedia}}"
+      puts $optionF "#set idlink(8) {{useNAMEF_} {https://www.365chess.com/players/%ID%} chess365lnk {365Chess}}"
+      puts $optionF "#set idlink(9) {{useNAMEF-} {https://chess24.com/en/read/players/%ID%} {c24lnk} {Chess24}}"
+      puts $optionF ""
       puts $optionF "#"
-      puts $optionF "# Icons for the icons defined here MUST NOT live in ::pinfo namespace"
+      puts $optionF "# Icons for the links"
       puts $optionF "#"
-      puts $optionF "image create photo fidelnk -data {"
-      puts $optionF "   R0lGODlhEAAQAOecACIxWSY0XSc2XSg2YCc3Xig3Xik3Xyk4Xyo4Xyo4YCo5Xyo5YCs5Xyo6Xys6"
-      puts $optionF "   YCs6YSw6YCw6YSw7YSw7Yi07Yi48Yi48Yy88Yi89YzA+ZDE/ZDE/ZTI/ZTJAZTJBZjNBZTNBZjRB"
-      puts $optionF "   ZjNCZTRCZjZEaDdEaThEaThGaTlGaTpIazxKbT1KbT9MbkBNb0NQc0VRc0ZScUZUdEhUdEdVdkhV"
-      puts $optionF "   dElVdEpXdk1ZeE5ZeFRef1NgfVRgf1dgf1hhf11nhGFsh2JsiGFtiGJtiGNtiGZyi2lzjWt3kHB4"
-      puts $optionF "   kHN+lnqEm36GnYCJnYmSo4qTpZWbrpWcq5eerZeer5qgrp6ltaGns6asuKesuqetvK60wrC1wLa6"
-      puts $optionF "   xra8x7i9xLu/x7vAyb3CyMvO1MzP09DS2tDT2dHU2dHV2tLV2dPV29PX29fZ3tna3dna3tra3tzd"
-      puts $optionF "   4d3d4dze4Nze4d3e4d3e4tzf4d3f4d3f497f4d7f5N/g4d7h497h5t/h5ODi5OHi5eHj5eLj5eLk"
-      puts $optionF "   5uPl6OTm6efn6eXo6ejq6+rq6+rq7Orr7Ors6+vs7ezt7+3u7+/w8vDw8O/x8fDx8vHx8vHy9PHz"
-      puts $optionF "   9PX19fb29vf39/j4+fr6+/v6+/z9/f39/v//////////////////////////////////////////"
-      puts $optionF "   ////////////////////////////////////////////////////////////////////////////"
-      puts $optionF "   ////////////////////////////////////////////////////////////////////////////"
-      puts $optionF "   ////////////////////////////////////////////////////////////////////////////"
-      puts $optionF "   ////////////////////////////////////////////////////////////////////////////"
-      puts $optionF "   /////////////////////////////////////////////////////yH+EUNyZWF0ZWQgd2l0aCBH"
-      puts $optionF "   SU1QACH5BAEKAP8ALAAAAAAQABAAAAjbAEEIHEiwoMGDBz1IGGDhhIkKBhx0IBhiAgUjWMSYiXRH"
-      puts $optionF "   C5IPC0YIfLBji51KV1wESWPpT5chCUBggDGH06UsACYE0DFIEqdGPSBsKIMojxwgRFg84MGmzh5B"
-      puts $optionF "   elbccATp0SNGVjgIWBKpUCJFjH7gcPOGDh8yFzAISGLID6A+f4SQCMQIzhovJVqouDFGTZtDk15Q"
-      puts $optionF "   8EEI0yZKVGrIgCJJU6ZFRxiAQFAEDR4wVXLYkBImzhklCgY2ENEkChMuX55McYLiQMEOBSCkiEFj"
-      puts $optionF "   RgQCGhCC6JCht+7fAwMCADs="
-      puts $optionF "}"
+      puts $optionF ""
       puts $optionF "image create photo iccflnk -data {"
       puts $optionF "   R0lGODlhEAAQAMZqAAAA/wEB/wMD/wQE/wUF/wYG/wcH/wgI/woK/wsL/wwM/xAQ/xER/xIS/xMT"
       puts $optionF "   /xQU/xYW/xcX/xgY/xkZ/xoa/xsb/x4e/yEh/yIi/yUl/yYm/ycn/ykp/zIy/zQ0/zY2/zc3/zo6"
@@ -117,14 +86,6 @@ proc setupDefaultResolvers { } {
       puts $optionF "   8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw=="
       puts $optionF "}"
       puts $optionF ""
-      puts $optionF "image create photo smlnk -data {"
-      puts $optionF "   R0lGODlhEAAQAOMNAAAAABgYITE5OVJSUmNja3Nzc4SEjJycpbW1tcbOztbW3ufn5+/39///////"
-      puts $optionF "   /////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAEAAQAAAEl7AVZEprawCSmkJLQy2HwCiFJgzK"
-      puts $optionF "   1RyAUBBKMhjBEAgGchSFWOGAahACh8GNsEDkBhaPStA6SAA7gytRMHQ8GQFCYcWEMK4DsoNwoS+L"
-      puts $optionF "   hIAwUnxA8Iv6N0gYBDkdDC5KCF0JCAQEgw0MIQxiBD0GTQRdUSETfQcHCAgCADEIjJwgY2N/VIw1"
-      puts $optionF "   lJ0vnTEKISEGRAOeuAhfLhEAOw=="
-      puts $optionF "}"
-      puts $optionF ""
       puts $optionF "image create photo bcflnk -data {"
       puts $optionF "   R0lGODlhEAAQAIQRAAAAAAAAIAAAQAAgYCAgIDAwMABAgEBAQGBgYDBvbwCAgD9/fzCQkH9/f2Cg"
       puts $optionF "   oDCvr4/Pz////////////////////////////////////////////////////////////yH+EUNy"
@@ -133,214 +94,213 @@ proc setupDefaultResolvers { } {
       puts $optionF "   hoYEIQA7"
       puts $optionF "}"
       puts $optionF ""
-      puts $optionF "image create photo dsblnk -data {"
-      puts $optionF "   R0lGODlhEAAQAMZMABIRERYVFDsQDUoTDyMiInUfGWclIDQzM3QmF4QiG0A3G0A3HU47OU49O0VE"
-      puts $optionF "   RE9FI1BNTFFNTFFOTVFOTlJOTlJQT1JRUVJSUVNSUlRTU1VUVFZVVds5LMw+Mto7Kds7L80/NF1d"
-      puts $optionF "   XNs9Mdo/K9s+Mts+M9pAK9xAM9xANNtBNW9iNtxDN9xDONpGLNxFOdlIK9lILH5tN9xQRXh3d458"
-      puts $optionF "   P4iIiK2XTJmZmb2lU6qqqru7u9zAYszMzOzNZuzNZ+zOZ+zOaOzOae3Qbe3Qbu7Rce3Sc93d3e7u"
-      puts $optionF "   7vn39/v5+fz6+v37+///////////////////////////////////////////////////////////"
-      puts $optionF "   ////////////////////////////////////////////////////////////////////////////"
-      puts $optionF "   /////////////////////////////////////////////////////////////////////////yH+"
-      puts $optionF "   EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAEAAQAAAHs4BMghAUIi5CPT2Ci4sVEgwpJkGJjI0SDSgv"
-      puts $optionF "   lJWLExUiIj49RZyCGBMyJCk9Q6WCS0sCBSM7Kg41gg66OUxIIScGNDG4NTdMDkxHB0xKFxwgCjYb"
-      puts $optionF "   N0aCBDUzM0xJEyIfCz1GNw7GBzo6DkZIqAkID9VHyMhMMzqwAQMdOAsOBzxMAHRp0xBhAosTQBS5"
-      puts $optionF "   YmIhQoYTHn4odBUhgowSLSQuzDABwooTMIAAIeKKYzcUMnokZBQIADs="
+      puts $optionF "image create photo dnblnk -data {"
+      puts $optionF "   R0lGODlhFAAUALMAAAAAAGZmZld/u8zMzP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      puts $optionF "   AAAAACH5BAEAAAQALAAAAAAUABQAAARkkMg5BaA4SxHs1RknjB5YdSQJfCGapismvjRLzDTM4vkI"
+      puts $optionF "   BB9e7ze4CHPEIsDT8wUGUAsHuKw9o8YAIUCFXQeWzbNQ4K4s37BkOSCTzWkb4dx2x0F0N9a0ZhfA"
+      puts $optionF "   ciZnanwYMSARAAA7"
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo c24lnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wIBFisA8KPVIgAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAFaSURBVDjLrZSxSgNBEIa/2azmOKOgjWihYmGh4IOksIkISRpLm+Rh"
+      puts $optionF "   8gKCSETINfoEYmXnMwQEsRCM0SSijsVdZE0uuSTeX+3O7v7M/P/MytHJpc3MZfLAAbCHyLLAEpAD"
+      puts $optionF "   fCDDX3wCb8Croi3gSZR7hauX9seNFCuNsoickwJU9dAAZdLDsRGRjbTYRGTLRlpNVhI8XtQKa26s"
+      puts $optionF "   VA26QDbaLpppCIGvmNi3s84ZYCFFDX3rpDsKnb5EQC9eiV94Nro4kqxeK/huoFhp3IlINmyTMCvX"
+      puts $optionF "   FzuDk/uAF66Hz03S+4QShxCXYRMNnVPozkKoTiadeq2wOaDZLcgqoBLe88e1qo2c88aIti2wPqHE"
+      puts $optionF "   PQO8Jw/IxOgYoJ1ggkxB2LYDhF6pGjw74yTAynSEqk1Edp3g8j8+xAejEKQ1yAqBVdUzwn7Li7AD"
+      puts $optionF "   0v/+c9Gcz8e5GZnZVmiBNlGuUU5/AOgHXYLbHhimAAAAAElFTkSuQmCC"
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo pslnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wIDCS0S6DMvKgAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAKPSURBVDjLrZRbSFRRGIW/vc85Mx6qKcaiiy+CVpLQhSGoiLAb9BAY"
+      puts $optionF "   FBQVUg/NQBGCkfTQQ/ZQVERv0QxCBRVBVAQlSNCFIsEYg9AUFcxiMGsqL6PNjOfs3UOpM4NdLNfr"
+      puts $optionF "   v/bPWazvPzDVCk/GHMxw7z6VPdt3AQABEIGSQcMosbTu9iple6Ft3+nGQbpeLUZI20h/We16/M8J"
+      puts $optionF "   H2jKWrLz5ApmzhWkEu1cPZIAMH+OkrZSdq9lFS1Ip88PQAvHVm4j9OoMWi1T5vQFaPWGtbvKWLRm"
+      puts $optionF "   E9LaipTzUG4RWiVQqgp4CCAB0mCitb+mcOFtoNkDG6o9eZtRbgwo0MIUQClL1r/D9F5Hyj3ARqRR"
+      puts $optionF "   iNYluI5/9KNN/SN350VYd6m9pQL4JsAoHkktZUZ+K0N9o14HuAXiNb0djdw79ywr/t6zcK0aUwCH"
+      puts $optionF "   wXChflDK0hFpnJjjjMRMKJ7Z01HX75s9AMInlJPUcIPaQ/UTFnatmrHICZAalvuFHjjujDSHoHIW"
+      puts $optionF "   PDhx8/hLhu0gqbwq/Sm1n9pVj34FQCAcHG85axAJ3kXjcy0jLV1lGLguoEBIpYSV80YAH4Cj0VAk"
+      puts $optionF "   BiAC4eDXDIMC/JNEWf8IiQtYpko5jswzZ6P/6z4MNZTukbZ12UzGhyvs+TNuCil8/7JJK31/+P3n"
+      puts $optionF "   yrZTd7oAjPjT5s78NUsazGmePO0qW0jx15G1ox43HazdEn/W2lf2tIa3V55gAHx89Lq7oHxlnZNI"
+      puts $optionF "   3pEeMx9oB+JA4e8Wfo7GdvQ3dfQEwkEatp8fbzkQDhINRXIxKAMe/25hNBQRmdhEQ5EJsAkHk4A3"
+      puts $optionF "   o0Hxh+RxoDwairwYAztHKoezPynTP/a3yVQNYE+i6H7g3a/OR/wriKOnN+X6DoYV8zpy6frwAAAA"
+      puts $optionF "   AElFTkSuQmCC"
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo chess365lnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wEWESUKAdQSwQAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAStSURBVDjLhZRbbFRlFIW/ff5z5sxMp/ebbZWWBrFAFdQqQYvKk1ED"
+      puts $optionF "   oVGiRgyGRIIxUR9UImj0SY1GQ2rig7eoiZd4SQniJSpaUiRUi5S01AIFxt6wnQ69TWc6Z875fx9A"
+      puts $optionF "   ITHqet5Ze6+9114C0PvYJhp3vgdA4pN3ZPTLXRG3tv7WcNVlG6xIeCWiatABxs+N+FOTnfMjv3/k"
+      puts $optionF "   TSTaJeykVry1y3AR5OgTW1j28hsAnH74LlcvvuYOVV71gq6pXzxbUEnGjRFYISwT4ObS5GcmCSeH"
+      puts $optionF "   8ePH+7wzQ9tmew7vbdq1P9P9wDpWvLsb+Ys5/tSDBSxp2pa9dPH2ZHUDM27RuY4YBIM5X2rEwvUz"
+      puts $optionF "   XDIzQnTgMP7A0WeTHd+/ev3XXalfWlajAIYeucf1lzc/fbb+2u1D1VeSDefjWILn+xit0dqgtSHQ"
+      puts $optionF "   Bt8PyGKTcIvxi8ooUMEa11bWa+0Hf3izfxBlWh+X8eK69aMLr2s9Ub6UEkdTnx6lcHqUaDRCPKPI"
+      puts $optionF "   BYZsYHBtYUGBgyVQEbUY0XlMuUWUZ882b6kuiL/e1dtt/TqaiY4VLXihv7SBWMiioihKNBGnZOAQ"
+      puts $optionF "   SikuLw0x42nOzgcExnBVZZhVNVEaSl08L8dJq4TemuuJVFY+922NVageuXnV2p8bbn8oEythxexx"
+      puts $optionF "   Sk53IzrA5DyUJRR0/8hU3VXEpzzSOUPG10x7mp7xLAOTOdJeQMIupHwyHiuLOmfsPqdqQ79TySXZ"
+      puts $optionF "   HCRGye77DCksxYiF9BzGT88SW3k3E+kAR6C+KERtoYMx8xwcyTCX04gIh4sb1ZrcN3faxyKXrhxO"
+      puts $optionF "   +WR9TbpyIbGNj+MNDlCcGifetI4rTv3EngmPWU/jCBwYTtM3ofgj5ZPMBMx5Ab6GCecyWZVOL7NT"
+      puts $optionF "   kaJqMTCZzvG2LmNt+TzLDrXzR08XVZcvZ2feTfQNphCBpWUh7l1W+LeJ+5NjjM8ZRMCoEFOxsmJ7"
+      puts $optionF "   3o0RCSkqXKElNExtvA8W1BEqr8CN93NvbIIPKlYxPO0RdhRTWU3W14SUhRJBzjvZiOA5UezacHBm"
+      puts $optionF "   jTNYV5Gdpry9jTOdHYgbBhEIApSt2LS9lWO25vhYPluH0kzP+1gihG1ByYW3s/3cpN1y+ouDc3u6"
+      puts $optionF "   63LZeabFRuVfkIQDBkPq+UepdRRLG6+hdvVmPldV5Lzc39MB2IFvCuYSR63EgX0fzOcCAuWAZfFP"
+      puts $optionF "   CFrZeFqYOXKI6t691JZG0BdFgkGoSp7UhanxzyyJxvYh8hsI/woREMGIgNYoES6OGK1srj723eii"
+      puts $optionF "   wd/et0QkBTzJ/0FrQmUVTC25kZPJDOq8GF85XDHYyaLhrm2qn1mrqa3DgNkLPPtffMoNkb36Ftrz"
+      puts $optionF "   lpDNegigLUXp9Ag3HPn85aa2jo8BLICmtv0ZDK8CL/6r6uo6jt64kf7xOWwBLYri2TFuOfThS7G5"
+      puts $optionF "   5A4B07W++Vx8da1fTdOuDm99Y+SHPJN3GlgBxDi3WLEiUbzNz/DmUJgQgUEsXXn21GjzkU+3bmx9"
+      puts $optionF "   ZefC3hNB19pradrdeeESv7Q0c13bfgA6191QpJS6H2hB68b8lk1lrQs2kBxLzEX9dE/N+PFP7vtq"
+      puts $optionF "   xzsNe0/MAHy96R5ue+9jAP4ETQUK89iGnNcAAAAASUVORK5CYII="
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo chessdblnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wEWESIIoJvlKgAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAOPSURBVDjLlZQ9jFRVFMd/57735mOZ3WXJAooIikSRyjXZgkYsjKCF"
+      puts $optionF "   YkdhaW9DaaKdBYmJMbHSxMpopRUhURGIIYpmDQZdRRZcVnd2Zmdmd2bevO97j8UbVpECPMW9yT3J"
+      puts $optionF "   P/+Pc4+oqnKfpQoC4+O/zfLd53+V4nDcWj9HmK6yo3GAWrCTydo+fFNHEMz9Q5XUBMPN9tdcWf4M"
+      puts $optionF "   pymp3cS6eExa781QxzpVFUFRlRJAhDjvUEUpO4LoPSSX9iqjpEl7+D2WlF2Np4mTnCK3pMUA39RB"
+      puts $optionF "   LWMB95asqqz0vuH8zx/imwr96Dp7Z+eIo4Lc9snsABEzNuUuybqVJii3B0AAzwhZ1iPwGtgsRGOL"
+      puts $optionF "   KSJEon9FIXcCqoJiMeITxU2sRtQqD2AKDz/KoRghzkCaYKICvxiB9jHIFpm7PFRrOfftuyTFFfY/"
+      puts $optionF "   vJ9G/TGysEsQW4IiBFUkizFRQaWIIe2NExZAMP/M9fgWw2R1ku6fHSbUp1IUmDzGjwuCPESyISZL"
+      puts $optionF "   MXFBLYvwkt7YwxLCB3CqGBF0/A0mKpPUrMNLBxgzhUlTJMypuQgrgqc5kjuqNsWOitvOo4AvInRX"
+      puts $optionF "   v8JFlzH+FPWpOSpmG0GSUcsjRDbRUULSSVhfWEZ+6pNu5Dw6ilnvXoPHp+CIggEx41AuX/ySuScs"
+      puts $optionF "   uBbRYB2bHGTYDik6A5yB65qhxw7xY98x+vQPjj7zIqwt0/z9Kg3pohKULFXLvK3dTmtxkXClSdLp"
+      puts $optionF "   Y5OC1vKQuLnJ+eYSTbOJWMfOPbuZ/+QkC198zMriD0wfPsBDzx7ixoW3wRjcbQ+NN83atQ6VnZOM"
+      puts $optionF "   VkPk4JO0VkLyZp+FG332HguYntpGf9QjWsxxkxPsOvkUv3rHueSfICmU5PMWb56YLRkG1SlWlzaI"
+      puts $optionF "   V4ekrQEP7tpNNwzI1xI0s9xa6rFyq8VGNKSy1mB+/i0+uHqc1eA5ev0hg8GI3xYXUaf4zjmOPP8y"
+      puts $optionF "   p995ncONBv7ufTgzw/tnL1D0Qx458x5LGwuYuqF+GiqVDu3gIq9pwUczB0kGQ+Jwg263h5ijZcr1"
+      puts $optionF "   Wo03zvyCJcP3a+AH2CKkOjvNSy+8ytnvEoZ2mfZfId5swfZqg5maR3v5JtYKMzsmOPXKsXLotayt"
+      puts $optionF "   STJbm228qmzGYNQm1jaDSwO0O8JkFt8Xlubm2V7z2DNTZXZ6gnrFvxNw6wep3LEojBGcs2RhQpFl"
+      puts $optionF "   4MATId9WZ6Lq4Xs+6sq9+Tcv6fd6haBVDgAAAABJRU5ErkJggg=="
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo wikiplnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wEWESoJH0VftAAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAKDSURBVDjLrZQ/SGNLFId/N6zwKrUIqKUgNqIW3kaQdKnFyKJio50h"
+      puts $optionF "   bUBQUAyIpLAVsVLQIrt9RAXRVkJAZDUi2AQjioWuf+5Gc8+3xdP7srsKb3c9MDBzzpyPmTlnfpIk"
+      puts $optionF "   M2szs09mdmNm/Oa4ec5tkyTneZKT9I/+zr5Jch0z+yTpo97HPjtmdiOp9p2AXx0zw3Gcd6EB+uB5"
+      puts $optionF "   nkZGRpTP5wXI933F43E1NDQonU7L8zyFw2FNTk5qb29PmUxGdXV16uvrk+u6SiaTKpfLikQiWlhY"
+      puts $optionF "   kHi2+fl5JJFOp19crKysIIm1tTUALi8vicVi7OzsBHsWFxdJJBLBWmYGwMXFBZ2dnXR1dQXB29tb"
+      puts $optionF "   enp6aG1tpVKpsLW1RSqV4unpCTPj/v6e8fFx8vk8AGb2L/AFOjMzgySy2WwAXV5eRhJzc3Mkk0n2"
+      puts $optionF "   9/eDWKFQYHh4OID9AiyVStTW1tLR0UG1tbS0UF9fz+zsbJAMkEgk2N3d/QEYqq5QU1OTBgcHdXR0"
+      puts $optionF "   pPX19aB6ExMTur6+Vk1NjSTJcRxdXV3p4OBAkUhEwH+lrv5GAKenp0iiv78/OOH09DSNjY20t7dT"
+      puts $optionF "   KpUAiMfjQXGqGfr5bwIMDQ0RDofJ5XIcHh4yOjrKxsYGklhaWuLs7Ize3t5fYG8Cj4+PkcTU1BRj"
+      puts $optionF "   Y2OcnJzgeR7d3d1Eo1EGBgbI5XL/D2hmPDw8EIvFkEQqleLx8RHf98lkMkgiGo1yd3f3qvroLVnK"
+      puts $optionF "   ZrM0NzdTKBSCtywWi7iuy+rqKr7vvwl8VQPPz8/Z3t6mXC4HvkqlwubmJsVi8dXrmtnNm/JVLRjV"
+      puts $optionF "   bfHi/6FVfpKvdxXYUCgU+iLJlfRZ0tc/0cDnXDcUCn35Ds1OQnIj7LXqAAAAAElFTkSuQmCC"
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo fidelnk -data {"
+      puts $optionF "   iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI"
+      puts $optionF "   WXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wIEEx02hxDjFwAAABl0RVh0Q29tbWVudABDcmVhdGVk"
+      puts $optionF "   IHdpdGggR0lNUFeBDhcAAAM9SURBVDjLrZRNbJRVFIaf+/NNyzAz/dOxU2vbGRoLVmikLUJUqMBC"
+      puts $optionF "   iFEW4oJo4g9hpyZu0BpNg1GJbpSNiX8LXGDiChUUu7CJrYKJSiASEa1DM0OV32lph5nvu/e7LoZW"
+      puts $optionF "   YwuJpic5q3PPyT3ved9X9Kzf4VjA0NcqOOcIQ4dzlQRACKQAISRSinn7JAscCz5wzsqBMQS+oa42"
+      puts $optionF "   Tro1RWOynkQiijGW4pUyFy5OMpb7k/z4eSKexvM8hJhnYBg6ildKrF2zgq1b+ritI00sWs0f5y8x"
+      puts $optionF "   UbhM78pl+IFhuliiVCqTy5/l4/1DDA59j5QCKSvLip71O1wYOlI31bPr+SdY3rkEayzaU5RKPv0v"
+      puts $optionF "   v8Pw4eO0tTSy7aGNPLjpbhBgTUhVxGP0dJ6du94le3ocIQSqKd090Lm0jT2vPc2t7begpERrRbFY"
+      puts $optionF "   4oVX3uPrb4+jtaIwMcXBwSNorVjd24mnFUII6usSPLzlXk7+OsZodhwZjVbT/+wjpBobMMZgjKUw"
+      puts $optionF "   McVLuz9gaPgo7ZmbWVQdQQhBPB7lwOBhAKy1GGMJrvYM7HyM5Z0ZZM8dHXS0t1QA1RqlJBFPs3nj"
+      puts $optionF "   ava+3c99G3qx1la4GTpqa2IIQEqJUhJPa7RWxGOL2frAOmSmJQVA2Q8o+wF+YFBasWFdN7kz59j7"
+      puts $optionF "   0Zf4gUUIQWAsfXd14QdmNmf6AmO48YY6dH78HABVEW8Op/YfHGG6WAIhEFfXbG5KEvHmF9ilwiRy"
+      puts $optionF "   5LufyJ05C4AxFj8wBIHBOUe6rZFkQ4ymZIJUMkFrcwOffTE8+7sgMBhrCcOQy1NFPvl8BJVs7hr4"
+      puts $optionF "   5bccq1YuJRFfjFIVbEDQdXsGreDEySxCCNauWcH2R++nvq4GTyuUkkgpcc7xxp59FU464Idjp3jq"
+      puts $optionF "   ubf48dipiloCA86RiMfou2cVo2MXyOYukqipZUmmBSVl5Q0wms2z/ZnX+fTQN2itKsSewcAPDHd2"
+      puts $optionF "   L+PxbZtIJKLsfnMfJ37+fVYF1oYIIXj1xSdJtzbx/ocH+Gr46N9uNKOUfwJrjKXsByyqiqC0xLm5"
+      puts $optionF "   tqaVpDA5TXVVBO9fB5pzLq0VWiucY86wiiUKjA2Jx6L/zb6EuLZFiesU9fWK/yf+AkkdVsIfTmX/"
+      puts $optionF "   AAAAAElFTkSuQmCC"
       puts $optionF "}"
       close $optionF
    }
 }
 
-# Resolve Wikipedias language sites by means of the Wikipedia API
-proc WikipNLS { LinkList } {
-
-   # set WikiPediaAPI "http://de.wikipedia.org/w/api.php?action=query"
-
-   set WikiPLL  "&prop=langlinks"
-   set WikiPTI  "&titles="
-   set lang     $::language
-   set langlink [lindex $LinkList 3]
-
-   # translate Scid's internal single letter language representation by
-   # a more common two letter one; the same is used by WP
-   switch $lang {
-      B {set wplanguage pt}
-      C {set wplanguage cs}
-      D {set wplanguage de}
-      F {set wplanguage fr}
-      G {set wplanguage gr}
-      H {set wplanguage hu}
-      I {set wplanguage it}
-      K {set wplanguage ca}
-      N {set wplanguage nl}
-      O {set wplanguage no}
-      P {set wplanguage pl}
-      R {set wplanguage ru}
-      S {set wplanguage es}
-      W {set wplanguage sv}
-      Y {set wplanguage sr}
-      default {set wplanguage en}
-   }
-
-   set Title    [lindex $LinkList 3]
-   regsub -all {.*/} $Title "" Title
-
-   # Spaces etc in URLs are bad, especially for TCL.
-   # Use poor mans urlencoding:
-   regsub -all { } $Title "%20" Title
-
-   # collect all languages in $fullresult, each page contains a
-   # llcontinue item linking to the following languages
-   set fullresult ""
-   set llcontinue ""
-
-   # start out here:
-   set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title"
-
-   set token     [::http::geturl $WPfetchURL]
-   set xmlresult [::http::data $token]
-   ::http::cleanup $token
-
-   # avoid requirement of tDOM and use simple regexping here as the
-   # XML structure returned is simple enough
-
-   # for more than 10 translations, a continue url is returned.
-   # Extract it
-   regsub -all {.*<langlinks llcontinue=} $xmlresult  "" llcontinue
-   regsub -all {/>.*}                     $llcontinue "" llcontinue
-   regsub -all {\|} $llcontinue "%7C" llcontinue
-   regsub -all {\"} $llcontinue "" llcontinue
-
-   # check if more langlinks exist, if so set the watermark, otherwise
-   # it has to be emptied.
-   if {[string match "*llcontinue*" $xmlresult]} {
-      # keep only the langlinks-section of the XML
-      regsub -all {.*<langlinks>} $xmlresult "" xmlresult
-      regsub -all {</langlinks>.*} $xmlresult "" xmlresult
-      regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
-   } else {
-      set llcontinue ""
-   }
-   set fullresult $xmlresult
-
-   while { $llcontinue != "" } {
-
-      set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title&llcontinue=$llcontinue"
-      regsub -all { } $WPfetchURL "" WPfetchURL
-
-      set token     [::http::geturl $WPfetchURL]
-      set xmlresult [::http::data $token]
-      ::http::cleanup $token
-
-      if {[string match "*llcontinue*" $xmlresult]} {
-         regsub -all {.*<langlinks llcontinue=} $xmlresult  "" llcontinue
-         regsub -all {/>.*}                     $llcontinue "" llcontinue
-         regsub -all {\|} $llcontinue "%7C" llcontinue
-         regsub -all {\"} $llcontinue "" llcontinue
-      } else {
-         set llcontinue ""
-      }
-
-      regsub -all {.*<langlinks>} $xmlresult "" xmlresult
-      regsub -all {</langlinks>.*} $xmlresult "" xmlresult
-      regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
-      set fullresult "$fullresult$xmlresult"
-   }
-
-   set langlist [split $fullresult "\n"]
-
-   foreach ll $langlist {
-      # construct the NLS-enabled link to WP
-      if { [string match "*lang=\"$wplanguage\"*" $ll] } {
-         set baselink "http://$wplanguage.wikipedia.org/wiki/"
-         regsub -all {.*preserve">} $ll       "" pagename
-         regsub -all {<.*} $pagename "" pagename
-         set langlink "$baselink$pagename"
-      }
-   }
-   openURL $langlink
-}
-
-# Use the SeeAlso service hosted at Gemeinsamer Bibliotheks Verbund
-# (Goettingen) to resolve the PND to german Wikipedia. SeeAlso might
-# proove useful later for other services as they appear on SeeAlso
-proc saPND2WP { pnd } {
-
-   set SeeAlso "$::pinfo::SeeAlsoPND2WP$pnd"
-
-   set token [::http::geturl $SeeAlso]
-
-   set LinkList [::http::data $token]
-   regsub -all {\[} $LinkList "" LinkList
-   regsub -all {\]} $LinkList "" LinkList
-   regsub -all {\"} $LinkList "" LinkList
-   set LinkList [split $LinkList ,]
-
-   WikipNLS $LinkList
+proc ::pinfo::splitName { playerName } {
+  set fname $playerName
+  set lname $playerName
+  set countlen 2
+  set count [string first ", " $playerName ]
+  if { $count < 0 } {
+     set count [string first " " $playerName ]
+     set countlen 1
+  }
+  if { $count > 0 } {
+     # create names "firstname lastname" and "lastname,firstname"
+     set fname "[string range $playerName [expr $count + $countlen] end] [string range $playerName 0 [expr $count - 1]]"
+     regsub -all "\[0-9\]" $fname "" fname
+     set lname "[string range $playerName 0 [expr $count - 1]],[string range $playerName [expr $count + $countlen] end]"
+     regsub -all "\[0-9\]" $lname "" lname
+  }
+  return [list $fname $lname]
 }
 
 # Replace the ID-Tags by proper links
-proc ReplaceIDTags { pinfo } {
-  # replace certain BIO lines by links to external media
-  regsub -all ".*PND "    $pinfo "" pnd
-  regsub -all {<br>.*}    $pnd  "" pnd
-
-  set pnd   [string trim $pnd]
-
+proc ::pinfo::ReplaceIDTags { pinfo } {
   switch $::language {
-     B {set wplanguage pt}
-     C {set wplanguage cs}
-     D {set wplanguage de}
-     F {set wplanguage fr}
-     H {set wplanguage hu}
-     I {set wplanguage it}
-     K {set wplanguage ca}
-     N {set wplanguage nl}
-     O {set wplanguage no}
-     P {set wplanguage pl}
-     R {set wplanguage ru}
-     S {set wplanguage es}
-     W {set wplanguage sv}
-     Y {set wplanguage sr}
-     default {set wplanguage en}
+    B {set wplanguage pt}
+    C {set wplanguage cs}
+    D {set wplanguage de}
+    F {set wplanguage fr}
+    H {set wplanguage hu}
+    I {set wplanguage it}
+    K {set wplanguage ca}
+    N {set wplanguage nl}
+    O {set wplanguage no}
+    P {set wplanguage pl}
+    R {set wplanguage ru}
+    S {set wplanguage es}
+    W {set wplanguage sv}
+    Y {set wplanguage sr}
+    default {set wplanguage en}
   }
 
-
-  # the following three resolvers hook up with PND and need special
-  # treatment as additional functions need to be called
-  set wikiplink  "<run openURL $::pinfo::wikipurl/$wplanguage/$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl/$wplanguage/$pnd;><blue>WP</blue></run>"
-
-  # As we have direct linkage to WikiPedia SeeAlso is currently
-  # obsolete. It might become of interest again if it offers other
-  # services to connect to.
-  ### set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk -command ::pinfo::saPND2WP $pnd><blue>SeeAlso</blue></run>"
-  set seealsolink ""
-
-  set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk -command openURL $::pinfo::dnburl/$pnd><blue>DNB</blue></run>"
-
+  set fideid ""
+  set linked "<br>"
   # Handle all id definitions and link resolvers from the config file
-  foreach index [array names ::pinfo::idlink] {
-     set federation $::pinfo::idlink($index)
-     set searchterm [lindex $federation 0]
-     set link       [lindex $federation 1]
-     set icon       [lindex $federation 2]
-     set str        [lindex $federation 3]
+  foreach index [lsort [array names ::unsafe::idlink]] {
+    set federation $::unsafe::idlink($index)
+    set searchterm [lindex $federation 0]
+    set url        [lindex $federation 1]
+    set icon       [lindex $federation 2]
+    set str        [lindex $federation 3]
+    if { $icon ne "" && ($icon eq [info commands $icon]) } { set btn "<img $icon>" } else { set btn "" }
 
-     # extract the ID
-     regsub -all ".*$searchterm " $pinfo "" id
-     regsub -all {<br>.*} $id "" id
-     set id [string trim $id]
-
-     if {$id != ""} {
-        regsub -all "%ID%" $link $id link
-        set btn "<run openURL $link; ::windows::stats::Refresh><button $icon -command openURL $link><blue>$str</blue></run>"
-        regsub -all "$searchterm $id<br>" $pinfo $btn pinfo
-     }
+    # extract the ID
+    if { [regsub -all ".*$searchterm " $pinfo "" id] } {
+      regsub -all {<br>.*} $id "" id
+      set id [string trim $id]
+      if { $searchterm == "FIDEID" } { set fideid $id }
+      regsub -all "%ID%" $url $id url
+      regsub -all "%LANG%" $url $wplanguage url
+      set link "<run openURL $url; ::windows::stats::Refresh><blue>$btn$str: $id  </blue></run>$linked"
+      regsub -all "$searchterm $id<br>" $pinfo "$link" pinfo
+      set linked ""
+    } else {
+      if { $searchterm == "useFIDEID" && $fideid != ""} {
+        regsub -all "%ID%" $url $fideid url
+      } elseif { [string range $searchterm 0 6] == "useNAME" } {
+        if {![info exists fname]} { lassign [splitName $::playerInfoName] fname lname }
+        if { [string index $searchterm 7] eq "L" } { set psname $lname } else { set psname $fname }
+        regsub -all " " $psname [string index $searchterm 8] psname
+        regsub -all " " $psname "%%20" psname
+        regsub -all "%ID%" $url $psname url
+        regsub -all "%LANG%" $url $wplanguage url
+      }
+      if { [string first "%ID%" $url ] < 0} {
+        set link "<run openURL $url; ::windows::stats::Refresh><blue>$btn$str  </blue></run>"
+        if { ![regsub "</blue></run>" $pinfo "</blue></run>$link$linked" pinfo] } {
+          regsub "<br><br>" $pinfo "<br><br>$link$linked" pinfo
+          set linked ""
+        }
+      }
+    }
   }
-
-  # Replace PND by all services linked to that ID
-  regsub -all "PND $pnd<br>" $pinfo "$seealsolink $wikiplink $dnblink" pinfo
-  regsub -all "</run>  <run" $pinfo "</run> <run" pinfo
-
   return $pinfo
 }
 
@@ -348,6 +308,15 @@ proc playerInfo {{player ""}} {
   global playerInfoName eloFromRating
   if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
+  # add country flag
+  set found [string first " \[" $pinfo]
+  if { $found > 0 } {
+    set countryID [string range $pinfo [expr $found - 3] [expr $found - 1]]
+    set country "flag_[string tolower $countryID]"
+    if { $country eq [info commands $country] } {
+      set pinfo [string replace $pinfo [expr $found - 3] [expr $found - 1] "$countryID <img $country>"]
+    }
+  }
   # append Elo History
   append pinfo "<br><br><darkblue>$::tr(PInfoRating):</darkblue><br>"
   if { $::eloFromRating } {
@@ -432,10 +401,10 @@ proc playerInfo {{player ""}} {
 }
 
 # Call in the idlink config file.
-   if {[catch {source [scidConfigFile resolvers]} ]} {
+   if {[catch {safeSource [scidConfigFile resolvers]} ]} {
      ::splash::add "No configuration for link resolvers found. Creating default..."
      ::pinfo::setupDefaultResolvers
-      if {[catch {source [scidConfigFile resolvers]} ]} {
+      if {[catch {safeSource [scidConfigFile resolvers]} ]} {
          ::splash::add "Oops there is something wrong with the resolvers file..."
       } else {
          ::splash::add "Default resolvers created and loaded."
