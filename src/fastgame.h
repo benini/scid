@@ -153,16 +153,15 @@ class FastBoard {
 	enum { EMPTY_SQ_ = 0xFF };
 
 public:
-	FastBoard() {}
-	FastBoard(Position& pos) { Init(pos); }
+	FastBoard() = default;
+	explicit FastBoard(const Position& pos) { Init(pos); }
 
-	void Init() {
-		static Position StdStartPos(Position::getStdStart());
-		static FastBoard StdStart(StdStartPos);
-		*this = StdStart;
+	static FastBoard stdStart() {
+		static const auto std_start = FastBoard(Position::getStdStart());
+		return std_start;
 	}
 
-	void Init(Position& pos) {
+	void Init(const Position& pos) {
 		std::fill_n(board_, 64, EMPTY_SQ_);
 
 		for (auto color : {WHITE, BLACK}) {
@@ -510,9 +509,8 @@ public:
 
 private:
 	FastGame(const byte* v_it, const byte* v_end)
-	: v_it_ (v_it), v_end_(v_end), cToMove_(WHITE) {
-		board_.Init();
-	}
+	    : board_(FastBoard::stdStart()), v_it_(v_it), v_end_(v_end),
+	      cToMove_(WHITE) {}
 
 	FastGame(const char* FEN, const byte* v_it, const byte* v_end)
 	: v_it_ (v_it), v_end_(v_end) {
