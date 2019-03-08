@@ -274,10 +274,10 @@ public:
 	 * @param lastmove: the last move played.
 	 */
 	void fillSANInfo(FullMove& lastmove) {
-		squareT lastFrom = lastmove.getFrom();
-		squareT lastTo = lastmove.getTo();
-		colorT lastCol = lastmove.getColor();
-		pieceT lastPt = lastmove.getPiece();
+		const auto lastFrom = lastmove.getFrom();
+		const auto lastTo = lastmove.getTo();
+		const auto lastCol = lastmove.getColor();
+		auto lastPt = lastmove.getPiece();
 
 		if (lastPt == PAWN) {
 			if (lastmove.isPromo())
@@ -291,7 +291,7 @@ public:
 		// Look for checks
 		ASSERT(mt_.count(WHITE) >= 1 && mt_.count(BLACK) >= 1);
 
-		const squareT enemyKingSq = getKingSquare(color_Flip(lastCol));
+		const auto enemyKingSq = getKingSquare(color_Flip(lastCol));
 		bool direct_check = lastPt != KING && movegen::attack<uint8_t>(
 		                                          lastTo, enemyKingSq, lastCol,
 		                                          lastPt, board_, EMPTY_SQ_);
