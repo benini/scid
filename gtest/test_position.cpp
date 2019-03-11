@@ -32,20 +32,21 @@ TEST(Test_movegen, attack) {
 	board[33] = !empty;
 	board[52] = !empty;
 
-	EXPECT_TRUE(movegen::attack(31, 29, WHITE, QUEEN, board, empty));
-	EXPECT_FALSE(movegen::attack(31, 27, WHITE, QUEEN, board, empty));
-	EXPECT_TRUE(movegen::attack(52, 28, BLACK, ROOK, board, empty));
-	EXPECT_FALSE(movegen::attack(52, 20, BLACK, ROOK, board, empty));
-	EXPECT_TRUE(movegen::attack(1, 11, WHITE, KNIGHT, board, empty));
-	EXPECT_FALSE(movegen::attack(1, 6, WHITE, KNIGHT, board, empty));
-	EXPECT_TRUE(movegen::attack(33, 19, BLACK, BISHOP, board, empty));
-	EXPECT_FALSE(movegen::attack(33, 12, BLACK, BISHOP, board, empty));
-	EXPECT_TRUE(movegen::attack(12, 19, WHITE, PAWN, board, empty));
-	EXPECT_FALSE(movegen::attack(12, 20, WHITE, PAWN, board, empty));
-	EXPECT_TRUE(movegen::attack(19, 12, BLACK, PAWN, board, empty));
-	EXPECT_FALSE(movegen::attack(12, 19, BLACK, PAWN, board, empty));
-	EXPECT_TRUE(movegen::attack(12, 3, WHITE, KING, board, empty));
-	EXPECT_FALSE(movegen::attack(12, 14, WHITE, KING, board, empty));
+	auto isOccupied = [&](auto square) { return board[square] != empty; };
+	EXPECT_TRUE(movegen::attack(31, 29, WHITE, QUEEN, isOccupied));
+	EXPECT_FALSE(movegen::attack(31, 27, WHITE, QUEEN, isOccupied));
+	EXPECT_TRUE(movegen::attack(52, 28, BLACK, ROOK, isOccupied));
+	EXPECT_FALSE(movegen::attack(52, 20, BLACK, ROOK, isOccupied));
+	EXPECT_TRUE(movegen::attack(1, 11, WHITE, KNIGHT, isOccupied));
+	EXPECT_FALSE(movegen::attack(1, 6, WHITE, KNIGHT, isOccupied));
+	EXPECT_TRUE(movegen::attack(33, 19, BLACK, BISHOP, isOccupied));
+	EXPECT_FALSE(movegen::attack(33, 12, BLACK, BISHOP, isOccupied));
+	EXPECT_TRUE(movegen::attack(12, 19, WHITE, PAWN, isOccupied));
+	EXPECT_FALSE(movegen::attack(12, 20, WHITE, PAWN, isOccupied));
+	EXPECT_TRUE(movegen::attack(19, 12, BLACK, PAWN, isOccupied));
+	EXPECT_FALSE(movegen::attack(12, 19, BLACK, PAWN, isOccupied));
+	EXPECT_TRUE(movegen::attack(12, 3, WHITE, KING, isOccupied));
+	EXPECT_FALSE(movegen::attack(12, 14, WHITE, KING, isOccupied));
 }
 
 TEST(Test_movegen, opens_ray) {
@@ -60,16 +61,17 @@ TEST(Test_movegen, opens_ray) {
 	board[33] = !empty;
 	board[52] = !empty;
 
-	auto test = movegen::opens_ray(19, 27, 12, board, empty);
+	auto isOccupied = [&](auto square) { return board[square] != empty; };
+	auto test = movegen::opens_ray(19, 27, 12, isOccupied);
 	EXPECT_TRUE(test.first == BISHOP && test.second == 33);
 
-	test = movegen::opens_ray(21, 29, 12, board, empty);
+	test = movegen::opens_ray(21, 29, 12, isOccupied);
 	EXPECT_TRUE(test.first == INVALID_PIECE);
 
-	test = movegen::opens_ray(28, 20, 12, board, empty);
+	test = movegen::opens_ray(28, 20, 12, isOccupied);
 	EXPECT_TRUE(test.first == INVALID_PIECE);
 
-	test = movegen::opens_ray(28, 27, 12, board, empty);
+	test = movegen::opens_ray(28, 27, 12, isOccupied);
 	EXPECT_TRUE(test.first == ROOK && test.second == 52);
 }
 

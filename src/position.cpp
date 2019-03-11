@@ -1889,6 +1889,8 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 {
     ASSERT (m != NULL  &&  s != NULL);
 
+    auto isOccupied = [this](auto square) { return Board[square] != EMPTY; };
+
     // Make sure m->pieceNum is updated:
     m->pieceNum = ListPos[m->from];
     squareT from = List[ToMove][m->pieceNum];
@@ -1950,11 +1952,11 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
                 if (sq == from || Board[sq] != piece)
                     continue;
 
-                if (!movegen::pseudo(sq, to, ToMove, p, Board, EMPTY))
+                if (!movegen::pseudo(sq, to, ToMove, p, isOccupied))
                     continue; // Skip illegal move
 
-                std::pair<pieceT, squareT> pin =
-                    movegen::opens_ray(sq, to, GetKingSquare(), Board, EMPTY);
+                const auto pin = movegen::opens_ray(sq, to, GetKingSquare(),
+                                                    isOccupied);
                 if (pin.first != INVALID_PIECE &&
                     piece_Color_NotEmpty(Board[pin.second]) != ToMove) {
                     pieceT pt = piece_Type(Board[pin.second]);
@@ -1994,13 +1996,12 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         Board[from] = EMPTY;
         squareT enemyKingSq = GetEnemyKingSquare();
         check = (p != KING) &&
-                movegen::attack(to, enemyKingSq, ToMove, p, Board, EMPTY);
+                movegen::attack(to, enemyKingSq, ToMove, p, isOccupied);
         if (!check) {
             bool enpassant = (p == PAWN && oldTo == EMPTY &&
                               square_Fyle(from) != square_Fyle(to));
             if (!enpassant && (p != KING || !m->isCastle()) &&
-                !movegen::attack_slider(from, enemyKingSq, QUEEN, Board,
-                                        EMPTY)) {
+                !movegen::attack_slider(from, enemyKingSq, QUEEN, isOccupied)) {
                 flag = SAN_NO_CHECKTEST;
             }
 
@@ -2302,10 +2303,11 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 		    (frRank != NO_RANK && frRank != square_Rank(from)))
 			continue;
 
-		if (!movegen::pseudo(from, to, ToMove, piece, Board, EMPTY))
+		auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
+		if (!movegen::pseudo(from, to, ToMove, piece, isOccupied))
 			continue;
 
-		auto pin = movegen::opens_ray(from, to, kingSq, Board, EMPTY);
+		const auto pin = movegen::opens_ray(from, to, kingSq, isOccupied);
 		if (pin.first != INVALID_PIECE) {
 			auto p = Board[pin.second];
 			if (piece_Color_NotEmpty(p) != ToMove &&

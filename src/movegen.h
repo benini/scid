@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2017  Fulvio Benini
+ * Copyright (C) 2011-2019  Fulvio Benini
  *
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -97,9 +97,9 @@ inline bool attack_pawn(squareT sqFrom, squareT sqTo, colorT pieceCol) {
 	return (distFyle == 1 || distFyle == -1);
 }
 
-template <typename TBoard>
+template <typename TFunc>
 bool attack_slider(squareT sqFrom, squareT sqTo, pieceT pieceType,
-                   const TBoard* board, const TBoard EMPTY_SQUARE) {
+                   TFunc isOccupied) {
 	int sqStep = valid_slider(sqFrom, sqTo, pieceType);
 	if (sqStep == 0)
 		return false;
@@ -109,7 +109,7 @@ bool attack_slider(squareT sqFrom, squareT sqTo, pieceT pieceType,
 		sqStep = -sqStep;
 
 	for (int sq = sqFrom + sqStep; sq != sqTo; sq += sqStep) {
-		if (board[sq] != EMPTY_SQUARE)
+		if (isOccupied(sq))
 			return false;
 	}
 
@@ -123,14 +123,15 @@ bool attack_slider(squareT sqFrom, squareT sqTo, pieceT pieceType,
  * @param sqTo:         square of the piece to be captured.
  * @param pieceCol:     color of the moving piece.
  * @param pieceType:    type of the moving piece.
- * @param board:        pointer to the board position; it's is irrelevant if the
- *                      position is the one before or after the move was made.
- * @param EMPTY_SQUARE: value of an empty square in the board position.
+ * @param isOccupied:   callable object which should returns true if a square is
+ *                      occupied by a piece. Since it is not invoked with @e
+ *                      sqFrom or @e sqTo, it's is irrelevant if the position is
+ *                      the one before or after the move was made.
  * @returns true if the move is a valid ATTACK move.
  */
-template <typename TBoard>
+template <typename TFunc>
 bool attack(squareT sqFrom, squareT sqTo, pieceT pieceCol, pieceT pieceType,
-            const TBoard* board, const TBoard EMPTY_SQUARE) {
+            TFunc isOccupied) {
 	switch (pieceType) {
 	case KING:
 		return valid_king(sqFrom, sqTo);
@@ -141,12 +142,12 @@ bool attack(squareT sqFrom, squareT sqTo, pieceT pieceCol, pieceT pieceType,
 	default:
 		break;
 	}
-	return attack_slider(sqFrom, sqTo, pieceType, board, EMPTY_SQUARE);
+	return attack_slider(sqFrom, sqTo, pieceType, isOccupied);
 }
 
-template <typename TBoard>
+template <typename TFunc>
 bool pseudo(squareT sqFrom, squareT sqTo, colorT /*pieceCol*/, pieceT pieceType,
-            const TBoard* board, const TBoard EMPTY_SQUARE) {
+            TFunc isOccupied) {
 	// TODO: pawn and king moves
 	ASSERT(pieceType != PAWN && pieceType != KING);
 
@@ -156,7 +157,7 @@ bool pseudo(squareT sqFrom, squareT sqTo, colorT /*pieceCol*/, pieceT pieceType,
 	default:
 		break;
 	}
-	return attack_slider(sqFrom, sqTo, pieceType, board, EMPTY_SQUARE);
+	return attack_slider(sqFrom, sqTo, pieceType, isOccupied);
 }
 
 /**
@@ -166,19 +167,17 @@ bool pseudo(squareT sqFrom, squareT sqTo, colorT /*pieceCol*/, pieceT pieceType,
  * @param sqTo:         destination square of the pseudo-legal move.
  * @param sqRay:        the projected ray starts from @e sqRay and goes through
  *                      @e sqFrom; it is usually the square where the king is.
- * @param board:        pointer to the board position where the pseudo-legal
- *                      move has to be made.
- * @param EMPTY_SQUARE: value of an empty square in the board position.
+ * @param isOccupied:   callable object which should returns true if a square is
+ *                      occupied by a piece.
  * @returns a std::pair with the type (INVALID_PIECE, BISHOP, ROOK) and the
  * square of the candidate pinning piece. If the type is INVALID_PIECE there is
  * no pin and the move is legal, otherwise it's necessary to test the board
  * position and if the returned square is occupied by an enemy QUEEN, or an
  * enemy piece matching the returned type, the move is not legal.
  */
-template <typename TBoard>
+template <typename TFunc>
 inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
-                                            squareT sqRay, const TBoard* board,
-                                            const TBoard EMPTY_SQUARE) {
+                                            squareT sqRay, TFunc isOccupied) {
 	ASSERT(sqRay != sqFrom);
 
 	int fyleFrom = sqFrom % NSQUARES;
@@ -195,7 +194,7 @@ inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
 		pt = ROOK;
 	} else {
 		if (fyleFrom == 0 || fyleFrom == (NSQUARES - 1))
-			return std::pair<pieceT, squareT>(INVALID_PIECE, 0);
+			return {INVALID_PIECE, 0};
 
 		if (distRank == 0) {
 			sqStep = 1; // horizontal
@@ -210,7 +209,7 @@ inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
 			fyleEdge = NSQUARES - 1;
 			pt = BISHOP;
 		} else {
-			return std::pair<pieceT, squareT>(INVALID_PIECE, 0);
+			return {INVALID_PIECE, 0};
 		}
 	}
 	if (sqFrom > sqRay) {
@@ -219,22 +218,21 @@ inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
 	}
 
 	for (int sq = sqFrom + sqStep; sq != sqRay; sq += sqStep) {
-		if (sq == sqTo || board[sq] != EMPTY_SQUARE)
-			return std::pair<pieceT, squareT>(INVALID_PIECE, 0);
+		if (sq == sqTo || isOccupied(sq))
+			return {INVALID_PIECE, 0};
 	}
 
 	for (int sq = sqFrom - sqStep; sq < NSQUARES * NSQUARES; sq -= sqStep) {
 		if (sq < 0 || sq == sqTo)
 			break;
 
-		if (board[sq] != EMPTY_SQUARE)
-			return std::make_pair(pt, static_cast<squareT>(sq));
+		if (isOccupied(sq))
+			return {pt, static_cast<squareT>(sq)};
 
 		if ((sq % NSQUARES) == fyleEdge)
 			break;
 	}
-	return std::pair<pieceT, squareT>(INVALID_PIECE, 0);
+	return {INVALID_PIECE, 0};
 }
-
 
 } // end of namespace movegen

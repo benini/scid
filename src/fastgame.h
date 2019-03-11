@@ -273,7 +273,7 @@ public:
 	 * appropriate bits in @e lastmove.
 	 * @param lastmove: the last move played.
 	 */
-	void fillSANInfo(FullMove& lastmove) {
+	void fillSANInfo(FullMove& lastmove) const {
 		const auto lastFrom = lastmove.getFrom();
 		const auto lastTo = lastmove.getTo();
 		const auto lastCol = lastmove.getColor();
@@ -291,10 +291,11 @@ public:
 		// Look for checks
 		ASSERT(mt_.count(WHITE) >= 1 && mt_.count(BLACK) >= 1);
 
+		auto isOccupied = [this](auto sq) { return board_[sq] != EMPTY_SQ_; };
 		const auto enemyKingSq = getKingSquare(color_Flip(lastCol));
-		bool direct_check = lastPt != KING && movegen::attack<uint8_t>(
-		                                          lastTo, enemyKingSq, lastCol,
-		                                          lastPt, board_, EMPTY_SQ_);
+		bool direct_check = (lastPt != KING) &&
+		                    movegen::attack(lastTo, enemyKingSq, lastCol,
+		                                    lastPt, isOccupied);
 		if (direct_check || // Look for a discovered check
 		    find_attacker_slider(enemyKingSq, lastCol) >= 0) {
 			lastmove.setCheck();
@@ -307,12 +308,12 @@ public:
 	}
 
 private:
-	squareT getKingSquare(colorT color) {
+	squareT getKingSquare(colorT color) const {
 		return pieces_.getSquare(color, pieces_.getKingIdx());
 	}
 
 	int ambiguousMove(squareT lastFrom, squareT lastTo, colorT lastCol,
-	                  pieceT lastPt) {
+	                  pieceT lastPt) const {
 		int ambiguity = 0;
 
 		const squareT kingSq = getKingSquare(lastCol);
@@ -325,22 +326,17 @@ private:
 			if (sq == lastTo)
 				continue; // Skip: this is the analyzed piece
 
-			board_[lastFrom] = board_[sq];
-			board_[sq] = EMPTY_SQ_;
-
-			bool pseudoLegal = movegen::pseudo<uint8_t>(
-			    sq, lastTo, lastCol, lastPt, board_, EMPTY_SQ_);
-
-			std::pair<pieceT, squareT> pin;
-			if (pseudoLegal)
-				pin = movegen::opens_ray<uint8_t>(sq, lastTo, kingSq, board_,
-				                                  EMPTY_SQ_);
-			board_[sq] = board_[lastFrom];
-			board_[lastFrom] = EMPTY_SQ_;
-
-			if (!pseudoLegal)
+			auto isOccupied = [sq, lastFrom, this](auto square) {
+				if (square == sq)
+					return false;
+				if (square == lastFrom)
+					return true;
+				return board_[square] != EMPTY_SQ_;
+			};
+			if (!movegen::pseudo(sq, lastTo, lastCol, lastPt, isOccupied))
 				continue; // Skip: illegal move
 
+			const auto pin = movegen::opens_ray(sq, lastTo, kingSq, isOccupied);
 			if (pin.first != INVALID_PIECE) {
 				uint8_t idx = board_[pin.second];
 				if (idx != EMPTY_SQ_ && idx < mt_.count(enemyCol) &&
@@ -367,15 +363,17 @@ private:
 		return ambiguity;
 	}
 
-	int find_attacker_slider(squareT destSq, colorT color) {
+	int find_attacker_slider(squareT destSq, colorT color) const {
 		for (int idx = 0, n = mt_.count(color); idx < n; ++idx) {
 			const pieceT pt = getPiece(color, idx);
 			if (pt != QUEEN && pt != ROOK && pt != BISHOP)
 				continue;
 
+			auto isOccupied = [this](auto square) {
+				return board_[square] != EMPTY_SQ_;
+			};
 			const squareT sq = getSquare(color, idx);
-			if (movegen::attack_slider<uint8_t>(sq, destSq, pt, board_,
-			                                    EMPTY_SQ_)) {
+			if (movegen::attack_slider(sq, destSq, pt, isOccupied)) {
 				return idx;
 			}
 		}

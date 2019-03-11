@@ -74,6 +74,7 @@ matrix:
           - clang-format-6.0
     script:
       - clang-format-6.0 -i src/codec*
+      - clang-format-6.0 -i src/movegen*
       - clang-format-6.0 -i src/pgn*
       - |
         if [[ -n $(git diff) ]]; then
