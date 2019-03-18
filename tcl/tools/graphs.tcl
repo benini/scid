@@ -402,9 +402,9 @@ proc ::tools::graphs::filter::Refresh {} {
 #Invert white/black Score in Score graph, switches for display move time and adding time
 set ::tools::graphs::score::White 0
 set ::tools::graphs::score::Black 0
-set ::tools::graphs::score::ThinkTime 0
-set ::tools::graphs::score::Both 1
-set ::tools::graphs::score::TimeSum 1
+set ::tools::graphs::score::Scores 1
+set ::tools::graphs::score::Times 1
+set ::tools::graphs::score::TimeSum 0
 
 ###########################
 # Game score and time graph
@@ -478,7 +478,7 @@ proc MoveTimeList {color add} {
 		    }
 		    if { $ok == 1 } {
 			set f [expr { $ho*3600.0 + $mi*60 + $sec}]
-			if { $add == 1 } {
+			if { $add } {
 			    # add move times and scale to minutes
 			    set f [expr { $f/60.0 + $sum }]
 			    set sum $f
@@ -613,15 +613,32 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
     $w.menu add command -label Help -accelerator F1 -command {helpWindow Graphs Score}
     #Checkbuttons for Invert white/black Score in Score graph
     menu $w.menu.options
-    foreach i {White Black Both ThinkTime TimeSum } {
+    foreach i {White Black} {
       $w.menu.options add checkbutton -label GraphOptions$i \
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
+    $w.menu.options add separator
+    $w.menu.options add checkbutton -variable ::tools::graphs::score::Scores -offvalue "0" -onvalue "1" \
+          -command "::tools::graphs::score::Refresh"
+    $w.menu.options add checkbutton -variable ::tools::graphs::score::Times -offvalue "0" -onvalue "1" \
+          -command "::tools::graphs::score::Refresh"
+    $w.menu.options add separator
+    $w.menu.options add checkbutton -variable ::tools::graphs::score::TimeSum -offvalue "1" -onvalue "0" \
+          -command "::tools::graphs::score::Refresh"
     canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
 
     $w.c create text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
+    ttk::frame $w.fbuttons
+    ttk::checkbutton $w.fbuttons.score -text [tr ToolsScore] -variable ::tools::graphs::score::Scores \
+        -command "::tools::graphs::score::Refresh"
+    ttk::checkbutton $w.fbuttons.time -text [tr Time] -variable ::tools::graphs::score::Times \
+        -command "::tools::graphs::score::Refresh"
+    ttk::checkbutton $w.fbuttons.timesum -text $::tr(AnnotateTime) -variable ::tools::graphs::score::TimeSum \
+        -command "::tools::graphs::score::Refresh" -offvalue "1" -onvalue "0"
+    pack $w.fbuttons.score $w.fbuttons.time $w.fbuttons.timesum -side left -padx 6 -pady 0
+    pack $w.fbuttons -side bottom -anchor e
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Score}
     bind $w <Configure> {
@@ -643,8 +660,11 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set height [expr {[winfo height $w.c] - 50} ]
   set width [expr {[winfo width $w.c] - 40} ]
   set yticks 1
-  if { $::tools::graphs::score::Both == 1 || $::tools::graphs::score::ThinkTime == 1} {
-      ::setTitle $w "Scid: [tr ToolsScore] & [tr Time]"
+  if { $::tools::graphs::score::Times } {
+      ::setTitle $w "Scid: [tr Time]"
+      if { $::tools::graphs::score::Scores } {
+          ::setTitle $w "Scid: [tr ToolsScore] & [tr Time]"
+      }
       set max 0
       # Find max Value of time, then set the tick value vor horizontal lines
       foreach j { "w" "b"} {
@@ -659,9 +679,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       if {$max > 20} { set yticks 5 }
       if {$max > 50} { set yticks 10 }
       if {$max > 100} { set yticks 20 }
-  }
-  if { $::tools::graphs::score::ThinkTime == 1 &&  $::tools::graphs::score::Both == 0 } {
-      ::setTitle $w "Scid: [tr Time]" }
+  } elseif { $::tools::graphs::score::Scores } {
+      ::setTitle $w "Scid: [tr ToolsScore]" }
 
   ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
       -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
@@ -680,14 +699,14 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   busyCursor $w
   update
 
-  if { $::tools::graphs::score::Both || $::tools::graphs::score::ThinkTime } {
+  if { $::tools::graphs::score::Times } {
       # draw move time
       catch {::utils::graph::data score data1 -color $firstColor -points 0 -lines 1\
 		  -key [sc_game info white] -linewidth $linewidth -radius $psize -outline $firstColor -coords $coordsw }
       catch {::utils::graph::data score data2 -color $secondColor -points 0 -lines 1 \
 		 -linewidth $linewidth -radius $psize -outline $secondColor -coords $coordsb}
   }
-  if { $::tools::graphs::score::Both || $::tools::graphs::score::ThinkTime == 0 } {
+  if { $::tools::graphs::score::Scores } {
       # draw score bars
       catch {::utils::graph::data score data -color $linecolor -points 0 -lines 0 -bars 2 \
 		 -linewidth $linewidth -radius $psize -outline $linecolor \
@@ -709,14 +728,14 @@ proc ::tools::graphs::score::ConfigMenus {{lang ""}} {
   foreach idx {0 1 3} tag {Color Grey Close} {
     configMenuText $m.file $idx GraphFile$tag $lang
   }
-  foreach idx {0 1 2} tag {White Black Both} {
-    configMenuText $m.options $idx GraphOptions$tag $lang
+  foreach idx {0 1 3} tag {GraphOptionsWhite GraphOptionsBlack ToolsScore} {
+    configMenuText $m.options $idx $tag $lang
   }
   #add option to show used Time and toggle between "Sum of time" (in min) and "Time per move" (in sec)
   $m entryconfig 2 -label $::tr(Help)
-  $m.options entryconfig 3 -label $::tr(Time)
-  $m.options entryconfig 4 -label $::tr(Total)
 
+  $m.options entryconfig 4 -label $::tr(Time)
+  $m.options entryconfig 6 -label $::tr(AnnotateTime)
 }
 
 proc ::tools::graphs::score::Move {xc} {
