@@ -618,14 +618,6 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    $w.menu.options add separator
-    $w.menu.options add checkbutton -variable ::tools::graphs::score::Scores -offvalue "0" -onvalue "1" \
-          -command "::tools::graphs::score::Refresh"
-    $w.menu.options add checkbutton -variable ::tools::graphs::score::Times -offvalue "0" -onvalue "1" \
-          -command "::tools::graphs::score::Refresh"
-    $w.menu.options add separator
-    $w.menu.options add checkbutton -variable ::tools::graphs::score::TimeSum -offvalue "1" -onvalue "0" \
-          -command "::tools::graphs::score::Refresh"
     canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
 
     $w.c create text 25 5 -tag text -justify center -width 1 \
@@ -661,10 +653,6 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set width [expr {[winfo width $w.c] - 40} ]
   set yticks 1
   if { $::tools::graphs::score::Times } {
-      ::setTitle $w "Scid: [tr Time]"
-      if { $::tools::graphs::score::Scores } {
-          ::setTitle $w "Scid: [tr ToolsScore] & [tr Time]"
-      }
       set max 0
       # Find max Value of time, then set the tick value vor horizontal lines
       foreach j { "w" "b"} {
@@ -679,8 +667,7 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       if {$max > 20} { set yticks 5 }
       if {$max > 50} { set yticks 10 }
       if {$max > 100} { set yticks 20 }
-  } elseif { $::tools::graphs::score::Scores } {
-      ::setTitle $w "Scid: [tr ToolsScore]" }
+  }
 
   ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
       -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
@@ -728,14 +715,10 @@ proc ::tools::graphs::score::ConfigMenus {{lang ""}} {
   foreach idx {0 1 3} tag {Color Grey Close} {
     configMenuText $m.file $idx GraphFile$tag $lang
   }
-  foreach idx {0 1 3} tag {GraphOptionsWhite GraphOptionsBlack ToolsScore} {
+  foreach idx {0 1} tag {GraphOptionsWhite GraphOptionsBlack} {
     configMenuText $m.options $idx $tag $lang
   }
-  #add option to show used Time and toggle between "Sum of time" (in min) and "Time per move" (in sec)
   $m entryconfig 2 -label $::tr(Help)
-
-  $m.options entryconfig 4 -label $::tr(Time)
-  $m.options entryconfig 6 -label $::tr(AnnotateTime)
 }
 
 proc ::tools::graphs::score::Move {xc} {
