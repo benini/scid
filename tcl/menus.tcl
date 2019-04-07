@@ -626,7 +626,9 @@ proc setLanguageMenus {} {
   ::crosstab::ConfigMenus
   ::optable::ConfigMenus
   ::preport::ConfigMenus
-  
+  ::tools::graphs::score::ConfigMenus
+  ::tools::graphs::rating::ConfigMenus
+
   # Check for duplicate menu underline characters in this language:
   # set ::verifyMenus 1
   if {[info exists ::verifyMenus] && $::verifyMenus} {
@@ -836,7 +838,9 @@ proc setTacticsBasesDir {} {
 }
 
 proc setPhotoDir {} {
-  set dir [tk_chooseDirectory -initialdir $::scidExeDir -mustexist 1]
+  set idir [pwd]
+  if { [info exists ::scidPhotoDir] } { set idir $::scidPhotoDir }
+  set dir [tk_chooseDirectory -initialdir $idir -mustexist 1]
   if {$dir == ""} {
     return
   } else {
@@ -850,7 +854,7 @@ proc setPhotoDir {} {
 
 proc setThemePkgFile {} {
   global initialDir
-  set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialfile $::ThemePackageFile \
+  set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialdir [file dirname $::ThemePackageFile] -initialfile $::ThemePackageFile \
 	       -filetypes { {Theme "pkgIndex.tcl"} }]
   if {$f ne ""} {
       ::safeSourceStyle $f
@@ -860,8 +864,9 @@ proc setThemePkgFile {} {
 }
 
 proc readECOFile {} {
+  global ecoFile
   set ftype { { "Scid ECO files" {".eco"} } }
-  set fullname [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Load ECO file"]
+  set fullname [tk_getOpenFile -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file"]
   if {[string compare $fullname ""]} {
     if {[catch {sc_eco read $fullname} result]} {
       tk_messageBox -title "Scid" -type ok \
