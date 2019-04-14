@@ -140,7 +140,7 @@ Crosstable::Init ()
     MaxRound = 0;
     FirstDate = ZERO_DATE;
     for (resultT r = 0; r < NUM_RESULT_TYPES; r++) { ResultCount[r] = 0; }
-    ShowTitles = ShowElos = ShowCountries = ShowTallies = SwissColors = ShowAges = true;
+    ShowTitles = ShowElos = ShowFlags = ShowCountries = ShowTallies = SwissColors = ShowAges = true;
     ShowTiebreaks = false;
     SortOption = CROSSTABLE_SortScore;
     OutputFormat = CROSSTABLE_Plain;
@@ -481,6 +481,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
     PrintRatings = false;
     PrintTitles = false;
     PrintCountries = false;
+    PrintFlags = false;
     PrintAges = false;
     PrintTiebreaks = true;
     PrintTallies = true;
@@ -488,7 +489,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
         playerDataT * pd = PlayerData[player];
         if (pd->elo > 0) { PrintRatings = true; }
         if (pd->title[0] != 0) { PrintTitles = true; }
-        if (pd->country[0] != 0) { PrintCountries = true; }
+        if (pd->country[0] != 0) { PrintCountries = true; PrintFlags = true; }
         if (pd->birthdate != ZERO_DATE) {
             PrintAges = true;
             int age = (int) date_GetYear(FirstDate);
@@ -502,6 +503,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
     if (! ShowElos) { PrintRatings = false; }
     if (! ShowTitles) { PrintTitles = false; }
     if (! ShowCountries) { PrintCountries = false; }
+    if (! ShowFlags) { PrintFlags = false; }
     if (! ShowTallies) { PrintTallies = false; }
     if (! ShowAges) { PrintAges = false; }
     if (! ShowTiebreaks) { PrintTiebreaks = false; }
@@ -558,14 +560,15 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
     if (PrintRatings) { LineWidth += 16; }
     if (PrintTitles) { LineWidth += 4; }
     if (PrintCountries) { LineWidth += 4; }
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) { LineWidth += 3; }
     if (PrintAges) { LineWidth += 4; }
 
     if (mode == CROSSTABLE_Swiss) {
-        LineWidth += 16 + PlayerNumWidth;
+        LineWidth += 28 + PlayerNumWidth;
         LineWidth += (PlayerNumWidth + (SwissColors ? 3 : 2)) * MaxRound;
         if (PrintTiebreaks) { LineWidth += 5; }
     } else if (mode == CROSSTABLE_AllPlayAll) {
-        LineWidth += 16 + PlayerNumWidth;
+        LineWidth += 28 + PlayerNumWidth;
         if (playerLimit == 2) {
             LineWidth += (MaxClashes + 1);
         } else {
@@ -577,6 +580,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, 
         if (PrintRatings) { LineWidth += 10; }
         if (PrintTitles) { LineWidth += 8; }
         if (PrintCountries) { LineWidth += 8; }
+        if (PrintFlags) { LineWidth += 4; }
         if (PrintAges) { LineWidth += 8; }
     }
 
@@ -647,11 +651,11 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
         if (pdata->elo) {
             sprintf (stemp, "%4u ", pdata->elo);
         } else {
-	    if (OutputFormat == CROSSTABLE_Html) {
-	      strcpy (stemp, "  -  ");
-	    } else {
-	      strcpy (stemp, "     ");
-	    }
+            if (OutputFormat == CROSSTABLE_Html) {
+                strcpy (stemp, "  -  ");
+            } else {
+                strcpy (stemp, "     ");
+            }
         }
         dstr->Append (StartRightCol, stemp, EndRightCol);
     }
@@ -660,31 +664,35 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
     //   as firefox doesn't make a grid box for blanks S.A.
 
     if (PrintTitles) {
-	if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->title,"")) {
-	  sprintf (stemp, " -  ");
-	} else {
-	  sprintf (stemp, "%3s ", pdata->title);
-	}
+        if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->title,"")) {
+            sprintf (stemp, " -  ");
+        } else {
+            sprintf (stemp, "%3s ", pdata->title);
+        }
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (PrintAges) {
         if (pdata->ageInYears == 0) {
-	    if (OutputFormat == CROSSTABLE_Html) {
-	      sprintf (stemp, " -  ");
-	    } else {
-	      strCopy (stemp, "    ");
-	    }
+            if (OutputFormat == CROSSTABLE_Html) {
+                sprintf (stemp, " -  ");
+            } else {
+                strCopy (stemp, "    ");
+            }
         } else {
             sprintf (stemp, "%3d ", pdata->ageInYears);
         }
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (PrintCountries) {
-	if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->country,"")) {
-	  sprintf (stemp, " -  ");
-	} else {
-	  sprintf (stemp, "%-3s ", pdata->country);
-	}
+        if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->country,"")) {
+            sprintf (stemp, " -  ");
+        } else {
+            sprintf (stemp, "%-3s ", pdata->country);
+        }
+        dstr->Append (StartCol, stemp, EndCol);
+    }
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+        sprintf (stemp, "<img flag_%s>",  pdata->country[0] ? pdata->country : "unkown");
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (OutputFormat == CROSSTABLE_Hypertext) { dstr->Append ("</pi>"); }
@@ -768,14 +776,19 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
     if (PrintCountries) {
         dstr->Append (StartBoldCol, " Nat", EndBoldCol);
     }
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+        dstr->Append (StartBoldCol, " Nat ", EndBoldCol);
+    }
     if (OutputFormat == CROSSTABLE_LaTeX) {
         // Todo : fix LateX Score column alignment with 3 points for win.
         dstr->Append (" \\multicolumn{2}{c}{\\bf Score} & ");
     } else {
         if (ThreeWin) 
-	  dstr->Append ("  ", StartBoldCol, "Score", EndBoldCol, " ");
+            dstr->Append ("  ", StartBoldCol, "Score", EndBoldCol, " ");
+        else if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
+            dstr->Append (" ", StartBoldCol, "Score  ", EndBoldCol, "   ");
         else
-	  dstr->Append ("   ", StartBoldCol, " Score ", EndBoldCol, "   ");
+            dstr->Append ("  ", StartBoldCol, " Score  ", EndBoldCol, "   ");
     }
     if (PrintTiebreaks) {
         dstr->Append (StartBoldCol, " (Tie) ", EndBoldCol);
@@ -809,10 +822,15 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+        if ( OutputFormat == CROSSTABLE_Html) {
+            dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
+        } else {
+            dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+        }
     } else
         dstr->Append (" ", StartBoldCol, "Percnt", EndBoldCol);
     if (PrintTallies && OutputFormat == CROSSTABLE_Html) {
+        dstr->Append ("   ", StartBoldCol, "Perc", EndBoldCol);
         dstr->Append ("   ", StartBoldCol, "+/-/=", EndBoldCol);
     }
     dstr->Append (EndRow, NewLine);
@@ -974,13 +992,18 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
     if (PrintCountries) {
         dstr->Append (StartBoldCol, " Nat", EndBoldCol);
     }
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+        dstr->Append (StartBoldCol, " Nat ", EndBoldCol);
+    }
     if (OutputFormat == CROSSTABLE_LaTeX) {
         dstr->Append (" \\multicolumn{2}{c}{\\bf Score} & ");
     } else {
         if (ThreeWin) 
-	  dstr->Append ("  ", StartBoldCol, "Score", EndBoldCol, " ");
+            dstr->Append ("  ", StartBoldCol, "Score", EndBoldCol, " ");
+        else if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
+            dstr->Append (" ", StartBoldCol, "Score  ", EndBoldCol, "   ");
         else
-	  dstr->Append ("   ", StartBoldCol, " Score ", EndBoldCol, "   ");
+            dstr->Append ("  ", StartBoldCol, " Score  ", EndBoldCol, "   ");
     }
     if (PrintTiebreaks) {
         dstr->Append (StartBoldCol, "(Tie)", EndBoldCol);
@@ -996,10 +1019,15 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+        if ( OutputFormat == CROSSTABLE_Html) {
+            dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
+        } else {
+            dstr->Append ("   ", StartBoldCol, "Perf Chg Percnt", EndBoldCol);
+        }
     } else
         dstr->Append (" ", StartBoldCol, "Percnt", EndBoldCol);
     if (PrintTallies && OutputFormat == CROSSTABLE_Html) {
+        dstr->Append ("   ", StartBoldCol, "Perc", EndBoldCol);
         dstr->Append ("   ", StartBoldCol, "+/-/=", EndBoldCol);
     }
     dstr->Append (EndRow, NewLine);

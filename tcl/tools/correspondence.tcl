@@ -1940,23 +1940,17 @@ namespace eval CorrespondenceChess {
 		$w.bottom.site tag add site$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.site "$site" site$id
 
+		set wc [getFlagImage $wc no]
 		if {$wc != ""} {
-			if {[lsearch [image names] $wc] > -1} {
-				$w.bottom.white   image create end -align center -image $wc
-				$w.bottom.white   insert end " "
-			} else {
-				puts stderr "$wc does not exist"
-			}
+		    $w.bottom.white   image create end -align center -image $wc
+		    $w.bottom.white   insert end " "
 		}
 		$w.bottom.white   insert end "$white\n"
 
+		set bc [getFlagImage $bc no]
 		if {$bc != ""} {
-			if {[lsearch [image names] $bc] > -1} {
-				$w.bottom.black   image create end -align center -image $bc
-				$w.bottom.black   insert end " "
-			} else {
-				puts stderr "$bc does not exist"
-			}
+		    $w.bottom.black   image create end -align center -image $bc
+		    $w.bottom.black   insert end " "
 		}
 		$w.bottom.black   insert end "$black\n"
 
@@ -3180,22 +3174,18 @@ namespace eval CorrespondenceChess {
 						if { [string equal -nocase [lindex $i 0] "whiteCountry" ] } {
 							set wc [string range $i 14 end-1]
 							set wc [string tolower $wc]
-							set wc "flag_$wc"
 						}
 						if { [string equal -nocase [lindex $i 0] "blackCountry" ] } {
 							set bc [string range $i 14 end-1]
 							set bc [string tolower $bc]
-							set bc "flag_$bc"
 						}
 						if { [string equal -nocase [lindex $i 0] "WhiteCountry" ] } {
 							set wc [string range $i 14 end-1]
 							set wc [string tolower $wc]
-							set wc "flag_$wc"
 						}
 						if { [string equal -nocase [lindex $i 0] "BlackCountry" ] } {
 							set bc [string range $i 14 end-1]
 							set bc [string tolower $bc]
-							set bc "flag_$bc"
 						}
 						if { [string equal -nocase [lindex $i 0] "TimeControl" ] } {
 							set TC [string range $i 13 end-1]

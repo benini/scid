@@ -90,6 +90,7 @@ class Crosstable
     bool         ShowTitles;
     bool         ShowElos;
     bool         ShowCountries;
+    bool         ShowFlags;
     bool         ShowTallies;
     bool         ShowAges;
     bool         ShowTiebreaks;
@@ -110,6 +111,7 @@ class Crosstable
     bool         PrintTitles;
     bool         PrintRatings;
     bool         PrintCountries;
+    bool         PrintFlags;
     bool         PrintTallies;
     bool         PrintAges;
     bool         PrintTiebreaks;
@@ -167,6 +169,7 @@ class Crosstable
     void   SetTitles (bool b) { ShowTitles = b; }
     void   SetElos (bool b) { ShowElos = b; }
     void   SetCountries (bool b) { ShowCountries = b; }
+    void   SetFlags (bool b) { ShowFlags = b; }
     void   SetTallies (bool b) { ShowTallies = b; }
     void   SetTiebreaks (bool b) { ShowTiebreaks = b; }
     void   SetSwissColors (bool b) { SwissColors = b; }

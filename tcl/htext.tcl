@@ -484,6 +484,10 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     # Check if it is an image or button tag:
     if {[strIsPrefix "img " $tagName]} {
       set imgName [string range $tagName 4 end]
+      #flags are not loaded on start, so check if a flag needs to load
+      if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
+        set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
+      }
       set winName $w.$imgName
       while {[winfo exists $winName]} { append winName a }
       ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white

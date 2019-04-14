@@ -12,6 +12,7 @@ set crosstab(ages) "+ages"
 set crosstab(colors) "+colors"
 set crosstab(ratings) "+ratings"
 set crosstab(countries) "+countries"
+set crosstab(flags) "-flags"
 set crosstab(titles) "+titles"
 set crosstab(groups) "-groups"
 set crosstab(breaks) "-breaks"
@@ -33,7 +34,7 @@ proc ::crosstab::ConfigMenus {{lang ""}} {
   foreach idx {0 1 2} tag {Event Site Date} {
     configMenuText $m.edit $idx CrosstabEdit$tag $lang
   }
-  foreach idx {0 1 2 3 5 6 7 8 9 10 12 13 15} tag {All Swiss Knockout Auto Ages Nats Ratings Titles Breaks Deleted Colors ColumnNumbers Group} {
+  foreach idx {0 1 2 3 5 6 8 9 10 11 13 14 16} tag {All Swiss Knockout Auto Ages Nats Ratings Titles Breaks Deleted Colors ColumnNumbers Group} {
     configMenuText $m.opt $idx CrosstabOpt$tag $lang
   }
   foreach idx {0 1 2} tag {Name Rating Score} {
@@ -105,7 +106,7 @@ proc ::crosstab::Open {} {
         tk_messageBox -title "Scid: Error saving file" -type ok -icon warning -message "Unable to save the file: $fname\n\n"
       } else {
         catch {sc_game crosstable html $crosstab(sort) $crosstab(type) \
-              $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+              $crosstab(ratings) $crosstab(countries) $crosstab(flags) $crosstab(titles) \
               $crosstab(colors) $crosstab(groups) $crosstab(ages) \
               $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
             result
@@ -130,7 +131,7 @@ proc ::crosstab::Open {} {
             -message "Unable to save the file: $fname\n\n"
       } else {
         catch {sc_game crosstable latex $crosstab(sort) $crosstab(type) \
-              $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+              $crosstab(ratings) $crosstab(countries) $crosstab(flags) $crosstab(titles) \
               $crosstab(colors) $crosstab(groups) $crosstab(ages) \
               $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
             result
@@ -181,6 +182,9 @@ proc ::crosstab::Open {} {
   $w.menu.opt add checkbutton -label CrosstabOptNats \
       -variable crosstab(countries) -onvalue "+countries" \
       -offvalue "-countries" -command crosstab::Refresh
+  $w.menu.opt add checkbutton -label "Flag" \
+      -variable crosstab(flags) -onvalue "+flags" \
+      -offvalue "-flags" -command crosstab::Refresh
   $w.menu.opt add checkbutton -label CrosstabOptRatings \
       -variable crosstab(ratings) -onvalue "+ratings" -offvalue "-ratings" \
       -command crosstab::Refresh
@@ -298,7 +302,7 @@ proc ::crosstab::Refresh {} {
   update
   set ::crosstab::dbase_ [sc_base current]
   catch {sc_game crosstable $crosstab(text) $crosstab(sort) $crosstab(type) \
-        $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+        $crosstab(ratings) $crosstab(countries) $crosstab(flags) $crosstab(titles) \
         $crosstab(colors) $crosstab(groups) $crosstab(ages) \
         $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} result
   $w.f.text configure -state normal

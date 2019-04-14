@@ -2300,6 +2300,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         "-breaks", "+breaks",           // Show tiebreak scores
         "-colors", "+colors",           // Show game colors in Swiss table
         "-countries", "+countries",     // Show current countries
+        "-flags", "+flags",             // Show flags
         "-tallies", "+tallies",
         "-ratings", "+ratings",         // Show Elo ratings
         "-titles", "+titles",           // Show FIDE titles
@@ -2317,6 +2318,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         EOPT_BREAKS_OFF, EOPT_BREAKS_ON,
         EOPT_COLORS_OFF, EOPT_COLORS_ON,
         EOPT_COUNTRIES_OFF, EOPT_COUNTRIES_ON,
+        EOPT_FLAGS_OFF, EOPT_FLAGS_ON,
         EOPT_TALLIES_OFF, EOPT_TALLIES_ON,
         EOPT_RATINGS_OFF, EOPT_RATINGS_ON,
         EOPT_TITLES_OFF, EOPT_TITLES_ON,
@@ -2332,6 +2334,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     bool showAges = true;
     bool showColors = true;
     bool showCountries = true;
+    bool showFlags = true;
     bool showTallies = true;
     bool showRatings = true;
     bool showTitles = true;
@@ -2365,6 +2368,8 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             case EOPT_COLORS_ON:      showColors = true;       break;
             case EOPT_COUNTRIES_OFF:  showCountries = false;   break;
             case EOPT_COUNTRIES_ON:   showCountries = true;    break;
+            case EOPT_FLAGS_OFF:      showFlags = false;       break;
+            case EOPT_FLAGS_ON:       showFlags = true;        break;
             case EOPT_TALLIES_OFF:    showTallies = false;     break;
             case EOPT_TALLIES_ON:     showTallies = true;      break;
             case EOPT_RATINGS_OFF:    showRatings = false;     break;
@@ -2441,6 +2446,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     ctable->SetSwissColors (showColors);
     ctable->SetAges (showAges);
     ctable->SetCountries (showCountries);
+    ctable->SetFlags (showFlags);
     ctable->SetTallies (showTallies);
     ctable->SetElos (showRatings);
     ctable->SetTitles (showTitles);

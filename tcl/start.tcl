@@ -441,6 +441,32 @@ proc applyThemeStyle {style widget} {
   bind $widget <<ThemeChanged>> "::applyThemeStyle $style $widget"
 }
 
+image create photo flag_unknown -data {
+      iVBORw0KGgoAAAANSUhEUgAAABgAAAAMCAYAAAB4MH11AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIw
+      F4pT92AAAAB3RJTUUH4wQHCTMzcDliXAAAABJJREFUOMtjYBgFo2AUjIKBBwAEjAABIobxpQAAAABJRU5ErkJggg==
+}
+
+proc getFlagImage { countryID { returnUnknowFlag no } } {
+  set cflag "flag_[string tolower [string range $countryID 0 2]]"
+  # preset unkown flag (empty transparent image 24x12)
+  set country flag_unknown
+  if { $cflag eq [info commands $cflag] } {
+    # flag exists, use it
+    set country $cflag
+  } else {
+    # flag does not exist, try to load it
+    set dname [file join $::scidImgDir flags $cflag.gif]
+    if { [file exists $dname] } {
+      image create photo $cflag -file $dname
+      set country $cflag
+    } elseif { $returnUnknowFlag == "no" } {
+      #no flag is needed, return nothing
+      set country ""
+    }
+  }
+  return $country
+}
+
 proc InitImg {} {
 	global scidImgDir boardStyle boardStyles textureSquare
 
@@ -482,13 +508,6 @@ proc InitImg {} {
 		if {[file isdirectory $piecetype] == 1} {
 			lappend boardStyles [file tail $piecetype]
 		}
-	}
-
-	#Load all img/flags/_filename_.gif
-	set dname [file join $::scidImgDir flags]
-	foreach {fname} [glob -directory $dname *.gif] {
-		set iname [string range [file tail $fname] 0 end-4]
-		image create photo $iname -file $fname
 	}
 }
 if {[catch {InitImg}]} {

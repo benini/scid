@@ -312,8 +312,8 @@ proc playerInfo {{player ""}} {
   set found [string first " \[" $pinfo]
   if { $found > 0 } {
     set countryID [string range $pinfo [expr $found - 3] [expr $found - 1]]
-    set country "flag_[string tolower $countryID]"
-    if { $country eq [info commands $country] } {
+    set country [getFlagImage $countryID]
+    if { $country ne "" } {
       set pinfo [string replace $pinfo [expr $found - 3] [expr $found - 1] "$countryID <img $country>"]
     }
   }
