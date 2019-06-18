@@ -5882,7 +5882,7 @@ sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
     }
     Position * p = db->game->GetCurrentPos();
     sanListT sanList; 
-    p->CalcSANStrings (&sanList, SAN_NO_CHECKTEST);
+    p->CalcSANStrings (&sanList, SAN_CHECKTEST);
 
     for (uint i=0; i < sanList.num; i++) {
             Tcl_AppendElement (ti, sanList.list[i]);
