@@ -1695,7 +1695,7 @@ void Game::GetSAN(char* str) {
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::GetPrevSAN():
-//      Print the SAN representation of the current move to a string.
+//      Print the SAN representation of the previous move to a string.
 //      Prints an empty string ("") if not at a move.
 void
 Game::GetPrevSAN (char * str)
