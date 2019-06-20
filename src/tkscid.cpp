@@ -5755,7 +5755,7 @@ int
 sc_pos_isPromo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
-        return errorResult (ti, "Usage: sc_move isPromo <square> <square>");
+        return errorResult (ti, "Usage: sc_pos isPromotion <square> <square>");
     }
 
     Position * pos = db->game->GetCurrentPos();
@@ -5763,7 +5763,7 @@ sc_pos_isPromo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     int toSq = strGetInteger (argv[3]);
 
     if (fromSq < A1  ||  fromSq > H8  ||  toSq < A1  ||  toSq > H8) {
-        return errorResult (ti, "Usage: sc_move isPromo <square> <square>");
+        return errorResult (ti, "Usage: sc_pos isPromotion <square> <square>");
     }
 
     return UI_Result(ti, OK, pos->IsPromoMove ((squareT) fromSq, (squareT) toSq));
