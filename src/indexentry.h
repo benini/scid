@@ -88,8 +88,6 @@ class IndexEntry {
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
 public:
-    void Init() { std::memset(this, 0, sizeof(IndexEntry)); }
-
     template <class T> errorT Write (T* file, versionT version) const;
 
     // get functions
