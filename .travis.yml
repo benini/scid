@@ -46,19 +46,19 @@ matrix:
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
 
   - os: linux
-    env: CXX=clang++-6.0 CC=clang-6.0
+    env: CXX=clang++-8 CC=clang-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-trusty-6.0
+          - llvm-toolchain-trusty-8
         packages:
-          - clang-6.0
-          - clang-tidy-6.0
+          - clang-8
+          - clang-tidy-8
           - libstdc++-8-dev
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
-      - run-clang-tidy-6.0.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
+      - run-clang-tidy-8.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid
@@ -69,13 +69,14 @@ matrix:
       apt:
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-trusty-6.0
+          - llvm-toolchain-trusty
         packages:
-          - clang-format-6.0
+          - clang-format
     script:
-      - clang-format-6.0 -i src/codec*
-      - clang-format-6.0 -i src/movegen*
-      - clang-format-6.0 -i src/pgn*
+      - clang-format -version
+      - clang-format -i src/codec*
+      - clang-format -i src/movegen*
+      - clang-format -i src/pgn*
       - |
         if [[ -n $(git diff) ]]; then
           git diff
@@ -94,14 +95,14 @@ matrix:
 
   - os: linux
     sudo: true
-    env: GTEST_ADDRESS=_ CXX=clang++-6.0 CC=clang-6.0
+    env: GTEST_ADDRESS=_ CXX=clang++-8 CC=clang-8
     addons:
       apt:
         sources:
           - ubuntu-toolchain-r-test
-          - llvm-toolchain-trusty-6.0
+          - llvm-toolchain-trusty-8
         packages:
-          - clang-6.0
+          - clang-8
           - libstdc++-8-dev
     script:
       - mkdir Test && cd Test
