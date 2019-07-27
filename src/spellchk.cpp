@@ -295,16 +295,17 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	char* shrink = (char*) realloc(staticStrings_, 1 + std::distance(staticStrings_,line));
 	if (shrink != NULL && shrink != staticStrings_) {
 		// Unlikely, but realloc() moved the memory: update the pointers.
-		const char* oldAddr = staticStrings_;
-		staticStrings_ = shrink;
+		const auto offset = shrink - staticStrings_;
+		staticStrings_ += offset;
+		ASSERT(staticStrings_ == shrink);
 		for (nameT i=0; i < NUM_NAME_TYPES; i++) {
 			for (auto& e : (names_[i]))
-				e = staticStrings_ + std::distance(oldAddr, e);
+				e += offset;
 		}
 		for (auto& e : pInfo_) {
-			e.comment_ = staticStrings_ + std::distance(oldAddr, e.comment_);
+			e.comment_ += offset;
 			for (auto& bio : e.bio_) {
-				bio = staticStrings_ + std::distance(oldAddr, bio);
+				bio += offset;
 			}
 		}
 	}
