@@ -2996,24 +2996,6 @@ Position::Compare (Position * p)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::GetSquares
-//    Adds to the provided square list all squares containing the specified
-//    piece, and return the number of pieces of that type on the board.
-uint
-Position::GetSquares (pieceT piece, SquareList * sqlist)
-{
-    colorT color = piece_Color(piece);
-    squareT * squares = GetList(color);
-    uint npieces = GetCount(color);
-    for (uint i=0; i < npieces; i++) {
-        squareT sq = squares[i];
-        pieceT p = Board[sq];
-        if (p == piece) { sqlist->Add (sq); }
-    }
-    return Material[piece];
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::Random
 //    Given a string such as "KRPKR" or "KRP-kr", sets up a
 //    random position with that material configuration.

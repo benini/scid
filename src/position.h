@@ -192,7 +192,6 @@ public:
     inline uint SquareColorCount (pieceT p, colorT sqColor) {
         return NumOnSquareColor[p][sqColor];
     }
-    uint        GetSquares (pieceT p, SquareList * sqlist);
 
     const pieceT* GetBoard() const {
         const_cast<Position*>(this)->Board[COLOR_SQUARE] = COLOR_CHAR[ToMove];

@@ -772,13 +772,10 @@ Engine::ScorePawnStructure (pawnTableEntryT * pawnEntry)
         pawnFiles[BLACK][f+1] = Pos.FyleCount (BP, f);
     }
 
-    for (colorT c = WHITE; c <= BLACK; c++) {
-        pieceT pawn = piece_Make (c, PAWN);
-        uint npawns = Pos.PieceCount(pawn);
-        SquareList sqlist;
-        Pos.GetSquares (pawn, &sqlist);
-        for (uint i = 0; i < npawns; i++) {
-            squareT sq = sqlist.Get(i);
+    for (squareT sq = A1; sq <= H8; ++sq) {
+        pieceT piece = Pos.GetPiece(sq);
+        if (piece_Type(piece) == PAWN) {
+            colorT c = piece_Color(piece);
             squareT wsq = (c == WHITE) ? sq : square_FlipRank(sq);
             squareT bonusSq = square_FlipRank(wsq);
             pawnScore[c] += PawnSquare[bonusSq];
