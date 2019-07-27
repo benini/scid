@@ -2215,11 +2215,10 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
             for (uint i=0; i < m->numVariations; i++) {
                 if (PgnStyle & PGN_STYLE_INDENT_VARS) {
                     if (IsColorFormat()) {
-                        switch (VarDepth) {
-                            case 0: tb->PrintString ("<ip1>"); break;
-                            case 1: tb->PrintString ("<ip2>"); break;
-                            case 2: tb->PrintString ("<ip3>"); break;
-                            case 3: tb->PrintString ("<ip4>"); break;
+                        if (VarDepth < 19) {
+                            char tmp_str[16];
+                            sprintf(tmp_str, "<ip%u>", VarDepth + 1);
+                            tb->PrintString(tmp_str);
                         }
                     } else {
                         tb->SetIndent (tb->GetIndent() + 4); tb->Indent();
@@ -2267,11 +2266,10 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 }
                 if (PgnStyle & PGN_STYLE_INDENT_VARS) {
                     if (IsColorFormat()) {
-                        switch (VarDepth) {
-                            case 0: tb->PrintString ("</ip1><br>"); break;
-                            case 1: tb->PrintString ("</ip2><br>"); break;
-                            case 2: tb->PrintString ("</ip3><br>"); break;
-                            case 3: tb->PrintString ("</ip4><br>"); break;
+                        if (VarDepth < 19) {
+                            char tmp_str[16];
+                            sprintf(tmp_str, "</ip%u><br>", VarDepth + 1);
+                            tb->PrintString(tmp_str);
                         }
                     } else {
                         tb->SetIndent (tb->GetIndent() - 4); tb->Indent();

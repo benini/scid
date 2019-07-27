@@ -223,10 +223,12 @@ proc ::htext::init {w} {
     ### $w tag configure var -foreground $::pgnColor(Var) -font font_Figurine_Var
 
   }
-  $w tag configure ip1 -lmargin1 25 -lmargin2 25
-  $w tag configure ip2 -lmargin1 50 -lmargin2 50
-  $w tag configure ip3 -lmargin1 75 -lmargin2 75
-  $w tag configure ip4 -lmargin1 100 -lmargin2 100
+
+  set lmargin 0
+  for {set i 1} {$i <= 19} {incr i} {
+    incr lmargin 25
+    $w tag configure "ip$i" -lmargin1 $lmargin -lmargin2 $lmargin
+  }
 }
 
 proc ::htext::isStartTag {tagName} {
