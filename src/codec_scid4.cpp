@@ -146,24 +146,6 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	return OK;
 }
 
-bool assert_sorted(const char* str1, const char* str2) {
-	// *** Compatibility ***
-	// Older code used a custom StrTree class with a peculiar sorting:
-	// - the first char was interpreted as an unsigned char;
-	// - the remaining part was compared with the function
-	// strComapare(),
-	//   which converts the chars to ints, and is not consistent with
-	//   the standard function strcmp().
-	// The old StrTree class did also have unpredictable behaviors when
-	// fed with names not sorted according to that criteria, for example
-	// it could create Namebase objects with duplicate entries.
-	// ***
-	if (*str1 == *str2)
-		return strCompare(str1, str2) < 0;
-
-	return static_cast<uint>(*str1) < static_cast<uint>(*str2);
-}
-
 /**
  * Write a SCIDv4 NameBase file.
  * @param filename: the full path of the file to open.
@@ -210,7 +192,20 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
 			const char* name = it.first;
 			idNumberT id = it.second;
 
-			ASSERT(prevName == nullptr || assert_sorted(prevName, name));
+			// *** Compatibility ***
+			// Older code used a custom StrTree class with a peculiar sorting:
+			// - the first char was interpreted as an unsigned char;
+			// - the remaining part was compared with strComapare(),
+			//   which converts the chars to ints, and is not consistent with
+			//   the standard function strcmp().
+			// The old StrTree class did also have unpredictable behaviors when
+			// fed with names not sorted according to that criteria, for example
+			// it could create Namebase objects with duplicate entries.
+			// ***
+			ASSERT(prevName == nullptr ||
+			       static_cast<uint>(*prevName) < static_cast<uint>(*name) ||
+			       (static_cast<uint>(*prevName) == static_cast<uint>(*name) &&
+			        strCompare(prevName, name) < 0));
 
 			// write idNumber in 2 bytes if possible, otherwise 3.
 			if (numNames >= 65536) {
