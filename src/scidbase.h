@@ -1,5 +1,5 @@
 /*
-# Copyright (C) 2014-2016 Fulvio Benini
+# Copyright (C) 2014-2019 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -28,8 +28,9 @@
 #include "namebase.h"
 #include "tree.h"
 #include <array>
-#include <vector>
+#include <cassert>
 #include <memory>
+#include <vector>
 
 class SortCache;
 
@@ -129,11 +130,11 @@ struct scidBaseT {
 	}
 
 	const IndexEntry* getIndexEntry(gamenumT g) const {
+		assert(g < numGames());
 		return idx->GetEntry(g);
 	}
 	const IndexEntry* getIndexEntry_bounds(gamenumT g) const {
-		if (g < numGames()) return getIndexEntry(g);
-		return 0;
+		return g < numGames() ? getIndexEntry(g) : nullptr;
 	}
 	const NameBase* getNameBase() const {
 		return nb_;
