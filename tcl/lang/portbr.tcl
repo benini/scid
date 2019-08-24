@@ -293,26 +293,20 @@ menuText B OptionsRecent "Arquivos recentes..." 0 \
   {Muda o número de arquivos recentes no menu Arquivo} 
 menuText B OptionsBooksDir "Diretório de Livros..." 0 {Define o diretório para os livros de aberturas}
 menuText B OptionsTacticsBasesDir "Diretório de bases..." 0 {Define o diretório para as bases de treinamento de táticas}
-# ====== TODO To be translated ======
-menuText B OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
-# ====== TODO To be translated ======
-menuText B OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText B OptionsPhotosDir "Diretorio de Fotos..." 0 {Define o diretorio base de fotos}
+menuText B OptionsThemeDir "Carregar Tema(s)..."  0 {Carrega arquivo de tema para a tela}
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
   {Salva automaticamente todas as opcoes quando sair do Scid}
-# ====== TODO To be translated ======
-menuText B OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate B MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate B MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate B MenuColorSelect "Select"
+menuText B OptionsMenuColor "Define Cores dos Menus..." 0 { }
+translate B MenuColorForeground "Cor do Texto"
+translate B MenuColorBackground "Cor de Fundo"
+translate B MenuColorSelect "Selecionar"
 
 # Help menu:
 menuText B Help "Ajuda" 0
-menuText B HelpContents "Contents" 0 {Show the help contents page} 
+menuText B HelpContents "Conteudo" 0 {Show the help contents page}
 menuText B HelpIndex "Indice" 0 {Indice da Ajuda}
 menuText B HelpGuide "Consulta Rapida" 0 {Mostra a pagina de consulta rapida}
 menuText B HelpHints "Dicas" 0 {Mostra a pagina de dicas}
@@ -401,8 +395,7 @@ translate B Month {Mes}
 translate B Months {Janeiro Fevereiro Marco Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro}
 translate B Days {Dom Seg Ter Qua Qui Sex Sab}
 translate B YearToToday {Anos ate hoje}
-# ====== TODO To be translated ======
-translate B YearToTodayTooltip {Set date from 1 year back to today}
+translate B YearToTodayTooltip {Define a data para 1 ano atrás}
 translate B Result {Resultado}
 translate B Round {Rodada}
 translate B Length {Tamanho}
@@ -466,22 +459,14 @@ translate B WinningMoves {Movimentos vencedores}
 translate B DrawingMoves {Movimentos para empate} 
 translate B LosingMoves {Movimentos perdedores} 
 translate B UnknownMoves {Movimentos com resultado desconhecido} 
-# ====== TODO To be translated ======
-translate B SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate B toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate B NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate B MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate B SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate B WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate B BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate B AllLoss {" Whoever moves loses:     " }
+translate B SideLongest {Lado    Mov. p/    %     %     %\n}
+translate B toNoveMate {a mover   mate      V     E     D\n}
+translate B NoSummary {\nSem resumo para esta tablebase.}
+translate B MutualZugzwang {Zugzwangs Nutuos: }
+translate B SelectetZugzwang {\nPosicoes de zugzwang selecionadas:}
+translate B WdrawBloss {Branca empata, Preta perde:}
+translate B BdrawWloss {Preta empata, Branca perde:}
+translate B AllLoss {" Quem mover perde   :     " }
 
 # Tip of the day:
 translate B Tip {Dica}
@@ -1678,74 +1663,40 @@ translate B DockLeft {Mover para a esquerda}
 translate B DockRight {Mover para a direita}
 translate B Undock {Desacoplar}
 translate B ChangeIcon {Alterar icone...}
-# ====== TODO To be translated ======
-translate B NewGameListWindow {New Game List Window}
-# ====== TODO To be translated ======
-translate B LoadatStartup {Load at startup}
-# ====== TODO To be translated ======
-translate B ShowHideDB {Show/Hide databases}
-# ====== TODO To be translated ======
-translate B ChangeFilter {Change filter}
-# ====== TODO To be translated ======
-translate B ChangeLayout {Load/Save/Change sorting criteria and column layout}
-# ====== TODO To be translated ======
-translate B ShowHideStatistic {Show/Hide statistics}
-# ====== TODO To be translated ======
-translate B BoardFilter {Show only games that matches the current board position}
-# ====== TODO To be translated ======
-translate B CopyGameTo {Copy Game to}
-# ====== TODO To be translated ======
-translate B FindBar {Find Bar}
-# ====== TODO To be translated ======
-translate B FindCurrentGame {Find current game}
-# ====== TODO To be translated ======
-translate B DeleteGame {Delete game}
-# ====== TODO To be translated ======
-translate B UndeleteGame {Undelete game}
-# ====== TODO To be translated ======
-translate B ResetSort {Reset sort}
-# ====== TODO To be translated ======
-translate B ConvertNullMove {Convert null moves to comments}
-# ====== TODO To be translated ======
-translate B SetupBoard {Setup Board}
-# ====== TODO To be translated ======
-translate B Rotate {Rotate}
-# ====== TODO To be translated ======
-translate B SwitchColors {Switch colors}
-# ====== TODO To be translated ======
-translate B FlipBoard {Flip Board}
-# ====== TODO To be translated ======
-translate B ImportPGN {Import PGN game}
-# ====== TODO To be translated ======
-translate B ImportingFiles {Importing PGN files in}
-# ====== TODO To be translated ======
-translate B ImportingFrom {Importing from}
-# ====== TODO To be translated ======
-translate B ImportingIn {Import games in}
-# ====== TODO To be translated ======
-translate B UseLastTag {Use last\ngame's tags}
-# ====== TODO To be translated ======
-translate B Random {Random}
-# ====== TODO To be translated ======
-translate B BackToMainline {Go back to mainline}
-# ====== TODO To be translated ======
-translate B LeaveVariant {Leave variant}
-# ====== TODO To be translated ======
-translate B Autoplay {Autoplay}
-# ====== TODO To be translated ======
-translate B ShowHideCoords {Show/Hide Coord.}
-# ====== TODO To be translated ======
-translate B ShowHideMaterial {Show/Hide Material}
-# ====== TODO To be translated ======
-translate B FullScreen {Full Screen}
-# ====== TODO To be translated ======
-translate B FilterStatistic {Filter Statistics}
-# ====== TODO To be translated ======
-translate B MakeCorrections {Make Corrections}
-# ====== TODO To be translated ======
-translate B Surnames {Surnames}
-# ====== TODO To be translated ======
-translate B Ambiguous {Ambiguous}
+translate B NewGameListWindow {Lista de Novos Jogos}
+translate B LoadatStartup {Carregar ao inicializar}
+translate B ShowHideDB {Exibe/Oculta base de dados}
+translate B ChangeFilter {Altera filtro}
+translate B ChangeLayout {Carrega/Salva/Altera criterio de ordenacao e layout das colunas}
+translate B ShowHideStatistic {Exibe/Oculta Estatisticas}
+translate B BoardFilter {Mostra apenas jogos que atendam a posicao atual no tabuleiro}
+translate B CopyGameTo {Copiar jogo para}
+translate B FindBar {Barra de Pesquisa}
+translate B FindCurrentGame {Pesquisar jogo atual}
+translate B DeleteGame {Excluir jogo}
+translate B UndeleteGame {Recuperar jogo deletado}
+translate B ResetSort {Reiniciar ordenacao}
+translate B ConvertNullMove {Converter movimentos nullos para comentarios}
+translate B SetupBoard {Definir tabuleiro}
+translate B Rotate {Rotacionar}
+translate B SwitchColors {Trocar cores}
+translate B FlipBoard {Virar o tabuleiro}
+translate B ImportPGN {Importar jogo em PGN}
+translate B ImportingFiles {Importar arquivos PGN para}
+translate B ImportingFrom {Importando de}
+translate B ImportingIn {Importar jogos para}
+translate B UseLastTag {Usar ultimas\ntags do jogo}
+translate B Random {Aleatorio}
+translate B BackToMainline {Voltar para linha principal}
+translate B LeaveVariant {Deixar variante}
+translate B Autoplay {Jogo automatico}
+translate B ShowHideCoords {Exibir/Ocultar Coord.}
+translate B ShowHideMaterial {Exibir/Ocultar Material}
+translate B FullScreen {Tela Cheia}
+translate B FilterStatistic {Estatisticas de Filtro}
+translate B MakeCorrections {Fazer Correcoes}
+translate B Surnames {Sobrenomes}
+translate B Ambiguous {Ambiguo}
 }
 
 # end of portbr.tcl
