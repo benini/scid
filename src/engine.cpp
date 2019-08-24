@@ -775,7 +775,7 @@ Engine::ScorePawnStructure (pawnTableEntryT * pawnEntry)
     for (squareT sq = A1; sq <= H8; ++sq) {
         pieceT piece = Pos.GetPiece(sq);
         if (piece_Type(piece) == PAWN) {
-            colorT c = piece_Color(piece);
+            colorT c = piece_Color_NotEmpty(piece);
             squareT wsq = (c == WHITE) ? sq : square_FlipRank(sq);
             squareT bonusSq = square_FlipRank(wsq);
             pawnScore[c] += PawnSquare[bonusSq];

@@ -78,7 +78,7 @@ public:
 
 		for (auto piece : board_) {
 			if (piece != EMPTY) {
-				nPieces_.incr(piece_Color(piece), piece_Type(piece));
+				nPieces_.incr(piece_Color_NotEmpty(piece), piece_Type(piece));
 			}
 		}
 
