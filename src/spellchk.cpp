@@ -292,20 +292,20 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	}
 
 	// Free unused memory
-	char* shrink = (char*) realloc(staticStrings_, 1 + std::distance(staticStrings_,line));
-	if (shrink != NULL && shrink != staticStrings_) {
-		// Unlikely, but realloc() moved the memory: update the pointers.
+	const auto new_size = std::distance(staticStrings_, line);
+	char* shrink = (char*)realloc(staticStrings_, new_size ? new_size : 1);
+	if (shrink) {
 		const auto offset = shrink - staticStrings_;
-		staticStrings_ += offset;
-		ASSERT(staticStrings_ == shrink);
-		for (nameT i=0; i < NUM_NAME_TYPES; i++) {
-			for (auto& e : (names_[i]))
-				e += offset;
-		}
-		for (auto& e : pInfo_) {
-			e.comment_ += offset;
-			for (auto& bio : e.bio_) {
-				bio += offset;
+		staticStrings_ = shrink;
+		if (offset) { // realloc() moved the memory: update the pointers.
+			for (nameT i = 0; i < NUM_NAME_TYPES; i++) {
+				for (auto& e : names_[i])
+					e += offset;
+			}
+			for (auto& e : pInfo_) {
+				e.comment_ += offset;
+				for (auto& bio : e.bio_)
+					bio += offset;
 			}
 		}
 	}
