@@ -66,7 +66,25 @@ class ByteBuffer
         Current++; ReadPos++;
         return b;
     }
-    void   GetFixedString (char *str, size_t length);
+
+    /// Reads a fixed-length string from the buffer.
+    /// @param length: the number of requested bytes. It is adjusted if it
+    ///                exceeds the available bytes in the buffer.
+    const char* GetFixedString(byte& length) {
+        assert(Current != NULL);
+
+        if (Err != OK) {
+            length = 0;
+        } else if (ReadPos + length > ByteCount) {
+            Err = ERROR_BufferRead;
+            length = static_cast<byte>(ByteCount - ReadPos);
+        }
+        const char* res = reinterpret_cast<char*>(Current);
+        Current += length;
+        ReadPos += length;
+        return res;
+    }
+
     void   GetTerminatedString (char **str);
     const byte* getData() { return Buffer; }
 

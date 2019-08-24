@@ -3119,15 +3119,20 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
     return buf->Status();
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Common tags are encoded in one byte, as a value over 240.
-//       This means that the maximum length of a non-common tag is 240
-//       bytes, and the maximum number of common tags is 15.
-//
+/**
+ * The Tag section is a list of <tag,value> variable length records:
+ * tag_length: 1-byte
+ * tag: [0:240] bytes
+ * value_length: 1-byte
+ * value: [0:255] bytes
+ * The section is terminated with 1-byte with value 0, meaning that empty
+ * tags cannot be stored.
+ * Some common tags are encoded in one byte, with a tag_length value over 240
+ * and a tag of 0 bytes.
+ */
 constexpr size_t MAX_TAG_LEN = 240;
-
-static const char* commonTags[255 - MAX_TAG_LEN] = {
+// TODO: use c++17 std::string_view
+static const char* commonTags[] = {
     // 241, 242: Country
     "WhiteCountry", "BlackCountry",
     // 243: Annotator
@@ -3139,116 +3144,68 @@ static const char* commonTags[255 - MAX_TAG_LEN] = {
     // 246, 247: Opening, Variation
     "Opening", "Variation",
     // 248-250: Setup and Source
-    "Setup", "Source", "SetUp",
+    "Setup", "Source", "SetUp"
     // 252-254: spare for future use
-    NULL, NULL, NULL, NULL,
     // 255: Reserved for compact EventDate encoding
-    NULL
 };
 
+template <typename SourceT, typename DestT>
+void encodeTags(const SourceT& tagList, DestT& dest) {
+	for (auto& tag : tagList) {
+		if (tag.first.length() == 0)
+			continue; // Cannot store empty tag names
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// encodeTags():
-//      Encodes the non-standard tags.
-//
-template <typename TCont>
-errorT encodeTags(ByteBuffer* buf, const TCont& tagList) {
-    for (auto& tag : tagList) {
-        uint tagnum = 1;
-        const char ** common = commonTags;
-        while (*common != NULL) {
-            if (tag.first == *common) {
-                buf->PutByte ((byte) MAX_TAG_LEN + tagnum);
-                break;
-            } else {
-                common++;
-                tagnum++;
-            }
-        }
-        if (*common == NULL) {   // This is not a common tag.
-            auto length = std::min(tag.first.length(), MAX_TAG_LEN);
-            buf->PutByte ((byte) length);
-            buf->PutFixedString(tag.first.c_str(), length);
-        }
+		const auto it = std::find(commonTags, std::end(commonTags), tag.first);
+		if (it != std::end(commonTags)) {
+			// Common tags are stored with just their 1-byte value [241:250]
+			const auto tagnum = std::distance(commonTags, it) + MAX_TAG_LEN + 1;
+			dest.PutByte(static_cast<byte>(tagnum));
+		} else {
+			// Other tags are stored as 1-byte length [1:240] + the tag name.
+			const auto length = std::min(tag.first.length(), MAX_TAG_LEN);
+			dest.PutByte(static_cast<byte>(length));
+			dest.PutFixedString(tag.first.c_str(), length);
+		}
 
-        auto valueLen = std::min<size_t>(tag.second.length(), 255);
-        buf->PutByte ((byte) valueLen);
-        buf->PutFixedString(tag.second.c_str(), valueLen);
-    }
-    buf->PutByte (0);
-    return buf->Status();
+		// The value is stored as 1-byte length [0:255] + the data.
+		const auto valueLen = std::min<size_t>(tag.second.length(), 255);
+		dest.PutByte(static_cast<byte>(valueLen));
+		dest.PutFixedString(tag.second.c_str(), valueLen);
+	}
+	dest.PutByte(0);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::DecodeTags():
-//      Decodes the non-standard tags of the game.
-//
-errorT
-Game::DecodeTags (ByteBuffer * buf, bool storeTags)
-{
-    byte b;
-    char tag [255];
-    char value [255];
+template <typename SourceT, typename FuncT>
+void decodeTags(SourceT& src, FuncT fn) {
+	for (;;) {
+		byte tagLen = src.GetByte();
+		if (src.Status() != OK || tagLen == 0)
+			return;
 
-    b = buf->GetByte ();
-    while (b != 0  &&  buf->Status() == OK) {
-        if (b == 255) {
-            // Special binary 3-byte encoding of EventDate:
-            dateT date = 0;
-            b = buf->GetByte(); date = (date << 8) | b;
-            b = buf->GetByte(); date = (date << 8) | b;
-            b = buf->GetByte(); date = (date << 8) | b;
-            SetEventDate (date);
-            //char dateStr[20];
-            //date_DecodeToString (date, dateStr);
-            //if (storeTags) { AddPgnTag ("EventDate", dateStr); }
-        } else if (b > MAX_TAG_LEN) {
-            // A common tag name, not explicitly stored:
-            char * ctag = (char *) commonTags[b - MAX_TAG_LEN - 1];
-            b = buf->GetByte ();
-            buf->GetFixedString (value, b);
-            value[b] = '\0';
-            if (storeTags) { AddPgnTag (ctag, value); }
-        } else {
-            buf->GetFixedString (tag, b);
-            tag[b] = '\0';
-            b = buf->GetByte ();
-            buf->GetFixedString (value, b);
-            value[b] = '\0';
-            if (storeTags) { AddPgnTag (tag, value); }
-        }
-        b = buf->GetByte();
-    }
-   return buf->Status();
-}
+		const char* tag;
+		if (tagLen <= MAX_TAG_LEN) {
+			tag = src.GetFixedString(tagLen);
+		} else if (tagLen <= MAX_TAG_LEN + 10) {
+			// A common tag name, not explicitly stored:
+			tag = commonTags[tagLen - MAX_TAG_LEN - 1];
+			tagLen = static_cast<byte>(std::strlen(tag));
+		} else {
+			ASSERT(false); // This common tags should be unused
+			if (tagLen == 255) {
+				// Special binary 3-byte encoding of EventDate used in SCID2
+				byte valueLen = 3;
+				src.GetFixedString(valueLen);
+			} else {
+				byte valueLen = src.GetByte();
+				src.GetFixedString(valueLen);
+			}
+			continue;
+		}
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// skipTags():
-//      Called instead of DecodeTags() to skip over the tags of the
-//      game when decoding it. Called from DecodeStart() since the
-//      nonstandard tags are not needed for searches.
-//
-static errorT
-skipTags (ByteBuffer * buf)
-{
-    byte b;
-    b = buf->GetByte ();
-    while (b != 0  &&  buf->Status() == OK) {
-        if (b == 255) {
-            // Special 3-byte binary encoding of EventDate:
-            buf->Skip (3);
-        } else {
-            if (b > MAX_TAG_LEN) {
-                // Do nothing.
-            } else {
-                buf->Skip (b);
-            }
-            b = buf->GetByte ();
-            buf->Skip (b);
-        }
-        b = buf->GetByte();
-    }
-    return buf->Status ();
+		byte valueLen = src.GetByte();
+		const char* value = src.GetFixedString(valueLen);
+		fn(tag, tagLen, value, valueLen);
+	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3330,8 +3287,10 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     buf->Empty();
     // First, encode info not already stored in the index
     // This will be the non-STR (non-"seven tag roster") PGN tags.
-    errorT err = encodeTags(buf, GetExtraTags());
-    if (err != OK) { return err; }
+    encodeTags(GetExtraTags(), *buf);
+    if (buf->Status() != OK)
+        return buf->Status();
+
     // Now the game flags:
     byte flags = 0;
     if (HasNonStandardStart()) { flags += 1; }
@@ -3348,7 +3307,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     // Now the movelist:
     uint varCount = 0;
     uint nagCount = 0;
-    err = encodeVariation (buf, FirstMove->next, &varCount, &nagCount, 0);
+    errorT err = encodeVariation(buf, FirstMove->next, &varCount, &nagCount, 0);
     if (err != OK) { return err; }
 
     // Now do the comments
@@ -3494,6 +3453,22 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Game::DecodeTags():
+//      Decodes the non-standard tags of the game.
+//
+errorT Game::DecodeTags(ByteBuffer* buf, bool storeTags) {
+	if (storeTags) {
+		decodeTags(*buf, [&](const char* tag, byte tagLen, const char* value,
+		                     byte valueLen) {
+			accessTagValue(tag, tagLen).assign(value, valueLen);
+		});
+	} else {
+		decodeTags(*buf, [](const char*, byte, const char*, byte) {});
+	}
+	return buf->Status();
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::DecodeStart():
 //      Decodes the starting information from the game's on-disk
 //      representation in the bytebuffer. After this is called,
@@ -3506,7 +3481,7 @@ errorT Game::DecodeStart(ByteBuffer* buf, bool decodeTags) {
     if (err != OK)
         return err;
 
-    err = decodeTags ? DecodeTags(buf, true) : skipTags(buf);
+    err = DecodeTags(buf, decodeTags);
     if (err != OK)
         return err;
 

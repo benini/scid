@@ -73,24 +73,6 @@ ByteBuffer::Skip (size_t length)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::GetFixedString():
-//      Reads a fixed-length string from the buffer. A terminating
-//      null character is not added.
-void
-ByteBuffer::GetFixedString (char * str, size_t length)
-{
-    ASSERT(Current != NULL  &&  str != NULL);
-
-    if (Err != OK) { return; }
-    if (ReadPos + length > ByteCount) { Err = ERROR_BufferRead; return; }
-    ReadPos += length;
-    while (length > 0) {
-        *str = *Current; Current++; str++;
-        length--;
-    }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ByteBuffer::PutFixedString():
 //      Writes a fixed-length string to the buffer. A terminating null
 //      character is not written, unless it was part of the string.
