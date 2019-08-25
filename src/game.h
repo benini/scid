@@ -464,7 +464,7 @@ public:
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode(ByteBuffer& buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
-    errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
+    errorT    DecodeTags(ByteBuffer* buf);
 
     Game* clone();
 };

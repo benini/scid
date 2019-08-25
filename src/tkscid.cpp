@@ -9481,7 +9481,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			if (!sAnnotator.empty()) {
 				// Need the annotator flag, so decode the flags
 				scratchGame->Clear();
-				if (match && scratchGame->DecodeTags(base->bbuf, true) != OK)
+				if (match && scratchGame->DecodeTags(base->bbuf) != OK)
 					match = false;
 				if (match) {
 					auto ann = scratchGame->FindExtraTag("Annotator");

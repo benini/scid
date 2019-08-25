@@ -3488,16 +3488,12 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
 // Game::DecodeTags():
 //      Decodes the non-standard tags of the game.
 //
-errorT Game::DecodeTags(ByteBuffer* buf, bool storeTags) {
-	if (storeTags) {
-		decodeTags(*buf, [&](const char* tag, byte tagLen, const char* value,
-		                     byte valueLen) {
-			accessTagValue(tag, tagLen).assign(value, valueLen);
-		});
-	} else {
-		decodeTags(*buf, [](const char*, byte, const char*, byte) {});
-	}
-	return buf->Status();
+errorT Game::DecodeTags(ByteBuffer* buf) {
+    decodeTags(*buf, [&](const char* tag, byte tagLen, const char* value,
+                         byte valueLen) {
+        accessTagValue(tag, tagLen).assign(value, valueLen);
+    });
+    return buf->Status();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
