@@ -3507,12 +3507,12 @@ errorT Game::DecodeTags(ByteBuffer* buf, bool storeTags) {
 //      DecodeNextMove() can be called to decode each successive
 //      mainline move.
 //
-errorT Game::DecodeStart(ByteBuffer* buf, bool decodeTags) {
+errorT Game::DecodeStart(ByteBuffer* buf) {
     ASSERT(buf != NULL);
-    errorT err = buf->Status();
-    if (err == OK)
-        err = DecodeTags(buf, decodeTags);
+    if (buf->Status() == OK)
+		decodeTags(*buf, [](const char*, byte, const char*, byte) {});
 
+    errorT err = buf->Status();
     if (err == OK)
         decodeStartBoard(*buf,
                          [&](const char* FEN) { err = SetStartFen(FEN); });
