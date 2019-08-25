@@ -21,6 +21,7 @@
 #define SCID_BYTEBUF_H
 
 #include "common.h"
+#include <algorithm>
 
 class ByteBuffer
 {
@@ -85,7 +86,24 @@ class ByteBuffer
         return res;
     }
 
+    /// Reads a null-terminated string from the buffer.
+    const char* GetTerminatedString() {
+        assert(Current != NULL);
+
+        const auto begin = Current;
+        const auto end = Buffer + ByteCount;
+        auto it = std::find(Current, end, 0);
+        if (it == end) {
+            Err = ERROR_BufferRead;
+            return nullptr;
+        }
+        Current = ++it;
+        ReadPos += std::distance(begin, Current);
+        return reinterpret_cast<char*>(begin);
+    }
+
     void   GetTerminatedString (char **str);
+
     const byte* getData() { return Buffer; }
 
 /*

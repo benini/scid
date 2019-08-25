@@ -14,10 +14,13 @@
  * along with Scid. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bytebuf.h"
 #include "containers.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <gtest/gtest.h>
+#include <vector>
 
 namespace {
 
@@ -81,7 +84,7 @@ TEST(Test_Containers, VectorChunked) {
 		auto contiguous = v.contiguous(i);
 		RefCounted* it = &v[i];
 		for (size_t j = 0; j < contiguous; j++) {
-			(*it++).ch[0] = (char) i;
+			(*it++).ch[0] = (char)i;
 			++i;
 		}
 	}
@@ -169,4 +172,23 @@ TEST(Test_Containers, UndoRedo) {
 	EXPECT_EQ('a', cur->ch[0]);
 
 	delete cur;
+}
+
+TEST(Test_Containers, ByteBuffer_GetTerminatedString) {
+	const char* test_data[] = {"abcd", "", "efg"};
+	auto v = [&] {
+		std::vector<char> res;
+		for (auto str : test_data) {
+			res.insert(res.end(), str, str + std::strlen(str) + 1);
+		}
+		return res;
+	}();
+	ByteBuffer buf(0);
+	buf.ProvideExternal(reinterpret_cast<byte*>(v.data()), v.size());
+	for (auto str : test_data) {
+		EXPECT_STREQ(str, buf.GetTerminatedString());
+	}
+	EXPECT_EQ(OK, buf.Status());
+	EXPECT_EQ(0, buf.GetByte());
+	EXPECT_NE(OK, buf.Status());
 }

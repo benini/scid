@@ -3208,6 +3208,44 @@ void decodeTags(SourceT& src, FuncT fn) {
 	}
 }
 
+/**
+ * The StartBoard section starts with a byte containing three flags:
+ * 0-bit: true if the game doesn't start with the standard board
+ * 1-bit: true if there are pawn to queen promotions
+ * 2-bit: true if there are pawn to non-queen promotions.
+ * If the 0-bit is true, the byte is followed by a null terminated string
+ * containing the FEN of the start position..
+ */
+template <typename DestT>
+void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
+                      DestT& dest) {
+	byte flags = 0;
+	if (FEN) {
+		flags += 1;
+	}
+	if (promoFlag) {
+		flags += 2;
+	}
+	if (underpromoFlag) {
+		flags += 4;
+	}
+	dest.PutByte(flags);
+	if (FEN) {
+		dest.PutTerminatedString(FEN);
+	}
+}
+
+template <typename SourceT, typename FuncT>
+void decodeStartBoard(SourceT& src, FuncT fn) {
+	byte flags = src.GetByte();
+	if (flags & 1) {
+		if (auto FEN = src.GetTerminatedString()) {
+			fn(FEN);
+		}
+	}
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeComments():
 //      Encode the comments of the game. Recurses the moves of the game
@@ -3291,18 +3329,12 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     if (buf->Status() != OK)
         return buf->Status();
 
-    // Now the game flags:
-    byte flags = 0;
-    if (HasNonStandardStart()) { flags += 1; }
-    if (promoFlags.first)   { flags += 2; }
-    if (promoFlags.second)  { flags += 4; }
-    buf->PutByte (flags);
-    // Now encode the startBoard, if there is one.
-    if (StartPos) {
-        char tempStr [256];
-        StartPos->PrintFEN (tempStr, FEN_ALL_FIELDS);
-        buf->PutTerminatedString (tempStr);
-    }
+    // Encode the promotion flags and the start position
+    char FEN[256];
+    encodeStartBoard(promoFlags.first, promoFlags.second,
+                     HasNonStandardStart(FEN) ? FEN : nullptr, *buf);
+    if (buf->Status() != OK)
+        return buf->Status();
 
     // Now the movelist:
     uint varCount = 0;
@@ -3478,32 +3510,14 @@ errorT Game::DecodeTags(ByteBuffer* buf, bool storeTags) {
 errorT Game::DecodeStart(ByteBuffer* buf, bool decodeTags) {
     ASSERT(buf != NULL);
     errorT err = buf->Status();
-    if (err != OK)
-        return err;
+    if (err == OK)
+        err = DecodeTags(buf, decodeTags);
 
-    err = DecodeTags(buf, decodeTags);
-    if (err != OK)
-        return err;
+    if (err == OK)
+        decodeStartBoard(*buf,
+                         [&](const char* FEN) { err = SetStartFen(FEN); });
 
-    // Now the flags:
-    byte flags = buf->GetByte();
-    // Now decode the startBoard, if there is one.
-    if (flags & 1) {
-        char * tempStr;
-        buf->GetTerminatedString (&tempStr);
-        if ((err = buf->Status()) != OK)
-            return err;
-
-        StartPos = std::make_unique<Position>();
-        err = StartPos->ReadFromFEN (tempStr);
-        if (err != OK) {
-            StartPos = nullptr;
-            return err;
-        }
-        *CurrentPos = *StartPos;
-    }
-
-    return err;
+    return (err != OK) ? err : buf->Status();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
