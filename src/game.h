@@ -193,7 +193,6 @@ class Game {
     ushort      NumHalfMoves; // Total half moves in the main line.
 
     // TODO: The following variables should not be part of this class.
-    bool        PromotionsFlag;   // Used by MaterialMatch
     bool        KeepDecodedMoves; // Used by MaterialMatch end ExactMatch
 
     eloT        WhiteEstimateElo;
@@ -209,7 +208,7 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    bool MakeHomePawnList(byte* pbPawnList);
+    std::pair<bool,bool> MakeHomePawnList(byte* pbPawnList);
     errorT DecodeVariation(ByteBuffer* buf, byte flags, uint level);
     errorT WritePGN(TextBuffer* tb);
 
@@ -443,7 +442,7 @@ public:
 
     errorT    GetPartialMoveList (DString * str, uint plyCount);
 
-    bool      MaterialMatch (ByteBuffer * buf, byte * min, byte * max,
+    bool      MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * max,
                              patternT * pattern, int minPly, int maxPly,
                              int matchLength,
                              bool oppBishops, bool sameBishops,

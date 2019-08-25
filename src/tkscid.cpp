@@ -9169,14 +9169,16 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         bool result = false;
         if (possibleMatch) {
-            result = g->MaterialMatch (db->bbuf, min, max, patt,
+            bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
+            result = g->MaterialMatch (hasPromo, db->bbuf, min, max, patt,
                                        minPly, maxPly, matchLength,
                                        oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
         }
         if (result == 0  &&  possibleFlippedMatch) {
             db->bbuf->BackToStart();
-            result = g->MaterialMatch (db->bbuf, minFlipped, maxFlipped,
+            bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
+            result = g->MaterialMatch (hasPromo, db->bbuf, minFlipped, maxFlipped,
                                        flippedPatt, minPly, maxPly,
                                        matchLength, oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);

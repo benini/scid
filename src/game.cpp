@@ -471,7 +471,6 @@ Game::Game(const Game& obj) {
 		StartPos = std::make_unique<Position>(*obj.StartPos);
 
 	NumHalfMoves = obj.NumHalfMoves;
-	PromotionsFlag = obj.PromotionsFlag;
 	KeepDecodedMoves = obj.KeepDecodedMoves;
 	WhiteEstimateElo = obj.WhiteEstimateElo;
 	BlackEstimateElo = obj.BlackEstimateElo;
@@ -561,7 +560,6 @@ void Game::Clear() {
 
 	ClearMoves();
 	KeepDecodedMoves = true;
-	PromotionsFlag = false;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1043,8 +1041,7 @@ void Game::TruncateStart() {
 //    This function also ensures that other information about the
 //    game that will be stored in the index file and used to speed
 //    up searches (material at end of game, etc) is up to date.
-
-bool Game::MakeHomePawnList(byte* pbPawnList) {
+std::pair<bool,bool> Game::MakeHomePawnList(byte* pbPawnList) {
     ASSERT(pbPawnList != nullptr);
     // We zero out the list first:
     std::fill_n(pbPawnList, 9, 0);
@@ -1056,7 +1053,7 @@ bool Game::MakeHomePawnList(byte* pbPawnList) {
     byte* pbList = pbPawnList +1;
 
     NumHalfMoves = 0;
-    PromotionsFlag = false;
+    bool PromoFlag = false;
     bool UnderPromosFlag = false;
     MoveToPly(0);
 
@@ -1084,7 +1081,7 @@ bool Game::MakeHomePawnList(byte* pbPawnList) {
         }
         if (CurrentMove->marker != END_MARKER) {
             if (CurrentMove->moveData.promote != EMPTY) {
-                PromotionsFlag = true;
+                PromoFlag = true;
                 if (piece_Type(CurrentMove->moveData.promote) != QUEEN) {
                     UnderPromosFlag = true;
                 }
@@ -1096,7 +1093,7 @@ bool Game::MakeHomePawnList(byte* pbPawnList) {
     // First byte in pawnlist array stores the count:
     pbPawnList[0] = (byte) count;
 
-    return UnderPromosFlag;
+    return {PromoFlag, UnderPromosFlag};
 }
 
 namespace {
@@ -1173,7 +1170,7 @@ int patternsMatch(const Position* pos, patternT* ptn) {
 //      of each type of piece.
 //
 bool
-Game::MaterialMatch (ByteBuffer * buf, byte * min, byte * max,
+Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * max,
                      patternT * patterns, int minPly, int maxPly,
                      int matchLength, bool oppBishops, bool sameBishops,
                      int minDiff, int maxDiff)
@@ -3328,7 +3325,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
 
     // Make the home pawn change list and update PromotionFlag:
     byte homePawnList[9];
-    auto UnderPromosFlag = MakeHomePawnList(homePawnList);
+    auto promoFlags = MakeHomePawnList(homePawnList);
 
     buf->Empty();
     // First, encode info not already stored in the index
@@ -3338,8 +3335,8 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     // Now the game flags:
     byte flags = 0;
     if (HasNonStandardStart()) { flags += 1; }
-    if (PromotionsFlag)   { flags += 2; }
-    if (UnderPromosFlag)  { flags += 4; }
+    if (promoFlags.first)   { flags += 2; }
+    if (promoFlags.second)  { flags += 4; }
     buf->PutByte (flags);
     // Now encode the startBoard, if there is one.
     if (StartPos) {
@@ -3379,8 +3376,8 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
 
         std::copy_n(homePawnList, sizeof(homePawnList), ie->GetHomePawnData());
         // Set other data updated by MakeHomePawnList():
-        ie->SetPromotionsFlag (PromotionsFlag);
-        ie->SetUnderPromoFlag (UnderPromosFlag);
+        ie->SetPromotionsFlag (promoFlags.first);
+        ie->SetUnderPromoFlag (promoFlags.second);
         ie->SetNumHalfMoves (NumHalfMoves);
         ASSERT(AtEnd());
         ie->SetFinalMatSig(matsig_Make(CurrentPos->GetMaterial()));
@@ -3515,8 +3512,6 @@ errorT Game::DecodeStart(ByteBuffer* buf, bool decodeTags) {
 
     // Now the flags:
     byte flags = buf->GetByte();
-    if (flags & 2) { PromotionsFlag = true; }
-
     // Now decode the startBoard, if there is one.
     if (flags & 1) {
         char * tempStr;
