@@ -523,7 +523,7 @@ sc_base_export (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 if (db->getGame(ie, db->bbuf) != OK) {
                     continue;
                 }
-                if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+                if (g->Decode (*db->bbuf) != OK) {
                     continue;
                 }
                 g->LoadStandardTags (ie, db->getNameBase());
@@ -1125,7 +1125,7 @@ sc_base_tag (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
-        if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+        if (g->Decode (*db->bbuf) != OK) {
             continue;
         }
         if (cmd == TAG_FIND) {
@@ -1778,7 +1778,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
                     if (dbase->getGame(ie, dbase->bbuf) != OK) continue;
-                    if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
+                    if (g.Decode(*dbase->bbuf) != OK) continue;
                     g.LoadStandardTags (ie, nb);
                     std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
                     if (pgn.second != fwrite(pgn.first, 1, pgn.second, exportFile)) {
@@ -2230,7 +2230,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
             errorT err = db->getGame(ie, db->bbuf);
             if (err != OK) return UI_Result(ti, err);
-            err = db->game->Decode (db->bbuf, GAME_DECODE_ALL);
+            err = db->game->Decode(*db->bbuf);
             if (err != OK) return UI_Result(ti, err);
             db->game->LoadStandardTags (ie, db->getNameBase());
             db->game->MoveToPly(0);
@@ -2419,7 +2419,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->getGame(ie, db->bbuf) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
-        if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+        if (g->Decode(*db->bbuf) != OK) {
             return errorResult (ti, "Error decoding game.");
             }
         g->LoadStandardTags (ie, db->getNameBase());
@@ -3535,7 +3535,7 @@ sc_game_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (db->getGame(ie, db->bbuf) != OK) {
         return errorResult (ti, corruptMsg);
     }
-    if (db->game->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+    if (db->game->Decode(*db->bbuf) != OK) {
         return errorResult (ti, corruptMsg);
     }
 
@@ -3935,7 +3935,7 @@ sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (base->getGame(ie, base->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            if (g->Decode (base->bbuf, GAME_DECODE_ALL) != OK) {
+            if (g->Decode(*base->bbuf) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
             g->LoadStandardTags (ie, base->getNameBase());
@@ -4347,7 +4347,7 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+            if (g->Decode(*db->bbuf) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
             g->LoadStandardTags (ie, db->getNameBase());
@@ -7805,7 +7805,7 @@ sc_report_create (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            if (scratchGame->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+            if (scratchGame->Decode(*db->bbuf) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
             scratchGame->LoadStandardTags (ie, db->getNameBase());
@@ -9492,7 +9492,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			if(pgnTextCount > 0)
 			{
 				scratchGame->Clear();
-				if (match  &&  scratchGame->Decode (base->bbuf, GAME_DECODE_ALL) != OK) {
+				if (match  &&  scratchGame->Decode(*base->bbuf) != OK) {
 					match = false;
 				}
 				if (match) {

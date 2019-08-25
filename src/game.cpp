@@ -3533,23 +3533,27 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 // Game::Decode():
 //      Decodes a game from its on-disk representation in a bytebuffer.
 //      Decodes all the information: comments, variations, non-standard
-//      tags, etc, or selectively can ignore comments and/or tags for
-//      speed if the argument "flags" indicates.
+//      tags, etc.
 //
-errorT
-Game::Decode (ByteBuffer * buf, byte flags)
-{
-    ASSERT (buf != NULL);
-
+errorT Game::Decode(ByteBuffer& buf) {
     Clear();
-    errorT err = DecodeStart(buf, flags & GAME_DECODE_TAGS);
+    if (buf.Status() == OK)
+        decodeTags(buf, [&](const char* tag, byte tagLen, const char* value,
+                            byte valueLen) {
+            accessTagValue(tag, tagLen).assign(value, valueLen);
+        });
+
+    errorT err = buf.Status();
     if (err == OK)
-        err = DecodeVariation (buf, flags, 0);
+        decodeStartBoard(buf, [&](const char* FEN) { err = SetStartFen(FEN); });
 
-    if (err == OK && (flags & GAME_DECODE_COMMENTS))
-        err = decodeComments (buf, FirstMove);
+    if (err == OK)
+        err = DecodeVariation(&buf, GAME_DECODE_ALL, 0);
 
-    return (err != OK) ? err : buf->Status();
+    if (err == OK)
+        err = decodeComments(&buf, FirstMove);
+
+    return (err != OK) ? err : buf.Status();
 }
 
 //////////////////////////////////////////////////////////////////////

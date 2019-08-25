@@ -462,7 +462,7 @@ public:
     errorT    Encode (ByteBuffer * buf, IndexEntry * ie);
     errorT    DecodeStart(ByteBuffer* buf, bool decodeTags = false);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
-    errorT    Decode (ByteBuffer * buf, byte flags);
+    errorT    Decode(ByteBuffer& buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
     errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
 

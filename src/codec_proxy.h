@@ -119,7 +119,7 @@ private:
 		ByteBuffer buf(0);
 		buf.ProvideExternal(const_cast<byte*>(srcData), dataLen);
 		Game game;
-		errorT err = game.Decode(&buf, GAME_DECODE_ALL);
+		errorT err = game.Decode(buf);
 		if (err == OK)
 			err = game.LoadStandardTags(srcIe, srcNb);
 		if (err != OK)

@@ -157,7 +157,7 @@ struct scidBaseT {
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
 		ByteBuffer buf(0);
 		auto res = getGame(&ie, &buf);
-		return (res != OK) ? res : dest.Decode(&buf, GAME_DECODE_ALL);
+		return (res != OK) ? res : dest.Decode(buf);
 	}
 
 	errorT importGame(const scidBaseT* srcBase, uint gNum);

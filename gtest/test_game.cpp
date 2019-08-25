@@ -41,7 +41,7 @@ TEST(Test_Game, clone) {
 		Game game;
 		ByteBuffer bufGame(BBUF_SIZE);
 		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
-		ASSERT_EQ(OK, game.Decode(&bufGame, GAME_DECODE_ALL));
+		ASSERT_EQ(OK, game.Decode(bufGame));
 
 		std::mt19937 re(std::random_device{}());
 		game.MoveToLocationInPGN(std::uniform_int_distribution<>{0, 500}(re));
@@ -92,7 +92,7 @@ TEST(Test_Game, locationInPGN) {
 		Game game;
 		ByteBuffer bufGame(BBUF_SIZE);
 		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
-		ASSERT_EQ(OK, game.Decode(&bufGame, GAME_DECODE_ALL));
+		ASSERT_EQ(OK, game.Decode(bufGame));
 
 		unsigned location = 1;
 		game.MoveToStart();
