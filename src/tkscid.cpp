@@ -3593,7 +3593,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     Game * merge = scratchGame;
     merge->Clear();
-    if (merge->Decode (base->bbuf, GAME_DECODE_NONE) != OK) {
+    if (merge->DecodeMovesOnly(*base->bbuf) != OK) {
         return errorResult (ti, "Error decoding game.");
     }
     merge->LoadStandardTags (ie, base->getNameBase());
@@ -4194,7 +4194,7 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return errorResult (ti, "Error loading game.");
         }
         g->Clear();
-        if (g->Decode (base->bbuf, GAME_DECODE_NONE) != OK) {
+        if (g->DecodeMovesOnly(*base->bbuf) != OK) {
             return errorResult (ti, "Error decoding game.");
         }
         g->LoadStandardTags (ie, base->getNameBase());
@@ -8687,7 +8687,7 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         }
         uint ply = 0;
         if (useVars) {
-            g->Decode (dbase->bbuf, GAME_DECODE_NONE);
+            g->DecodeMovesOnly(*dbase->bbuf);
             // Try matching the game without variations first:
             if (ply == 0  &&  possibleMatch) {
                 if (g->ExactMatch (pos, NULL, NULL, searchType)) {

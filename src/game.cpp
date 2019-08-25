@@ -3520,6 +3520,15 @@ errorT Game::DecodeStart(ByteBuffer* buf, bool decodeTags) {
     return (err != OK) ? err : buf->Status();
 }
 
+errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
+    Clear();
+    errorT err = DecodeStart(&buf);
+    if (err == OK)
+        err = DecodeVariation(&buf, GAME_DECODE_NONE, 0);
+
+    return (err != OK) ? err : buf.Status();
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::Decode():
 //      Decodes a game from its on-disk representation in a bytebuffer.
