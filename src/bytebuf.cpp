@@ -110,22 +110,6 @@ ByteBuffer::GetTerminatedString (char ** str)
     if (ReadPos > ByteCount) { Err = ERROR_BufferRead; }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::PutTerminatedString():
-//      Writes a null-terminated string to the buffer, including
-//      the null character.
-void
-ByteBuffer::PutTerminatedString (const char * str)
-{
-    ASSERT(Current != NULL  &&  str != NULL);
-    while (*str) {
-        if (ByteCount >= BufferSize) { Err = ERROR_BufferFull; return; }
-        *Current = *str; Current++; str++;
-        ByteCount++;
-    }
-    *Current = 0; Current++; ByteCount++;
-}
-
 //////////////////////////////////////////////////////////////////////
 //  EOF: bytebuf.cpp
 //////////////////////////////////////////////////////////////////////

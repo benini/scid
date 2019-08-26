@@ -124,8 +124,6 @@ class ByteBuffer
         Current++; ByteCount++;
     }
     void PutFixedString (const char *str, size_t length);
-    void PutTerminatedString (const char *str);
-
 
 private:
 	ByteBuffer(const ByteBuffer&);

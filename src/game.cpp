@@ -3228,7 +3228,8 @@ void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
 	}
 	dest.emplace_back(flags);
 	if (FEN) {
-		dest.PutTerminatedString(FEN);
+		const auto len = std::strlen(FEN) + 1; // Include the null char
+		dest.PutFixedString(FEN, len);
 	}
 }
 
@@ -3253,7 +3254,8 @@ static errorT encodeComments(ByteBuffer* buf, moveT* m, uint* commentCounter) {
 
     while (m->marker != END_MARKER) {
         if (! m->comment.empty()) {
-            buf->PutTerminatedString (m->comment.c_str());
+            const auto len = m->comment.size() + 1; // Include the null char
+            buf->PutFixedString(m->comment.c_str(), len);
             *commentCounter += 1;
         }
         if (m->numVariations) {
