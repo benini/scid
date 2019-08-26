@@ -314,8 +314,8 @@ TEST(Test_decodemove, legacy_generic) {
 	ByteBuffer buf(1024);
 	ByteBuffer buf2(1024);
 	for (unsigned i = 0; i < 1024; ++i) {
-		buf.PutByte(static_cast<byte>(i));
-		buf2.PutByte(static_cast<byte>(i));
+		buf.emplace_back(static_cast<byte>(i));
+		buf2.emplace_back(static_cast<byte>(i));
 	}
 	buf.BackToStart();
 	buf2.BackToStart();
@@ -422,8 +422,8 @@ TEST(Test_decodemove, legacy_fastgame) {
 	ByteBuffer buf(1024);
 	ByteBuffer buf2(1024);
 	for (unsigned i = 0; i < 1024; ++i) {
-		buf.PutByte(static_cast<byte>(i));
-		buf2.PutByte(static_cast<byte>(i));
+		buf.emplace_back(static_cast<byte>(i));
+		buf2.emplace_back(static_cast<byte>(i));
 	}
 	buf.BackToStart();
 	buf2.BackToStart();

@@ -114,7 +114,7 @@ class ByteBuffer
  * - Status() must be called after every Put
  */
     void Empty ();
-    void PutByte (byte value) {
+    void emplace_back(byte value) {
         ASSERT(Current != NULL);
         ASSERT(Buffer == AllocatedBuffer);
         if (Buffer == AllocatedBuffer  && ByteCount >= BufferSize) {

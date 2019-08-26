@@ -2641,13 +2641,13 @@ encodeKing (ByteBuffer * buf, simpleMoveT * sm)
     // is represented as a king move to its own square and is encoded
     // as the byte value zero.
     if (sm->to == sm->from) {
-        buf->PutByte (makeMoveByte (0, 0));
+        buf->emplace_back(makeMoveByte (0, 0));
         return;
     }
 
     // Verify we have a valid King move:
     ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
-    buf->PutByte (makeMoveByte (0, val [diff + 9]));
+    buf->emplace_back(makeMoveByte (0, val [diff + 9]));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2692,7 +2692,7 @@ encodeKnight (ByteBuffer * buf, simpleMoveT * sm)
 
     // Verify we have a valid knight move:
     ASSERT (diff >= -17  &&  diff <= 17  &&  val[diff + 17] != 0);
-    buf->PutByte (makeMoveByte (sm->pieceNum, val [diff + 17]));
+    buf->emplace_back(makeMoveByte (sm->pieceNum, val [diff + 17]));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2730,7 +2730,7 @@ encodeRook (ByteBuffer * buf, simpleMoveT * sm)
     } else {
         val = 8 + square_Rank(sm->to);
     }
-    buf->PutByte (makeMoveByte (sm->pieceNum, val));
+    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2767,7 +2767,7 @@ encodeBishop (ByteBuffer * buf, simpleMoveT * sm)
     // If (rankdiff * fylediff) is negative, it's up-left/down-right:
     if (rankdiff * fylediff < 0) { val += 8; }
 
-    buf->PutByte (makeMoveByte (sm->pieceNum, val));
+    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2805,13 +2805,13 @@ encodeQueen (ByteBuffer * buf, simpleMoveT * sm)
         // Rook-horizontal move:
 
         val = square_Fyle(sm->to);
-        buf->PutByte (makeMoveByte (sm->pieceNum, val));
+        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 
     } else if (square_Fyle(sm->from) == square_Fyle(sm->to)) {
         // Rook-vertical move:
 
         val = 8 + square_Rank(sm->to);
-        buf->PutByte (makeMoveByte (sm->pieceNum, val));
+        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 
     } else {
         // Diagonal move:
@@ -2822,13 +2822,13 @@ encodeQueen (ByteBuffer * buf, simpleMoveT * sm)
         // is illegal of course) to indicate it is NOT a rooklike move:
 
         val = square_Fyle(sm->from);
-        buf->PutByte (makeMoveByte (sm->pieceNum, val));
+        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 
         // Now we put the to-square in the next byte. We add a 64 to it
         // to make sure that it cannot clash with the Special tokens (which
         // are in the range 0 to 15, since they are special King moves).
 
-        buf->PutByte (sm->to + 64);
+        buf->emplace_back(sm->to + 64);
     }
 }
 
@@ -2896,7 +2896,7 @@ encodePawn (ByteBuffer * buf, simpleMoveT * sm)
             val += 3 * ((sm->promote) - 1);
         }
     }
-    buf->PutByte (makeMoveByte (sm->pieceNum, val));
+    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3037,24 +3037,24 @@ static errorT encodeVariation(ByteBuffer* buf, moveT* m, uint* subVarCount,
 
     // Check if there is a pre-game or start-of-variation comment:
     if (! m->prev->comment.empty()) {
-        buf->PutByte (ENCODE_COMMENT);
+        buf->emplace_back(ENCODE_COMMENT);
     }
 
     while (m->marker != END_MARKER) {
         encodeMove (buf, m);
         for (uint i=0; i < (uint) m->nagCount; i++) {
-            buf->PutByte (ENCODE_NAG);
-            buf->PutByte (m->nags[i]);
+            buf->emplace_back(ENCODE_NAG);
+            buf->emplace_back(m->nags[i]);
             *nagCount += 1;
         }
         if (! m->comment.empty()) {
-            buf->PutByte (ENCODE_COMMENT);
+            buf->emplace_back(ENCODE_COMMENT);
         }
         if (m->numVariations > 0) {
             moveT * subVar = m->varChild;
             for (uint i=0; i < m->numVariations; i++) {
                 *subVarCount += 1;
-                buf->PutByte (ENCODE_START_MARKER);
+                buf->emplace_back(ENCODE_START_MARKER);
                 encodeVariation (buf, subVar->next, subVarCount, nagCount, depth+1);
                 subVar = subVar->varChild;
             }
@@ -3063,9 +3063,9 @@ static errorT encodeVariation(ByteBuffer* buf, moveT* m, uint* subVarCount,
     }
     // At end, we output the end-variation or end-game token.
     if (depth == 0) {
-        buf->PutByte (ENCODE_END_GAME);
+        buf->emplace_back(ENCODE_END_GAME);
     } else {
-        buf->PutByte (ENCODE_END_MARKER);
+        buf->emplace_back(ENCODE_END_MARKER);
     }
     return buf->Status();
 }
@@ -3158,20 +3158,20 @@ void encodeTags(const SourceT& tagList, DestT& dest) {
 		if (it != std::end(commonTags)) {
 			// Common tags are stored with just their 1-byte value [241:250]
 			const auto tagnum = std::distance(commonTags, it) + MAX_TAG_LEN + 1;
-			dest.PutByte(static_cast<byte>(tagnum));
+			dest.emplace_back(static_cast<byte>(tagnum));
 		} else {
 			// Other tags are stored as 1-byte length [1:240] + the tag name.
 			const auto length = std::min(tag.first.length(), MAX_TAG_LEN);
-			dest.PutByte(static_cast<byte>(length));
+			dest.emplace_back(static_cast<byte>(length));
 			dest.PutFixedString(tag.first.c_str(), length);
 		}
 
 		// The value is stored as 1-byte length [0:255] + the data.
 		const auto valueLen = std::min<size_t>(tag.second.length(), 255);
-		dest.PutByte(static_cast<byte>(valueLen));
+		dest.emplace_back(static_cast<byte>(valueLen));
 		dest.PutFixedString(tag.second.c_str(), valueLen);
 	}
-	dest.PutByte(0);
+	dest.emplace_back(0);
 }
 
 template <typename SourceT, typename FuncT>
@@ -3226,7 +3226,7 @@ void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
 	if (underpromoFlag) {
 		flags += 4;
 	}
-	dest.PutByte(flags);
+	dest.emplace_back(flags);
 	if (FEN) {
 		dest.PutTerminatedString(FEN);
 	}
