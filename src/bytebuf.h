@@ -22,6 +22,7 @@
 
 #include "common.h"
 #include <algorithm>
+#include <string_view>
 
 class ByteBuffer
 {
@@ -71,16 +72,16 @@ class ByteBuffer
     /// Reads a fixed-length string from the buffer.
     /// @param length: the number of requested bytes. It is adjusted if it
     ///                exceeds the available bytes in the buffer.
-    const char* GetFixedString(byte& length) {
+    std::string_view GetFixedString(size_t length) {
         assert(Current != NULL);
 
         if (Err != OK) {
             length = 0;
         } else if (ReadPos + length > ByteCount) {
             Err = ERROR_BufferRead;
-            length = static_cast<byte>(ByteCount - ReadPos);
+            length = ByteCount - ReadPos;
         }
-        const char* res = reinterpret_cast<char*>(Current);
+        auto res = std::string_view(reinterpret_cast<char*>(Current), length);
         Current += length;
         ReadPos += length;
         return res;

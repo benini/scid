@@ -3131,8 +3131,7 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
  * and a tag of 0 bytes.
  */
 constexpr size_t MAX_TAG_LEN = 240;
-// TODO: use c++17 std::string_view
-static const char* commonTags[] = {
+constexpr std::string_view commonTags[] = {
     // 241, 242: Country
     "WhiteCountry", "BlackCountry",
     // 243: Annotator
@@ -3179,22 +3178,20 @@ template <typename SourceT, typename FuncT>
 void decodeTags(SourceT& src, FuncT fn) {
 	for (;;) {
 		byte tagLen = src.GetByte();
-		if (src.Status() != OK || tagLen == 0)
+		if (tagLen == 0 || src.Status() != OK)
 			return;
 
-		const char* tag;
+		std::string_view tag;
 		if (tagLen <= MAX_TAG_LEN) {
 			tag = src.GetFixedString(tagLen);
 		} else if (tagLen <= MAX_TAG_LEN + 10) {
 			// A common tag name, not explicitly stored:
 			tag = commonTags[tagLen - MAX_TAG_LEN - 1];
-			tagLen = static_cast<byte>(std::strlen(tag));
 		} else {
 			ASSERT(false); // This common tags should be unused
 			if (tagLen == 255) {
 				// Special binary 3-byte encoding of EventDate used in SCID2
-				byte valueLen = 3;
-				src.GetFixedString(valueLen);
+				src.GetFixedString(3);
 			} else {
 				byte valueLen = src.GetByte();
 				src.GetFixedString(valueLen);
@@ -3203,8 +3200,8 @@ void decodeTags(SourceT& src, FuncT fn) {
 		}
 
 		byte valueLen = src.GetByte();
-		const char* value = src.GetFixedString(valueLen);
-		fn(tag, tagLen, value, valueLen);
+		auto value = src.GetFixedString(valueLen);
+		fn(tag, value);
 	}
 }
 
@@ -3489,9 +3486,8 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
 //      Decodes the non-standard tags of the game.
 //
 errorT Game::DecodeTags(ByteBuffer* buf) {
-    decodeTags(*buf, [&](const char* tag, byte tagLen, const char* value,
-                         byte valueLen) {
-        accessTagValue(tag, tagLen).assign(value, valueLen);
+    decodeTags(*buf, [&](auto tag, auto value) {
+        accessTagValue(tag.data(), tag.size()).assign(value);
     });
     return buf->Status();
 }
@@ -3506,7 +3502,7 @@ errorT Game::DecodeTags(ByteBuffer* buf) {
 errorT Game::DecodeStart(ByteBuffer* buf) {
     ASSERT(buf != NULL);
     if (buf->Status() == OK)
-		decodeTags(*buf, [](const char*, byte, const char*, byte) {});
+		decodeTags(*buf, [](auto, auto) {});
 
     errorT err = buf->Status();
     if (err == OK)
@@ -3534,9 +3530,8 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 errorT Game::Decode(ByteBuffer& buf) {
     Clear();
     if (buf.Status() == OK)
-        decodeTags(buf, [&](const char* tag, byte tagLen, const char* value,
-                            byte valueLen) {
-            accessTagValue(tag, tagLen).assign(value, valueLen);
+        decodeTags(buf, [&](auto tag, auto value) {
+            accessTagValue(tag.data(), tag.size()).assign(value);
         });
 
     errorT err = buf.Status();
