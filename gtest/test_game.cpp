@@ -74,7 +74,8 @@ TEST(Test_Game, clone) {
 		                       pgnGame.first, pgnGame.first + pgnGame.second));
 
 		ByteBuffer bufClone(BBUF_SIZE);
-		clone->Encode(&bufClone, NULL);
+		auto ie = IndexEntry();
+		clone->Encode(&bufClone, ie);
 
 		ASSERT_TRUE(std::equal(
 		    bufClone.getData(), bufClone.getData() + bufClone.GetByteCount(),

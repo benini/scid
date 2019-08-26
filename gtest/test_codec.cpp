@@ -112,7 +112,9 @@ private:
 	void encodeGames() {
 		static ByteBuffer buf(128 * 1024);
 		for (auto& game : v_) {
-			ASSERT_EQ(OK, game->Encode(&buf, NULL));
+			auto ie = IndexEntry();
+			buf.Empty();
+			ASSERT_EQ(OK, game->Encode(&buf, ie));
 			encoded_.emplace_back();
 			auto& v = encoded_.back();
 			v.insert(v.end(), buf.getData(),

@@ -96,7 +96,8 @@ public: // ICodecDatabase interface
 private:
 	std::pair<errorT, IndexEntry> addGameHelper(Game* game) {
 		std::pair<errorT, IndexEntry> res;
-		res.first = game->Encode(&bbuf_, &res.second);
+		bbuf_.Empty();
+		res.first = game->Encode(&bbuf_, res.second);
 		if (res.first == OK) {
 			res.first = addGameHelper(&res.second, bbuf_.getData(),
 			                          bbuf_.GetByteCount(), game->GetWhiteStr(),

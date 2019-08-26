@@ -3312,16 +3312,13 @@ static errorT decodeComments(ByteBuffer* buf, moveT* m) {
 //       -  finalMatSig: the material signature of the final position.
 //       -  homePawnData: the home pawn change list.
 //
-errorT
-Game::Encode (ByteBuffer * buf, IndexEntry * ie)
-{
+errorT Game::Encode(ByteBuffer* buf, IndexEntry& ie) {
     ASSERT (buf != NULL);
 
     // Make the home pawn change list and update PromotionFlag:
     byte homePawnList[9];
     auto promoFlags = MakeHomePawnList(homePawnList);
 
-    buf->Empty();
     // First, encode info not already stored in the index
     // This will be the non-STR (non-"seven tag roster") PGN tags.
     encodeTags(GetExtraTags(), *buf);
@@ -3347,58 +3344,57 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
     err = encodeComments (buf, FirstMove, &commentCount);
 
     // Set the fields in the IndexEntry:
-    if (ie != NULL) {
-        ie->SetDate (Date);
-        ie->SetEventDate (EventDate);
-        ie->SetResult (Result);
-        ie->SetEcoCode (EcoCode);
-        ie->SetWhiteElo (WhiteElo);
-        ie->SetBlackElo (BlackElo);
-        ie->SetWhiteRatingType (WhiteRatingType);
-        ie->SetBlackRatingType (BlackRatingType);
+    ie.SetDate(Date);
+    ie.SetEventDate(EventDate);
+    ie.SetResult(Result);
+    ie.SetEcoCode(EcoCode);
+    ie.SetWhiteElo(WhiteElo);
+    ie.SetBlackElo(BlackElo);
+    ie.SetWhiteRatingType(WhiteRatingType);
+    ie.SetBlackRatingType(BlackRatingType);
 
-        ie->clearFlags();
-        ie->SetStartFlag (HasNonStandardStart());
-        ie->SetCommentCount (commentCount);
-        ie->SetVariationCount (varCount);
-        ie->SetNagCount (nagCount);
-        ie->SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
+    ie.clearFlags();
+    ie.SetStartFlag(HasNonStandardStart());
+    ie.SetCommentCount(commentCount);
+    ie.SetVariationCount(varCount);
+    ie.SetNagCount(nagCount);
+    ie.SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
 
-        std::copy_n(homePawnList, sizeof(homePawnList), ie->GetHomePawnData());
-        // Set other data updated by MakeHomePawnList():
-        ie->SetPromotionsFlag (promoFlags.first);
-        ie->SetUnderPromoFlag (promoFlags.second);
-        ie->SetNumHalfMoves (NumHalfMoves);
-        ASSERT(AtEnd());
-        ie->SetFinalMatSig(matsig_Make(CurrentPos->GetMaterial()));
+    std::copy_n(homePawnList, sizeof(homePawnList), ie.GetHomePawnData());
+    // Set other data updated by MakeHomePawnList():
+    ie.SetPromotionsFlag(promoFlags.first);
+    ie.SetUnderPromoFlag(promoFlags.second);
+    ie.SetNumHalfMoves(NumHalfMoves);
+    ASSERT(AtEnd());
+    ie.SetFinalMatSig(matsig_Make(CurrentPos->GetMaterial()));
 
-        // Find the longest matching stored line for this game:
-        uint storedLineCode = 0;
-        if (!HasNonStandardStart()) {
-            uint longestMatch = 0;
-            for (uint i = 1; i < StoredLine::count(); i++) {
-                moveT* gameMove = FirstMove->next;
-                uint matchLength = 0;
-                FullMove m = StoredLine::getMove(i, matchLength);
-                while (m) {
-                    if (gameMove->marker == END_MARKER
-                        ||  gameMove->moveData.from != m.getFrom()
-                        ||  gameMove->moveData.to != m.getTo())
-                    {
-                        matchLength = 0; break;
-                    }
-                    gameMove = gameMove->next;
-                    m = StoredLine::getMove(i, ++matchLength);
+    // Find the longest matching stored line for this game:
+    uint storedLineCode = 0;
+    if (!HasNonStandardStart()) {
+        uint longestMatch = 0;
+        for (uint i = 1; i < StoredLine::count(); i++) {
+            moveT* gameMove = FirstMove->next;
+            uint matchLength = 0;
+            FullMove m = StoredLine::getMove(i, matchLength);
+            while (m) {
+                if (gameMove->marker == END_MARKER ||
+                    gameMove->moveData.from != m.getFrom() ||
+                    gameMove->moveData.to != m.getTo()) {
+                    matchLength = 0;
+                    break;
                 }
-                if (matchLength > longestMatch) {
-                    longestMatch = matchLength;
-                    storedLineCode = i;
-                }
+                gameMove = gameMove->next;
+                m = StoredLine::getMove(i, ++matchLength);
+            }
+            if (matchLength > longestMatch) {
+                longestMatch = matchLength;
+                storedLineCode = i;
             }
         }
-        ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
-        ie->SetStoredLineCode(static_cast<byte>(storedLineCode));
     }
+    ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
+    ie.SetStoredLineCode(static_cast<byte>(storedLineCode));
+
     return err;
 }
 
