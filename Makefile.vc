@@ -224,7 +224,7 @@ SCID_XOBJS = \
 OPTIMIZE	= -ZI -Fd$(TMP_DIR)\ -Od
 !message *** Build 'Debug' Version	= yes
 !else
-OPTIMIZE	= -Ox /EHsc
+OPTIMIZE	= -O2 /EHsc
 !message *** Build 'Release' Version	= yes
 !if "$(GLOBAL_OPT)" == "1"
 OPTIMIZE	= $(OPTIMIZE) -GL
@@ -258,7 +258,7 @@ PROFILE		= $(PROFILE) -DWIN32 -DWIN32_LEAN_AND_MEAN
 #	-c	:Compile Without linking
 #
 CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) \
-			$(SCID_INCLUDES) -c -nologo
+			$(SCID_INCLUDES) -c -nologo -std:c++17
 !message *** CFLAGS: $(CFLAGS)
 
 
