@@ -3399,13 +3399,6 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
         ie->SetStoredLineCode(static_cast<byte>(storedLineCode));
     }
-    
-    // as each game entry length is coded on 17 bits, and game must fit in a block
-    // return an error if there is an overflow
-    if (buf->GetByteCount() >= MAX_GAME_LENGTH) {
-      err = ERROR_GameFull;
-    }
-
     return err;
 }
 

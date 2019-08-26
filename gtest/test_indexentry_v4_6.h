@@ -26,9 +26,6 @@
 #include "matsig.h"
 #include "namebase.h"
 
-// Length is encoded as 17bits uint
-#define MAX_GAME_LENGTH 131072
-
 // HPSIG_SIZE = size of HomePawnData array in an IndexEntry.
 // It is nine bytes: the first byte contains the number of valid entries
 // in the array, and the next 8 bytes contain up to 16 half-byte entries.
@@ -91,7 +88,6 @@ public:
         return Length_Low + (uint32_t(Length_High & 0x80) << 9);
     }
     void SetLength (size_t length) {
-        ASSERT(length < MAX_GAME_LENGTH);
         Length_Low = static_cast<uint16_t>(length & 0xFFFF);
         // preserve the last 7 bits
         Length_High = ( Length_High & 0x7F ) | static_cast<byte>( (length >> 16) << 7 );
