@@ -3243,31 +3243,25 @@ void decodeStartBoard(SourceT& src, FuncT fn) {
 	}
 }
 
+/**
+ * The Comments section is composed by null-terminated strings. The comments are
+ * stored in the order in which they will appear in the PGN notation:
+ * {C1} 1.d4 {C2} (1.b4 {C3} 1...e5 {C4} (1...Na6 {C5}) 2.e4 {C6})
+ * ({C7} 1.g4 {C8}) 1...d5 {C9}
+ */
+template <typename MoveT, typename DestT>
+auto encodeComments(const MoveT* m, DestT& dest) {
+	ASSERT(m);
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// encodeComments():
-//      Encode the comments of the game. Recurses the moves of the game
-//      and writes the comment whenever a move with a comment is found.
-//
-static errorT encodeComments(ByteBuffer* buf, moveT* m, uint* commentCounter) {
-    ASSERT(buf != NULL && m != NULL);
-
-    while (m->marker != END_MARKER) {
-        if (! m->comment.empty()) {
-            const auto len = m->comment.size() + 1; // Include the null char
-            buf->PutFixedString(m->comment.c_str(), len);
-            *commentCounter += 1;
-        }
-        if (m->numVariations) {
-           moveT * subVar = m->varChild;
-            for (uint i=0; i < m->numVariations; i++) {
-                encodeComments (buf, subVar, commentCounter);
-                subVar = subVar->varChild;
-            }
-        }
-        m = m->next;
-    }
-    return buf->Status();
+	unsigned n_comments = 0;
+	do {
+		if (!m->comment.empty()) {
+			const auto len = m->comment.size() + 1; // Include the null char
+			dest.PutFixedString(m->comment.c_str(), len);
+			++n_comments;
+		}
+	} while ((m = m->nextMoveInPGN()));
+	return n_comments;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3277,29 +3271,21 @@ static errorT encodeComments(ByteBuffer* buf, moveT* m, uint* commentCounter) {
 //      not empty), so this function recurses the movelist and subvariations
 //      and allocates each comment to its move.
 //
-static errorT decodeComments(ByteBuffer* buf, moveT* m) {
-    ASSERT (buf != NULL  &&  m != NULL);
+template <typename SourceT, typename MoveT>
+static errorT decodeComments(SourceT& buf, MoveT* m) {
+	ASSERT(m);
 
-    while (m->marker != END_MARKER) {
-        if (! m->comment.empty()) {
-            ASSERT (m->comment == "*");
-            char * str;
-            buf->GetTerminatedString(&str);
-            m->comment = str;
-        }
-
-        if (m->numVariations) {
-           moveT * subVar = m->varChild;
-            for (uint i=0; i < m->numVariations; i++) {
-                decodeComments (buf, subVar);
-                subVar = subVar->varChild;
-            }
-        }
-        m = m->next;
-    }
-    return buf->Status();
+	do {
+		if (!m->comment.empty()) {
+			ASSERT(m->comment == "*");
+			auto str = buf.GetTerminatedString();
+			if (!str)
+				return ERROR_BufferRead;
+			m->comment = str;
+		}
+	} while ((m = m->nextMoveInPGN()));
+	return OK;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::Encode(): Encode the game to a buffer for disk storage.
@@ -3339,9 +3325,9 @@ errorT Game::Encode(ByteBuffer* buf, IndexEntry& ie) {
     if (err != OK) { return err; }
 
     // Now do the comments
-    uint commentCount = 0;
-    
-    err = encodeComments (buf, FirstMove, &commentCount);
+    const auto commentCount = encodeComments(FirstMove, *buf);
+    if (buf->Status() != OK)
+        return buf->Status();
 
     // Set the fields in the IndexEntry:
     ie.SetDate(Date);
@@ -3533,7 +3519,7 @@ errorT Game::Decode(ByteBuffer& buf) {
         err = DecodeVariation(&buf, GAME_DECODE_ALL, 0);
 
     if (err == OK)
-        err = decodeComments(&buf, FirstMove);
+        err = decodeComments(buf, FirstMove);
 
     return (err != OK) ? err : buf.Status();
 }

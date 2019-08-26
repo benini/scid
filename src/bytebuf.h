@@ -103,8 +103,6 @@ class ByteBuffer
         return reinterpret_cast<char*>(begin);
     }
 
-    void   GetTerminatedString (char **str);
-
     const byte* getData() { return Buffer; }
 
 /*

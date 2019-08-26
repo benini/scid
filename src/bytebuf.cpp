@@ -88,28 +88,6 @@ ByteBuffer::PutFixedString (const char * str, size_t length)
     }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::GetTerminatedString():
-//    Get a null-terminated string.
-//    Just sets str to point to current, and then moves current
-//    to the end of the string, so the calling function can to
-//    duplicate the string itself if it needs to.
-//    The length returned does not include the trailing '\0'.
-void
-ByteBuffer::GetTerminatedString (char ** str)
-{
-    ASSERT(Current != NULL  &&  str != NULL);
-
-    *str = (char *) Current;
-    while (*Current) {
-        Current++;
-        ReadPos++;
-    }
-    Current++;
-    ReadPos++;
-    if (ReadPos > ByteCount) { Err = ERROR_BufferRead; }
-}
-
 //////////////////////////////////////////////////////////////////////
 //  EOF: bytebuf.cpp
 //////////////////////////////////////////////////////////////////////

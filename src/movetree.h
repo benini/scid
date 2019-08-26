@@ -158,7 +158,7 @@ struct moveT {
 		return {varStart->prev, varStart};
 	}
 
-	const moveT* nextMoveInPGN() const {
+	moveT* nextMoveInPGN() const {
 		if (endMarker()) {
 			auto parent = getParent();
 			auto nextVar = parent.second->varChild;
