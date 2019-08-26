@@ -633,7 +633,6 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
-        db->bbuf->BackToStart();
         g->Clear();
         if (g->DecodeStart (db->bbuf) != OK) { continue; }
 
@@ -1344,7 +1343,6 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         if (dbase.getGame(&ie, dbase.bbuf) != OK)
             return false;
-        db->bbuf->BackToStart();
         Game* g = scratchGame;
         g->Clear();
         if (g->DecodeStart(dbase.bbuf) != OK)
