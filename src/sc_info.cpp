@@ -17,7 +17,7 @@
  * along with Scid. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX
