@@ -515,7 +515,7 @@ proc ::enginelist::edit {index} {
     set engines(newTime) [lindex $e 5]
     set engines(newURL) [lindex $e 6]
     set engines(newUCI) [lindex $e 7]
-    set engines(newUCIoptions) [lindex $e 8]
+    set ::uci::newOptions [lindex $e 8]
     
     set engines(newDate) $::tr(None)
     if {$engines(newTime) > 0 } {
@@ -592,7 +592,7 @@ proc ::enginelist::edit {index} {
     ttk::checkbutton $f.cbUci -text UCI -variable engines(newUCI) -style Bold.TCheckbutton
     ttk::button $f.bConfigUCI -text $::tr(ConfigureUCIengine) -command {
         ::uci::uciConfig 2 [ toAbsPath $engines(newCmd) ] $engines(newArgs) \
-                [ toAbsPath $engines(newDir) ] $engines(newUCIoptions)
+                [ toAbsPath $engines(newDir) ] $::uci::newOptions
     }
     # Mark required fields:
     $f.lName configure -font font_Bold
