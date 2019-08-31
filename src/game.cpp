@@ -2621,9 +2621,7 @@ makeMoveByte (byte pieceNum, byte value)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKing(): encoding of King moves.
 //
-static inline void
-encodeKing (ByteBuffer * buf, simpleMoveT * sm)
-{
+static byte encodeKing(const simpleMoveT* sm) {
     // Valid King difference-from-old-square values are:
     // -9, -8, -7, -1, 1, 7, 8, 9, and -2 and 2 for castling.
     // To convert this to a val in the range [1-10], we add 9 and
@@ -2641,13 +2639,12 @@ encodeKing (ByteBuffer * buf, simpleMoveT * sm)
     // is represented as a king move to its own square and is encoded
     // as the byte value zero.
     if (sm->to == sm->from) {
-        buf->emplace_back(makeMoveByte (0, 0));
-        return;
+        return 0;
     }
 
     // Verify we have a valid King move:
     ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
-    buf->emplace_back(makeMoveByte (0, val [diff + 9]));
+    return val[diff + 9];
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2673,9 +2670,7 @@ decodeKing (byte val, simpleMoveT * sm)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKnight(): encoding Knight moves.
 //
-static inline void
-encodeKnight (ByteBuffer * buf, simpleMoveT * sm)
-{
+static byte encodeKnight(const simpleMoveT* sm) {
     // Valid Knight difference-from-old-square values are:
     // -17, -15, -10, -6, 6, 10, 15, 17.
     // To convert this to a value in the range [1-8], we add 17 to
@@ -2692,7 +2687,7 @@ encodeKnight (ByteBuffer * buf, simpleMoveT * sm)
 
     // Verify we have a valid knight move:
     ASSERT (diff >= -17  &&  diff <= 17  &&  val[diff + 17] != 0);
-    buf->emplace_back(makeMoveByte (sm->pieceNum, val [diff + 17]));
+    return val[diff + 17];
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2712,9 +2707,7 @@ decodeKnight (byte val, simpleMoveT * sm)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeRook(): encoding rook moves.
 //
-static inline void
-encodeRook (ByteBuffer * buf, simpleMoveT * sm)
-{
+static byte encodeRook(const simpleMoveT* sm) {
     // Valid Rook moves are to same rank, OR to same fyle.
     // We encode the 8 squares on the same rank 0-8, and the 8
     // squares on the same fyle 9-15. This means that for any particular
@@ -2722,15 +2715,12 @@ encodeRook (ByteBuffer * buf, simpleMoveT * sm)
     // meaningless, as they will represent the from-square.
 
     ASSERT (sm->from <= H8  &&  sm->to <= H8);
-    byte val;
 
     // Check if the two squares share the same rank:
     if (square_Rank(sm->from) == square_Rank(sm->to)) {
-        val = square_Fyle(sm->to);
-    } else {
-        val = 8 + square_Rank(sm->to);
+        return square_Fyle(sm->to);
     }
-    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
+    return 8 + square_Rank(sm->to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2751,23 +2741,20 @@ decodeRook (byte val, simpleMoveT * sm)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeBishop(): encoding Bishop moves.
 //
-static inline void
-encodeBishop (ByteBuffer * buf, simpleMoveT * sm)
-{
+static byte encodeBishop(const simpleMoveT* sm) {
     // We encode a Bishop move as the Fyle moved to, plus
     // a one-bit flag to indicate if the direction was
     // up-right/down-left or vice versa.
 
     ASSERT (sm->to <= H8  &&  sm->from <= H8);
-    byte val;
-    val = square_Fyle(sm->to);
     int rankdiff = (int)square_Rank(sm->to) - (int)square_Rank(sm->from);
     int fylediff = (int)square_Fyle(sm->to) - (int)square_Fyle(sm->from);
 
     // If (rankdiff * fylediff) is negative, it's up-left/down-right:
-    if (rankdiff * fylediff < 0) { val += 8; }
+    if (rankdiff * fylediff < 0)
+        return square_Fyle(sm->to) + 8;
 
-    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
+    return square_Fyle(sm->to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2791,9 +2778,8 @@ decodeBishop (byte val, simpleMoveT * sm)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeQueen(): encoding Queen moves.
 //
-static inline void
-encodeQueen (ByteBuffer * buf, simpleMoveT * sm)
-{
+template <typename DestT>
+void encodeQueen(DestT* buf, const simpleMoveT* sm) {
     // We cannot fit all Queen moves in one byte, so Rooklike moves
     // are in one byte (encoded the same way as Rook moves),
     // while diagonal moves are in two bytes.
@@ -2858,9 +2844,7 @@ decodeQueen (ByteBuffer * buf, byte val, simpleMoveT * sm)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodePawn(): encoding Pawn moves.
 //
-static inline void
-encodePawn (ByteBuffer * buf, simpleMoveT * sm)
-{
+static byte encodePawn(const simpleMoveT* sm) {
     // Pawn moves require a promotion encoding.
     // The pawn moves are:
     // 0 = capture-left,
@@ -2896,7 +2880,7 @@ encodePawn (ByteBuffer * buf, simpleMoveT * sm)
             val += 3 * ((sm->promote) - 1);
         }
     }
-    buf->emplace_back(makeMoveByte (sm->pieceNum, val));
+    return val;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3005,26 +2989,33 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
     return err;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::EncodeMove():
-//  Encode one move and output it to the bytebuffer.
-//
-static void encodeMove(ByteBuffer* buf, moveT* m) {
-    simpleMoveT* sm = &(m->moveData);
-    pieceT pt = piece_Type(sm->movingPiece);
+template <typename DestT>
+void encodeMove(const simpleMoveT& sm, DestT& dest) {
+	byte val;
+	switch (piece_Type(sm.movingPiece)) {
+	case KING:
+		val = encodeKing(&sm);
+		break;
+	case QUEEN:
+		return encodeQueen(&dest, &sm);
 
-    typedef void encodeFnType (ByteBuffer *, simpleMoveT *);
-    static encodeFnType * encodeFn[] = {
-        NULL         /* 0 */,
-        encodeKing   /*1=KING*/,
-        encodeQueen  /*2=QUEEN*/,
-        encodeRook   /*3=ROOK*/,
-        encodeBishop /*4=BISHOP*/,
-        encodeKnight /*5=KNIGHT*/,
-        encodePawn   /*6=PAWN*/
-    };
-    ASSERT (pt >= KING  &&  pt <= PAWN);
-    (encodeFn[pt]) (buf, sm);
+	case ROOK:
+		val = encodeRook(&sm);
+		break;
+	case BISHOP:
+		val = encodeBishop(&sm);
+		break;
+	case KNIGHT:
+		val = encodeKnight(&sm);
+		break;
+	case PAWN:
+		val = encodePawn(&sm);
+		break;
+	default:
+		assert(false);
+	}
+	const auto encoded = makeMoveByte(sm.pieceNum, val);
+	dest.emplace_back(encoded);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3041,7 +3032,7 @@ static errorT encodeVariation(ByteBuffer* buf, moveT* m, uint* subVarCount,
     }
 
     while (m->marker != END_MARKER) {
-        encodeMove (buf, m);
+        encodeMove(m->moveData, *buf);
         for (uint i=0; i < (uint) m->nagCount; i++) {
             buf->emplace_back(ENCODE_NAG);
             buf->emplace_back(m->nags[i]);
