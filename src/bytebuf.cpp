@@ -58,36 +58,6 @@ ByteBuffer::ProvideExternal (byte * data, size_t length)
     Err = OK;
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::Skip():
-//      Skips over a specified number of bytes.
-void
-ByteBuffer::Skip (size_t length)
-{
-    ASSERT (Current != NULL);
-
-    if (ReadPos + length > ByteCount) { Err = ERROR_BufferRead; return; }
-    ReadPos += length;
-    Current += length;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::PutFixedString():
-//      Writes a fixed-length string to the buffer. A terminating null
-//      character is not written, unless it was part of the string.
-void
-ByteBuffer::PutFixedString (const char * str, size_t length)
-{
-    ASSERT(Current != NULL  &&  str != NULL);
-    if (ByteCount + length > BufferSize) { Err = ERROR_BufferFull; return; }
-    ByteCount += length;
-    while (length > 0) {
-        *Current = *str; Current++; str++;
-        length--;
-    }
-}
-
 //////////////////////////////////////////////////////////////////////
 //  EOF: bytebuf.cpp
 //////////////////////////////////////////////////////////////////////

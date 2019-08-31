@@ -3022,8 +3022,8 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 // encodeVariation(): Used by Encode() to encode the game's moves.
 //      Recursive; calls itself to encode subvariations.
 //
-static errorT encodeVariation(ByteBuffer* buf, moveT* m, uint* subVarCount,
-                              uint* nagCount, uint depth) {
+static void encodeVariation(std::vector<byte>* buf, moveT* m, uint* subVarCount,
+                            uint* nagCount, uint depth) {
     ASSERT(m != NULL);
 
     // Check if there is a pre-game or start-of-variation comment:
@@ -3058,7 +3058,6 @@ static errorT encodeVariation(ByteBuffer* buf, moveT* m, uint* subVarCount,
     } else {
         buf->emplace_back(ENCODE_END_MARKER);
     }
-    return buf->Status();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3152,15 +3151,17 @@ void encodeTags(const SourceT& tagList, DestT& dest) {
 			dest.emplace_back(static_cast<byte>(tagnum));
 		} else {
 			// Other tags are stored as 1-byte length [1:240] + the tag name.
+			const auto tag_name = tag.first.data();
 			const auto length = std::min(tag.first.length(), MAX_TAG_LEN);
 			dest.emplace_back(static_cast<byte>(length));
-			dest.PutFixedString(tag.first.c_str(), length);
+			dest.insert(dest.end(), tag_name, tag_name + length);
 		}
 
 		// The value is stored as 1-byte length [0:255] + the data.
+		const auto value = tag.second.data();
 		const auto valueLen = std::min<size_t>(tag.second.length(), 255);
 		dest.emplace_back(static_cast<byte>(valueLen));
-		dest.PutFixedString(tag.second.c_str(), valueLen);
+		dest.insert(dest.end(), value, value + valueLen);
 	}
 	dest.emplace_back(0);
 }
@@ -3220,7 +3221,7 @@ void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
 	dest.emplace_back(flags);
 	if (FEN) {
 		const auto len = std::strlen(FEN) + 1; // Include the null char
-		dest.PutFixedString(FEN, len);
+		dest.insert(dest.end(), FEN, FEN + len);
 	}
 }
 
@@ -3248,7 +3249,8 @@ auto encodeComments(const MoveT* m, DestT& dest) {
 	do {
 		if (!m->comment.empty()) {
 			const auto len = m->comment.size() + 1; // Include the null char
-			dest.PutFixedString(m->comment.c_str(), len);
+			const auto data = m->comment.c_str();
+			dest.insert(dest.end(), data, data + len);
 			++n_comments;
 		}
 	} while ((m = m->nextMoveInPGN()));
@@ -3289,36 +3291,27 @@ static errorT decodeComments(SourceT& buf, MoveT* m) {
 //       -  finalMatSig: the material signature of the final position.
 //       -  homePawnData: the home pawn change list.
 //
-errorT Game::Encode(ByteBuffer* buf, IndexEntry& ie) {
-    ASSERT (buf != NULL);
-
+errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) {
     // Make the home pawn change list and update PromotionFlag:
     byte homePawnList[9];
     auto promoFlags = MakeHomePawnList(homePawnList);
 
     // First, encode info not already stored in the index
     // This will be the non-STR (non-"seven tag roster") PGN tags.
-    encodeTags(GetExtraTags(), *buf);
-    if (buf->Status() != OK)
-        return buf->Status();
+    encodeTags(GetExtraTags(), dest);
 
     // Encode the promotion flags and the start position
     char FEN[256];
     encodeStartBoard(promoFlags.first, promoFlags.second,
-                     HasNonStandardStart(FEN) ? FEN : nullptr, *buf);
-    if (buf->Status() != OK)
-        return buf->Status();
+                     HasNonStandardStart(FEN) ? FEN : nullptr, dest);
 
     // Now the movelist:
     uint varCount = 0;
     uint nagCount = 0;
-    errorT err = encodeVariation(buf, FirstMove->next, &varCount, &nagCount, 0);
-    if (err != OK) { return err; }
+    encodeVariation(&dest, FirstMove->next, &varCount, &nagCount, 0);
 
     // Now do the comments
-    const auto commentCount = encodeComments(FirstMove, *buf);
-    if (buf->Status() != OK)
-        return buf->Status();
+    const auto commentCount = encodeComments(FirstMove, dest);
 
     // Set the fields in the IndexEntry:
     ie.SetDate(Date);
@@ -3372,7 +3365,7 @@ errorT Game::Encode(ByteBuffer* buf, IndexEntry& ie) {
     ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
     ie.SetStoredLineCode(static_cast<byte>(storedLineCode));
 
-    return err;
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

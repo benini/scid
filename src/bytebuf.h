@@ -60,7 +60,6 @@ class ByteBuffer
     errorT Status ()      { return Err; }
     size_t GetByteCount() { return ByteCount; }
     void   BackToStart ();
-    void   Skip (size_t value);
     byte   GetByte () {
         ASSERT(Current != NULL);
         if (ReadPos >= ByteCount) { Err = ERROR_BufferRead; return 0; }
@@ -105,23 +104,7 @@ class ByteBuffer
 
     const byte* getData() { return Buffer; }
 
-/*
- * Writing to a bytebuffer is very error-prone
- * - Empty() must be called to be sure that Buffer points to the internal buffer
- *   and to clear the Error Flag;
- * - Status() must be called after every Put
- */
     void Empty ();
-    void emplace_back(byte value) {
-        ASSERT(Current != NULL);
-        ASSERT(Buffer == AllocatedBuffer);
-        if (Buffer == AllocatedBuffer  && ByteCount >= BufferSize) {
-            Err = ERROR_BufferFull; return;
-        }
-        *Current = value;
-        Current++; ByteCount++;
-    }
-    void PutFixedString (const char *str, size_t length);
 
 private:
 	ByteBuffer(const ByteBuffer&);

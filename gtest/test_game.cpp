@@ -39,7 +39,7 @@ TEST(Test_Game, clone) {
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
-		ByteBuffer bufGame(BBUF_SIZE);
+		ByteBuffer bufGame(0);
 		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
 		ASSERT_EQ(OK, game.Decode(bufGame));
 
@@ -73,12 +73,12 @@ TEST(Test_Game, clone) {
 		ASSERT_TRUE(std::equal(pgnClone.first, pgnClone.first + pgnClone.second,
 		                       pgnGame.first, pgnGame.first + pgnGame.second));
 
-		ByteBuffer bufClone(BBUF_SIZE);
+		std::vector<byte> bufClone;
 		auto ie = IndexEntry();
-		clone->Encode(&bufClone, ie);
+		clone->Encode(bufClone, ie);
 
 		ASSERT_TRUE(std::equal(
-		    bufClone.getData(), bufClone.getData() + bufClone.GetByteCount(),
+		    bufClone.data(), bufClone.data() + bufClone.size(),
 		    bufGame.getData(), bufGame.getData() + bufGame.GetByteCount()));
 	}
 }
@@ -91,7 +91,7 @@ TEST(Test_Game, locationInPGN) {
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
-		ByteBuffer bufGame(BBUF_SIZE);
+		ByteBuffer bufGame(0);
 		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
 		ASSERT_EQ(OK, game.Decode(bufGame));
 

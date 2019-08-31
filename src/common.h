@@ -32,9 +32,6 @@ typedef __int32  int32_t;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 
-// Buffer sizes
-#define BBUF_SIZE 256000 //120000
-
 typedef unsigned short versionT;
 
 // Version: div by 100 for major number, modulo 100 for minor number

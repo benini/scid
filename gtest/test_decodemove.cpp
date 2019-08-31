@@ -311,14 +311,14 @@ TResult decodeMove(colorT toMove, pieceT moving_piece, squareT from, byte move,
 } // namespace testdecode_fastgame
 
 TEST(Test_decodemove, legacy_generic) {
-	ByteBuffer buf(1024);
-	ByteBuffer buf2(1024);
+	std::vector<byte> vec(1024);
 	for (unsigned i = 0; i < 1024; ++i) {
-		buf.emplace_back(static_cast<byte>(i));
-		buf2.emplace_back(static_cast<byte>(i));
+		vec.emplace_back(static_cast<byte>(i));
 	}
-	buf.BackToStart();
-	buf2.BackToStart();
+	ByteBuffer buf(0);
+	buf.ProvideExternal(vec.data(), 1024);
+	ByteBuffer buf2(0);
+	buf2.ProvideExternal(vec.data(), 1024);
 
 	for (const auto piece : {WP, BP, WN, WR, WB, WK, WQ}) {
 		const colorT toMove = piece_Color(piece);
@@ -419,14 +419,14 @@ TEST(Test_decodemove, legacy_generic) {
 }
 
 TEST(Test_decodemove, legacy_fastgame) {
-	ByteBuffer buf(1024);
-	ByteBuffer buf2(1024);
+	std::vector<byte> vec(1024);
 	for (unsigned i = 0; i < 1024; ++i) {
-		buf.emplace_back(static_cast<byte>(i));
-		buf2.emplace_back(static_cast<byte>(i));
+		vec.emplace_back(static_cast<byte>(i));
 	}
-	buf.BackToStart();
-	buf2.BackToStart();
+	ByteBuffer buf(0);
+	buf.ProvideExternal(vec.data(), 1024);
+	ByteBuffer buf2(0);
+	buf2.ProvideExternal(vec.data(), 1024);
 
 	for (const auto piece : {WP, BP, WN, WR, WB, WK, WQ}) {
 		const colorT toMove = piece_Color(piece);

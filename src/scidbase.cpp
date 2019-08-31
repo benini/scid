@@ -60,7 +60,7 @@ scidBaseT::scidBaseT() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	fileMode_ = FMODE_None;
-	bbuf = new ByteBuffer(BBUF_SIZE);
+	bbuf = new ByteBuffer(0);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
 	duplicates_ = NULL;

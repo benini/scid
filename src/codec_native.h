@@ -29,6 +29,7 @@
 #include "game.h"
 #include "index.h"
 #include "namebase.h"
+#include <vector>
 
 /**
  * This class stores the pointers to the @e Index and @e NameBase objects used
@@ -42,12 +43,9 @@
  */
 template <typename Derived> class CodecNative : public ICodecDatabase {
 protected:
-	Index* idx_;
-	NameBase* nb_;
-	ByteBuffer bbuf_;
-
-protected:
-	CodecNative() : idx_(0), nb_(0), bbuf_(BBUF_SIZE) {}
+	Index* idx_ = nullptr;
+	NameBase* nb_ = nullptr;
+	std::vector<byte> bbuf_;
 
 public: // ICodecDatabase interface
 	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
@@ -96,13 +94,13 @@ public: // ICodecDatabase interface
 private:
 	std::pair<errorT, IndexEntry> addGameHelper(Game* game) {
 		std::pair<errorT, IndexEntry> res;
-		bbuf_.Empty();
-		res.first = game->Encode(&bbuf_, res.second);
+		bbuf_.clear();
+		res.first = game->Encode(bbuf_, res.second);
 		if (res.first == OK) {
-			res.first = addGameHelper(&res.second, bbuf_.getData(),
-			                          bbuf_.GetByteCount(), game->GetWhiteStr(),
-			                          game->GetBlackStr(), game->GetEventStr(),
-			                          game->GetSiteStr(), game->GetRoundStr());
+			res.first = addGameHelper(&res.second, bbuf_.data(), bbuf_.size(),
+			                          game->GetWhiteStr(), game->GetBlackStr(),
+			                          game->GetEventStr(), game->GetSiteStr(),
+			                          game->GetRoundStr());
 		}
 		return res;
 	}

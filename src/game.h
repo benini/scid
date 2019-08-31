@@ -459,7 +459,7 @@ public:
                             gameExactMatchT searchType)
       { return ExactMatch (pos, buf, sm, searchType, NULL); }
 
-    errorT    Encode(ByteBuffer* buf, IndexEntry& ie);
+    errorT    Encode(std::vector<byte>& dest, IndexEntry& ie);
     errorT    DecodeStart(ByteBuffer* buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode(ByteBuffer& buf);
