@@ -41,6 +41,7 @@ TEST(Test_Game, clone) {
 		Game game;
 		ByteBuffer bufGame(0);
 		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
+		auto orig_encoded = bufGame;
 		ASSERT_EQ(OK, game.Decode(bufGame));
 
 		std::mt19937 re(std::random_device{}());
@@ -77,9 +78,10 @@ TEST(Test_Game, clone) {
 		auto ie = IndexEntry();
 		clone->Encode(bufClone, ie);
 
-		ASSERT_TRUE(std::equal(
-		    bufClone.data(), bufClone.data() + bufClone.size(),
-		    bufGame.getData(), bufGame.getData() + bufGame.GetByteCount()));
+		ASSERT_EQ(bufClone.size(), bufGame.GetByteCount());
+		for (auto b : bufClone) {
+			ASSERT_EQ(b, orig_encoded.GetByte());
+		}
 	}
 }
 

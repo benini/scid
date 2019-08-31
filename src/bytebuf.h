@@ -24,42 +24,36 @@
 #include <algorithm>
 #include <string_view>
 
-class ByteBuffer
-{
- private:
-    //----------------------------------
-    //  TextBuffer:  Data Structures
-    //----------------------------------
+class ByteBuffer {
+    size_t ReadPos = 0;
+    size_t ByteCount = 0;
+    byte * Buffer = nullptr;
+    byte * Current = nullptr;
+    errorT Err = OK;
 
-    size_t ReadPos;
-    size_t ByteCount;
-    size_t BufferSize;
-    byte * Buffer;
-    byte * Current;
-    byte * AllocatedBuffer;
-    byte * ExternalBuffer;
-
-    errorT Err;
-    
-    //----------------------------------
-    //  TextBuffer:  Public Functions
-    //----------------------------------
  public:
-    ByteBuffer(size_t length) : BufferSize(length), AllocatedBuffer(new byte[length]) { Empty(); }
-    ~ByteBuffer() { delete[] AllocatedBuffer; }
+    ByteBuffer(size_t) {}
 
-/*
- * ProvideExternal is super dangerous:
- * - GFile::ReadGame will change "data" when reading another game
- * - At that point reading or __writing__ to the bytebuffer will create havoc
- * For example calling GFile::ReadGame(&bytebuffer, ...) followed by GFile::AddGame(&bytebuffer)
- * is __very__ bad
- */
-    void ProvideExternal (byte * data, size_t length);
+    /// The ByteBuffer will act like a std::string_view to the supplied data.
+    /// The caller should ensure that @e data remain valid while using the
+    /// related ByteBuffer.
+    void ProvideExternal(byte* data, size_t length) {
+        Current = Buffer = data;
+        ByteCount = length;
+        ReadPos = 0;
+        Err = OK;
+    }
 
     errorT Status ()      { return Err; }
     size_t GetByteCount() { return ByteCount; }
-    void   BackToStart ();
+
+    /// Sets the ByteBuffer's read position back to the buffer start.
+    void   BackToStart () {
+        ReadPos = 0;
+        Current = Buffer;
+        Err = OK;
+    }
+
     byte   GetByte () {
         ASSERT(Current != NULL);
         if (ReadPos >= ByteCount) { Err = ERROR_BufferRead; return 0; }
@@ -101,14 +95,6 @@ class ByteBuffer
         ReadPos += std::distance(begin, Current);
         return reinterpret_cast<char*>(begin);
     }
-
-    const byte* getData() { return Buffer; }
-
-    void Empty ();
-
-private:
-	ByteBuffer(const ByteBuffer&);
-	ByteBuffer& operator=(const ByteBuffer&);
 };
 
 #endif  // #ifndef SCID_BYTEBUF_H
