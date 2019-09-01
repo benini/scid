@@ -47,13 +47,6 @@ class ByteBuffer {
     errorT Status ()      { return Err; }
     size_t GetByteCount() { return ByteCount; }
 
-    /// Sets the ByteBuffer's read position back to the buffer start.
-    void   BackToStart () {
-        ReadPos = 0;
-        Current = Buffer;
-        Err = OK;
-    }
-
     byte   GetByte () {
         ASSERT(Current != NULL);
         if (ReadPos >= ByteCount) { Err = ERROR_BufferRead; return 0; }

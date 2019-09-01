@@ -348,7 +348,6 @@ public:
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
 	TreeCache treeCache;
-	ByteBuffer* bbuf;
 	Filter* dbFilter;
 	Filter* treeFilter;
 

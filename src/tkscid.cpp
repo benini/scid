@@ -629,12 +629,13 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         int ntrack = nTrackSquares;
         for (uint sq=0; sq < 64; sq++) { track[sq] = trackSquare[sq]; }
 
+        ByteBuffer bbuf(0);
         Game * g = scratchGame;
-        if (db->getGame(ie, db->bbuf) != OK) {
+        if (db->getGame(ie, &bbuf) != OK) {
             continue;
         }
         g->Clear();
-        if (g->DecodeStart (db->bbuf) != OK) { continue; }
+        if (g->DecodeStart (&bbuf) != OK) { continue; }
 
         uint plyCount = 0;
         simpleMoveT sm;
@@ -643,7 +644,7 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         // the game is reached:
 
         while (plyCount < maxPly) {
-            if (g->DecodeNextMove (db->bbuf, &sm) != OK) { break; }
+            if (g->DecodeNextMove(&bbuf, &sm) != OK) { break; }
             plyCount++;
             squareT toSquare = sm.to;
             squareT fromSquare = sm.from;
@@ -1341,11 +1342,12 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (option == ECO_DATE  &&  ie.GetDate() < startDate)
             return false;
 
-        if (dbase.getGame(&ie, dbase.bbuf) != OK)
+        ByteBuffer bbuf(0);
+        if (dbase.getGame(&ie, &bbuf) != OK)
             return false;
         Game* g = scratchGame;
         g->Clear();
-        if (g->DecodeStart(dbase.bbuf) != OK)
+        if (g->DecodeStart(&bbuf) != OK)
             return false;
 
         // First, read in the game -- with a limit of 30 moves per
@@ -1361,7 +1363,7 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         errorT err = OK;
         do {
-            err = g->DecodeNextMove (db->bbuf, NULL);
+            err = g->DecodeNextMove(&bbuf, NULL);
             maxPly--;
             material = g->GetCurrentPos()->TotalMaterial();
         } while (err == OK  &&  maxPly > 0  &&  material >= leastMaterial);
@@ -3571,13 +3573,14 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Load the merge game:
 
+    ByteBuffer bbuf(0);
     const IndexEntry* ie = base->getIndexEntry(gnum);
-    if (base->getGame(ie, base->bbuf) != OK) {
+    if (base->getGame(ie, &bbuf) != OK) {
         return errorResult (ti, "Error loading game.");
     }
     Game * merge = scratchGame;
     merge->Clear();
-    if (merge->DecodeMovesOnly(*base->bbuf) != OK) {
+    if (merge->DecodeMovesOnly(bbuf) != OK) {
         return errorResult (ti, "Error decoding game.");
     }
     merge->LoadStandardTags (ie, base->getNameBase());
@@ -4158,6 +4161,7 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         default: return errorResult (ti, usage);
     }
 
+    ByteBuffer bbuf(0);
     Game * g = scratchGame;
     if (gnum == 0) {
         g = base->game;
@@ -4171,11 +4175,11 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
         gnum--;
         const IndexEntry* ie = base->getIndexEntry(gnum);
-        if (base->getGame(ie, base->bbuf) != OK) {
+        if (base->getGame(ie, &bbuf) != OK) {
             return errorResult (ti, "Error loading game.");
         }
         g->Clear();
-        if (g->DecodeMovesOnly(*base->bbuf) != OK) {
+        if (g->DecodeMovesOnly(bbuf) != OK) {
             return errorResult (ti, "Error decoding game.");
         }
         g->LoadStandardTags (ie, base->getNameBase());
@@ -8143,12 +8147,13 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     continue;
                 }
 
-                if (base->getGame(ie, base->bbuf) != OK) {
+                ByteBuffer bbuf(0);
+                if (base->getGame(ie, &bbuf) != OK) {
                     search_pool.erase(&base);
                     return errorResult (ti, "Error reading game file.");
     			}
     			Game *g = scratchGame;
-    			if (g->ExactMatch (pos, base->bbuf, &sm)) {
+    			if (g->ExactMatch (pos, &bbuf, &sm)) {
     				ply = g->GetCurrentPly() + 1;
     				foundMatch = true;
     			}
@@ -8657,12 +8662,13 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         }
 
         // At this point, the game needs to be loaded:
-        if (dbase->getGame(ie, dbase->bbuf) != OK) {
+        ByteBuffer bbuf(0);
+        if (dbase->getGame(ie, &bbuf) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
         uint ply = 0;
         if (useVars) {
-            g->DecodeMovesOnly(*dbase->bbuf);
+            g->DecodeMovesOnly(bbuf);
             // Try matching the game without variations first:
             if (ply == 0  &&  possibleMatch) {
                 if (g->ExactMatch (pos, NULL, NULL, searchType)) {
@@ -8689,14 +8695,14 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         } else {
             // No searching in variations:
             if (possibleMatch) {
-                if (g->ExactMatch (pos, dbase->bbuf, NULL, searchType)) {
+                auto bbuf_clone = bbuf;
+                if (g->ExactMatch(pos, &bbuf_clone, NULL, searchType)) {
                     // Set its auto-load move number to the matching move:
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                dbase->bbuf->BackToStart();
-                if (g->ExactMatch (posFlip, dbase->bbuf, NULL, searchType)) {
+                if (g->ExactMatch (posFlip, &bbuf, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
@@ -9137,23 +9143,23 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         // Now, the game must be loaded and searched:
-
-        if (db->getGame(ie, db->bbuf) != OK) {
+        ByteBuffer bbuf(0);
+        if (db->getGame(ie, &bbuf) != OK) {
             continue;
         }
 
         bool result = false;
         if (possibleMatch) {
+            auto bbuf_clone = bbuf;
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
-            result = g->MaterialMatch (hasPromo, db->bbuf, min, max, patt,
+            result = g->MaterialMatch (hasPromo, &bbuf_clone, min, max, patt,
                                        minPly, maxPly, matchLength,
                                        oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
         }
         if (result == 0  &&  possibleFlippedMatch) {
-            db->bbuf->BackToStart();
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
-            result = g->MaterialMatch (hasPromo, db->bbuf, minFlipped, maxFlipped,
+            result = g->MaterialMatch (hasPromo, &bbuf, minFlipped, maxFlipped,
                                        flippedPatt, minPly, maxPly,
                                        matchLength, oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
@@ -9449,14 +9455,15 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
         if (match  &&  (pgnTextCount > 0 || !sAnnotator.empty())) {
-            if (match  &&  (base->getGame(ie, base->bbuf) != OK)) {
+            ByteBuffer bbuf(0);
+            if (match  &&  (base->getGame(ie, &bbuf) != OK)) {
                 match = false;
             }
 
 			if (!sAnnotator.empty()) {
 				// Need the annotator flag, so decode the flags
 				scratchGame->Clear();
-				if (match && scratchGame->DecodeTags(base->bbuf) != OK)
+				if (match && scratchGame->DecodeTags(&bbuf) != OK)
 					match = false;
 				if (match) {
 					auto ann = scratchGame->FindExtraTag("Annotator");
@@ -9467,7 +9474,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			if(pgnTextCount > 0)
 			{
 				scratchGame->Clear();
-				if (match  &&  scratchGame->Decode(*base->bbuf) != OK) {
+				if (match  &&  scratchGame->Decode(bbuf) != OK) {
 					match = false;
 				}
 				if (match) {

@@ -60,7 +60,6 @@ scidBaseT::scidBaseT() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	fileMode_ = FMODE_None;
-	bbuf = new ByteBuffer(0);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
 	duplicates_ = NULL;
@@ -75,7 +74,6 @@ scidBaseT::~scidBaseT() {
 	delete idx;
 	delete nb_;
 	delete game;
-	delete bbuf;
 	delete stats_;
 	delete dbFilter;
 	delete treeFilter;
