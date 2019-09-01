@@ -145,19 +145,19 @@ struct scidBaseT {
 		if (b == 0) length = 0; // Error
 		return FastGame::Create(b, b + length);
 	}
-	errorT getGame(const IndexEntry* ie, ByteBuffer* destBuf) const {
-		uint length = ie->GetLength();
-		const byte* b = codec_->getGameData(ie->GetOffset(), length);
-		if (b == 0) return ERROR_FileRead;
-		// The data for the game is not actually copied into the bytebuffer, which would
-		// be slower and a waste of time if the bytebuffer is not going to be modified.
-		*destBuf = ByteBuffer(b, length);
-		return OK;
+	ByteBuffer getGame(const IndexEntry& ie) const {
+		auto length = ie.GetLength();
+		auto data = codec_->getGameData(ie.GetOffset(), length);
+		if (!data)
+			length = 0; // Error
+
+		return {data, length};
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
-		ByteBuffer buf(0);
-		auto res = getGame(&ie, &buf);
-		return (res != OK) ? res : dest.Decode(buf);
+		if (auto bbuf = getGame(ie))
+			return dest.Decode(bbuf);
+
+		return ERROR_FileRead;
 	}
 
 	errorT importGame(const scidBaseT* srcBase, uint gNum);

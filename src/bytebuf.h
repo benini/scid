@@ -37,12 +37,12 @@ class ByteBuffer {
 	size_t size_;
 
 public:
-	ByteBuffer(size_t){};
-
 	ByteBuffer(const unsigned char* data, size_t length)
 	    : data_(data), size_(length) {}
 
 	errorT Status() { return data_ ? OK : ERROR_BufferRead; }
+
+	operator bool() const { return data_; }
 
 	/// Reads one byte from the buffer
 	unsigned char GetByte() {

@@ -629,9 +629,9 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         int ntrack = nTrackSquares;
         for (uint sq=0; sq < 64; sq++) { track[sq] = trackSquare[sq]; }
 
-        ByteBuffer bbuf(0);
         Game * g = scratchGame;
-        if (db->getGame(ie, &bbuf) != OK) {
+        auto bbuf = db->getGame(*ie);
+        if (!bbuf) {
             continue;
         }
         g->Clear();
@@ -1342,8 +1342,8 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (option == ECO_DATE  &&  ie.GetDate() < startDate)
             return false;
 
-        ByteBuffer bbuf(0);
-        if (dbase.getGame(&ie, &bbuf) != OK)
+        auto bbuf = dbase.getGame(ie);
+        if (!bbuf)
             return false;
         Game* g = scratchGame;
         g->Clear();
@@ -3573,9 +3573,9 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Load the merge game:
 
-    ByteBuffer bbuf(0);
     const IndexEntry* ie = base->getIndexEntry(gnum);
-    if (base->getGame(ie, &bbuf) != OK) {
+    auto bbuf = base->getGame(*ie);
+    if (!bbuf) {
         return errorResult (ti, "Error loading game.");
     }
     Game * merge = scratchGame;
@@ -4161,7 +4161,6 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         default: return errorResult (ti, usage);
     }
 
-    ByteBuffer bbuf(0);
     Game * g = scratchGame;
     if (gnum == 0) {
         g = base->game;
@@ -4175,7 +4174,8 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
         gnum--;
         const IndexEntry* ie = base->getIndexEntry(gnum);
-        if (base->getGame(ie, &bbuf) != OK) {
+        auto bbuf = base->getGame(*ie);
+        if (!bbuf) {
             return errorResult (ti, "Error loading game.");
         }
         g->Clear();
@@ -8147,8 +8147,8 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     continue;
                 }
 
-                ByteBuffer bbuf(0);
-                if (base->getGame(ie, &bbuf) != OK) {
+                auto bbuf = base->getGame(*ie);
+                if (!bbuf) {
                     search_pool.erase(&base);
                     return errorResult (ti, "Error reading game file.");
     			}
@@ -8662,8 +8662,8 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         }
 
         // At this point, the game needs to be loaded:
-        ByteBuffer bbuf(0);
-        if (dbase->getGame(ie, &bbuf) != OK) {
+        auto bbuf = dbase->getGame(*ie);
+        if (!bbuf) {
             return errorResult (ti, "Error reading game file.");
         }
         uint ply = 0;
@@ -9143,8 +9143,8 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         // Now, the game must be loaded and searched:
-        ByteBuffer bbuf(0);
-        if (db->getGame(ie, &bbuf) != OK) {
+        auto bbuf = db->getGame(*ie);
+        if (!bbuf) {
             continue;
         }
 
@@ -9455,9 +9455,9 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
         if (match  &&  (pgnTextCount > 0 || !sAnnotator.empty())) {
-            ByteBuffer bbuf(0);
-            if (match  &&  (base->getGame(ie, &bbuf) != OK)) {
-                match = false;
+            auto bbuf = base->getGame(*ie);
+            if (!bbuf) {
+                 match = false;
             }
 
 			if (!sAnnotator.empty()) {

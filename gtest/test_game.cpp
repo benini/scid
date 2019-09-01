@@ -39,8 +39,8 @@ TEST(Test_Game, clone) {
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
-		ByteBuffer bufGame(0);
-		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
+		auto bufGame = dbase.getGame(*dbase.getIndexEntry(0));
+		ASSERT_TRUE(bufGame);
 		auto orig_encoded = bufGame;
 		ASSERT_EQ(OK, game.Decode(bufGame));
 
@@ -95,8 +95,8 @@ TEST(Test_Game, locationInPGN) {
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
-		ByteBuffer bufGame(0);
-		ASSERT_EQ(OK, dbase.getGame(dbase.getIndexEntry(0), &bufGame));
+		auto bufGame = dbase.getGame(*dbase.getIndexEntry(0));
+		ASSERT_TRUE(bufGame);
 		ASSERT_EQ(OK, game.Decode(bufGame));
 
 		unsigned location = 1;
@@ -129,10 +129,10 @@ TEST(Test_Game, gamevisit) {
 	Game game;
 
 	// Expect to visit the STR even for an empty game
-	std::vector<std::pair<std::string, std::string> > expected_STR = {
+	std::vector<std::pair<std::string, std::string>> expected_STR = {
 	    {"Event", ""}, {"Site", ""},  {"Date", "????.??.??"}, {"Round", ""},
 	    {"White", ""}, {"Black", ""}, {"Result", "*"}};
-	std::vector<std::pair<std::string, std::string> > result_STR;
+	std::vector<std::pair<std::string, std::string>> result_STR;
 	gamevisit::tags_STR(game, [&](const char* tag, const char* value) {
 		result_STR.emplace_back(tag, value);
 	});
@@ -140,8 +140,8 @@ TEST(Test_Game, gamevisit) {
 	                       result_STR.begin(), result_STR.end()));
 
 	// Expect no extra tags for an empty game
-	std::vector<std::pair<std::string, std::string> > expected_extra;
-	std::vector<std::pair<std::string, std::string> > result_extra;
+	std::vector<std::pair<std::string, std::string>> expected_extra;
+	std::vector<std::pair<std::string, std::string>> result_extra;
 	gamevisit::tags_extra(game, [&](const char* tag, const char* value) {
 		result_extra.emplace_back(tag, value);
 	});
