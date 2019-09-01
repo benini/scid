@@ -77,6 +77,7 @@ matrix:
       - clang-format -i src/codec*
       - clang-format -i src/movegen*
       - clang-format -i src/pgn*
+      - clang-format -i src/bytebuf.h
       - |
         if [[ -n $(git diff) ]]; then
           git diff

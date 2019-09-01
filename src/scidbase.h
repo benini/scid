@@ -151,7 +151,7 @@ struct scidBaseT {
 		if (b == 0) return ERROR_FileRead;
 		// The data for the game is not actually copied into the bytebuffer, which would
 		// be slower and a waste of time if the bytebuffer is not going to be modified.
-		destBuf->ProvideExternal(const_cast<byte*>(b), length);
+		*destBuf = ByteBuffer(b, length);
 		return OK;
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {

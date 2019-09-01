@@ -78,10 +78,12 @@ TEST(Test_Game, clone) {
 		auto ie = IndexEntry();
 		clone->Encode(bufClone, ie);
 
-		ASSERT_EQ(bufClone.size(), bufGame.GetByteCount());
 		for (auto b : bufClone) {
 			ASSERT_EQ(b, orig_encoded.GetByte());
 		}
+		ASSERT_EQ(OK, orig_encoded.Status());
+		orig_encoded.GetByte();
+		ASSERT_NE(OK, orig_encoded.Status());
 	}
 }
 

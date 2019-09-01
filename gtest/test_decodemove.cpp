@@ -315,10 +315,8 @@ TEST(Test_decodemove, legacy_generic) {
 	for (unsigned i = 0; i < 1024; ++i) {
 		vec.emplace_back(static_cast<byte>(i));
 	}
-	ByteBuffer buf(0);
-	buf.ProvideExternal(vec.data(), 1024);
-	ByteBuffer buf2(0);
-	buf2.ProvideExternal(vec.data(), 1024);
+	ByteBuffer buf(vec.data(), 1024);
+	ByteBuffer buf2(vec.data(), 1024);
 
 	for (const auto piece : {WP, BP, WN, WR, WB, WK, WQ}) {
 		const colorT toMove = piece_Color(piece);
@@ -423,10 +421,8 @@ TEST(Test_decodemove, legacy_fastgame) {
 	for (unsigned i = 0; i < 1024; ++i) {
 		vec.emplace_back(static_cast<byte>(i));
 	}
-	ByteBuffer buf(0);
-	buf.ProvideExternal(vec.data(), 1024);
-	ByteBuffer buf2(0);
-	buf2.ProvideExternal(vec.data(), 1024);
+	ByteBuffer buf(vec.data(), 1024);
+	ByteBuffer buf2(vec.data(), 1024);
 
 	for (const auto piece : {WP, BP, WN, WR, WB, WK, WQ}) {
 		const colorT toMove = piece_Color(piece);

@@ -183,8 +183,7 @@ TEST(Test_Containers, ByteBuffer_GetTerminatedString) {
 		}
 		return res;
 	}();
-	ByteBuffer buf(0);
-	buf.ProvideExternal(reinterpret_cast<byte*>(v.data()), v.size());
+	ByteBuffer buf(reinterpret_cast<byte*>(v.data()), v.size());
 	for (auto str : test_data) {
 		EXPECT_STREQ(str, buf.GetTerminatedString());
 	}

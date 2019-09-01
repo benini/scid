@@ -116,8 +116,7 @@ private:
 
 	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
 	               const byte* srcData, size_t dataLen) final {
-		ByteBuffer buf(0);
-		buf.ProvideExternal(const_cast<byte*>(srcData), dataLen);
+		ByteBuffer buf(srcData, dataLen);
 		Game game;
 		errorT err = game.Decode(buf);
 		if (err == OK)
