@@ -3008,11 +3008,9 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 	case KNIGHT:
 		val = encodeKnight(&sm);
 		break;
-	case PAWN:
-		val = encodePawn(&sm);
-		break;
 	default:
-		assert(false);
+		ASSERT(PAWN == piece_Type(sm.movingPiece));
+		val = encodePawn(&sm);
 	}
 	const auto encoded = makeMoveByte(sm.pieceNum, val);
 	dest.emplace_back(encoded);

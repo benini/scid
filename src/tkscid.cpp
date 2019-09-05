@@ -3631,12 +3631,13 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         // at the start of the variation:
         db->game->MoveBackup();
         sm = db->game->GetCurrentMove();
+        ASSERT(sm);
         db->game->MoveForward();
     }
     db->game->MoveForward();
     db->game->AddVariation();
     db->gameAltered = true;
-    if (atLastMove) {
+    if (sm) {
         // We need to replicate the last move of the current game.
         db->game->AddMove(sm);
     }
