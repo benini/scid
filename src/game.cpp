@@ -1312,7 +1312,7 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
 //
 bool
 Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
-                  gameExactMatchT searchType, bool * neverMatch)
+                  gameExactMatchT searchType)
 {
     // If buf is NULL, the game is in memory. Otherwise, Decode only
     // the necessary moves:
@@ -1350,11 +1350,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         }
     }
 
-    // If neverMatch is null, point it at a dummy value
-    bool dummy;
-    if (neverMatch == NULL) { neverMatch = &dummy; }
-    *neverMatch = false;
-
     if (searchType == GAME_EXACT_MATCH_Exact  ||
         searchType == GAME_EXACT_MATCH_Pawns) {
         doHomePawnChecks = true;
@@ -1376,13 +1371,11 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         // Insufficient material optimisation:
         if (searchPos->GetCount(WHITE) > CurrentPos->GetCount(WHITE)  ||
             searchPos->GetCount(BLACK) > CurrentPos->GetCount(BLACK)) {
-            *neverMatch = true;
             return false;
         }
         // Insufficient pawns optimisation:
         if (searchPos->PieceCount(WP) > CurrentPos->PieceCount(WP)  ||
             searchPos->PieceCount(BP) > CurrentPos->PieceCount(BP)) {
-            *neverMatch = true;
             return false;
         }
 
@@ -1399,7 +1392,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
                 current_whiteHPawns = calcHomePawnMask (WP, currentBoard);
                 if ((current_whiteHPawns & search_whiteHPawns)
                         != search_whiteHPawns) {
-                    *neverMatch = true;
                     return false;
                 }
             }
@@ -1407,7 +1399,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
                 current_blackHPawns = calcHomePawnMask (BP, currentBoard);
                 if ((current_blackHPawns & search_blackHPawns)
                         != search_blackHPawns) {
-                    *neverMatch = true;
                     return false;
                 }
             }

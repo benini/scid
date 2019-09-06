@@ -448,16 +448,10 @@ public:
                              bool oppBishops, bool sameBishops,
                              int minDiff, int maxDiff);
     bool      ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
-                          gameExactMatchT searchType, bool * neverMatch);
+                          gameExactMatchT searchType);
     bool      VarExactMatch (Position * searchPos, gameExactMatchT searchType);
     inline bool ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm)
-      { return ExactMatch (pos, buf, sm, GAME_EXACT_MATCH_Exact, NULL); }
-    inline bool ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
-                            bool * neverMatch)
-      { return ExactMatch (pos, buf, sm, GAME_EXACT_MATCH_Exact, neverMatch); }
-    inline bool ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
-                            gameExactMatchT searchType)
-      { return ExactMatch (pos, buf, sm, searchType, NULL); }
+      { return ExactMatch (pos, buf, sm, GAME_EXACT_MATCH_Exact); }
 
     errorT    Encode(std::vector<byte>& dest, IndexEntry& ie);
     errorT    DecodeStart(ByteBuffer* buf);
