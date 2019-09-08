@@ -3152,8 +3152,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             std::string str;
             if (ecoBook) {
                 auto ecoStr = ecoBook->findECOstr(db->game->GetCurrentPos());
-                if (ecoStr.first)
-                    str.append(ecoStr.first, ecoStr.second);
+                if (!ecoStr.empty())
+                    str.append(ecoStr);
             }
             return UI_Result(ti, OK, str);
         }
@@ -3471,8 +3471,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Now check ECO book for the current position:
     if (ecoBook) {
         auto ecoStr = ecoBook->findECOstr(db->game->GetCurrentPos());
-        if (ecoStr.first) {
-            std::string ecoComment(ecoStr.first, ecoStr.second);
+        if (!ecoStr.empty()) {
+            std::string ecoComment(ecoStr);
             ecoT eco = eco_FromString(ecoComment.c_str());
             ecoStringT estr;
             eco_ToExtendedString (eco, estr);
@@ -3793,7 +3793,7 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Game* g = base->game;
     if (ecoBook) {
         while (g->MoveForward() == OK) {}
-        while (!ecoBook->findECOstr(g->GetCurrentPos()).first) {
+        while (ecoBook->findECOstr(g->GetCurrentPos()).empty()) {
             if (g->MoveBackup() != OK) break;
         }
     }

@@ -26,7 +26,7 @@
 
 namespace {
 
-inline const char *
+std::string_view
 epd_findOpcode (const char * epdStr, const char * opcode)
 {
     const char * s = epdStr;
@@ -40,7 +40,7 @@ epd_findOpcode (const char * epdStr, const char * opcode)
         }
         while (*s != '\n'  &&  *s != 0) { s++; }
     }
-    return NULL;
+    return {};
 }
 
 
@@ -75,60 +75,51 @@ errorT ReadLine(Position& pos, const char* s) {
 
 } // namespace
 
-std::pair<const char*, const char*> PBook::findECOstr(Position* pos) const {
-	auto range = pos_.equal_range(pos->HashValue());
-	if (range.first == pos_.end())
-		return std::make_pair(nullptr, nullptr);
+std::string_view PBook::findECOstr(Position* pos) const {
+	auto [it, end] = pos_.equal_range(pos->HashValue());
+	if (it == end)
+		return {};
 
 	char cboard[36];
 	pos->PrintCompactStr(cboard);
-	auto it = std::find_if(range.first, range.second,
-	                 [&](const std::pair<const unsigned, bookDataT>& data) {
-		                 return std::equal(cboard, cboard + 36,
-		                                   data.second.compactStr.get());
-	                 });
-	if (it == range.second)
-		return std::make_pair(nullptr, nullptr);
+	it = std::find_if(it, end, [&](const auto& data) {
+		return std::equal(cboard, cboard + 36, data.second.compactStr.get());
+	});
+	if (it == end)
+		return {};
 
-	const char* end = NULL;
-	const char* begin = epd_findOpcode(it->second.comment.get(), "eco");
-	if (begin != NULL) {
-		end = begin;
-		while (*end != '\0' && *end != '\n') {
-			++end;
-		}
-	}
-	return std::make_pair(begin, end);
+	auto res = epd_findOpcode(it->second.comment.get(), "eco");
+	return res.substr(0, res.find('\n'));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PBook::EcoSummary():
 //    Produce a summary from the PBook for the specified ECO code prefix.
-std::string PBook::EcoSummary(const char* ecoPrefix) const {
-    std::string dstr;
-    uint depth = strLength (ecoPrefix);
-    const char * prevEcoStr = "";
-    for (const char* comment : comments_) {
-        const char * ecoStr = epd_findOpcode (comment, "eco");
-        if (ecoStr != NULL  &&  strIsPrefix (ecoPrefix, ecoStr)) {
-            if (depth < 3  &&  strPrefix (ecoStr, prevEcoStr) >= depth+1) {
-                continue;
-            }
-            prevEcoStr = ecoStr;
-            while (*ecoStr != '\n'  &&  *ecoStr != 0) {
-                dstr.push_back(*ecoStr);
-                ecoStr++;
-            }
-            dstr.append("  ");
-            const char* movesStr = epd_findOpcode(comment, "moves");
-            while (*movesStr != '\n'  &&  *movesStr != 0) {
-                dstr.push_back(*movesStr);
-                movesStr++;
-            }
-            dstr.push_back('\n');
-        }
-    }
-    return dstr;
+std::string PBook::EcoSummary(const std::string_view prefix) const {
+	auto res = std::string();
+	auto prevEco = std::string_view();
+	for (const char* comment : comments_) {
+		const auto eco = epd_findOpcode(comment, "eco");
+		if (eco.empty() || eco.substr(0, prefix.size()) != prefix)
+			continue;
+
+		if (prefix.size() < 3) {
+			const auto common = std::mismatch(eco.begin(), eco.end(),
+			                                  prevEco.begin(), prevEco.end());
+			const size_t nChars = std::distance(eco.begin(), common.first);
+			if (nChars > prefix.size())
+				continue;
+
+			prevEco = eco;
+		}
+
+		res.append(eco.substr(0, eco.find('\n')));
+		res.append("  ");
+		const auto moves = epd_findOpcode(comment, "moves");
+		res.append(moves.substr(0, moves.find('\n')));
+		res.push_back('\n');
+	}
+	return res;
 }
 
 std::pair<errorT, std::unique_ptr<PBook> >

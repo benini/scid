@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 class Position;
@@ -64,12 +65,9 @@ public:
 	/**
 	 * Retrieve an ECO string containing the ECO code and the mnemonic name.
 	 * @param pos: the position to search for.
-	 * @returns
-	 * - if the position is found, a @e std::pair with the range iterators for
-	 *   the string (string_view).
-	 * - a @e std::pair containing nullptr otherwise.
+	 * @returns an empty string_view if the position is not found
 	 */
-	std::pair<const char*, const char*> findECOstr(Position* pos) const;
+	std::string_view findECOstr(Position* pos) const;
 
 	/**
 	 * Retrieve the ECO code of a position.
@@ -78,17 +76,15 @@ public:
 	 */
 	ecoT findECO(Position* pos) const {
 		auto it = findECOstr(pos);
-		if (!it.first)
+		if (it.empty())
 			return ECO_None;
 
-		char buf[7] = {0};
-		std::copy_n(it.first,
-		            std::min(ptrdiff_t(6), std::distance(it.first, it.second)),
-		            buf);
+		char buf[8] = {0};
+		it.copy(buf, 6);
 		return eco_FromString(buf);
 	}
 
-	std::string EcoSummary(const char* ecoPrefix) const;
+	std::string EcoSummary(std::string_view ecoPrefix) const;
 
 	unsigned GetLineNumber() const { return LineCount; }
 	unsigned FewestPieces() const { return LeastMaterial; }

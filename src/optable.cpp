@@ -496,8 +496,8 @@ OpTable::Init (const char * type, Game * g, PBook * ebook)
         }
         if (ebook != NULL && ECOstr_.empty()) {
             auto eco = ebook->findECOstr(g->GetCurrentPos());
-            if (eco.first)
-                ECOstr_.append(eco.first, eco.second);
+            if (!eco.empty())
+                ECOstr_.append(eco);
         }
         g->MoveBackup();
         simpleMoveT * sm = g->GetCurrentMove();
