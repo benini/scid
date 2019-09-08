@@ -118,6 +118,7 @@ $m add command -label EditPaste -command {
   ::notify::GameChanged
 }
 
+
 ### Game menu:
 set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
@@ -266,7 +267,6 @@ $m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -ac
 set m .menu.options
 menu $m
 .menu add cascade -label Options -menu $m
-$m add command -label ConfigureScid -command { config::toggle }
 menu $m.language
   foreach l $::languages {
       $m.language add radiobutton -label $::langName($l) \
@@ -317,6 +317,7 @@ menu $m.windows
     $m.windows.startup add checkbutton -label WindowsStats -variable startup(stats)
   $m.windows add cascade -label OptionsStartup -menu $m.windows.startup
 $m add cascade -label OptionsWindows -menu $m.windows
+$m add command -label ConfigureScid -command { ::preferences::toggle }
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add command -label OptionsToolbar -command configToolbar
 $m add separator

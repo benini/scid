@@ -553,6 +553,7 @@ windows.tcl
 windows/browser.tcl
 windows/gamelist.tcl
 windows/pgn.tcl
+windows/preferences.tcl
 windows/book.tcl
 windows/comment.tcl
 windows/eco.tcl
@@ -599,7 +600,6 @@ utils/metadata.tcl
 tools/inputengine.tcl
 tools/novag.tcl
 utils/bibliography.tcl
-windows/setup.tcl
 }
 
 foreach f $tcl_files {

@@ -8,30 +8,30 @@
 
 ### Preference setup window
 
-namespace eval ::config {}
+namespace eval ::preferences {}
 
-set config::aktConfig ""
+set ::preferences::aktConfig ""
 
-proc ::config::toggle {} {
+proc ::preferences::toggle {} {
   set w .config
   if {[winfo exists $w]} {
     ::win::closeWindow $w
   } else {
-    ::config::Open
+    ::preferences::Open
   }
 }
 
 ### Switch to a new selected preferences dialog from the list
-proc ::config::replaceConfig { nr } {
-  global ::config::aktConfig
-  pack forget $::config::aktConfig 
-  set ::config::aktConfig .config.c.f.$nr
-  pack $::config::aktConfig -side left -anchor n -padx "10 0" -pady "5 0"
+proc ::preferences::replaceConfig { nr } {
+  global ::preferences::aktConfig
+  pack forget $::preferences::aktConfig
+  set ::preferences::aktConfig .config.c.f.$nr
+  pack $::preferences::aktConfig -side left -anchor n -padx "10 0" -pady "5 0"
   .config.c.f.configs.list selection clear 0 end
   .config.c.f.configs.list selection set $nr
 }
 
-proc ::config::Open {} {
+proc ::preferences::Open {} {
   set w .config
   if {[winfo exists .config]} { return }
 
@@ -50,14 +50,14 @@ proc ::config::Open {} {
   ttk::frame $w.configs
   set t $w.configs
   listbox $t.list -width 11 -exportselection 0 -font {{} 11 } -background [ttk::style lookup . -background "" #d9d9d9] -foreground [ttk::style lookup . -foreground "" #202020] -relief flat
-  bind $t.list <<ListboxSelect>> { ::config::replaceConfig [.config.c.f.configs.list curselection] }
+  bind $t.list <<ListboxSelect>> { ::preferences::replaceConfig [.config.c.f.configs.list curselection] }
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMenuColor] ::appearance::menuConfigDialog ] 
+  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMenuColor] ::appearance::menuConfigDialog ]
   ### create the dialogs
   foreach {m init} $configList {
-	$t.list insert end $m 
+	$t.list insert end $m
 	ttk::frame $w.$idx
 	$init $w.$idx
 	incr idx
