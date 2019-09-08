@@ -418,8 +418,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		ginfo.push_back(ie->GetYear());
 		ginfo.push_back((welo + belo)/2);
 		ginfo.push_back(ie->GetRating(nb));
-		FastGame game = dbase->getGame(ie);
-		ginfo.push_back(game.getMoveSAN(ply, 10));
+		ginfo.push_back(dbase->getGame(ie).getMoveSAN(ply, 10));
 
 		res.push_back(std::to_string(idx+1) + "_" + std::to_string(ply));
 		res.push_back(ginfo);

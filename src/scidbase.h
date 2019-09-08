@@ -139,11 +139,11 @@ struct scidBaseT {
 	const NameBase* getNameBase() const {
 		return nb_;
 	}
-	FastGame getGame(const IndexEntry* ie) const {
+	GameView getGame(const IndexEntry* ie) const {
 		uint length = ie->GetLength();
 		const byte* b = codec_->getGameData(ie->GetOffset(), length);
 		if (b == 0) length = 0; // Error
-		return FastGame::Create(b, b + length);
+		return GameView::Create(b, b + length);
 	}
 	ByteBuffer getGame(const IndexEntry& ie) const {
 		auto length = ie.GetLength();

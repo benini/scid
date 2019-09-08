@@ -381,14 +381,14 @@ private:
 	}
 };
 
-class FastGame {
+class GameView {
 	FastBoard board_;
 	const byte* v_it_;
 	const byte* v_end_;
 	colorT cToMove_;
 
 public:
-	static FastGame Create(const byte* v_begin, const byte* v_end) {
+	static GameView Create(const byte* v_begin, const byte* v_end) {
 		const byte* v_it = v_begin;
 		while (v_it < v_end) {
 			byte b = *v_it++;
@@ -396,11 +396,12 @@ public:
 				if (v_it >= v_end) break; // Error
 				byte haveFEN = *v_it++ & 1;
 				if (haveFEN == 0) {
-					return FastGame(v_it, v_end);
+					return {v_it, v_end};
 				} else {
 					const char* FENstring = (char*) v_it;
 					while (v_it < v_end) {
-						if (*v_it++ == 0) return FastGame(FENstring, v_it, v_end);
+						if (*v_it++ == 0)
+							return {FENstring, v_it, v_end};
 					}
 					break; // FEN error
 				}
@@ -413,7 +414,7 @@ public:
 			}
 		}
 
-		return FastGame(0,0); // Error default to StdStart and empty buffer
+		return {nullptr, nullptr}; // Error default to StdStart and empty buffer
 	}
 
 	FullMove getMove(int ply_to_skip) {
@@ -506,11 +507,11 @@ public:
 	}
 
 private:
-	FastGame(const byte* v_it, const byte* v_end)
+	GameView(const byte* v_it, const byte* v_end)
 	    : board_(FastBoard::stdStart()), v_it_(v_it), v_end_(v_end),
 	      cToMove_(WHITE) {}
 
-	FastGame(const char* FEN, const byte* v_it, const byte* v_end)
+	GameView(const char* FEN, const byte* v_it, const byte* v_end)
 	: v_it_ (v_it), v_end_(v_end) {
 		Position StartPos;
 		if (FEN == 0 || StartPos.ReadFromFEN(FEN) != OK) StartPos.StdStart();
