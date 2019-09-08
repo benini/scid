@@ -35,14 +35,12 @@ proc ::appearance::applyMenuBarColor { menu docked_nb } {
   }
 }
 
-proc ::appearance::chooseMenuColor {col_var} {
+proc ::appearance::chooseMenuColor {col_var w} {
   set col [ tk_chooseColor -initialcolor [set $col_var] -title "Scid"]
   if { $col != "" } {
       set $col_var $col
-      ::appearance::Refresh
+      ::appearance::Refresh $w
   }
-  raiseWin .menuOptions
-  focus .menuOptions.f.bg
 }
 
 proc ::appearance::setNewMenuColors { m configure_cmd } {
@@ -86,12 +84,7 @@ proc ::appearance::setMenuColors {} {
       unset -nocomplain ::menuBarColor($col)
     }
   }
-
   updateMenuColors
-
-  set w .menuOptions
-  catch {grab release $w}
-  destroy $w
 }
 
 proc ::appearance::defaultColors {} {
@@ -106,7 +99,7 @@ proc ::appearance::defaultColors {} {
 # Menu Color Config
 #
 #   Dialog window for configuring Menu colors
-proc ::appearance::menuConfigDialog {} {
+proc ::appearance::menuConfigDialog { w } {
   ::appearance::defaultColors
   foreach {col value} [array get ::menuColor] {
     set ::menuDialog_($col) $value
@@ -115,75 +108,49 @@ proc ::appearance::menuConfigDialog {} {
     set ::menuBarDialog_($col) $value
   }
 
-  set w .menuOptions
-  win::createDialog $w
-  wm title $w "Scid: [tr OptionsMenuColor]"
-
-  ttk::label $w.status -text ""
-  pack [ttk::frame $w.b] -side bottom -fill x
-  pack [ttk::frame $w.f] \
-      -side top -fill x
-
+  pack [ttk::frame $w.f] -side top
   set f $w.f
   set r 0
 
   ttk::label $f.mainmenu -text "Menu bar Menu"
   if { ! $::windowsOS &&  ! $::macOS} {
-    ttk::button $f.mbg -text $::tr(MenuColorBackground) -command { ::appearance::chooseMenuColor ::menuBarDialog_(background) }
+    ttk::button $f.mbg -text $::tr(MenuColorBackground) -command "::appearance::chooseMenuColor ::menuBarDialog_(background) $w"
     grid $f.mainmenu -row $r -column 0 -columnspan 3 -padx 4 -sticky e
     grid $f.mbg -row $r -column 4 -padx 4
     incr r
   }
   ttk::label $f.menuline0 -text "Disabled"
   grid $f.menuline0 -row $r -column 2 -padx 4
-  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor ::menuDialog_(disabledForeground) }
+  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(disabledForeground) $w"
   grid $f.dfg -row $r -column 3 -padx 4
   incr r
-  ttk::button $f.sel -text $::tr(MenuColorSelect) -command { ::appearance::chooseMenuColor ::menuDialog_(selectColor) }
+  ttk::button $f.sel -text $::tr(MenuColorSelect) -command "::appearance::chooseMenuColor ::menuDialog_(selectColor) $w"
   grid $f.sel -row $r -column 0 -padx 4
   ttk::label $f.select -text "x"
   grid $f.select -row $r -column 1
   ttk::label $f.menuline1 -text "Menu1"
   grid $f.menuline1 -row $r -column 2 -padx 4
-  ttk::button $f.fg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor ::menuDialog_(foreground) }
+  ttk::button $f.fg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(foreground) $w"
   grid $f.fg -row $r -column 3 -padx 4 -pady 5
-  ttk::button $f.bg -text $::tr(MenuColorBackground) -command { ::appearance::chooseMenuColor ::menuDialog_(background) }
+  ttk::button $f.bg -text $::tr(MenuColorBackground) -command "::appearance::chooseMenuColor ::menuDialog_(background) $w"
   grid $f.bg -row $r -column 4 -padx 4
   incr r
   ttk::label $f.menuline2 -text "Menu2"
   grid $f.menuline2 -row $r -column 2 -padx 4
-  ttk::button $f.afg -text $::tr(MenuColorForeground) -command { ::appearance::chooseMenuColor ::menuDialog_(activeForeground) }
+  ttk::button $f.afg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(activeForeground) $w"
   grid $f.afg -row $r -column 3 -padx 4
-  ttk::button $f.abg -text $::tr(MenuColorBackground) -command { ::appearance::chooseMenuColor ::menuDialog_(activeBackground) }
+  ttk::button $f.abg -text $::tr(MenuColorBackground) -command "::appearance::chooseMenuColor ::menuDialog_(activeBackground) $w"
   grid $f.abg -row $r -column 4 -padx 4 -pady 5
-  incr r
-  addHorizontalRule $w
-  ttk::button $w.b.help -image tb_help -command {grab release .menuOptions; helpWindow Appearance }
-  ::utils::tooltip::Set $w.b.help $::tr(Help)
-  dialogbutton $w.b.ok -text OK -command ::appearance::setMenuColors
-  dialogbutton $w.b.reset -text $::tr(Defaults) -command {
-    ::appearance::defaultColors
-    ::appearance::setMenuColors
-  }
-  dialogbutton $w.b.cancel -text $::tr(Cancel) -command "::win::closeWindow $w"
-  packdlgbuttons $w.b.cancel $w.b.ok $w.b.reset $w.b.help
-  bind $w <Return> [list $w.b.ok invoke]
-  bind $w <Escape> [list $w.b.cancel invoke]
-  bind $w.f <Destroy>  { unset ::menuDialog_ }
-  bind $w <F1> { grab release .menuOptions; helpWindow Appearance }
-  ::appearance::Refresh
-  wm resizable $w 0 0
-  raiseWin $w
-  grab $w
-  focus $w.f.bg
+  ::appearance::Refresh $w
 }
 
-proc ::appearance::Refresh {} {
+proc ::appearance::Refresh { w } {
   global menuDialog_
-  set w .menuOptions
+
   $w.f.menuline0 configure -background $menuDialog_(background) -foreground $menuDialog_(disabledForeground)
   $w.f.menuline1 configure -background $menuDialog_(background) -foreground $menuDialog_(foreground)
   $w.f.menuline2 configure -background $menuDialog_(activeBackground) -foreground $menuDialog_(activeForeground)
   $w.f.select configure -foreground $menuDialog_(selectColor)
   $w.f.mainmenu configure -background $::menuBarDialog_(background) -foreground $menuDialog_(foreground)
+  ::appearance::setMenuColors
 }

@@ -106,6 +106,7 @@ menuText D EditCopyBoard "Stellung kopieren" 10 \
   {Aktuelle Brettposition in die Zwischenablage kopieren (im FEN-Format)}
 menuText D EditPasteBoard "Stellung einfügen" 12 \
   {Stellung aus der Zwischenablage (im FEN-Format) einfügen}
+menuText D ConfigureScid "Einstellungen..." 0 {Alle Optionen für SCID einstellen}
 
 # Game menu:
 menuText D Game "Partie" 0
@@ -252,11 +253,6 @@ menuText D CCEditCopy "Partieliste in Ablage" 0 {Kopiert die Parieliste als CSV 
 
 # Options menu:
 menuText D Options "Optionen" 0
-menuText D OptionsBoard "Schachbrett" 6 {Schachbrettoptionen}
-menuText D OptionsBoardSize "Brettgröße" 0 {Brettgröße ändern}
-menuText D OptionsBoardPieces "Figurensatz" 2 {Figurensatz wechseln}
-menuText D OptionsBoardColors "Farben..." 0 {Brettfarben ändern}
-#Klimmek
 menuText D OptionsBoardGraphics "Brettfelder..." 3 {Grafik für Brettfelder auswählen}
 translate D OptionsBGW {Grafikdatei für Felder auswählen}
 translate D OptionsBoardGraphicsText {Grafikdateien für helle und dunkle Felder auswählen:}
@@ -323,10 +319,6 @@ menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
   {Alle Optionen beim Beenden von Scid automatisch speichern}
-menuText D OptionsMenuColor "Menüfarben einstellen..." 0 {  }
-translate D MenuColorForeground "Text"
-translate D MenuColorBackground "Hintergrund"
-translate D MenuColorSelect "Auswahl"
 
 # Help menu:
 menuText D Help "Hilfe" 0
@@ -1747,6 +1739,15 @@ translate D MakeCorrections {Korrigieren}
 translate D Surnames {Nachnamen}
 translate D Ambiguous {Mehrdeutig}
 }
+#Preferences Dialog
+translate D OptionsBoardSize "Brettgröße"
+translate D OptionsBoardPieces "Figurensatz"
+translate D OptionsBoardColors "Farben..."
+translate D OptionsBoard "Schachbrett"
+translate D OptionsMenuColor "Menüfarben"
+translate D MenuColorForeground "Text"
+translate D MenuColorBackground "Hintergrund"
+translate D MenuColorSelect "Auswahl"
 
 ##########
 #

@@ -124,6 +124,7 @@ menuText E EditCopyBoard "Copy Position" 6 \
   {Copy the current board in FEN notation to the text selection (clipboard)}
 menuText E EditPasteBoard "Paste Start Board" 12 \
   {Set the start board from the current text selection (clipboard)}
+menuText E ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText E Game "Game" 0
@@ -267,11 +268,6 @@ menuText E CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list 
 
 # Options menu:
 menuText E Options "Options" 0
-menuText E OptionsBoard "Chessboard" 0 {Chess board appearance options}
-menuText E OptionsBoardSize "Size" 0 {Change the board size}
-menuText E OptionsBoardPieces "Piece Style" 6 {Change the board piece style}
-menuText E OptionsBoardColors "Colors..." 0 {Change board colors}
-#Klimmek
 menuText E OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
 translate E OptionsBGW {Select texture for squares}
 translate E OptionsBoardGraphicsText {Select graphic files for white and black squares:}
@@ -336,10 +332,6 @@ menuText E OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file
 menuText E OptionsSave "Save Options" 0 "Save all settable options to the file $::optionsFile"
 menuText E OptionsAutoSave "Auto-Save Options on Exit" 0 \
   {Auto-save all options when exiting Scid}
-menuText E OptionsMenuColor "Setup Menu Colors..." 0 { }
-translate E MenuColorForeground "Textcolor"
-translate E MenuColorBackground "Background"
-translate E MenuColorSelect "Select"
 
 # Help menu:
 menuText E Help "Help" 0
@@ -1769,5 +1761,14 @@ translate E FilterStatistic {Filter Statistics}
 translate E MakeCorrections {Make Corrections}
 translate E Surnames {Surnames}
 translate E Ambiguous {Ambiguous}
+
+#Preferences Dialog
+translate E OptionsBoard "Chessboard"
+translate E OptionsMenuColor "Menu colors"
+translate E OptionsBoardSize "Board size"
+translate E OptionsBoardPieces "Piece Style"
+translate E MenuColorForeground "Textcolor"
+translate E MenuColorBackground "Background"
+translate E MenuColorSelect "Select"
 }
 # end of english.tcl

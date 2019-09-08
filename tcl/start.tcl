@@ -599,6 +599,7 @@ utils/metadata.tcl
 tools/inputengine.tcl
 tools/novag.tcl
 utils/bibliography.tcl
+windows/setup.tcl
 }
 
 foreach f $tcl_files {

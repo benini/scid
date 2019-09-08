@@ -118,7 +118,6 @@ $m add command -label EditPaste -command {
   ::notify::GameChanged
 }
 
-
 ### Game menu:
 set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
@@ -267,6 +266,7 @@ $m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -ac
 set m .menu.options
 menu $m
 .menu add cascade -label Options -menu $m
+$m add command -label ConfigureScid -command { config::toggle }
 menu $m.language
   foreach l $::languages {
       $m.language add radiobutton -label $::langName($l) \
@@ -274,13 +274,6 @@ menu $m.language
           -command setLanguage
   }
 $m add cascade -label OptionsLanguage -menu $m.language
-menu $m.board
-  menu $m.board.bdsize
-  $m.board add cascade -label OptionsBoardSize -menu $m.board.bdsize
-  menu $m.board.pieces -tearoff 1
-  $m.board add cascade -label OptionsBoardPieces -menu $m.board.pieces
-  $m.board add command -label OptionsBoardColors -command chooseBoardColors
-$m add cascade -label OptionsBoard -menu $m.board
 menu $m.fonts
   $m.fonts add command -label OptionsFontsRegular -command {chooseFont Regular}
   $m.fonts add command -label OptionsFontsMenu    -command {chooseFont Menu}
@@ -288,7 +281,6 @@ menu $m.fonts
   $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
   $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
 $m add cascade -label OptionsFonts -menu $m.fonts
-$m add command -label OptionsMenuColor -command { ::appearance::menuConfigDialog }
 if { $::macOS } { $m entryconfigure end -state disabled }
 menu $m.numbers
   foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
@@ -555,36 +547,6 @@ proc menuUpdateBases {} {
   menuConfig .menu.db.utils FileMaintTwin    entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintCompact entryconfig -state $canCompact
   menuConfig .menu.db.utils FileMaintNameEditor entryconfig -state $canChange
-}
-
-proc menuUpdateBoardSizes {} {
-  set count 0
-  set m .menu.options.board
-  $m.bdsize delete 0 end
-  set st normal
-  $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
-        -command "::resizeMainBoard; menuUpdateBoardSizes"
-  if {$::autoResizeBoard} { set st disabled }
-  foreach i $::boardSizes {
-    incr count
-    if {$count <= 9} {
-      set lbl "  $count"
-    } else {
-      set lbl " $count"
-    }
-    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
-      -command "::board::resize .main.board $i "
-  }
-}
-
-proc menuUpdatePieces {} {
-  set m .menu
-  $m.options.board.pieces delete 0 end
-  foreach i $::boardStyles {
-    $m.options.board.pieces add radio -label $i \
-      -variable boardStyle -value $i \
-      -underline 0 -command "setPieceFont \"$i\"; updateBoard"
-  }
 }
 
 proc menuUpdateThemes {} {
