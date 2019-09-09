@@ -1283,13 +1283,20 @@ proc toggleToolbarButton { b i } {
 	set ::toolbar_temp($i) 1
 	$b.$i state pressed
     }
+    array set ::toolbar_state [array get ::toolbar_temp]
+    redrawToolbar
 }
 
-proc configToolbar {} {
-  set w .tbconfig
-  win::createDialog $w
-  wm title $w "Scid: [tr OptionsToolbar]"
+proc toggleAllToolbarButtons { b state } {
+    foreach i [array names ::toolbar_temp] {
+	set ::toolbar_temp($i) $state
+	if { $state } { $b.$i state pressed } else { $b.$i state !pressed }
+    }
+    array set ::toolbar_state [array get ::toolbar_temp]
+    redrawToolbar
+}
 
+proc ConfigToolbar { w } {
   array set ::toolbar_temp [array get ::toolbar_state]
   pack [ttk::frame $w.f] -side top -fill x
   set col 0
@@ -1306,23 +1313,10 @@ proc configToolbar {} {
   setToolbarTooltips $w.f
   addHorizontalRule $w
   pack [ttk::frame $w.b] -side bottom -fill x
-  ttk::button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
-      foreach i [array names toolbar_temp] { set toolbar_temp($i) 1; .tbconfig.f.$i state pressed }
-  }
-  ttk::button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
-      foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 ; .tbconfig.f.$i state !pressed }
-  }
-  ttk::button $w.ok -text "OK" -command {
-    array set ::toolbar_state [array get toolbar_temp]
-    catch {grab release .tbconfig}
-    destroy .tbconfig
-    redrawToolbar
-  }
-  ttk::button $w.cancel -text $::tr(Cancel) \
-      -command "catch {grab release $w}; destroy $w"
-  pack $w.cancel $w.ok -side right -padx 2 -pady "5 0"
+  ttk::button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command "toggleAllToolbarButtons $w.f 1"
+  ttk::button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command "toggleAllToolbarButtons $w.f 0"
+
   pack $w.on $w.off -side left -padx 2 -pady "5 0"
-  catch {grab $w}
 }
 
 proc redrawToolbar {} {

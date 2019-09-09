@@ -318,7 +318,6 @@ menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText E OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText E OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText E OptionsToolbar "Toolbar..." 0 {Configure the main window toolbar}
 menuText E OptionsECO "Load ECO File..." 7 {Load the ECO classification file}
 menuText E OptionsSpell "Load Spellcheck File..." 11 \
   {Load the Scid spellcheck file}
@@ -1763,6 +1762,7 @@ translate E Surnames {Surnames}
 translate E Ambiguous {Ambiguous}
 
 #Preferences Dialog
+translate E OptionsToolbar "Toolbar"
 translate E OptionsBoard "Chessboard"
 translate E OptionsMenuColor "Menu colors"
 translate E OptionsBoardSize "Board size"

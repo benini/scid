@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2019 Uwe Klimmek
+# Copyright (C) 2019 Uwe Klimmek, Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 # Scid is free software: you can redistribute it and/or modify
@@ -49,15 +49,18 @@ proc ::preferences::Open { {toggle ""} } {
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMenuColor] ::appearance::menuConfigDialog ]
+  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar]
+  set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
     $t.list insert end $m
+    set mlen [string length $m]
+    if { $maxlen < $mlen } { set $maxlen $mlen }
     ttk::frame $t.$idx
     $init $t.$idx
     incr idx
   }
-  $t.list configure -height $idx
+  $t.list configure -height $idx -width $maxlen
 
   unset -nocomplain ::preferences::aktConfig
   replaceConfig 0 $w.c

@@ -319,7 +319,6 @@ menu $m.windows
 $m add cascade -label OptionsWindows -menu $m.windows
 $m add command -label ConfigureScid -command { ::preferences::Open toggle }
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
-$m add command -label OptionsToolbar -command configToolbar
 $m add separator
 $m add command -label OptionsRecent -command ::recentFiles::configure
 $m add command -label GInfoInformant -command configInformant

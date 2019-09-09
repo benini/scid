@@ -303,7 +303,6 @@ menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
 menuText D OptionsWindowsAutoLoadLayout "Automatisch laden: 1. Layout" 0 {Lädt das erste definierte Layout automatisch beim Programmstart}
-menuText D OptionsToolbar "Werkzeugleiste..." 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
   {Datei für Scid-Rechtschreibprüfung laden}
@@ -1740,6 +1739,7 @@ translate D Surnames {Nachnamen}
 translate D Ambiguous {Mehrdeutig}
 }
 #Preferences Dialog
+translate D OptionsToolbar "Werkzeugleiste"
 translate D OptionsBoardSize "Brettgröße"
 translate D OptionsBoardPieces "Figurensatz"
 translate D OptionsBoardColors "Farben..."
