@@ -550,15 +550,21 @@ proc ::docking::manage_motion_ {src_noteb x y} {
 	unset ::docking::motion_
 	if {$src_tab eq ""} { return }
 
+	set wnd [lindex [$src_noteb tabs] $src_tab]
 	set dest_noteb [winfo containing $x $y]
-	if {![info exists ::docking::tbs($dest_noteb)]} { return }
+	if {$dest_noteb eq ""} {
+		::win::undockWindow $wnd $src_noteb
+		return
+	}
+	if {![info exists ::docking::tbs($dest_noteb)]} {
+		return
+	}
 
 	set localX [expr $x-[winfo rootx $dest_noteb]]
 	set localY [expr $y-[winfo rooty $dest_noteb]]
 	set dest_pos [$dest_noteb identify tab $localX $localY]
 	if {$dest_pos eq ""} { set dest_pos "end" }
 
-	set wnd [lindex [$src_noteb tabs] $src_tab]
 	if {$src_noteb eq $dest_noteb} {
 		$dest_noteb insert $dest_pos $wnd
 	} else {
