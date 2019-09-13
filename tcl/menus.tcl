@@ -402,7 +402,6 @@ $m  add command -label HelpAbout -command helpAbout
 set ::menuHelpMessage {}
 proc storeMenuLabels {m} {
     bind $m <<MenuSelect>> {
-        set ::menuHelpMessage {}
         set idx [%W index active]
         if {$idx != "none"} {
             # Tcl/Tk seems to generate strange window names for menus that
@@ -412,12 +411,16 @@ proc storeMenuLabels {m} {
             # I have no idea why it does this, but to avoid it we
             # convert a window paths with hashes to its true value:
             regsub -all "\#" [winfo name %W] . win
+            set ::menuHelpMessage {}
             catch {
                 set lbl $::MenuLabels($win,$idx)
                 set ::menuHelpMessage $::helpMessage($::language,$lbl)
             }
+            updateStatusBar
+        } elseif {$::menuHelpMessage ne ""} {
+            set ::menuHelpMessage {}
+            updateStatusBar
         }
-        updateStatusBar
     }
 
     set n [$m index end]
