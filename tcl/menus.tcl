@@ -714,39 +714,47 @@ proc setAutoplayDelay {} {
 #    directory will be used.
 #
 proc setTableBaseDir {} {
-  global initialDir tempDir
-  set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
-
   set w .tbDialog
   win::createDialog $w
   ::setTitle $w Scid
+
   ttk::label $w.title -text "Select up to 4 table base directories:"
   pack $w.title -side top -fill x
+
   foreach i {1 2 3 4} {
-    set tempDir(tablebase$i) $initialDir(tablebase$i)
     pack [ttk::frame $w.f$i] -side top -fill x -expand yes
-    ttk::entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
-    bindFocusColors $w.f$i.e
-    ttk::button $w.f$i.b -text "..." -command [list chooseTableBaseDir $i]
+    ttk::entry $w.f$i.e -width 80
+    $w.f$i.e insert end $::initialDir(tablebase$i)
+    $w.f$i.e configure -validate key -validatecommand "
+      after cancel ::openTableBaseDirs $i $w.f$i.e
+      after 200 ::openTableBaseDirs $i $w.f$i.e
+      return true
+    "
+    ttk::button $w.f$i.b -text "..." -command "chooseTableBaseDir $w.f$i.e"
+
     pack $w.f$i.b -side right -padx 2
     pack $w.f$i.e -side left -padx 2 -fill x -expand yes
   }
-#  addHorizontalRule $w
-  pack [ttk::frame $w.b] -side top -fill x
-  ttk::button $w.b.ok -text "OK" \
-      -command "catch {grab release $w; destroy $w}; openTableBaseDirs"
-  ttk::button $w.b.cancel -text $::tr(Cancel) \
-      -command "catch {grab release $w; destroy $w}"
-  packdlgbuttons $w.b.cancel $w.b.ok
-  bind $w <Escape> "$w.b.cancel invoke"
+
   wm resizable $w 1 0
   grab $w
 }
-proc openTableBaseDirs {} {
-  global initialDir tempDir
+
+proc openTableBaseDirs {nr widget} {
+  set dirname [$widget get]
+  if {$dirname ne "" && ![file isdirectory $dirname]} {
+    $widget configure -style Error.TEntry
+    return
+  }
+  $widget configure -style TEntry
+  if {$dirname eq $::initialDir(tablebase$nr)} {
+    return
+  }
+  set ::initialDir(tablebase$nr) $dirname
+
   set tableBaseDirs ""
   foreach i {1 2 3 4} {
-    set tbDir [string trim $tempDir(tablebase$i)]
+    set tbDir [string trim $::initialDir(tablebase$i)]
     if {$tbDir != ""} {
       if {$tableBaseDirs != ""} { append tableBaseDirs ";" }
       append tableBaseDirs [file nativename $tbDir]
@@ -754,9 +762,6 @@ proc openTableBaseDirs {} {
   }
 
   set npieces [sc_info tb $tableBaseDirs]
-  foreach i {1 2 3 4} {
-    set initialDir(tablebase$i) $tempDir(tablebase$i)
-  }
   if {$npieces == 0} {
     set msg "No tablebases were found."
   } else {
@@ -767,18 +772,17 @@ proc openTableBaseDirs {} {
   }
   tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
       -message $msg
+
+  grab [winfo toplevel $widget]
 }
-proc chooseTableBaseDir {i} {
-  global tempDir
 
-  set idir $tempDir(tablebase$i)
-  if {$idir == ""} { set idir [pwd] }
-
-  set fullname [tk_chooseDirectory -initialdir $idir -mustexist 1 \
+proc chooseTableBaseDir {widget} {
+  set fullname [tk_chooseDirectory -initialdir [$widget get] -mustexist 1 \
       -title "Scid: Select a Tablebase directory"]
-  if {$fullname == ""} { return }
-
-  set tempDir(tablebase$i) $fullname
+  if {$fullname ne ""} {
+    $widget delete 0 end
+    $widget insert end [file nativename $fullname]
+  }
 }
 ################################################################################
 
