@@ -960,16 +960,18 @@ errorT Game::MainVariation() {
 	root->swapLine(*parent.second->next);
 
 	ASSERT(VarDepth);
-	--VarDepth;
-
-	// Now, the information about the material at the end of the
-	// game, pawn promotions, will be wrong if the variation was
-	// promoted to an actual game move, so call MakeHomePawnList()
-	// to go through the game moves and ensure it is correct.
-	auto location = currentLocation();
-	byte tempPawnList[9];
-	MakeHomePawnList(tempPawnList);
-	restoreLocation(location);
+	if (--VarDepth == 0) { // Recalculate NumHalfMoves
+		const auto count_moves = [](auto move) {
+			int res = 0;
+			while (!move->endMarker()) {
+				++res;
+				move = move->next;
+			}
+			return res;
+		};
+		ASSERT(FirstMove->startMarker() && FirstMove->next);
+		NumHalfMoves = count_moves(FirstMove->next);
+	}
 
 	return OK;
 }
