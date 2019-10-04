@@ -636,7 +636,7 @@ StoredLine::StoredLine(const pieceT* board, colorT toMove)
 	Board search(board);
 	matches_[0] = -1;
 	matches_[STORED_LINES] = -1;
-	for (uint line = 1; line < STORED_LINES; line++) {
+	for (int line = 1; line < STORED_LINES; line++) {
 		Board b(START_BOARD);
 		const FullMove* end = Moves_[line +1];
 		for (int ply=0; ply < 99; ply++) {

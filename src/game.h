@@ -208,7 +208,6 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    std::pair<bool,bool> MakeHomePawnList(byte* pbPawnList);
     errorT DecodeVariation(ByteBuffer* buf, byte flags, uint level);
     errorT WritePGN(TextBuffer* tb);
 
@@ -453,7 +452,7 @@ public:
     inline bool ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm)
       { return ExactMatch (pos, buf, sm, GAME_EXACT_MATCH_Exact); }
 
-    errorT    Encode(std::vector<byte>& dest, IndexEntry& ie);
+    errorT    Encode(std::vector<byte>& dest, IndexEntry& ie) const;
     errorT    DecodeStart(ByteBuffer* buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode(ByteBuffer& buf);

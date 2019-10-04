@@ -22,7 +22,7 @@
 #include "fullmove.h"
 
 class StoredLine {
-	static const unsigned STORED_LINES = 255;
+	static constexpr int STORED_LINES = 255;
 	static const FullMove* Moves_[STORED_LINES + 1];
 
 	int8_t matches_[STORED_LINES + 1];
@@ -36,8 +36,21 @@ public:
 	//>=0: the game reach the searched position at the returned ply
 	int match(byte code) const { return matches_[code]; }
 
-	static uint count () { return STORED_LINES; }
-	static FullMove getMove (uint code, uint ply = 0) {
+	template <typename CompareOp> static byte classify(CompareOp comp) {
+		int res = 0;
+		std::ptrdiff_t longest = 0;
+		for (int i = 1; i < STORED_LINES; ++i) {
+			const auto begin = Moves_[i];
+			const auto end = Moves_[i + 1];
+			if (std::distance(begin, end) > longest && comp(begin, end)) {
+				res = i;
+				longest = std::distance(begin, end);
+			}
+		}
+		return static_cast<byte>(res);
+	}
+
+	static FullMove getMove (byte code, uint ply = 0) {
 		if ((code < STORED_LINES) && (Moves_[code] + ply) < Moves_[code +1]) {
 			return Moves_[code][ply];
 		}

@@ -111,7 +111,10 @@ public:
     ecoT      GetEcoCode() const { return ECOcode_; }
     bool      GetFlag(uint32_t mask) const { return (flags_ & mask) == mask; }
     const byte* GetHomePawnData() const { return HomePawnData; }
-    byte* GetHomePawnData() { return HomePawnData; }
+    void SetHomePawnData(byte hpCount, const byte hpVal[8]) {
+        HomePawnData[0] = hpCount; // First byte stores the count
+        std::copy_n(hpVal, 8, HomePawnData + 1);
+    }
 
     // set functions, assert that the value is not truncated.
     void SetOffset(uint64_t offset) {

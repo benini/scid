@@ -1036,68 +1036,6 @@ void Game::TruncateStart() {
 	FirstMove->setNext(CurrentMove);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::MakeHomePawnList():
-//    Is passed an array of 9 bytes and fills it with the game's
-//    home pawn delta information.
-//    This function also ensures that other information about the
-//    game that will be stored in the index file and used to speed
-//    up searches (material at end of game, etc) is up to date.
-std::pair<bool,bool> Game::MakeHomePawnList(byte* pbPawnList) {
-    ASSERT(pbPawnList != nullptr);
-    // We zero out the list first:
-    std::fill_n(pbPawnList, 9, 0);
-
-    uint count = 0;
-    uint halfByte = 0;
-    errorT err = OK;
-    uint hpOld = HPSIG_StdStart;    // All 16 pawns are on their home squares.
-    byte* pbList = pbPawnList +1;
-
-    NumHalfMoves = 0;
-    bool PromoFlag = false;
-    bool UnderPromosFlag = false;
-    MoveToPly(0);
-
-    while (err == OK) {
-        uint hpNew = CurrentPos->GetHPSig();
-        uint changed = hpOld - hpNew;
-        if (changed != 0 && !HasNonStandardStart()) {
-            // Find the idx of the moved pawn
-            uint changeValue = 0;
-            while (1) {
-                changed = changed >> 1;
-                if (changed == 0) break;
-                changeValue++;
-            }
-
-            // There are only 16 pawns, so we can store two pawn moves
-            // in every byte
-            if (halfByte == 0) {
-                *pbList = (changeValue << 4);  halfByte = 1;
-            } else {
-                *pbList |= (changeValue & 15);  pbList++;  halfByte = 0;
-            }
-            hpOld = hpNew;
-            count++;
-        }
-        if (CurrentMove->marker != END_MARKER) {
-            if (CurrentMove->moveData.promote != EMPTY) {
-                PromoFlag = true;
-                if (piece_Type(CurrentMove->moveData.promote) != QUEEN) {
-                    UnderPromosFlag = true;
-                }
-            }
-        }
-        err = MoveForward();
-        if (err == OK) { NumHalfMoves++; }
-    }
-    // First byte in pawnlist array stores the count:
-    pbPawnList[0] = (byte) count;
-
-    return {PromoFlag, UnderPromosFlag};
-}
-
 namespace {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // calcHomePawnMask():
@@ -3271,6 +3209,78 @@ static errorT decodeComments(SourceT& buf, MoveT* m) {
 	return OK;
 }
 
+/// Calculate the game's main line information:
+/// - home pawn delta information
+/// - promotions flags
+/// - number of half moves
+/// - final material signature
+/// - stored line code
+template <typename MoveT>
+std::pair<bool, bool> mainlineInfo(const Position* customStart,
+                                   const MoveT* firstMove, IndexEntry& dest) {
+	ushort nHalfMoves = 0;
+	bool PromoFlag = false;
+	bool UnderPromosFlag = false;
+	unsigned hpCount = 0;
+	byte hpVal[8] = {};
+	Position pos = customStart ? *customStart : Position::getStdStart();
+
+	auto hpOld = HPSIG_StdStart; // All 16 pawns are on their home squares.
+	for (auto move = firstMove; !move->endMarker(); move = move->next) {
+		++nHalfMoves;
+
+		if (move->moveData.promote != EMPTY) {
+			PromoFlag = true;
+			if (piece_Type(move->moveData.promote) != QUEEN) {
+				UnderPromosFlag = true;
+			}
+		}
+
+		pos.DoSimpleMove(move->moveData);
+		if (!customStart) {
+			const auto hpNew = pos.GetHPSig();
+			if (unsigned changed = hpOld - hpNew) {
+				hpOld = hpNew;
+				byte idxMovedPawn = 0; // __builtin_ctz(changed)
+				while (changed >>= 1) {
+					++idxMovedPawn;
+				}
+				assert(idxMovedPawn <= 0x0F);
+				if ((hpCount & 1) == 0) // There are only 16 pawns, so we can
+					idxMovedPawn <<= 4; // store two pawn moves in every byte
+				hpVal[hpCount++ / 2] |= idxMovedPawn;
+			}
+		}
+	}
+
+	byte storedCode = 0;
+	if (!customStart) {
+		storedCode = StoredLine::classify([&](auto begin, auto end) {
+			if (std::distance(begin, end) > nHalfMoves)
+				return false;
+
+			const moveT* gameMove = firstMove;
+			for (; begin != end; ++begin) {
+				if (gameMove->moveData.from != begin->getFrom() ||
+				    gameMove->moveData.to != begin->getTo())
+					return false;
+
+				gameMove = gameMove->next;
+			}
+			return true;
+		});
+	}
+
+	dest.SetHomePawnData(static_cast<byte>(hpCount), hpVal);
+	dest.SetPromotionsFlag(PromoFlag);
+	dest.SetUnderPromoFlag(UnderPromosFlag);
+	dest.SetNumHalfMoves(nHalfMoves);
+	dest.SetFinalMatSig(matsig_Make(pos.GetMaterial()));
+	dest.SetStoredLineCode(storedCode);
+
+	return {PromoFlag, UnderPromosFlag};
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::Encode(): Encode the game to a buffer for disk storage.
 //      If passed a NON-null IndexEntry pointer, it will fill in the
@@ -3282,27 +3292,8 @@ static errorT decodeComments(SourceT& buf, MoveT* m) {
 //       -  finalMatSig: the material signature of the final position.
 //       -  homePawnData: the home pawn change list.
 //
-errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) {
-    // Make the home pawn change list and update PromotionFlag:
-    byte homePawnList[9];
-    auto promoFlags = MakeHomePawnList(homePawnList);
-
-    // First, encode info not already stored in the index
-    // This will be the non-STR (non-"seven tag roster") PGN tags.
-    encodeTags(GetExtraTags(), dest);
-
-    // Encode the promotion flags and the start position
-    char FEN[256];
-    encodeStartBoard(promoFlags.first, promoFlags.second,
-                     HasNonStandardStart(FEN) ? FEN : nullptr, dest);
-
-    // Now the movelist:
-    uint varCount = 0;
-    uint nagCount = 0;
-    encodeVariation(&dest, FirstMove->next, &varCount, &nagCount, 0);
-
-    // Now do the comments
-    const auto commentCount = encodeComments(FirstMove, dest);
+errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
+    ie.clearFlags();
 
     // Set the fields in the IndexEntry:
     ie.SetDate(Date);
@@ -3313,48 +3304,32 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) {
     ie.SetBlackElo(BlackElo);
     ie.SetWhiteRatingType(WhiteRatingType);
     ie.SetBlackRatingType(BlackRatingType);
-
-    ie.clearFlags();
     ie.SetStartFlag(HasNonStandardStart());
+    ie.SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
+
+    const auto [promo, underPromo] = mainlineInfo(StartPos.get(),
+                                                  FirstMove->next, ie);
+
+    // First, encode info not already stored in the index
+    // This will be the non-STR (non-"seven tag roster") PGN tags.
+    encodeTags(GetExtraTags(), dest);
+
+    // Encode the promotion flags and the start position
+    char FEN[256];
+    encodeStartBoard(promo, underPromo,
+                     HasNonStandardStart(FEN) ? FEN : nullptr, dest);
+
+    // Now the movelist:
+    uint varCount = 0;
+    uint nagCount = 0;
+    encodeVariation(&dest, FirstMove->next, &varCount, &nagCount, 0);
+
+    // Now do the comments
+    const auto commentCount = encodeComments(FirstMove, dest);
+
     ie.SetCommentCount(commentCount);
     ie.SetVariationCount(varCount);
     ie.SetNagCount(nagCount);
-    ie.SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
-
-    std::copy_n(homePawnList, sizeof(homePawnList), ie.GetHomePawnData());
-    // Set other data updated by MakeHomePawnList():
-    ie.SetPromotionsFlag(promoFlags.first);
-    ie.SetUnderPromoFlag(promoFlags.second);
-    ie.SetNumHalfMoves(NumHalfMoves);
-    ASSERT(AtEnd());
-    ie.SetFinalMatSig(matsig_Make(CurrentPos->GetMaterial()));
-
-    // Find the longest matching stored line for this game:
-    uint storedLineCode = 0;
-    if (!HasNonStandardStart()) {
-        uint longestMatch = 0;
-        for (uint i = 1; i < StoredLine::count(); i++) {
-            moveT* gameMove = FirstMove->next;
-            uint matchLength = 0;
-            FullMove m = StoredLine::getMove(i, matchLength);
-            while (m) {
-                if (gameMove->marker == END_MARKER ||
-                    gameMove->moveData.from != m.getFrom() ||
-                    gameMove->moveData.to != m.getTo()) {
-                    matchLength = 0;
-                    break;
-                }
-                gameMove = gameMove->next;
-                m = StoredLine::getMove(i, ++matchLength);
-            }
-            if (matchLength > longestMatch) {
-                longestMatch = matchLength;
-                storedLineCode = i;
-            }
-        }
-    }
-    ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
-    ie.SetStoredLineCode(static_cast<byte>(storedLineCode));
 
     return OK;
 }

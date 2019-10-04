@@ -348,9 +348,8 @@ void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 	uint16_t NumHalfMoves = ReadOneByte();
 	uint16_t pawnData0 = ReadOneByte();
 	ie->SetNumHalfMoves(((pawnData0 & 0xC0) << 2) | NumHalfMoves);
-	byte* pb = ie->GetHomePawnData();
-	*pb++ = pawnData0 & 0x3F;
-	std::copy_n(buf_it, HPSIG_SIZE - 1, pb);
+	ie->SetHomePawnData(pawnData0 & 0x3F,
+	                    reinterpret_cast<const unsigned char*>(buf_it));
 }
 
 errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,

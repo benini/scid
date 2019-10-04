@@ -152,9 +152,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		entry.SetNagCount(static_cast<unsigned>(*it++));
 		entry.SetFinalMatSig(static_cast<matSigT>(*it++));
 		entry.SetStoredLineCode(static_cast<byte>(*it++));
-		for (int i = 0; i < 9; i++) {
-			entry.GetHomePawnData()[i] = (static_cast<byte>(*it++));
-		}
+		return it;
 	};
 
 	auto chkEntry = [](auto& entry, auto it, bool fullEDate = false) {
@@ -204,7 +202,10 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		Buffer ie_buf;
 		{ // Build the current IndexEntry and serialize it to ie_buf
 			IndexEntry ie;
-			setEntry(ie, v.cbegin());
+			auto it = setEntry(ie, v.cbegin());
+			byte hpBuf[8];
+			std::copy_n(it + 1, 8, hpBuf);
+			ie.SetHomePawnData(*it, hpBuf);
 			chkEntry(ie, v.cbegin(), true);
 			ie.Write(&ie_buf, 400);
 			ie_buf.ToStart();
@@ -214,7 +215,10 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 		{ // Build the v4_6::IndexEntry and serialize it to ie_buf_v4_6
 			v4_6::IndexEntry ie4_6;
 			ie4_6.Init();
-			setEntry(ie4_6, v.cbegin());
+			auto it = setEntry(ie4_6, v.cbegin());
+			for (int i = 0; i < 9; i++) {
+				ie4_6.GetHomePawnData()[i] = (static_cast<byte>(*it++));
+			}
 			chkEntry(ie4_6, v.cbegin());
 			ie4_6.Write(&ie_buf_v4_6, 400);
 			ie_buf_v4_6.ToStart();
