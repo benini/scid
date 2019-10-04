@@ -19,7 +19,7 @@
 #ifndef SCID_UI_TCLTK_H
 #define SCID_UI_TCLTK_H
 
-#include "timer.h"
+#include <chrono>
 #include <tcl.h>
 #include <sstream>
 #include <limits>
@@ -74,24 +74,24 @@ inline int Main (int argc, char* argv[], void (*exit) (void*)) {
 
 class tcl_Progress : public Progress::Impl {
 	UI_handle_t ti_;
-	Timer timer_;
+	using clock = std::chrono::high_resolution_clock;
+	decltype(clock::now()) timer_ = clock::now();
 
 public:
-	tcl_Progress(UI_handle_t ti) : ti_(ti) {}
-	virtual ~tcl_Progress() {}
+	explicit tcl_Progress(UI_handle_t ti) : ti_(ti) {}
 
-	virtual bool report(size_t done, size_t total, const char* msg) {
+	bool report(size_t done, size_t total, const char* msg) final {
 		ASSERT(done <= static_cast<size_t>(std::numeric_limits<int>::max()));
 		ASSERT(total <= static_cast<size_t>(std::numeric_limits<int>::max()));
 
-		uint64_t elapsed = timer_.MilliSecs();
-		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
+		const std::chrono::duration<double> elapsed = clock::now() - timer_;
+		const double estimated = (done) ? elapsed.count() * total / done : 0;
 		Tcl_Obj* tmp[5];
 		tmp[0] = Tcl_NewStringObj("::progressCallBack", -1);
 		tmp[1] = Tcl_NewIntObj(static_cast<int>(done));
 		tmp[2] = Tcl_NewIntObj(static_cast<int>(total));
-		tmp[3] = Tcl_NewIntObj(static_cast<int>(elapsed / 1000));
-		tmp[4] = Tcl_NewIntObj(static_cast<int>(estimated / 1000));
+		tmp[3] = Tcl_NewIntObj(static_cast<int>(elapsed.count()));
+		tmp[4] = Tcl_NewIntObj(static_cast<int>(estimated));
 		Tcl_Obj* cmd = Tcl_NewListObj(5, tmp);
 		if (msg != NULL)
 			Tcl_ListObjAppendElement(ti_, cmd, Tcl_NewStringObj(msg, -1));

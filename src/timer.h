@@ -21,27 +21,24 @@
 
 #include <chrono>
 class Timer {
-   decltype(std::chrono::system_clock::now()) start_;
+	decltype(std::chrono::high_resolution_clock::now()) start_;
+
 public:
-   Timer() { Reset(); }
-   void Reset() { start_ = std::chrono::system_clock::now(); }
-   long long MilliSecs (void) const {
-		auto t = std::chrono::system_clock::now();
-		return std::chrono::duration_cast<std::chrono::milliseconds>(t - start_).count();
-   }
-   long long CentiSecs () const { return MilliSecs() / 10; }
+	Timer() { Reset(); }
+
+	void Reset() { start_ = std::chrono::high_resolution_clock::now(); }
+
+	int MilliSecs() const {
+		using namespace std::chrono;
+		const auto t = high_resolution_clock::now() - start_;
+		return duration_cast<duration<int, std::milli>>(t).count();
+	}
+
+	int CentiSecs() const {
+		using namespace std::chrono;
+		const auto t = high_resolution_clock::now() - start_;
+		return duration_cast<duration<int, std::centi>>(t).count();
+	}
 };
-
-template <class S>
-auto operator<<(S& os, const Timer& timer) -> decltype(os) {
-   return os << timer.MilliSecs() << " milliseconds\n";
-}
-
-/* Usage:
-Timer t;
-//do some stuff
-std::cout << "Elapsed: " << t;
-*/
-
 
 #endif //SCID_TIMER_H
