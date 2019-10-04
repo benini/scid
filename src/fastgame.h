@@ -519,30 +519,53 @@ private:
 		cToMove_ = StartPos.GetToMove();
 	}
 
-	template <typename TResult, colorT toMove>
-	TResult DecodeNextMove() {
-		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER, ENCODE_END_GAME };
-		enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
+	/// Find the next move in the main line
+	template <typename IterT>
+	static IterT findNextMainLineMove(IterT it, const IterT end) {
+		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER,	ENCODE_END_GAME };
 
-		while (v_it_ < v_end_) {
-			byte b = *v_it_++;
-			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<TResult, toMove>(b);
-			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return {};
-			if (b == ENCODE_NAG) {v_it_++; continue; }
-			if (b == ENCODE_START_MARKER) {
-				int nestCount = 1;
-				do {
-					if (v_it_ >= v_end_) return {};
-					switch (*v_it_++) {
-					case ENCODE_NAG: v_it_++; break;
-					case ENCODE_START_MARKER: nestCount++; break;
-					case ENCODE_END_MARKER: nestCount--; break;
-					case ENCODE_END_GAME: return {};
-					}
-				} while (nestCount > 0);
+		int varDepth = 0;
+		for (; it != end; ++it) {
+			switch (*it) {
+			case ENCODE_NAG: // Ignore NAGS
+				if (++it == end) {
+					return end; // ERROR: missing ENCODE_END_GAME
+				}
+				continue;
+
+			case ENCODE_COMMENT: // Ignore comments
+				continue;
+
+			case ENCODE_START_MARKER:
+				++varDepth;
+				continue;
+
+			case ENCODE_END_MARKER:
+				if (varDepth == 0) {
+					return end; // ERROR: end marker in main line
+				}
+				--varDepth;
+				continue;
+
+			case ENCODE_END_GAME:
+				if (varDepth == 0 && ++it == end) {
+					return end; // SUCCESS: end of game
+				}
+				return end; // ERROR: unexpected end of game
 			}
+
+			if (varDepth == 0)
+				return it; // SUCCESS
 		}
-		return {};
+		return end; // ERROR: missing ENCODE_END_GAME
+	}
+
+	template <typename TResult, colorT toMove> TResult DecodeNextMove() {
+		v_it_ = findNextMainLineMove(v_it_, v_end_);
+		if (v_it_ == v_end_)
+			return {}; // End of game or error
+
+		return doPly<TResult, toMove>(*v_it_++);
 	}
 
 	template <typename TResult, colorT toMove> TResult doPly(byte v) {
