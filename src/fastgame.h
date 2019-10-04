@@ -417,6 +417,16 @@ public:
 		return {nullptr, nullptr}; // Error default to StdStart and empty buffer
 	}
 
+	template <typename FuncT> void mainLine(FuncT fn) {
+		while (const auto move = (cToMove_ == WHITE)
+		                             ? DecodeNextMove<FullMove, WHITE>()
+		                             : DecodeNextMove<FullMove, BLACK>()) {
+			cToMove_ = 1 - cToMove_;
+			if (!fn(move))
+				return;
+		}
+	}
+
 	FullMove getMove(int ply_to_skip) {
 		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
 			auto move = (cToMove_ == WHITE)

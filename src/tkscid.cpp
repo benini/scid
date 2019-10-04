@@ -600,15 +600,11 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Examine every filter game and track the selected pieces:
 
     Progress progress = UI_CreateProgress(ti);
-    uint filterCount = db->dbFilter->Count();
-    uint filterSeen = 0;
-
-    for (uint gnum = 0, n = db->numGames(); gnum < n; gnum++) {
-        // Skip over non-filter games:
-        if (!db->dbFilter->Get(gnum)) { continue; }
-
-        // Update progress bar:
-        if ((filterSeen++ % 1000) == 0) {
+    const auto filter = db->getFilter("dbfilter");
+    const size_t filterCount = filter->size();
+    size_t filterSeen = 0;
+    for (const auto gnum : filter) {
+        if (++filterSeen % 1024 == 0) {
             if (!progress.report(filterSeen, filterCount)) {
                 return UI_Result(ti, ERROR_UserCancel);
             }
@@ -629,42 +625,45 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         int ntrack = nTrackSquares;
         for (uint sq=0; sq < 64; sq++) { track[sq] = trackSquare[sq]; }
 
-        Game * g = scratchGame;
-        auto bbuf = db->getGame(*ie);
-        if (!bbuf) {
-            continue;
-        }
-        g->Clear();
-        if (g->DecodeStart (&bbuf) != OK) { continue; }
-
-        uint plyCount = 0;
-        simpleMoveT sm;
-
         // Process each game move until the maximum ply or end of
         // the game is reached:
+        uint plyCount = 0;
+        db->getGame(ie).mainLine([&](auto move) {
+            if (plyCount++ >= maxPly)
+                return false;
 
-        while (plyCount < maxPly) {
-            if (g->DecodeNextMove(&bbuf, &sm) != OK) { break; }
-            plyCount++;
-            squareT toSquare = sm.to;
-            squareT fromSquare = sm.from;
+            squareT toSquare = move.getTo();
+            squareT fromSquare = move.getFrom();
 
             // Special hack for castling:
-            if (piece_Type(sm.movingPiece) == KING) {
-                if (fromSquare == E1) {
-                    if (toSquare == G1  &&  track[H1]) {
-                        fromSquare = H1; toSquare = F1;
+            if (move.isCastle()) {
+                if (toSquare == H1) {
+                    if (track[H1]) {
+                        fromSquare = H1;
+                        toSquare = F1;
+                    } else {
+                        toSquare = G1;
                     }
-                    if (toSquare == C1  &&  track[A1]) {
-                        fromSquare = A1; toSquare = D1;
+                } else if (toSquare == A1) {
+                    if (track[A1]) {
+                        fromSquare = A1;
+                        toSquare = D1;
+                    } else {
+                        toSquare = C1;
                     }
-                }
-                if (fromSquare == E8) {
-                    if (toSquare == G8  &&  track[H8]) {
-                        fromSquare = H8; toSquare = F8;
+                } else if (toSquare == H8) {
+                    if (track[H8]) {
+                        fromSquare = H8;
+                        toSquare = F8;
+                    } else {
+                        toSquare = G8;
                     }
-                    if (toSquare == C8  &&  track[A8]) {
-                        fromSquare = A8; toSquare = D8;
+                } else if (toSquare == A8) {
+                    if (track[A8]) {
+                        fromSquare = A8;
+                        toSquare = D8;
+                    } else {
+                        toSquare = C8;
                     }
                 }
             }
@@ -675,7 +674,8 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 // A tracked piece has been captured:
                 track[toSquare] = false;
                 ntrack--;
-                if (ntrack <= 0) { break; }
+                if (ntrack <= 0)
+                    return false;
 
             } else if (track[fromSquare]) {
                 // A tracked piece is moving:
@@ -704,11 +704,14 @@ sc_base_piecetrack (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                         nleft--;
                         // We can stop early when all tracked
                         // squares have been found:
-                        if (nleft <= 0) { break; }
+                        if (nleft <= 0)
+                            return false;
                     }
                 }
             }
-        } // while (plyCount < maxPly)
+
+            return true;
+        }); // while (plyCount < maxPly)
     } // foreach game
 
     progress.report(1, 1);
