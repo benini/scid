@@ -81,6 +81,7 @@ private:
     } Header;
 
     friend class CodecSCID4;
+    friend class CodecMemory;
 
 public:
     Index()  { Init(); }

@@ -96,7 +96,7 @@ public: // CodecNative CRTP
 
 		auto offset = v_.size();
 		auto capacity = v_.capacity();
-		if (capacity - offset < length) // Do not fit in the current chunk
+		if (capacity - offset < length) // Doesn't fit in the current chunk
 			offset = capacity;
 		if (offset >= LIMIT_GAMEOFFSET)
 			return std::make_pair(ERROR_OffsetLimit, 0);
@@ -126,11 +126,13 @@ public: // CodecNative CRTP
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_addIndexEntry(const IndexEntry& ie) {
-		auto nGames = idx_->GetNumGames();
+		const auto nGames = idx_->GetNumGames();
 		if (nGames >= LIMIT_NUMGAMES)
 			return ERROR_NumGamesLimit;
 
-		return idx_->WriteEntry(&ie, nGames);
+		idx_->entries_.push_back(ie);
+		idx_->Header.numGames++;
+		return OK;
 	}
 
 	/**
@@ -140,7 +142,9 @@ public: // CodecNative CRTP
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
-		return idx_->WriteEntry(&ie, replaced);
+		assert(replaced < idx_->GetNumGames());
+		idx_->entries_[replaced] = ie;
+		return OK;
 	}
 };
 
