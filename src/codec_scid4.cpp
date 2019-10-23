@@ -473,14 +473,14 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 		if (idxFile->sgetn(buf, nBytes) != nBytes)
 			return ERROR_FileRead;
 
-		IndexEntry* ie = idx_->FetchEntry(gNum);
-		decodeIndexEntry(buf, version, ie);
+		IndexEntry& ie = idx_->entries_[gNum];
+		decodeIndexEntry(buf, version, &ie);
 
-		if (!validateNameIDs(ie))
+		if (!validateNameIDs(&ie))
 			return ERROR_CorruptData;
 
-		nb_->AddElo(ie->GetWhite(), ie->GetWhiteElo());
-		nb_->AddElo(ie->GetBlack(), ie->GetBlackElo());
+		nb_->AddElo(ie.GetWhite(), ie.GetWhiteElo());
+		nb_->AddElo(ie.GetBlack(), ie.GetBlackElo());
 	}
 	progress.report(1, 1);
 

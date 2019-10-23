@@ -188,26 +188,6 @@ public:
     }
 
     /**
-     * FetchEntry() - return a modifiable pointer to a game's IndexEntry
-     *
-     * The pointer returned by this function allow to modify the IndexEntry
-     * informations of a game. If modified, the IndexEntry object must be
-     * passed to WriteEntry() to write the changes to the disks.
-     * This functions is very error prone. For example:
-     * IndexEntry* ie = FetchEntry(0);
-     * ie->SetWhiteName(nb, "New player with white");
-     * oops(); // the function oops() may call GetEntry(0) and get a messy object.
-     * ie->SetBlackName(nb, "New player with black");
-     *
-     * A safer alternative is to create a temporary copy of the IndexEntry object
-     * returned by GetEntry() and then write all the changes in a single step
-     */
-    IndexEntry* FetchEntry (gamenumT g) {
-        ASSERT(g < GetNumGames());
-        return &(entries_[g]);
-    }
-
-    /**
      * WriteEntry() - modify a game in the Index
      */
     errorT WriteEntry(const IndexEntry* ie, gamenumT idx);
