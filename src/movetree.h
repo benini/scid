@@ -72,7 +72,7 @@ struct moveT {
 	std::string comment;
 
 	void clear() {
-		moveData.clear();
+		moveData = simpleMoveT();
 		prev = nullptr;
 		next = nullptr;
 		varChild = nullptr;

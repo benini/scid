@@ -234,10 +234,10 @@ class make_simpleMoveT {
 	simpleMoveT sm_;
 
 public:
-	make_simpleMoveT() { sm_.clear(); }
+	make_simpleMoveT() { sm_ = simpleMoveT(); }
 
 	make_simpleMoveT(colorT c, squareT from, squareT to, pieceT pt) {
-		sm_.clear();
+		sm_ = simpleMoveT();
 		sm_.movingPiece = piece_Make(c, pt);
 		sm_.from = from;
 		sm_.to = to;

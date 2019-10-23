@@ -18,8 +18,6 @@
 #define SCID_MOVELIST_H
 
 #include "common.h"
-#include <cstring>
-#include <iterator>
 
 //////////////////////////////////////////////////////////////////////
 //  MoveList:  Constants
@@ -69,10 +67,6 @@ struct simpleMoveT
 	bool operator<(const simpleMoveT& b) const {
 		// Highest score first
 		return score > b.score;
-	}
-
-	void clear() {
-		std::memset(this, 0, sizeof *this);
 	}
 };
 
