@@ -470,7 +470,7 @@ template <typename TInitFunc, typename TMapFunc>
 std::pair<errorT, size_t>
 scidBaseT::transformNames(nameT nt, HFilter hfilter, const Progress& progress,
                           const std::vector<std::string>& newNames,
-                          TInitFunc initFunc, TMapFunc getID) {
+                          TInitFunc initFunc, TMapFunc getNewID) {
 	beginTransaction();
 
 	std::vector<idNumberT> nameIDs(newNames.size());
@@ -486,43 +486,46 @@ scidBaseT::transformNames(nameT nt, HFilter hfilter, const Progress& progress,
 
 	initFunc(nameIDs);
 
-	auto fnGet = [](nameT nt, const IndexEntry& ie) {
-		switch (nt) { // clang-format off
-		case NAME_PLAYER: return ie.GetWhite();
-		case NAME_EVENT:  return ie.GetEvent();
-		case NAME_SITE:   return ie.GetSite();
-		} // clang-format on
-		ASSERT(nt == NAME_ROUND);
-		return ie.GetRound();
-	};
-	auto fnSet = [](nameT nt, IndexEntry& ie, idNumberT newID) {
-		switch (nt) { // clang-format off
-		case NAME_PLAYER: return ie.SetWhite(newID);
-		case NAME_EVENT:  return ie.SetEvent(newID);
-		case NAME_SITE:   return ie.SetSite(newID);
-		} // clang-format on
-		ASSERT(nt == NAME_ROUND);
-		return ie.SetRound(newID);
-	};
 	auto res = transformIndex_(hfilter, progress, [&](IndexEntry& ie) {
 		const IndexEntry& ie_const = ie;
-		auto oldID = fnGet(nt, ie);
-		auto newID = getID(oldID, ie_const);
-		bool b1 = (oldID != newID);
-		idNumberT newBlack = 0;
-		bool b2 = (nt == NAME_PLAYER);
-		if (b2) {
-			auto oldBlack = ie.GetBlack();
-			newBlack = getID(oldBlack, ie_const);
-			b2 = (oldBlack != newBlack);
+		idNumberT oldID;
+		idNumberT oldBlackID = 0;
+		idNumberT newBlackID = 0;
+		switch (nt) {
+		case NAME_PLAYER:
+			oldID = ie_const.GetWhite();
+			oldBlackID = ie_const.GetBlack();
+			newBlackID = getNewID(oldBlackID, ie_const);
+			break;
+		case NAME_EVENT:
+			oldID = ie_const.GetEvent();
+			break;
+		case NAME_SITE:
+			oldID = ie_const.GetSite();
+			break;
+		default:
+			ASSERT(nt == NAME_ROUND);
+			oldID = ie_const.GetRound();
 		}
-		if (!b1 && !b2)
+		const auto newID = getNewID(oldID, ie_const);
+		if (oldID == newID && oldBlackID == newBlackID)
 			return false;
 
-		if (b1)
-			fnSet(nt, ie, newID);
-		if (b2)
-			ie.SetBlack(newBlack);
+		switch (nt) {
+		case NAME_PLAYER:
+			ie.SetWhite(newID);
+			ie.SetBlack(newBlackID);
+			break;
+		case NAME_EVENT:
+			ie.SetEvent(newID);
+			break;
+		case NAME_SITE:
+			ie.SetSite(newID);
+			break;
+		default:
+			ASSERT(nt == NAME_ROUND);
+			ie.SetRound(newID);
+		}
 		return true;
 	});
 
