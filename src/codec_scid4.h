@@ -57,42 +57,52 @@ public: // ICodecDatabase interface
 	std::vector<std::pair<const char*, std::string>>
 	getExtraInfo() const final {
 		std::vector<std::pair<const char*, std::string>> res;
-		res.emplace_back("type", std::to_string(idx_->GetType()));
-		res.emplace_back("description", idx_->GetDescription());
-		res.emplace_back("autoload", std::to_string(idx_->GetAutoLoad()));
-		res.emplace_back("flag1",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM1));
-		res.emplace_back("flag2",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM2));
-		res.emplace_back("flag3",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM3));
-		res.emplace_back("flag4",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM4));
-		res.emplace_back("flag5",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM5));
-		res.emplace_back("flag6",
-		                 idx_->GetCustomFlagDesc(IndexEntry::IDX_FLAG_CUSTOM6));
+		res.emplace_back("type", std::to_string(idx_->Header.baseType));
+		res.emplace_back("description", idx_->Header.description);
+		const auto autoload = std::min(idx_->Header.autoLoad,
+		                               idx_->GetNumGames());
+		res.emplace_back("autoload", std::to_string(autoload));
+		res.emplace_back("flag1", idx_->Header.customFlagDesc[0]);
+		res.emplace_back("flag2", idx_->Header.customFlagDesc[1]);
+		res.emplace_back("flag3", idx_->Header.customFlagDesc[2]);
+		res.emplace_back("flag4", idx_->Header.customFlagDesc[3]);
+		res.emplace_back("flag5", idx_->Header.customFlagDesc[4]);
+		res.emplace_back("flag6", idx_->Header.customFlagDesc[5]);
 		return res;
 	}
 
 	errorT setExtraInfo(const char* tagname, const char* new_value) override {
-		if (std::strcmp(tagname, "type") == 0)
-			return idx_->SetType(strGetUnsigned(new_value));
+		if (idx_->fileMode_ == FMODE_ReadOnly)
+			return ERROR_FileMode;
 
-		if (std::strcmp(tagname, "description") == 0)
-			return idx_->SetDescription(new_value);
+		if (std::strcmp(tagname, "type") == 0) {
+			idx_->Header.baseType = strGetUnsigned(new_value);
 
-		if (std::strcmp(tagname, "autoload") == 0)
-			return idx_->SetAutoLoad(strGetUnsigned(new_value));
+		} else if (std::strcmp(tagname, "description") == 0) {
+			strncpy(idx_->Header.description, new_value, SCID_DESC_LENGTH);
+			idx_->Header.description[SCID_DESC_LENGTH] = 0;
 
-		auto len = std::strlen(tagname);
-		if (len == 5 && std::equal(tagname, tagname + 4, "flag")) {
-			uint flagType = IndexEntry::CharToFlag(tagname[4]);
-			if (flagType != 0 && idx_->GetCustomFlagDesc(flagType) != nullptr)
-				return idx_->SetCustomFlagDesc(flagType, new_value);
+		} else if (std::strcmp(tagname, "autoload") == 0) {
+			idx_->Header.autoLoad = strGetUnsigned(new_value);
+
+		} else {
+			auto len = std::strlen(tagname);
+			if (len != 5 || !std::equal(tagname, tagname + 4, "flag"))
+				return ERROR_CodecUnsupFeat;
+
+			uint flag = IndexEntry::CharToFlag(tagname[4]);
+			if (flag < IndexEntry::IDX_FLAG_CUSTOM1 ||
+			    flag > IndexEntry::IDX_FLAG_CUSTOM6)
+				return ERROR_CodecUnsupFeat;
+
+			const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
+			char* dest = idx_->Header.customFlagDesc[idx];
+			strncpy(dest, new_value, CUSTOM_FLAG_DESC_LENGTH);
+			dest[CUSTOM_FLAG_DESC_LENGTH] = 0;
 		}
 
-		return ERROR_CodecUnsupFeat;
+		idx_->Header.dirty_ = true;
+		return OK;
 	}
 
 	const byte* getGameData(uint64_t offset, uint32_t length) final {

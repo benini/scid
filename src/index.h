@@ -135,48 +135,7 @@ public:
      * Header getter functions
      */
     gamenumT    GetNumGames ()    const { return Header.numGames; }
-    uint        GetType ()        const { return Header.baseType; }
     versionT    GetVersion ()     const { return Header.version; }
-    const char* GetDescription () const { return Header.description; }
-    const char* GetCustomFlagDesc (byte c) const {
-        if (c < IndexEntry::IDX_FLAG_CUSTOM1 || c > IndexEntry::IDX_FLAG_CUSTOM6) return 0;
-        return Header.customFlagDesc[c - IndexEntry::IDX_FLAG_CUSTOM1];
-    }
-    gamenumT GetAutoLoad () const {
-        return (Header.autoLoad <= Header.numGames) ? Header.autoLoad : Header.numGames;
-    }
-
-    /**
-     * Header setter functions
-     */
-    errorT SetType (uint t) {
-        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        Header.baseType = t;
-        Header.dirty_ = true;
-        return OK;
-    }
-    errorT SetDescription (const char* str) {
-        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        strncpy(Header.description, str, SCID_DESC_LENGTH);
-        Header.description[SCID_DESC_LENGTH] = 0;
-        Header.dirty_ = true;
-        return OK;
-    }
-    errorT SetCustomFlagDesc (byte c, const char* str) {
-        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        if (c < IndexEntry::IDX_FLAG_CUSTOM1 || c > IndexEntry::IDX_FLAG_CUSTOM6) return ERROR_BadArg;
-        char* flagDesc = Header.customFlagDesc[c - IndexEntry::IDX_FLAG_CUSTOM1];
-        strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
-        flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
-        Header.dirty_ = true;
-        return OK;
-    }
-    errorT SetAutoLoad (gamenumT gnum) {
-        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        Header.autoLoad = gnum;
-        Header.dirty_ = true;
-        return OK;
-    }
 
     /**
      * WriteEntry() - modify a game in the Index

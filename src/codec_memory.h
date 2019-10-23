@@ -52,7 +52,7 @@ public: // ICodecDatabase interface
 	std::vector<std::pair<const char*, std::string>>
 	getExtraInfo() const override {
 		std::vector<std::pair<const char*, std::string>> res;
-		res.emplace_back("type", std::to_string(idx_->GetType()));
+		res.emplace_back("type", std::to_string(idx_->Header.baseType));
 		return res;
 	}
 
