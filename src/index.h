@@ -149,15 +149,6 @@ public:
     /**
      * Header setter functions
      */
-    errorT copyHeaderInfo(const Index& src) {
-        if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
-        Header.baseType = src.Header.baseType;
-        Header.autoLoad = src.Header.autoLoad;
-        std::memcpy(Header.description, src.Header.description, sizeof Header.description);
-        std::memcpy(Header.customFlagDesc, src.Header.customFlagDesc, sizeof Header.customFlagDesc);
-        Header.dirty_ = true;
-        return flush();
-    }
     errorT SetType (uint t) {
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         Header.baseType = t;

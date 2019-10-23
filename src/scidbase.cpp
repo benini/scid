@@ -573,13 +573,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	errorT err_Create = tmp.Open(dbtype, FMODE_Create, tmpfile.c_str());
 	if (err_Create != OK) return err_Create;
 
-	//2) Copy the Index Header
-	tmp.beginTransaction();
-	tmp.idx->copyHeaderInfo(*idx);
-	gamenumT autoloadOld = idx->GetAutoLoad();
-	gamenumT autoloadNew = 1;
-
-	//3) Create the list of games to be copied
+	//2) Create the list of games to be copied
 	std::vector< std::pair<uint64_t, gamenumT> > sort;
 	uint n_deleted = 0;
 	for (gamenumT i = 0, n = numGames(); i < n; i++) {
@@ -599,6 +593,27 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 	std::stable_sort(sort.begin(), sort.end());
 
+	//3) Copy the Index Header
+	tmp.beginTransaction();
+	auto extraInfo = getExtraInfo();
+	errorT err_Header = OK;
+	for (auto& pair : extraInfo) {
+		if (std::strcmp(pair.first, "autoload") == 0) {
+			gamenumT autoloadOld = strGetUnsigned(pair.second.c_str());
+			size_t autoloadNew = 1;
+			for (size_t i = 0, n = sort.size(); i < n; ++i) {
+				if (sort[i].second + 1 == autoloadOld) {
+					autoloadNew = i + 1;
+					break;
+				}
+			}
+			pair.second = std::to_string(autoloadNew);
+		}
+		err_Header = tmp.codec_->setExtraInfo(pair.first, pair.second.c_str());
+		if (err_Header != OK)
+			break;
+	}
+
 	//4) Copy the games
 	uint iProgress = 0;
 	bool err_UserCancel = false;
@@ -607,8 +622,6 @@ errorT scidBaseT::compact(const Progress& progress) {
 		err_AddGame = tmp.importGameHelper(this, it->second);
 		if (err_AddGame != OK) break;
 
-		gamenumT oldGnum = it->second + 1;
-		if (oldGnum == autoloadOld) autoloadNew = tmp.numGames();
 		//TODO:
 		//- update bookmarks game number
 		//  (*it).second   == old game number
@@ -622,24 +635,26 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	//5) Finalize the new database
-	tmp.idx->SetAutoLoad(autoloadNew);
 	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
 	errorT err_NbWrite = tmp.endTransaction();
 	errorT err_Close = tmp.Close();
 	if (err_Close == OK) err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
 	//6) Error: cleanup and report
-	if (err_NbWrite != OK || err_Close != OK || err_UserCancel || err_AddGame != OK) {
+	if (err_Header != OK || err_AddGame != OK || err_UserCancel ||
+	    err_NbWrite != OK || err_Close != OK) {
 		for (size_t i = 0, n = tmp_filenames.size(); i < n; i++) {
 			std::remove(tmp_filenames[i].c_str());
 		}
+		if (err_Header != OK)
+			return err_Header;
 		if (err_AddGame != OK)
 			return err_AddGame;
 		if (err_UserCancel)
 			return ERROR_UserCancel;
 		if (err_NbWrite != OK)
 			return err_NbWrite;
-		ASSERT(err_Close != OK);
+
 		return err_Close;
 	}
 
