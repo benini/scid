@@ -82,6 +82,11 @@ public:
 	getExtraInfo() const = 0;
 
 	/**
+	 * Store an extra information about the database (type, description, etc..)
+	 */
+	virtual errorT setExtraInfo(const char* tagname, const char* new_value) = 0;
+
+	/**
 	 * Fetches the data of a game (excluding index info), encoded in native
 	 * format.
 	 * @param offset: offset of the requested game.

@@ -162,14 +162,14 @@ public:
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         Header.baseType = t;
         Header.dirty_ = true;
-        return flush();
+        return OK;
     }
     errorT SetDescription (const char* str) {
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         strncpy(Header.description, str, SCID_DESC_LENGTH);
         Header.description[SCID_DESC_LENGTH] = 0;
         Header.dirty_ = true;
-        return flush();
+        return OK;
     }
     errorT SetCustomFlagDesc (byte c, const char* str) {
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
@@ -178,13 +178,13 @@ public:
         strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
         flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
         Header.dirty_ = true;
-        return flush();
+        return OK;
     }
     errorT SetAutoLoad (gamenumT gnum) {
         if (fileMode_ == FMODE_ReadOnly) return ERROR_FileMode;
         Header.autoLoad = gnum;
         Header.dirty_ = true;
-        return flush();
+        return OK;
     }
 
     /**

@@ -107,26 +107,8 @@ struct scidBaseT {
 
 	/// Store an extra information about the database (type, description, etc..)
 	errorT setExtraInfo(const char* tagname, const char* new_value) {
-		// TODO: move the code to CodecMemory and CodecSCID4
-		if (std::strcmp(tagname, "type") == 0)
-			return idx->SetType(strGetUnsigned(new_value));
-
-		if (codec_->getType() == ICodecDatabase::SCID4) {
-			if (std::strcmp(tagname, "description") == 0)
-				return idx->SetDescription(new_value);
-
-			if (std::strcmp(tagname, "autoload") == 0)
-				return idx->SetAutoLoad(strGetUnsigned(new_value));
-
-			auto len = std::strlen(tagname);
-			if (len == 5 && std::equal(tagname, tagname + 4, "flag")) {
-				uint flagType = IndexEntry::CharToFlag(tagname[4]);
-				if (flagType != 0 &&
-				    idx->GetCustomFlagDesc(flagType) != nullptr)
-					return idx->SetCustomFlagDesc(flagType, new_value);
-			}
-		}
-		return ERROR_CodecUnsupFeat;
+		const auto res = codec_->setExtraInfo(tagname, new_value);
+		return (res != OK) ? res : codec_->flush();
 	}
 
 	const IndexEntry* getIndexEntry(gamenumT g) const {

@@ -56,6 +56,14 @@ public: // ICodecDatabase interface
 		return res;
 	}
 
+	errorT setExtraInfo(const char* tagname, const char* new_value) override {
+		if (std::strcmp(tagname, "type") == 0) {
+			idx_->Header.baseType = strGetUnsigned(new_value);
+			return OK;
+		}
+		return ERROR_CodecUnsupFeat;
+	}
+
 	const byte* getGameData(uint64_t offset, uint32_t length) override {
 		ASSERT(offset < v_.size());
 		ASSERT(length <= v_.size() - offset);

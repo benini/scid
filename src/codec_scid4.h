@@ -75,6 +75,26 @@ public: // ICodecDatabase interface
 		return res;
 	}
 
+	errorT setExtraInfo(const char* tagname, const char* new_value) override {
+		if (std::strcmp(tagname, "type") == 0)
+			return idx_->SetType(strGetUnsigned(new_value));
+
+		if (std::strcmp(tagname, "description") == 0)
+			return idx_->SetDescription(new_value);
+
+		if (std::strcmp(tagname, "autoload") == 0)
+			return idx_->SetAutoLoad(strGetUnsigned(new_value));
+
+		auto len = std::strlen(tagname);
+		if (len == 5 && std::equal(tagname, tagname + 4, "flag")) {
+			uint flagType = IndexEntry::CharToFlag(tagname[4]);
+			if (flagType != 0 && idx_->GetCustomFlagDesc(flagType) != nullptr)
+				return idx_->SetCustomFlagDesc(flagType, new_value);
+		}
+
+		return ERROR_CodecUnsupFeat;
+	}
+
 	const byte* getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())
 			return NULL;
