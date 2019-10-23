@@ -907,7 +907,7 @@ UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** a
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-uint sc_base_duplicates (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_duplicates  (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
 
 
 UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
@@ -980,8 +980,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 		return sc_base_copygames(dbase, ti, argc, argv);
 
 	case BASE_DUPLICATES:
-		if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
-		return UI_Result(ti, OK, sc_base_duplicates (dbase, ti, argc, argv));
+		return sc_base_duplicates(dbase, ti, argc, argv);
 
 	case BASE_EXTRA:
 		return sc_base_extra(dbase, ti, argc, argv);

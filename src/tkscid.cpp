@@ -822,9 +822,8 @@ checkDuplicate (scidBaseT * base,
     return true;
 }
 
-uint
-sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** argv)
-{
+UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
+                            const char** argv) {
     dupCriteriaT criteria;
     criteria.exactNames  = false;
     criteria.sameColors  = true;
@@ -888,6 +887,8 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
             case OPT_SETFILTER:   setFilterToDups = b;       break;
             case OPT_USEFILTER:   onlyFilterGames = b;       break;
             case OPT_DELETE:
+                if (dbase->isReadOnly())
+                    return UI_Result(ti, ERROR_FileReadOnly);
                 if (strIsCasePrefix (valueStr, "shorter")) {
                     deleteStrategy = DELETE_SHORTER;
                 } else if (strIsCasePrefix (valueStr, "older")) {
@@ -895,19 +896,22 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
                 } else if (strIsCasePrefix (valueStr, "newer")) {
                     deleteStrategy = DELETE_NEWER;
                 } else {
-                    return errorResult (ti, "Invalid option.");
+                    return UI_Result(ti, ERROR_BadArg, "Invalid option.");
                 }
                 break;
             default:
-                return InvalidCommand (ti, "sc_base duplicates", options);
+                return UI_Result(ti, ERROR_BadArg, "Invalid option.");
         }
     }
-    uint deletedCount = 0;
     const gamenumT numGames = dbase->numGames();
 
+    Filter tmp_filter(numGames);
+    HFilter filter = setFilterToDups ? dbase->getFilter("dbfilter")
+                                     : HFilter(&tmp_filter);
+    filter.clear();
+
     // Setup duplicates array:
-    uint* duplicates = new uint [numGames];
-    std::fill(duplicates, duplicates + numGames, 0);
+    uint* duplicates = new uint[numGames]{};
 
     // We use a hashtable to limit duplicate game comparisons; each game
     // is only compared to others that hash to the same value.
@@ -939,91 +943,66 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
     hash.resize(n_hash);
     std::sort(hash.begin(), hash.end());
 
-    if (setFilterToDups) { dbase->dbFilter->Fill (0); }
     Progress progress = UI_CreateProgress(ti);
-
-    dbase->beginTransaction();
-
     // Now check same-hash games for duplicates:
     for (size_t i=0; i < n_hash; i++) {
         if ((i % 1024) == 0) {
             if (!progress.report(i, numGames)) break;
         }
-        gNumListT* head = &(hash[i]);
-        IndexEntry* ieHead = dbase->idx->FetchEntry (head->gNumber);
+        const gNumListT& head = hash[i];
+        const IndexEntry* ieHead = dbase->getIndexEntry(head.gNumber);
 
         for (size_t comp=i+1; comp < n_hash; comp++) {
-            gNumListT* compare = &(hash[comp]);
-            if (compare->hash != head->hash) break;
+            const gNumListT& compare = hash[comp];
+            if (compare.hash != head.hash) break;
 
-            IndexEntry * ieComp = dbase->idx->FetchEntry (compare->gNumber);
+            const IndexEntry* ieComp = dbase->getIndexEntry(compare.gNumber);
 
-            if (checkDuplicate (dbase, ieHead, ieComp, &criteria)) {
-                    duplicates[head->gNumber] = compare->gNumber + 1;
-                    duplicates[compare->gNumber] = head->gNumber + 1;
+            if (checkDuplicate(dbase, ieHead, ieComp, &criteria)) {
+                duplicates[head.gNumber] = compare.gNumber + 1;
+                duplicates[compare.gNumber] = head.gNumber + 1;
 
-                    // Found a duplicate! Decide which one to delete:
+                auto isImmune = [&](const IndexEntry* ie) {
+                    if (keepAllCommentedGames && ie->GetCommentsFlag())
+                        return true;
+                    return keepAllGamesWithVars && ie->GetVariationsFlag();
+                };
 
-                    bool headImmune = false;
-                    bool compImmune = false;
-                    bool doDeletion = false;
-                    gamenumT gnumKeep, gnumDelete;
-                    IndexEntry * ieDelete, * ieKeep;
+                // Decide which game should get deleted:
+                bool deleteHead = false;
+                if (deleteStrategy == DELETE_OLDER) {
+                    deleteHead = (head.gNumber < compare.gNumber);
+                } else if (deleteStrategy == DELETE_NEWER) {
+                    deleteHead = (head.gNumber > compare.gNumber);
+                } else {
+                    ASSERT(deleteStrategy == DELETE_SHORTER);
+                    uint a = ieHead->GetNumHalfMoves();
+                    uint b = ieComp->GetNumHalfMoves();
+                    deleteHead = (a <= b);
+                    if (a == b && isImmune(ieHead))
+                        deleteHead = false;
+                }
 
-                    if (keepAllCommentedGames) {
-                        if (ieHead->GetCommentsFlag()) { headImmune = true; }
-                        if (ieComp->GetCommentsFlag()) { compImmune = true; }
-                    }
-                    if (keepAllGamesWithVars) {
-                        if (ieHead->GetVariationsFlag()) { headImmune = true; }
-                        if (ieComp->GetVariationsFlag()) { compImmune = true; }
-                    }
-
-                    // Decide which game should get deleted:
-                    bool deleteHead = false;
-                    if (deleteStrategy == DELETE_OLDER) {
-                        deleteHead = (head->gNumber < compare->gNumber);
-                    } else if (deleteStrategy == DELETE_NEWER) {
-                        deleteHead = (head->gNumber > compare->gNumber);
-                    } else {
-                        ASSERT (deleteStrategy == DELETE_SHORTER);
-                        uint a = ieHead->GetNumHalfMoves();
-                        uint b = ieComp->GetNumHalfMoves();
-                        deleteHead = (a <= b);
-                        if (a == b && headImmune) deleteHead = false;
-                    }
-
-                    if (deleteHead) {
-                        ieDelete = ieHead;
-                        ieKeep = ieComp;
-                        gnumDelete = head->gNumber;
-                        gnumKeep = compare->gNumber;
-                        doDeletion = ! headImmune;
-                    } else {
-                        ieDelete = ieComp;
-                        ieKeep = ieHead;
-                        gnumDelete = compare->gNumber;
-                        gnumKeep = head->gNumber;
-                        doDeletion = ! compImmune;
-                    }
-                    // Delete whichever game is to be deleted:
-                    if (doDeletion) {
-                        deletedCount++;
-                        ieDelete->SetDeleteFlag (true);
-                        dbase->idx->WriteEntry (ieDelete, gnumDelete);
-                        if (setFilterToDups) {
-                            dbase->dbFilter->Set (gnumDelete, 1);
-                        }
-                    }
+                gamenumT gnumDelete = compare.gNumber;
+                const IndexEntry* ieDelete = ieComp;
+                if (deleteHead) {
+                    gnumDelete = head.gNumber;
+                    ieDelete = ieHead;
+                }
+                // Delete whichever game is to be deleted:
+                if (!isImmune(ieDelete)) {
+                    filter->set(gnumDelete, 1);
+                }
             }
         }
     }
-
-    dbase->endTransaction();
+    auto[err, nDel] = dbase->transformIndex(filter, {}, [](IndexEntry& ie) {
+        ie.SetDeleteFlag(true);
+        return true;
+    });
     dbase->setDuplicates(duplicates);
-    progress.report(1,1);
-
-    return deletedCount;
+    progress.report(1, 1);
+    return (err == OK) ? UI_Result(ti, OK, nDel) : UI_Result(ti, err);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
