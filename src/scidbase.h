@@ -182,9 +182,9 @@ struct scidBaseT {
 		return idx->GetEntry(gNum)->GetFlag (flag);
 	}
 	errorT setFlag(bool value, uint flag, uint gNum);
-	errorT setFlag(bool value, uint flag, const HFilter& filter);
+	errorT setFlags(bool value, uint flag, const HFilter& filter);
 	errorT invertFlag(uint flag, uint gNum);
-	errorT invertFlag(uint flag, const HFilter& filter);
+	errorT invertFlags(uint flag, const HFilter& filter);
 
 	/**
 	 * A Filter is a selection of games, usually obtained searching the
@@ -429,42 +429,6 @@ inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
 		nexp++;
 	}
 }
-
-inline errorT scidBaseT::invertFlag(uint flag, uint gNum) {
-	return setFlag(! getFlag(flag, gNum), flag, gNum);
-}
-
-inline errorT scidBaseT::invertFlag(uint flag, const HFilter& filter) {
-	errorT res = OK;
-	for (gamenumT i = 0, n = numGames(); i < n; i++) {
-		if (filter != 0 && filter->get(i) == 0) continue;
-		res = invertFlag(flag, i);
-		if (res != OK) return res;
-	}
-	return res;
-}
-
-inline errorT scidBaseT::setFlag(bool value, uint flag, uint gNum){
-	ASSERT(gNum < idx->GetNumGames());
-	IndexEntry* ie = idx->FetchEntry (gNum);
-	ie->SetFlag (flag, value);
-	errorT res = idx->WriteEntry(ie, gNum);
-	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
-	// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
-	// idx->IndexUpdated(gNum);
-	return res;
-}
-
-inline errorT scidBaseT::setFlag(bool value, uint flag, const HFilter& filter) {
-	errorT res = OK;
-	for (gamenumT gNum = 0, n = numGames(); gNum < n; gNum++) {
-		if (filter != 0 && filter->get(gNum) == 0) continue;
-		res = setFlag(value, flag, gNum);
-		if (res != OK) return res;
-	}
-	return res;
-}
-
 
 template <typename TInitFunc, typename TMapFunc>
 std::pair<errorT, size_t>

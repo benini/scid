@@ -243,14 +243,15 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 		cmd = 4;
 	uint flagType = IndexEntry::CharToFlagMask(argv[5][0]);
 	if (flagType != 0 && cmd != 0) {
-		bool value = (cmd == 2);
-
-		const HFilter filter = dbase->getFilter(argv[3]);
-		if (filter != 0 || (std::strcmp("all", argv[3]) == 0)) {
+		Filter filter_all(dbase->numGames());
+		const HFilter filter = std::strcmp("all", argv[3]) == 0
+		                           ? HFilter(&filter_all)
+		                           : dbase->getFilter(argv[3]);
+		if (filter != 0) {
 			switch (cmd) {
-			case 2:
-			case 3: return UI_Result(ti, dbase->setFlag(value, flagType, filter));
-			case 4: return UI_Result(ti, dbase->invertFlag(flagType, filter));
+			case 2: return UI_Result(ti, dbase->setFlags(true, flagType, filter));
+			case 3: return UI_Result(ti, dbase->setFlags(false, flagType, filter));
+			case 4: return UI_Result(ti, dbase->invertFlags(flagType, filter));
 			}
 		} else {
 			gamenumT gNum = strGetUnsigned(argv[3]);
@@ -258,8 +259,8 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 				gNum--;
 				switch (cmd) {
 				case 1: return UI_Result(ti, OK, dbase->getFlag(flagType, gNum));
-				case 2:
-				case 3: return UI_Result(ti, dbase->setFlag(value, flagType, gNum));
+				case 2: return UI_Result(ti, dbase->setFlag(true, flagType, gNum));
+				case 3: return UI_Result(ti, dbase->setFlag(false, flagType, gNum));
 				case 4: return UI_Result(ti, dbase->invertFlag(flagType, gNum));
 				}
 			}

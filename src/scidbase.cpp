@@ -254,6 +254,40 @@ errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
 	return (res != OK) ? res : res_endTrans;
 }
 
+errorT scidBaseT::invertFlag(uint flag, uint gNum) {
+	return setFlag(!getFlag(flag, gNum), flag, gNum);
+}
+
+errorT scidBaseT::invertFlags(uint flag, const HFilter& filter) {
+	return transformIndex(filter, Progress(),
+	                      [&](IndexEntry& ie) {
+		                      const auto value = ie.GetFlag(flag);
+		                      ie.SetFlag(flag, !value);
+		                      return true;
+	                      })
+	    .first;
+}
+
+errorT scidBaseT::setFlag(bool value, uint flag, uint gNum) {
+	ASSERT(gNum < idx->GetNumGames());
+
+	IndexEntry ie = *getIndexEntry(gNum);
+	ie.SetFlag(flag, value);
+	beginTransaction();
+	const auto res = codec_->saveIndexEntry(ie, gNum);
+	const auto err = endTransaction(gNum);
+	return res != OK ? res : err;
+}
+
+errorT scidBaseT::setFlags(bool value, uint flag, const HFilter& filter) {
+	return transformIndex(filter, Progress(),
+	                      [&](IndexEntry& ie) {
+		                      ie.SetFlag(flag, value);
+		                      return true;
+	                      })
+	    .first;
+}
+
 /**
  * Filters
  */
