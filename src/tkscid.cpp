@@ -843,7 +843,6 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
     bool keepAllGamesWithVars  = true;
     bool setFilterToDups = false;
     bool onlyFilterGames = false;
-    bool copyRatings = false;
 
     // Deletion strategy: delete the shorter game, the game with the
     // smaller game number, or the game with the larger game number.
@@ -856,14 +855,14 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
         "-players", "-colors", "-event", "-site", "-round", "-year",
         "-month", "-day", "-result", "-eco", "-moves", "-skipshort",
         "-comments", "-variations", "-setfilter", "-usefilter",
-        "-copyratings", "-delete",
+        "-delete",
         NULL
     };
     enum {
         OPT_PLAYERS, OPT_COLORS, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_YEAR,
         OPT_MONTH, OPT_DAY, OPT_RESULT, OPT_ECO, OPT_MOVES, OPT_SKIPSHORT,
         OPT_COMMENTS, OPT_VARIATIONS, OPT_SETFILTER, OPT_USEFILTER,
-        OPT_COPYRATINGS, OPT_DELETE
+        OPT_DELETE
     };
 
     for (int arg = 3; arg < argc; arg += 2) {
@@ -888,7 +887,6 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
             case OPT_VARIATIONS:  keepAllGamesWithVars = b;  break;
             case OPT_SETFILTER:   setFilterToDups = b;       break;
             case OPT_USEFILTER:   onlyFilterGames = b;       break;
-            case OPT_COPYRATINGS: copyRatings = b;           break;
             case OPT_DELETE:
                 if (strIsCasePrefix (valueStr, "shorter")) {
                     deleteStrategy = DELETE_SHORTER;
@@ -969,7 +967,6 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
                     bool headImmune = false;
                     bool compImmune = false;
                     bool doDeletion = false;
-                    bool copiedRatings = false;
                     gamenumT gnumKeep, gnumDelete;
                     IndexEntry * ieDelete, * ieKeep;
 
@@ -1013,28 +1010,7 @@ sc_base_duplicates (scidBaseT* dbase, UI_handle_t ti, int argc, const char ** ar
                     if (doDeletion) {
                         deletedCount++;
                         ieDelete->SetDeleteFlag (true);
-                        if (copyRatings  &&  ieKeep->GetWhiteElo() == 0) {
-                            eloT elo = ieDelete->GetWhiteElo();
-                            byte rtype = ieDelete->GetWhiteRatingType();
-                            if (elo != 0) {
-                                ieKeep->SetWhiteElo (elo);
-                                ieKeep->SetWhiteRatingType (rtype);
-                                copiedRatings = true;
-                            }
-                        }
-                        if (copyRatings  &&  ieKeep->GetBlackElo() == 0) {
-                            eloT elo = ieDelete->GetBlackElo();
-                            byte rtype = ieDelete->GetBlackRatingType();
-                            if (elo != 0) {
-                                ieKeep->SetBlackElo (elo);
-                                ieKeep->SetBlackRatingType (rtype);
-                                copiedRatings = true;
-                            }
-                        }
                         dbase->idx->WriteEntry (ieDelete, gnumDelete);
-                        if (copiedRatings) {
-                            dbase->idx->WriteEntry (ieKeep, gnumKeep);
-                        }
                         if (setFilterToDups) {
                             dbase->dbFilter->Set (gnumDelete, 1);
                         }
