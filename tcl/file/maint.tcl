@@ -1038,7 +1038,6 @@ proc stripTags {} {
     grid $w.f.c$tag -row $row -column 1 -sticky e
     incr row
   }
-  ttk::button $w.b.find -text $::tr(SetFilter) -command findStripTags
   ttk::button $w.b.strip -text $::tr(StripTag...) -command {
     set removed [doStripTags .striptags]
     set stripTagCount($stripTagChoice) \
@@ -1048,7 +1047,7 @@ proc stripTags {} {
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
-  packdlgbuttons $w.b.cancel $w.b.strip $w.b.find
+  packdlgbuttons $w.b.cancel $w.b.strip
   wm resizable $w 0 0
   update
   catch {grab $w}
@@ -1078,15 +1077,6 @@ proc doStripTags {{parent .}} {
       -message $result
   return $count
 }
-
-proc findStripTags {} {
-  global stripTagChoice
-  progressWindow "Scid" "Finding games with the PGN tag $stripTagChoice..." $::tr(Cancel) 
-  set err [catch {sc_base tag find $stripTagChoice} result]
-  closeProgressWindow
-  ::notify::DatabaseModified $::curr_db dbfilter
-}
-
 
 # cleanerWin:
 #   Open a dialog so the user can choose several maintenance tasks
