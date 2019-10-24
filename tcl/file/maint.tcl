@@ -994,6 +994,8 @@ proc stripTags {} {
         [expr {$stripTagCount($stripTagChoice) - $removed} ]
     .striptags.f.c$stripTagChoice configure -text \
         [::utils::thousands $stripTagCount($stripTagChoice)]
+    ::notify::GameChanged
+    ::notify::DatabaseModified $::curr_db
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
@@ -1011,11 +1013,10 @@ proc doStripTags {{parent .}} {
       -icon question -type yesno -message $msg]
   if {$result == "no"} { return 0 }
   progressWindow "Scid" "Removing the PGN tag $stripTagChoice..." $::tr(Cancel)
-  set err [catch {sc_base tag strip $stripTagChoice} result]
+  set err [catch {sc_base strip $::curr_db $stripTagChoice} result]
   closeProgressWindow
-  if {$err} {
+  if {$err && $::errorCode != $::ERROR::UserCancel} {
     ERROR::MessageBox
-    return 0
   }
   set count 0
   set count $result

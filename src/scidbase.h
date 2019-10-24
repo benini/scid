@@ -156,9 +156,6 @@ struct scidBaseT {
 	 * @returns OK if successful or an error code.
 	 */
 	errorT saveGame(Game* game, gamenumT replacedGameId = INVALID_GAMEID);
-	// TODO: private:
-	errorT saveGameHelper(Game* game, gamenumT gameId);
-
 
 	bool getFlag(uint flag, uint gNum) const {
 		return idx->GetEntry(gNum)->GetFlag (flag);
@@ -401,6 +398,7 @@ private:
 private:
 	void clear();
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
+	errorT saveGameHelper(Game* game, gamenumT gameId);
 
 	Filter* fetchFilter(const std::string& filterId) const;
 	HFilter getFilterHelper(const std::string& filterId,

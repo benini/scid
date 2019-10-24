@@ -725,6 +725,28 @@ UI_res_t sc_base_switch(scidBaseT* dbase, UI_handle_t ti)
 	return UI_Result(ti, OK, res);
 }
 
+/// Remove all occurrences of the specified tags from the database.
+/// @returns the number of changed games.
+UI_res_t sc_base_strip(scidBaseT& dbase, UI_handle_t ti, int argc,
+                       const char** argv) {
+	const char* usage = "Usage: sc_base strip baseId tagNames...";
+	if (argc < 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	Filter filter_all(dbase.numGames());
+	auto progress = UI_CreateProgress(ti);
+	const auto res = dbase.transformGames(
+	    HFilter(&filter_all), progress, [&](Game& game) {
+		    bool modified = false;
+		    for (int i = 3; i < argc; i++) {
+			    const bool removed = game.RemoveExtraTag(argv[i]);
+			    modified = modified || removed;
+		    }
+		    return modified;
+	    });
+	return UI_Result(ti, res.first, res.second);
+}
+
 /// Produce a list of PGN tags used in the database
 /// @returns a even-sized list, where each pair of elements is a tag name and
 /// its frequency
@@ -936,7 +958,6 @@ UI_res_t sc_base_player_elo(const scidBaseT& dbase, UI_handle_t ti, int argc,
 UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
-UI_res_t sc_base_tag         (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_duplicates  (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
 
 
@@ -949,7 +970,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    "gamelocation",    "gameslist",       "getGame",         "import",
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
 	    "piecetrack",      "player_elo",      "slot",            "sortcache",       "stats",
-	    "switch",          "tag",             "taglist",         "tournaments",     "type",
+	    "strip",           "switch",          "taglist",         "tournaments",     "type",
 	    NULL
 	};
 	enum {
@@ -959,7 +980,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
 	    BASE_PTRACK,       BASE_PLAYER_ELO,   BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
-	    BASE_SWITCH,       BASE_TAG,          BASE_TAGLIST,      BASE_TOURNAMENTS,  BASE_TYPE
+	    BASE_STRIP,        BASE_SWITCH,       BASE_TAGLIST,      BASE_TOURNAMENTS,  BASE_TYPE
 	};
 
 	if (argc <= 1) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd>");
@@ -989,9 +1010,6 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_SLOT:
 		return sc_base_slot (ti, argc, argv);
-
-	case BASE_TAG:
-		return sc_base_tag (cd, ti, argc, argv);
 	}
 
 	//New multi-base functions
@@ -1050,6 +1068,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_SWITCH:
 		return sc_base_switch (dbase, ti);
+
+	case BASE_STRIP:
+		return sc_base_strip(*dbase, ti, argc, argv);
 
 	case BASE_TAGLIST:
 		return sc_base_taglist(*dbase, ti);
