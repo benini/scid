@@ -307,6 +307,52 @@ struct scidBaseT {
 	               const std::vector<std::string>& newNames, TInitFunc fnInit,
 	               TMapFunc getID);
 
+	/**
+	 * Transform the games included in @e hfilter.
+	 * The @e entry_op must accept a Game& parameter and return true when
+	 * the object was modified.
+	 * @param hfilter:  HFilter containing the games to be transformed.
+	 * @param progress: a Progress object used for GUI communications.
+	 * @param entry_op: operator that will be applied to games.
+	 * @returns a std::pair containing OK (or an error code) and the number of
+	 * games modified.
+	 */
+	template <typename TOper>
+	std::pair<errorT, size_t>
+	transformGames(HFilter hfilter, const Progress& progress, TOper entry_op) {
+		beginTransaction();
+		Game game;
+		size_t nCorrections = 0;
+		size_t iProg = 0;
+		const size_t totProg = hfilter->size();
+		errorT err = OK;
+		for (const auto gnum : hfilter) {
+			if ((++iProg % 1024 == 0) && !progress.report(iProg, totProg)) {
+				err = ERROR_UserCancel;
+				break;
+			}
+
+			const IndexEntry* ie = getIndexEntry(gnum);
+			err = getGame(*ie, game);
+			if (err != OK)
+				break;
+
+			game.LoadStandardTags(ie, getNameBase());
+			if (!entry_op(game))
+				continue;
+
+			err = codec_->saveGame(&game, gnum);
+			if (err != OK)
+				break;
+
+			++nCorrections;
+		}
+		const auto err_trans = endTransaction();
+		if (err == OK)
+			err = err_trans;
+		return {err, nCorrections};
+	}
+
 	// TODO: private:
 	/**
 	 * This function must be called before modifying the games of the database.

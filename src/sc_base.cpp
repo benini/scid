@@ -1,5 +1,5 @@
 /*
-# Copyright (C) 2015 Fulvio Benini
+ * Copyright (C) 2015-2019 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -22,8 +22,11 @@
 #include "scidbase.h"
 #include "searchtournaments.h"
 #include "ui.h"
+#include <algorithm>
 #include <cstring>
+#include <map>
 #include <string>
+#include <vector>
 
 namespace {
 /*
@@ -722,6 +725,33 @@ UI_res_t sc_base_switch(scidBaseT* dbase, UI_handle_t ti)
 	return UI_Result(ti, OK, res);
 }
 
+/// Produce a list of PGN tags used in the database
+/// @returns a even-sized list, where each pair of elements is a tag name and
+/// its frequency
+UI_res_t sc_base_taglist(scidBaseT& dbase, UI_handle_t ti) {
+	static_assert(gamenumT() == 0);
+	std::map<std::string, gamenumT> tag_freq;
+	Filter filter_all(dbase.numGames());
+	auto progress = UI_CreateProgress(ti);
+	const auto err = dbase.transformGames(
+	    HFilter(&filter_all), progress, [&tag_freq](const Game& game) {
+		    for (const auto& tag : game.GetExtraTags()) {
+			    tag_freq[tag.first] += 1;
+		    }
+		    return false;
+	    });
+	if (err.first != OK)
+		return UI_Result(ti, err.first);
+
+	UI_List res(tag_freq.size() * 2);
+	for (const auto& [tag, freq] : tag_freq) {
+		if (tag != "SetUp") {
+			res.push_back(tag.c_str());
+			res.push_back(freq);
+		}
+	}
+	return UI_Result(ti, OK, res);
+}
 
 /**
  * sc_base_tournaments() - return a list of tournaments
@@ -919,7 +949,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    "gamelocation",    "gameslist",       "getGame",         "import",
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
 	    "piecetrack",      "player_elo",      "slot",            "sortcache",       "stats",
-	    "switch",          "tag",             "tournaments",     "type",
+	    "switch",          "tag",             "taglist",         "tournaments",     "type",
 	    NULL
 	};
 	enum {
@@ -929,7 +959,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
 	    BASE_PTRACK,       BASE_PLAYER_ELO,   BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
-	    BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE
+	    BASE_SWITCH,       BASE_TAG,          BASE_TAGLIST,      BASE_TOURNAMENTS,  BASE_TYPE
 	};
 
 	if (argc <= 1) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd>");
@@ -1020,6 +1050,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_SWITCH:
 		return sc_base_switch (dbase, ti);
+
+	case BASE_TAGLIST:
+		return sc_base_taglist(*dbase, ti);
 
 	case BASE_TOURNAMENTS:
 		return sc_base_tournaments (dbase, ti, argc, argv);

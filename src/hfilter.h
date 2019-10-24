@@ -229,7 +229,7 @@ public: // Pointer interface
 	const HFilter& operator*() const { return *this; }
 
 public:
-	explicit HFilter(Filter* main = 0, const Filter* mask = 0)
+	explicit HFilter(Filter* main, const Filter* mask = 0)
 	    : main_(main), mask_(mask) {}
 
 	void clear() { return main_->Fill(0); }

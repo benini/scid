@@ -950,7 +950,7 @@ proc stripTags {} {
   
   # Find extra PGN tags:
   progressWindow "Scid" "Searching for extra PGN tags..." $::tr(Cancel)
-  set err [catch {sc_base tag list} result]
+  set err [catch {sc_base taglist $::curr_db} result]
   closeProgressWindow
   if {$err} {
     ERROR::MessageBox
