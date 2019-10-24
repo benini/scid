@@ -173,21 +173,13 @@ proc ::maint::OpenClose {} {
   ttk::frame $w.dm
   ttk::labelframe $w.dm.delete -text [tr DeleteFlag]
   ttk::labelframe $w.dm.mark -text [tr Flag]
-  ttk::labelframe $w.dm.spell -text [tr Spellchecking]
-  ttk::labelframe $w.dm.db -text [tr DatabaseOps]
   grid $w.dm.delete -row 0 -column 0 -sticky snwe -padx "0 10" -pady "0 10"
   grid $w.dm.mark -row 0 -column 1 -sticky snwe -pady "0 10"
-  grid $w.dm.spell -row 1 -column 0 -sticky snwe -padx "0 10"
-  grid $w.dm.db -row 1 -column 1 -sticky snwe
+  grid columnconfigure $w.dm.mark 0 -weight 1
+  grid columnconfigure $w.dm.mark 1 -weight 1
   grid columnconfigure $w.dm 0 -weight 1
   grid columnconfigure $w.dm 1 -weight 1
 
-  foreach grid {dm.mark dm.spell dm.db} cols {2 2 2} {
-    for {set i 0} {$i < $cols} {incr i} {
-      grid columnconfigure $w.$grid $i -weight 1
-    }
-  }
-  
   ttk::label $w.dm.delete.vdelete
   ttk::menubutton $w.dm.mark.title -menu $w.dm.mark.title.m
   menu $w.dm.mark.title.m -font $font
@@ -221,44 +213,6 @@ proc ::maint::OpenClose {} {
   grid rowconfigure $w.dm.delete 0 -weight 1
   grid columnconfigure $w.dm.delete 0 -weight 1
   grid columnconfigure $w.dm.delete 1 -weight 1
-
-  
-  ttk::button $w.dm.spell.player -textvar ::tr(Players...) -style Small.TButton \
-      -command "openSpellCheckWin Player $w"
-  ttk::button $w.dm.spell.event -textvar ::tr(Events...) -style Small.TButton \
-      -command "openSpellCheckWin Event $w"
-  ttk::button $w.dm.spell.site -textvar ::tr(Sites...) -style Small.TButton \
-      -command "openSpellCheckWin Site $w"
-  ttk::button $w.dm.spell.round -textvar ::tr(Rounds...) -style Small.TButton \
-      -command "openSpellCheckWin Round $w"
-  grid $w.dm.spell.player -row 0 -column 0 -sticky we -padx "0 5" -pady "0 5"
-  grid $w.dm.spell.event -row 0 -column 1 -sticky we -pady "0 5"
-  grid $w.dm.spell.site -row 1 -column 0 -sticky we -padx "0 5" -pady "0 5"
-  grid $w.dm.spell.round -row 1 -column 1 -sticky we -pady "0 5"
-
-  bind $w <Alt-p> "$w.dm.spell.player invoke"
-  bind $w <Alt-e> "$w.dm.spell.event invoke"
-  bind $w <Alt-s> "$w.dm.spell.site invoke"
-  bind $w <Alt-r> "$w.dm.spell.round invoke"
-
-  ttk::button $w.dm.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
-  ttk::button $w.dm.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command compactDB
-  ttk::button $w.dm.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
-  ttk::button $w.dm.db.dups -style Small.TButton -textvar ::tr(DeleteTwins...) -command "markTwins $w"
-  ttk::button $w.dm.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
-  ttk::button $w.dm.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
-
-  foreach i {eco compact elo dups cleaner strip} {
-    $w.dm.db.$i configure -style Small.TButton
-  }
-  bind $w <Alt-d> "$w.dm.db.dups invoke"
-  
-  grid $w.dm.db.eco -row 0 -column 0 -sticky we -padx "0 5" -pady "0 5"
-  grid $w.dm.db.elo -row 0 -column 1 -sticky we -pady "0 5"
-  grid $w.dm.db.dups -row 1 -column 0 -sticky we -padx "0 5" -pady "0 5"
-  grid $w.dm.db.strip -row 1 -column 1 -sticky we -pady "0 5"
-  grid $w.dm.db.compact -row 2 -column 0 -sticky we -padx "0 5" -pady "0 5"
-  grid $w.dm.db.cleaner -row 2 -column 1 -sticky we -pady "0 5"
 
   grid $w.title -sticky news
   grid $w.stats -pady 5 -sticky news
@@ -356,7 +310,7 @@ proc ::maint::Refresh {} {
   $w.customFlags.edit configure -state disabled
 
   set state [expr {$state eq "disabled" || $ng == 0 ? "disabled" : "normal"}]
-  foreach frame {dm.delete dm.mark dm.spell dm.db} {
+  foreach frame {dm.delete dm.mark} {
     foreach widget [winfo children $w.$frame] {
 	  if {[winfo class $widget] eq "TLabel"} { continue }
 	  $widget configure -state $state
@@ -367,10 +321,6 @@ proc ::maint::Refresh {} {
      $w.dm.delete.offCurrent configure -state disabled
      $w.dm.mark.onCurrent configure -state disabled
      $w.dm.mark.offCurrent configure -state disabled
-  }
-  if {$state eq "normal" && ![baseIsCompactable]} {
-    $w.dm.db.compact configure -state disabled
-    $w.dm.db.cleaner configure -state disabled
   }
 }
 

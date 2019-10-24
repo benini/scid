@@ -76,9 +76,12 @@ menu $m.utils
   $m.utils add command -label FileMaintCompact -command compactDB
   $m.utils add command -label FileMaintClass -command classifyAllGames
   $m.utils add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
+  $m.utils add command -label StripTags -command stripTags
   $m.utils add separator
   $m.utils add command -label FileMaintDelete -state disabled -command markTwins
   $m.utils add command -label FileMaintTwin -command updateTwinChecker
+  $m.utils add separator
+  $m.utils add command -label Cleaner -command cleanerWin
 $m add cascade -label FileMaint -menu $m.utils
 menu $m.spell
   $m.spell add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
