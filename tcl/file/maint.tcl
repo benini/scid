@@ -979,24 +979,24 @@ proc stripTags {} {
   pack [ttk::frame $w.b] -side bottom -fill x
   
   set row 0
+  unset -nocomplain ::stripTagChoice
   foreach tag [lsort [array names stripTagCount]] {
-    set count $stripTagCount($tag)
-    ttk::radiobutton $w.f.t$tag -text "$tag  " -variable stripTagChoice -value $tag
-    ttk::label $w.f.c$tag -text [::utils::thousands $count]
-    if {$row == 0} { set stripTagChoice $tag }
+    set ::stripTagChoice($tag) 0
+    ttk::checkbutton $w.f.t$tag -text "$tag" -variable stripTagChoice($tag) -command "
+      foreach {tag selected} \[array get ::stripTagChoice\] {
+        if {\$selected} {
+          $w.b.strip configure -state normal
+          return
+        }
+      }
+      $w.b.strip configure -state disabled
+    "
+    ttk::label $w.f.c$tag -text "  [::utils::thousands $stripTagCount($tag)]"
     grid $w.f.t$tag -row $row -column 0 -sticky w
     grid $w.f.c$tag -row $row -column 1 -sticky e
     incr row
   }
-  ttk::button $w.b.strip -text $::tr(StripTag...) -command {
-    set removed [doStripTags .striptags]
-    set stripTagCount($stripTagChoice) \
-        [expr {$stripTagCount($stripTagChoice) - $removed} ]
-    .striptags.f.c$stripTagChoice configure -text \
-        [::utils::thousands $stripTagCount($stripTagChoice)]
-    ::notify::GameChanged
-    ::notify::DatabaseModified $::curr_db
-  }
+  ttk::button $w.b.strip -text $::tr(StripTag...) -state disabled -command "doStripTags $w"
   ttk::button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
   packdlgbuttons $w.b.cancel $w.b.strip
@@ -1005,28 +1005,38 @@ proc stripTags {} {
   catch {grab $w}
 }
 
-proc doStripTags {{parent .}} {
-  global stripTagChoice
-  set msg "Do you really want to remove all occurrences of the PGN tag"
-  append msg " \"$stripTagChoice\" from this database?"
-  set result [tk_messageBox -title "Scid" -parent $parent \
+proc doStripTags {topwin} {
+  set msg "Do you really want to remove all occurrences of the PGN tags:\n"
+  set tags {}
+  foreach {tag selected} [array get ::stripTagChoice] {
+    if {$selected} {
+      append msg "  $tag\n"
+      lappend tags $tag
+    }
+  }
+  append msg "from this database?"
+  set result [tk_messageBox -title "Scid" -parent $topwin \
       -icon question -type yesno -message $msg]
-  if {$result == "no"} { return 0 }
-  progressWindow "Scid" "Removing the PGN tag $stripTagChoice..." $::tr(Cancel)
-  set err [catch {sc_base strip $::curr_db $stripTagChoice} result]
+  if {$result == "no"} {
+    return
+  }
+  destroy $topwin
+  progressWindow "Scid" "Removing PGN tags..." $::tr(Stop)
+  set err [catch {sc_base strip $::curr_db {*}$tags} result]
   closeProgressWindow
   if {$err && $::errorCode != $::ERROR::UserCancel} {
     ERROR::MessageBox
+    if {$result == 0} {
+      return
+    }
   }
-  set count 0
-  set count $result
-  set result "Removed $result instances of \"$stripTagChoice\"."
+  set result "Modified $result games."
   append result "\n\n"
   append result "To save space and maintain database efficiency, it is a "
   append result "good idea to compact the game file after removing tags."
-  tk_messageBox -title "Scid" -parent $parent -type ok -icon info \
-      -message $result
-  return $count
+  tk_messageBox -title "Scid" -type ok -icon info -message $result
+  ::notify::GameChanged
+  ::notify::DatabaseModified $::curr_db
 }
 
 # cleanerWin:
