@@ -911,7 +911,7 @@ UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
     filter.clear();
 
     // Setup duplicates array:
-    uint* duplicates = new uint[numGames]{};
+    auto duplicates = std::make_unique<gamenumT[]>(numGames);
 
     // We use a hashtable to limit duplicate game comparisons; each game
     // is only compared to others that hash to the same value.
@@ -1000,7 +1000,7 @@ UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
         ie.SetDeleteFlag(true);
         return true;
     });
-    dbase->setDuplicates(duplicates);
+    dbase->setDuplicates(std::move(duplicates));
     progress.report(1, 1);
     return (err == OK) ? UI_Result(ti, OK, nDel) : UI_Result(ti, err);
 }
@@ -4575,6 +4575,7 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (!updateMode)
         return TCL_OK;
 
+    auto duplicates = db->extractDuplicates();
     errorT err1 = OK;
     errorT err2 = OK;
     if (updated1) {
@@ -4593,6 +4594,7 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             err2 = db->saveGame(&game, gn2 - 1);
         }
     }
+    db->setDuplicates(std::move(duplicates));
     return UI_Result(ti, err1 != OK ? err1 : err2);
 }
 

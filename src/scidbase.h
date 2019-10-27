@@ -255,14 +255,6 @@ struct scidBaseT {
 	size_t sortedPosition(const char* criteria, const HFilter& filter,
 	                      gamenumT gameId);
 
-	void setDuplicates(uint* duplicates) {
-		if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
-		duplicates_ = duplicates;
-	}
-	uint getDuplicates(gamenumT gNum) {
-		return (duplicates_ == NULL) ? 0 : duplicates_[gNum];
-	}
-
 	/**
 	 * Transform the IndexEntries of the games included in @e hfilter.
 	 * The @e entry_op must accept a IndexEntry& parameter and return true when
@@ -351,6 +343,16 @@ struct scidBaseT {
 		return {err, nCorrections};
 	}
 
+	std::unique_ptr<gamenumT[]> extractDuplicates() {
+		return std::move(duplicates_);
+	}
+	void setDuplicates(std::unique_ptr<gamenumT[]> duplicates) {
+		duplicates_ = std::move(duplicates);
+	}
+	gamenumT getDuplicates(gamenumT gNum) const {
+		return duplicates_ ? duplicates_[gNum] : 0;
+	}
+
 public:
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
@@ -374,7 +376,7 @@ private:
 	std::vector< std::pair<std::string, Filter*> > filters_;
 	mutable Stats* stats_;
 	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
-	uint* duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
+	std::unique_ptr<gamenumT[]> duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
 	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
 
 private:

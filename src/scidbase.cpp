@@ -62,7 +62,6 @@ scidBaseT::scidBaseT() {
 	fileMode_ = FMODE_None;
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
-	duplicates_ = NULL;
 	stats_ = NULL;
 }
 
@@ -70,7 +69,6 @@ scidBaseT::~scidBaseT() {
 	if (inUse)
 		Close();
 
-	delete[] duplicates_;
 	delete idx;
 	delete nb_;
 	delete game;
@@ -139,7 +137,7 @@ errorT scidBaseT::Close () {
 
 void scidBaseT::clear() {
 	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
-	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
+	duplicates_.reset();
 	treeCache.Clear();
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
 		nameFreq_[nt].resize(0);
