@@ -116,6 +116,7 @@ struct scidBaseT {
 		return idx->GetEntry(g);
 	}
 	const IndexEntry* getIndexEntry_bounds(gamenumT g) const {
+		static_assert(std::is_unsigned_v<gamenumT>);
 		return g < numGames() ? getIndexEntry(g) : nullptr;
 	}
 	const NameBase* getNameBase() const {
@@ -350,32 +351,12 @@ struct scidBaseT {
 		return {err, nCorrections};
 	}
 
-	// TODO: private:
-	/**
-	 * This function must be called before modifying the games of the database.
-	 * Currently this function do not guarantees that the database is not altered
-	 * in case of errors.
-	 */
-	void beginTransaction();
-
-	// TODO: private:
-	/**
-	 * Update caches and flush the database's files.
-	 * This function must be called after changing one or more games.
-	 * @param gameId: id of the modified game
-	 *                INVALID_GAMEID to update all games.
-	 * @returns OK if successful or an error code.
-	 */
-	errorT endTransaction(gamenumT gameId = INVALID_GAMEID);
-
 public:
-	Index* idx;       // the Index file in memory for this base.
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
 	TreeCache treeCache;
 	Filter* dbFilter;
 	Filter* treeFilter;
-
 
 	//TODO: this vars do not belong to scidBaseT class
 	Game* game;       // the active game for this base.
@@ -386,6 +367,7 @@ public:
 
 private:
 	std::unique_ptr<ICodecDatabase> codec_;
+	Index* idx;
 	NameBase* nb_;
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
@@ -397,6 +379,19 @@ private:
 
 private:
 	void clear();
+
+	/// This function must be called before modifying the games of the database.
+	/// Currently this function do not guarantees that the database is not
+	/// altered in case of errors.
+	void beginTransaction();
+
+	/// Update caches and flush the database's files.
+	/// This function must be called after changing one or more games.
+	/// @param gameId: id of the modified game
+	///                INVALID_GAMEID to update all games.
+	/// @returns OK if successful or an error code.
+	errorT endTransaction(gamenumT gameId = INVALID_GAMEID);
+
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 	errorT saveGameHelper(Game* game, gamenumT gameId);
 

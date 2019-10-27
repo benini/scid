@@ -4572,18 +4572,28 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    // Write changes to the index file:
-    if (updateMode && (updated1 || updated2)) {
-        db->beginTransaction();
-        if (updated1) {
-            db->idx->WriteEntry (&ie1, gn1 - 1);
+    if (!updateMode)
+        return TCL_OK;
+
+    errorT err1 = OK;
+    errorT err2 = OK;
+    if (updated1) {
+        Game game;
+        err1 = db->getGame(ie1, game);
+        if (err1 == OK) {
+            game.LoadStandardTags(&ie1, db->getNameBase());
+            err1 = db->saveGame(&game, gn1 - 1);
         }
-        if (updated2) {
-            db->idx->WriteEntry (&ie2, gn2 - 1);
-        }
-        db->endTransaction();
     }
-    return TCL_OK;
+    if (updated2) {
+        Game game;
+        err2 = db->getGame(ie2, game);
+        if (err2 == OK) {
+            game.LoadStandardTags(&ie2, db->getNameBase());
+            err2 = db->saveGame(&game, gn2 - 1);
+        }
+    }
+    return UI_Result(ti, err1 != OK ? err1 : err2);
 }
 
 //////////////////////////////////////////////////////////////////////
