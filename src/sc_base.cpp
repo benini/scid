@@ -56,23 +56,26 @@ namespace {
  * If @fMode == FMODE_Both, and the file cannot be opened for writing, this
  * function will try to open the database read-only.
  */
-static UI_res_t doOpenBase(UI_handle_t ti, const char* filename,
-                           fileModeT fMode, ICodecDatabase::Codec codec) {
-	if (DBasePool::find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
+static UI_res_t doOpenBase(UI_handle_t ti, const char* codec, fileModeT fMode,
+                           const char* filename) {
+	if (DBasePool::find(filename))
+		return UI_Result(ti, ERROR_FileInUse);
 
 	scidBaseT* dbase = DBasePool::getFreeSlot();
-	if (dbase == 0) return UI_Result(ti, ERROR_Full);
+	if (!dbase)
+		return UI_Result(ti, ERROR_Full);
 
 	Progress progress = UI_CreateProgress(ti);
-	errorT err = dbase->Open(codec, fMode, filename, progress);
+	errorT err = dbase->open(codec, fMode, filename, progress);
 
 	if ((err == ERROR_FileOpen || err == ERROR_FileMode) &&
 	    fMode == FMODE_Both) {
-		err = dbase->Open(codec, FMODE_ReadOnly, filename, progress);
+		err = dbase->open(codec, FMODE_ReadOnly, filename, progress);
 	}
-	progress.report(1,1);
+	progress.report(1, 1);
 
-	if (err != OK && err != ERROR_NameDataLoss) return UI_Result(ti, err);
+	if (err != OK && err != ERROR_NameDataLoss)
+		return UI_Result(ti, err);
 
 	int res = DBasePool::switchCurrent(dbase);
 	return UI_Result(ti, err, res);
@@ -163,24 +166,14 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
  */
 UI_res_t sc_base_create(UI_handle_t ti, int argc, const char** argv) {
 	const char* usage = "Usage: sc_base create <MEMORY|SCID4|PGN> filename";
-	if (argc != 4 && argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
 
-	// Old interface defaults to SCID4
-	ICodecDatabase::Codec codec = ICodecDatabase::SCID4;
-	if (argc == 4) {
-		if (std::strcmp("MEMORY", argv[2]) == 0)
-			codec = ICodecDatabase::MEMORY;
-		else if (std::strcmp("SCID4", argv[2]) == 0)
-			codec = ICodecDatabase::SCID4;
-		else if (std::strcmp("PGN", argv[2]) == 0)
-			codec = ICodecDatabase::PGN;
-		else
-			return UI_Result(ti, ERROR_BadArg, usage);
-	}
+	if (argc == 3) // Old interface defaults to SCID4
+		return doOpenBase(ti, "SCID4", FMODE_Create, argv[2]);
 
-	return doOpenBase(
-	    ti, argc == 4 ? argv[3] : argv[2],
-	    codec == ICodecDatabase::MEMORY ? FMODE_Memory : FMODE_Create, codec);
+	if (argc == 4)
+		return doOpenBase(ti, argv[2], FMODE_Create, argv[3]);
+
+	return UI_Result(ti, ERROR_BadArg, usage);
 }
 
 
@@ -572,20 +565,14 @@ UI_res_t sc_base_numGames(scidBaseT* dbase, UI_handle_t ti, int argc,
  */
 UI_res_t sc_base_open(UI_handle_t ti, int argc, const char** argv) {
 	const char* usage = "Usage: sc_base open <SCID4|PGN> filename";
-	if (argc != 4 && argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
 
-	// Old interface defaults to SCID4
-	ICodecDatabase::Codec codec = ICodecDatabase::SCID4;
-	if (argc == 4) {
-		if (std::strcmp("SCID4", argv[2]) == 0)
-			codec = ICodecDatabase::SCID4;
-		else if (std::strcmp("PGN", argv[2]) == 0)
-			codec = ICodecDatabase::PGN;
-		else
-			return UI_Result(ti, ERROR_BadArg, usage);
-	}
+	if (argc == 3) // Old interface defaults to SCID4
+		return doOpenBase(ti, "SCID4", FMODE_Both, argv[2]);
 
-	return doOpenBase(ti, argc == 4 ? argv[3] : argv[2], FMODE_Both, codec);
+	if (argc == 4)
+		return doOpenBase(ti, argv[2], FMODE_Both, argv[3]);
+
+	return UI_Result(ti, ERROR_BadArg, usage);
 }
 
 

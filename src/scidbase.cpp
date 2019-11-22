@@ -77,12 +77,12 @@ scidBaseT::~scidBaseT() {
 	delete treeFilter;
 }
 
-errorT scidBaseT::Open(ICodecDatabase::Codec dbtype, fileModeT fMode,
-                       const char* filename, const Progress& progress) {
+errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
+                             const char* filename, const Progress& progress) {
+	assert(filename);
+
 	if (inUse)
 		return ERROR_FileInUse;
-	if (filename == 0)
-		filename = "";
 
 	auto obj = ICodecDatabase::open(dbtype, fMode, filename, progress, idx, nb_);
 	if (obj.first) {
@@ -568,7 +568,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	std::string tmpfile = filename + "__COMPACT__";
 	ICodecDatabase::Codec dbtype = codec_->getType();
 	scidBaseT tmp;
-	errorT err_Create = tmp.Open(dbtype, FMODE_Create, tmpfile.c_str());
+	errorT err_Create = tmp.openHelper(dbtype, FMODE_Create, tmpfile.c_str());
 	if (err_Create != OK) return err_Create;
 
 	//2) Create the list of games to be copied
@@ -680,7 +680,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 		const char* s2 = filenames[i].c_str();
 		std::rename(s1, s2);
 	}
-	errorT res = Open(dbtype, FMODE_Both, filename.c_str());
+	errorT res = openHelper(dbtype, FMODE_Both, filename.c_str());
 
 	//10) Re-create filters and SortCaches
 	if (res == OK || res == ERROR_NameDataLoss) {

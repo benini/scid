@@ -30,6 +30,7 @@
 #include <array>
 #include <cassert>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 class SortCache;
@@ -88,10 +89,18 @@ struct scidBaseT {
 	scidBaseT();
 	~scidBaseT();
 
-	errorT Open(ICodecDatabase::Codec dbtype,
-	            fileModeT mode,
-	            const char* filename = 0,
-	            const Progress& progress = Progress());
+	errorT open(std::string_view dbType, fileModeT fMode, const char* filename,
+	            const Progress& progress = {}) {
+		auto codec = ICodecDatabase::SCID4;
+		if (dbType == "PGN") {
+			codec = ICodecDatabase::PGN;
+		} else if (dbType == "MEMORY") {
+			codec = ICodecDatabase::MEMORY;
+		} else if (dbType != "SCID4") {
+			return ERROR_BadArg;
+		}
+		return openHelper(codec, fMode, filename, progress);
+	}
 
 	errorT Close ();
 
@@ -380,6 +389,9 @@ private:
 	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
 
 private:
+	errorT openHelper(ICodecDatabase::Codec dbtype, fileModeT mode,
+	                  const char* filename, const Progress& progress = {});
+
 	void clear();
 
 	/// This function must be called before modifying the games of the database.

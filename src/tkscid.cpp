@@ -1030,8 +1030,7 @@ sc_clipbase (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case CLIP_CLEAR:
         clipbase->Close();
-        clipbase->Open(ICodecDatabase::MEMORY, FMODE_Memory, "<clipbase>");
-        clipbase->setExtraInfo("type", "2");
+        DBasePool::clearClipBase();
         break;
 
     case CLIP_PASTE: // Paste the active clipbase game

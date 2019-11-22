@@ -247,10 +247,6 @@ TEST_F(Test_Filebuf, Filebuf_open) {
 	}
 	{
 		Filebuf file;
-		ASSERT_NE(OK, file.Open(fname, FMODE_Memory));
-	}
-	{
-		Filebuf file;
 		ASSERT_EQ(OK, file.Open(fname, FMODE_Create));
 		ASSERT_EQ(1, file.WriteOneByte(0x01));
 		ASSERT_EQ(2, file.WriteTwoBytes(0x0202));

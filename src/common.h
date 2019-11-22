@@ -135,8 +135,7 @@ enum fileModeT {
     FMODE_ReadOnly,
     FMODE_WriteOnly,
     FMODE_Both,
-    FMODE_Create,
-    FMODE_Memory
+    FMODE_Create
 };
 
 //  Date type: see date.h and date.cpp

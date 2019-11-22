@@ -34,7 +34,7 @@ void Index::Init ()
     std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
     Header.dirty_ = false;
     FilePtr = NULL;
-    fileMode_ = FMODE_Memory;
+    fileMode_ = FMODE_None;
     nInvalidNameId_ = 0;
     seqWrite_ = 0;
     entries_.resize(0);

@@ -77,7 +77,7 @@ public: // ICodecDatabase interface
 	                NameBase* nb) override {
 		if (idx == 0 || nb == 0)
 			return ERROR;
-		if (fMode != FMODE_Memory)
+		if (fMode != FMODE_Create)
 			return ERROR;
 		idx_ = idx;
 		nb_ = nb;

@@ -300,7 +300,7 @@ TEST_F(Test_Scidbase, getGamePos1) {
 	ASSERT_STREQ(parseLog.log.c_str(), "");
 
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
@@ -327,7 +327,7 @@ TEST_F(Test_Scidbase, getGamePos2) {
 	ASSERT_STREQ(parseLog.log.c_str(), "");
 
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
@@ -343,7 +343,7 @@ TEST_F(Test_Scidbase, getGamePos3) {
 	ASSERT_STREQ(parseLog.log.c_str(), "");
 
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 	ASSERT_EQ(OK, dbase.saveGame(&game));
 	ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
@@ -362,7 +362,7 @@ TEST_F(Test_Scidbase, saveGame) {
 	ASSERT_STREQ(parseLog.log.c_str(), "");
 
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
 	HFilter dbfilter = dbase.getFilter("dbfilter");
 	EXPECT_EQ(0U, dbfilter->size());
@@ -421,7 +421,7 @@ TEST_F(Test_Scidbase, importGames) {
 
 
 	scidBaseT srcBase;
-	ASSERT_EQ(OK, srcBase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, srcBase.open("MEMORY", FMODE_Create, "Memory"));
 	ASSERT_EQ(OK, srcBase.saveGame(&game0));
 	ASSERT_EQ(OK, srcBase.saveGame(&game1));
 	ASSERT_EQ(OK, srcBase.saveGame(&game1));
@@ -430,7 +430,7 @@ TEST_F(Test_Scidbase, importGames) {
 	srcFilter->erase(1);
 
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
 	HFilter dbfilter = dbase.getFilter("dbfilter");
 
@@ -475,7 +475,7 @@ TEST_F(Test_Scidbase, importGames) {
 
 TEST_F(Test_Scidbase, new_compose_delete_get_Filter) {
 	scidBaseT dbase;
-	ASSERT_EQ(OK, dbase.Open(ICodecDatabase::MEMORY, FMODE_Memory));
+	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 
 	std::vector<std::pair<std::string, bool>> tests = {
 	    {" dbfilter", false},   {"dbfilter ", false}, {"+dbfilter+", true},

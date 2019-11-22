@@ -36,11 +36,13 @@ scidBaseT* dbList = NULL;      // array of database slots.
 
 void DBasePool::init() {
 	dbList = new scidBaseT[MAX_BASES];
-
-	dbList[CLIPBASE_NUM].Open(ICodecDatabase::MEMORY, FMODE_Memory, "<clipbase>");
-	dbList[CLIPBASE_NUM].setExtraInfo("type", "2");
-
+	DBasePool::clearClipBase();
 	DBasePool::switchCurrent(&(dbList[CLIPBASE_NUM]));
+}
+
+void DBasePool::clearClipBase() {
+	dbList[CLIPBASE_NUM].open("MEMORY", FMODE_Create, "<clipbase>");
+	dbList[CLIPBASE_NUM].setExtraInfo("type", "2");
 }
 
 void DBasePool::closeAll() {

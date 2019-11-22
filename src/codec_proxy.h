@@ -148,7 +148,7 @@ private:
 		if (filename == 0)
 			return ERROR;
 
-		errorT err = CodecMemory::dyn_open(FMODE_Memory, filename, progress,
+		errorT err = CodecMemory::dyn_open(FMODE_Create, filename, progress,
 		                                   idx, nb);
 		if (err != OK)
 			return err;

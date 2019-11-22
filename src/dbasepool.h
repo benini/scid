@@ -34,6 +34,10 @@ namespace DBasePool {
 void init();
 
 
+ /// Reset the ClipBase to empty.
+void clearClipBase();
+
+
 /**
  * closeAll() - close all the databases in the pool.
  *

@@ -31,7 +31,7 @@
 namespace {
 
 fileModeT fmodes[] = {
-	FMODE_Memory, FMODE_Create, FMODE_ReadOnly, FMODE_WriteOnly, FMODE_Both
+	FMODE_Create, FMODE_ReadOnly, FMODE_WriteOnly, FMODE_Both
 };
 const char* filename = "codecbase";
 
@@ -41,18 +41,15 @@ ICodecDatabase::Codec codecs[] = {
 
 std::vector<std::pair<ICodecDatabase::Codec, std::string> > unsupportedVec = {
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_None) },
-	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_Create) },
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_ReadOnly) },
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_WriteOnly) },
 	{ ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_Both) },
 
 	{ ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_None) },
-	{ ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_Memory) },
 	{ ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_WriteOnly) },
 	{ ICodecDatabase::SCID4, "empty_filename" },
 
 	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_None) },
-	{ ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_Memory) },
 	{ ICodecDatabase::PGN, "saveGame_game" },
 	{ ICodecDatabase::PGN, "empty_filename" }
 };
@@ -163,10 +160,6 @@ void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
 		return;
 
 	fileModeT fMode = FMODE_Create;
-	if (!supports("FMODE" + std::to_string(fMode))) {
-		fMode = FMODE_Memory;
-		ASSERT_TRUE(supports("FMODE" + std::to_string(fMode)));
-	}
 
 	struct Cleanup {
 		std::vector<std::string> filenames;

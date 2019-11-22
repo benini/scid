@@ -35,7 +35,7 @@ TEST(Test_Game, clone) {
 	for (auto filename : {gameUTF8, gameLatin1, gameLatin1Conv}) {
 
 		scidBaseT dbase;
-		ASSERT_EQ(OK, dbase.Open(ICodecDatabase::PGN, FMODE_Both, filename));
+		ASSERT_EQ(OK, dbase.open("PGN", FMODE_Both, filename));
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
@@ -91,7 +91,7 @@ TEST(Test_Game, locationInPGN) {
 	for (auto filename : {gameUTF8, gameLatin1, gameLatin1Conv}) {
 
 		scidBaseT dbase;
-		ASSERT_EQ(OK, dbase.Open(ICodecDatabase::PGN, FMODE_Both, filename));
+		ASSERT_EQ(OK, dbase.open("PGN", FMODE_Both, filename));
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
