@@ -85,8 +85,7 @@ menuText F EditCopyBoard "Copier la position" 6 \
   {Copier la position en cours en notation FEN vers la sélection de texte (presse-papier)}
 menuText F EditPasteBoard "Coller la position de départ" 12 \
   {Initialiser la position de départ à partir de la sélection de texte courante(presse-papier)}
-# ====== TODO To be translated ======
-menuText F ConfigureScid "Preferences..." 0 {Configure all options for SCID}
+menuText F ConfigureScid "Préférences..." 0 {Configurer toutes les options pour SCID}
 
 # Game menu:
 menuText F Game "Partie" 0
@@ -1714,7 +1713,7 @@ translate F IESynchronise {Synchronizer}
 translate F IERotate  {Tourner}
 translate F IEUnableToStart {Impossible de démarrer le moteur en entrée:}
 translate F DoneWithPosition {Position terminée}
-translate F Board {Echiquier}
+translate F Board {Échiquier}
 translate F showGameInfo {Montrer le panneau d'info}
 translate F autoResizeBoard {Redimensionnement automatique}
 translate F DockTop {Déplacer en haut}
@@ -1774,18 +1773,18 @@ translate F Ambiguous {Ambiguous}
 
 #Preferences Dialog
 translate F OptionsToolbar "Barre d'outils de la fenêtre principale"
-translate F OptionsBoard "Echiquier"
+translate F OptionsBoard "Échiquier"
 # ====== TODO To be translated ======
-translate F OptionsMenuColor "Setup Menu Colors..."
+translate F OptionsMenuColor "Couleurs des menus..."
 translate F OptionsBoardSize "Taille d'échiquier"
 translate F OptionsBoardPieces "Style des pièces"
 #menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
 # ====== TODO To be translated ======
-translate F MenuColorForeground "Textcolor"
+translate F MenuColorForeground "Texte"
 # ====== TODO To be translated ======
-translate F MenuColorBackground "Background"
+translate F MenuColorBackground "Fond"
 # ====== TODO To be translated ======
-translate F MenuColorSelect "Select"
+translate F MenuColorSelect "Sélection"
 
 ##########
 #
