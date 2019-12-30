@@ -1639,17 +1639,17 @@ translate F CCDlgDefaultDB {Base par défaut:}
 translate F CCDlgInbox {Réception (chemin):}
 translate F CCDlgOutbox {Envoi (chemin):}
 translate F CCDlgXfcc {Configuration Xfcc:}
-translate F CCDlgExternalProtocol {Protocole externe (p.e. Xfcc)}
+translate F CCDlgExternalProtocol {Protocole externe (par ex. Xfcc)}
 translate F CCDlgFetchTool {Outil de réception:}
 translate F CCDlgSendTool {Outil d'envoi:}
 translate F CCDlgEmailCommunication {Communication eMail}
 translate F CCDlgMailPrg {Programme de mail:}
 translate F CCDlgBCCAddr {Addresse de copie:}
 translate F CCDlgMailerMode {Mode:}
-translate F CCDlgThunderbirdEg {p.e. Thunderbird, Mozilla Mail, Icedove...}
-translate F CCDlgMailUrlEg {p.e. Evolution}
-translate F CCDlgClawsEg {p.e Sylpheed Claws}
-translate F CCDlgmailxEg {p.e. mailx, mutt, nail...}
+translate F CCDlgThunderbirdEg {par ex. Thunderbird, Mozilla Mail, Icedove...}
+translate F CCDlgMailUrlEg {par ex. Evolution}
+translate F CCDlgClawsEg {par ex. Sylpheed Claws}
+translate F CCDlgmailxEg {par ex. mailx, mutt, nail...}
 translate F CCDlgAttachementPar {Attachement:}
 translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
 translate F CCDlgConfirmXfcc {Confirmer les coups}
