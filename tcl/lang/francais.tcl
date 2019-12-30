@@ -101,13 +101,13 @@ menuText F GameLast "Charger la dernière partie" 5 {Charger la dernière partie d
 menuText F GameRandom "Charger une partie au hasard" 8 {Charger au hasard une partie du filtre}
 menuText F GameNumber "Partie numéro..." 9 \
   {Charger une partie en donnant son numéro}
-menuText F GameReplace "Enregistrer: Remplacer la partie..." 13 \
+menuText F GameReplace "Enregistrer: remplacer la partie..." 13 \
   {Enregistrer cette partie, en écrasant l'ancienne version}
-menuText F GameAdd "Enregistrer: Ajouter nouvelle partie..." 13 \
+menuText F GameAdd "Enregistrer: ajouter nouvelle partie..." 13 \
   {Enregistrer cette partie en tant que nouvelle partie dans la base}
-menuText F GameDeepest "Identifier ouverture" 11 \
+menuText F GameDeepest "Identifier l'ouverture" 11 \
   {Trouver la partie la plus proche dans la nomenclature ECO}
-menuText F GameGotoMove "Coup numéro..." 6 \
+menuText F GameGotoMove "Aller au coup numéro..." 6 \
   {Aller au coup spécifié dans la partie en cours}
 menuText F GameNovelty "Trouver la nouveauté..." 7 \
   {Trouver le premier coup de la partie qui n'a pas été joué auparavant}
@@ -170,7 +170,7 @@ menuText F ToolsTraining "Entrainement"  0 {Entrainement (tactique, ouvertures, 
 menuText F ToolsTacticalGame "Partie tactique"  0 {Jouer une partie tactique}
 menuText F ToolsSeriousGame "Partie sérieuse"  0 {Jouer une partie sans handicap}
 menuText F ToolsTrainOpenings "Ouvertures"  0 {Entrainement sur un répertoire}
-menuText F ToolsTrainReviewGame "Revoir partie"  0 {Deviner les coups joués dans la partie}
+menuText F ToolsTrainReviewGame "Revoir la partie"  0 {Deviner les coups joués dans la partie}
 menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
 menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de variantes}
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
@@ -187,7 +187,7 @@ menuText F ToolsPInfo "Information sur les joueurs"  0 \
   {Ouvrir/Mettre à jour la fenêtre d'information sur les joueurs}
 menuText F ToolsPlayerReport "Rapport pour le joueur..." 3 \
   {Générer un rapport pour le joueur}
-menuText F ToolsRating "Elo graphique" 0 \
+menuText F ToolsRating "Graphique Elo" 0 \
   {Tracer un graphique du classement Elo des joueurs de cette partie}
 menuText F ToolsScore "Score graphique" 0 {Montrer le graphique des scores}
 menuText F ToolsExpCurrent "Écrire la partie en cours" 22 \
@@ -221,13 +221,13 @@ menuText F ToolsCaptureBoard "Capture Current Board..." 0  {Save the current boa
 menuText F Play "Jouer" 0
 
 # --- Correspondence Chess
-menuText F CorrespondenceChess "Echecs par correspondance" 0 {eMail et Xfcc échecs par correspondance}
+menuText F CorrespondenceChess "Echecs par correspondance" 0 {Échecs par correspondance eMail et Xfcc}
 menuText F CCConfigure "Configurer..." 0 {Configurer les outils externes et la config générale}
 menuText F CCConfigRelay "Configurer les observations..." 10 {Configurer les jeux à observer}
 menuText F CCOpenDB "Ouvrir la base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
 menuText F CCRetrieve "Récupérer les parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser la boîte de réception" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
-menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
+menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via eMail ou un outil externe (Xfcc)}
 
 menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
 menuText F CCClaimDraw "Réclamer la partie nulle" 0 {Envoyer le coup et réclamer une partie nulle (pas par eMail)}
@@ -303,10 +303,10 @@ menuText F OptionsRecent "Fichiers récents..." 0 \
   {Changer le nombre de fichiers récents affichés dans le menu Fichier}
 menuText F OptionsBooksDir "Répertoire des bibliothèques..." 0 {Répertoire des bibliothèques d'ouverture}
 menuText F OptionsTacticsBasesDir "Répertoire des bases d'entrainement..." 0 {Répertoire des bases pour l'entrainement tactique}
-menuText F OptionsPhotosDir "Répertoire des images..." 0 {Répertoire des bases pour l'images}
+menuText F OptionsPhotosDir "Répertoire des images..." 0 {Répertoire des bases pour les images}
 # ====== TODO To be translated ======
 menuText F OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
-menuText F OptionsSave "Sauver les options" 0 "Sauver les options dans le fichier $::optionsFile"
+menuText F OptionsSave "Enregistrer les options" 0 "Enregistrer les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
   {Sauvegarder automatiquement toutes les options en quittant Scid}
 
@@ -350,7 +350,7 @@ translate F Graph {Graphique}
 translate F Help {Aide}
 translate F Import {Importer}
 translate F Index {Index}
-translate F LoadGame {Charger partie}
+translate F LoadGame {Charger cette partie}
 translate F BrowseGame {Explorer la partie dans une fenêtre séparée}
 translate F MergeGame {Fusionner la partie comme variante}
 translate F MergeGames {Fusionner les parties}
@@ -386,15 +386,15 @@ translate F Pawn {Pion}
 translate F White {Blancs}
 translate F Black {Noirs}
 translate F Player {Joueur}
-translate F Rating {Classement ELO}
-translate F RatingDiff {Différence de classement ELO (Blancs - Noirs)}
+translate F Rating {Classement Elo}
+translate F RatingDiff {Différence de classement Elo (Blancs - Noirs)}
 translate F AverageRating {Classement moyen}
 translate F Event {Événement}
-translate F Site {Lieux}
+translate F Site {Lieu}
 translate F Country {Pays}
 translate F IgnoreColors {Ignorer les couleurs}
 translate F Date {Date}
-translate F EventDate {Événement date}
+translate F EventDate {Date d'événement}
 translate F Decade {Décennie}
 translate F Year {Année}
 translate F Month {Mois}
@@ -491,11 +491,11 @@ translate F TipAtStartup {Conseil au démarrage}
 
 # Tree window menus:
 menuText F TreeFile "Fichier" 0
-menuText F TreeFileFillWithBase "Remplir cache avec base" 0 {Remplir le cache avec toutes les parties de la base courante}
-menuText F TreeFileFillWithGame "Remplir cache avec partie" 0 {Remplir le cache avec la partie de la base courante}
+menuText F TreeFileFillWithBase "Remplir le cache avec la base" 0 {Remplir le cache avec toutes les parties de la base courante}
+menuText F TreeFileFillWithGame "Remplir le cache avec la partie" 0 {Remplir le cache avec la partie de la base courante}
 menuText F TreeFileSetCacheSize "Taille du cache" 0 {Taille du cache}
 menuText F TreeFileCacheInfo "Info cache" 0 {Afficher information sur l'utilisation du cache}
-menuText F TreeFileSave "Sauver le cache" 0
+menuText F TreeFileSave "Enregistrer le cache" 0
 menuText F TreeFileFill "Remplir le cache" 0
 menuText F TreeFileBest "Liste des meilleures parties" 0 {Montrer la liste des meilleures parties}
 menuText F TreeFileGraph "Graphique" 0 {Graphique de l'arbre}
@@ -503,12 +503,12 @@ menuText F TreeFileCopy "Copier l'arbre dans le presse-papiers" 0
 menuText F TreeFileClose "Fermer la fenêtre d'arbre" 0
 menuText F TreeMask "Masque" 0
 menuText F TreeMaskNew "Nouveau" 0 {Nouveau masque}
-menuText F TreeMaskOpen "Ouvrir" 0 {Ouvrir masque}
+menuText F TreeMaskOpen "Ouvrir" 0 {Ouvrir un masque}
 menuText F TreeMaskOpenRecent "Ouvrir récent" 0 {Ouvrir un masque récent}
-menuText F TreeMaskSave "Sauver" 0 {Sauver masque}
-menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
-menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
-menuText F TreeMaskFillWithBase "Remplir avec base" 0 {Remplir le masque avec les parties de la base}
+menuText F TreeMaskSave "Enregistrer" 0 {Enregistrer le masque}
+menuText F TreeMaskClose "Fermer" 0 {Fermer le masque}
+menuText F TreeMaskFillWithGame "Remplir avec la partie" 0 {Remplir le masque avec la partie courante}
+menuText F TreeMaskFillWithBase "Remplir avec la base" 0 {Remplir le masque avec les parties de la base}
 menuText F TreeMaskInfo "Info" 0 {Statistiques du masque}
 menuText F TreeMaskDisplay "Afficher l'arbre" 0 {Affichage des données du masque sous la forme d'un arbre}
 menuText F TreeMaskSearch "Chercher" 0 {Chercher dans le masque courant}
@@ -524,11 +524,11 @@ menuText F TreeOptFastAndSlowmode "Mode rapide puis lent" 0 {Mode rapide puis le
 menuText F TreeOptStartStop "Rafraîchissement auto" 0 {Rafraîchissement automatique de la fenêtre}
 menuText F TreeOptLock "Verrouille" 0 {Dé/verrouiller l'arbre à la base en cours}
 menuText F TreeOptTraining "Entraînement" 0 {Démarrer/Arrêter l'arbre du mode d'entraînement}
-menuText F TreeOptAutosave "Sauver le cache automatiquement" 0
+menuText F TreeOptAutosave "Enregistrer le cache automatiquement" 0
 menuText F TreeHelp "Aide" 0
 menuText F TreeHelpTree "Aide Arbre" 0
 menuText F TreeHelpIndex "Index" 0
-translate F SaveCache {Sauver le cache}
+translate F SaveCache {Enregistrer le cache}
 translate F Training {Entraînement}
 translate F LockTree {Verrouiller}
 translate F TreeLocked {verrouillé}
@@ -624,13 +624,13 @@ menuText F TmtSortSite "Lieux" 0
 menuText F TmtSortEvent "Événement" 1
 menuText F TmtSortWinner "Vainqueur" 0
 translate F TmtLimit "Limite de liste"
-translate F TmtMeanElo "Moyenne ELO la plus basse"
+translate F TmtMeanElo "Moyenne Elo la plus basse"
 translate F TmtNone "Aucun tournoi correspondant n'a été trouvé."
 
 # Graph windows:
 menuText F GraphFile "Fichier" 0
-menuText F GraphFileColor "Sauver comme Postscript en couleurs..." 27
-menuText F GraphFileGrey "Sauver comme Postscript en niveaux de gris..." 27
+menuText F GraphFileColor "Enregistrer comme Postscript en couleurs..." 27
+menuText F GraphFileGrey "Enregistrer comme Postscript en niveaux de gris..." 27
 menuText F GraphFileClose "Fermer la fenêtre" 0
 menuText F GraphOptions "Options" 0
 menuText F GraphOptionsWhite "Blancs" 0
@@ -996,7 +996,7 @@ translate F TwinCriteria2 {Il est recommandé de sélectionner "Non" pour "mêmes c
 translate F TwinCriteria3 {Il est recommandé de sélectionner "Oui" pour au moins deux des paramètres "même site", "même ronde" et "même année".\nVoulez-vous continuer et effacer les doublons quand même ?}
 translate F TwinCriteriaConfirm {Scid: Confirmer les paramètres de doublons}
 translate F TwinChangeTag "Changer les tags de partie suivants:\n\n"
-translate F AllocRatingDescription "Cette commande va utiliser les fichiers de vérification de noms et de classement ELO pour les parties de cette base. Chaque fois qu'un joueur n'a pas de classement mais que son classement est listé dans le fichier de vérification de noms à la date de la partie, ce classement est pris en compte."
+translate F AllocRatingDescription "Cette commande va utiliser les fichiers de vérification de noms et de classement Elo pour les parties de cette base. Chaque fois qu'un joueur n'a pas de classement mais que son classement est listé dans le fichier de vérification de noms à la date de la partie, ce classement est pris en compte."
 translate F RatingOverride "Remplacer le classement non nul existant"
 translate F AddRatings "ajouter classement à:"
 translate F AddedRatings {Scid a ajouté $r classements Elo dans $g parties.}
@@ -1433,7 +1433,7 @@ translate F NotFollowedLine {Vous n'avez pas suivi la ligne}
 translate F DoYouWantContinue {Voulez-vous continuer ?}
 translate F CoachIsWatching {L'entraineur regarde}
 translate F Ponder {Réflexion permanente}
-translate F LimitELO {Limiter force ELO}
+translate F LimitELO {Limiter la force Elo}
 translate F DubiousMovePlayedTakeBack {Coup douteux joué, voulez-vous reprendre le coup ?}
 translate F WeakMovePlayedTakeBack {Coup faible joué, voulez-vous reprendre le coup ?}
 translate F BadMovePlayedTakeBack {Mauvais coup joué, voulez-vous reprendre le coup ?}
@@ -1677,7 +1677,7 @@ translate F CCErrNoCCDB {Aucune base du type 'Correspondance' n'est ouverte. Ouv
 translate F CCFetchBtn {Récupérer les parties sur le serveur et les analyser dans la boîte de réception}
 translate F CCPrevBtn {Aller à la partie précédente}
 translate F CCNextBtn {Aller à la partie suivante}
-translate F CCSendBtn {Envoyer coup}
+translate F CCSendBtn {Envoyer le coup}
 translate F CCEmptyBtn {Vider les boîtes d'envoi et de réception}
 translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide appuyer sur F1!}
 translate F CCDlgServerName {Nom serveur:}
