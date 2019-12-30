@@ -85,6 +85,8 @@ menuText F EditCopyBoard "Copier la position" 6 \
   {Copier la position en cours en notation FEN vers la sélection de texte (presse-papier)}
 menuText F EditPasteBoard "Coller la position de départ" 12 \
   {Initialiser la position de départ à partir de la sélection de texte courante(presse-papier)}
+# ====== TODO To be translated ======
+menuText F ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText F Game "Partie" 0
@@ -448,6 +450,8 @@ translate F PInfoMostBlack {Ouvertures les plus fréquentes avec les noirs}
 translate F PInfoRating {Historique du classement}
 translate F PInfoBio {Biographie}
 translate F PInfoEditRatings {Editer les Classements}
+# ====== TODO To be translated ======
+translate F PInfoEloFile {File}
 
 # Tablebase information:
 translate F Draw {Nulle}
@@ -635,6 +639,10 @@ menuText F GraphOptionsWhite "Blancs" 0
 menuText F GraphOptionsBlack "Noirs" 0
 menuText F GraphOptionsBoth "Les deux" 4
 menuText F GraphOptionsPInfo "Informations joueurs" 0
+# ====== TODO To be translated ======
+menuText F GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText F GraphOptionsEloDB "Elo from database" 0
 translate F GraphFilterTitle "Graphique de filtre: fréquence pour 1000 parties"
 translate F GraphAbsFilterTitle "Graphique de filtre: fréquence des parties"
 translate F ConfigureFilter {Configurer l'axe des X par année, classement et coups}
