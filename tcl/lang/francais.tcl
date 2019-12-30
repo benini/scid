@@ -181,6 +181,7 @@ menuText F ToolsConnectHardware "Connecter matériel" 0 {Connecter un échiquier e
 menuText F ToolsConnectHardwareConfigure "Configurer..." 0 {Configurer un échiquier externe et connection}
 menuText F ToolsConnectHardwareNovagCitrineConnect "Connecter Novag Citrine" 0 {Connecter Novag Citrine}
 menuText F ToolsConnectHardwareInputEngineConnect "Connecter entrée" 0 {Connecter un moteur en entrée (p.e. DGT)}
+
 menuText F ToolsPInfo "Information sur les joueurs"  0 \
   {Ouvrir/Mettre à jour la fenêtre d'information sur les joueurs}
 menuText F ToolsPlayerReport "Rapport pour le joueur..." 3 \
@@ -214,7 +215,11 @@ menuText F ToolsStartEngine1 "Démarrer moteur 1" 0  {Démarrer moteur 1}
 menuText F ToolsStartEngine2 "Démarrer moteur 2" 0  {Démarrer moteur 2}
 # ====== TODO To be translated ======
 menuText F ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+
+# Play menu
 menuText F Play "Jouer" 0
+
+# --- Correspondence Chess
 menuText F CorrespondenceChess "Echecs par correspondance" 0 {eMail et Xfcc échecs par correspondance}
 menuText F CCConfigure "Configurer..." 0 {Configurer outils externes et config générale}
 # ====== TODO To be translated ======
@@ -223,21 +228,21 @@ menuText F CCOpenDB "Ouvrir base..." 0 {Ouvrir la base de jeu par correspondance
 menuText F CCRetrieve "Récupérer parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser boîte" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
 menuText F CCSend "Envoyer coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
+
 menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
 menuText F CCClaimDraw "Réclamer la nulle" 0 {Envoyer coup et réclamer nulle (pas par eMail)}
 menuText F CCOfferDraw "Proposer la nulle" 0 {Envoyer coup et proposer nulle (pas par eMail)}
 menuText F CCAcceptDraw "Accepter la nulle" 0 {Accepter la nulle (pas par eMail)}
+
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
 menuText F CCGamePage "Page partie..." 0 {Ouvrir la partie dans navigateur web}
+
+# menu in cc window:
 menuText F CCEditCopy "Copier parties dans Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText F Options "Options" 0
-menuText F OptionsBoard "Echiquier" 0 {Options d'aspect de l'échiquier}
-menuText F OptionsBoardSize "Taille échiquier" 0 {Changer la taille de l'échiquier}
-menuText F OptionsBoardPieces "Style des pièces" 6 {Changer le style des pièces}
-menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
 menuText F OptionsBoardGraphics "Images de cases..." 0 {Select textures for squares}
 translate F OptionsBGW {Sélectionner les textures des cases}
 translate F OptionsBoardGraphicsText {Sélection des images pour les cases blanches et noires:}
@@ -288,8 +293,6 @@ menuText F OptionsWindowsSaveLayout "Enregistrer disposition" 0 {Enregistrer dis
 menuText F OptionsWindowsRestoreLayout "Remettre disposition" 0 {Remettre disposition}
 menuText F OptionsWindowsShowGameInfo "Montrer le panneau d'info" 0 {Montrer le panneau d'info}
 menuText F OptionsWindowsAutoLoadLayout "Chargement auto 1ère disposition" 0 {Chargement auto de la première disposition au démarrage}
-menuText F OptionsToolbar "Barre d'outils de la fenêtre principale" 12 \
-  {Montrer/Cacher dans la barre d'outils de la fenêtre principale}
 menuText F OptionsECO "Charger le fichier ECO..." 20 \
   {Charger un fichier au format ECO}
 menuText F OptionsSpell "Charger le fichier d'orthographe..." 25 \
@@ -306,14 +309,6 @@ menuText F OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file
 menuText F OptionsSave "Sauver les options" 0 "Sauver les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
   {Sauvegarder automatiquement toutes les options en quittant Scid}
-# ====== TODO To be translated ======
-menuText F OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate F MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate F MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate F MenuColorSelect "Select"
 
 # Help menu:
 menuText F Help "Aide" 0
@@ -1772,6 +1767,21 @@ translate F MakeCorrections {Make Corrections}
 translate F Surnames {Surnames}
 # ====== TODO To be translated ======
 translate F Ambiguous {Ambiguous}
+
+#Preferences Dialog
+translate F OptionsToolbar "Barre d'outils de la fenêtre principale"
+translate F OptionsBoard "Echiquier"
+# ====== TODO To be translated ======
+translate F OptionsMenuColor "Setup Menu Colors..."
+translate F OptionsBoardSize "Taille d'échiquier"
+translate F OptionsBoardPieces "Style des pièces"
+#menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
+# ====== TODO To be translated ======
+translate F MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate F MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate F MenuColorSelect "Select"
 
 ##########
 #
