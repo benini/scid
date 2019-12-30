@@ -178,10 +178,10 @@ menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
 # ====== TODO To be translated ======
 menuText F ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText F ToolsBookTuning "Config. bibliothèque" 0 {Configuration fine d'une bibliothèque}
-menuText F ToolsConnectHardware "Connecter matériel" 0 {Connecter un échiquier externe}
+menuText F ToolsConnectHardware "Connecter un matériel" 0 {Connecter un échiquier externe}
 menuText F ToolsConnectHardwareConfigure "Configurer..." 0 {Configurer un échiquier externe et connection}
 menuText F ToolsConnectHardwareNovagCitrineConnect "Connecter Novag Citrine" 0 {Connecter Novag Citrine}
-menuText F ToolsConnectHardwareInputEngineConnect "Connecter entrée" 0 {Connecter un moteur en entrée (p.e. DGT)}
+menuText F ToolsConnectHardwareInputEngineConnect "Connecter une entrée" 0 {Connecter un moteur en entrée (par ex. DGT)}
 
 menuText F ToolsPInfo "Information sur les joueurs"  0 \
   {Ouvrir/Mettre à jour la fenêtre d'information sur les joueurs}
@@ -1697,7 +1697,7 @@ translate F CCOrderStartDate {Date de départ}
 translate F CCOrderOppTimeTxt {Pendule de l'adversaire}
 translate F CCDlgConfigRelay {Configurer les observations ICCF}
 translate F CCDlgConfigRelayHelp {Allez à la page des jeux sur http://www.iccf-webchess.com et affichez le jeu à observer. Si vous voyez l'échiquier, copiez l'URL de votre navigateur dans la liste ci-dessous. Une seule URL par ligne !\nExemple: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
-translate F ExtHWConfigConnection {Configure external hardware}
+translate F ExtHWConfigConnection {Configurer un materiel externe}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
 translate F ExtHWEngineParam {Paramètre moteur}
