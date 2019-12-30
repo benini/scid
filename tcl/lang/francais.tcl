@@ -467,22 +467,14 @@ translate F WinningMoves {Coups gagnants}
 translate F DrawingMoves {Coups faisant nulle}
 translate F LosingMoves {Coups perdants}
 translate F UnknownMoves {Coups dont le résultat est inconnu}
-# ====== TODO To be translated ======
-translate F SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate F toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate F NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate F MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate F SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate F WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate F BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate F AllLoss {" Whoever moves loses:     " }
+translate F SideLongest {Joueur    +long    %     %     %\n}
+translate F toNoveMate {au trait   mat    Gain  Nul  Perte\n}
+translate F NoSummary {\nPas de résumé pour cette table de finales.}
+translate F MutualZugzwang {Zugzwangs mutuels : }
+translate F SelectetZugzwang {\nPositions de zugzwang choisies :}
+translate F WdrawBloss {Blanc annule, Noir perd :}
+translate F BdrawWloss {Noir annule, Blanc perd :}
+translate F AllLoss {" Celui au trait perd:     " }
 
 # Tip of the day:
 translate F Tip {Conseil}
