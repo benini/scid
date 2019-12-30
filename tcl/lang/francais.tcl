@@ -227,7 +227,7 @@ menuText F CCConfigure "Configurer..." 0 {Configurer les outils externes et la c
 menuText F CCConfigRelay "Configurer les observations..." 10 {Configurer les jeux à observer}
 menuText F CCOpenDB "Ouvrir la base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
 menuText F CCRetrieve "Récupérer les parties" 0 {Récupérer les parties via Xfcc}
-menuText F CCInbox "Analyser boîte" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
+menuText F CCInbox "Analyser la boîte de réception" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
 menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
 
 menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
