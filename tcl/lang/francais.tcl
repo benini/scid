@@ -223,22 +223,21 @@ menuText F Play "Jouer" 0
 
 # --- Correspondence Chess
 menuText F CorrespondenceChess "Echecs par correspondance" 0 {eMail et Xfcc échecs par correspondance}
-menuText F CCConfigure "Configurer..." 0 {Configurer outils externes et config générale}
-# ====== TODO To be translated ======
-menuText F CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-menuText F CCOpenDB "Ouvrir base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
-menuText F CCRetrieve "Récupérer parties" 0 {Récupérer les parties via Xfcc}
+menuText F CCConfigure "Configurer..." 0 {Configurer les outils externes et la config générale}
+menuText F CCConfigRelay "Configurer les observations..." 10 {Configurer les jeux à observer}
+menuText F CCOpenDB "Ouvrir la base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
+menuText F CCRetrieve "Récupérer les parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser boîte" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
-menuText F CCSend "Envoyer coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
+menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
 
 menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
-menuText F CCClaimDraw "Réclamer la nulle" 0 {Envoyer coup et réclamer nulle (pas par eMail)}
-menuText F CCOfferDraw "Proposer la nulle" 0 {Envoyer coup et proposer nulle (pas par eMail)}
-menuText F CCAcceptDraw "Accepter la nulle" 0 {Accepter la nulle (pas par eMail)}
+menuText F CCClaimDraw "Réclamer la partie nulle" 0 {Envoyer le coup et réclamer une partie nulle (pas par eMail)}
+menuText F CCOfferDraw "Proposer la partie nulle" 0 {Envoyer le coup et proposer une partie nulle (pas par eMail)}
+menuText F CCAcceptDraw "Accepter la partie nulle" 0 {Accepter la partie nulle (pas par eMail)}
 
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
-menuText F CCGamePage "Page partie..." 0 {Ouvrir la partie dans navigateur web}
+menuText F CCGamePage "Page web partie..." 0 {Ouvrir la partie dans un navigateur web}
 
 # menu in cc window:
 menuText F CCEditCopy "Copier parties dans Clipbase" 0 {Copy the games as CSV list to clipbase}
@@ -1653,14 +1652,14 @@ translate F CCDlgClawsEg {p.e Sylpheed Claws}
 translate F CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate F CCDlgAttachementPar {Attachement:}
 translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
-translate F CCDlgConfirmXfcc {Confirmer coups}
+translate F CCDlgConfirmXfcc {Confirmer les coups}
 translate F CCDlgSubjectPar {Objet:}
 translate F CCDlgDeleteBoxes {Vider boîtes}
 translate F CCDlgDeleteBoxesText {Voulez-vous réellement vider les boîtes entrantes et sortantes pour les échecs par correspondance ? Cela nécessite une nouvelle synchronisation pour afficher le dernier état de vos parties}
-translate F CCDlgConfirmMove {Confirmer coup}
+translate F CCDlgConfirmMove {Confirmer le coup}
 translate F CCDlgConfirmMoveText {Si vous confirmez, le coup ci-dessous et le commentaire sont envoyés au serveur:}
 translate F CCDlgDBGameToLong {Ligne principale incohérente}
-translate F CCDlgDBGameToLongError {La ligne principale dans votre base de données est plus longue que la partie dans votre boîte de réception. Si la boîte de réception contient les parties en cours, c'est-à-dire juste après une synchronisation, certains coups ont été ajoutés à tort à la ligne principale dans la base de données.\nDans ce cas veuillez raccourcir la ligne principale à au plus coup\n}
+translate F CCDlgDBGameToLongError {La ligne principale dans votre base de données est plus longue que la partie dans votre boîte de réception. Si la boîte de réception contient les parties en cours, c'est-à-dire juste après une synchronisation, certains coups ont été ajoutés à tort à la ligne principale dans la base de données.\nDans ce cas veuillez raccourcir la ligne principale à ce coup au plus\n}
 translate F CCDlgStartEmail {Commencer nouvelle partie par eMail}
 translate F CCDlgYourName {Votre nom:}
 translate F CCDlgYourMail {Votre adresse mail:}
@@ -1685,23 +1684,20 @@ translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide app
 translate F CCDlgServerName {Nom serveur:}
 translate F CCDlgLoginName  {Login:}
 translate F CCDlgPassword   {Mot de passe:}
-# ====== TODO To be translated ======
-translate F CCDlgShowPassword {Show password}
+translate F CCDlgShowPassword {Montrer le mot de passe}
 translate F CCDlgURL        {Xfcc-URL:}
-translate F CCDlgRatingType {Type classement:}
+translate F CCDlgRatingType {Type de classement:}
 translate F CCDlgDuplicateGame {Identifiant de partie non-unique}
 translate F CCDlgDuplicateGameError {Cette partie existe à plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
 translate F CCDlgSortOption {Tri:}
 translate F CCDlgListOnlyOwnMove {Parties où c'est mon tour}
 translate F CCOrderClassicTxt {Site, Evénement, Ronde, Résultat, Blancs, Noirs}
 translate F CCOrderMyTimeTxt {Ma pendule}
-translate F CCOrderTimePerMoveTxt {Temps par coup jusqu'au prochain contrôlede temps}
+translate F CCOrderTimePerMoveTxt {Temps par coup jusqu'au prochain contrôle de temps}
 translate F CCOrderStartDate {Date de départ}
-translate F CCOrderOppTimeTxt {Pendule adversaire}
-# ====== TODO To be translated ======
-translate F CCDlgConfigRelay {Configure ICCF observations}
-# ====== TODO To be translated ======
-translate F CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+translate F CCOrderOppTimeTxt {Pendule de l'adversaire}
+translate F CCDlgConfigRelay {Configurer les observations ICCF}
+translate F CCDlgConfigRelayHelp {Allez à la page des jeux sur http://www.iccf-webchess.com et affichez le jeu à observer. Si vous voyez l'échiquier, copiez l'URL de votre navigateur dans la liste ci-dessous. Une seule URL par ligne !\nExemple: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
