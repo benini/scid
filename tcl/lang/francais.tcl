@@ -121,7 +121,7 @@ menuText F SearchNegate "Inverser le filtre" 0 \
 menuText F SearchCurrent "Position..." 0 \
   {Rechercher la position en cours}
 menuText F SearchHeader "Entête..." 0 \
-  {Rechercher par entête (joueur, tournoi, etc) information}
+  {Rechercher par l'information dans l'entête (joueur, tournoi, etc)}
 menuText F SearchMaterial "Motifs" 0 \
   {Rechercher des motifs ou un matériel particulier sur l'échiquier}
 menuText F SearchUsing "En utilisant un fichier d'options..." 0 \
@@ -399,9 +399,8 @@ translate F Year {Année}
 translate F Month {Mois}
 translate F Months {Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Décembre}
 translate F Days {Dim Lun Mar Mer Jeu Ven Sam}
-translate F YearToToday {-1A}
-# ====== TODO To be translated ======
-translate F YearToTodayTooltip {Set date from 1 year back to today}
+translate F YearToToday {- 1 an}
+translate F YearToTodayTooltip {Fixer la date de 1 an en arrière à aujourd'hui}
 translate F Result {Résultat}
 translate F Round {Ronde}
 translate F Length {Longueur}
@@ -687,7 +686,7 @@ translate F EngineArgs {Paramètres}
 translate F EngineDir {Répertoire}
 translate F EngineElo {Elo}
 translate F EngineTime {Date}
-translate F EngineNew {Nouvelle}
+translate F EngineNew {Nouveau}
 translate F EngineEdit {Éditer}
 translate F EngineRequired {Les champs en gras sont requis; les autres sont optionnels}
 
@@ -781,7 +780,7 @@ menuText F OprepHelpReport "Aide du rapport" 0
 menuText F OprepHelpIndex "Index" 0
 
 # Header search:
-translate F HeaderSearch {Rechercher Entête}
+translate F HeaderSearch {Rechercher dans l'entête}
 translate F EndSideToMove {Côté devant jouer à la fin de la partie}
 translate F GamesWithNoECO {Partie sans code ECO?}
 translate F GameLength {Longueur de la partie}
@@ -805,10 +804,8 @@ translate F BrilliancyFlag {Spectaculaire}
 translate F BlunderFlag {Gaffe}
 translate F UserFlag {Utilisateur}
 translate F PgnContains {PGN contenant du texte}
-# ====== TODO To be translated ======
-translate F Annotator {Annotator}
-# ====== TODO To be translated ======
-translate F Cmnts {Annotated games only}
+translate F Annotator {Annotateur}
+translate F Cmnts {Jeux annotés uniquement}
 
 # Game list window:
 translate F GlistNumber {Numéro}
@@ -817,11 +814,11 @@ translate F GlistBlack {Noirs}
 translate F GlistWElo {B-Elo}
 translate F GlistBElo {N-Elo}
 translate F GlistEvent {Événement}
-translate F GlistSite {Lieux}
+translate F GlistSite {Lieu}
 translate F GlistRound {Ronde}
 translate F GlistDate {Date}
 translate F GlistYear {Année}
-translate F GlistEDate {Événement-Date}
+translate F GlistEDate {Date d'événement}
 translate F GlistResult {Résultat}
 translate F GlistLength {Longueur}
 translate F GlistCountry {Pays}
@@ -856,8 +853,7 @@ translate F GlistColor {Couleur}
 translate F GlistSep {Séparateur}
 # ====== TODO To be translated ======
 translate F GlistCurrentSep {-- Current --}
-# ====== TODO To be translated ======
-translate F GlistNewSort {New}
+translate F GlistNewSort {Nouveau}
 # ====== TODO To be translated ======
 translate F GlistAddToSort {Add}
 # ====== TODO To be translated ======
