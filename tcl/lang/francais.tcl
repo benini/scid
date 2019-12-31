@@ -1720,7 +1720,7 @@ translate F ImportPGN {Importer un jeu PGN}
 translate F ImportingFiles {Importing PGN files in}
 translate F ImportingFrom {Importation de}
 translate F ImportingIn {Importer des jeux dans}
-translate F UseLastTag {Utilisez les tags de last\ngame's tags}
+translate F UseLastTag {Utilisez les tags de la dernière partie}
 translate F Random {Aléatoire}
 translate F BackToMainline {Revenir à la ligne principale}
 translate F LeaveVariant {Quitter la variante}
