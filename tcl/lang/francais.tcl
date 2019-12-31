@@ -446,8 +446,7 @@ translate F PInfoMostBlack {Ouvertures les plus fréquentes avec les noirs}
 translate F PInfoRating {Historique du classement}
 translate F PInfoBio {Biographie}
 translate F PInfoEditRatings {Editer les Classements}
-# ====== TODO To be translated ======
-translate F PInfoEloFile {File}
+translate F PInfoEloFile {Fichier}
 
 # Tablebase information:
 translate F Draw {Nulle}
@@ -627,10 +626,8 @@ menuText F GraphOptionsWhite "Blancs" 0
 menuText F GraphOptionsBlack "Noirs" 0
 menuText F GraphOptionsBoth "Les deux" 4
 menuText F GraphOptionsPInfo "Informations joueurs" 0
-# ====== TODO To be translated ======
-menuText F GraphOptionsEloFile "Elo from rating file" 0
-# ====== TODO To be translated ======
-menuText F GraphOptionsEloDB "Elo from database" 0
+menuText F GraphOptionsEloFile "Classement Elo du fichier" 0
+menuText F GraphOptionsEloDB "Classement Elo dans la base" 0
 translate F GraphFilterTitle "Graphique de filtre: fréquence pour 1000 parties"
 translate F GraphAbsFilterTitle "Graphique de filtre: fréquence des parties"
 translate F ConfigureFilter {Configurer l'axe des X par année, classement et coups}
