@@ -84,7 +84,7 @@ menuText F EditSetup "Position de départ" 0 \
 menuText F EditCopyBoard "Copier la position" 6 \
   {Copier la position en cours en notation FEN vers la sélection de texte (presse-papier)}
 menuText F EditPasteBoard "Coller la position de départ" 12 \
-  {Initialiser la position de départ à partir de la sélection de texte courante(presse-papier)}
+  {Initialiser la position de départ à partir de la sélection de texte courante (presse-papier)}
 menuText F ConfigureScid "Préférences..." 0 {Configurer toutes les options pour SCID}
 
 # Game menu:
@@ -443,7 +443,7 @@ translate F PInfoMostWhite {Ouvertures les plus fréquentes avec les blancs}
 translate F PInfoMostBlack {Ouvertures les plus fréquentes avec les noirs}
 translate F PInfoRating {Historique du classement}
 translate F PInfoBio {Biographie}
-translate F PInfoEditRatings {Editer les Classements}
+translate F PInfoEditRatings {Editer les classements}
 translate F PInfoEloFile {Fichier}
 
 # Tablebase information:
