@@ -54,8 +54,8 @@ menuText F FileMaintFixBase "Réparer base" 0 {Essaie de réparer une base corromp
 
 # Edit menu:
 menuText F Edit "Éditer" 0
-menuText F EditAdd "Ajouter variante" 0 {Ajouter une variante}
-menuText F EditDelete "Effacer variante" 0 {Effacer cette variante}
+menuText F EditAdd "Ajouter une variante" 0 {Ajouter une variante}
+menuText F EditDelete "Effacer cette variante" 0 {Effacer cette variante}
 menuText F EditFirst "Déplacer en tête" 0 \
   {Déplacer cette variante en tête de liste}
 menuText F EditMain "Variante vers ligne principale" 13 \
@@ -1724,18 +1724,12 @@ translate F ImportingFrom {Importation de}
 translate F ImportingIn {Importer des jeux dans}
 translate F UseLastTag {Utilisez les tags de last\ngame's tags}
 translate F Random {Aléatoire}
-# ====== TODO To be translated ======
-translate F BackToMainline {Go back to mainline}
-# ====== TODO To be translated ======
-translate F LeaveVariant {Leave variant}
-# ====== TODO To be translated ======
-translate F Autoplay {Autoplay}
-# ====== TODO To be translated ======
-translate F ShowHideCoords {Show/Hide Coord.}
-# ====== TODO To be translated ======
-translate F ShowHideMaterial {Show/Hide Material}
-# ====== TODO To be translated ======
-translate F FullScreen {Full Screen}
+translate F BackToMainline {Revenir à la ligne principale}
+translate F LeaveVariant {Quitter la variante}
+translate F Autoplay {Jeu automatique}
+translate F ShowHideCoords {Afficher/Masquer Coord.}
+translate F ShowHideMaterial {Afficher/Masquer Matériel}
+translate F FullScreen {Plein écran}
 # ====== TODO To be translated ======
 translate F FilterStatistic {Filter Statistics}
 # ====== TODO To be translated ======
