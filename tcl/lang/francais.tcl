@@ -175,8 +175,7 @@ menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
 menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de variantes}
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
-# ====== TODO To be translated ======
-menuText F ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+menuText F ToolsEngineTournament "Tournoi de moteurs"  0 {Démarrer un tournoi entre moteurs d'échecs}
 menuText F ToolsBookTuning "Config. bibliothèque" 0 {Configuration fine d'une bibliothèque}
 menuText F ToolsConnectHardware "Connecter un matériel" 0 {Connecter un échiquier externe}
 menuText F ToolsConnectHardwareConfigure "Configurer..." 0 {Configurer un échiquier externe et connection}
@@ -214,8 +213,7 @@ menuText F ToolsImportFile "Importer un fichier en PGN..." 12 \
   {Importer des parties à partir d'un fichier PGN}
 menuText F ToolsStartEngine1 "Démarrer moteur 1" 0  {Démarrer moteur 1}
 menuText F ToolsStartEngine2 "Démarrer moteur 2" 0  {Démarrer moteur 2}
-# ====== TODO To be translated ======
-menuText F ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+menuText F ToolsCaptureBoard "Capturer l'échiquier..." 0  {Enregistrer la position actuelle de l'échiquier en tant qu'image.}
 
 # Play menu
 menuText F Play "Jouer" 0
@@ -541,10 +539,10 @@ translate F Exclude {Exclure}
 translate F MainLine {Ligne principale}
 translate F Bookmark {Signet}
 translate F NewLine {Nouvelle ligne}
-translate F ToBeVerified {A vérifier}
+translate F ToBeVerified {À vérifier}
 translate F ToTrain {S'entrainer}
 translate F Dubious {Douteux}
-translate F ToRemove {A supprimer}
+translate F ToRemove {À supprimer}
 translate F NoMarker {Aucun marqueur}
 translate F ColorMarker {Couleur}
 translate F WhiteMark {Blanc}
@@ -656,7 +654,6 @@ translate F AnnotateBlack {Pour les coups des noirs seulement}
 translate F AnnotateBlundersOnly {Quand le coup est une erreur}
 translate F AnnotateBlundersOnlyScoreChange {Coup faible, le score varie de/à: }
 translate F BlundersThreshold {Seuil de l'erreur}
-# TODO: Translate
 translate F ScoreAllMoves {Valider tous les coups}
 translate F LowPriority {Priorité processeur basse}
 translate F ClickHereToSeeMoves {Cliquer ici pour afficher les coups}
