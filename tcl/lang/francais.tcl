@@ -41,7 +41,7 @@ menuText F FileMaintNamePlayer "Corriger les noms de joueurs..." 21 \
   {Vérifier l'orthographe des noms de joueurs}
 menuText F FileMaintNameEvent "Corriger les événements..." 14 \
   {Vérifier l'orthographe des noms d'événements}
-menuText F FileMaintNameSite "Corriger les noms de lieux.." 21 \
+menuText F FileMaintNameSite "Corriger les noms de lieux..." 21 \
   {Vérifier l'orthographe des noms de lieux}
 menuText F FileMaintNameRound "Corriger les noms des rondes..." 22 \
   {Vérifier l'orthographe des noms de rondes}
@@ -234,10 +234,10 @@ menuText F CCAcceptDraw "Accepter la partie nulle" 0 {Accepter la partie nulle (
 
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
-menuText F CCGamePage "Page web partie..." 0 {Ouvrir la partie dans un navigateur web}
+menuText F CCGamePage "Page web de la partie..." 0 {Ouvrir la partie dans un navigateur web}
 
 # menu in cc window:
-menuText F CCEditCopy "Copier parties dans Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText F CCEditCopy "Copier parties dans clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText F Options "Options" 0
