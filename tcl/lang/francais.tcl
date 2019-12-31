@@ -962,10 +962,10 @@ translate F TwinChecknextPair {Paire suivante}
 translate F TwinChecker {Scid: vérificateur de doublon}
 translate F TwinCheckTournament {Parties dans le tournoi:}
 translate F TwinCheckNoTwin {Pas de doublon  }
-translate F TwinCheckNoTwinfound {No twin was detected for this game.\nTo show twins using this window, you must first use the "Delete twin games..." function. }
+translate F TwinCheckNoTwinfound {Aucun doublon n'a été détecté pour ce jeu.\nPour afficher les doublon dans cette fenêtre, vous devez d'abord utiliser la fonction "Purger les doublon...". }
 translate F TwinCheckTag {Partager tags...}
 translate F TwinCheckFound1 {Scid a trouvé $result doublons}
-translate F TwinCheckFound2 { et positionné le marquer de suppression}
+translate F TwinCheckFound2 { et positionné le marqueur de suppression}
 translate F TwinCheckNoDelete {Il n'y a pas de parties dans cette base à effacer.}
 translate F TwinCriteria1 { Les paramètres pour trouver des doublons risquent de\nfaire que des parties différentes avec des coups similaires soient marquées comme des doublons.}
 translate F TwinCriteria2 {Il est recommandé de sélectionner "Non" pour "mêmes coups", vous devriez sélectionner "Oui" pour les couleurs, événement, site, ronde, année et mois.\nVoulez-vous continuer et effacer les doublons quand même ? }
