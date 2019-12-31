@@ -281,8 +281,8 @@ menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombr
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}
 menuText F OptionsWindows "Fenêtres" 0 {Options des fenêtres}
-menuText F OptionsWindowsIconify "Mise en icone automatique" 5 \
-  {Mettre toutes les fenêtres en icones quand la fenêtre principale est mise en icone}
+menuText F OptionsWindowsIconify "Mise en icône automatique" 5 \
+  {Mettre toutes les fenêtres en icônes quand la fenêtre principale est mise en icône}
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
@@ -359,7 +359,7 @@ translate F Stop {Arrêter}
 translate F Store {Enregistrer}
 translate F Update {Mettre à jour}
 translate F ChangeOrient {Changer l'orientation de la fenêtre}
-translate F ShowIcons {Montrer les icones}
+translate F ShowIcons {Montrer les icônes}
 translate F None {Aucun}
 translate F First {Premier}
 translate F Current {En cours}
@@ -1697,7 +1697,7 @@ translate F DockBottom {Déplacer en bas}
 translate F DockLeft {Déplacer à gauche}
 translate F DockRight {Déplacer à droite}
 translate F Undock {Détacher}
-translate F ChangeIcon {Changer icone...}
+translate F ChangeIcon {Changer l'icône...}
 translate F NewGameListWindow {Nouvelle fenêtre de liste de parties}
 translate F LoadatStartup {Charger au démarrage}
 translate F ShowHideDB {Afficher/Masquer les bases de données}
