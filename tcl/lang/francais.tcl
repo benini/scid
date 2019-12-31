@@ -826,10 +826,8 @@ translate F GlistComments {Commentaires}
 translate F GlistAnnos {Annotations}
 translate F GlistStart {Départ}
 translate F GlistGameNumber {Partie numéro}
-# ====== TODO To be translated ======
-translate F GlistAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate F GlistRating {Rating}
+translate F GlistAverageElo {Moyenne Elo}
+translate F GlistRating {Classement}
 translate F GlistFindText {Rechercher texte}
 translate F GlistMoveField {Coup}
 translate F GlistEditField {Configurer}
@@ -837,12 +835,9 @@ translate F GlistAddField {Ajouter}
 translate F GlistDeleteField {Enlever}
 translate F GlistWidth {Largeur}
 translate F GlistAlign {Aligner}
-# ====== TODO To be translated ======
-translate F GlistAlignL {Align: left}
-# ====== TODO To be translated ======
-translate F GlistAlignR {Align: right}
-# ====== TODO To be translated ======
-translate F GlistAlignC {Align: center}
+translate F GlistAlignL {Aligner: à gauche}
+translate F GlistAlignR {Aligner: à droite}
+translate F GlistAlignC {Aligner: au centre}
 translate F GlistColor {Couleur}
 translate F GlistSep {Séparateur}
 # ====== TODO To be translated ======
@@ -1703,17 +1698,15 @@ translate F DockLeft {Déplacer à gauche}
 translate F DockRight {Déplacer à droite}
 translate F Undock {Détacher}
 translate F ChangeIcon {Changer icone...}
-# ====== TODO To be translated ======
-translate F NewGameListWindow {New Game List Window}
-# ====== TODO To be translated ======
-translate F LoadatStartup {Load at startup}
+translate F NewGameListWindow {Nouvelle fenêtre de liste de parties}
+translate F LoadatStartup {Charger au démarrage}
 translate F ShowHideDB {Afficher/Masquer les bases de données}
 translate F ChangeFilter {Remplacer le filtre}
 translate F ChangeLayout {Charger/Enregistrer/Modifier les critères de tri et la disposition des colonnes.}
 translate F ShowHideStatistic {Afficher/Masquer les statistiques}
 translate F BoardFilter {Afficher uniquement les jeux qui correspondent à la position actuelle du plateau de jeu.}
 translate F CopyGameTo {Copier le jeu dans}
-translate F FindBar {Trouver un bar}
+translate F FindBar {Barre de recherche}
 translate F FindCurrentGame {Trouver le jeu actuel}
 translate F DeleteGame {Supprimer le jeu}
 translate F UndeleteGame {Reconstitue le jeu}
