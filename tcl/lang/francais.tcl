@@ -1073,8 +1073,8 @@ translate F ClassifyGame {Classer la partie}
 
 # Setup position:
 translate F EmptyBoard {Vider l'échiquier}
-translate F InitialBoard {Ré-initialiser l'échiquier}
-translate F SideToMove {Coté qui a le trait}
+translate F InitialBoard {Réinitialiser l'échiquier}
+translate F SideToMove {Côté qui a le trait}
 translate F MoveNumber {Coup numéro}
 translate F Castling {Roque}
 translate F EnPassantFile {Prise en passant}
@@ -1712,12 +1712,10 @@ translate F DeleteGame {Supprimer le jeu}
 translate F UndeleteGame {Reconstitue le jeu}
 translate F ResetSort {Réinitialiser le tri}
 translate F ConvertNullMove {Convertir les mouvements nuls en commentaires}
-# ====== TODO To be translated ======
-translate F SetupBoard {Setup Board}
+translate F SetupBoard {Définir la position de départ}
 translate F Rotate {Rotation}
 translate F SwitchColors {Changer de couleur}
-# ====== TODO To be translated ======
-translate F FlipBoard {Flip Board}
+translate F FlipBoard {Retourner l'échiquier}
 translate F ImportPGN {Importer un jeu PGN}
 translate F ImportingFiles {Importing PGN files in}
 translate F ImportingFrom {Importation de}
