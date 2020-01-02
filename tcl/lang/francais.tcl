@@ -1729,12 +1729,9 @@ translate F ShowHideMaterial {Afficher/Masquer Matériel}
 translate F FullScreen {Plein écran}
 # ====== TODO To be translated ======
 translate F FilterStatistic {Filter Statistics}
-# ====== TODO To be translated ======
-translate F MakeCorrections {Make Corrections}
-# ====== TODO To be translated ======
-translate F Surnames {Surnames}
-# ====== TODO To be translated ======
-translate F Ambiguous {Ambiguous}
+translate F MakeCorrections {Corriger}
+translate F Surnames {Noms de famille}
+translate F Ambiguous {Ambiguës}
 
 #Preferences Dialog
 translate F OptionsToolbar "Barre d'outils de la fenêtre principale"
