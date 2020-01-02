@@ -1716,7 +1716,7 @@ translate F Rotate {Rotation}
 translate F SwitchColors {Changer de couleur}
 translate F FlipBoard {Retourner l'échiquier}
 translate F ImportPGN {Importer un jeu PGN}
-translate F ImportingFiles {Importing PGN files in}
+translate F ImportingFiles {Importer des fichiers PGN dans}
 translate F ImportingFrom {Importation de}
 translate F ImportingIn {Importer des jeux dans}
 translate F UseLastTag {Utilisez les tags de la dernière partie}
