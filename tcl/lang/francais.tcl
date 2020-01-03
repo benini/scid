@@ -275,7 +275,7 @@ menuText F OptionsShowVarPopup "Montrer fenêtre des variantes" 0 {Affichage auto
 menuText F OptionsMovesSpace "Ajouter un espace après le numéro du coup" 0 {Espace après numéro du coup}  
 menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
-menuText F OptionsMovesShowVarArrows "Montrer flêches pour les variations" 0 {Montrer des flêches pour les variations existantes}
+menuText F OptionsMovesShowVarArrows "Montrer flèches pour les variations" 0 {Montrer des flèches pour les variations existantes}
 menuText F OptionsMovesGlossOfDanger "Couleur codée Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
@@ -647,7 +647,7 @@ translate F AnalysisCommand {Commande d'analyse}
 translate F PreviousChoices {Choix précédents}
 translate F AnnotateTime {Temps en secondes par deux coups}
 translate F AnnotateWhich {Ajouter des variantes}
-translate F AnnotateAll {Pour les coups des deux cotés}
+translate F AnnotateAll {Pour les coups des deux côtés}
 translate F AnnotateAllMoves {Annoter tous les coups}
 translate F AnnotateWhite {Pour les coups des blancs seulement}
 translate F AnnotateBlack {Pour les coups des noirs seulement}
@@ -1227,7 +1227,7 @@ translate F TwinsNote {Pour être considérées comme doublons, deux parties doiven
 translate F TwinsCriteria {Critère: Les doublons doivent avoir...}
 translate F TwinsWhich {Parties à examiner}
 translate F TwinsColors {Même couleurs de joueurs}
-translate F TwinsEvent {Même évènement}
+translate F TwinsEvent {Même événement}
 translate F TwinsSite {Même lieu}
 translate F TwinsRound {Même ronde}
 translate F TwinsYear {Même année}
@@ -1399,7 +1399,7 @@ translate F Noblunder {Pas d'erreur}
 translate F blunder {erreur}
 translate F Noinfo {-- Pas d'info --}
 translate F PhalanxOrTogaMissing {Phalanx ou Toga non trouvé}
-translate F moveblunderthreshold {le coup est une erreur si les pertes sont supérieures à }
+translate F moveblunderthreshold {le coup est une erreur si les pertes sont supérieures à }
 translate F limitanalysis {limiter le temps d'analyse}
 translate F seconds {secondes}
 translate F Abort {Arrêter}
@@ -1506,7 +1506,7 @@ translate F d4Nf6Miscellaneous {1.d4 Cf6 divers}
 translate F Trompowsky {Trompowsky}
 translate F Budapest {Budapest}
 translate F OldIndian {Vieille Indienne}
-translate F BenkoGambit {Gambit Benko}
+translate F BenkoGambit {Gambit Benkö}
 translate F ModernBenoni {Benoni Moderne}
 translate F DutchDefence {Défense hollandaise}
 translate F Scandinavian {Scandinave}
@@ -1662,7 +1662,7 @@ translate F CCDlgShowPassword {Montrer le mot de passe}
 translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type de classement:}
 translate F CCDlgDuplicateGame {Identifiant de partie non-unique}
-translate F CCDlgDuplicateGameError {Cette partie existe à plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
+translate F CCDlgDuplicateGameError {Cette partie existe en plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
 translate F CCDlgSortOption {Tri:}
 translate F CCDlgListOnlyOwnMove {Parties où c'est mon tour}
 translate F CCOrderClassicTxt {Site, Evénement, Ronde, Résultat, Blancs, Noirs}
@@ -1725,13 +1725,13 @@ translate F BackToMainline {Revenir à la ligne principale}
 translate F LeaveVariant {Quitter la variante}
 translate F Autoplay {Jeu automatique}
 translate F ShowHideCoords {Afficher/Masquer Coord.}
-translate F ShowHideMaterial {Afficher/Masquer Matériel}
+translate F ShowHideMaterial {Afficher/Masquer matériel}
 translate F FullScreen {Plein écran}
 # ====== TODO To be translated ======
 translate F FilterStatistic {Filter Statistics}
 translate F MakeCorrections {Corriger}
 translate F Surnames {Noms de famille}
-translate F Ambiguous {Ambiguës}
+translate F Ambiguous {Ambigus}
 
 #Preferences Dialog
 translate F OptionsToolbar "Barre d'outils de la fenêtre principale"
@@ -1833,7 +1833,7 @@ translate F MenuColorSelect "Sélection"
   # {Anderssen Opening} Ouverture-Anderssen
   # {Anti-King's Indian} Anti-Est-Indienne
   # {Austrian Attack} {Attaque Autrichienne}
-  # {Benko Gambit} {Gambit Benko}
+  # {Benko Gambit} {Gambit Benkö}
   # {Benko Opening} {Ouverture Benkö}
   # {Berlin Defence} {Défense Berlinoise}
   # Chameleon Cameleon
