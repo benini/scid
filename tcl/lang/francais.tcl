@@ -35,7 +35,7 @@ menuText F FileMaintDelete "Purger les doublons..." 0 \
   {Trouver les parties en doublons et les marquer pour l'effacement}
 menuText F FileMaintTwin "Trouver les doublons" 0 \
   {Ouvrir/Actualiser la fenêtre de recherche de doublons}
-menuText F FileMaintName "Orthographie des noms" 0 {Édition des noms et outils orthographiques}
+menuText F FileMaintName "Orthographie des noms" 0 {Correction des noms et autres outils orthographiques}
 menuText F FileMaintNameEditor "Éditeur de noms" 11 {Ouvrir/Fermer l'éditeur de noms}
 menuText F FileMaintNamePlayer "Corriger les noms de joueurs..." 21 \
   {Vérifier l'orthographe des noms de joueurs}
@@ -163,8 +163,8 @@ menuText F ToolsEmail "Gestion des messages" 0 \
 menuText F ToolsFilterGraph "Graphique de filtre" 7 {Ouvrir/Fermer la fenêtre du graphique de filtre}
 menuText F ToolsAbsFilterGraph "Graphique de filtre absolu" 7 {Ouvrir/Fermer la fenêtre du graphique de filtre absolu}
 menuText F ToolsOpReport "Rapport d'ouverture" 0 {Générer un rapport d'ouvertures à partir de la position courante}
-menuText F ToolsOpenBaseAsTree "Ouvrir base dans arbre" 0   {Ouvrir une base dans la fenêtre d'arbre}
-menuText F ToolsOpenRecentBaseAsTree "Ouvrir base récente dans arbre" 0   {Ouvrir une base récente dans la fenêtre d'arbre}
+menuText F ToolsOpenBaseAsTree "Ouvrir une base dans l'arbre" 0   {Ouvrir une base dans la fenêtre d'arbre}
+menuText F ToolsOpenRecentBaseAsTree "Ouvrir une base récente dans l'arbre" 0   {Ouvrir une base récente dans la fenêtre d'arbre}
 menuText F ToolsTracker "Suivi de pièce"  0 {Ouvrir la fenêtre de suivi de pièce}
 menuText F ToolsTraining "Entrainement"  0 {Entrainement (tactique, ouvertures, ...) }
 menuText F ToolsTacticalGame "Partie tactique"  0 {Jouer une partie tactique}
@@ -198,8 +198,8 @@ menuText F ToolsExpCurrentHTML "Dans un fichier HTML..." 16 \
 menuText F ToolsExpCurrentHTMLJS "Dans un fichier HTML et JavaScript..." 16 {Écrire la partie en cours dans un fichier HTML et JavaScript}  
 menuText F ToolsExpCurrentLaTeX "Dans un fichier LaTeX..." 16 \
   {Écrire la partie en cours dans un fichier LaTeX}
-menuText F ToolsExpFilter "Écrire le filtre " 2 \
-  {Écrire le filtre dans un fichier texte}
+menuText F ToolsExpFilter "Exporter les parties filtrées" 2 \
+  {Exporter les parties sélectionnées par un filtre dans un fichier PGN, HTML, LaTeX, ou dans une autre base}
 menuText F ToolsExpFilterPGN "Dans un fichier PGN..." 16 \
   {Écrire le filtre dans un fichier PGN}
 menuText F ToolsExpFilterHTML "Dans un fichier HTML..." 16 \
@@ -209,7 +209,7 @@ menuText F ToolsExpFilterLaTeX "Dans un fichier LaTeX..." 16 \
   {Écrire le filtre dans un fichier LaTeX}
 menuText F ToolsImportOne "Importer une partie en PGN..." 0 \
   {Importer une partie à partir d'un texte PGN}
-menuText F ToolsImportFile "Importer un fichier en PGN..." 12 \
+menuText F ToolsImportFile "Importer un fichier PGN..." 12 \
   {Importer des parties à partir d'un fichier PGN}
 menuText F ToolsStartEngine1 "Démarrer moteur 1" 0  {Démarrer moteur 1}
 menuText F ToolsStartEngine2 "Démarrer moteur 2" 0  {Démarrer moteur 2}
@@ -1249,7 +1249,7 @@ translate F TwinsDeleteWhich {Partie à effacer}
 translate F TwinsDeleteShorter {La partie la plus courte}
 translate F TwinsDeleteOlder {La partie avec le plus petit numéro}
 translate F TwinsDeleteNewer {La partie avec le plus grand numéro}
-translate F TwinsDelete {Effacer les parties}
+translate F TwinsDelete {Effacer les doublons}
 
 # Name editor window:
 translate F NameEditType {Taper le nom à éditer}
