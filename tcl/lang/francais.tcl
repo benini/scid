@@ -135,8 +135,8 @@ menuText F WindowsComment "Éditeur de commentaires" 0 \
 menuText F WindowsGList "Liste des parties" 0 \
   {Ouvrir/fermer la liste des parties}
 menuText F WindowsPGN "Fenêtre PGN" 8 {Ouvrir/fermer la fenêtre PGN}
-menuText F WindowsPList "Chercher un joueur" 2 {Ouvrir/fermer la recherche de joueur}
-menuText F WindowsTmt "Recherche de tournois" 0 {Ouvrir/fermer la recherche de tournois}
+menuText F WindowsPList "Chercher un joueur" 2 {Ouvrir/fermer la fenêtre de recherche de joueurs}
+menuText F WindowsTmt "Chercher un tournoi" 0 {Ouvrir/fermer la fenêtre de recherche de tournois}
 menuText F WindowsSwitcher "Changer de base" 0 \
   {Ouvrir/Fermer l'outil de changement de base}
 menuText F WindowsMaint "Fenêtre de Maintenance" 0 \
