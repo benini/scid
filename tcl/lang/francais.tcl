@@ -123,8 +123,8 @@ menuText F SearchCurrent "Position..." 0 \
   {Rechercher selon la position actuelle}
 menuText F SearchHeader "En-tête..." 0 \
   {Rechercher par l'information dans l'en-tête (joueur, tournoi, etc.)}
-menuText F SearchMaterial "Motifs" 0 \
-  {Rechercher des motifs ou un matériel particulier sur l'échiquier}
+menuText F SearchMaterial "Matériel ou motif..." 0 \
+  {Rechercher un motif ou un matériel particulier sur l'échiquier}
 menuText F SearchUsing "En utilisant un fichier d'options..." 0 \
   {Rechercher en utilisant un fichier d'options de recherche}
 
@@ -1020,7 +1020,7 @@ translate F SearchInRefDatabase { Dans la base de référence }
 translate F LookInVars {Chercher dans les variantes}
 
 # Material search:
-translate F MaterialSearch {Rechercher Motifs}
+translate F MaterialSearch {Rechercher un matériel ou motif}
 translate F Material {Matériel}
 translate F Patterns {Motifs}
 translate F Zero {Zéro}
