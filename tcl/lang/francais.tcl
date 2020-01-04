@@ -1006,16 +1006,16 @@ translate F Unclear {Peu clair}
 translate F Diagram {Diagramme}
 
 # Board search:
-translate F BoardSearch {Rechercher Position}
-translate F FilterOperation {Opération sur le filtre en cours:}
+translate F BoardSearch {Rechercher selon la position actuelle}
+translate F FilterOperation {Opération sur le filtre en cours :}
 translate F FilterAnd {ET (Restreint le filtre)}
-translate F FilterOr {OU (Ajouter au filtre)}
+translate F FilterOr {OU (Ajoute au filtre)}
 translate F FilterIgnore {IGNORER (Restaure le filtre initial)}
-translate F SearchType {Type de recherche:}
-translate F SearchBoardExact {Position exacte (mêmes pièces sur les mêmes cases)}
-translate F SearchBoardPawns {Pions (même matériel, tous les pions sur les mêmes cases)}
-translate F SearchBoardFiles {Colonnes (même matériel, tous les pions sur mêmes colonnes)}
-translate F SearchBoardAny {Tous (même matériel, pions et pièces n'importe où)}
+translate F SearchType {Type de recherche :}
+translate F SearchBoardExact {Position exacte, mêmes pièces sur les mêmes cases.}
+translate F SearchBoardPawns {Pions, même matériel avec tous les pions sur les mêmes cases.}
+translate F SearchBoardFiles {Colonnes, même matériel avec tous les pions sur mêmes colonnes.}
+translate F SearchBoardAny {Même matériel, les pions et pièces n'importe où.}
 translate F SearchInRefDatabase { Dans la base de référence }
 translate F LookInVars {Chercher dans les variantes}
 
