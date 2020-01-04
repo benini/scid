@@ -116,13 +116,13 @@ menuText F GameNovelty "Trouver la nouveauté..." 7 \
 # Search menu:
 menuText F Search "Rechercher" 0
 menuText F SearchReset "Réinitialiser le filtre" 0 \
-  {Remettre à zéro le filtre (inclusion de toutes les parties)}
+  {Remettre à zéro le filtre (inclure toutes les parties)}
 menuText F SearchNegate "Inverser le filtre" 0 \
   {Inverser le filtre}
 menuText F SearchCurrent "Position..." 0 \
-  {Rechercher la position en cours}
+  {Rechercher selon la position actuelle}
 menuText F SearchHeader "Entête..." 0 \
-  {Rechercher par l'information dans l'entête (joueur, tournoi, etc)}
+  {Rechercher par l'information dans l'entête (joueur, tournoi, etc.)}
 menuText F SearchMaterial "Motifs" 0 \
   {Rechercher des motifs ou un matériel particulier sur l'échiquier}
 menuText F SearchUsing "En utilisant un fichier d'options..." 0 \
