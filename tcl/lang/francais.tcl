@@ -35,7 +35,8 @@ menuText F FileMaintDelete "Purger les doublons..." 0 \
   {Trouver les parties en doublons et les marquer pour l'effacement}
 menuText F FileMaintTwin "Trouver les doublons" 0 \
   {Ouvrir/Actualiser la fenêtre de recherche de doublons}
-menuText F FileMaintName "Orthographie des noms" 0 {Correction des noms et autres outils orthographiques}
+menuText F FileMaintName "Orthographie des noms" 0 \
+  {correction orthographiques des noms et du classement Elo}
 menuText F FileMaintNameEditor "Éditeur de noms" 11 {Ouvrir/Fermer l'éditeur de noms}
 menuText F FileMaintNamePlayer "Corriger les noms de joueurs..." 21 \
   {Vérifier l'orthographe des noms de joueurs}
