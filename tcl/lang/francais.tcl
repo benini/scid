@@ -121,8 +121,8 @@ menuText F SearchNegate "Inverser le filtre" 0 \
   {Inverser le filtre}
 menuText F SearchCurrent "Position..." 0 \
   {Rechercher selon la position actuelle}
-menuText F SearchHeader "Entête..." 0 \
-  {Rechercher par l'information dans l'entête (joueur, tournoi, etc.)}
+menuText F SearchHeader "En-tête..." 0 \
+  {Rechercher par l'information dans l'en-tête (joueur, tournoi, etc.)}
 menuText F SearchMaterial "Motifs" 0 \
   {Rechercher des motifs ou un matériel particulier sur l'échiquier}
 menuText F SearchUsing "En utilisant un fichier d'options..." 0 \
@@ -698,7 +698,7 @@ menuText F PgnFilePrint "Écrire dans fichier..." 0
 menuText F PgnFileClose "Fermer la fenêtre PGN" 0
 menuText F PgnOpt "Affichage" 0
 menuText F PgnOptColor "Couleur d'affichage" 0
-menuText F PgnOptShort "Entête court (3-lignes)" 0
+menuText F PgnOptShort "En-tête court (trois lignes)" 0
 menuText F PgnOptSymbols "Annotations symboliques" 0
 menuText F PgnOptIndentC "Indentation des commentaires" 0
 menuText F PgnOptIndentV "Indentation des variantes" 16
@@ -707,7 +707,7 @@ menuText F PgnOptSpace "Espace après numéro des coups" 0
 menuText F PgnOptStripMarks "Enlever les codes de flèches et de coloration de cases" 1
 menuText F PgnOptBoldMainLine "Mettre en gras les coups de la ligne principale" 4
 menuText F PgnColor "Couleur" 0
-menuText F PgnColorHeader "Entête..." 0
+menuText F PgnColorHeader "En-tête..." 0
 menuText F PgnColorAnno "Annotations..." 0
 menuText F PgnColorComments "Commentaires..." 0
 menuText F PgnColorVars "Variantes..." 0
@@ -775,7 +775,7 @@ menuText F OprepHelpReport "Aide du rapport" 0
 menuText F OprepHelpIndex "Index" 0
 
 # Header search:
-translate F HeaderSearch {Rechercher dans l'entête}
+translate F HeaderSearch {Rechercher dans l'en-tête}
 translate F EndSideToMove {Côté devant jouer à la fin de la partie}
 translate F GamesWithNoECO {Partie sans code ECO?}
 translate F GameLength {Longueur de la partie}
@@ -798,7 +798,7 @@ translate F KsideFlag {Jeu à l'aile roi}
 translate F BrilliancyFlag {Spectaculaire}
 translate F BlunderFlag {Gaffe}
 translate F UserFlag {Utilisateur}
-translate F PgnContains {PGN contenant du texte}
+translate F PgnContains {PGN contient le texte}
 translate F Annotator {Annotateur}
 translate F Cmnts {Jeux annotés uniquement}
 
