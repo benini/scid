@@ -64,8 +64,8 @@ menuText F EditMain "Variante vers ligne principale" 13 \
 menuText F EditTrial "Essayer une variante" 0 \
   {Démarrer/Stopper mode d'essai, pour tester une idée sur l'échiquier}
 menuText F EditStrip "Épurer" 2 {Épurer les commentaires ou les variantes de cette partie}
-menuText F EditUndo "Annuler" 0 {Annuler la dernière modification de la partie}
-menuText F EditRedo "Rétablir" 0 {Redo last game change}
+menuText F EditUndo "Annuler" 0 {Annuler la dernière modification de cette partie}
+menuText F EditRedo "Rétablir" 0 {Refaire la dernière modification de cette partie}
 menuText F EditStripComments "Commentaires" 0 \
   {Épurer cette partie de tous les commentaires et annotations}
 menuText F EditStripVars "Variantes" 0 {Épurer cette partie des variantes}
@@ -73,14 +73,14 @@ menuText F EditStripBegin "Coups depuis le début" 1 \
   {Épurer cette partie des coups depuis le début}
 menuText F EditStripEnd "Coups jusqu'à la fin" 0 \
   {Épurer cette partie des coups jusqu'à la fin}
-menuText F EditReset "Vider le presse-papier" 0 {Vider le presse-papier}
+menuText F EditReset "Vider la base presse-papier" 0 {Vider la base presse-papier}
 menuText F EditCopy "Copier dans la base presse-papier" 0 \
-  {Copier la partie en cours dans la base clipbase (9)}
+  {Copier la partie en cours dans la base Clipbase}
 menuText F EditPaste "Coller depuis la base presse-papier" 1 \
-  {Copier la partie contenue dans la base clipbase (9) à cet emplacement}
+  {Copier la partie contenue dans la base Clipbase à cet emplacement}
 menuText F EditPastePGN "Coller le presse-papier comme partie PGN..." 10 \
-  {Interpréter le texte du presse-papiers comme de la notation PGN et le coller ici}
-menuText F EditSetup "Position de départ" 0 \
+  {Interpréter le texte du presse-papiers comme de la notation PGN et le coller comme partie active}
+menuText F EditSetup "Définir la position de départ" 0 \
   {Choisir une position de départ pour cette partie}
 menuText F EditCopyBoard "Copier la position" 6 \
   {Copier la position en cours en notation FEN vers la sélection de texte (presse-papier)}
@@ -693,7 +693,7 @@ menuText F StatsOpt "Options" 0
 
 # PGN window menus:
 menuText F PgnFile "Fichier" 0
-menuText F PgnFileCopy "Copier la partie dans le Presse-papier" 0
+menuText F PgnFileCopy "Copier la partie dans le presse-papier" 0
 menuText F PgnFilePrint "Écrire dans fichier..." 0
 menuText F PgnFileClose "Fermer la fenêtre PGN" 0
 menuText F PgnOpt "Affichage" 0
