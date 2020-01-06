@@ -167,13 +167,13 @@ menuText F ToolsOpReport "Rapport d'ouverture" 0 {Générer un rapport d'ouverture
 menuText F ToolsOpenBaseAsTree "Ouvrir une base dans l'arbre" 0   {Ouvrir une base dans la fenêtre d'arbre}
 menuText F ToolsOpenRecentBaseAsTree "Ouvrir une base récente dans l'arbre" 0   {Ouvrir une base récente dans la fenêtre d'arbre}
 menuText F ToolsTracker "Suivi de pièce"  0 {Ouvrir la fenêtre de suivi de pièce}
-menuText F ToolsTraining "Entrainement"  0 {Entrainement (tactique, ouvertures, ...) }
+menuText F ToolsTraining "Entraînement"  0 {Entraînement (tactique, ouvertures, ...) }
 menuText F ToolsTacticalGame "Partie tactique"  0 {Jouer une partie tactique}
 menuText F ToolsSeriousGame "Partie sérieuse"  0 {Jouer une partie sans handicap}
-menuText F ToolsTrainOpenings "Ouvertures"  0 {Entrainement sur un répertoire}
+menuText F ToolsTrainOpenings "Ouvertures"  0 {Entraînement avec un répertoire d'ouvertures}
 menuText F ToolsTrainReviewGame "Revoir la partie"  0 {Deviner les coups joués dans la partie}
 menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
-menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de variantes}
+menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entraînement au calcul de variantes}
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
 menuText F ToolsEngineTournament "Tournoi de moteurs"  0 {Démarrer un tournoi entre moteurs d'échecs}
@@ -301,7 +301,7 @@ menuText F OptionsTable "Répertoire des tables de finales TB..." 0 \
 menuText F OptionsRecent "Fichiers récents..." 0 \
   {Changer le nombre de fichiers récents affichés dans le menu Fichier}
 menuText F OptionsBooksDir "Répertoire des bibliothèques..." 0 {Répertoire des bibliothèques d'ouverture}
-menuText F OptionsTacticsBasesDir "Répertoire des bases d'entrainement..." 0 {Répertoire des bases pour l'entrainement tactique}
+menuText F OptionsTacticsBasesDir "Répertoire des bases d'entraînement..." 0 {Répertoire des bases pour l'entraînement tactique}
 menuText F OptionsPhotosDir "Répertoire des images..." 0 {Répertoire des bases pour les images}
 menuText F OptionsThemeDir "Charger thème(s)..."  0 { Charger un fichier de thèmes pour l'interface graphique }
 menuText F OptionsSave "Enregistrer les options" 0 "Enregistrer les options dans le fichier $::optionsFile"
@@ -1383,7 +1383,7 @@ Chaque fois qu'une partie avec un joueur de la liste est chargée, l'échiquier de
 translate F showblunderexists {Montrer si erreur}
 translate F showblundervalue {Montrer la valeur de l'erreur}
 translate F showscore {Montrer score}
-translate F coachgame {Entrainement}
+translate F coachgame {Entraînement}
 translate F configurecoachgame {Configurer une partie avec entraineur}
 translate F configuregame {Configuration de partie}
 translate F Phalanxengine {moteur Phalanx}
@@ -1417,7 +1417,7 @@ translate F BadMovePlayedTakeBack {Mauvais coup joué, voulez-vous reprendre le c
 translate F Iresign {J'abandonne}
 translate F yourmoveisnotgood {Votre coup n'est pas bon}
 translate F EndOfVar {Fin de variante}
-translate F Openingtrainer {Entrainement aux ouvertures}
+translate F Openingtrainer {Entraînement aux ouvertures}
 translate F DisplayCM {Afficher les coups candidats}
 translate F DisplayCMValue {Afficher la valeur des coups candidats}
 translate F DisplayOpeningStats {Montrer statistiques}
@@ -1430,7 +1430,7 @@ translate F PlayerBestMove  {N'autoriser que les meilleurs coups}
 translate F OpponentBestMove {Ne jouer que les meilleurs coups}
 translate F OnlyFlaggedLines {Seulement les lignes marquées}
 translate F resetStats {Remettre à zéro les scores}
-translate F Repertoiretrainingconfiguration {Configuration entrainement répertoire}
+translate F Repertoiretrainingconfiguration {Configuration entraînement répertoire}
 translate F Loadingrepertoire {Chargement du répertoire}
 translate F Movesloaded {Coups lus}
 translate F Repertoirenotfound {Répertoire introuvable}
@@ -1449,7 +1449,7 @@ translate F Tactics {Tactique}
 translate F ShowSolution {Montrer la solution}
 translate F NextExercise {Exercice suivant}
 translate F PrevExercise {Exercice précédent}
-translate F StopTraining {Arrêter l'entrainement}
+translate F StopTraining {Arrêter l'entraînement}
 translate F Next {Suivant}
 translate F ResettingScore {Remise à zéro des scores}
 translate F LoadingGame {Chargement partie}
