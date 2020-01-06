@@ -171,7 +171,7 @@ menuText F ToolsTraining "Entraînement"  0 {Entraînement (tactique, ouvertures, 
 menuText F ToolsTacticalGame "Partie tactique"  0 {Jouer une partie tactique}
 menuText F ToolsSeriousGame "Partie sérieuse"  0 {Jouer une partie sans handicap}
 menuText F ToolsTrainOpenings "Ouvertures"  0 {Entraînement avec un répertoire d'ouvertures}
-menuText F ToolsTrainReviewGame "Revoir la partie"  0 {Deviner les coups joués dans la partie}
+menuText F ToolsTrainReviewGame "Reviser la partie"  0 {Étudier la partie en devinant les coups joués}
 menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
 menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entraînement au calcul de variantes}
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
