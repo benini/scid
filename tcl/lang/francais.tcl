@@ -1384,10 +1384,10 @@ translate F showblunderexists {Montrer si erreur}
 translate F showblundervalue {Montrer la valeur de l'erreur}
 translate F showscore {Montrer score}
 translate F coachgame {Entraînement}
-translate F configurecoachgame {Configurer une partie avec entraineur}
-translate F configuregame {Configuration de partie}
+translate F configurecoachgame {Configurer une partie avec entraîneur}
+translate F configuregame {Configurer une partie sérieuse}
 translate F Phalanxengine {moteur Phalanx}
-translate F Coachengine {entraineur}
+translate F Coachengine {entraîneur}
 translate F difficulty {difficulté}
 translate F hard {difficile}
 translate F easy {facile}
@@ -1408,7 +1408,7 @@ translate F Resume {Reprendre}
 translate F OutOfOpening {Hors de l'ouverture}
 translate F NotFollowedLine {Vous n'avez pas suivi la ligne}
 translate F DoYouWantContinue {Voulez-vous continuer ?}
-translate F CoachIsWatching {L'entraineur regarde}
+translate F CoachIsWatching {L'entraîneur regarde}
 translate F Ponder {Réflexion permanente}
 translate F LimitELO {Limiter la force Elo}
 translate F DubiousMovePlayedTakeBack {Coup douteux joué, voulez-vous reprendre le coup ?}
@@ -1464,7 +1464,7 @@ translate F Thinking {Calcul en cours}
 translate F AnalyzeDone {Analyse terminée}
 translate F WinWonGame {Terminer partie gagnée}
 translate F Lines {Lignes}
-translate F ConfigureUCIengine {Configurer moteur UCI}
+translate F ConfigureUCIengine {Configurer le moteur UCI}
 translate F SpecificOpening {Ouverture spécifique}
 translate F StartNewGame {Nouvelle partie}
 translate F FixedLevel {Niveau fixe}
@@ -1487,7 +1487,7 @@ translate F LastBookMove {Dernier coup de la bibliothèque d'ouverture}
 translate F AnnotateSeveralGames {Annotater plusieurs parties\ndepuis l'actuelle jusqu'à :}
 translate F FindOpeningErrors {Chercher les erreurs d'ouverture}
 translate F MarkTacticalExercises {Marquer exercices tactiques}
-translate F UseBook {Utiliser bibliothèque}
+translate F UseBook {Utiliser une bibliothèque d'ouverture}
 translate F MultiPV {Nombre de variantes}
 translate F Hash {Mémoire}
 translate F OwnBook {Utiliser bibliothèque propre}
