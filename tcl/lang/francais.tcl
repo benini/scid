@@ -172,7 +172,7 @@ menuText F ToolsTacticalGame "Partie tactique"  0 {Jouer une partie tactique}
 menuText F ToolsSeriousGame "Partie sérieuse"  0 {Jouer une partie sans handicap}
 menuText F ToolsTrainOpenings "Ouvertures"  0 {Entraînement avec un répertoire d'ouvertures}
 menuText F ToolsTrainReviewGame "Reviser la partie"  0 {Étudier la partie en devinant les coups joués}
-menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
+menuText F ToolsTrainTactics "Exercices tactiques"  0 {Résoudre des problèmes tactiques}
 menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entraînement au calcul de variantes}
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
@@ -1442,7 +1442,7 @@ translate F PositionsPlayed {Positions jouées}
 translate F Success {Succès}
 translate F DubiousMoves {Coups douteux}
 translate F OutOfRepertoire {Hors du répertoire}
-translate F ConfigureTactics {Configurer exercices tactiques}
+translate F ConfigureTactics {Configurer les exercices tactiques}
 translate F ResetScores {Remise à zéro des scores}
 translate F LoadingBase {Chargement de la base}
 translate F Tactics {Tactique}
