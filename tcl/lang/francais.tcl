@@ -220,21 +220,21 @@ menuText F ToolsCaptureBoard "Capturer l'échiquier..." 0  {Enregistrer la positi
 menuText F Play "Jouer" 0
 
 # --- Correspondence Chess
-menuText F CorrespondenceChess "Echecs par correspondance" 0 {Échecs par correspondance eMail et Xfcc}
-menuText F CCConfigure "Configurer..." 0 {Configurer les outils externes et la config générale}
-menuText F CCConfigRelay "Configurer les observations..." 10 {Configurer les jeux à observer}
-menuText F CCOpenDB "Ouvrir la base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
+menuText F CorrespondenceChess "Échecs par correspondance" 0 {Échecs par correspondance par e-mail ou Xfcc}
+menuText F CCConfigure "Configurer..." 0 {Configurer le sous-sytème d'échecs par correspondance par e-mail ou Xfcc}
+menuText F CCConfigRelay "Observer des parties..." 10 {Configurer les jeux à observer sur un site web}
+menuText F CCOpenDB "Ouvrir la base..." 0 {Ouvrir la base de jeux par correspondance par défaut}
 menuText F CCRetrieve "Récupérer les parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser la boîte de réception" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
-menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via eMail ou un outil externe (Xfcc)}
+menuText F CCSend "Envoyer le coup" 0 {Envoyer votre coup via e-mail ou un outil externe (Xfcc)}
 
-menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
-menuText F CCClaimDraw "Réclamer la partie nulle" 0 {Envoyer le coup et réclamer une partie nulle (pas par eMail)}
-menuText F CCOfferDraw "Proposer la partie nulle" 0 {Envoyer le coup et proposer une partie nulle (pas par eMail)}
-menuText F CCAcceptDraw "Accepter la partie nulle" 0 {Accepter la partie nulle (pas par eMail)}
+menuText F CCResign "Abandonner" 0 {Abandonner (par Xfcc)}
+menuText F CCClaimDraw "Réclamer la partie nulle" 0 {Envoyer le coup et réclamer une partie nulle (par Xfcc)}
+menuText F CCOfferDraw "Proposer la partie nulle" 0 {Envoyer le coup et proposer une partie nulle (par Xfcc)}
+menuText F CCAcceptDraw "Accepter la partie nulle" 0 {Accepter la partie nulle (par Xfcc)}
 
-menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
-menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
+menuText F CCNewMailGame "Nouvelle partie par e-mail..." 0 {Commencer une nouvelle partie par e-mail}
+menuText F CCMailMove "e-mailer le coup..." 0 {Envoyer le coup par e-mail à l'adversaire}
 menuText F CCGamePage "Page web de la partie..." 0 {Ouvrir la partie dans un navigateur web}
 
 # menu in cc window:
@@ -1617,7 +1617,7 @@ translate F CCDlgXfcc {Configuration Xfcc:}
 translate F CCDlgExternalProtocol {Protocole externe (par ex. Xfcc)}
 translate F CCDlgFetchTool {Outil de réception:}
 translate F CCDlgSendTool {Outil d'envoi:}
-translate F CCDlgEmailCommunication {Communication eMail}
+translate F CCDlgEmailCommunication {Communication e-mail}
 translate F CCDlgMailPrg {Programme de mail:}
 translate F CCDlgBCCAddr {Addresse de copie:}
 translate F CCDlgMailerMode {Mode:}
@@ -1625,21 +1625,21 @@ translate F CCDlgThunderbirdEg {par ex. Thunderbird, Mozilla Mail, Icedove...}
 translate F CCDlgMailUrlEg {par ex. Evolution}
 translate F CCDlgClawsEg {par ex. Sylpheed Claws}
 translate F CCDlgmailxEg {par ex. mailx, mutt, nail...}
-translate F CCDlgAttachementPar {Attachement:}
+translate F CCDlgAttachementPar {commande Joindre:}
 translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
 translate F CCDlgConfirmXfcc {Confirmer les coups}
-translate F CCDlgSubjectPar {Objet:}
+translate F CCDlgSubjectPar {commande Objet:}
 translate F CCDlgDeleteBoxes {Vider boîtes}
 translate F CCDlgDeleteBoxesText {Voulez-vous réellement vider les boîtes entrantes et sortantes pour les échecs par correspondance ? Cela nécessite une nouvelle synchronisation pour afficher le dernier état de vos parties}
 translate F CCDlgConfirmMove {Confirmer le coup}
 translate F CCDlgConfirmMoveText {Si vous confirmez, le coup ci-dessous et le commentaire sont envoyés au serveur:}
 translate F CCDlgDBGameToLong {Ligne principale incohérente}
 translate F CCDlgDBGameToLongError {La ligne principale dans votre base de données est plus longue que la partie dans votre boîte de réception. Si la boîte de réception contient les parties en cours, c'est-à-dire juste après une synchronisation, certains coups ont été ajoutés à tort à la ligne principale dans la base de données.\nDans ce cas veuillez raccourcir la ligne principale à ce coup au plus\n}
-translate F CCDlgStartEmail {Commencer nouvelle partie par eMail}
+translate F CCDlgStartEmail {Commencer une nouvelle partie par e-mail}
 translate F CCDlgYourName {Votre nom:}
 translate F CCDlgYourMail {Votre adresse mail:}
 translate F CCDlgOpponentName {Nom adversaire:}
-translate F CCDlgOpponentMail {Adresse eMail adversaire:}
+translate F CCDlgOpponentMail {Adresse e-mail adversaire:}
 translate F CCDlgGameID {Identifiant Partie (unique):}
 translate F CCDlgTitNoOutbox {Scid: Boîte d'envoi}
 translate F CCDlgTitNoInbox {Scid: Boîte de réception}
@@ -1647,7 +1647,7 @@ translate F CCDlgTitNoGames {Scid: Pas de parties par correspondence}
 translate F CCErrInboxDir {Répertoire de la boîte de réception:}
 translate F CCErrOutboxDir {Répertoire de la boîte d'envoi:}
 translate F CCErrDirNotUsable {n'existe pas ou inaccessible!\nVeuillez vérifier les paramètres.}
-translate F CCErrNoGames {ne contient pas de parties!\nVeuillez d'abord les récupérer.}
+translate F CCErrNoGames {ne contient pas de parties !\nVeuillez d'abord les récupérer.}
 translate F CCDlgTitNoCCDB {Scid: pas de base par correspondance}
 translate F CCErrNoCCDB {Aucune base du type 'Correspondance' n'est ouverte. Ouvrez-en une avant d'utiliser les fonctions par correspondance.}
 translate F CCFetchBtn {Récupérer les parties sur le serveur et les analyser dans la boîte de réception}
