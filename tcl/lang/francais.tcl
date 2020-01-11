@@ -54,7 +54,7 @@ menuText F FileExit "Quitter" 0 {Quitter Scid}
 menuText F FileMaintFixBase "Réparer base" 0 {Essaie de réparer une base corrompue}
 
 # Edit menu:
-menuText F Edit "Éditer" 0
+menuText F Edit "Édition" 0
 menuText F EditAdd "Ajouter une variante" 0 {Ajouter une variante}
 menuText F EditDelete "Effacer cette variante" 0 {Effacer cette variante}
 menuText F EditFirst "Déplacer en tête" 0 \
