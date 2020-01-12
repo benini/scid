@@ -238,7 +238,7 @@ menuText F CCMailMove "e-mailer le coup..." 0 {Envoyer le coup par e-mail à l'ad
 menuText F CCGamePage "Page web de la partie..." 0 {Ouvrir la partie dans un navigateur web}
 
 # menu in cc window:
-menuText F CCEditCopy "Copier parties dans clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText F CCEditCopy "Copier parties dans clipbase" 0 {Copier les parties comme liste CSV list dans clipbase}
 
 # Options menu:
 menuText F Options "Options" 0
