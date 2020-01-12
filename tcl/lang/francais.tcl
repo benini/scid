@@ -11,7 +11,7 @@ menuText F File "Fichier" 0
 menuText F FileNew "Nouvelle..." 0 {Créer une nouvelle base de données Scid}
 menuText F FileOpen "Ouvrir..." 0 {Ouvrir une base de données Scid existante}
 menuText F FileClose "Fermer" 0 {Fermer la base de données Scid active}
-menuText F FileFinder "Trouver" 0 {Ouvrir la fenêtre de recherche de fichier}
+menuText F FileFinder "Explorer..." 0 {Ouvrir la fenêtre de recherche de fichier}
 menuText F FileBookmarks "Signets" 0 {Menu des signets (raccourci: Ctrl+B)}
 menuText F FileBookmarksAdd "Ajouter un signet" 0 \
   {Poser un signet pour la position et partie courante}
@@ -560,7 +560,7 @@ translate F Moves {Coups}
 
 # Finder window:
 menuText F FinderFile "Fichier" 0
-menuText F FinderFileSubdirs "Rechercher dans les sous répertoires" 0
+menuText F FinderFileSubdirs "Rechercher dans les sous-répertoires" 0
 menuText F FinderFileClose "Fermer l'explorateur de fichiers" 0
 menuText F FinderSort "Trier" 0
 menuText F FinderSortType "Type" 0
