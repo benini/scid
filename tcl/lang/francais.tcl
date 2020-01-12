@@ -79,7 +79,7 @@ menuText F EditCopy "Copier dans la base presse-papier" 0 \
 menuText F EditPaste "Coller depuis la base presse-papier" 1 \
   {Copier la partie contenue dans la base Clipbase à cet emplacement}
 menuText F EditPastePGN "Coller le presse-papier comme partie PGN..." 10 \
-  {Interpréter le texte du presse-papiers comme de la notation PGN et le coller comme partie active}
+  {Interpréter le texte du presse-papier comme de la notation PGN et le coller comme partie active}
 menuText F EditSetup "Définir la position de départ" 0 \
   {Choisir une position de départ pour cette partie}
 menuText F EditCopyBoard "Copier la position" 6 \
@@ -487,7 +487,7 @@ menuText F TreeFileSave "Enregistrer le cache" 0
 menuText F TreeFileFill "Remplir le cache" 0
 menuText F TreeFileBest "Liste des meilleures parties" 0 {Montrer la liste des meilleures parties}
 menuText F TreeFileGraph "Graphique" 0 {Graphique de l'arbre}
-menuText F TreeFileCopy "Copier l'arbre dans le presse-papiers" 0
+menuText F TreeFileCopy "Copier l'arbre dans le presse-papier" 0
 menuText F TreeFileClose "Fermer la fenêtre d'arbre" 0
 menuText F TreeMask "Masque" 0
 menuText F TreeMaskNew "Nouveau" 0 {Nouveau masque}
