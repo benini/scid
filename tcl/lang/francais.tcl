@@ -190,24 +190,24 @@ menuText F ToolsPlayerReport "Rapport pour le joueur..." 3 \
 menuText F ToolsRating "Graphique Elo" 0 \
   {Tracer un graphique du classement Elo des joueurs de cette partie}
 menuText F ToolsScore "Score graphique" 0 {Montrer le graphique des scores}
-menuText F ToolsExpCurrent "Écrire la partie en cours" 22 \
-  {Écrire la partie en cours dans un fichier texte}
+menuText F ToolsExpCurrent "Exporter la partie en cours" 22 \
+  {Exporter la partie en cours dans un fichier texte}
 menuText F ToolsExpCurrentPGN "Dans un fichier PGN..." 16 \
-  {Écrire la partie en cours dans un fichier PGN}
+  {Exporter la partie en cours dans un fichier PGN}
 menuText F ToolsExpCurrentHTML "Dans un fichier HTML..." 16 \
-  {Écrire la partie en cours dans un fichier HTML}
-menuText F ToolsExpCurrentHTMLJS "Dans un fichier HTML et JavaScript..." 16 {Écrire la partie en cours dans un fichier HTML et JavaScript}  
+  {Exporter la partie en cours dans un fichier HTML}
+menuText F ToolsExpCurrentHTMLJS "Dans un fichier HTML et JavaScript..." 16 {Exporter la partie en cours dans un fichier HTML et JavaScript}
 menuText F ToolsExpCurrentLaTeX "Dans un fichier LaTeX..." 16 \
-  {Écrire la partie en cours dans un fichier LaTeX}
+  {Exporter la partie en cours dans un fichier LaTeX}
 menuText F ToolsExpFilter "Exporter les parties filtrées" 2 \
   {Exporter les parties sélectionnées par un filtre dans un fichier PGN, HTML, LaTeX, ou dans une autre base}
 menuText F ToolsExpFilterPGN "Dans un fichier PGN..." 16 \
-  {Écrire le filtre dans un fichier PGN}
+  {Exporter le filtre dans un fichier PGN}
 menuText F ToolsExpFilterHTML "Dans un fichier HTML..." 16 \
-  {Écrire le filtre dans un fichier HTML}
-menuText F ToolsExpFilterHTMLJS "Dans un fichier HTML et JavaScript..." 16 {Écrire le filtre dans un fichier HTML et JavaScript}  
+  {Exporter le filtre dans un fichier HTML}
+menuText F ToolsExpFilterHTMLJS "Dans un fichier HTML et JavaScript..." 16 {Exporter le filtre dans un fichier HTML et JavaScript}
 menuText F ToolsExpFilterLaTeX "Dans un fichier LaTeX..." 16 \
-  {Écrire le filtre dans un fichier LaTeX}
+  {Exporter le filtre dans un fichier LaTeX}
 menuText F ToolsImportOne "Importer une partie en PGN..." 0 \
   {Importer une partie à partir d'un texte PGN}
 menuText F ToolsImportFile "Importer un fichier PGN..." 12 \
@@ -687,14 +687,14 @@ translate F EngineRequired {Les champs en gras sont requis; les autres sont opti
 
 # Stats window menus:
 menuText F StatsFile "Fichier" 0
-menuText F StatsFilePrint "Écrire dans fichier..." 0
+menuText F StatsFilePrint "Enregistrer sous..." 0
 menuText F StatsFileClose "Fermer la fenêtre" 0
 menuText F StatsOpt "Options" 0
 
 # PGN window menus:
 menuText F PgnFile "Fichier" 0
 menuText F PgnFileCopy "Copier la partie dans le presse-papier" 0
-menuText F PgnFilePrint "Écrire dans fichier..." 0
+menuText F PgnFilePrint "Enregistrer sous..." 0
 menuText F PgnFileClose "Fermer la fenêtre PGN" 0
 menuText F PgnOpt "Affichage" 0
 menuText F PgnOptColor "Couleur d'affichage" 0
