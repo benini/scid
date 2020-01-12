@@ -2,7 +2,8 @@
 #
 # French language support for Scid.
 # Translations contributed by:
-# Gilles Maire, Vincent Serisier, Joel Rivat, and Pascal Heisel.
+# Gilles Maire, Vincent Serisier, Joel Rivat, Pascal Heisel,
+# and Besoa Rabenasolo.
 
 proc setLanguage_F {} {
 
@@ -1951,7 +1952,241 @@ translate F MenuColorSelect "Sélection"
   # {Yugoslav Attack} {Attaque Yougoslave}
 # }
 
+}
 
+############################################################
+#
+# French tip of the day
+
+
+set tips(F) {
+  {
+    Scid a plus de 30 <a Index>pages d'aide</a>, et dans la plupart des fenêtres Scid,
+    vous obtiendrez la page d'aide à son sujet en appuyant sur la touche <b>F1</b>.
+  }
+  {
+    Certaines fenêtres de Scid (par exemple la zone d'information du jeu, le
+    <a Switcher>sélecteur de base de données</a>) ont un menu contextuel.  Essayez
+    en appuyant sur le bouton droit de la souris dans chaque fenêtre pour voir
+    si elle en a un et quelles sont les fonctions disponibles.
+  }
+  {
+    Scid vous offre plus d'une façon de saisir des coups d'échecs, en vous laissant
+    le choix de ce qui vous convient le mieux.  Vous pouvez utiliser la souris
+    (avec ou sans suggestion de coup) ou le clavier (avec ou sans achèvement du coup).
+    Lisez la page d'aide <a Moves>Saisie des coups d'échecs</a> pour les détails.
+  }
+  {
+    Si vous avez des bases de données que vous ouvrez souvent, ajoutez un
+    <a Bookmarks>signet</a> pour chacunes d'elles.  Vous pourrez alors
+    les ouvrir plus rapidement en utilisant le menu des signets.
+  }
+  {
+    Vous pouvez voir tous les coups de la partie en cours (avec les variations et
+    commentaires éventuels) en utilisant la fenêtre <a PGN>PGN</a>.  De cette fenêtre,
+    vous pouvez aller à n'importe quel coup en cliquant dessus avec le bouton gauche
+    de la souris, ou utiliser le bouton central ou droit de la souris
+    pour voir un aperçu de cette position.
+  }
+  {
+    Vous pouvez copier des parties d'échecs d'une base de données à une autre par
+    glisser-déposer avec le bouton gauche de la souris dans la fenêtre
+    <a Switcher>Sélecteur de base de données</a>.
+  }
+  {
+    Scid peut ouvrir des fichiers PGN, même s'ils sont compressés avec Gzip
+    (avec un suffixe de nom de fichier .gz).  Les fichiers PGN sont ouverts en lecture
+    seule.  Donc, si vous voulez les éditer dans Scid, créez une nouvelle base
+    de données Scid et copiez-y les jeux du fichier PGN en utilisant
+    le <a Switcher>sélecteur de base de données</a>.
+  }
+  {
+    Si vous avez une grande base de données dont vous utilisez souvent la fenêtre
+    <a Tree>Arbre</a>, çà vaut la peine de <b>remplir le fichier cache</b>
+    dans le menu Fichier de cette fenêtre.  Cela permet de mémoriser les statistiques
+    de l'arbre pour de nombreuses positions d'ouverture, rendant l'accès à l'arbre
+    plus rapide pour cette base de données.
+  }
+  {
+    La fenêtre <a Tree>Arbre</a> peut vous montrer tous les coups joués à partir de la
+    position actuelle.  Mais si vous voulez aussi voir tous les ordres de coup
+    qui ont atteint cette position, vous pouvez les trouver en générant
+    un <a OpReport>rapport d'ouverture</a>.
+  }
+  {
+    Dans la fenêtre <a GameList>Liste des jeux</a>, appuyez sur l'en-tête de chaque
+    colonne avec le bouton gauche ou droite de la souris pour ajuster sa largeur.
+  }
+  {
+    Il suffit de cliquer sur le nom du joueur dans le panneau d'information sous
+    l'échiquier de la fenêtre principale pour ouvrir la fenêtre <a PInfo>Information sur
+    le joueur</a>.  De là, vous pouvez facilement régler le <a Searches Filter>filtre
+    de recherche</a> sur toutes les parties de ce joueur avec un résultat donné
+    en cliquant sur n'importe quelle valeur qui est affichée <rouge>en texte
+    rouge</rouge>.
+  }
+  {
+    Lors de l'étude d'une ouverture, il peut être très utile de faire une
+    <a Searches Board>recherche de position d'échiquier</a> avec l'option <b>Pions</b>
+    ou <b>Colonnes</b> sur une position d'ouverture importante, car cela peut
+    révéler d'autres ouvertures qui atteignent la même structure de pions.
+  }
+  {
+    Vous pouvez appuyer sur le panneau d'information sous l'échiquier avec le bouton
+    droit de la souris pour ouvrir un menu permettant de le personnaliser.
+    Par exemple, vous pouvez faire en sorte que Scid cache le prochain coup de la partie
+    en cours, ce qui est utile pour s'entraîner en la rejouant par un jeu de devinettes.
+  }
+  {
+    Si vous faites souvent beaucoup <a Maintenance>maintenance</a> sur une grande base
+    de données, vous pouvez effectuer plusieurs tâches de maintenance en même temps
+    en utilisant le <a Maintenance Cleaner>Nettoyeur</a>.
+  }
+  {
+    Si vous avez une grande base de données où la plupart des jeux ont une date
+    d'événement (EventDate) et vous voulez les jeux dans l'ordre des dates,
+    effectuez un <a Sorting>triage</a> par date d'événement puis par événement
+    (Event) au lieu de date du match (Date) puis événement, car cela aide à
+    garder des parties dans le même tournoi avec des dates différentes ensemble,
+    en supposant qu'ils ont tous le même EventDate, bien sûr.
+  }
+  {
+    Avant de <a Maintenance Twins>supprimer les parties en doublon</a>, c'est une
+    bonne idée de <a Maintenance Spellcheck>corriger l'orthographe</a> de
+    votre base de données puisque ceci  permettra à Scid de trouver d'autres doublons
+    et de les marquer pour les supprimer.
+  }
+  {
+    Les <a Flags>drapeaux</a> sont utiles pour marquer les jeux de la base de
+    données avec des caractéristiques que vous pourriez vouloir rechercher
+    ultérieurement, telles que la structure de pions, les tactiques, etc.  Vous
+    pouvez effectuer une recherche par drapeaux avec une
+    <a Searches Header>recherche par en-tête</a>.
+  }
+  {
+    Si vous jouez à un jeu et que vous voulez essayer quelques coups sans altérer
+    le jeu, il suffit d'activer le mode Trial avec le raccourci clavier
+    <b>Ctrl+espace</b> ou l'icône correspondante de la barre d'outils, puis le
+    désactiver pour revenir au jeu original quand vous avez fini.
+  }
+  {
+    Pour trouver les jeux les plus importants (avec des adversaires de haut niveau)
+    en arrivant à une position particulière, ouvrir la fenêtre <a Tree>Arbre</a>
+    et de là, ouvrir la liste des meilleurs jeux.  Vous pouvez même restreindre
+    la liste des meilleurs jeux pour ne montrer que les jeux avec un résultat
+    particulier, Blancs ou Noirs gagnants.
+  }
+  {
+    Une excellente façon d'étudier une ouverture en utilisant une grande base de
+    données de jeux est d'activer le mode d'entraînement dans la fenêtre
+    <a Tree>Arbre</a>, puis jouer contre la base de données pour voir quelles
+    lignes se produisent souvent.
+  }
+  {
+    Si vous avez deux bases de données ouvertes, et que vous voulez voir
+    l'<a Tree>arbre</a> de la première base de données en examinant un jeu de
+    la deuxième base de données, il suffit d'appuyer sur le bouton
+    <b>Verrouiller</b> ou le menu <b>Options</b>/<b>Verrouiller</b> de la fenêtre
+    d'arbre pour la verrouiller sur la première base de données, puis passez à la
+    deuxième base.
+  }
+  {
+    La <a Tmt>recherche de tournois</a> n'est pas seulement utile pour trouver
+    un tournoi particulier, mais peut aussi être utilisée pour voir à quels
+    tournois un certain joueur a participé récemment. On peut aussi Identifier
+    quels sont les tournois de haut niveau de chaque pays.
+  }
+  {
+    Il existe un certain nombre de schémas communs définis dans la fenêtre de
+    recherche de <a Searches Material>matériel ou motif</a> que vous pourriez
+    trouver utiles pour l'étude des ouvertures ou du milieu de partie.
+  }
+  {
+    Lors de la recherche d'une situation matérielle particulière dans la fenêtre de
+    recherche de <a Searches Material>matériel ou motif</a>, c'est souvent utile de
+    restreindre la recherche aux parties qui correspondent à au moins quelques
+    demi-coups pour éliminer les parties où La situation ne s'est produite que
+    brièvement.
+  }
+  {
+    Si vous avez une base de données importante que vous ne voulez pas
+    accidentellement alterer, sélectionnez <b>Lecture seule...</b> dans le menu
+    <b>Fichier</b> après l'avoir ouvert, ou changer les permissions de ses
+    fichiers pour qu'ils soient en lecture seule.
+  }
+  {
+    Si vous utilisez XBoard ou WinBoard, ou un autre programme d'échecs qui peut
+    copier une position d'échecs en notation FEN standard dans le presse-papiers,
+    et que vous voulez copier sa position d'échiquier actuelle dans Scid, la façon
+    la plus rapide et la plus simple est de sélectionner <b>Copier Position</b>
+    dans le menu Fichier de XBoard ou WinBoard, puis <b>Coller la position
+    de départ</b> dans le menu Édition de Scid.
+  }
+  {
+    Dans une
+    <a Searches Header>recherche par en-tête</a>, les noms de joueur, d'événement,
+    de lieu ou de ronde sont insensibles à la casse et correspondent à n'importe
+    quel endroit dans un nom. Vous pouvez choisir d'utiliser à la place une recherche
+    sensible à la casse avec des caractères génériques où " ? " représente un seul
+    caractère et " * " = zéro ou plusieurs caractères, en entrant le texte de recherche
+    "entre guillemets". Par exemple, tapez "*BEL" avec les guillemets dans le champ
+    du lieu pour trouver toutes les parties jouées en Belgique mais pas à Belgrade.
+  }
+  {
+    Si vous voulez corriger un coup dans une partie sans perdre tous les coups joués
+    après, utilisez le menu <b>Édition</b>/<b>Coller le presse-papier comme partie PGN</b>
+    pour ouvrir la fenêtre <a Import>Importer un jeu PGN</a>, appuyer sur le bouton
+    <b>Coller la partie en cours</b>, éditer le mauvais coup et puis appuyez sur
+    <b>Importer</b>.
+  }
+  {
+    Si vous avez chargé un fichier de classification ECO, vous pouvez aller à la
+    position la plus profonde classée dans la partie actuelle avec le menu <b>Partie</b>
+    <b>Identifier l'ouverture</b> (raccourci : Ctrl+Maj+D).
+  }
+  {
+    Si vous voulez vérifier la taille d'un fichier ou sa date de dernière modification
+    avant de l'ouvrir, utilisez l'<a Finder>explorateur de fichier</a>.
+  }
+  {
+    Un <a OpReport>rapport d'ouverture</a> est idéal pour en savoir plus sur une position
+    d'échiquier donnée. Vous pouvez voir son score, si elle conduit à de fréquentes
+    parties nulles ou à des thèmes positionnels classiques (raccourci : Ctrl+Maj+O).
+  }
+  {
+    Vous pouvez ajouter les symboles d'annotation les plus courants ( !, ! ?, +=, etc.) au
+    coup ou position actuelle avec des raccourcis clavier sans avoir besoin d'utilisez
+    l'<a Comment>éditeur de commentaire<a>. Par exemple, tapez "!" puis
+    la touche Retour pour ajouter un symbole d'annotation "!".  Voir la page d'aide
+    <a Moves>Saisie de coups d'échecs</a> pour plus de détails.
+  }
+  {
+    Si vous parcourez les ouvertures d'une base de données avec l'<a Tree>arbre</a>,
+    vous pouvez voir un aperçu utile de la qualité de l'ouverture actuelle, comment elle
+    est son score récent entre joueurs de haut niveau en ouvrant la fenêtre de statistiques
+    (raccourci : Ctrl+I).
+  }
+  {
+    Vous pouvez changer la taille du panneau de la fenêtre principale en maintenant les
+    touches <b>Ctrl</b> et <b>Maj</b> enfoncées, et en appuyant sur les touches flèchées
+    <b>Gauche</b> ou <b>Droite</b>.
+  }
+  {
+    Après une <a Searches>recherche</a>, vous pouvez facilement parcourir tous les
+    les jeux correspondants en maintenant enfoncée la touche <b>Ctrl</b> et en appuyant sur
+    la touche fléchée Touche <b>Haut</b> ou <b>Bas</b> pour charger la partie précédente ou
+    suivante de la liste <a Searches Filter>filtrée</a>.
+  }
+  {
+    Les fenêtres peuvent être ancrées en cochant l'entrée correspondante dans le menu
+    <b>Options</b>/<b>Fenêtres groupées</b>.  Les onglets peuvent être glissés et déposés
+    d'un panneau à l'autre et organisés par un clic droit sur son onglet.
+  }
+  {
+    L'interface graphique de Scid peut être personnalisée par les TTK-Themes. Cela permet de
+    changer l'apparence et le comportement selon la préférence de l'utilisateur. Utilisez le
+    menu <b>Options</b>/<b>Charger le thème</b> et regardez dans l'<a Appearance>aide</a>.
+  }
 }
 
 # end of francais.tcl
