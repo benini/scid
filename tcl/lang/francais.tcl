@@ -1115,7 +1115,7 @@ translate F ExitDialog {Voulez vous réellement quitter Scid?}
 translate F ExitUnsaved {Les bases de données suivantes ont des parties modifiées non sauvegardées. Si vous quittez maintenant, ces modifications seront perdues.}
 
 # Import window:
-translate F PasteCurrentGame {Coller la partie courante}
+translate F PasteCurrentGame {Coller la partie en cours}
 translate F ImportHelp1 {Entrer ou coller une partie au format PGN dans le cadre ci-dessus.}
 translate F ImportHelp2 {Toutes les erreurs durant l'import de la partie seront affichées ici.}
 translate F OverwriteExistingMoves {Effacer les coups existants ?}
