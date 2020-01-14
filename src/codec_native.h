@@ -65,46 +65,43 @@ public: // ICodecDatabase interface
 	}
 
 	errorT addGame(Game* game) override {
-		std::pair<errorT, IndexEntry> ie = addGameHelper(game);
-		if (ie.first != OK)
-			return ie.first;
+		bbuf_.clear();
+		IndexEntry ie;
+		auto err = game->Encode(bbuf_, ie);
+		if (err)
+			return err;
 
-		return derived()->dyn_addIndexEntry(ie.second);
+		err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(),
+		                    game->GetWhiteStr(), game->GetBlackStr(),
+		                    game->GetEventStr(), game->GetSiteStr(),
+		                    game->GetRoundStr());
+		if (err)
+			return err;
+
+		return derived()->dyn_addIndexEntry(ie);
 	}
 
 	errorT saveGame(Game* game, gamenumT replaced) override {
 		if (replaced >= idx_->GetNumGames())
 			return ERROR_BadArg;
 
-		std::pair<errorT, IndexEntry> ie = addGameHelper(game);
-		if (ie.first != OK)
-			return ie.first;
+		bbuf_.clear();
+		IndexEntry ie;
+		auto err = game->Encode(bbuf_, ie);
+		if (err)
+			return err;
 
-		return derived()->dyn_saveIndexEntry(ie.second, replaced);
-	}
+		err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(),
+		                    game->GetWhiteStr(), game->GetBlackStr(),
+		                    game->GetEventStr(), game->GetSiteStr(),
+		                    game->GetRoundStr());
+		if (err)
+			return err;
 
-	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) override {
 		return derived()->dyn_saveIndexEntry(ie, replaced);
 	}
 
-	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) override {
-		return derived()->dyn_addName(nt, name);
-	}
-
 private:
-	std::pair<errorT, IndexEntry> addGameHelper(Game* game) {
-		std::pair<errorT, IndexEntry> res;
-		bbuf_.clear();
-		res.first = game->Encode(bbuf_, res.second);
-		if (res.first == OK) {
-			res.first = addGameHelper(&res.second, bbuf_.data(), bbuf_.size(),
-			                          game->GetWhiteStr(), game->GetBlackStr(),
-			                          game->GetEventStr(), game->GetSiteStr(),
-			                          game->GetRoundStr());
-		}
-		return res;
-	}
-
 	errorT addGameHelper(IndexEntry* ie, const byte* srcData, size_t dataLen,
 	                     const char* white, const char* black,
 	                     const char* event, const char* site,

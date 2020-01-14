@@ -71,6 +71,14 @@ public: // ICodecDatabase interface
 		return &v_[offset];
 	}
 
+	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) override {
+		return dyn_saveIndexEntry(ie, replaced);
+	}
+
+	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) override {
+		return dyn_addName(nt, name);
+	}
+
 	errorT flush() override { return OK; }
 
 	errorT dyn_open(fileModeT fMode, const char*, const Progress&, Index* idx,

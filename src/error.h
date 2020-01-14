@@ -81,6 +81,9 @@ const errorT
     // Codec errors
     ERROR_CodecUnsupFeat = 701;
 
+
+static_assert(OK == false);
+
 #endif   // #ifdef SCID_ERROR_H
 
 ///////////////////////////////////////////////////////////////////////////

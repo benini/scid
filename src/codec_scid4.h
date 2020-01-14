@@ -119,6 +119,14 @@ public: // ICodecDatabase interface
 		return reinterpret_cast<const byte*>(gamecache_);
 	}
 
+	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) final {
+		return dyn_saveIndexEntry(ie, replaced);
+	}
+
+	std::pair<errorT, idNumberT> addName(nameT nt, const char* name) final {
+		return dyn_addName(nt, name);
+	}
+
 	errorT flush() final;
 
 	errorT dyn_open(fileModeT, const char*, const Progress&, Index*,
