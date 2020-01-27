@@ -16,7 +16,7 @@
 array set encodings {
   czech iso8859-2
   deutsch iso8859-1
-  francais iso8859-1
+  francais utf-8
   hungary iso8859-2
   italian iso8859-1
   nederlan iso8859-1
