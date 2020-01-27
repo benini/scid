@@ -89,6 +89,8 @@ menuText W EditCopyBoard "Kopiera ställning" 0 \
   {Kopiera den aktuella ställningen i FEN kod till urklippshanteraren} 
 menuText W EditPasteBoard "Klistra in utgångsställning" 10 \
   {Klistra in ställningen från aktuellt parti i den temporära databasen}
+# ====== TODO To be translated ======
+menuText W ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText W Game "Partier" 0
@@ -451,6 +453,8 @@ translate W PInfoMostBlack {De vanligaste öppningarna som svart}
 translate W PInfoRating {Ratinghistoria}
 translate W PInfoBio {Biografisk information}
 translate W PInfoEditRatings {Redigera rating} 
+# ====== TODO To be translated ======
+translate W PInfoEloFile {File}
 
 # Tablebase information:
 translate W Draw {Remi}
@@ -641,6 +645,10 @@ menuText W GraphOptionsWhite "Vit" 0
 menuText W GraphOptionsBlack "Svart" 0
 menuText W GraphOptionsBoth "Båda" 1
 menuText W GraphOptionsPInfo "Spelarinformation" 0
+# ====== TODO To be translated ======
+menuText W GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText W GraphOptionsEloDB "Elo from database" 0
 translate W GraphFilterTitle "Filterdiagram: antal per 1000 partier"
 translate W GraphAbsFilterTitle "Filtergraf: frekvens för partierna"
 translate W ConfigureFilter {Konfigurera X-axlar för År, Rating och Drag}
@@ -1749,6 +1757,16 @@ translate W MakeCorrections {Make Corrections}
 translate W Surnames {Surnames}
 # ====== TODO To be translated ======
 translate W Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate W OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate W OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate W OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate W OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate W OptionsBoardPieces "Piece Style"
 }
 
 ############################################################

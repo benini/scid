@@ -88,6 +88,8 @@ menuText B EditCopyBoard "Copia posição" 6 \
   {Copia o tabuleiro corrente em notação FEN para a área de transferência} 
 menuText B EditPasteBoard "Colar Posicao" 12 \
   {Configura a posicao inicial a partir da area de transferencia}
+# ====== TODO To be translated ======
+menuText B ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText B Game "Jogo" 0
@@ -441,6 +443,8 @@ translate B PInfoMostBlack {Aberturas mais comuns com as Pretas}
 translate B PInfoRating {Historico de Rating}
 translate B PInfoBio {Biografia}
 translate B PInfoEditRatings {Editar Ratings} 
+# ====== TODO To be translated ======
+translate B PInfoEloFile {File}
 
 # Tablebase information:
 translate B Draw {Empate}
@@ -627,6 +631,10 @@ menuText B GraphOptionsWhite "Branco" 0
 menuText B GraphOptionsBlack "Preto" 0
 menuText B GraphOptionsBoth "Ambos" 0
 menuText B GraphOptionsPInfo "Informacao do Jogador" 0
+# ====== TODO To be translated ======
+menuText B GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText B GraphOptionsEloDB "Elo from database" 0
 translate B GraphFilterTitle "Gráfico de filtro: frequencia por 1000 jogos" 
 translate B GraphAbsFilterTitle "Gráfico de filtro: frequencia dos jogos"
 translate B ConfigureFilter {Configurar Eixos X para Ano, Rating e Movimentos}
@@ -1697,6 +1705,16 @@ translate B FilterStatistic {Estatisticas de Filtro}
 translate B MakeCorrections {Fazer Correcoes}
 translate B Surnames {Sobrenomes}
 translate B Ambiguous {Ambiguo}
+# ====== TODO To be translated ======
+translate B OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate B OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate B OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate B OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate B OptionsBoardPieces "Piece Style"
 }
 
 # end of portbr.tcl

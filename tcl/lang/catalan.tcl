@@ -93,6 +93,8 @@ menuText K EditCopyBoard "Copiar posició" 8 \
   {Copia l'escaquer actual en notació FEN a la selecció de text (clipboard)}
 menuText K EditPasteBoard "Pegar escaquer inicial" 6 \
   {Posa l'escaquer inicial des de la selecció de text actual (clipboard)}
+# ====== TODO To be translated ======
+menuText K ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText K Game "Partida" 0
@@ -476,6 +478,8 @@ translate K PInfoMostBlack {Obertures més comuns amb Negres}
 translate K PInfoRating {Historial de classificació}
 translate K PInfoBio {Biografia}
 translate K PInfoEditRatings {Editar elos}
+# ====== TODO To be translated ======
+translate K PInfoEloFile {File}
 
 # Tablebase information:
 translate K Draw {Taules}
@@ -674,6 +678,10 @@ menuText K GraphOptionsWhite "Blanques" 0
 menuText K GraphOptionsBlack "Negres" 0
 menuText K GraphOptionsBoth "Ambdos" 0
 menuText K GraphOptionsPInfo "Opcions informació jugador" 0
+# ====== TODO To be translated ======
+menuText K GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText K GraphOptionsEloDB "Elo from database" 0
 translate K GraphFilterTitle "Filtre gràfic: freqüencia per 1000 partides"
 translate K GraphAbsFilterTitle "Filtre gràfic: freqüencia de les partides"
 translate K ConfigureFilter {Configurar Eix-X per Any, Rating i Jugades}
@@ -1863,6 +1871,16 @@ translate K MakeCorrections {Make Corrections}
 translate K Surnames {Surnames}
 # ====== TODO To be translated ======
 translate K Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate K OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate K OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate K OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate K OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate K OptionsBoardPieces "Piece Style"
 
 }
 # end of catalan.tcl

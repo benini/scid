@@ -99,6 +99,8 @@ proc checkfile {code langfile enc} {
       if { $lineCount < 0} {
         puts $fnew  "# ====== TODO To be translated ======"
         puts $fnew [regsub " E " $line " $code "]
+      } elseif {$lastLine >= $lineCount} {
+          puts "WARNING: $name found in a wrong position"
       } else {
         foreach l [lrange $langData [ expr $lastLine + 1 ] $lineCount] {
           puts $fnew $l

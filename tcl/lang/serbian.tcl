@@ -89,6 +89,8 @@ menuText Y EditCopyBoard "Copy position" 6 \
   {Copy the current board in FEN notation to the text selection (klipbord)} ;# ***
 menuText Y EditPasteBoard "Prenesi poèetnu poziciju" 9 \
   {Postavi poèetnu poziciju na osnovu trenutno izabranog teksta (klipbord)}
+# ====== TODO To be translated ======
+menuText Y ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText Y Game "Partija" 0
@@ -514,6 +516,8 @@ translate Y PInfoMostBlack {Najèe¹æe igrana otvaranja sa crnim figurama}
 translate Y PInfoRating {Istorija rejtinga}
 translate Y PInfoBio {Biography} ;# ***
 translate Y PInfoEditRatings {Edit Ratings} ;# ***
+# ====== TODO To be translated ======
+translate Y PInfoEloFile {File}
 
 # Tablebase information:
 translate Y Draw {Remi}
@@ -758,6 +762,10 @@ menuText Y GraphOptionsWhite "Beli" 0
 menuText Y GraphOptionsBlack "Crni" 0
 menuText Y GraphOptionsBoth "Oba" 1
 menuText Y GraphOptionsPInfo "Informacije o igraèu" 0
+# ====== TODO To be translated ======
+menuText Y GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText Y GraphOptionsEloDB "Elo from database" 0
 translate Y GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
 # ====== TODO To be translated ======
 translate Y GraphAbsFilterTitle "Filter Graph: frequency of the games"
@@ -2296,6 +2304,16 @@ translate Y MakeCorrections {Make Corrections}
 translate Y Surnames {Surnames}
 # ====== TODO To be translated ======
 translate Y Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate Y OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate Y OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate Y OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate Y OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate Y OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl

@@ -88,6 +88,8 @@ menuText H EditCopyBoard "Állás másolása FEN-ként" 17 \
   {Az aktuális állást FEN-jelöléssel a vágólapra másolja.}
 menuText H EditPasteBoard "Kezdõállás beillesztése" 13 \
   {Felállítja a kezdõállást kijelölt szöveg (vágólap) alapján.}
+# ====== TODO To be translated ======
+menuText H ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText H Game "Játszma" 0
@@ -458,6 +460,8 @@ translate H PInfoMostBlack {Leggyakoribb megnyitások sötétként}
 translate H PInfoRating {Értékszám alakulása}
 translate H PInfoBio {Életrajz}
 translate H PInfoEditRatings {Értékszámok átszerkesztése}
+# ====== TODO To be translated ======
+translate H PInfoEloFile {File}
 
 # Tablebase information:
 translate H Draw {Döntetlen}
@@ -651,6 +655,10 @@ menuText H GraphOptionsWhite "Világos" 0
 menuText H GraphOptionsBlack "Sötét" 0
 menuText H GraphOptionsBoth "Mindkettõ" 1
 menuText H GraphOptionsPInfo "A játékosinformáció játékosa" 0
+# ====== TODO To be translated ======
+menuText H GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText H GraphOptionsEloDB "Elo from database" 0
 translate H GraphFilterTitle "Szûrõgrafikon: gyakoriság 1000 játszmánként"
 translate H GraphAbsFilterTitle "Szûrõgrafikon: játszmák gyakorisága"
 translate H ConfigureFilter {Állítsd be az X tengelyt évre, értékszámra vagy lépésre}
@@ -1844,6 +1852,16 @@ translate H MakeCorrections {Make Corrections}
 translate H Surnames {Surnames}
 # ====== TODO To be translated ======
 translate H Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate H OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate H OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate H OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate H OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate H OptionsBoardPieces "Piece Style"
 }
 
 # Tips of the day in Hungarian

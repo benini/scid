@@ -89,6 +89,8 @@ menuText P EditCopyBoard "Kopiuj pozycjê" 7 \
   {Kopiuj aktualn± pozycjê w notacji FEN do schowka}
 menuText P EditPasteBoard "Ustaw pozycjê ze schowka" 3 \
   {Ustaw pozycjê ze schowka}
+# ====== TODO To be translated ======
+menuText P ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 menuText P Game "Partia" 1
 menuText P GameNew "Opu¶æ partiê" 0 \
@@ -520,6 +522,8 @@ translate P PInfoMostBlack {Najczêstsze debiuty czarnymi}
 translate P PInfoRating {Historia rankingu}
 translate P PInfoBio {Biografia}
 translate P PInfoEditRatings {Modyfikuj rankingi} 
+# ====== TODO To be translated ======
+translate P PInfoEloFile {File}
 
 # Tablebase information:
 translate P Draw {remis}
@@ -764,6 +768,10 @@ menuText P GraphOptionsWhite "Bia³e" 0
 menuText P GraphOptionsBlack "Czarne" 0
 menuText P GraphOptionsBoth "Oba kolory" 1
 menuText P GraphOptionsPInfo "Gracz z Informacji o graczu" 0
+# ====== TODO To be translated ======
+menuText P GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText P GraphOptionsEloDB "Elo from database" 0
 translate P GraphFilterTitle "Filtr: czêsto¶æ na 1000 partii" 
 # ====== TODO To be translated ======
 translate P GraphAbsFilterTitle "Filter Graph: frequency of the games"
@@ -2304,6 +2312,16 @@ translate P MakeCorrections {Make Corrections}
 translate P Surnames {Surnames}
 # ====== TODO To be translated ======
 translate P Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate P OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate P OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate P OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate P OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate P OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
 }
 

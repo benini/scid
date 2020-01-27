@@ -122,6 +122,8 @@ menuText U EditCopyBoard "Kopioi asema" 0 \
   {Kopioi nykyinen asema leikepöydälle FEN-muodossa}
 menuText U EditPasteBoard "Liitä asema" 0 \
   {Liitä leikepöydällä oleva FEN-teksti alkuasemaksi}
+# ====== TODO To be translated ======
+menuText U ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText U Game "Peli" 0
@@ -485,6 +487,8 @@ translate U PInfoMostBlack {Yleisimmät avaukset: Musta}
 translate U PInfoRating {Vahvuuslukuhistoria}
 translate U PInfoBio {Biografia}
 translate U PInfoEditRatings {Muokkaa vahvuuslukuja}
+# ====== TODO To be translated ======
+translate U PInfoEloFile {File}
 
 # Tablebase information:
 translate U Draw {Tasapeli}
@@ -675,6 +679,10 @@ menuText U GraphOptionsWhite "Valkea" 0
 menuText U GraphOptionsBlack "Musta" 0
 menuText U GraphOptionsBoth "Molemmat" 1
 menuText U GraphOptionsPInfo "Pelaaja Info pelaaja" 0
+# ====== TODO To be translated ======
+menuText U GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText U GraphOptionsEloDB "Elo from database" 0
 translate U GraphFilterTitle "Graafi: yleisyys per 1000 peliä"
 translate U GraphAbsFilterTitle "graafi: pelien yleisyys"
 translate U ConfigureFilter "Muokkaa X-akseli; vuosi, vahvuus, siirrot"
@@ -1810,6 +1818,16 @@ translate U MakeCorrections {Make Corrections}
 translate U Surnames {Surnames}
 # ====== TODO To be translated ======
 translate U Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate U OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate U OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate U OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate U OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate U OptionsBoardPieces "Piece Style"
 
 }
 # end of suomi.tcl

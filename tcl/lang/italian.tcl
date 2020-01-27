@@ -90,6 +90,8 @@ menuText I EditCopyBoard "Copia posizione" 6 \
   {Copia la posizione della scacchiera corrente in notazione FEN come testo (clipboard)}
 menuText I EditPasteBoard "Incolla come posizione di partenza" 17 \
   {Imposta la posizione di partenza dalla selezione del testo corrente (clipboard)}
+# ====== TODO To be translated ======
+menuText I ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText I Game "Partita" 0
@@ -449,6 +451,8 @@ translate I PInfoMostBlack {Le più frequenti aperture con il Nero}
 translate I PInfoRating {Variazioni Elo}
 translate I PInfoBio {Biografia}
 translate I PInfoEditRatings {Edita i rating}
+# ====== TODO To be translated ======
+translate I PInfoEloFile {File}
 
 # Tablebase information:
 translate I Draw {Patta}
@@ -642,6 +646,10 @@ menuText I GraphOptionsWhite "Bianco" 0
 menuText I GraphOptionsBlack "Nero" 0
 menuText I GraphOptionsBoth "Entrambi" 1
 menuText I GraphOptionsPInfo "Informazioni sul giocatore" 0
+# ====== TODO To be translated ======
+menuText I GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText I GraphOptionsEloDB "Elo from database" 0
 translate I GraphFilterTitle "Grafico del filtro: frequenza ogni 1000 partite"
 translate I GraphAbsFilterTitle "Grafico del filtro: frequenza delle partite"
 translate I ConfigureFilter {Configura l'asse delle X per Anno, Rating e Mosse}
@@ -1748,6 +1756,16 @@ translate I MakeCorrections {Make Corrections}
 translate I Surnames {Surnames}
 # ====== TODO To be translated ======
 translate I Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate I OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate I OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate I OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate I OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate I OptionsBoardPieces "Piece Style"
 }
 
 ############################################################

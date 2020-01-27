@@ -116,6 +116,8 @@ menuText G EditCopyBoard "Αντιγραφή θέσης" 6 \
   {Αντιγράψτε την τρέχουσα σκακιέρα στην προσωρινή μνήμη με σχολιασμό FEN}
 menuText G EditPasteBoard "Επικόλληση σκακιέρας έναρξης" 12 \
   {Καθορίστε την σκακιέρα από την προσωρινή μνήμη}
+# ====== TODO To be translated ======
+menuText G ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText G Game "Παρτίδα" 0
@@ -481,6 +483,8 @@ translate G PInfoMostBlack {Τα κοινότερα ανοίγματα ως Μα
 translate G PInfoRating {Ιστορικό βαθμολόγησης}
 translate G PInfoBio {Βιογραφία}
 translate G PInfoEditRatings {Επεξεργασία βαθμολογήσεων}
+# ====== TODO To be translated ======
+translate G PInfoEloFile {File}
 
 # Tablebase information:
 translate G Draw {Ισοπαλία}
@@ -671,6 +675,10 @@ menuText G GraphOptionsWhite "Λευκά" 0
 menuText G GraphOptionsBlack "Μαύρα" 0
 menuText G GraphOptionsBoth "Και τα δύο" 1
 menuText G GraphOptionsPInfo "Πληροφορίες παίκτη" 0
+# ====== TODO To be translated ======
+menuText G GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText G GraphOptionsEloDB "Elo from database" 0
 translate G GraphFilterTitle "Φίλτρο γραφήματος: συχνότητα ανά 1000 παρτίδες"
 translate G GraphAbsFilterTitle "Φίλτρο γραφήματος: συχνότητα παρτίδας"
 translate G ConfigureFilter "Προσαρμογή των αξόνων Χ ως προς Έτος, Βαθμολογία και Κινήσεις"
@@ -1850,6 +1858,16 @@ translate G MakeCorrections {Make Corrections}
 translate G Surnames {Surnames}
 # ====== TODO To be translated ======
 translate G Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate G OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate G OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate G OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate G OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate G OptionsBoardPieces "Piece Style"
 
 }
 # end of greek.tcl

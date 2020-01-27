@@ -94,6 +94,8 @@ menuText N EditCopyBoard "Copieer stelling " 6 \
   {Copieer de huidige stelling in FEN notatie naar de tekst het tekst clibbord } ;
 menuText N EditPasteBoard "Invoegen start stelling" 12 \
   {Maak de start stelling van de huidige tekst selectie (klembord)}
+# ====== TODO To be translated ======
+menuText N ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText N Game "Partij" 0
@@ -474,6 +476,8 @@ translate N PInfoMostBlack {Meest gespeelde opening als Zwart}
 translate N PInfoRating {Geschiedenis Elo Klassering}
 translate N PInfoBio {Biografie}
 translate N PInfoEditRatings {Bewerk elo rangschikking} ;
+# ====== TODO To be translated ======
+translate N PInfoEloFile {File}
 
 # Tablebase information:
 translate N Draw {Remise}
@@ -665,6 +669,10 @@ menuText N GraphOptionsWhite "Wit" 0
 menuText N GraphOptionsBlack "Zwart" 0
 menuText N GraphOptionsBoth "Beide" 1
 menuText N GraphOptionsPInfo "Speler informatie" 0
+# ====== TODO To be translated ======
+menuText N GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText N GraphOptionsEloDB "Elo from database" 0
 translate N GraphFilterTitle "Filtergrafiek: frequentie per 1000 partijen"
 translate N GraphAbsFilterTitle "Filtergrafiek: frequentie van de partijen"
 translate N ConfigureFilter {Configureer de X-as voor Jaar, Elo en Zetten}
@@ -1940,5 +1948,15 @@ translate N MakeCorrections {Make Corrections}
 translate N Surnames {Surnames}
 # ====== TODO To be translated ======
 translate N Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate N OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate N OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate N OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate N OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate N OptionsBoardPieces "Piece Style"
 }
 # End of nederlan.tcl

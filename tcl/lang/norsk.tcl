@@ -91,6 +91,8 @@ menuText O EditCopyBoard "Copy position" 6 \
   {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText O EditPasteBoard "Lim inn stilling" 0 \
   {Lag en startstilling fra gjeldende utvalg (utklippstavle)}
+# ====== TODO To be translated ======
+menuText O ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText O Game "Parti" 0
@@ -516,6 +518,8 @@ translate O PInfoMostBlack {Hyppigste åpning som sort}
 translate O PInfoRating {Historisk rating}
 translate O PInfoBio {Biografi}
 translate O PInfoEditRatings {Edit Ratings} ;# ***
+# ====== TODO To be translated ======
+translate O PInfoEloFile {File}
 
 # Tablebase information:
 translate O Draw {Uavgjort}
@@ -760,6 +764,10 @@ menuText O GraphOptionsWhite "Hvit" 0
 menuText O GraphOptionsBlack "Sort" 0
 menuText O GraphOptionsBoth "Begge" 0
 menuText O GraphOptionsPInfo "Spiller Info spiller" 0
+# ====== TODO To be translated ======
+menuText O GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText O GraphOptionsEloDB "Elo from database" 0
 translate O GraphFilterTitle "Filtergraf: hyppighet per 1000 partier"
 # ====== TODO To be translated ======
 translate O GraphAbsFilterTitle "Filter Graph: frequency of the games"
@@ -2292,6 +2300,16 @@ translate O MakeCorrections {Make Corrections}
 translate O Surnames {Surnames}
 # ====== TODO To be translated ======
 translate O Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate O OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate O OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate O OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate O OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate O OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
 }
 

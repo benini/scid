@@ -87,6 +87,8 @@ menuText C EditCopyBoard "Kopírovat pozici" 4 \
   {Kopírovat aktuální pozici ve FEN notaci do textového výbìru (do clipboardu)}
 menuText C EditPasteBoard "Vlo¾it poèáteèní pozici" 1 \
   {Nastavit poèáteèní pozici z aktuálního textového výbìru (z clipboardu)}
+# ====== TODO To be translated ======
+menuText C ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText C Game "Partie" 0
@@ -445,6 +447,8 @@ translate C PInfoMostBlack {Nejèastìj¹í zahájení za èerné}
 translate C PInfoRating {Historie ratingu}
 translate C PInfoBio {Biografie}
 translate C PInfoEditRatings {Editovat ratingy}
+# ====== TODO To be translated ======
+translate C PInfoEloFile {File}
 
 # Tablebase information:
 translate C Draw {Remíza}
@@ -636,6 +640,10 @@ menuText C GraphOptionsWhite "Bílý" 0
 menuText C GraphOptionsBlack "Èerný" 1
 menuText C GraphOptionsBoth "Oba" 0
 menuText C GraphOptionsPInfo "Informace o hráèi" 0
+# ====== TODO To be translated ======
+menuText C GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText C GraphOptionsEloDB "Elo from database" 0
 translate C GraphFilterTitle "Graf filtru: èetnost na 1000 partií"
 translate C GraphAbsFilterTitle "Graf filtru: èetnost partií"
 translate C ConfigureFilter {Konfigurovat x-souøadnici pro rok, rating a tahy}
@@ -1799,6 +1807,16 @@ translate C MakeCorrections {Make Corrections}
 translate C Surnames {Surnames}
 # ====== TODO To be translated ======
 translate C Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate C OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate C OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate C OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate C OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate C OptionsBoardPieces "Piece Style"
 }
 
 

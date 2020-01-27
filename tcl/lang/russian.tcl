@@ -89,6 +89,8 @@ menuText R EditCopyBoard "Копировать позицию" 4 \
   {Копировать текущую позицию в нотации FEN в выбранный текст (буфер обмена)}
 menuText R EditPasteBoard "Вставить начальную позицию" 3 \
   {Вставить начальную позицию из текущего выбранного текста (буфера обмена)}
+# ====== TODO To be translated ======
+menuText R ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 
 # Game menu:
 menuText R Game "Партия" 0
@@ -452,6 +454,8 @@ translate R PInfoMostBlack {Наиболее частые дебюты за чё
 translate R PInfoRating {История рейтинга}
 translate R PInfoBio {Биография}
 translate R PInfoEditRatings {Редактировать рейтинги}
+# ====== TODO To be translated ======
+translate R PInfoEloFile {File}
 
 # Tablebase information:
 translate R Draw {Ничья}
@@ -642,6 +646,10 @@ menuText R GraphOptionsWhite "Белые" 0
 menuText R GraphOptionsBlack "Чёрные" 0
 menuText R GraphOptionsBoth "Оба" 0
 menuText R GraphOptionsPInfo "Игрок - информация об игроке" 0
+# ====== TODO To be translated ======
+menuText R GraphOptionsEloFile "Elo from rating file" 0
+# ====== TODO To be translated ======
+menuText R GraphOptionsEloDB "Elo from database" 0
 translate R GraphFilterTitle "Диаграмма фильтра: частота на 1000 партий"
 translate R GraphAbsFilterTitle "Диаграмма фильтра: частота на все партии"
 translate R ConfigureFilter {Настройка оси Х по годам, рейтингу и ходам}
@@ -1789,6 +1797,16 @@ translate R MakeCorrections {Make Corrections}
 translate R Surnames {Surnames}
 # ====== TODO To be translated ======
 translate R Ambiguous {Ambiguous}
+# ====== TODO To be translated ======
+translate R OptionsToolbar "Toolbar"
+# ====== TODO To be translated ======
+translate R OptionsBoard "Chessboard"
+# ====== TODO To be translated ======
+translate R OptionsMenuColor "Menu colors"
+# ====== TODO To be translated ======
+translate R OptionsBoardSize "Board size"
+# ====== TODO To be translated ======
+translate R OptionsBoardPieces "Piece Style"
 
 }
 # end of russian.tcl
