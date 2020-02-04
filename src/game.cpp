@@ -2506,7 +2506,7 @@ Game::WriteToPGN(uint lineWidth, bool NewLineAtEnd, bool newLineToSpaces)
 //      index file entry and a namebase that stores the
 //      player/site/event/round names.
 //
-errorT
+void
 Game::LoadStandardTags (const IndexEntry* ie, const NameBase* nb)
 {
     ASSERT (ie != NULL  &&  nb != NULL);
@@ -2526,7 +2526,6 @@ Game::LoadStandardTags (const IndexEntry* ie, const NameBase* nb)
     SetResult (ie->GetResult());
     SetEco (ie->GetEcoCode());
     ie->GetFlagStr (ScidFlags, NULL);
-    return OK;
 }
 
 eloT

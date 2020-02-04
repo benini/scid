@@ -374,7 +374,7 @@ public:
     const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
     void ClearExtraTags() { extraTags_.clear(); }
 
-    errorT LoadStandardTags(const IndexEntry* ie, const NameBase* nb);
+    void LoadStandardTags(const IndexEntry* ie, const NameBase* nb);
 
     void     SetEventStr (const char * str) { EventStr = str; }
     void     SetSiteStr  (const char * str) { SiteStr  = str; }

@@ -118,14 +118,12 @@ private:
 	               const byte* srcData, size_t dataLen) final {
 		ByteBuffer buf(srcData, dataLen);
 		Game game;
-		errorT err = game.Decode(buf);
-		if (err == OK)
-			err = game.LoadStandardTags(srcIe, srcNb);
-		if (err != OK)
+		if (errorT err = game.Decode(buf))
 			return err;
 
-		err = getDerived()->gameAdd(&game);
-		if (err != OK)
+		game.LoadStandardTags(srcIe, srcNb);
+
+		if (errorT err = getDerived()->gameAdd(&game))
 			return err;
 
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
