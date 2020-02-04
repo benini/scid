@@ -171,31 +171,15 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 }
 
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
-	beginTransaction();
-	errorT err1 = saveGameHelper(game, replacedGameId);
-	errorT err2 = endTransaction(replacedGameId);
-	return (err1 != OK) ? err1 : err2;
-}
-
-errorT scidBaseT::saveGameHelper(Game* game, gamenumT gameId) {
 	if (isReadOnly())
 		return ERROR_FileReadOnly;
 
-	if (gameId < numGames())
-		return codec_->saveGame(game, gameId);
-
-	return codec_->addGame(game);
-}
-
-errorT scidBaseT::importGame(const scidBaseT* srcBase, uint gNum) {
-	if (srcBase == this) return ERROR_BadArg;
-	if (isReadOnly()) return ERROR_FileReadOnly;
-	if (gNum >= srcBase->numGames()) return ERROR_BadArg;
-
 	beginTransaction();
-	errorT err = importGameHelper(srcBase, gNum);
-	errorT errClear = endTransaction();
-	return (err == OK) ? errClear : err;
+	errorT err = (replacedGameId < numGames())
+	                 ? codec_->saveGame(game, replacedGameId)
+	                 : codec_->addGame(game);
+	errorT errClear = endTransaction(replacedGameId);
+	return (err != OK) ? err : errClear;
 }
 
 errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress) {
@@ -208,12 +192,14 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 	errorT err = OK;
 	size_t iProgress = 0;
 	size_t totGames = filter->size();
-	for (gamenumT gNum = 0, n = srcBase->numGames(); gNum < n; gNum++) {
-		if (filter.get(gNum) == 0) continue;
+	for (const auto gNum : filter) {
 		err = importGameHelper(srcBase, gNum);
-		if (err != OK) break;
+		if (err != OK)
+			break;
+
 		if (++iProgress % 8192 == 0) {
-			if (!progress.report(iProgress, totGames)) break;
+			if (!progress.report(iProgress, totGames))
+				break;
 		}
 	}
 	errorT errClear = endTransaction();

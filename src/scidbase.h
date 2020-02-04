@@ -152,7 +152,6 @@ struct scidBaseT {
 		return ERROR_FileRead;
 	}
 
-	errorT importGame(const scidBaseT* srcBase, uint gNum);
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
 	                   const Progress& progress);
 	errorT importGames(ICodecDatabase::Codec dbtype, const char* filename,
@@ -407,7 +406,6 @@ private:
 	errorT endTransaction(gamenumT gameId = INVALID_GAMEID);
 
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
-	errorT saveGameHelper(Game* game, gamenumT gameId);
 
 	Filter* fetchFilter(const std::string& filterId) const;
 	HFilter getFilterHelper(const std::string& filterId,

@@ -145,10 +145,21 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	if (filter != 0) {
 		err = targetBase->importGames(dbase, filter, UI_CreateProgress(ti));
 	} else {
-		uint gNum = strGetUnsigned (argv[3]);
-		if (gNum == 0)
-			return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
-		err = targetBase->importGame(dbase, gNum -1);
+		uint gNum = strGetUnsigned(argv[3]);
+		const IndexEntry* ie = (gNum > 0)
+		                           ? dbase->getIndexEntry_bounds(gNum - 1)
+		                           : nullptr;
+		if (ie == nullptr)
+			return UI_Result(
+			    ti, ERROR_BadArg,
+			    "sc_base copygames error: wrong <gameNum|filterName>");
+
+		Game game;
+		err = dbase->getGame(*ie, game);
+		if (err == OK) {
+			game.LoadStandardTags(ie, dbase->getNameBase());
+			err = targetBase->saveGame(&game);
+		}
 	}
 	return UI_Result(ti, err);
 }

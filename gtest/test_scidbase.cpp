@@ -434,41 +434,24 @@ TEST_F(Test_Scidbase, importGames) {
 	EXPECT_EQ(nullptr, dbase.getIndexEntry_bounds(0));
 	HFilter dbfilter = dbase.getFilter("dbfilter");
 
-	EXPECT_EQ(ERROR_BadArg, dbase.importGame(&dbase, 0));
 	EXPECT_EQ(ERROR_BadArg, dbase.importGames(&dbase, dbfilter, Progress()));
-	EXPECT_EQ(ERROR_BadArg, dbase.importGame(&srcBase, 3));
 	EXPECT_EQ(0U, dbase.numGames());
 	EXPECT_EQ(0U, dbfilter->size());
 
 	{
-		EXPECT_EQ(OK, dbase.importGame(&srcBase, 1));
-		EXPECT_EQ(1U, dbase.numGames());
-		EXPECT_EQ(1U, dbfilter->size());
-		auto ie0 = dbase.getIndexEntry_bounds(0);
-		auto ie1 = dbase.getIndexEntry_bounds(1);
-		EXPECT_NE(nullptr, ie0);
-		EXPECT_EQ(nullptr, ie1);
-		EXPECT_NE(ie0, ie1);
-		auto gamepos = collectPositions(dbase, 0);
-		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
-	}
-	{
 		EXPECT_EQ(OK, dbase.importGames(&srcBase, srcFilter, Progress()));
-		EXPECT_EQ(3U, dbase.numGames());
-		EXPECT_EQ(3U, dbfilter->size());
+		EXPECT_EQ(2U, dbase.numGames());
+		EXPECT_EQ(2U, dbfilter->size());
 		auto ie0 = dbase.getIndexEntry_bounds(0);
 		auto ie1 = dbase.getIndexEntry_bounds(1);
 		auto ie2 = dbase.getIndexEntry_bounds(2);
 		EXPECT_NE(nullptr, ie0);
 		EXPECT_NE(nullptr, ie1);
-		EXPECT_NE(nullptr, ie2);
+		EXPECT_EQ(nullptr, ie2);
 		EXPECT_NE(ie0, ie1);
-		EXPECT_NE(ie0, ie2);
 		auto gamepos = collectPositions(dbase, 0);
-		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
-		gamepos = collectPositions(dbase, 1);
 		EXPECT_EQ(test_pgnShort, encodePgn(gamepos));
-		gamepos = collectPositions(dbase, 2);
+		gamepos = collectPositions(dbase, 1);
 		EXPECT_EQ(test_pgnLong, encodePgn(gamepos));
 	}
 }
