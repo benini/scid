@@ -328,9 +328,10 @@ proc playerInfo {{player ""}} {
   }
   set i 0
   foreach { date elo } $eloList {
-    set d [string range $date 0 4]
-    scan [string range $date 5 6] %d m
-    set m [format "%02d" [expr {round( ($m+1) * 12 / 100 )+1 } ]]
+    set d [expr {int($date)}]
+    set m [expr {round(($date - $d) * 12 + 1)}]
+    set d [format "%04d" $d]
+    set m [format "%02d" $m]
     append pinfo "$d$m  $elo     "
     incr i
     if { $i == 3 } { append pinfo "<br>"; set i 0 }
