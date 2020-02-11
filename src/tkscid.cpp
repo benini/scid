@@ -523,7 +523,6 @@ sc_base_export (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 if (db->getGame(*ie, *g) != OK) {
                     continue;
                 }
-                g->LoadStandardTags (ie, db->getNameBase());
                 exportGame (g, exportFile, outputFormat, pgnStyle);
             }
         }
@@ -1590,7 +1589,6 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
             if (argc > 7) fprintf(exportFile, "%s", argv[7]);
             Progress progress = UI_CreateProgress(ti);
-            const NameBase* nb = dbase->getNameBase();
             size_t count = filter->size();
             gamenumT* idxList = new gamenumT[count];
             count = dbase->listGames(argv[4], 0, count, filter, idxList);
@@ -1600,7 +1598,6 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     // Skip any corrupt games:
                     if (dbase->getGame(*ie, g) != OK) continue;
 
-                    g.LoadStandardTags (ie, nb);
                     std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
                     if (pgn.second != fwrite(pgn.first, 1, pgn.second, exportFile)) {
                         err = ERROR_FileWrite;
@@ -2051,7 +2048,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
             errorT err = db->getGame(*ie, *db->game);
             if (err != OK) return UI_Result(ti, err);
-            db->game->LoadStandardTags (ie, db->getNameBase());
             db->game->MoveToPly(0);
         }
         return UI_Result(ti, OK);
@@ -2238,7 +2234,6 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->getGame(*ie, *g) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
-        g->LoadStandardTags (ie, db->getNameBase());
     }
 
     idNumberT eventId = 0, siteId = 0;
@@ -3358,7 +3353,6 @@ sc_game_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         db->game->MoveToPly(0);
     }
 
-    db->game->LoadStandardTags (ie, db->getNameBase());
     db->gameNumber = gnum;
     db->gameAltered = false;
     return OK;
@@ -3750,7 +3744,6 @@ sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (base->getGame(*ie, *g) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            g->LoadStandardTags (ie, base->getNameBase());
 
         } else if (index == OPT_FORMAT) {
             // The option value should be "plain", "html" or "latex".
@@ -4160,7 +4153,6 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->getGame(*ie, *g) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            g->LoadStandardTags (ie, db->getNameBase());
         }
     }
     const char * s;
@@ -4581,7 +4573,6 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         Game game;
         err1 = db->getGame(ie1, game);
         if (err1 == OK) {
-            game.LoadStandardTags(&ie1, db->getNameBase());
             err1 = db->saveGame(&game, gn1 - 1);
         }
     }
@@ -4589,7 +4580,6 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         Game game;
         err2 = db->getGame(ie2, game);
         if (err2 == OK) {
-            game.LoadStandardTags(&ie2, db->getNameBase());
             err2 = db->saveGame(&game, gn2 - 1);
         }
     }
@@ -7627,7 +7617,6 @@ sc_report_create (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->getGame(*ie, *scratchGame) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
-            scratchGame->LoadStandardTags (ie, db->getNameBase());
             scratchGame->MoveToPly (ply - 1);
             if (scratchGame->AtEnd()) ply = 0;
             if (ply != 0) {

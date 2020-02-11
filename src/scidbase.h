@@ -146,10 +146,17 @@ struct scidBaseT {
 		return {data, length};
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
-		if (auto bbuf = getGame(ie))
-			return dest.Decode(bbuf);
+		auto length = ie.GetLength();
+		auto data = codec_->getGameData(ie.GetOffset(), length);
+		if (!data)
+			return ERROR_FileRead;
 
-		return ERROR_FileRead;
+		auto bbuf = ByteBuffer(data, length);
+		errorT err = dest.Decode(bbuf);
+		if (err == OK)
+			dest.LoadStandardTags(&ie, getNameBase());
+
+		return err;
 	}
 
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
@@ -335,7 +342,6 @@ struct scidBaseT {
 			if (err != OK)
 				break;
 
-			game.LoadStandardTags(ie, getNameBase());
 			if (!entry_op(game))
 				continue;
 

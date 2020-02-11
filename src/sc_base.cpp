@@ -157,7 +157,6 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		Game game;
 		err = dbase->getGame(*ie, game);
 		if (err == OK) {
-			game.LoadStandardTags(ie, dbase->getNameBase());
 			err = targetBase->saveGame(&game);
 		}
 	}
