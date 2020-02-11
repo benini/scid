@@ -171,7 +171,6 @@ SCID_EXECS = \
 #	files that most of the Scid programs use.
 #
 SCID_OBJS = \
-	$(TMP_DIR)\bytebuf.obj \
 	$(TMP_DIR)\codec_scid4.obj \
 	$(TMP_DIR)\game.obj \
 	$(TMP_DIR)\index.obj \
