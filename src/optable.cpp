@@ -2052,7 +2052,7 @@ OpTable::PopularMoveOrders (DString * dstr, uint count)
 
     for (uint i=0; i < count; i++) {
         if (i == NumMoveOrders) { break; }
-        char tempStr [10];
+        char tempStr [16];
         sprintf (tempStr, "%2u", i+1);
         dstr->Append (preNum, tempStr, postNum);
         if (Format == OPTABLE_CText) {

@@ -37,6 +37,8 @@ public:
 		++nObjects;
 	}
 
+	RefCounted& operator=(const RefCounted&) = default;
+
 	RefCounted* clone() { return new RefCounted(*this); }
 
 	~RefCounted() { --nObjects; }
