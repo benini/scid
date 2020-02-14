@@ -81,7 +81,7 @@ inline errorT decodeQueen(ByteBuffer* buf, byte val, simpleMoveT* sm) {
 
 	} else {
 		// Diagonal move: coded in TWO bytes.
-		val = buf->GetByte();
+		val = buf->GetByteZeroOnError();
 		if (val < 64 || val > 127) {
 			return ERROR_Decode;
 		}
@@ -273,7 +273,7 @@ TResult decodeMove(colorT toMove, pieceT moving_piece, squareT from, byte move,
 		break;
 	case QUEEN:
 		if (move == square_Fyle(from)) { // 2 BYTES MOVE
-			to = decodeQueen2byte(buf.GetByte());
+			to = decodeQueen2byte(buf.GetByteZeroOnError());
 			break;
 		}
 		/* FALLTHRU */
@@ -382,7 +382,7 @@ TEST(Test_decodemove, legacy_generic) {
 					    return OK;
 				    },
 				    [&]() { // 2 BYTES
-					    int dest_sq = buf.GetByte() - 64;
+					    int dest_sq = buf.GetByteZeroOnError() - 64;
 					    if (dest_sq < 0 || dest_sq > 63)
 						    return ERROR_Decode;
 

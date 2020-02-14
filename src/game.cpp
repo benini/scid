@@ -1122,8 +1122,7 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
     if (buf == NULL) {
         MoveToPly(0);
     } else {
-        Clear();
-        err = DecodeStart (buf);
+        err = DecodeSkipTags(buf);
         KeepDecodedMoves = false;
     }
 
@@ -1261,8 +1260,7 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
     if (buf == NULL) {
         MoveToPly(0);
     } else {
-        Clear ();
-        err = DecodeStart (buf);
+        err = DecodeSkipTags(buf);
         KeepDecodedMoves = false;
     }
 
@@ -2764,7 +2762,7 @@ decodeQueen (ByteBuffer * buf, byte val, simpleMoveT * sm)
 
     } else {
         // Diagonal move: coded in TWO bytes.
-        val = buf->GetByte();
+        val = buf->GetByteZeroOnError();
         if (val < 64  ||  val > 127) { return ERROR_Decode; }
         sm->to = val - 64;
     }
@@ -2996,9 +2994,12 @@ errorT
 Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
 {
     simpleMoveT sm;
-    errorT err;
-    byte b = buf->GetByte ();
-    while (b != ENCODE_END_GAME  &&  b != ENCODE_END_MARKER) {
+    for(;;) {
+        errorT err;
+        byte b = buf->GetByte(err);
+        if (err)
+            return err;
+
         switch (b) {
         case ENCODE_START_MARKER:
             err = AddVariation();
@@ -3012,7 +3013,10 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
             break;
 
         case ENCODE_NAG:
-            AddNag (buf->GetByte ());
+            b = buf->GetByte(err);
+            if (err)
+                return err;
+            AddNag(b);
             break;
 
         case ENCODE_COMMENT:
@@ -3022,107 +3026,18 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
             }
             break;
 
+        case ENCODE_END_MARKER:
+            return (level > 0) ? OK : ERROR_Decode;
+
+        case ENCODE_END_GAME:
+            return (level == 0) ? OK : ERROR_Decode;
+
         default:  // It is a regular move
             err = decodeMove(buf, &sm, b, currentPos());
             if (err != OK)  { return err; }
             AddMove(&sm);
         }
-
-        b = buf->GetByte ();
-        if (buf->Status() != OK) { return buf->Status(); }
     }
-
-    if (level == 0  &&  b != ENCODE_END_GAME) { return ERROR_Decode; }
-    if (level > 0  &&  b != ENCODE_END_MARKER) { return ERROR_Decode; }
-    return buf->Status();
-}
-
-/**
- * The Tag section is a list of <tag,value> variable length records:
- * tag_length: 1-byte
- * tag: [0:240] bytes
- * value_length: 1-byte
- * value: [0:255] bytes
- * The section is terminated with 1-byte with value 0, meaning that empty
- * tags cannot be stored.
- * Some common tags are encoded in one byte, with a tag_length value over 240
- * and a tag of 0 bytes.
- */
-constexpr size_t MAX_TAG_LEN = 240;
-constexpr std::string_view commonTags[] = {
-    // 241, 242: Country
-    "WhiteCountry", "BlackCountry",
-    // 243: Annotator
-    "Annotator",
-    // 244: PlyCount
-    "PlyCount",
-    // 245: EventDate (plain text encoding)
-    "EventDate",
-    // 246, 247: Opening, Variation
-    "Opening", "Variation",
-    // 248-250: Setup and Source
-    "Setup", "Source", "SetUp"
-    // 252-254: spare for future use
-    // 255: Reserved for compact EventDate encoding
-};
-
-template <typename SourceT, typename DestT>
-void encodeTags(const SourceT& tagList, DestT& dest) {
-	for (auto& tag : tagList) {
-		if (tag.first.length() == 0)
-			continue; // Cannot store empty tag names
-
-		const auto it = std::find(commonTags, std::end(commonTags), tag.first);
-		if (it != std::end(commonTags)) {
-			// Common tags are stored with just their 1-byte value [241:250]
-			const auto tagnum = std::distance(commonTags, it) + MAX_TAG_LEN + 1;
-			dest.emplace_back(static_cast<byte>(tagnum));
-		} else {
-			// Other tags are stored as 1-byte length [1:240] + the tag name.
-			const auto tag_name = tag.first.data();
-			const auto length = std::min(tag.first.length(), MAX_TAG_LEN);
-			dest.emplace_back(static_cast<byte>(length));
-			dest.insert(dest.end(), tag_name, tag_name + length);
-		}
-
-		// The value is stored as 1-byte length [0:255] + the data.
-		const auto value = tag.second.data();
-		const auto valueLen = std::min<size_t>(tag.second.length(), 255);
-		dest.emplace_back(static_cast<byte>(valueLen));
-		dest.insert(dest.end(), value, value + valueLen);
-	}
-	dest.emplace_back(0);
-}
-
-template <typename SourceT, typename FuncT>
-void decodeTags(SourceT& src, FuncT fn) {
-	for (;;) {
-		byte tagLen = src.GetByte();
-		if (tagLen == 0 || src.Status() != OK)
-			return;
-
-		std::string_view tag;
-		if (tagLen <= MAX_TAG_LEN) {
-			tag = src.GetFixedString(tagLen);
-		} else if (tagLen <= MAX_TAG_LEN + 10) {
-			// A common tag name, not explicitly stored:
-			tag = commonTags[tagLen - MAX_TAG_LEN - 1];
-		} else {
-			ASSERT(false); // This common tags should be unused
-			if (tagLen == 255) {
-				// Special binary 3-byte encoding of EventDate used in SCID2
-				src.GetFixedString(3);
-			} else {
-				byte valueLen = src.GetByte();
-				src.GetFixedString(valueLen);
-			}
-			continue;
-		}
-
-		byte valueLen = src.GetByte();
-		auto value = src.GetFixedString(valueLen);
-		fn(tag, value);
-	}
 }
 
 /**
@@ -3155,7 +3070,7 @@ void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
 
 template <typename SourceT, typename FuncT>
 void decodeStartBoard(SourceT& src, FuncT fn) {
-	byte flags = src.GetByte();
+	byte flags = src.GetByteZeroOnError();
 	if (flags & 1) {
 		if (auto FEN = src.GetTerminatedString()) {
 			fn(FEN);
@@ -3351,15 +3266,17 @@ errorT
 Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
 {
     ASSERT (buf != NULL);
-    errorT err;
-    byte b;
-    while (1) {
-        b = buf->GetByte ();
-        if (buf->Status() != OK) { return ERROR_Game; }
+
+    for(;;) {
+        errorT err;
+        byte b = buf->GetByte(err);
+        if (err)
+            return ERROR_Game;
+
         switch (b) {
         case ENCODE_NAG:
             // We ignore NAGS but have to read it from the buffer
-            buf->GetByte();
+            buf->GetByteZeroOnError();
             break;
 
         case ENCODE_COMMENT:  // We also ignore comments
@@ -3370,9 +3287,9 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
             uint nestCount;
             nestCount= 1;
             while (nestCount > 0) {
-                b = buf->GetByte();
-                if (buf->Status() != OK) { return ERROR_Game; }
-                if (b == ENCODE_NAG) { buf->GetByte(); }
+                b = buf->GetByte(err);
+                if (err) { return ERROR_Game; }
+                if (b == ENCODE_NAG) { buf->GetByteZeroOnError(); }
                 else if (b == ENCODE_START_MARKER) { nestCount++; }
                 else if (b == ENCODE_END_MARKER) { nestCount--; }
                 else if (b == ENCODE_END_GAME) {
@@ -3408,43 +3325,30 @@ Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::DecodeTags():
-//      Decodes the non-standard tags of the game.
-//
-errorT Game::DecodeTags(ByteBuffer* buf) {
-    decodeTags(*buf, [&](auto tag, auto value) {
-        accessTagValue(tag.data(), tag.size()).assign(value);
-    });
-    return buf->Status();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::DecodeStart():
 //      Decodes the starting information from the game's on-disk
 //      representation in the bytebuffer. After this is called,
 //      DecodeNextMove() can be called to decode each successive
 //      mainline move.
 //
-errorT Game::DecodeStart(ByteBuffer* buf) {
+errorT Game::DecodeSkipTags(ByteBuffer* buf) {
     ASSERT(buf != NULL);
-    if (buf->Status() == OK)
-		decodeTags(*buf, [](auto, auto) {});
 
-    errorT err = buf->Status();
+    Clear();
+    errorT err = buf->decodeTags([](auto, auto) {});
+
     if (err == OK)
         decodeStartBoard(*buf,
                          [&](const char* FEN) { err = SetStartFen(FEN); });
 
-    return (err != OK) ? err : buf->Status();
+    return err;
 }
 
 errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
-    Clear();
-    errorT err = DecodeStart(&buf);
-    if (err == OK)
-        err = DecodeVariation(&buf, GAME_DECODE_NONE, 0);
+	if (errorT err = DecodeSkipTags(&buf))
+		return err;
 
-    return (err != OK) ? err : buf.Status();
+	return DecodeVariation(&buf, GAME_DECODE_NONE, 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3455,12 +3359,11 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 //
 errorT Game::Decode(ByteBuffer& buf) {
     Clear();
-    if (buf.Status() == OK)
-        decodeTags(buf, [&](auto tag, auto value) {
-            accessTagValue(tag.data(), tag.size()).assign(value);
-        });
 
-    errorT err = buf.Status();
+    errorT err = buf.decodeTags([&](const auto& tag, const auto& value) {
+		accessTagValue(tag.data(), tag.size()).assign(value);
+	});
+
     if (err == OK)
         decodeStartBoard(buf, [&](const char* FEN) { err = SetStartFen(FEN); });
 
@@ -3470,7 +3373,7 @@ errorT Game::Decode(ByteBuffer& buf) {
     if (err == OK)
         err = decodeComments(buf, FirstMove);
 
-    return (err != OK) ? err : buf.Status();
+    return err;
 }
 
 //////////////////////////////////////////////////////////////////////

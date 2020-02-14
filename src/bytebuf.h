@@ -30,58 +30,150 @@
 
 #include "error.h"
 #include <algorithm>
+#include <cassert>
 #include <string_view>
+
+/**
+ * The Tag section is a list of <tag,value> variable length records:
+ * tag_length: 1-byte
+ * tag name: [0:240] bytes
+ * value_length: 1-byte
+ * value: [0:255] bytes
+ * The section is terminated with 1-byte with value 0, meaning that un empty
+ * tag name cannot be stored.
+ * Some common tags are encoded in one byte, using a tag_length value over 240
+ * and a tag name of 0 bytes.
+ */
+constexpr size_t MAX_TAG_LEN = 240;
+constexpr std::string_view commonTags[] = {
+    // 241, 242: Country
+    "WhiteCountry", "BlackCountry",
+    // 243: Annotator
+    "Annotator",
+    // 244: PlyCount
+    "PlyCount",
+    // 245: EventDate (plain text encoding)
+    "EventDate",
+    // 246, 247: Opening, Variation
+    "Opening", "Variation",
+    // 248-250: Setup and Source
+    "Setup", "Source", "SetUp"
+    // 252-254: spare for future use
+    // 255: Reserved for compact EventDate encoding
+};
+
+template <typename SourceT, typename DestT>
+void encodeTags(const SourceT& tagList, DestT& dest) {
+	for (auto& tag : tagList) {
+		if (tag.first.length() == 0)
+			continue; // Cannot store empty tag names
+
+		const auto it = std::find(commonTags, std::end(commonTags), tag.first);
+		if (it != std::end(commonTags)) {
+			// Common tags are stored with just their 1-byte value [241:250]
+			const auto tagnum = std::distance(commonTags, it) + MAX_TAG_LEN + 1;
+			dest.emplace_back(static_cast<unsigned char>(tagnum));
+		} else {
+			// Other tags are stored as 1-byte length [1:240] + the tag name.
+			const auto tag_name = tag.first.data();
+			const auto length = std::min(tag.first.length(), MAX_TAG_LEN);
+			dest.emplace_back(static_cast<unsigned char>(length));
+			dest.insert(dest.end(), tag_name, tag_name + length);
+		}
+
+		// The value is stored as 1-byte length [0:255] + the data.
+		const auto value = tag.second.data();
+		const auto valueLen = std::min<size_t>(tag.second.length(), 255);
+		dest.emplace_back(static_cast<unsigned char>(valueLen));
+		dest.insert(dest.end(), value, value + valueLen);
+	}
+	dest.emplace_back(0);
+}
 
 class ByteBuffer {
 	const unsigned char* data_;
-	size_t size_;
+	const unsigned char* const end_;
 
 public:
 	ByteBuffer(const unsigned char* data, size_t length)
-	    : data_(data), size_(length) {}
+	    : data_(data), end_(data + length) {
+		assert(data_ || data_ == end_);
+	}
 
-	errorT Status() { return data_ ? OK : ERROR_BufferRead; }
-
-	operator bool() const { return data_; }
+	operator bool() const { return data_ != end_; }
 
 	/// Reads one byte from the buffer
-	unsigned char GetByte() {
-		if (size_ == 0) {
-			data_ = nullptr;
+	unsigned char GetByte(errorT& err) {
+		if (data_ == end_) {
+			err = ERROR_BufferRead;
 			return 0;
 		}
-		--size_;
+
+		err = OK;
 		return *data_++;
 	}
 
-	/// Reads a fixed-length string from the buffer.
-	/// @param length: the number of requested bytes. It is adjusted if it
-	///                exceeds the available bytes in the buffer.
-	std::string_view GetFixedString(size_t length) {
-		auto begin = reinterpret_cast<const char*>(data_);
-		if (length <= size_) {
-			data_ += length;
-			size_ -= length;
-		} else {
-			length = size_;
-			data_ = nullptr;
-			size_ = 0;
+	/// Reads one byte from the buffer; returns 0 on error
+	unsigned char GetByteZeroOnError() {
+		if (data_ == end_)
+			return 0;
+
+		return *data_++;
+	}
+
+	/// Decodes the tag pairs not stored into the index.
+	/// @param fn: a function that should accept 2 parameters
+	///            (string_view tag_name, string_view tag_value)
+	///            and that will be called for each tag pair.
+	template <typename FuncT> errorT decodeTags(FuncT fn) {
+		if (data_ == end_)
+			return ERROR_BufferRead;
+
+		auto it = data_;
+		for (;;) {
+			const auto tagLen = *it++;
+			if (tagLen == 0) {
+				data_ = it;
+				return OK; // Reached the end of the tags section
+			}
+
+			const char* tag = nullptr;
+			size_t tagID = 0;
+			if (tagLen > MAX_TAG_LEN) {
+				// A common tag name, not explicitly stored
+				tagID = tagLen - MAX_TAG_LEN - 1;
+			} else {
+				tag = reinterpret_cast<const char*>(it);
+				it += tagLen;
+			}
+
+			if (it >= end_)
+				return ERROR_Decode;
+
+			// 255 was a special 3-bytes encoding of EventDate used in SCID2
+			const auto valueLen = (tagLen != 255) ? *it++ : 3;
+			const char* value = reinterpret_cast<const char*>(it);
+			it += valueLen;
+			if (it >= end_)
+				return ERROR_Decode;
+
+			if (tag) {
+				fn(std::string_view(tag, tagLen),
+				   std::string_view(value, valueLen));
+			} else if (tagID < 10) {
+				fn(commonTags[tagID], std::string_view(value, valueLen));
+			}
 		}
-		return {begin, length};
 	}
 
 	/// Reads a null-terminated string from the buffer.
 	const char* GetTerminatedString() {
-		const auto begin = data_;
-		const auto end = data_ + size_;
-		auto it = std::find(begin, end, 0);
-		if (it == end) {
-			data_ = nullptr;
-			size_ = 0;
+		const char* res = reinterpret_cast<const char*>(data_);
+		data_ = std::find(data_, end_, 0);
+		if (data_ == end_)
 			return nullptr;
-		}
-		data_ = ++it;
-		size_ = std::distance(data_, end);
-		return reinterpret_cast<const char*>(begin);
+
+		++data_; // skip the null char
+		return res;
 	}
 };

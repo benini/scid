@@ -1169,11 +1169,8 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return false;
 
         auto bbuf = dbase.getGame(ie);
-        if (!bbuf)
-            return false;
         Game* g = scratchGame;
-        g->Clear();
-        if (g->DecodeStart(&bbuf) != OK)
+        if (g->DecodeSkipTags(&bbuf) != OK)
             return false;
 
         // First, read in the game -- with a limit of 30 moves per
@@ -3396,11 +3393,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     const IndexEntry* ie = base->getIndexEntry(gnum);
     auto bbuf = base->getGame(*ie);
-    if (!bbuf) {
-        return errorResult (ti, "Error loading game.");
-    }
     Game * merge = scratchGame;
-    merge->Clear();
     if (merge->DecodeMovesOnly(bbuf) != OK) {
         return errorResult (ti, "Error decoding game.");
     }
@@ -3996,10 +3989,6 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         gnum--;
         const IndexEntry* ie = base->getIndexEntry(gnum);
         auto bbuf = base->getGame(*ie);
-        if (!bbuf) {
-            return errorResult (ti, "Error loading game.");
-        }
-        g->Clear();
         if (g->DecodeMovesOnly(bbuf) != OK) {
             return errorResult (ti, "Error decoding game.");
         }
@@ -9283,44 +9272,36 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         // algorithm like Boyer-Moore or Knuth-Morris-Pratt since
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
-        if (match  &&  (pgnTextCount > 0 || !sAnnotator.empty())) {
-            auto bbuf = base->getGame(*ie);
-            if (!bbuf) {
-                 match = false;
-            }
 
-			if (!sAnnotator.empty()) {
-				// Need the annotator flag, so decode the flags
-				scratchGame->Clear();
-				if (match && scratchGame->DecodeTags(&bbuf) != OK)
-					match = false;
-				if (match) {
-					auto ann = scratchGame->FindExtraTag("Annotator");
-					match = (ann != NULL) && strAlphaContains(ann, sAnnotator.c_str());
-				}
-			}
+		if (match && !sAnnotator.empty()) {
+			match = false;
+			base->getGame(*ie).decodeTags(
+				[&](auto const& tag, auto const& value) {
+					if (tag == "Annotator") {
+						match = strAlphaContains(std::string(value).c_str(),
+						                         sAnnotator.c_str());
+					}
+				});
+		}
 
-			if(pgnTextCount > 0)
-			{
-				scratchGame->Clear();
-				if (match  &&  scratchGame->Decode(bbuf) != OK) {
-					match = false;
-				}
-				if (match) {
-					scratchGame->LoadStandardTags (ie, base->getNameBase());
-					scratchGame->ResetPgnStyle ();
-					scratchGame->AddPgnStyle (PGN_STYLE_TAGS);
-					scratchGame->AddPgnStyle (PGN_STYLE_COMMENTS);
-					scratchGame->AddPgnStyle (PGN_STYLE_VARS);
-					scratchGame->AddPgnStyle (PGN_STYLE_SYMBOLS);
-					scratchGame->SetPgnFormat (PGN_FORMAT_Plain);
-					const char* buf = scratchGame->WriteToPGN().first;
-					for (int m=0; m < pgnTextCount; m++) {
-					   if (match) { match = strContains (buf, sPgnText[m]); }
+		if (match && pgnTextCount > 0) {
+			if (base->getGame(*ie, *scratchGame) != OK) {
+				match = false;
+			} else {
+				scratchGame->ResetPgnStyle();
+				scratchGame->AddPgnStyle(PGN_STYLE_TAGS);
+				scratchGame->AddPgnStyle(PGN_STYLE_COMMENTS);
+				scratchGame->AddPgnStyle(PGN_STYLE_VARS);
+				scratchGame->AddPgnStyle(PGN_STYLE_SYMBOLS);
+				scratchGame->SetPgnFormat(PGN_FORMAT_Plain);
+				const char* buf = scratchGame->WriteToPGN().first;
+				for (int m = 0; m < pgnTextCount; m++) {
+					if (match) {
+						match = strContains(buf, sPgnText[m]);
 					}
 				}
 			}
-        }
+		}
 
         if (match) {
             filter.set (i, 1);

@@ -453,11 +453,10 @@ public:
       { return ExactMatch (pos, buf, sm, GAME_EXACT_MATCH_Exact); }
 
     errorT    Encode(std::vector<byte>& dest, IndexEntry& ie) const;
-    errorT    DecodeStart(ByteBuffer* buf);
+    errorT    DecodeSkipTags(ByteBuffer* buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode(ByteBuffer& buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
-    errorT    DecodeTags(ByteBuffer* buf);
 
     Game* clone();
 };

@@ -189,7 +189,4 @@ TEST(Test_Containers, ByteBuffer_GetTerminatedString) {
 	for (auto str : test_data) {
 		EXPECT_STREQ(str, buf.GetTerminatedString());
 	}
-	EXPECT_EQ(OK, buf.Status());
-	EXPECT_EQ(0, buf.GetByte());
-	EXPECT_NE(OK, buf.Status());
 }
