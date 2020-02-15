@@ -142,19 +142,13 @@ UI_res_t sc_filter_reset(UI_handle_t ti, HFilter& filter, int argc,
  * - the number of games included in the "main" filter composing @filterId
  *   (if @filterId is not a combined filter, this value is equal to the first).
  */
-UI_res_t sc_filter_sizes(UI_handle_t ti, const scidBaseT& dbase, HFilter& filter,
-                       int argc, const char** argv) {
-	const char* usage = "Usage: sc_filter sizes baseId filterId";
-	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
-
-	HFilter unmasked = dbase.getMainFilter(argv[3]);
-	if (unmasked == 0)
-		return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid filterId");
-
+UI_res_t sc_filter_sizes(UI_handle_t ti, const scidBaseT& dbase,
+                         HFilter& filter) {
+	// "Usage: sc_filter sizes baseId filterId";
 	UI_List res(3);
 	res.push_back(filter.size());
 	res.push_back(dbase.numGames());
-	res.push_back(unmasked.size());
+	res.push_back(filter.mainSize());
 	return UI_Result(ti, OK, res);
 }
 
@@ -189,7 +183,7 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	if (strcmp("reset", cmd) == 0)
 		return sc_filter_reset(ti, filter, argc, argv);
 	if (strcmp("sizes", cmd) == 0)
-		return sc_filter_sizes(ti, *dbase, filter, argc, argv);
+		return sc_filter_sizes(ti, *dbase, filter);
 
 	std::string err = "sc_filter\nInvalid minor command: ";
 	return UI_Result(ti, ERROR_BadArg, err + cmd);

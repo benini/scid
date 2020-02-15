@@ -319,28 +319,29 @@ void scidBaseT::deleteFilter(const char* filterId) {
 	}
 }
 
-Filter* scidBaseT::fetchFilter(const std::string& filterId) const {
-	if (filterId == "dbfilter") return dbFilter;
-	if (filterId == "tree") return treeFilter;
+HFilter scidBaseT::getFilter(std::string_view filterId) const {
+	const auto findFilter = [&](auto const& id) -> Filter* {
+		if (id == "dbfilter")
+			return dbFilter;
+		if (id == "tree")
+			return treeFilter;
 
-	for (size_t i = 0, n = filters_.size(); i < n; i++) {
-		if (filterId == filters_[i].first)
-			return filters_[i].second;
-	}
-	return 0;
-}
+		for (auto const& [name, filter] : filters_) {
+			if (name == id)
+				return filter;
+		}
+		return nullptr;
+	};
 
-HFilter scidBaseT::getFilterHelper(const std::string& filterId,
-                                   bool unmasked) const {
-	Filter* main = 0;
-	const Filter* mask = 0;
+	Filter* main = nullptr;
+	const Filter* mask = nullptr;
 	if (filterId.empty() || filterId[0] != '+') {
-		main = fetchFilter(filterId);
+		main = findFilter(filterId);
 	} else {
 		size_t maskName = filterId.find('+', 1);
 		if (maskName != std::string::npos) {
-			main = fetchFilter(filterId.substr(1, maskName - 1));
-			if (!unmasked) mask = fetchFilter(filterId.substr(maskName + 1));
+			main = findFilter(filterId.substr(1, maskName - 1));
+			mask = findFilter(filterId.substr(maskName + 1));
 		}
 	}
 	return HFilter(main, mask);

@@ -246,6 +246,9 @@ public:
 		return static_cast<size_t>(res);
 	}
 
+	/// Returns the number of games included in the main filter
+	size_t mainSize() const { return main_->Count(); }
+
 	/* Convenience function, behave like:
 	 * for (gamenumT gnum = 0; gnum < scidBaseT::numGames(); gnum++)
 	 *		std:map::insert_or_assign(gnum, 0);

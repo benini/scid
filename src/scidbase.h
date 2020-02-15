@@ -193,12 +193,7 @@ struct scidBaseT {
 	std::string composeFilter(const std::string& mainFilter,
 	                          const std::string& maskFilter) const;
 	void deleteFilter(const char* filterId);
-	HFilter getFilter(const std::string& filterId) const {
-		return getFilterHelper(filterId, false);
-	}
-	HFilter getMainFilter(const std::string& filterId) const {
-		return getFilterHelper(filterId, true);
-	}
+	HFilter getFilter(std::string_view filterId) const;
 
 	const Stats& getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
@@ -412,9 +407,6 @@ private:
 
 	errorT importGameHelper(const scidBaseT* sourceBase, uint gNum);
 
-	Filter* fetchFilter(const std::string& filterId) const;
-	HFilter getFilterHelper(const std::string& filterId,
-	                        bool unmasked = false) const;
 	SortCache* getSortCache(const char* criteria);
 
 	/**
