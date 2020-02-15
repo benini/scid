@@ -617,7 +617,7 @@ UI_res_t sc_base_sortcache(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
 	if (std::strcmp("create", argv[3]) == 0) {
-		if (dbase->createSortCache(argv[4]) == NULL)
+		if (!dbase->createSortCache(argv[4]))
 			return UI_Result(ti, ERROR);
 	} else {
 		dbase->releaseSortCache(argv[4]);

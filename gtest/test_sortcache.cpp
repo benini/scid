@@ -212,7 +212,7 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 			// Test scidBaseT::createSortCache()
 			if (!pass) {
 				auto sc = dbase.createSortCache(crit);
-				EXPECT_EQ(validCriteria, sc != nullptr);
+				EXPECT_EQ(validCriteria, sc);
 			}
 
 			// Test scidBaseT::releaseSortCache()
@@ -222,6 +222,6 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 	}
 
 	// Test scidBaseT::Close() when background threads are running.
-	EXPECT_NE(nullptr, dbase.createSortCache("w+s-"));
-	EXPECT_NE(nullptr, dbase.createSortCache("i-d-n+"));
+	EXPECT_TRUE(dbase.createSortCache("w+s-"));
+	EXPECT_TRUE(dbase.createSortCache("i-d-n+"));
 }

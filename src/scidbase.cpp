@@ -727,12 +727,12 @@ void scidBaseT::releaseSortCache(const char* criteria) {
 	}
 }
 
-SortCache* scidBaseT::createSortCache(const char* criteria) {
-	SortCache* sc = getSortCache(criteria);
-	if (sc != NULL)
+bool scidBaseT::createSortCache(const char* criteria) {
+	if (auto sc = getSortCache(criteria)) {
 		sc->incrRef(1);
-
-	return sc;
+		return true;
+	}
+	return false;
 }
 
 size_t scidBaseT::listGames(const char* criteria, size_t start, size_t count,

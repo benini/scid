@@ -220,10 +220,9 @@ struct scidBaseT {
 	 * @param criteria: the list of fields by which games will be ordered.
 	 *                  Each field should be followed by '+' to indicate an
 	 *                  ascending order or by '-' for a descending order.
-	 * @returns a pointer to a SortCache object in case of success, NULL
-	 * otherwise.
+	 * @returns true on success
 	 */
-	SortCache* createSortCache(const char* criteria);
+	bool createSortCache(const char* criteria);
 
 	/**
 	 * Decrement the reference count of the SortCache object matching @e
