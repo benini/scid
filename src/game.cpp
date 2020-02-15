@@ -3043,44 +3043,6 @@ errorT Game::DecodeVariation(ByteBuffer* buf, uint level) {
 }
 
 /**
- * The StartBoard section starts with a byte containing three flags:
- * 0-bit: true if the game doesn't start with the standard board
- * 1-bit: true if there are pawn to queen promotions
- * 2-bit: true if there are pawn to non-queen promotions.
- * If the 0-bit is true, the byte is followed by a null terminated string
- * containing the FEN of the start position..
- */
-template <typename DestT>
-void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
-                      DestT& dest) {
-	byte flags = 0;
-	if (FEN) {
-		flags += 1;
-	}
-	if (promoFlag) {
-		flags += 2;
-	}
-	if (underpromoFlag) {
-		flags += 4;
-	}
-	dest.emplace_back(flags);
-	if (FEN) {
-		const auto len = std::strlen(FEN) + 1; // Include the null char
-		dest.insert(dest.end(), FEN, FEN + len);
-	}
-}
-
-template <typename SourceT, typename FuncT>
-void decodeStartBoard(SourceT& src, FuncT fn) {
-	byte flags = src.GetByteZeroOnError();
-	if (flags & 1) {
-		if (auto FEN = src.GetTerminatedString()) {
-			fn(FEN);
-		}
-	}
-}
-
-/**
  * The Comments section is composed by null-terminated strings. The comments are
  * stored in the order in which they will appear in the PGN notation:
  * {C1} 1.d4 {C2} (1.b4 {C3} 1...e5 {C4} (1...Na6 {C5}) 2.e4 {C6})
@@ -3338,12 +3300,17 @@ errorT Game::DecodeSkipTags(ByteBuffer* buf) {
 
     Clear();
     errorT err = buf->decodeTags([](auto, auto) {});
+    if (err != OK)
+        return err;
 
-    if (err == OK)
-        decodeStartBoard(*buf,
-                         [&](const char* FEN) { err = SetStartFen(FEN); });
+    const auto [err_startpos, fen] = buf->decodeStartBoard();
+    if (err_startpos)
+        return err_startpos;
 
-    return err;
+    if (fen)
+        return SetStartFen(fen);
+
+    return OK;
 }
 
 errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
@@ -3363,11 +3330,17 @@ errorT Game::Decode(ByteBuffer& buf) {
     Clear();
 
     errorT err = buf.decodeTags([&](const auto& tag, const auto& value) {
-		accessTagValue(tag.data(), tag.size()).assign(value);
-	});
+        accessTagValue(tag.data(), tag.size()).assign(value);
+    });
+    if (err)
+        return err;
 
-    if (err == OK)
-        decodeStartBoard(buf, [&](const char* FEN) { err = SetStartFen(FEN); });
+    const auto [err_startpos, fen] = buf.decodeStartBoard();
+    if (err_startpos)
+        return err_startpos;
+
+    if (fen)
+        err = SetStartFen(fen);
 
     if (err == OK)
         err = DecodeVariation(&buf, 0);

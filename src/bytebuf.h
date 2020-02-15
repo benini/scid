@@ -31,6 +31,7 @@
 #include "error.h"
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <string_view>
 
 /**
@@ -88,6 +89,34 @@ void encodeTags(const SourceT& tagList, DestT& dest) {
 		dest.insert(dest.end(), value, value + valueLen);
 	}
 	dest.emplace_back(0);
+}
+
+/**
+ * The StartBoard section starts with a byte containing three flags:
+ * 0-bit: true if the game doesn't start with the standard board
+ * 1-bit: true if there are pawn to queen promotions
+ * 2-bit: true if there are pawn to non-queen promotions.
+ * If the 0-bit is true, the byte is followed by a null terminated string
+ * containing the FEN of the start position.
+ */
+template <typename DestT>
+void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
+                      DestT& dest) {
+	char flags = 0;
+	if (FEN) {
+		flags += 1;
+	}
+	if (promoFlag) {
+		flags += 2;
+	}
+	if (underpromoFlag) {
+		flags += 4;
+	}
+	dest.emplace_back(flags);
+	if (FEN) {
+		const auto len = std::strlen(FEN) + 1; // Include the null char
+		dest.insert(dest.end(), FEN, FEN + len);
+	}
 }
 
 class ByteBuffer {
@@ -164,6 +193,29 @@ public:
 				fn(commonTags[tagID], std::string_view(value, valueLen));
 			}
 		}
+	}
+
+	/// Decodes the start position.
+	/// @returns OK on success and the FEN of the start position (nullptr for
+	///          the standard starting position).
+	/// To decode the moves the correct index should be assigned to each piece:
+	/// they are assigned from left to right, but the king should always have
+	/// index 0. It is therefore swapped with the piece occupying the index 0.
+	/// For example with "rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b" the black
+	/// rook on A8 gets index 3, the black night on B8 gets index 1 .... and the
+	/// white queen on H8 gets index 6, the pawn on A2 gets index 1 ...
+	std::pair<errorT, const char*> decodeStartBoard() {
+		if (data_ == end_)
+			return {ERROR_Decode, nullptr};
+
+		const auto flags = *data_++;
+		if ((flags & 1) == 0)
+			return {OK, nullptr};
+
+		if (const auto FEN = GetTerminatedString())
+			return {OK, FEN};
+
+		return {ERROR_Decode, nullptr};
 	}
 
 	/// Reads a null-terminated string from the buffer.
