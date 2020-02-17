@@ -122,11 +122,6 @@ struct patternT
     patternT * next;
 };
 
-#define GAME_DECODE_NONE 0
-#define GAME_DECODE_TAGS 1
-#define GAME_DECODE_COMMENTS 2
-#define GAME_DECODE_ALL 3
-
 enum gameExactMatchT {
     GAME_EXACT_MATCH_Exact = 0,
     GAME_EXACT_MATCH_Pawns,
@@ -208,7 +203,7 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    errorT DecodeVariation(ByteBuffer* buf, byte flags, uint level);
+    errorT DecodeVariation(ByteBuffer* buf, uint level);
     errorT WritePGN(TextBuffer* tb);
 
     /**

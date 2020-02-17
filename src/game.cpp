@@ -2990,9 +2990,7 @@ static void encodeVariation(std::vector<byte>* buf, moveT* m, uint* subVarCount,
 // Game::DecodeVariation():
 //      Decodes the game moves. Recursively decodes subvariations.
 //
-errorT
-Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
-{
+errorT Game::DecodeVariation(ByteBuffer* buf, uint level) {
     simpleMoveT sm;
     for(;;) {
         errorT err;
@@ -3004,7 +3002,7 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
         case ENCODE_START_MARKER:
             err = AddVariation();
             if (err != OK) { return err; }
-            err = DecodeVariation (buf, flags, level + 1);
+            err = DecodeVariation (buf, level + 1);
             if (err != OK) { return err; }
             err = MoveExitVariation();
             if (err != OK) { return err; }
@@ -3020,10 +3018,8 @@ Game::DecodeVariation (ByteBuffer * buf, byte flags, uint level)
             break;
 
         case ENCODE_COMMENT:
-            if (flags & GAME_DECODE_COMMENTS) {
-                // Mark this comment as needing to be read
-                CurrentMove->prev->comment = "*";
-            }
+            // Mark this comment as needing to be read
+            CurrentMove->prev->comment = '*';
             break;
 
         case ENCODE_END_MARKER:
@@ -3348,7 +3344,7 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 	if (errorT err = DecodeSkipTags(&buf))
 		return err;
 
-	return DecodeVariation(&buf, GAME_DECODE_NONE, 0);
+	return DecodeVariation(&buf, 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3368,7 +3364,7 @@ errorT Game::Decode(ByteBuffer& buf) {
         decodeStartBoard(buf, [&](const char* FEN) { err = SetStartFen(FEN); });
 
     if (err == OK)
-        err = DecodeVariation(&buf, GAME_DECODE_ALL, 0);
+        err = DecodeVariation(&buf, 0);
 
     if (err == OK)
         err = decodeComments(buf, FirstMove);
