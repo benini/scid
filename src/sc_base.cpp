@@ -956,6 +956,7 @@ UI_res_t sc_base_inUse       (UI_extra_t, UI_handle_t, int argc, const char ** a
 UI_res_t sc_base_export      (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_piecetrack  (UI_extra_t, UI_handle_t, int argc, const char ** argv);
 UI_res_t sc_base_duplicates  (scidBaseT* dbase, UI_handle_t, int argc, const char ** argv);
+UI_res_t sc_base_gamesummary (const scidBaseT& dbase, UI_handle_t, int, const char**);
 
 
 UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
@@ -968,6 +969,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    "inUse",           "isReadOnly",      "list",            "numGames",        "open",
 	    "piecetrack",      "player_elo",      "slot",            "sortcache",       "stats",
 	    "strip",           "switch",          "taglist",         "tournaments",     "type",
+	    "gamesummary",
 	    NULL
 	};
 	enum {
@@ -977,7 +979,8 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 	    BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_GETGAME,      BASE_IMPORT,
 	    BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
 	    BASE_PTRACK,       BASE_PLAYER_ELO,   BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
-	    BASE_STRIP,        BASE_SWITCH,       BASE_TAGLIST,      BASE_TOURNAMENTS,  BASE_TYPE
+	    BASE_STRIP,        BASE_SWITCH,       BASE_TAGLIST,      BASE_TOURNAMENTS,  BASE_TYPE,
+	    BASE_GAMESUMMARY
 	};
 
 	if (argc <= 1) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd>");
@@ -1074,6 +1077,9 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	case BASE_TOURNAMENTS:
 		return sc_base_tournaments (dbase, ti, argc, argv);
+
+	case BASE_GAMESUMMARY:
+		return sc_base_gamesummary(*dbase, ti, argc, argv);
 	}
 
 	std::string res = "sc_base\nInvalid minor command: ";

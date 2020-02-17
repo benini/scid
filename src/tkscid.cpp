@@ -1911,7 +1911,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
-        "startBoard", "strip",      "summary",
+        "startBoard", "strip",
         "tags",       "truncate",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
@@ -1921,7 +1921,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
-        GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
+        GAME_STARTBOARD, GAME_STRIP,
         GAME_TAGS,       GAME_TRUNCATE,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
@@ -2008,9 +2008,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_STRIP:
         return sc_game_strip (cd, ti, argc, argv);
-
-    case GAME_SUMMARY:
-        return sc_game_summary (cd, ti, argc, argv);
 
     case GAME_TAGS:
         return sc_game_tags (cd, ti, argc, argv);
@@ -3932,111 +3929,68 @@ int sc_game_strip(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_summary:
 //    Returns summary information of the specified game:
 //    its players, site, etc; or its moves; or all its boards
 //    positions.
-int
-sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage = "Usage: sc_game summary [-base <baseNum>] [-gameNumber <gameNum>] header|boards|moves";
+UI_res_t sc_base_gamesummary(const scidBaseT& base, UI_handle_t ti, int argc,
+                             const char** argv) {
+	const char* usage = "Usage: sc_base gamesummary baseId gameNum";
+	if (argc != 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
 
-    const char * options[] = {
-        "-base", "-gameNumber", NULL
-    };
-    enum { OPT_BASE, OPT_GNUM };
+	Game* g = scratchGame;
+	gamenumT gnum = strGetUnsigned(argv[3]);
+	if (gnum > 0) {
+		auto ie = base.getIndexEntry_bounds(gnum - 1);
+		if (!ie || base.getGame(*ie, *scratchGame) != OK) {
+			return UI_Result(ti, ERROR_BadArg, usage);
+		}
+	} else {
+		g = base.game;
+	}
 
-    const scidBaseT* base = db;
-    uint gnum = 0;
-
-    int arg = 2;
-    while (arg+1 < argc) {
-        const char * value = argv[arg+1];
-        int index = strUniqueMatch (argv[arg], options);
-        arg += 2;
-
-        if (index == OPT_BASE) {
-            base = DBasePool::getBase(strGetUnsigned(value));
-            if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
-        } else if (index == OPT_GNUM) {
-            gnum = strGetUnsigned (value);
-        } else {
-            return errorResult (ti, usage);
-        }
-    }
-    if (arg+1 != argc) { return errorResult (ti, usage); }
-
-    enum modeT { MODE_HEADER, MODE_BOARDS, MODE_MOVES };
-    modeT mode = MODE_HEADER;
-    switch (tolower(argv[arg][0])) {
-        case 'h': mode = MODE_HEADER; break;
-        case 'b': mode = MODE_BOARDS; break;
-        case 'm': mode = MODE_MOVES; break;
-        default: return errorResult (ti, usage);
-    }
-
-    Game * g = scratchGame;
-    if (gnum == 0) {
-        g = base->game;
-    } else {
-        // Load the specified game number:
-        if (! base->inUse) {
-            return errorResult (ti, "This database is not in use.");
-        }
-        if (gnum > base->numGames()) {
-            return errorResult (ti, "Invalid game number.");
-        }
-        gnum--;
-        const IndexEntry* ie = base->getIndexEntry(gnum);
-        auto bbuf = base->getGame(*ie);
-        if (g->DecodeMovesOnly(bbuf) != OK) {
-            return errorResult (ti, "Error decoding game.");
-        }
-        g->LoadStandardTags (ie, base->getNameBase());
-    }
+    UI_List res(3);
 
     // Return header summary if requested:
-    if (mode == MODE_HEADER) {
-        DString * dstr = new DString;
-        dstr->Append (g->GetWhiteStr());
+        DString dstr;
+        dstr.Append (g->GetWhiteStr());
         eloT elo = g->GetWhiteElo();
-        if (elo > 0) { dstr->Append (" (", elo, ")"); }
-        dstr->Append ("  --  ", g->GetBlackStr());
+        if (elo > 0) { dstr.Append (" (", elo, ")"); }
+        dstr.Append ("  --  ", g->GetBlackStr());
         elo = g->GetBlackElo();
-        if (elo > 0) { dstr->Append (" (", elo, ")"); }
-        dstr->Append ("\n", g->GetEventStr());
+        if (elo > 0) { dstr.Append (" (", elo, ")"); }
+        dstr.Append ("\n", g->GetEventStr());
         const char * round = g->GetRoundStr();
         if (! strIsUnknownName(round)) {
-            dstr->Append (" (", round, ")");
+            dstr.Append (" (", round, ")");
         }
-        dstr->Append ("  ", g->GetSiteStr(), "\n");
+        dstr.Append ("  ", g->GetSiteStr(), "\n");
         char dateStr [20];
         date_DecodeToString (g->GetDate(), dateStr);
         // Remove ".??" or ".??.??" from end of date:
         if (dateStr[4] == '.'  &&  dateStr[5] == '?') { dateStr[4] = 0; }
         if (dateStr[7] == '.'  &&  dateStr[8] == '?') { dateStr[7] = 0; }
-        dstr->Append (dateStr, "  ");
-        dstr->Append (RESULT_LONGSTR[g->GetResult()]);
+        dstr.Append (dateStr, "  ");
+        dstr.Append (RESULT_LONGSTR[g->GetResult()]);
         ecoT eco = g->GetEco();
         if (eco != 0) {
             ecoStringT ecoStr;
             eco_ToExtendedString (eco, ecoStr);
-            dstr->Append ("  ", ecoStr);
+            dstr.Append ("  ", ecoStr);
         }
-        Tcl_AppendResult (ti, dstr->Data(), NULL);
-        delete dstr;
-        return TCL_OK;
-    }
+        res.push_back(dstr.Data());
 
     // Here, a list of the boards or moves is requested:
+    const auto n_moves = g->GetNumHalfMoves() + 1;
+    UI_List boards(n_moves);
+    UI_List moves(n_moves);
     auto location = g->currentLocation();
     g->MoveToPly (0);
-    while (1) {
-        if (mode == MODE_BOARDS) {
+    do {
             char boardStr[100];
             g->GetCurrentPos()->MakeLongStr (boardStr);
-            Tcl_AppendElement (ti, boardStr);
-        } else {
+            boards.push_back(boardStr);
+
             colorT toMove = g->GetCurrentPos()->GetToMove();
             uint moveCount = g->GetCurrentPos()->GetFullMoveCount();
             char san [20];
@@ -4061,16 +4015,17 @@ sc_game_summary (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                         strAppend (temp, nagstr);
                     }
                 }
-                Tcl_AppendElement (ti, temp);
+                moves.push_back(temp);
             } else {
-                Tcl_AppendElement (ti, (char *)RESULT_LONGSTR[g->GetResult()]);
+                moves.push_back(RESULT_LONGSTR[g->GetResult()]);
             }
-        }
-        if (g->MoveForward() != OK) { break; }
-    }
 
+    } while (g->MoveForward() == OK);
     g->restoreLocation(location);
-    return TCL_OK;
+
+    res.push_back(boards);
+    res.push_back(moves);
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

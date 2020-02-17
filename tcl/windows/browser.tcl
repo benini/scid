@@ -16,9 +16,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   if {$gnum < 1} { set game [sc_game number] }
   set filename [file tail [sc_base filename $base]]
   wm title $w "Scid: $::tr(BrowseGame) ($filename: $gnum)"
-  set header [sc_game summary -base $base -game $gnum header]
-  set ::gbrowser::boards($n) [sc_game summary -base $base -game $gnum boards]
-  set moves [sc_game summary -base $base -game $gnum moves]
+  lassign [sc_base gamesummary $base $gnum] header ::gbrowser::boards($n) moves
   
   pack [ttk::frame $w.b] -side bottom -fill x
   ::board::new $w.bd $::gbrowser::size
