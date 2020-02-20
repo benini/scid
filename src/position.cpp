@@ -2621,42 +2621,36 @@ Position::PrintCompactStrFlipped (char * cboard)
     cboard[35] = 0;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ReadFromFEN():
-//      Setup the position from a FEN string.
-//      Note: the slashes usually found in Fen strings to mark the start
-//      of a new row do not need to be present, but if they are, they must
-//      appear at the actual start of a new row or the string will be
-//      considered corrupt.
-//
-//      IMPORTANT: the shortcut of having a two-digit number to represent
-//      a number of empty rows (e.g. "/24/" instead of "/8/8/8/") is NOT
-//      accepted by this function.
-//
-//      It is not considered an error for the halfmove clock or fullmove
-//      counter to be invalid, so this routine can also read positions
-//      from EPD lines (which only share the first four fields with FEN).
-errorT
-Position::ReadFromFEN (const char * str)
-{
+/// Setup the position from a FEN string.
+/// Note: the slashes usually found in Fen strings to mark the start
+/// of a new row do not need to be present, but if they are, they must
+/// appear at the actual start of a new row or the string will be
+/// considered corrupt.
+///
+/// IMPORTANT: the shortcut of having a two-digit number to represent
+/// a number of empty rows (e.g. "/24/" instead of "/8/8/8/") is NOT
+/// accepted by this function.
+///
+/// It is not considered an error for the halfmove clock or fullmove
+/// counter to be invalid, so this routine can also read positions
+/// from EPD lines (which only share the first four fields with FEN).
+errorT Position::ReadFromFEN(const char* str) {
+    ASSERT (str != NULL);
+
     auto is_space = [](char ch) {
         return isspace(static_cast<unsigned char>(ch));
+    };
+    auto skip_spaces = [&]() {
+        while (isspace(*str)) {
+            str++;
+        }
     };
 
     // pieceFromByte[] converts a character to its piece, e.g. 'k' -> BK.
     static pieceT pieceFromByte [256];
 
-    // fenSqToRealSquare[] converts a fen square (0 to 63) to its real
-    // square. E.g: [0] -> A8, [1] -> B8, .... [63] -> H1.
-    static squareT fenSqToRealSquare [64];
-
     // Note the first Call to set up the static arrays only once:
     static int firstCall = 1;
-
-    ASSERT (str != NULL);
-    const char * s = str;
-    int count = 0;
-
     if (firstCall) {
         firstCall = 0;
 
@@ -2668,39 +2662,43 @@ Position::ReadFromFEN (const char * str)
         pieceFromByte [(int) 'B'] = WB;  pieceFromByte [(int) 'b'] = BB;
         pieceFromByte [(int) 'N'] = WN;  pieceFromByte [(int) 'n'] = BN;
         pieceFromByte [(int) 'P'] = WP;  pieceFromByte [(int) 'p'] = BP;
-
-        // Set up fenSqToRealSq[]:
-        for (int sq=0; sq < 64; sq++) {
-            fenSqToRealSquare [sq] = (squareT)((7 - (sq)/8) * 8 + ((sq) % 8));
-        }
     }
 
-    Clear ();
-    while (count < 64) {
-        if (*s == '/') {
-            // A FEN string does not have to contain '/'s but if one
-            // appears anywhere except the start of a row, it is an error:
+    Clear();
 
-            if (count % 8) { return ERROR_InvalidFEN; }
+    // Piece placement
+    skip_spaces();
+    for (int row = 7; row >= 0; --row) {
+        for (int col = 0; col < 8;) {
+            const auto ch = *str++;
+            if (ch == '/') {
+                // A FEN string does not have to contain '/'s but if one
+                // appears anywhere except the start of a row, it is an error:
+                if (col != 0)
+                    return ERROR_InvalidFEN;
 
-        } else if (*s > '0'  &&  *s < '9') {
-            count += (*s - '0');
+            } else if (ch > '0' && ch < '9') {
+                col += (ch - '0');
+                if (col > 8)
+                    return ERROR_InvalidFEN;
 
-        } else {
-            pieceT p = pieceFromByte [(byte) *s];
-            if (p == EMPTY) { return ERROR_InvalidFEN; }
-            if (AddPiece (p, fenSqToRealSquare[count]) != OK) {
-                return ERROR_InvalidFEN;
+            } else {
+                auto piece = pieceFromByte[static_cast<unsigned char>(ch)];
+                if (piece == EMPTY)
+                    return ERROR_InvalidFEN;
+
+                if (AddPiece(piece, static_cast<squareT>(row * 8 + col)) != OK)
+                    return ERROR_InvalidFEN;
+
+                col++;
             }
-            count++;
         }
-        s++;
     }
     if (Material[WK] != 1  ||  Material[BK] != 1) { return ERROR_InvalidFEN; }
 
     // Now the side to move:
-    while (is_space(*s)) { s++; }
-    switch (*s) {
+    skip_spaces();
+    switch (*str++) {
     case 'w':
         SetToMove (WHITE);
         break;
@@ -2710,15 +2708,14 @@ Position::ReadFromFEN (const char * str)
     default:
         return ERROR_InvalidFEN;
     }
-    s++;
 
     if (! IsLegal()) { return ERROR_InvalidFEN; }
 
     // Now the castling flags:
-    while (is_space(*s)) { s++; }
-    if (*s == '-') {
-        s++;  // do nothing
-    } else if (*s == 0) {
+    skip_spaces();
+    if (*str == '-') {
+        str++;  // do nothing
+    } else if (*str == 0) {
         // The FEN has no castling field, so just guess that
         // castling is possible whenever a king and rook are
         // still on their starting squares:
@@ -2731,8 +2728,8 @@ Position::ReadFromFEN (const char * str)
             if (Board[H8] == BR) { SetCastling (BLACK, KSIDE, true); }
         }
     } else {
-        while (!is_space(*s)  &&  *s != 0) {
-            switch (*s) {
+        while (!is_space(*str)  &&  *str != 0) {
+            switch (*str++) {
             case 'Q':
                 SetCastling (WHITE, QSIDE, true);
                 break;
@@ -2748,23 +2745,20 @@ Position::ReadFromFEN (const char * str)
             default:
                 return ERROR_InvalidFEN;
             }
-            s++;
         }
     }
 
     // Now the EP target:
-    while (is_space(*s)) { s++; }
-    if (*s == 0) {
-        // do nothing
-    } else if (*s == '-') {
+    skip_spaces();
+    if (*str == '-') {
         EPTarget = NULL_SQUARE;
-        s++;  // No EP target
-    } else {
-        char fylec = *s; s++;
+        str++;  // No EP target
+    } else if (*str) {
+        char fylec = *str++;
         if (fylec < 'a'  ||  fylec > 'h') {
             return ERROR_InvalidFEN;
         }
-        char rankc = *s; s++;
+        char rankc = *str++;
         if (rankc != '3'  &&  rankc != '6') {
             return ERROR_InvalidFEN;
         }
@@ -2772,16 +2766,17 @@ Position::ReadFromFEN (const char * str)
     }
 
     // Now the capture/pawn halfmove clock:
-    while (is_space(*s)) { s++; }
-    if (*s) {
-        HalfMoveClock = (ushort) atoi(s);
+    skip_spaces();
+    if (*str) {
+        char* end;
+        HalfMoveClock = (ushort)std::max(0l, strtol(str, &end, 10));
+        str = end;
     }
-    while (!is_space(*s)  && *s != 0) { s++; }
 
     // Finally, the fullmove counter:
-    while (is_space(*s)) { s++; }
-    if (*s) {
-        int i = atoi(s);
+    skip_spaces();
+    if (*str) {
+        int i = atoi(str);
         if (i >= 1) {
             PlyCounter = (i - 1) * 2;
         }

@@ -266,3 +266,145 @@ TEST(Test_MaterialCount, less_mat) {
 	EXPECT_TRUE(less_mat(mt_count, matSig, false, true));
 	EXPECT_TRUE(less_mat(mt_count, matSig, false, false));
 }
+
+TEST(Test_ReadFromFen, invalid_FEN) {
+	Position pos;
+	EXPECT_EQ(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2/Q1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p4/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4a3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4 3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PKP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1k5p/p7/4p3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1q2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 a"));
+	EXPECT_NE(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b z"));
+	EXPECT_NE(OK, // extra piece on rank
+	          pos.ReadFromFEN(
+	              "rnbqkbn1/ppppppppr/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+	EXPECT_NE(OK, // white 18 pieces
+	          pos.ReadFromFEN(
+	              "nbqkbnr/ppppNNpp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
+	EXPECT_NE(OK, // black 17 pieces
+	          pos.ReadFromFEN(
+	              "nbqkbnr/pppppppp/8/8/8/8/PPPPPnPP/RNBQKBNR w KQkq - 0 1"));
+	EXPECT_NE(OK, // colour
+	          pos.ReadFromFEN(
+	              "nbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR K KQkq - 0 1"));
+	EXPECT_NE(OK, // king in check
+	          pos.ReadFromFEN(
+	              "1B6/prpb2p1/2KPp3/qp1p4/Q1k5/nRP3p1/BRPP2Pp/BN6 w - -"));
+}
+
+TEST(Test_ReadFromFen, castling_flags) {
+	const char* valid_fens[] = {
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR    w    KQkq",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQk",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQ",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w K",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w Q",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w Qk",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w -"};
+	const char* invalid_fens[] = {
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w z",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w 1",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w T",
+	    "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w Ka"};
+	Position pos;
+	for (auto fen : valid_fens) {
+		EXPECT_EQ(OK, pos.ReadFromFEN(fen));
+	}
+	for (auto fen : invalid_fens) {
+		EXPECT_NE(OK, pos.ReadFromFEN(fen));
+	}
+}
+
+TEST(Test_ReadFromFen, EP_target) {
+	Position pos;
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 1 1"));
+	EXPECT_EQ(NULL_SQUARE, pos.GetEPTarget());
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - a3 1 1"));
+	EXPECT_EQ(A3, pos.GetEPTarget());
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - b6 1 1"));
+	EXPECT_EQ(B6, pos.GetEPTarget());
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - f3 1 1"));
+	EXPECT_EQ(F3, pos.GetEPTarget());
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - h6 1 1"));
+	EXPECT_EQ(H6, pos.GetEPTarget());
+
+	EXPECT_NE(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - i6 1 1"));
+	EXPECT_NE(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - a2 1 1"));
+	EXPECT_NE(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - z3 1 1"));
+	EXPECT_NE(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - a7 1 1"));
+	EXPECT_NE(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - a 3 1 1"));
+}
+
+TEST(Test_ReadFromFen, halfmove_clock) {
+	const char* valid_fens[] = {"8/K7/8/8/7k/8/8/8 w - - 0 1",
+	                            "8/K7/8/8/7k/8/8/8 w - - 5 1",
+	                            "8/K7/8/8/7k/8/8/8 w - - 45 1"};
+	const char* invalid_fens[] = {
+	    "8/K7/8/8/7k/8/8/8 w - - -1 1", "8/K7/8/8/7k/8/8/8 w - - - 1 1",
+	    "8/K7/8/8/7k/8/8/8 w - - - 1",  "8/K7/8/8/7k/8/8/8 w - - a 1",
+	    "8/K7/8/8/7k/8/8/8 w - - a5 1", "8/K7/8/8/7k/8/8/8 w - - 0x5 1"};
+	char buf[1024];
+	Position pos;
+	for (auto fen : valid_fens) {
+		EXPECT_EQ(OK, pos.ReadFromFEN(fen));
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, fen);
+	}
+	for (auto fen : invalid_fens) {
+		EXPECT_EQ(OK, pos.ReadFromFEN(fen));
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, "8/K7/8/8/7k/8/8/8 w - - 0 1");
+	}
+}
+
+TEST(Test_ReadFromFen, fullmove_number) {
+	Position pos;
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 0"));
+	EXPECT_EQ(pos.GetPlyCounter(), 0);
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 1);
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 -1"));
+	EXPECT_EQ(pos.GetPlyCounter(), 0);
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 1);
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 a"));
+	EXPECT_EQ(pos.GetPlyCounter(), 0);
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 1);
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 1"));
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 1);
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 25"));
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 25);
+	EXPECT_EQ(OK, pos.ReadFromFEN("8/K7/8/8/7k/8/8/8 w - - 0 115"));
+	EXPECT_EQ(pos.GetPlyCounter() / 2 + 1, 115);
+}
+
+TEST(Test_ReadFromFen, GetList) {
+	Position pos;
+	auto getPiece = [&](auto sq) { return std::pair(sq, pos.GetPiece(sq)); };
+
+	ASSERT_EQ(OK, pos.ReadFromFEN("rnb1k2Q/1p5p/p7/4p3/4q3/8/PPP2R1P/2K5 b"));
+	const auto wh_list = pos.GetList(WHITE);
+	ASSERT_TRUE(7 == pos.GetCount(WHITE));
+	EXPECT_EQ(std::pair(C1, WK), getPiece(wh_list[0]));
+	EXPECT_EQ(std::pair(A2, WP), getPiece(wh_list[1]));
+	EXPECT_EQ(std::pair(B2, WP), getPiece(wh_list[2]));
+	EXPECT_EQ(std::pair(C2, WP), getPiece(wh_list[3]));
+	EXPECT_EQ(std::pair(F2, WR), getPiece(wh_list[4]));
+	EXPECT_EQ(std::pair(H2, WP), getPiece(wh_list[5]));
+	EXPECT_EQ(std::pair(H8, WQ), getPiece(wh_list[6]));
+	const auto bl_list = pos.GetList(BLACK);
+	ASSERT_TRUE(9 == pos.GetCount(BLACK));
+	EXPECT_EQ(std::pair(E8, BK), getPiece(bl_list[0]));
+	EXPECT_EQ(std::pair(B8, BN), getPiece(bl_list[1]));
+	EXPECT_EQ(std::pair(C8, BB), getPiece(bl_list[2]));
+	EXPECT_EQ(std::pair(A8, BR), getPiece(bl_list[3]));
+	EXPECT_EQ(std::pair(B7, BP), getPiece(bl_list[4]));
+	EXPECT_EQ(std::pair(H7, BP), getPiece(bl_list[5]));
+	EXPECT_EQ(std::pair(A6, BP), getPiece(bl_list[6]));
+	EXPECT_EQ(std::pair(E5, BP), getPiece(bl_list[7]));
+	EXPECT_EQ(std::pair(E4, BQ), getPiece(bl_list[8]));
+}
