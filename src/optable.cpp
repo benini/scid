@@ -174,7 +174,7 @@ OpLine::Init (Game * g, const IndexEntry * ie, gamenumT gameNum,
     // Now set positional themes:
     uint maxThemePly = maxThemeMoveNumber * 2;
     for (i=0; i < NUM_POSTHEMES; i++) { Theme[i] = 0; }
-    g->MoveToPly (0);
+    g->MoveToStart();
     for (i=0; i < maxThemePly; i++) {
         if (g->MoveForward() != OK) { break; }
         SetPositionalThemes (g->GetCurrentPos());

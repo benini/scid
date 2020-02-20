@@ -264,6 +264,8 @@ public:
     errorT MoveForwardInPGN();
     errorT MoveToLocationInPGN(unsigned stopLocation);
     void MoveToStart();
+    /// Move to the end of the main line.
+    void MoveToEnd();
     void MoveToPly(int hmNumber) { // Move to a specified
         MoveToStart();             // mainline ply in the game.
         for (int i = 0; i < hmNumber; ++i)

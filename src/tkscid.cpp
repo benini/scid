@@ -1243,9 +1243,7 @@ sc_eco_game (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (!ecoBook) { return TCL_OK; }
 
     auto location = db->game->currentLocation();
-    db->game->MoveToPly (0);
-
-    do {} while (db->game->MoveForward() == OK);
+    db->game->MoveToEnd();
     ecoT ecoCode = ECO_None;
     do {
         ecoCode = ecoBook->findECO(db->game->GetCurrentPos());
@@ -2042,7 +2040,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
             errorT err = db->getGame(*ie, *db->game);
             if (err != OK) return UI_Result(ti, err);
-            db->game->MoveToPly(0);
+            db->game->MoveToStart();
         }
         return UI_Result(ti, OK);
 
@@ -3344,7 +3342,7 @@ sc_game_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (db->dbFilter->Get(gnum) > 0) {
         db->game->MoveToPly(db->dbFilter->Get(gnum) - 1);
     } else {
-        db->game->MoveToPly(0);
+        db->game->MoveToStart();
     }
 
     db->gameNumber = gnum;
@@ -3403,7 +3401,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     uint nMergePos = merge->GetNumHalfMoves() + 1;
     typedef char compactBoardStr [36];
     compactBoardStr * mergeBoards = new compactBoardStr [nMergePos];
-    merge->MoveToPly (0);
+    merge->MoveToStart();
     for (uint i=0; i < nMergePos; i++) {
         merge->GetCurrentPos()->PrintCompactStr (mergeBoards[i]);
         merge->MoveForward();
@@ -3411,7 +3409,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Now find the deepest position in the current game that occurs
     // in the merge game:
-    db->game->MoveToPly (0);
+    db->game->MoveToStart();
     uint matchPly = 0;
     uint mergePly = 0;
     uint ply = 0;
@@ -3985,7 +3983,7 @@ UI_res_t sc_base_gamesummary(const scidBaseT& base, UI_handle_t ti, int argc,
     UI_List boards(n_moves);
     UI_List moves(n_moves);
     auto location = g->currentLocation();
-    g->MoveToPly (0);
+    g->MoveToStart();
     do {
             char boardStr[100];
             g->GetCurrentPos()->MakeLongStr (boardStr);
@@ -4820,13 +4818,7 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_move_back (cd, ti, argc, argv);
 
     case MOVE_END:
-        db->game->MoveToPly(0);
-        {
-            errorT err = OK;
-            do {
-                err = db->game->MoveForward();
-            } while (err == OK);
-        }
+        db->game->MoveToEnd();
         break;
 
     case MOVE_FORWARD:
@@ -4843,7 +4835,7 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_move ply <plynumber>");
 
     case MOVE_START:
-        db->game->MoveToPly (0);
+        db->game->MoveToStart();
         break;
 
     default:
@@ -8454,13 +8446,13 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
                 }
             }
             if (ply == 0  &&  possibleMatch) {
-                g->MoveToPly (0);
+                g->MoveToStart();
                 if (g->VarExactMatch (pos, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                g->MoveToPly (0);
+                g->MoveToStart();
                 if (g->VarExactMatch (posFlip, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }

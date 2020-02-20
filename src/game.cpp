@@ -824,6 +824,12 @@ void Game::MoveToStart() {
 	ASSERT(!CurrentMove->startMarker());
 }
 
+void Game::MoveToEnd() {
+	MoveToStart();
+	while (MoveForward() == OK) {
+	}
+}
+
 errorT Game::MoveForwardInPGN() {
 	if (CurrentMove->prev->varChild && MoveBackup() == OK)
 		return MoveIntoVariation(0);
@@ -843,7 +849,7 @@ errorT Game::MoveForwardInPGN() {
 }
 
 errorT Game::MoveToLocationInPGN(unsigned stopLocation) {
-	MoveToPly(0);
+	MoveToStart();
 	for (unsigned loc = 1; loc < stopLocation; ++loc) {
 		errorT err = MoveForwardInPGN();
 		if (err != OK)
@@ -1120,7 +1126,7 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
     errorT err = OK;
 
     if (buf == NULL) {
-        MoveToPly(0);
+        MoveToStart();
     } else {
         err = DecodeSkipTags(buf);
         KeepDecodedMoves = false;
@@ -1258,7 +1264,7 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
     errorT err = OK;
 
     if (buf == NULL) {
-        MoveToPly(0);
+        MoveToStart();
     } else {
         err = DecodeSkipTags(buf);
         KeepDecodedMoves = false;
@@ -1568,7 +1574,7 @@ Game::GetPartialMoveList (DString * outStr, uint plyCount)
     // unaltered:
     auto location = currentLocation();
 
-    MoveToPly(0);
+    MoveToStart();
     char temp [80];
     for (uint i=0; i < plyCount; i++) {
         if (CurrentMove->marker == END_MARKER) {
@@ -2460,7 +2466,7 @@ errorT Game::WritePGN(TextBuffer* tb) {
         tb->PrintString (newline);
     }
 
-    MoveToPly(0);
+    MoveToStart();
 
     if (IsHtmlFormat()) { tb->PrintString ("<p>"); }
     NumMovesPrinted = 1;
