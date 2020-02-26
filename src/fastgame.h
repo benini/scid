@@ -19,6 +19,7 @@
 #ifndef FASTGAME_H
 #define FASTGAME_H
 
+#include "bytebuf.h"
 #include "common.h"
 #include "fullmove.h"
 #include "movegen.h"
@@ -529,50 +530,10 @@ private:
 		cToMove_ = StartPos.GetToMove();
 	}
 
-	/// Find the next move in the main line
-	template <typename IterT>
-	static IterT findNextMainLineMove(IterT it, const IterT end) {
-		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER,	ENCODE_END_GAME };
-
-		int varDepth = 0;
-		for (; it != end; ++it) {
-			switch (*it) {
-			case ENCODE_NAG: // Ignore NAGS
-				if (++it == end) {
-					return end; // ERROR: missing ENCODE_END_GAME
-				}
-				continue;
-
-			case ENCODE_COMMENT: // Ignore comments
-				continue;
-
-			case ENCODE_START_MARKER:
-				++varDepth;
-				continue;
-
-			case ENCODE_END_MARKER:
-				if (varDepth == 0) {
-					return end; // ERROR: end marker in main line
-				}
-				--varDepth;
-				continue;
-
-			case ENCODE_END_GAME:
-				if (varDepth == 0 && ++it == end) {
-					return end; // SUCCESS: end of game
-				}
-				return end; // ERROR: unexpected end of game
-			}
-
-			if (varDepth == 0)
-				return it; // SUCCESS
-		}
-		return end; // ERROR: missing ENCODE_END_GAME
-	}
-
 	template <typename TResult, colorT toMove> TResult DecodeNextMove() {
-		v_it_ = findNextMainLineMove(v_it_, v_end_);
-		if (v_it_ == v_end_)
+		bool endGame;
+		v_it_ = findNextMainLineMove(v_it_, v_end_, endGame);
+		if (v_it_ == v_end_ || endGame)
 			return {}; // End of game or error
 
 		return doPly<TResult, toMove>(*v_it_++);

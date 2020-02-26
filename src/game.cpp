@@ -3226,66 +3226,27 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
 //      moves have been decoded. Returns ERROR_Game if some corruption was
 //      detected.
 //
-errorT
-Game::DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm)
-{
-    ASSERT (buf != NULL);
+errorT Game::DecodeNextMove(ByteBuffer* buf, simpleMoveT* sm) {
+	ASSERT(buf != NULL);
 
-    for(;;) {
-        errorT err;
-        byte b = buf->GetByte(err);
-        if (err)
-            return ERROR_Game;
+	simpleMoveT tempMove;
+	if (!sm) {
+		sm = &tempMove;
+	}
 
-        switch (b) {
-        case ENCODE_NAG:
-            // We ignore NAGS but have to read it from the buffer
-            buf->GetByteZeroOnError();
-            break;
+	auto [err, val] = buf->decodeNextMainLineMove();
+	if (err)
+		return err;
 
-        case ENCODE_COMMENT:  // We also ignore comments
-            break;
+	err = decodeMove(buf, sm, val, currentPos());
+	if (err)
+		return err;
 
-        case ENCODE_START_MARKER:
-            // Find the end of this variation and its children
-            uint nestCount;
-            nestCount= 1;
-            while (nestCount > 0) {
-                b = buf->GetByte(err);
-                if (err) { return ERROR_Game; }
-                if (b == ENCODE_NAG) { buf->GetByteZeroOnError(); }
-                else if (b == ENCODE_START_MARKER) { nestCount++; }
-                else if (b == ENCODE_END_MARKER) { nestCount--; }
-                else if (b == ENCODE_END_GAME) {
-                    // Open var at end of game: should never happen!
-                    return ERROR_Game;
-                }
-            }
-            break;
+	if (KeepDecodedMoves)
+		return AddMove(sm);
 
-        case ENCODE_END_MARKER:  // End marker in main game: error!
-            return ERROR_Game;
-
-        case ENCODE_END_GAME:  // We reached the end of the game:
-            return ERROR_EndOfMoveList;
-
-        default:  // It's a move in the game; decode it:
-            simpleMoveT tempMove;
-            if (!sm) { sm = &tempMove; }
-            err = decodeMove (buf, sm, b, currentPos());
-            if (err != OK)  { return err; }
-            if (KeepDecodedMoves) {
-                AddMove(sm);
-            } else {
-                CurrentPos->DoSimpleMove (sm);
-            }
-            return OK;
-        }
-    }
-
-    // We never reach here:
-    ASSERT(0);
-    return ERROR_Game;
+	CurrentPos->DoSimpleMove(sm);
+	return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
