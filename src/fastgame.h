@@ -384,38 +384,16 @@ private:
 
 class GameView {
 	FastBoard board_;
-	const byte* v_it_;
-	const byte* v_end_;
+	ByteBuffer bbuf_;
 	colorT cToMove_;
 
 public:
-	static GameView Create(const byte* v_begin, const byte* v_end) {
-		const byte* v_it = v_begin;
-		while (v_it < v_end) {
-			byte b = *v_it++;
-			if (b == 0) {
-				if (v_it >= v_end) break; // Error
-				byte haveFEN = *v_it++ & 1;
-				if (haveFEN == 0) {
-					return {v_it, v_end};
-				} else {
-					const char* FENstring = (char*) v_it;
-					while (v_it < v_end) {
-						if (*v_it++ == 0)
-							return {FENstring, v_it, v_end};
-					}
-					break; // FEN error
-				}
-			} else if (b == 255) { // Skip special 3-byte binary encoding of EventDate
-				v_it += 3;
-			} else { // Skip tags
-				enum { MAX_TAG_LEN = 240 };
-				if (b <= MAX_TAG_LEN) v_it += b;
-				if (v_it < v_end) v_it += *v_it +1;
-			}
-		}
+	explicit GameView(const ByteBuffer& bbuf)
+	    : board_(FastBoard::stdStart()), bbuf_(bbuf), cToMove_(WHITE) {}
 
-		return {nullptr, nullptr}; // Error default to StdStart and empty buffer
+	GameView(const ByteBuffer& bbuf, const Position& startPos) : bbuf_(bbuf) {
+		board_.Init(startPos);
+		cToMove_ = startPos.GetToMove();
 	}
 
 	template <typename FuncT> void mainLine(FuncT fn) {
@@ -518,25 +496,12 @@ public:
 	}
 
 private:
-	GameView(const byte* v_it, const byte* v_end)
-	    : board_(FastBoard::stdStart()), v_it_(v_it), v_end_(v_end),
-	      cToMove_(WHITE) {}
-
-	GameView(const char* FEN, const byte* v_it, const byte* v_end)
-	: v_it_ (v_it), v_end_(v_end) {
-		Position StartPos;
-		if (FEN == 0 || StartPos.ReadFromFEN(FEN) != OK) StartPos.StdStart();
-		board_.Init(StartPos);
-		cToMove_ = StartPos.GetToMove();
-	}
-
 	template <typename TResult, colorT toMove> TResult DecodeNextMove() {
-		bool endGame;
-		v_it_ = findNextMainLineMove(v_it_, v_end_, endGame);
-		if (v_it_ == v_end_ || endGame)
-			return {}; // End of game or error
+		auto [err, val] = bbuf_.decodeNextMainLineMove();
+		if (err)
+			return {};
 
-		return doPly<TResult, toMove>(*v_it_++);
+		return doPly<TResult, toMove>(val);
 	}
 
 	template <typename TResult, colorT toMove> TResult doPly(byte v) {
@@ -559,10 +524,7 @@ private:
 			break;
 		case QUEEN:
 			if (move == square_Fyle(from)) { // 2 BYTES MOVE
-				if (v_it_ >= v_end_)
-					return {}; // decode error
-
-				to = decodeQueen2byte(*v_it_++);
+				to = decodeQueen2byte(bbuf_.GetByteZeroOnError());
 				break;
 			}
 			/* FALLTHRU */

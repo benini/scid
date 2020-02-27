@@ -132,10 +132,26 @@ struct scidBaseT {
 		return nb_;
 	}
 	GameView getGame(const IndexEntry* ie) const {
-		uint length = ie->GetLength();
-		const byte* b = codec_->getGameData(ie->GetOffset(), length);
-		if (b == 0) length = 0; // Error
-		return GameView::Create(b, b + length);
+		auto length = ie->GetLength();
+		auto data = codec_->getGameData(ie->GetOffset(), length);
+		if (data) {
+			auto bbuf = ByteBuffer(data, length);
+			auto err = bbuf.decodeTags([](auto, auto) {});
+			if (err == OK) {
+				auto [errPos, fen] = bbuf.decodeStartBoard();
+				if (errPos == OK) {
+					if (fen) {
+						Position startPos;
+						if (startPos.ReadFromFEN(fen) == OK) {
+							return GameView(bbuf, startPos);
+						}
+					} else {
+						return GameView(bbuf);
+					}
+				}
+			}
+		}
+		return GameView({nullptr, 0});
 	}
 	ByteBuffer getGame(const IndexEntry& ie) const {
 		auto length = ie.GetLength();

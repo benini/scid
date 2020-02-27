@@ -119,56 +119,6 @@ void encodeStartBoard(bool promoFlag, bool underpromoFlag, const char* FEN,
 	}
 }
 
-/// Find the next move in the main line
-template <typename IterT>
-IterT findNextMainLineMove(IterT it, IterT end, bool& endGame) {
-	enum {
-		ENCODE_NAG = 11,
-		ENCODE_COMMENT,
-		ENCODE_START_MARKER,
-		ENCODE_END_MARKER,
-		ENCODE_END_GAME
-	};
-
-	endGame = false;
-	int varDepth = 0;
-	for (; it != end; ++it) {
-		switch (*it) {
-		case ENCODE_NAG: // Ignore NAGS
-			if (++it == end) {
-				return end; // ERROR: missing nag
-			}
-			continue;
-
-		case ENCODE_COMMENT: // Ignore comments
-			continue;
-
-		case ENCODE_START_MARKER:
-			++varDepth;
-			continue;
-
-		case ENCODE_END_MARKER:
-			if (varDepth == 0) {
-				return end; // ERROR: end marker in main line
-			}
-			--varDepth;
-			continue;
-
-		case ENCODE_END_GAME:
-			if (varDepth != 0) {
-				return end; // ERROR: unexpected end of game
-			}
-			endGame = true;
-			return it; // SUCCESS: end of game
-		}
-
-		if (varDepth == 0) {
-			return it; // SUCCESS
-		}
-	}
-	return end; // ERROR: missing ENCODE_END_GAME
-}
-
 class ByteBuffer {
 	const unsigned char* data_;
 	const unsigned char* const end_;
@@ -281,11 +231,51 @@ public:
 
 	/// Find the next move in the main line
 	std::pair<errorT, unsigned char> decodeNextMainLineMove() {
-		bool endGame;
-		data_ = findNextMainLineMove(data_, end_, endGame);
-		if (data_ == end_)
-			return {ERROR_Decode, 0};
+		enum {
+			ENCODE_NAG = 11,
+			ENCODE_COMMENT,
+			ENCODE_START_MARKER,
+			ENCODE_END_MARKER,
+			ENCODE_END_GAME
+		};
 
-		return {endGame ? ERROR_EndOfMoveList : OK, *data_++};
+		auto it = data_;
+		int varDepth = 0;
+		for (; it != end_; ++it) {
+			switch (*it) {
+			case ENCODE_NAG: // Ignore NAGS
+				if (++it == end_) {
+					return {ERROR_Decode, 0}; // ERROR: missing nag
+				}
+				continue;
+
+			case ENCODE_COMMENT: // Ignore comments
+				continue;
+
+			case ENCODE_START_MARKER:
+				++varDepth;
+				continue;
+
+			case ENCODE_END_MARKER:
+				if (varDepth == 0) {
+					return {ERROR_Decode, 0}; // ERROR: end marker in main line
+				}
+				--varDepth;
+				continue;
+
+			case ENCODE_END_GAME:
+				if (varDepth != 0) {
+					return {ERROR_Decode, 0}; // ERROR: unexpected end of game
+				}
+				data_ = ++it;
+				return {ERROR_EndOfMoveList, 0}; // SUCCESS: end of game
+			}
+
+			if (varDepth == 0) {
+				data_ = it;
+				return {OK, *data_++}; // SUCCESS
+			}
+		}
+		return {ERROR_Decode, 0}; // ERROR: missing ENCODE_END_GAME
 	}
 };
