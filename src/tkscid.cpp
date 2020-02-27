@@ -1186,7 +1186,11 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         errorT err = OK;
         do {
-            err = g->DecodeNextMove(&bbuf, NULL);
+            simpleMoveT sm;
+            err = g->DecodeNextMove(&bbuf, sm);
+            if (err == OK) {
+                err = g->AddMove(&sm);
+            }
             maxPly--;
             material = g->GetCurrentPos()->TotalMaterial();
         } while (err == OK  &&  maxPly > 0  &&  material >= leastMaterial);

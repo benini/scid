@@ -471,7 +471,6 @@ Game::Game(const Game& obj) {
 		StartPos = std::make_unique<Position>(*obj.StartPos);
 
 	NumHalfMoves = obj.NumHalfMoves;
-	KeepDecodedMoves = obj.KeepDecodedMoves;
 	WhiteEstimateElo = obj.WhiteEstimateElo;
 	BlackEstimateElo = obj.BlackEstimateElo;
 	NumMovesPrinted = obj.NumMovesPrinted;
@@ -559,7 +558,6 @@ void Game::Clear() {
 	HtmlStyle = 0;
 
 	ClearMoves();
-	KeepDecodedMoves = true;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1129,7 +1127,6 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
         MoveToStart();
     } else {
         err = DecodeSkipTags(buf);
-        KeepDecodedMoves = false;
     }
 
     ASSERT (matchLength >= 1);
@@ -1237,7 +1234,11 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
                 err = ERROR_EndOfMoveList;
             }
         } else {
-            err = DecodeNextMove (buf, NULL);
+            simpleMoveT sm;
+            err = DecodeNextMove(buf, sm);
+            if (err == OK) {
+                CurrentPos->DoSimpleMove(&sm);
+            }
         }
         plyCount++;
         if (! foundMatch) { matchesNeeded = matchLength; }
@@ -1267,7 +1268,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         MoveToStart();
     } else {
         err = DecodeSkipTags(buf);
-        KeepDecodedMoves = false;
     }
 
     uint plyCount = 0;
@@ -1422,14 +1422,11 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
                         MoveBackup();
                     }
                 } else {
-                    err = DecodeNextMove (buf, sm);
+                    err = DecodeNextMove(buf, *sm);
                     if (err != OK) {
                         // Position matched at last move in the game.
                         sm->from = sm->to = NULL_SQUARE;
                         sm->promote = EMPTY;
-                    } else {
-                        // Backup to the matching position:
-                        CurrentPos->UndoSimpleMove (sm);
                     }
                 }
             }
@@ -1459,7 +1456,11 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
                 err = ERROR_EndOfMoveList;
             }
         } else {
-            err = DecodeNextMove (buf, NULL);
+            simpleMoveT nextMove;
+            err = DecodeNextMove(buf, nextMove);
+            if (err == OK) {
+                CurrentPos->DoSimpleMove(&nextMove);
+            }
             if (err != OK  &&  err != ERROR_EndOfMoveList) {
                 return false;
             }
@@ -3226,27 +3227,14 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
 //      moves have been decoded. Returns ERROR_Game if some corruption was
 //      detected.
 //
-errorT Game::DecodeNextMove(ByteBuffer* buf, simpleMoveT* sm) {
+errorT Game::DecodeNextMove(ByteBuffer* buf, simpleMoveT& sm) {
 	ASSERT(buf != NULL);
-
-	simpleMoveT tempMove;
-	if (!sm) {
-		sm = &tempMove;
-	}
 
 	auto [err, val] = buf->decodeNextMainLineMove();
 	if (err)
 		return err;
 
-	err = decodeMove(buf, sm, val, currentPos());
-	if (err)
-		return err;
-
-	if (KeepDecodedMoves)
-		return AddMove(sm);
-
-	CurrentPos->DoSimpleMove(sm);
-	return OK;
+	return decodeMove(buf, &sm, val, currentPos());
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

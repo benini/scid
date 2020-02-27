@@ -188,8 +188,6 @@ class Game {
     ushort      NumHalfMoves; // Total half moves in the main line.
 
     // TODO: The following variables should not be part of this class.
-    bool        KeepDecodedMoves; // Used by MaterialMatch end ExactMatch
-
     eloT        WhiteEstimateElo;
     eloT        BlackEstimateElo;
 
@@ -451,7 +449,7 @@ public:
 
     errorT    Encode(std::vector<byte>& dest, IndexEntry& ie) const;
     errorT    DecodeSkipTags(ByteBuffer* buf);
-    errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
+    errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT& sm);
     errorT    Decode(ByteBuffer& buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
 
