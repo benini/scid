@@ -1161,11 +1161,11 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return false;
 
         // Ignore games with existing ECO code if directed:
-        if (option == ECO_NOCODE  &&  ie.GetEcoCode() != 0)
+        if (option == ECO_NOCODE && ie.GetEcoCode() != 0)
             return false;
 
         // Ignore games before starting date if directed:
-        if (option == ECO_DATE  &&  ie.GetDate() < startDate)
+        if (option == ECO_DATE && ie.GetDate() < startDate)
             return false;
 
         auto bbuf = dbase.getGame(ie);
@@ -1173,43 +1173,27 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (g->DecodeSkipTags(&bbuf) != OK)
             return false;
 
-        // First, read in the game -- with a limit of 30 moves per
-        // side, since an ECO match after move 31 is very unlikely and
-        // we can save time by setting a limit. Also, stop when the
-        // material left in on the board is less than that of the
-        // book position with the least material, since no further
-        // positions in the game could possibly match.
-
-        uint maxPly = 60;
-        uint leastMaterial = ecoBook->FewestPieces();
-        uint material;
-
-        errorT err = OK;
-        do {
-            simpleMoveT sm;
-            err = g->DecodeNextMove(&bbuf, sm);
-            if (err == OK) {
-                err = g->AddMove(&sm);
-            }
-            maxPly--;
-            material = g->GetCurrentPos()->TotalMaterial();
-        } while (err == OK  &&  maxPly > 0  &&  material >= leastMaterial);
-
-        // Now, move back through the game to the start searching for a
-        // match in the ECO book. Stop at the first match found since it
-        // is the deepest.
-
         ecoT ecoCode = ECO_None;
-        do {
-            ecoCode = ecoBook->findECO(g->GetCurrentPos());
-            if (ecoCode != ECO_None) {
-                if (! extendedCodes) {
-                    ecoCode = eco_BasicCode (ecoCode);
-                }
+        for (;;) {
+            auto pos = g->GetCurrentPos();
+            if (pos->TotalMaterial() < ecoBook->FewestPieces())
                 break;
+
+            const auto eco = ecoBook->findECO(pos);
+            if (eco != ECO_None) {
+                ecoCode = eco;
             }
-            err = g->MoveBackup();
-        } while (err == OK);
+
+            simpleMoveT sm;
+            if (g->DecodeNextMove(&bbuf, sm) != OK)
+                break;
+
+            g->GetCurrentPos()->DoSimpleMove(&sm);
+        }
+
+        if (!extendedCodes) {
+            ecoCode = eco_BasicCode(ecoCode);
+        }
 
         if (ie.GetEcoCode() != ecoCode) {
             ie.SetEcoCode(ecoCode);
