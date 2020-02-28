@@ -509,49 +509,24 @@ private:
 		byte move = v & 0x0F;
 		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
 		squareT from = board_.getSquare(toMove, idx_piece_moving);
-		int to;
-		pieceT promo = INVALID_PIECE;
-		bool enPassant = false;
-		switch (moving_piece) {
-		case PAWN:
-			to = decodePawn<toMove>(from, move, promo, enPassant);
-			break;
-		case BISHOP:
-			to = decodeBishop(from, move);
-			break;
-		case KNIGHT:
-			to = decodeKnight(from, move);
-			break;
-		case QUEEN:
-			if (move == square_Fyle(from)) { // 2 BYTES MOVE
-				to = decodeQueen2byte(bbuf_.GetByteZeroOnError());
-				break;
-			}
-			/* FALLTHRU */
-		case ROOK:
-			to = decodeRook(from, move);
-			break;
-		case KING:
-			if (move == 0) { // NULL MOVE
-				return TResult(toMove, 0, 0, KING);
-			}
-			if (move <= 8) {
-				to = decodeKing(from, move);
-				break;
-			}
-			if (move <= 10) { // CASTLE
-				const squareT rook_from = board_.castle<toMove>(move == 10);
-				return TResult(toMove, from, rook_from);
-			}
-			return {}; // decode error
 
-		default:
-			return {}; // decode error
-		}
-
+		auto [to, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, move);
 		if (to < 0 || to > 63)
 			return {}; // decode error
 
+		if (to == from) {
+			if (promo == INVALID_PIECE)
+				return {}; // decode error
+
+			if (promo == PAWN) // NULL MOVE
+				return TResult(toMove, 0, 0, KING);
+
+			const squareT rook_from = board_.castle<toMove>(promo == KING);
+			return TResult(toMove, from, rook_from); // CASTLE
+		}
+
+		bool enPassant = moving_piece == PAWN &&
+		                 square_Fyle(from) != square_Fyle(to);
 		pieceT captured = board_.move<toMove>(idx_piece_moving, to, promo);
 		TResult res(toMove, from, to, moving_piece);
 		if (promo != INVALID_PIECE)
@@ -564,60 +539,6 @@ private:
 			res.setCapture(captured, true);
 		}
 		return res;
-	}
-
-	/**
-	 * decode*() - decode a move from Scid format
-	 * @from: start square of the moving piece
-	 * @val: index of the target square
-	 *
-	 * Excluding queens, the other chess pieces cannot reach more than 16 target
-	 * squares from any given position. This allow to store the target square of
-	 * a move into 4 bits, as an index of all the possible target squares.
-	 * Return:
-	 * - the target square
-	 * Error handling:
-	 * - Debug code will check if the decoded value is a valid [0-63] square.
-	 * - Release code will force the returned valid to be a valid [0-63] square
-	 *   but, for performance reasons, do not report invalid encoded moves.
-	 */
-	static inline int decodeKing(squareT from, byte val) {
-		ASSERT(val <= 8);
-		static const int8_t sqdiff[] = {0, -9, -8, -7, -1, 1, 7, 8, 9};
-		return from + sqdiff[val];
-	}
-	static inline int decodeQueen2byte(byte val) {
-		return val - 64;
-	}
-	static inline int decodeBishop(squareT from, byte val) {
-		int fylediff = square_Fyle(val) - square_Fyle(from);
-		return (val >= 8) ? from - 7 * fylediff //
-		                  : from + 9 * fylediff;
-	}
-	static inline int decodeKnight(squareT from, byte val) {
-		ASSERT(val <= 16);
-		static const int8_t sqdiff[] = {0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0};
-		return from + sqdiff[val];
-	}
-	static inline int decodeRook(squareT from, byte val) {
-		ASSERT(val <= 16);
-		if (val >= 8) // vertical move
-			return square_Make(square_Fyle(from), (val - 8));
-		else // horizontal move
-			return square_Make(val, square_Rank(from));
-	}
-	template <colorT color>
-	static inline int decodePawn(squareT from, byte val, pieceT& promo,
-	                             bool& enPassant) {
-		ASSERT(val <= 16);
-		static const int8_t sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
-		static const pieceT promoPieceFromVal [] = {
-			0,0,0,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK, BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,0
-		};
-		promo = promoPieceFromVal[val];
-		enPassant = (val == 0 || val == 2);
-		return (color == WHITE) ? from + sqdiff[val] //
-		                        : from - sqdiff[val];
 	}
 };
 

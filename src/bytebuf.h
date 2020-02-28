@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "common.h"
 #include "error.h"
 #include <algorithm>
 #include <cassert>
@@ -277,5 +278,79 @@ public:
 			}
 		}
 		return {ERROR_Decode, 0}; // ERROR: missing ENCODE_END_GAME
+	}
+
+	/// Decode a move encoded in SCID4 format.
+	/// Excluding queens, the other chess pieces cannot reach more than 16
+	/// target squares from any given position. This allow to store the target
+	/// square of a move into 4 bits, as an index of all the reachable squares.
+	/// @param movingPiece: the type (PAWN, BISHOP, etc.) of the piece to move.
+	/// @param from: the square where is the piece to move.
+	/// @param moveCode: the SCID4 encoding of the move (a 0-15 value).
+	/// @returns a pair containing the destination square and the new type of
+	///          the piece for promotions (INVALID_PIECE for normal moves).
+	///          Special moves are returned as:
+	///          - castle kingside: {from, KING}
+	///          - castle queenside: {from, QUEEN}
+	///          - null move: {from, PAWN}
+	/// On error returns an invalid square (<0 or >63) or {from, INVALID_PIECE}.
+	template <colorT toMove>
+	std::pair<int, pieceT> decodeMove(pieceT movingPiece, squareT from,
+	                                  unsigned char moveCode) {
+		assert(moveCode < 16);
+
+		switch (movingPiece) {
+		case PAWN: {
+			static const pieceT promoPiece[] = {
+			    INVALID_PIECE, INVALID_PIECE, INVALID_PIECE, QUEEN,
+			    QUEEN,         QUEEN,         ROOK,          ROOK,
+			    ROOK,          BISHOP,        BISHOP,        BISHOP,
+			    KNIGHT,        KNIGHT,        KNIGHT,        INVALID_PIECE};
+			static const int8_t sqdiff[] = {7, 8, 9, 7, 8, 9, 7, 8,
+			                                9, 7, 8, 9, 7, 8, 9, 16};
+			int to = (toMove == WHITE) ? from + sqdiff[moveCode]
+			                           : from - sqdiff[moveCode];
+			return {to, promoPiece[moveCode]};
+		}
+		case BISHOP: {
+			int fylediff = square_Fyle(moveCode) - square_Fyle(from);
+			int to = (moveCode >= 8) ? from - 7 * fylediff
+			                         : from + 9 * fylediff;
+			return {to, INVALID_PIECE};
+		}
+		case KNIGHT: {
+			static const int8_t sqdiff[] = {0,  -17, -15, -10, -6, 6, 10, 15,
+			                                17, 0,   0,   0,   0,  0, 0,  0};
+			return {from + sqdiff[moveCode], INVALID_PIECE};
+		}
+		case QUEEN:
+			if (moveCode == square_Fyle(from)) { // 2 BYTES MOVE
+				int to = (data_ != end_) ? *data_++ : 0;
+				return {to - 64, INVALID_PIECE};
+			}
+			/* FALLTHRU */
+		case ROOK: {
+			int to = (moveCode >= 8) // a vertical move
+			             ? square_Make(square_Fyle(from), (moveCode - 8))
+			             : square_Make(moveCode, square_Rank(from));
+			return {to, INVALID_PIECE};
+		}
+		case KING:
+			if (moveCode == 0) // NULL MOVE
+				return {from, PAWN};
+
+			if (moveCode <= 8) {
+				static const int8_t sqdiff[] = {0, -9, -8, -7, -1, 1, 7, 8, 9};
+				return {from + sqdiff[moveCode], INVALID_PIECE};
+			}
+
+			if (moveCode == 9) // CASTLE QUEENSIDE
+				return {from, QUEEN};
+
+			if (moveCode == 10) // CASTLE KINGSIDE
+				return {from, KING};
+		}
+
+		return {from, INVALID_PIECE}; // decode error
 	}
 };
