@@ -2583,26 +2583,6 @@ static byte encodeKing(const simpleMoveT* sm) {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeKing(): decoding of King moves.
-//
-static inline errorT
-decodeKing (byte val, simpleMoveT * sm)
-{
-    static const int sqdiff[] = {
-        0, -9, -8, -7, -1, 1, 7, 8, 9, -2, 2
-    };
-
-    if (val == 0) {
-      sm->to = sm->from;  // Null move
-        return OK;
-    }
-
-    if (val < 1  ||  val > 10) { return ERROR_Decode; }
-    sm->to = sm->from + sqdiff[val];
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKnight(): encoding Knight moves.
 //
 static byte encodeKnight(const simpleMoveT* sm) {
@@ -2626,20 +2606,6 @@ static byte encodeKnight(const simpleMoveT* sm) {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeKnight(): decoding Knight moves.
-//
-static inline errorT
-decodeKnight (byte val, simpleMoveT * sm)
-{
-    static const int sqdiff[] = {
-        0, -17, -15, -10, -6, 6, 10, 15, 17
-    };
-    if (val < 1  ||  val > 8) { return ERROR_Decode; }
-    sm->to = sm->from + sqdiff[val];
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeRook(): encoding rook moves.
 //
 static byte encodeRook(const simpleMoveT* sm) {
@@ -2659,21 +2625,6 @@ static byte encodeRook(const simpleMoveT* sm) {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeRook(): decoding Rook moves.
-//
-static inline errorT
-decodeRook (byte val, simpleMoveT * sm)
-{
-    if (val >= 8) {
-        // This is a move along a Fyle, to a different rank:
-        sm->to = square_Make (square_Fyle(sm->from), (val - 8));
-    } else {
-        sm->to = square_Make (val, square_Rank(sm->from));
-    }
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeBishop(): encoding Bishop moves.
 //
 static byte encodeBishop(const simpleMoveT* sm) {
@@ -2690,24 +2641,6 @@ static byte encodeBishop(const simpleMoveT* sm) {
         return square_Fyle(sm->to) + 8;
 
     return square_Fyle(sm->to);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeBishop(): decoding Bishop moves.
-//
-static inline errorT
-decodeBishop (byte val, simpleMoveT * sm)
-{
-    byte fyle = (val & 7);
-    int fylediff = (int)fyle - (int)square_Fyle(sm->from);
-    if (val >= 8) {
-        // It is an up-left/down-right direction move.
-        sm->to = sm->from - 7 * fylediff;
-    } else {
-        sm->to = sm->from + 9 * fylediff;
-    }
-    if (sm->to > H8) { return ERROR_Decode;}
-    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2753,29 +2686,6 @@ void encodeQueen(DestT* buf, const simpleMoveT* sm) {
     }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeQueen(): decoding Queen moves.
-//
-static inline errorT
-decodeQueen (ByteBuffer * buf, byte val, simpleMoveT * sm)
-{
-    if (val >= 8) {
-        // Rook-vertical move:
-        sm->to = square_Make (square_Fyle(sm->from), (val - 8));
-
-    } else if (val != square_Fyle(sm->from)) {
-        // Rook-horizontal move:
-        sm->to = square_Make (val, square_Rank(sm->from));
-
-    } else {
-        // Diagonal move: coded in TWO bytes.
-        val = buf->GetByteZeroOnError();
-        if (val < 64  ||  val > 127) { return ERROR_Decode; }
-        sm->to = val - 64;
-    }
-    return OK;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodePawn(): encoding Pawn moves.
 //
@@ -2818,38 +2728,6 @@ static byte encodePawn(const simpleMoveT* sm) {
     return val;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodePawn(): decoding Pawn moves.
-//
-static inline errorT
-decodePawn (byte val, simpleMoveT * sm, colorT toMove)
-{
-    static const int
-    toSquareDiff [16] = {
-        7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16
-    };
-
-    static const pieceT
-    promoPieceFromVal [16] = {
-        EMPTY,EMPTY,EMPTY,
-        QUEEN,QUEEN,QUEEN,
-        ROOK,ROOK,ROOK,
-        BISHOP,BISHOP,BISHOP,
-        KNIGHT,KNIGHT,KNIGHT,
-        EMPTY
-    };
-
-    if (toMove == WHITE) {
-        sm->to = sm->from + toSquareDiff[val];
-    } else {
-        sm->to = sm->from - toSquareDiff[val];
-    }
-
-    sm->promote = promoPieceFromVal[val];
-
-    return OK;
-}
-
 
 // Special-move tokens:
 // Since king-move values 1-10 are taken for actual King moves, only
@@ -2869,15 +2747,6 @@ decodePawn (byte val, simpleMoveT * sm, colorT toMove)
 // a game must end with the end-game token.
 
 
-// The inline routine  isSpecialMoveCode() returns true is a byte value
-// has the value of a special non-move token:
-inline bool
-isSpecialMoveCode (byte val)
-{
-    return (val <= ENCODE_LAST  &&  val >= ENCODE_FIRST);
-}
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // decodeMove():
 //      Decode a move from a bytebuffer. Assumes the byte val is an
@@ -2888,40 +2757,39 @@ isSpecialMoveCode (byte val)
 //
 static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
                          const Position* pos) {
-    const squareT* sqList = pos->GetList(pos->GetToMove());
-    sm->from = sqList[val >> 4];
-    if (sm->from > H8) { return ERROR_Decode; }
+	const byte move = val & 0x0F;
+	const colorT toMove = pos->GetToMove();
+	const squareT from = pos->GetList(toMove)[val >> 4];
+	if (from > H8)
+		return ERROR_Decode;
+	sm->from = from;
+	sm->to = from;
+	sm->promote = EMPTY;
+	sm->movingPiece = pos->GetBoard()[from];
 
-    const pieceT* board = pos->GetBoard();
-    sm->movingPiece = board[sm->from];
-    sm->promote = EMPTY;
+	const auto [to, promo] =
+	    (toMove == WHITE)
+	        ? buf->decodeMove<WHITE>(piece_Type(sm->movingPiece), from, move)
+	        : buf->decodeMove<BLACK>(piece_Type(sm->movingPiece), from, move);
+	if (to < 0 || to > 63)
+		return ERROR_Decode;
 
-    errorT err = OK;
-    pieceT pt = piece_Type (sm->movingPiece);
-    switch (pt) {
-    case PAWN:
-        err = decodePawn (val & 15, sm, pos->GetToMove());
-        break;
-    case KNIGHT:
-        err = decodeKnight (val & 15, sm);
-        break;
-    case ROOK:
-        err = decodeRook (val & 15, sm);
-        break;
-    case BISHOP:
-        err = decodeBishop (val & 15, sm);
-        break;
-    case KING:
-        err = decodeKing (val & 15, sm);
-        break;
-    // For queen moves: Rook-like moves are in 1 byte, diagonals are in 2.
-    case QUEEN:
-        err = decodeQueen (buf, val & 15, sm);
-        break;
-    default:
-        err = ERROR_Decode;
-    }
-    return err;
+	if (to == from) {
+		if (promo == INVALID_PIECE)
+			return ERROR_Decode;
+
+		if (promo == PAWN) // NULL MOVE
+			return OK;
+
+		sm->to += (promo == KING) ? 2 : -2;
+		return OK; // CASTLE
+	}
+
+	if (promo != INVALID_PIECE)
+		sm->promote = promo;
+
+	sm->to = static_cast<squareT>(to);
+	return OK;
 }
 
 template <typename DestT>
