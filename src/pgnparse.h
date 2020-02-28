@@ -24,7 +24,6 @@
 #ifndef SCID_PGNPARSE_H
 #define SCID_PGNPARSE_H
 
-#include "common.h"
 #include "game.h"
 #include "pgn_lexer.h"
 #include <string>

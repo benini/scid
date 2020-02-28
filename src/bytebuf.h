@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "board_def.h"
 #include "error.h"
 #include <algorithm>
 #include <cassert>

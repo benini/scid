@@ -27,7 +27,6 @@
 
 #include "codec.h"
 #include "codec_memory.h"
-#include "common.h"
 #include "game.h"
 
 #ifndef MULTITHREADING_OFF

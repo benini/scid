@@ -19,7 +19,7 @@
 #ifndef CONTAINERS_H
 #define CONTAINERS_H
 
-#include "common.h" // for ASSERT
+#include <cassert>
 #include <vector>
 
 /**
@@ -121,11 +121,11 @@ public:
 	}
 
 	const T& operator[](size_t idx) const {
-		ASSERT(idx < size_);
+		assert(idx < size_);
 		return chunks_[idx >> CHUNKSHIFT][idx & low_mask];
 	}
 	T& operator[](size_t idx) {
-		ASSERT(idx < size_);
+		assert(idx < size_);
 		return chunks_[idx >> CHUNKSHIFT][idx & low_mask];
 	}
 
@@ -136,7 +136,7 @@ public:
 	 * the count of contiguously allocated objects starting at @e pos (included)
 	 */
 	size_t contiguous(size_t pos) const {
-		ASSERT(pos < size());
+		assert(pos < size());
 		return 1 + (~pos & low_mask);
 	}
 

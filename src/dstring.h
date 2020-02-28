@@ -15,7 +15,6 @@
 #ifndef SCID_DSTRING_H
 #define SCID_DSTRING_H
 
-#include "common.h"
 #include <stdio.h>
 #include <string>
 

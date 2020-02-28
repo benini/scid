@@ -26,7 +26,6 @@
 #define CODEC_PGN_H
 
 #include "codec_proxy.h"
-#include "common.h"
 #include "filebuf.h"
 #include "pgnparse.h"
 #include <algorithm>

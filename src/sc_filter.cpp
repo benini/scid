@@ -16,7 +16,6 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "common.h"
 #include "dbasepool.h"
 #include "scidbase.h"
 #include "ui.h"

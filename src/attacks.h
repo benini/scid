@@ -15,9 +15,7 @@
 #ifndef SCID_ATTACKS_H
 #define SCID_ATTACKS_H
 
-#ifndef SCID_COMMON_H
-#include "common.h"
-#endif
+#include "board_def.h"
 
 
 // NOTE: These arrays have been automatically generated. Don't change
