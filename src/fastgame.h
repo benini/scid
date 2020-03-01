@@ -497,7 +497,7 @@ public:
 
 private:
 	template <typename TResult, colorT toMove> TResult DecodeNextMove() {
-		auto [err, val] = bbuf_.decodeNextMainLineMove();
+		auto [err, val] = bbuf_.nextLineMove();
 		if (err)
 			return {};
 
@@ -505,12 +505,11 @@ private:
 	}
 
 	template <typename TResult, colorT toMove> TResult doPly(byte v) {
-		byte idx_piece_moving = v >> 4;
-		byte move = v & 0x0F;
+		const auto idx_piece_moving = v >> 4;
 		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
 		squareT from = board_.getSquare(toMove, idx_piece_moving);
 
-		auto [to, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, move);
+		auto [to, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, v);
 		if (to < 0 || to > 63)
 			return {}; // decode error
 

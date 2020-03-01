@@ -3098,7 +3098,7 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
 errorT Game::DecodeNextMove(ByteBuffer* buf, simpleMoveT& sm) {
 	ASSERT(buf != NULL);
 
-	auto [err, val] = buf->decodeNextMainLineMove();
+	auto [err, val] = buf->nextLineMove();
 	if (err)
 		return err;
 

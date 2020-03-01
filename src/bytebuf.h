@@ -230,8 +230,21 @@ public:
 		return res;
 	}
 
-	/// Find the next move in the main line
-	std::pair<errorT, unsigned char> decodeNextMainLineMove() {
+	/// Extract the next move.
+	/// @returns a std::pair containing OK and the move value.
+	///          Returns ERROR_EndOfMoveList when the end of the game is
+	///          reached, an error otherwise.
+	template <typename MoveFn, typename CommentFn, typename VariationFn,
+	          typename NagFn>
+	std::pair<errorT, unsigned char>
+	nextMove(int varDepth, MoveFn acceptMove, CommentFn commentMarker,
+	         VariationFn changeVar, NagFn addNag) {
+		// The king has always index 0 and only 11 possible moves (8 destination
+		// squares, 2 castle moves and the null move). The unused codes 11-15
+		// represent special markers for nags, comments and variations.
+		// Note: 2-bytes queen moves use the second byte as (64 + destination
+		// square) to avoid interferences with these markers. However the byte
+		// immediatly after the ENCODE_NAG can have any possible value.
 		enum {
 			ENCODE_NAG = 11,
 			ENCODE_COMMENT,
@@ -241,20 +254,26 @@ public:
 		};
 
 		auto it = data_;
-		int varDepth = 0;
 		for (; it != end_; ++it) {
 			switch (*it) {
-			case ENCODE_NAG: // Ignore NAGS
+			case ENCODE_NAG:
 				if (++it == end_) {
 					return {ERROR_Decode, 0}; // ERROR: missing nag
 				}
+				if (!addNag(*it)) {
+					return {ERROR_Decode, 0}; // ERROR: marker decoding
+				}
 				continue;
 
-			case ENCODE_COMMENT: // Ignore comments
+			case ENCODE_COMMENT:
+				commentMarker();
 				continue;
 
 			case ENCODE_START_MARKER:
 				++varDepth;
+				if (!changeVar(true)) {
+					return {ERROR_Decode, 0}; // ERROR: variation
+				}
 				continue;
 
 			case ENCODE_END_MARKER:
@@ -262,6 +281,9 @@ public:
 					return {ERROR_Decode, 0}; // ERROR: end marker in main line
 				}
 				--varDepth;
+				if (!changeVar(false)) {
+					return {ERROR_Decode, 0}; // ERROR: variation
+				}
 				continue;
 
 			case ENCODE_END_GAME:
@@ -270,14 +292,26 @@ public:
 				}
 				data_ = ++it;
 				return {ERROR_EndOfMoveList, 0}; // SUCCESS: end of game
-			}
 
-			if (varDepth == 0) {
-				data_ = it;
-				return {OK, *data_++}; // SUCCESS
+			default:
+				if (acceptMove(varDepth)) {
+					data_ = it;
+					return {OK, *data_++}; // SUCCESS
+				}
 			}
 		}
 		return {ERROR_Decode, 0}; // ERROR: missing ENCODE_END_GAME
+	}
+
+	/// Find the next move in the current line.
+	/// Ignore variations, comments and nags.
+	std::pair<errorT, unsigned char> nextLineMove() {
+		return nextMove(
+		    0, [](auto varDepth) { return varDepth == 0; },
+		    [] {},                     // Ignore comments
+		    [](auto) { return true; }, // Ignore variations
+		    [](auto) { return true; }  // Ignore nags
+		);
 	}
 
 	/// Decode a move encoded in SCID4 format.
@@ -297,8 +331,7 @@ public:
 	template <colorT toMove>
 	std::pair<int, pieceT> decodeMove(pieceT movingPiece, squareT from,
 	                                  unsigned char moveCode) {
-		assert(moveCode < 16);
-
+		moveCode &= 0x0F;
 		switch (movingPiece) {
 		case PAWN: {
 			static const pieceT promoPiece[] = {
