@@ -17,9 +17,6 @@ set analysis(logMax) 5000
 #
 set analysis(log_stdout) 0
 
-set useAnalysisBook 1
-set analysisBookSlot 1
-set useAnalysisBookName ""
 set wentOutOfBook 0
 # State variable: 1 <=> engine is making an initial
 # assessment of the current position, before progressing
@@ -31,18 +28,8 @@ set initialAnalysis 0
 # (engine variation to the) main line
 set atStartOfLine 0
 
-set isBatch 0
 set batchEnd 1
-set isBatchOpening 0
-set isBatchOpeningMoves 12
 set stack ""
-
-set markTacticalExercises 0
-
-set isAnnotateVar 0
-set isShortAnnotation 0
-set addScoreToShortAnnotations 0
-set addAnnotatorTag 0
 
 ################################################################################
 #
@@ -113,13 +100,6 @@ proc resetEngine {n} {
 
 resetEngine 1
 resetEngine 2
-
-set annotateMode 0
-set annotateModeButtonValue 0 ; # feedback of annotate mode
-
-set annotateMoves all
-set annotateBlunders blundersonly
-set scoreAllMoves 0
 
 ################################################################################
 # calculateNodes:
@@ -806,11 +786,11 @@ proc startAutoplay { } {
 
 proc setAnnotateModeButtonValue { value } {
     if { ! $value } {
-	.analysisWin1.b1.annotate configure -image tb_annotate
-	.analysisWin1.b1.annotate state !pressed
+       .analysisWin1.b1.annotate configure -image tb_annotate
+       .analysisWin1.b1.annotate state !pressed
     } else {
-	.analysisWin1.b1.annotate configure -image tb_annotate_on
-	.analysisWin1.b1.annotate state pressed
+       .analysisWin1.b1.annotate configure -image tb_annotate_on
+       .analysisWin1.b1.annotate state pressed
     }
     set ::annotateModeButtonValue $value
 }
@@ -837,9 +817,9 @@ proc configAnnotation {n} {
     }
     
     if { ! $annotateModeButtonValue } {
-	setAnnotateModeButtonValue 1
+       setAnnotateModeButtonValue 1
     } else {
-	setAnnotateModeButtonValue 0
+       setAnnotateModeButtonValue 0
     }
     # If the annotation button is pressed while annotation is
     # running, stop the annotation
