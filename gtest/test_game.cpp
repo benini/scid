@@ -39,10 +39,7 @@ TEST(Test_Game, clone) {
 		ASSERT_NE(nullptr, dbase.getIndexEntry_bounds(0));
 
 		Game game;
-		auto bufGame = dbase.getGame(*dbase.getIndexEntry(0));
-		ASSERT_TRUE(bufGame);
-		auto orig_encoded = bufGame;
-		ASSERT_EQ(OK, game.Decode(bufGame));
+		ASSERT_EQ(OK, dbase.getGame(*dbase.getIndexEntry(0), game));
 
 		std::mt19937 re(std::random_device{}());
 		game.MoveToLocationInPGN(std::uniform_int_distribution<>{0, 500}(re));
@@ -73,18 +70,6 @@ TEST(Test_Game, clone) {
 
 		ASSERT_TRUE(std::equal(pgnClone.first, pgnClone.first + pgnClone.second,
 		                       pgnGame.first, pgnGame.first + pgnGame.second));
-
-		std::vector<byte> bufClone;
-		auto ie = IndexEntry();
-		clone->Encode(bufClone, ie);
-
-		errorT err;
-		for (auto b : bufClone) {
-			ASSERT_EQ(b, orig_encoded.GetByte(err));
-			ASSERT_EQ(OK, err);
-		}
-		orig_encoded.GetByte(err);
-		ASSERT_NE(OK, err);
 	}
 }
 

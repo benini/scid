@@ -130,26 +130,7 @@ public:
 		assert(data_ || data_ == end_);
 	}
 
-	operator bool() const { return data_ != end_; }
-
-	/// Reads one byte from the buffer
-	unsigned char GetByte(errorT& err) {
-		if (data_ == end_) {
-			err = ERROR_BufferRead;
-			return 0;
-		}
-
-		err = OK;
-		return *data_++;
-	}
-
-	/// Reads one byte from the buffer; returns 0 on error
-	unsigned char GetByteZeroOnError() {
-		if (data_ == end_)
-			return 0;
-
-		return *data_++;
-	}
+	explicit operator bool() const { return data_ != end_; }
 
 	/// Decodes the tag pairs not stored into the index.
 	/// @param fn: a function that should accept 2 parameters
