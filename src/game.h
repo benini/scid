@@ -201,7 +201,7 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    errorT DecodeVariation(ByteBuffer* buf, uint level);
+    errorT DecodeVariation(ByteBuffer& buf);
     errorT WritePGN(TextBuffer* tb);
 
     /**

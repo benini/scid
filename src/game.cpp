@@ -2757,7 +2757,6 @@ static byte encodePawn(const simpleMoveT* sm) {
 //
 static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
                          const Position* pos) {
-	const byte move = val & 0x0F;
 	const colorT toMove = pos->GetToMove();
 	const squareT from = pos->GetList(toMove)[val >> 4];
 	if (from > H8)
@@ -2769,8 +2768,8 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 
 	const auto [to, promo] =
 	    (toMove == WHITE)
-	        ? buf->decodeMove<WHITE>(piece_Type(sm->movingPiece), from, move)
-	        : buf->decodeMove<BLACK>(piece_Type(sm->movingPiece), from, move);
+	        ? buf->decodeMove<WHITE>(piece_Type(sm->movingPiece), from, val)
+	        : buf->decodeMove<BLACK>(piece_Type(sm->movingPiece), from, val);
 	if (to < 0 || to > 63)
 		return ERROR_Decode;
 
@@ -2861,54 +2860,34 @@ static void encodeVariation(std::vector<byte>* buf, moveT* m, uint* subVarCount,
     }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::DecodeVariation():
-//      Decodes the game moves. Recursively decodes subvariations.
-//
-errorT Game::DecodeVariation(ByteBuffer* buf, uint level) {
-    simpleMoveT sm;
-    for(;;) {
-        errorT err;
-        byte b = buf->GetByte(err);
-        if (err)
-            return err;
+/// Decodes the game moves
+errorT Game::DecodeVariation(ByteBuffer& buf) {
+	simpleMoveT sm;
+	for (;;) {
+		auto [err, val] = buf.nextMove(
+		    this->VarDepth, [&](auto) { return true; },
+		    [&] {
+			    // Mark this comment as needing to be read
+			    this->CurrentMove->prev->comment = '*';
+		    },
+		    [&](auto newVariation) {
+			    if (newVariation)
+				    return AddVariation() == OK;
 
-        switch (b) {
-        case ENCODE_START_MARKER:
-            err = AddVariation();
-            if (err != OK) { return err; }
-            err = DecodeVariation (buf, level + 1);
-            if (err != OK) { return err; }
-            err = MoveExitVariation();
-            if (err != OK) { return err; }
-            err = MoveForward();
-            if (err != OK) { return err; }
-            break;
+			    return (MoveExitVariation() == OK && MoveForward() == OK);
+		    },
+		    [&](auto nag) {
+			    return this->AddNag(nag) == OK;
+		    });
+		if (err)
+			return (err == ERROR_EndOfMoveList) ? OK : err;
 
-        case ENCODE_NAG:
-            b = buf->GetByte(err);
-            if (err)
-                return err;
-            AddNag(b);
-            break;
-
-        case ENCODE_COMMENT:
-            // Mark this comment as needing to be read
-            CurrentMove->prev->comment = '*';
-            break;
-
-        case ENCODE_END_MARKER:
-            return (level > 0) ? OK : ERROR_Decode;
-
-        case ENCODE_END_GAME:
-            return (level == 0) ? OK : ERROR_Decode;
-
-        default:  // It is a regular move
-            err = decodeMove(buf, &sm, b, currentPos());
-            if (err != OK)  { return err; }
-            AddMove(&sm);
-        }
-    }
+		auto errMove = decodeMove(&buf, &sm, val, currentPos());
+		if (!errMove)
+			errMove = AddMove(&sm);
+		if (errMove)
+			return errMove;
+	}
 }
 
 /**
@@ -3134,7 +3113,7 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 	if (errorT err = DecodeSkipTags(&buf))
 		return err;
 
-	return DecodeVariation(&buf, 0);
+	return DecodeVariation(buf);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3160,7 +3139,7 @@ errorT Game::Decode(ByteBuffer& buf) {
         err = SetStartFen(fen);
 
     if (err == OK)
-        err = DecodeVariation(&buf, 0);
+        err = DecodeVariation(buf);
 
     if (err == OK)
         err = decodeComments(buf, FirstMove);
