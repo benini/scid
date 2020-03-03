@@ -15,6 +15,7 @@
  */
 
 #include "game.h"
+#include "pgnparse.h"
 #include "scidbase.h"
 #include <algorithm>
 #include <bytebuf.h>
@@ -188,4 +189,31 @@ TEST(Test_Game, gamevisit) {
 	for (auto& exp : expected_extra) {
 		EXPECT_EQ(exp, *it++);
 	}
+}
+
+TEST(Test_Game, empty_tag_name) {
+	std::vector<unsigned char> encodedGame;
+	{
+		Game game;
+		game.AddPgnTag("Normal tag ", "normal  value");
+		game.AddPgnTag("", "empty tag name");
+		game.AddPgnTag("Annotator", "common tag");
+		EXPECT_EQ(game.GetExtraTags().size(), 3);
+
+		IndexEntry ie;
+		game.Encode(encodedGame, ie);
+	}
+
+	ByteBuffer bbuf(encodedGame.data(), encodedGame.size());
+	int i = 0;
+	bbuf.decodeTags([&i](auto tag_name, auto tag_value) {
+		if (i++ == 0) {
+			EXPECT_EQ(tag_name, "Normal tag ");
+			EXPECT_EQ(tag_value, "normal  value");
+		} else {
+			EXPECT_EQ(tag_name, "Annotator");
+			EXPECT_EQ(tag_value, "common tag");
+		}
+	});
+	EXPECT_EQ(i, 2);
 }
