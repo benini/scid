@@ -137,6 +137,17 @@ public:
     gamenumT    GetNumGames ()    const { return Header.numGames; }
     versionT    GetVersion ()     const { return Header.version; }
 
+    void addEntry(const IndexEntry& ie) {
+        entries_.push_back(ie);
+        Header.numGames++;
+    }
+
+    void replaceEntry(const IndexEntry& ie, gamenumT replaced) {
+        ASSERT(replaced < this->GetNumGames());
+
+        entries_[replaced] = ie;
+    }
+
     /**
      * WriteEntry() - modify a game in the Index
      */

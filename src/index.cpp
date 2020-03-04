@@ -163,12 +163,10 @@ errorT Index::WriteEntry(const IndexEntry* ie, gamenumT idx)
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
 
     if (idx == Header.numGames) {
-        entries_.push_back(*ie);
-        Header.numGames++;
+        this->addEntry(*ie);
         Header.dirty_ = true;
     } else {
-        IndexEntry* copyToMemory = &(entries_[idx]);
-        *copyToMemory = *ie;
+        this->replaceEntry(*ie, idx);
     }
     if (FilePtr == NULL) return OK;
 

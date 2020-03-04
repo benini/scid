@@ -146,8 +146,7 @@ public: // CodecNative CRTP
 		if (nGames >= LIMIT_NUMGAMES)
 			return ERROR_NumGamesLimit;
 
-		idx_->entries_.push_back(ie);
-		idx_->Header.numGames++;
+		idx_->addEntry(ie);
 		return OK;
 	}
 
@@ -158,8 +157,7 @@ public: // CodecNative CRTP
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
-		assert(replaced < idx_->GetNumGames());
-		idx_->entries_[replaced] = ie;
+		idx_->replaceEntry(ie, replaced);
 		return OK;
 	}
 };
