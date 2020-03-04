@@ -152,16 +152,6 @@ public:
      */
     errorT WriteEntry(const IndexEntry* ie, gamenumT idx);
 
-    /**
-     * flush() - writes all cached data to the file
-     */
-    errorT flush() {
-        if (FilePtr == 0) return OK;
-        errorT errHeader = (Header.dirty_) ? WriteHeader() : OK;
-        errorT errSync = (FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
-        return (errHeader == OK) ? errSync : errHeader;
-    }
-
 private:
     void Init ();
     errorT Clear ();

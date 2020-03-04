@@ -42,10 +42,9 @@ void Index::Init ()
 
 errorT Index::Clear ()
 {
-    errorT res = flush();
     delete FilePtr;
     Init();
-    return res;
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

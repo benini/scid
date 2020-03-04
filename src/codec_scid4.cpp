@@ -389,7 +389,11 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 }
 
 errorT CodecSCID4::flush() {
-	errorT err = idx_->flush();
+	assert(idx_->FilePtr);
+	errorT errHeader = (idx_->Header.dirty_) ? idx_->WriteHeader() : OK;
+	errorT errSync = (idx_->FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
+	errorT err = (errHeader == OK) ? errSync : errHeader;
+
 	if (err == OK) {
 		// *** Compatibility ***
 		// Even if name's frequency is no longer used, it's necessary to
