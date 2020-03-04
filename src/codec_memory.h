@@ -33,6 +33,7 @@
  */
 class CodecMemory : public CodecNative<CodecMemory> {
 	VectorChunked<byte, 24> v_;
+	unsigned baseType_ = 0;
 
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 46,
@@ -52,13 +53,13 @@ public: // ICodecDatabase interface
 	std::vector<std::pair<const char*, std::string>>
 	getExtraInfo() const override {
 		std::vector<std::pair<const char*, std::string>> res;
-		res.emplace_back("type", std::to_string(idx_->Header.baseType));
+		res.emplace_back("type", std::to_string(baseType_));
 		return res;
 	}
 
 	errorT setExtraInfo(const char* tagname, const char* new_value) override {
 		if (std::strcmp(tagname, "type") == 0) {
-			idx_->Header.baseType = strGetUnsigned(new_value);
+			baseType_ = strGetUnsigned(new_value);
 			return OK;
 		}
 		return ERROR_CodecUnsupFeat;
