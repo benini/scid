@@ -45,31 +45,6 @@ errorT Index::Clear ()
     return OK;
 }
 
-errorT Index::WriteEntry(const IndexEntry* ie, gamenumT idx)
-{
-    if (idx > Header.numGames) return ERROR_BadArg;
-    if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
-
-    if (idx == Header.numGames) {
-        this->addEntry(*ie);
-        Header.dirty_ = true;
-    } else {
-        this->replaceEntry(*ie, idx);
-    }
-    if (FilePtr == NULL) return OK;
-
-    if ((seqWrite_ == 0) || (idx != seqWrite_ + 1)) {
-        std::streampos pos = INDEX_ENTRY_SIZE * idx + INDEX_HEADER_SIZE;
-        if (FilePtr->pubseekpos(pos) != pos) {
-            seqWrite_ = 0;
-            return ERROR_FileWrite;
-        }
-    }
-    errorT res = ie->Write (FilePtr, Header.version);
-    seqWrite_ = (res == OK) ? idx : 0;
-    return res;
-}
-
 //////////////////////////////////////////////////////////////////////
 //  EOF: index.cpp
 //////////////////////////////////////////////////////////////////////

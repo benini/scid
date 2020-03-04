@@ -196,11 +196,16 @@ public: // CodecNative interface
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_addIndexEntry(const IndexEntry& ie) {
-		auto nGames = idx_->GetNumGames();
+		if (idx_->fileMode_ == FMODE_ReadOnly)
+			return ERROR_FileMode;
+
+		const auto nGames = idx_->GetNumGames();
 		if (nGames >= LIMIT_NUMGAMES)
 			return ERROR_NumGamesLimit;
 
-		return idx_->WriteEntry(&ie, nGames);
+		idx_->addEntry(ie);
+		idx_->Header.dirty_ = true;
+		return writeEntry(ie, nGames);
 	}
 
 	/**
@@ -210,11 +215,28 @@ public: // CodecNative interface
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
-		return idx_->WriteEntry(&ie, replaced);
+		if (idx_->fileMode_ == FMODE_ReadOnly)
+			return ERROR_FileMode;
+
+		idx_->replaceEntry(ie, replaced);
+		return writeEntry(ie, replaced);
 	}
 
 private:
 	errorT readIndex(const Progress& progress);
+
+	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
+		if (idx_->seqWrite_ == 0 || (gnum != idx_->seqWrite_ + 1)) {
+			std::streampos pos = INDEX_ENTRY_SIZE * gnum + INDEX_HEADER_SIZE;
+			if (idx_->FilePtr->pubseekpos(pos) != pos) {
+				idx_->seqWrite_ = 0;
+				return ERROR_FileWrite;
+			}
+		}
+		errorT res = ie.Write(idx_->FilePtr, idx_->Header.version);
+		idx_->seqWrite_ = (res == OK) ? gnum : 0;
+		return res;
+	}
 };
 
 #endif

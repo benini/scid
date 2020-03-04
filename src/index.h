@@ -144,11 +144,6 @@ public:
         entries_[replaced] = ie;
     }
 
-    /**
-     * WriteEntry() - modify a game in the Index
-     */
-    errorT WriteEntry(const IndexEntry* ie, gamenumT idx);
-
 private:
     void Init ();
     errorT Clear ();
