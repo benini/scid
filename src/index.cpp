@@ -22,8 +22,6 @@
 #include "namebase.h"
 #include <cstring>
 
-static constexpr char INDEX_MAGIC[8] = "Scid.si";
-
 void Index::Init ()
 {
     Header.numGames  = 0;
@@ -44,115 +42,6 @@ errorT Index::Clear ()
 {
     delete FilePtr;
     Init();
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Index::CreateIndexFile():
-//      Creates and opens a new empty index file.
-//
-errorT
-Index::Create(const char* filename)
-{
-    ASSERT(filename != 0);
-
-    Clear();
-    FilePtr = new Filebuf;
-    std::string fname = filename;
-    fname += INDEX_SUFFIX;
-    //Check that the file does not exists and then create it
-    if (FilePtr->Open(fname.c_str(), FMODE_ReadOnly) == OK ||
-        FilePtr->Open(fname.c_str(), FMODE_Create) != OK) {
-        delete FilePtr;
-        FilePtr = NULL;
-        return ERROR_FileOpen;
-    }
-    fileMode_ = FMODE_Both;
-    return WriteHeader();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Index::Open():
-//      Open an index file and read the header.
-//
-errorT
-Index::Open (const char* filename, fileModeT fmode)
-{
-    ASSERT(filename != 0);
-
-    Clear();
-    if (fmode == FMODE_WriteOnly) return ERROR_FileMode;
-    FilePtr = new Filebuf;
-    std::string fname = filename;
-    fname += INDEX_SUFFIX;
-
-    if (FilePtr->Open (fname.c_str(), fmode) != OK) {
-        delete FilePtr;
-        FilePtr = NULL;
-        return ERROR_FileOpen;
-    }
-
-    char magic[8];
-    FilePtr->sgetn(magic, 8);
-    if (!std::equal(std::begin(magic), std::end(magic), std::begin(INDEX_MAGIC),
-                    std::end(INDEX_MAGIC))) {
-        delete FilePtr;
-        FilePtr = NULL;
-        return ERROR_BadMagic;
-    }
-
-    Header.version = FilePtr->ReadTwoBytes ();
-    if (Header.version < SCID_OLDEST_VERSION || Header.version > SCID_VERSION) {
-        delete FilePtr;
-        FilePtr = NULL;
-        return ERROR_FileVersion;
-    }
-    if (Header.version != SCID_VERSION && fmode != FMODE_ReadOnly) {
-        //Old versions must be opened readonly
-        delete FilePtr;
-        FilePtr = NULL;
-        return ERROR_FileMode;
-    }
-
-    Header.baseType = FilePtr->ReadFourBytes ();
-    Header.numGames = FilePtr->ReadThreeBytes ();
-    Header.autoLoad = FilePtr->ReadThreeBytes ();
-    FilePtr->sgetn(Header.description, SCID_DESC_LENGTH + 1);
-    Header.description[SCID_DESC_LENGTH] = 0;
-    if (Header.version >= 400) {
-        for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
-            FilePtr->sgetn(Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
-            Header.customFlagDesc[i][CUSTOM_FLAG_DESC_LENGTH] = 0;
-        }
-    } 
-
-    fileMode_ = fmode;
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Index::WriteHeader():
-//      Write the header to the open index file.
-//
-errorT
-Index::WriteHeader ()
-{
-    ASSERT(FilePtr != NULL);
-    if (FilePtr->pubseekpos(0) != std::streampos(0)) return ERROR_FileWrite;
-
-    seqWrite_ = 0;
-    std::streamsize n = 0;
-    n += FilePtr->sputn(INDEX_MAGIC, 8);
-    n += FilePtr->WriteTwoBytes (Header.version);
-    n += FilePtr->WriteFourBytes (Header.baseType);
-    n += FilePtr->WriteThreeBytes (Header.numGames);
-    n += FilePtr->WriteThreeBytes (Header.autoLoad);
-    n += FilePtr->sputn(Header.description, SCID_DESC_LENGTH + 1);
-    for (size_t i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
-        n += FilePtr->sputn(Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
-    }
-    if (n != INDEX_HEADER_SIZE || FilePtr->pubsync() == -1) return ERROR_FileWrite;
-    Header.dirty_ = false;
     return OK;
 }
 

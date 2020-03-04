@@ -240,6 +240,91 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
 	return OK;
 }
 
+/**
+ * An Index file starts with an header of 182 bytes containing:
+ * - index_magic (8 bytes): identifies the file format.
+ * - version (2 bytes): 300 or 400
+ * - baseType (4 bytes): e.g. tournament, theory, etc.
+ * - numGames (3 bytes): total number of games contained into the index.
+ * - autoLoad (3 bytes): number of the game to load at start
+ *                       (0=none, 1=1st, >numGames=last).
+ * - description (108 bytes): a null-terminated string describing the database.
+ * - flag1 description (9 bytes): a null-terminated string describing flag1.
+ * - flag2 description (9 bytes): a null-terminated string describing flag2.
+ * - flag3 description (9 bytes): a null-terminated string describing flag3.
+ * - flag4 description (9 bytes): a null-terminated string describing flag4.
+ * - flag5 description (9 bytes): a null-terminated string describing flag5.
+ * - flag6 description (9 bytes): a null-terminated string describing flag6.
+ */
+constexpr char INDEX_MAGIC[8] = "Scid.si";
+
+/// Read the header section of a SCIDv4 Index file into memory.
+/// @param indexFile: file handle positioned at the start of the Index file.
+/// @param fMode:     a valid file mode.
+/// @param header:    reference to the object where the data will be stored.
+/// @returns OK if successful or an error code.
+template <typename FileT, typename HeaderT>
+errorT readIndexHeader(FileT& indexFile, fileModeT fmode, HeaderT& header) {
+	constexpr versionT SCID_VERSION = 400; // Current file format version = 4.0
+	constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
+
+	char magic[8];
+	indexFile.sgetn(magic, 8);
+	if (!std::equal(std::begin(magic), std::end(magic), std::begin(INDEX_MAGIC),
+	                std::end(INDEX_MAGIC))) {
+		return ERROR_BadMagic;
+	}
+
+	header.version = indexFile.ReadTwoBytes();
+	if (header.version < SCID_OLDEST_VERSION || header.version > SCID_VERSION) {
+		return ERROR_FileVersion;
+	}
+	if (header.version != SCID_VERSION && fmode != FMODE_ReadOnly) {
+		// Old versions must be opened readonly
+		return ERROR_FileMode;
+	}
+
+	header.baseType = indexFile.ReadFourBytes();
+	header.numGames = indexFile.ReadThreeBytes();
+	header.autoLoad = indexFile.ReadThreeBytes();
+	indexFile.sgetn(header.description, SCID_DESC_LENGTH + 1);
+	header.description[SCID_DESC_LENGTH] = 0;
+	if (header.version >= 400) {
+		for (uint i = 0; i < CUSTOM_FLAG_MAX; i++) {
+			indexFile.sgetn(header.customFlagDesc[i],
+			                CUSTOM_FLAG_DESC_LENGTH + 1);
+			header.customFlagDesc[i][CUSTOM_FLAG_DESC_LENGTH] = 0;
+		}
+	}
+	return OK;
+}
+
+/// Write the header section of a SCIDv4 Index file.
+/// @param indexFile: file handle of the Index file.
+/// @param header:    reference to the object containing the header data.
+/// @returns OK if successful or an error code.
+template <typename FileT, typename HeaderT>
+errorT writeIndexHeader(FileT& indexFile, HeaderT& Header) {
+	if (indexFile.pubseekpos(0) != std::streampos(0))
+		return ERROR_FileWrite;
+
+	std::streamsize n = 0;
+	n += indexFile.sputn(INDEX_MAGIC, 8);
+	n += indexFile.WriteTwoBytes(Header.version);
+	n += indexFile.WriteFourBytes(Header.baseType);
+	n += indexFile.WriteThreeBytes(Header.numGames);
+	n += indexFile.WriteThreeBytes(Header.autoLoad);
+	n += indexFile.sputn(Header.description, SCID_DESC_LENGTH + 1);
+	for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
+		n += indexFile.sputn(Header.customFlagDesc[i],
+		                     CUSTOM_FLAG_DESC_LENGTH + 1);
+	}
+	if (n != INDEX_HEADER_SIZE || indexFile.pubsync() == -1)
+		return ERROR_FileWrite;
+
+	return OK;
+}
+
 } // namespace
 
 /**
@@ -355,12 +440,13 @@ void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
                             const Progress& progress, Index* idx,
                             NameBase* nb) {
-	if (filename == nullptr || idx == nullptr || nb == nullptr)
+	if (fMode == FMODE_WriteOnly || !filename || !idx || !nb)
 		return ERROR;
 	if (*filename == '\0')
 		return ERROR_FileOpen;
 
 	idx_ = idx;
+	idx_->Clear();
 	nb_ = nb;
 	filenames_.resize(3);
 	filenames_[0] = std::string(filename) + ".si4";
@@ -371,18 +457,41 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 	if (err != OK)
 		return err;
 
+	idx_->FilePtr = new Filebuf;
+	const char* indexFilename = filenames_[0].c_str();
 	if (fMode == FMODE_Create) {
-		err = idx->Create(filename);
+		idx_->fileMode_ = FMODE_Both;
+		// Check that the file does not exists
+		if (idx_->FilePtr->Open(indexFilename, FMODE_ReadOnly) == OK)
+			err = ERROR_FileOpen;
+
+		if (err == OK)
+			err = idx_->FilePtr->Open(indexFilename, FMODE_Create);
+
+		if (err == OK)
+			err = writeIndexHeader(*idx_->FilePtr, idx_->Header);
+
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
 			                    idx_->calcNameFreq(*nb_));
 		}
 	} else {
-		err = idx->Open(filename, fMode);
+		idx_->fileMode_ = fMode;
+		err = idx_->FilePtr->Open(indexFilename, fMode);
+
+		if (err == OK)
+			err = readIndexHeader(*idx_->FilePtr, fMode, idx_->Header);
+
 		if (err == OK)
 			err = namefileRead(filenames_[1].c_str(), fMode, *nb_);
+
 		if (err == OK)
 			err = readIndex(progress);
+	}
+
+	if (err != OK) {
+		delete idx_->FilePtr;
+		idx_->FilePtr = nullptr;
 	}
 
 	return err;
@@ -390,7 +499,13 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 
 errorT CodecSCID4::flush() {
 	assert(idx_->FilePtr);
-	errorT errHeader = (idx_->Header.dirty_) ? idx_->WriteHeader() : OK;
+	idx_->seqWrite_ = 0;
+	errorT errHeader = OK;
+	if (idx_->Header.dirty_) {
+		errHeader = writeIndexHeader(*idx_->FilePtr, idx_->Header);
+		if (errHeader == OK)
+			idx_->Header.dirty_ = false;
+	}
 	errorT errSync = (idx_->FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
 	errorT err = (errHeader == OK) ? errSync : errHeader;
 

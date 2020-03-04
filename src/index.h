@@ -38,7 +38,6 @@ class NameBase;
 //  Index:  Constants
 
 const char         INDEX_SUFFIX[]     = ".si4";
-const char         OLD_INDEX_SUFFIX[] = ".si3";
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
@@ -88,8 +87,6 @@ public:
     Index& operator=(const Index&);
     ~Index() { Clear(); }
 
-    errorT Open(const char* filename, fileModeT fmode);
-    errorT Create(const char* filename);
     errorT Close() { return Clear(); }
 
     const IndexEntry* GetEntry (gamenumT g) const {
@@ -155,7 +152,6 @@ public:
 private:
     void Init ();
     errorT Clear ();
-    errorT WriteHeader ();
 };
 
 
