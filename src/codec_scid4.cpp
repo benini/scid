@@ -446,7 +446,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		return ERROR_FileOpen;
 
 	idx_ = idx;
-	idx_->Clear();
+	idx_->Init();
 	nb_ = nb;
 	filenames_.resize(3);
 	filenames_[0] = std::string(filename) + ".si4";
@@ -457,19 +457,18 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 	if (err != OK)
 		return err;
 
-	idx_->FilePtr = new Filebuf;
 	const char* indexFilename = filenames_[0].c_str();
 	if (fMode == FMODE_Create) {
 		idx_->fileMode_ = FMODE_Both;
 		// Check that the file does not exists
-		if (idx_->FilePtr->Open(indexFilename, FMODE_ReadOnly) == OK)
+		if (idxfile_.Open(indexFilename, FMODE_ReadOnly) == OK)
 			err = ERROR_FileOpen;
 
 		if (err == OK)
-			err = idx_->FilePtr->Open(indexFilename, FMODE_Create);
+			err = idxfile_.Open(indexFilename, FMODE_Create);
 
 		if (err == OK)
-			err = writeIndexHeader(*idx_->FilePtr, idx_->Header);
+			err = writeIndexHeader(idxfile_, idx_->Header);
 
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
@@ -477,10 +476,10 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		}
 	} else {
 		idx_->fileMode_ = fMode;
-		err = idx_->FilePtr->Open(indexFilename, fMode);
+		err = idxfile_.Open(indexFilename, fMode);
 
 		if (err == OK)
-			err = readIndexHeader(*idx_->FilePtr, fMode, idx_->Header);
+			err = readIndexHeader(idxfile_, fMode, idx_->Header);
 
 		if (err == OK)
 			err = namefileRead(filenames_[1].c_str(), fMode, *nb_);
@@ -489,24 +488,18 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			err = readIndex(progress);
 	}
 
-	if (err != OK) {
-		delete idx_->FilePtr;
-		idx_->FilePtr = nullptr;
-	}
-
 	return err;
 }
 
 errorT CodecSCID4::flush() {
-	assert(idx_->FilePtr);
 	idx_->seqWrite_ = 0;
 	errorT errHeader = OK;
 	if (idx_->Header.dirty_) {
-		errHeader = writeIndexHeader(*idx_->FilePtr, idx_->Header);
+		errHeader = writeIndexHeader(idxfile_, idx_->Header);
 		if (errHeader == OK)
 			idx_->Header.dirty_ = false;
 	}
-	errorT errSync = (idx_->FilePtr->pubsync() != 0) ? ERROR_FileWrite : OK;
+	errorT errSync = (idxfile_.pubsync() != 0) ? ERROR_FileWrite : OK;
 	errorT err = (errHeader == OK) ? errSync : errHeader;
 
 	if (err == OK) {
@@ -573,13 +566,12 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 		return true;
 	};
 
-	auto idxFile = idx_->FilePtr;
 	auto version = idx_->Header.version;
 	auto nGames = idx_->GetNumGames();
 	idx_->entries_.resize(nGames);
 
 	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
-	for (gamenumT gNum = 0; idxFile->sgetc() != EOF; ++gNum) {
+	for (gamenumT gNum = 0; idxfile_.sgetc() != EOF; ++gNum) {
 		if (gNum == nGames)
 			return ERROR_CorruptData;
 
@@ -589,7 +581,7 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 		}
 
 		char buf[INDEX_ENTRY_SIZE];
-		if (idxFile->sgetn(buf, nBytes) != nBytes)
+		if (idxfile_.sgetn(buf, nBytes) != nBytes)
 			return ERROR_FileRead;
 
 		IndexEntry& ie = idx_->entries_[gNum];

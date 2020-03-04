@@ -34,6 +34,7 @@
  */
 class CodecSCID4 : public CodecNative<CodecSCID4> {
 	std::vector<std::string> filenames_;
+	Filebuf idxfile_;
 	FilebufAppend gfile_;
 	char gamecache_[1ULL << 17];
 
@@ -227,13 +228,14 @@ private:
 
 	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
 		if (idx_->seqWrite_ == 0 || (gnum != idx_->seqWrite_ + 1)) {
-			std::streampos pos = INDEX_ENTRY_SIZE * gnum + INDEX_HEADER_SIZE;
-			if (idx_->FilePtr->pubseekpos(pos) != pos) {
+			std::streampos pos = gnum;
+			pos = pos * INDEX_ENTRY_SIZE + INDEX_HEADER_SIZE;
+			if (idxfile_.pubseekpos(pos) != pos) {
 				idx_->seqWrite_ = 0;
 				return ERROR_FileWrite;
 			}
 		}
-		errorT res = ie.Write(idx_->FilePtr, idx_->Header.version);
+		errorT res = ie.Write(&idxfile_, idx_->Header.version);
 		idx_->seqWrite_ = (res == OK) ? gnum : 0;
 		return res;
 	}

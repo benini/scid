@@ -62,7 +62,6 @@ private:
     // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
     VectorChunked<IndexEntry, 16> entries_; // A two-level array of the entire index.
-    Filebuf*     FilePtr;       // filehandle for opened index file.
     fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
     int nInvalidNameId_;
     gamenumT seqWrite_;
@@ -83,11 +82,8 @@ private:
 
 public:
     Index()  { Init(); }
-    Index(const Index&);
-    Index& operator=(const Index&);
-    ~Index() { Clear(); }
 
-    errorT Close() { return Clear(); }
+    errorT Close() { Init(); return OK; }
 
     const IndexEntry* GetEntry (gamenumT g) const {
         ASSERT(g < GetNumGames());
@@ -146,7 +142,6 @@ public:
 
 private:
     void Init ();
-    errorT Clear ();
 };
 
 
