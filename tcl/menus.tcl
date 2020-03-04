@@ -548,6 +548,8 @@ proc menuUpdateBases {} {
   menuConfig .menu.db FileClose entryconfig -state $notClipbase
   menuConfig .menu.db ToolsExpFilter entryconfig -state $notEmpty
   menuConfig .menu.db FileMaintName entryconfig -state $canChange
+  menuConfig .menu.db.utils Cleaner          entryconfig -state $canChange
+  menuConfig .menu.db.utils StripTags        entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintDelete  entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintClass   entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintTwin    entryconfig -state $canChange

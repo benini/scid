@@ -31,7 +31,6 @@ void Index::Init ()
     Header.description[0] = 0;
     std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
     Header.dirty_ = false;
-    fileMode_ = FMODE_None;
     nInvalidNameId_ = 0;
     seqWrite_ = 0;
     entries_.resize(0);

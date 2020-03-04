@@ -73,9 +73,6 @@ public: // ICodecDatabase interface
 	}
 
 	errorT setExtraInfo(const char* tagname, const char* new_value) override {
-		if (idx_->fileMode_ == FMODE_ReadOnly)
-			return ERROR_FileMode;
-
 		if (std::strcmp(tagname, "type") == 0) {
 			idx_->Header.baseType = strGetUnsigned(new_value);
 
@@ -197,9 +194,6 @@ public: // CodecNative interface
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_addIndexEntry(const IndexEntry& ie) {
-		if (idx_->fileMode_ == FMODE_ReadOnly)
-			return ERROR_FileMode;
-
 		const auto nGames = idx_->GetNumGames();
 		if (nGames >= LIMIT_NUMGAMES)
 			return ERROR_NumGamesLimit;
@@ -216,9 +210,6 @@ public: // CodecNative interface
 	 * @returns OK if successful or an error code.
 	 */
 	errorT dyn_saveIndexEntry(const IndexEntry& ie, gamenumT replaced) {
-		if (idx_->fileMode_ == FMODE_ReadOnly)
-			return ERROR_FileMode;
-
 		idx_->replaceEntry(ie, replaced);
 		return writeEntry(ie, replaced);
 	}

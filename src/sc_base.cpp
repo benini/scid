@@ -137,8 +137,6 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	scidBaseT* targetBase = DBasePool::getBase(strGetUnsigned(argv[4]));
 	if (targetBase == 0)
 		return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
-	if (targetBase->isReadOnly())
-		return UI_Result(ti, ERROR_FileReadOnly);
 
 	errorT err = OK;
 	const HFilter filter = dbase->getFilter(argv[3]);

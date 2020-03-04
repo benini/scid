@@ -152,7 +152,7 @@ proc ::file::Open_ {{fName ""} } {
     if {$err} {
       ERROR::MessageBox "$fName\n"
     } else {
-      sc_base extra $::file::lastOpened type 3
+      catch { sc_base extra $::file::lastOpened type 3 }
       set ::initialDir(base) [file dirname "$fName"]
       ::recentFiles::add "$fName"
     }

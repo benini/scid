@@ -116,6 +116,9 @@ struct scidBaseT {
 
 	/// Store an extra information about the database (type, description, etc..)
 	errorT setExtraInfo(const char* tagname, const char* new_value) {
+		if (isReadOnly())
+			return ERROR_FileReadOnly;
+
 		const auto res = codec_->setExtraInfo(tagname, new_value);
 		return (res != OK) ? res : codec_->flush();
 	}
@@ -293,7 +296,9 @@ struct scidBaseT {
 	template <typename TOper>
 	std::pair<errorT, size_t>
 	transformIndex(HFilter hfilter, const Progress& progress, TOper entry_op) {
-		beginTransaction();
+		if (auto errModify = beginTransaction())
+			return {errModify, 0};
+
 		auto res = transformIndex_(hfilter, progress, entry_op);
 		auto err = endTransaction();
 		res.first = (res.first == OK) ? err : res.first;
@@ -335,7 +340,9 @@ struct scidBaseT {
 	template <typename TOper>
 	std::pair<errorT, size_t>
 	transformGames(HFilter hfilter, const Progress& progress, TOper entry_op) {
-		beginTransaction();
+		if (auto errModify = beginTransaction())
+			return {errModify, 0};
+
 		Game game;
 		size_t nCorrections = 0;
 		size_t iProg = 0;
@@ -412,7 +419,7 @@ private:
 	/// This function must be called before modifying the games of the database.
 	/// Currently this function do not guarantees that the database is not
 	/// altered in case of errors.
-	void beginTransaction();
+	errorT beginTransaction();
 
 	/// Update caches and flush the database's files.
 	/// This function must be called after changing one or more games.
@@ -481,7 +488,8 @@ std::pair<errorT, size_t>
 scidBaseT::transformNames(nameT nt, HFilter hfilter, const Progress& progress,
                           const std::vector<std::string>& newNames,
                           TInitFunc initFunc, TMapFunc getNewID) {
-	beginTransaction();
+	if (auto errModify = beginTransaction())
+		return {errModify, 0};
 
 	std::vector<idNumberT> nameIDs(newNames.size());
 	auto it = nameIDs.begin();

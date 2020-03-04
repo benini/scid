@@ -1182,7 +1182,9 @@ proc doCleaner {} {
     mtoolAdd $t "$count: $::tr(DeleteTwins)..."
     incr count
     if {$twinSettings(undelete) == "Yes"} {
-      sc_base gameflag [sc_base current] all unset del
+      if {[catch {sc_base gameflag [sc_base current] all unset del}]} {
+        $t insert end "   [ERROR::getErrorMsg]\n"
+      }
     }
     if {[catch {sc_base duplicates [sc_base current] \
             -colors $twinSettings(colors) \

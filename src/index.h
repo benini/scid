@@ -62,7 +62,6 @@ private:
     // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
     VectorChunked<IndexEntry, 16> entries_; // A two-level array of the entire index.
-    fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
     int nInvalidNameId_;
     gamenumT seqWrite_;
 

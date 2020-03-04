@@ -144,10 +144,14 @@ void scidBaseT::clear() {
 	}
 }
 
-void scidBaseT::beginTransaction() {
+errorT scidBaseT::beginTransaction() {
+	if (isReadOnly())
+		return ERROR_FileReadOnly;
+
 	for (auto& sortCache : sortCaches_) {
 		sortCache.second->prepareForChanges();
 	}
+	return OK;
 }
 
 errorT scidBaseT::endTransaction(gamenumT gNum) {
@@ -171,10 +175,9 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 }
 
 errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
-	if (isReadOnly())
-		return ERROR_FileReadOnly;
+	if (auto errModify = beginTransaction())
+		return errModify;
 
-	beginTransaction();
 	errorT err = (replacedGameId < numGames())
 	                 ? codec_->saveGame(game, replacedGameId)
 	                 : codec_->addGame(game);
@@ -186,9 +189,10 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 	ASSERT(srcBase != 0);
 	ASSERT(filter != 0);
 	if (srcBase == this) return ERROR_BadArg;
-	if (isReadOnly()) return ERROR_FileReadOnly;
 
-	beginTransaction();
+	if (auto errModify = beginTransaction())
+		return errModify;
+
 	errorT err = OK;
 	size_t iProgress = 0;
 	size_t totGames = filter->size();
@@ -221,10 +225,8 @@ errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
                               std::string& errorMsg) {
 	ASSERT(dbtype == ICodecDatabase::PGN);
 
-	if (isReadOnly())
-		return ERROR_FileReadOnly;
-
-	beginTransaction();
+	if (auto errModify = beginTransaction())
+		return errModify;
 
 	CodecPgn pgn;
 	auto res = pgn.open(filename, FMODE_ReadOnly);
@@ -257,7 +259,10 @@ errorT scidBaseT::setFlag(bool value, uint flag, uint gNum) {
 
 	IndexEntry ie = *getIndexEntry(gNum);
 	ie.SetFlag(flag, value);
-	beginTransaction();
+
+	if (auto errModify = beginTransaction())
+		return errModify;
+
 	const auto res = codec_->saveIndexEntry(ie, gNum);
 	const auto err = endTransaction(gNum);
 	return res != OK ? res : err;
@@ -579,10 +584,12 @@ errorT scidBaseT::compact(const Progress& progress) {
 	std::stable_sort(sort.begin(), sort.end());
 
 	//3) Copy the Index Header
-	tmp.beginTransaction();
 	auto extraInfo = getExtraInfo();
-	errorT err_Header = OK;
+	errorT err_Header = tmp.beginTransaction();
 	for (auto& pair : extraInfo) {
+		if (err_Header != OK)
+			break;
+
 		if (std::strcmp(pair.first, "autoload") == 0) {
 			gamenumT autoloadOld = strGetUnsigned(pair.second.c_str());
 			size_t autoloadNew = 1;
@@ -595,8 +602,6 @@ errorT scidBaseT::compact(const Progress& progress) {
 			pair.second = std::to_string(autoloadNew);
 		}
 		err_Header = tmp.codec_->setExtraInfo(pair.first, pair.second.c_str());
-		if (err_Header != OK)
-			break;
 	}
 
 	//4) Copy the games

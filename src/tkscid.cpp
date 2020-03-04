@@ -1132,7 +1132,6 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     if (!ecoBook) { return errorResult (ti, "No ECO Book is loaded."); }
     if (! db->inUse) return errorResult (ti, ERROR_FileNotOpen);
-    if (db->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
 
     int option = -1;
     enum {ECO_NOCODE, ECO_ALL, ECO_DATE, ECO_FILTER};

@@ -459,7 +459,6 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 
 	const char* indexFilename = filenames_[0].c_str();
 	if (fMode == FMODE_Create) {
-		idx_->fileMode_ = FMODE_Both;
 		// Check that the file does not exists
 		if (idxfile_.Open(indexFilename, FMODE_ReadOnly) == OK)
 			err = ERROR_FileOpen;
@@ -475,7 +474,6 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			                    idx_->calcNameFreq(*nb_));
 		}
 	} else {
-		idx_->fileMode_ = fMode;
 		err = idxfile_.Open(indexFilename, fMode);
 
 		if (err == OK)
