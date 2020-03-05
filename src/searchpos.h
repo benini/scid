@@ -122,7 +122,8 @@ public:
 
 	/// Reset @e filter to include only the games that reached the searched
 	/// position in their main line.
-	bool setFilter(scidBaseT* base, HFilter& filter, const Progress& progress) {
+	bool setFilter(scidBaseT const& base, HFilter& filter,
+	               const Progress& progress) const {
 		if (toMove_ == BLACK)
 			return SetFilter<BLACK>(base, filter, progress);
 
@@ -133,12 +134,12 @@ public:
 	}
 
 private:
-	bool setFilterStdStart(scidBaseT* base, HFilter& filter) {
+	bool setFilterStdStart(scidBaseT const& base, HFilter& filter) const {
 		filter->includeAll();
-		for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
-			const IndexEntry* ie = base->getIndexEntry(i);
+		for (gamenumT i = 0, n = base.numGames(); i < n; i++) {
+			const IndexEntry* ie = base.getIndexEntry(i);
 			if (ie->GetStartFlag()) {
-				int ply = base->getGame(ie).search<WHITE>(board_, nPieces_);
+				int ply = base.getGame(ie).search<WHITE>(board_, nPieces_);
 				filter.set(i, (ply > 255) ? 255 : ply);
 			}
 		}
@@ -146,16 +147,17 @@ private:
 	}
 
 	template <colorT TOMOVE>
-	bool SetFilter(scidBaseT* base, HFilter& filter, const Progress& prg) {
+	bool SetFilter(scidBaseT const& base, HFilter& filter,
+	               const Progress& prg) const {
 		filter->clear();
 		long long progress = 0;
-		for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
-			const IndexEntry* ie = base->getIndexEntry(i);
+		for (gamenumT i = 0, n = base.numGames(); i < n; i++) {
+			const IndexEntry* ie = base.getIndexEntry(i);
 			int ply = index_match(*ie);
 			if (ply >= 0) {
 				filter.set(i, static_cast<byte>(ply + 1));
 			} else if (ply == -1) {
-				ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
+				ply = base.getGame(ie).search<TOMOVE>(board_, nPieces_);
 				if (ply != 0)
 					filter.set(i, (ply > 255) ? 255 : ply);
 

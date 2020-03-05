@@ -1439,7 +1439,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 //TODO: use a dedicated filter instead of treeFilter
                 HFilter maskfilter = HFilter(dbase->treeFilter);
                 std::string val;
-                if (fp.setFilter(dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
+                if (fp.setFilter(*dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
                     val = "tree";
                 }
                 return UI_Result(ti, OK, val);
@@ -3602,7 +3602,7 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     HFilter filter = base->getFilter(filtername);
     dateT currentDate = g->GetDate();
     while (g->MoveForward() == OK) {
-        SearchPos(g->GetCurrentPos()).setFilter(base, filter, Progress());
+        SearchPos(g->GetCurrentPos()).setFilter(*base, filter, Progress());
         int count = 0;
         for (uint i=0, n = base->numGames(); i < n; i++) {
             if (filter.get(i) == 0) continue;
