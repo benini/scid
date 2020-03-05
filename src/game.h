@@ -436,7 +436,7 @@ public:
 
     errorT    GetPartialMoveList (DString * str, uint plyCount);
 
-    bool      MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * max,
+    bool      MaterialMatch (bool PromotionsFlag, ByteBuffer& buf, byte * min, byte * max,
                              patternT * pattern, int minPly, int maxPly,
                              int matchLength,
                              bool oppBishops, bool sameBishops,

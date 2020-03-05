@@ -1114,26 +1114,17 @@ int patternsMatch(const Position* pos, patternT* ptn) {
 //      of each type of piece.
 //
 bool
-Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * max,
+Game::MaterialMatch (bool PromotionsFlag, ByteBuffer& buf, byte * min, byte * max,
                      patternT * patterns, int minPly, int maxPly,
                      int matchLength, bool oppBishops, bool sameBishops,
                      int minDiff, int maxDiff)
 {
-    // If buf is NULL, the game is in memory. Otherwise, Decode only
-    // the necessary moves:
-    errorT err = OK;
-
-    if (buf == NULL) {
-        MoveToStart();
-    } else {
-        err = DecodeSkipTags(buf);
-    }
-
     ASSERT (matchLength >= 1);
 
     int matchesNeeded = matchLength;
     int matDiff;
     uint plyCount = 0;
+    errorT err = DecodeSkipTags(&buf);
     while (err == OK) {
         bool foundMatch = false;
         byte wMinor, bMinor;
@@ -1228,14 +1219,9 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer * buf, byte * min, byte * m
         if (! PromotionsFlag) { return false; }
 
       Next_Move:
-        if (buf == NULL) {
-            MoveForward();
-            if (CurrentMove->marker == END_MARKER) {
-                err = ERROR_EndOfMoveList;
-            }
-        } else {
+        {
             simpleMoveT sm;
-            err = DecodeNextMove(buf, sm);
+            err = DecodeNextMove(&buf, sm);
             if (err == OK) {
                 CurrentPos->DoSimpleMove(&sm);
             }

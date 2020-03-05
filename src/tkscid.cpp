@@ -8904,14 +8904,14 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (possibleMatch) {
             auto bbuf_clone = bbuf;
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
-            result = g->MaterialMatch (hasPromo, &bbuf_clone, min, max, patt,
+            result = g->MaterialMatch (hasPromo, bbuf_clone, min, max, patt,
                                        minPly, maxPly, matchLength,
                                        oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
         }
         if (result == 0  &&  possibleFlippedMatch) {
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
-            result = g->MaterialMatch (hasPromo, &bbuf, minFlipped, maxFlipped,
+            result = g->MaterialMatch (hasPromo, bbuf, minFlipped, maxFlipped,
                                        flippedPatt, minPly, maxPly,
                                        matchLength, oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
