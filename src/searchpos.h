@@ -120,6 +120,33 @@ public:
 		return -1;
 	}
 
+	/// Search the position in the main line of the specified game.
+	/// @returns a std::pair containg the ply where the position was reached and
+	///          the next move. Returns ply==0 if the position was not found.
+	/// TODO: filling the SAN info of the returned move may be unnecessary
+	std::pair<int, FullMove> match(scidBaseT const& base, gamenumT gnum) const {
+		const IndexEntry* ie = base.getIndexEntry(gnum);
+		int ply = index_match(*ie);
+		if (ply < -1)
+			return {};
+
+		if (ply >= 0) {
+			auto move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
+			if (!move) // Matched at the end of the stored line
+				move = base.getGame(ie).getMove(ply);
+
+			return {ply + 1, move};
+		}
+
+		auto gameview = base.getGame(ie);
+		ply = (toMove_ == WHITE) ? gameview.search<WHITE>(board_, nPieces_)
+		                         : gameview.search<BLACK>(board_, nPieces_);
+		if (ply > 0)
+			return {ply, gameview.getMove(0)};
+
+		return {};
+	}
+
 	/// Reset @e filter to include only the games that reached the searched
 	/// position in their main line.
 	bool setFilter(scidBaseT const& base, HFilter& filter,
