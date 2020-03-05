@@ -7804,7 +7804,6 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
-    uint skipcount = 0;
 
     // 1. Cache Search
     bool foundInCache = false;
@@ -7831,7 +7830,6 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         uint hpSig = pos->GetHPSig();
         simpleMoveT sm;
         base->treeFilter->Fill (0); // Reset the filter to be empty
-        skipcount = 0;
 
     	// 3. Set up the stored line code matches:
     	StoredLine stored_line(pos->GetBoard(), pos->GetToMove());
@@ -7847,7 +7845,7 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (inFilterOnly && filter.get(i) == 0) { continue; }
 
     		const IndexEntry* ie = base->getIndexEntry(i);
-    		if (ie->GetLength() == 0) { skipcount++; continue; }
+    		if (ie->GetLength() == 0) { continue; }
     		// We do not skip deleted games, so next line is commented out:
     		// if (ie->GetDeleteFlag()) { skipcount++; continue; }
 
@@ -7855,7 +7853,7 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
             // Check the stored line result for this game:
             int ply = stored_line.match(ie->GetStoredLineCode());
-            if (ply < -1) { skipcount++; continue; }
+            if (ply < -1) { continue; }
             if (ply >= 0) {
                 FullMove m = StoredLine::getMove(ie->GetStoredLineCode(), ply);
                 if (m) {
@@ -7879,7 +7877,6 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                      bd[A8]==BR  &&  bd[B8]==BN  &&  bd[C8]==BB  &&  bd[D8]==BQ  &&
                      bd[E8]==BK  &&  bd[F8]==BB  &&  bd[G8]==BN  &&  bd[H8]==BR);
                 if (!isStartPos  &&  ie->GetNumHalfMoves() == 0) {
-                    skipcount++;
                     continue;
                 }
 
@@ -7895,7 +7892,6 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                                 ie->GetPromotionsFlag(),
                                 ie->GetUnderPromoFlag()))
                 {
-                    skipcount++;
                     continue;
                 }
 
@@ -8323,8 +8319,6 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         msigFlip = matsig_Make (posFlip->GetMaterial());
     }
 
-    uint skipcount = 0;
-
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
         filter->includeAll();
@@ -8343,12 +8337,10 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
             if (filter.get(gameNum) == 0) {
-                skipcount++;
                 continue;
             }
         } else /* filterOp==FILTEROP_OR*/ { // Skip any games in the filter:
             if (filter.get(gameNum) != 0) {
-                skipcount++;
                 continue;
             } else {
                 // OK, this game is NOT in the filter.
@@ -8361,7 +8353,6 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
         if (ie->GetLength() == 0) {
             // Skip games with no gamefile record:
             filter.set (gameNum, 0);
-            skipcount++;
             continue;
         }
 
@@ -8409,7 +8400,6 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
 
         if (!possibleMatch  &&  !possibleFlippedMatch) {
             filter.set (gameNum, 0);
-            skipcount++;
             continue;
         }
 
@@ -8477,12 +8467,7 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
              static_cast<unsigned long>(startFilterCount),
              centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
-#ifdef SHOW_SKIPPED_STATS
-    sprintf(temp, "  Skipped %u games.", skipcount);
-    Tcl_AppendResult (ti, temp, NULL);
-#endif
-
-return TCL_OK;
+    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8800,7 +8785,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
 
-    uint skipcount = 0;
     char temp [250];
     Game * g = scratchGame;
     HFilter filter = db->getFilter("dbfilter");
@@ -8821,12 +8805,10 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
             if (filter.get(gameNum) == 0) {
-                skipcount++;
                 continue;
             }
         } else /* filterOp == FILTEROP_OR*/ { // Skip any games in the filter:
             if (filter.get(gameNum) != 0) {
-                skipcount++;
                 continue;
             }
             // OK, this game is NOT in the filter.
@@ -8837,7 +8819,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         const IndexEntry* ie = db->getIndexEntry(gameNum);
         if (ie->GetLength() == 0) {  // Skip games with no gamefile record
             filter.set (gameNum, 0);
-            skipcount++;
             continue;
         }
 
@@ -8845,7 +8826,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             // Skip games without enough moves to match, if they
             // have the standard starting position:
             filter.set (gameNum, 0);
-            skipcount++;
             continue;
         }
 
@@ -8890,7 +8870,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         if (!possibleMatch  &&  !possibleFlippedMatch) {
             filter.set (gameNum, 0);
-            skipcount++;
             continue;
         }
 
@@ -8943,11 +8922,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
              static_cast<unsigned long>(startFilterCount),
              centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
-#ifdef SHOW_SKIPPED_STATS
-    sprintf(temp, "  Skipped %u games.", skipcount);
-    Tcl_AppendResult (ti, temp, NULL);
-#endif
-
     return TCL_OK;
 }
 
