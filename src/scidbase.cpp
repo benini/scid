@@ -581,7 +581,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 		order |= ie->GetFinalMatSig() & 0xFFFFFF;
 		sort.emplace_back(order, i);
 	}
-	std::stable_sort(sort.begin(), sort.end());
+	if (sort.size() > 10000) // Reorder only larger databases
+		std::stable_sort(sort.begin(), sort.end());
 
 	//3) Copy the Index Header
 	auto extraInfo = getExtraInfo();
