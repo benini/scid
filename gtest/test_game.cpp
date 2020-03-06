@@ -112,6 +112,36 @@ TEST(Test_Game, locationInPGN) {
 	}
 }
 
+TEST(Test_Game, MoveToStart_MoveToEnd) {
+	scidBaseT dbase;
+	ASSERT_EQ(OK, dbase.open("PGN", FMODE_Both, gameUTF8));
+	auto ie = dbase.getIndexEntry_bounds(0);
+	ASSERT_NE(nullptr, ie);
+
+	auto randomEngine = std::mt19937(std::random_device{}());
+	auto distribution = std::uniform_int_distribution<>{2, 500};
+	Game game;
+	ASSERT_EQ(OK, dbase.getGame(*ie, game));
+
+	for (int i = 0; i < 10; i++) {
+		game.MoveToLocationInPGN(distribution(randomEngine));
+		ASSERT_NE(0, game.GetCurrentPly());
+		game.MoveToStart(); // Move to start from any position
+		EXPECT_EQ(0, game.GetCurrentPly());
+	}
+	game.MoveToStart(); // Move to start from start
+	EXPECT_EQ(0, game.GetCurrentPly());
+	game.MoveToEnd(); // Move to end from start
+	EXPECT_EQ(149, game.GetCurrentPly());
+	game.MoveToEnd(); // Move to end from end
+	EXPECT_EQ(149, game.GetCurrentPly());
+	for (int i = 0; i < 10; i++) {
+		game.MoveToLocationInPGN(distribution(randomEngine));
+		game.MoveToEnd(); // Move to end from any position
+		EXPECT_EQ(149, game.GetCurrentPly());
+	}
+}
+
 TEST(Test_Game, gamevisit) {
 	Game game;
 
