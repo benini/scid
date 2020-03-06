@@ -140,7 +140,18 @@ public:
     }
 
 private:
-    void Init ();
+    void Init() {
+        Header.numGames = 0;
+        Header.version = SCID_VERSION;
+        Header.baseType = 0;
+        Header.autoLoad = 1;
+        Header.description[0] = 0;
+        std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
+        Header.dirty_ = false;
+        nInvalidNameId_ = 0;
+        seqWrite_ = 0;
+        entries_.resize(0);
+    }
 };
 
 

@@ -173,7 +173,6 @@ SCID_EXECS = \
 SCID_OBJS = \
 	$(TMP_DIR)\codec_scid4.obj \
 	$(TMP_DIR)\game.obj \
-	$(TMP_DIR)\index.obj \
 	$(TMP_DIR)\matsig.obj \
 	$(TMP_DIR)\misc.obj \
 	$(TMP_DIR)\position.obj \
