@@ -3005,7 +3005,7 @@ proc sendFENtoEngineUCI {engine_n  {delay 0}} {
         append cmd { [ } " after $delay sendFENtoEngineUCI $engine_n $delay " { ] }
         set analysis(after$engine_n) [eval [list after idle $cmd]]
     } else {
-        sendToEngine $engine_n "position fen $analysis(fen$engine_n)"
+        sendToEngine $engine_n "$analysis(movelist$engine_n)"
         sendToEngine $engine_n "go infinite"
     }
 }
@@ -3034,7 +3034,7 @@ proc updateAnalysis {{n 1}} {
         }
         set analysis(fen$n) [sc_pos fen]
         set analysis(maxmovenumber$n) 0
-        set analysis(movelist$n) [sc_game moves coord list]
+        set analysis(movelist$n) [sc_game UCI_currentPos]
         set analysis(nonStdStart$n) [sc_game startBoard]
     } else {
         #TODO: remove 0.3s delay even for other engines
