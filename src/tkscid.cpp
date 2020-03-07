@@ -1897,7 +1897,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
         "startBoard", "strip",
-        "tags",       "truncate",
+        "tags",       "truncate",   "UCI_currentPos",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
     enum {
@@ -1907,7 +1907,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
         GAME_STARTBOARD, GAME_STRIP,
-        GAME_TAGS,       GAME_TRUNCATE,
+        GAME_TAGS,       GAME_TRUNCATE,   GAME_UCI_CURRENTPOS,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
@@ -2011,6 +2011,10 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->gameAltered = true;
         language = old_language;
         break;
+
+    case GAME_UCI_CURRENTPOS:
+        return UI_Result(ti, OK, db->game->currentPosUCI());
+
     case GAME_UNDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
             return UI_Result(ti, OK, (uint) db->gameAlterations.undoSize());

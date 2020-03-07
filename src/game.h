@@ -285,6 +285,8 @@ public:
     Position* GetCurrentPos() { // Deprecated, use the const version
         return CurrentPos.get();
     }
+    /// @return an "UCI position" string that leads to the current position
+    std::string currentPosUCI() const;
     simpleMoveT* GetCurrentMove() { // Deprecated
         return CurrentMove->endMarker() ? nullptr : &CurrentMove->moveData;
     }

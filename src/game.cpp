@@ -880,6 +880,31 @@ unsigned Game::GetPgnOffset() const {
 	return res;
 }
 
+std::string Game::currentPosUCI() const {
+	std::string res = "position startpos moves";
+	char FEN[256];
+	if (HasNonStandardStart(FEN)) {
+		res.replace(9, 4, "fen ");
+		res.replace(13, 4, FEN);
+	}
+
+	std::vector<const moveT*> moves;
+	const moveT* move = CurrentMove;
+	while ((move = move->getPrevMove())) {
+		moves.emplace_back(move);
+	}
+
+	const auto allocSpeedup = res.size();
+	res.resize(allocSpeedup + moves.size() * 6);
+	auto it = res.data() + allocSpeedup;
+	for (auto m = moves.crbegin(), end = moves.crend(); m != end; ++m) {
+		*it++ = ' ';
+		it = (*m)->moveData.toLongNotation(it);
+	}
+	res.resize(std::distance(res.data(), it)); // shrink
+	return res;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // The following functions modify the moves graph in order to add or delete
 // moves. Promoting variations also modifies the moves graph.

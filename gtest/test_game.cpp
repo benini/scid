@@ -268,3 +268,56 @@ TEST(Test_Game, encodeFEN) {
 		EXPECT_STREQ(kiwipete, str);
 	}
 }
+
+TEST(Test_Game, currentPosUCI_startpos) {
+	std::string_view pgn = "1.d4 (1.e4 e5 ( 1...c5)) (1.c4) 1...d5 2.c4";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	const std::pair<unsigned, const char*> expected[] = {
+	    {0, "position startpos moves"},
+	    {1, "position startpos moves"},
+	    {2, "position startpos moves d2d4"},
+	    {3, "position startpos moves"},
+	    {4, "position startpos moves e2e4"},
+	    {5, "position startpos moves e2e4 e7e5"},
+	    {6, "position startpos moves e2e4"},
+	    {7, "position startpos moves e2e4 c7c5"},
+	    {8, "position startpos moves"},
+	    {9, "position startpos moves c2c4"},
+	    {10, "position startpos moves d2d4 d7d5"},
+	    {11, "position startpos moves d2d4 d7d5 c2c4"}};
+	for (auto [pos, str] : expected) {
+		game.MoveToLocationInPGN(pos);
+		EXPECT_EQ(str, game.currentPosUCI());
+	}
+}
+
+TEST(Test_Game, currentPosUCI_fen) {
+	std::string_view pgn =
+	    "[FEN 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198]\n"
+	    "198.Kd2 ( 198.Nxd3 a1=R+ 199.Kd2 cxd3 )198...a1=Q 199.Ke3 Qe1+ 0-1";
+
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	const std::pair<unsigned, const char*> expected[] = {
+	    // clang-format off
+	    {0, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves"},
+	    {1, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves"},
+	    {2, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves c1d2"},
+	    {3, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves"},
+	    {4, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves f2d3"},
+	    {5, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves f2d3 a2a1r"},
+	    {6, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves f2d3 a2a1r c1d2"},
+	    {7, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves f2d3 a2a1r c1d2 c4d3"},
+	    {8, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves c1d2 a2a1q"},
+	    {9, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves c1d2 a2a1q d2e3"},
+	    {10, "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves c1d2 a2a1q d2e3 a1e1"}
+	    // clang-format on
+	};
+	for (auto [pos, str] : expected) {
+		game.MoveToLocationInPGN(pos);
+		EXPECT_EQ(str, game.currentPosUCI());
+	}
+}

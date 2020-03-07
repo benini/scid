@@ -35,7 +35,7 @@ struct simpleMoveT
 {
     squareT  from;
     squareT  to;
-    pieceT   promote;
+    pieceT   promote; // EMPTY if not a promotion, type (no color) otherwise
     pieceT   movingPiece;
     byte     pieceNum;
     byte     capturedNum;
@@ -62,6 +62,28 @@ struct simpleMoveT
 				return 2;
 		}
 		return 0;
+	}
+
+	/// Converts the move to long algebraic notation.
+	/// @return a pointer one past the last char written.
+	template <typename OutputIt> OutputIt toLongNotation(OutputIt dest) const {
+		if (from == to) {
+			// UCI standard for null move
+			*dest++ = '0';
+			*dest++ = '0';
+			*dest++ = '0';
+			*dest++ = '0';
+		} else {
+			*dest++ = square_FyleChar(from);
+			*dest++ = square_RankChar(from);
+			*dest++ = square_FyleChar(to);
+			*dest++ = square_RankChar(to);
+			if (promote != EMPTY) {
+				constexpr const char promoChars[] = "  qrbn ";
+				*dest++ = promoChars[piece_Type(promote)];
+			}
+		}
+		return dest;
 	}
 
 	bool operator<(const simpleMoveT& b) const {
