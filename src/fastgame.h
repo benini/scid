@@ -107,7 +107,7 @@ public:
 	}
 
 	/// Change the square position of the piece with index @e idx
-	void move(colorT color, int idx, squareT to) {
+	void changeSq(colorT color, int idx, squareT to) {
 		ASSERT(color == 0 || color == 1);
 		ASSERT(idx >= 0 && idx < 16);
 
@@ -150,6 +150,8 @@ class FastBoard {
 	uint8_t board_[64];
 	MaterialCount mt_;
 	PieceList pieces_;
+	uint8_t castlingRook_[2][2]; // [WHITE|BLACK][long|short] the idx of the
+	                             // rooks that can castle. 0 if none
 
 	enum { EMPTY_SQ_ = 0xFF };
 
@@ -164,6 +166,7 @@ public:
 
 	void Init(const Position& pos) {
 		std::fill_n(board_, 64, EMPTY_SQ_);
+		std::fill_n(*castlingRook_, 4, 0);
 
 		for (auto color : {WHITE, BLACK}) {
 			const auto pos_count = pos.GetCount(color);
@@ -175,6 +178,17 @@ public:
 					pieces_.set(color, idx, sq, piece_type);
 					board_[sq] = idx;
 					mt_.incr(color, piece_type);
+
+					if (piece_type == ROOK &&
+					    square_Rank(sq) == rank_Relative(color, RANK_1)) {
+						auto oldIdx = castlingRook_[color][0];
+						if (!oldIdx || sq < pieces_.getSquare(color, oldIdx))
+							castlingRook_[color][0] = idx;
+
+						oldIdx = castlingRook_[color][1];
+						if (!oldIdx || sq > pieces_.getSquare(color, oldIdx))
+							castlingRook_[color][1] = idx;
+					}
 				} else {
 					pieces_.set(color, idx, 0, INVALID_PIECE);
 				}
@@ -213,28 +227,29 @@ public:
 		return pieces_.getPieceType(color, idx);
 	}
 
-	// TODO: error detection
+	/// The king and the rook are moved to the castle squares (even if they were
+	/// no longer in their starting squares).
+	/// @returns the previous position of the rook on success.
+	///          On error returns the king's square (no piece is moved).
 	template <colorT color> squareT castle(bool king_side) {
-		const squareT black = (color == WHITE) ? 0 : 56;
-		squareT king_to, rook_from, rook_to;
-		if (king_side) { // King Side
-			king_to = black + G1;
-			rook_from = black + H1;
-			rook_to = black + F1;
-		} else { // Queen Side
-			king_to = black + C1;
-			rook_from = black + A1;
-			rook_to = black + D1;
-		}
-		const uint8_t rook_idx = board_[rook_from];
-		const auto king_idx = pieces_.getKingIdx();
+		const squareT king_to = king_side ? square_Relative(color, G1)
+		                                  : square_Relative(color, C1);
+		const squareT rook_to = king_side ? square_Relative(color, F1)
+		                                  : square_Relative(color, D1);
+		const int king_idx = pieces_.getKingIdx();
 		const squareT king_from = pieces_.getSquare(color, king_idx);
-		pieces_.move(color, rook_idx, rook_to);
-		pieces_.move(color, king_idx, king_to);
-		board_[rook_to] = rook_idx;
-		board_[king_to] = king_idx;
+		const int rook_idx = castlingRook_[color][king_side ? 1 : 0];
+		const squareT rook_from = pieces_.getSquare(color, rook_idx);
+
+		if (pieces_.getPieceType(color, rook_idx) != ROOK)
+			return king_from; // No rook or captured
+
+		pieces_.changeSq(color, rook_idx, rook_to);
+		pieces_.changeSq(color, king_idx, king_to);
 		board_[rook_from] = EMPTY_SQ_;
 		board_[king_from] = EMPTY_SQ_;
+		board_[rook_to] = rook_idx;
+		board_[king_to] = king_idx;
 		return rook_from;
 	}
 
@@ -247,7 +262,7 @@ public:
 		}
 		const auto from = pieces_.getSquare(color, idx);
 		board_[from] = EMPTY_SQ_;
-		pieces_.move(color, idx, to);
+		pieces_.changeSq(color, idx, to);
 		return remove<1 - color>(to, idx);
 	}
 
@@ -264,6 +279,11 @@ public:
 		if (oldIdx != lastvalid_idx) {
 			squareT moved_sq = pieces_.remove(color, oldIdx, lastvalid_idx);
 			board_[moved_sq] = oldIdx;
+
+			for (auto& cRook : castlingRook_[color]) {
+				if (cRook == lastvalid_idx)
+					cRook = oldIdx;
+			}
 		}
 		return removed_pt;
 	}
@@ -425,22 +445,28 @@ public:
 
 	std::string getMoveSAN(int ply_to_skip, int count) {
 		std::stringstream res;
+		const auto ply_num = (cToMove_ == WHITE)? 2 : 3;
 		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
 				move = DecodeNextMove <FullMove, WHITE>();
 				if (!move)
 					break;
-				if (ply < ply_to_skip) continue;
-				if (ply > ply_to_skip) res << "  ";
-				res << (1 + ply/2) << ".";
+				if (ply < ply_to_skip)
+					continue;
+				if (ply > ply_to_skip)
+					res << "  ";
+				res << (ply_num + ply) / 2 << ".";
 			} else {
 				move = DecodeNextMove <FullMove, BLACK>();
 				if (!move)
 					break;
-				if (ply < ply_to_skip) continue;
-				if (ply == ply_to_skip) res << (1 + ply/2) << "...";
-				else res << " ";
+				if (ply < ply_to_skip)
+					continue;
+				if (ply == ply_to_skip)
+					res << (ply_num + ply) / 2 << "...";
+				else
+					res << " ";
 			}
 			board_.fillSANInfo(move);
 			res << move.getSAN();
@@ -520,8 +546,11 @@ private:
 			if (promo == PAWN) // NULL MOVE
 				return TResult(toMove, 0, 0, KING);
 
+			// CASTLE
 			const squareT rook_from = board_.castle<toMove>(promo == KING);
-			return TResult(toMove, from, rook_from); // CASTLE
+			if (rook_from == from)
+				return {}; // decode error
+			return TResult(toMove, from, rook_from);
 		}
 
 		bool enPassant = moving_piece == PAWN &&

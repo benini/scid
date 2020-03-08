@@ -109,3 +109,11 @@ inline squareT square_Make(fyleT f, rankT r) { return ((r << 3) | f); }
 inline fyleT square_Fyle(squareT sq) { return (sq & 0x7); }
 
 inline rankT square_Rank(squareT sq) { return ((sq >> 3) & 0x7); }
+
+constexpr squareT square_Relative(colorT c, squareT sq) {
+	return static_cast<squareT>(sq ^ (c * 56));
+}
+
+constexpr rankT rank_Relative(colorT c, rankT r) {
+	return static_cast<rankT>(r ^ (c * 7));
+}

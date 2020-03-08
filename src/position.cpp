@@ -2347,7 +2347,7 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 		sm->from = kingSq;
 		sm->to = kingSq + 2;
 		sm->promote = EMPTY;
-		sm->movingPiece = KING;
+		sm->movingPiece = piece_Make(ToMove, KING);
 		sm->capturedPiece = EMPTY;
 		return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
 	}
@@ -2365,7 +2365,7 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 		sm->from = kingSq;
 		sm->to = kingSq - 2;
 		sm->promote = EMPTY;
-		sm->movingPiece = KING;
+		sm->movingPiece = piece_Make(ToMove, KING);
 		sm->capturedPiece = EMPTY;
 		return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
 	}

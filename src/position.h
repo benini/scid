@@ -204,7 +204,7 @@ public:
     }
 
     // Other one-line methods
-    squareT     GetKingSquare (colorT c)  { return List[c][0]; }
+    squareT     GetKingSquare (colorT c) const { return List[c][0]; }
     squareT     GetKingSquare ()          { return List[ToMove][0]; }
     squareT     GetEnemyKingSquare ()     { return List[1-ToMove][0]; }
 
@@ -219,7 +219,6 @@ public:
     }
     inline bool CastlingPossible () { return (Castling ? true : false); }
     byte        GetCastlingFlags () { return Castling; }
-    void        SetCastlingFlags (byte b) { Castling = b; }
 
     // Hashing
     inline uint HashValue (void) { return Hash; }
