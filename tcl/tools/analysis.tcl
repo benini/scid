@@ -17,6 +17,9 @@ set analysis(logMax) 5000
 #
 set analysis(log_stdout) 0
 
+set useAnalysisBook 1
+set analysisBookSlot 1
+set useAnalysisBookName ""
 set wentOutOfBook 0
 # State variable: 1 <=> engine is making an initial
 # assessment of the current position, before progressing
@@ -100,6 +103,9 @@ proc resetEngine {n} {
 
 resetEngine 1
 resetEngine 2
+
+set annotateMode 0
+set annotateModeButtonValue 0 ; # feedback of annotate mode
 
 ################################################################################
 # calculateNodes:

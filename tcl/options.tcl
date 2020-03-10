@@ -134,16 +134,11 @@ proc InitDefaultAnnotate {} {
   set ::isBatchOpening 0
   set ::isBatchOpeningMoves 12
   set ::isBatch 0
-  set ::useAnalysisBook 1
-  set ::analysisBookSlot 1
-  set ::useAnalysisBookName ""
   set ::markTacticalExercises 0
   set ::isAnnotateVar 0
   set ::isShortAnnotation 0
   set ::addScoreToShortAnnotations 0
   set ::addAnnotatorTag 0
-  set ::annotateMode 0
-  set ::annotateModeButtonValue 0 ; # feedback of annotate mode
   set ::annotateMoves all
   set ::annotateBlunders blundersonly
   set ::scoreAllMoves 0
@@ -714,10 +709,10 @@ proc options.write {} {
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard \
-          isBatchOpening isBatchOpeningMoves isBatch useAnalysisBook \
-          analysisBookSlot useAnalysisBookName markTacticalExercises scoreAllMoves \
+          isBatchOpening isBatchOpeningMoves isBatch \
+          markTacticalExercises scoreAllMoves \
           isAnnotateVar isShortAnnotation addScoreToShortAnnotations annotateBlunders\
-          addAnnotatorTag annotateMode annotateModeButtonValue annotateMoves } {
+          addAnnotatorTag annotateMoves } {
       puts $optionF "set $i [list [set $i]]"
     }
     
