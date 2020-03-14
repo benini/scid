@@ -21,21 +21,21 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - script: git submodule update --init vcpkg
+  - script: git clone --depth=1 https://github.com/microsoft/vcpkg.git
     displayName: Checkout vcpkg submodule
   - script: .\vcpkg\bootstrap-vcpkg.bat
     displayName: Bootstrap vcpkg
   - script: .\vcpkg\vcpkg.exe install tcl zlib --triplet x64-uwp --vcpkg-root .\vcpkg
     displayName: vcpkg install dependencies
-  - script: mkdir build.common
+  - script: mkdir build
     displayName: Make Build Directory
   - task: CMake@1
     inputs:
-      workingDirectory: 'build.common'
+      workingDirectory: 'build'
       cmakeArgs: '-A x64 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake'
   - task: MSBuild@1
     inputs:
-      solution: 'build.common/ALL_BUILD.vcxproj'
+      solution: 'build/ALL_BUILD.vcxproj'
       maximumCpuCount: true
       platform: 'x64'
 
