@@ -2,27 +2,40 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+jobs:
+- job: ubuntu_latest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+       sudo apt-get update &&
+       sudo apt-get -y install tcl-dev tk-dev
+    displayName: 'download tclt'
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: '-DGTEST=ON ..'
+  - script: cmake --build build
 
-steps:
-- script: sudo apt-get install tcl-dev tk-dev
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-
-# Starter pipeline
-- task: CMake@1
-  inputs:
-    cmakeArgs: '-DGTEST=ON ..'
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-- script: cmake --build build
-
+- job: Windows_VS2019_UWP
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: git submodule update --init vcpkg
+    displayName: Checkout vcpkg submodule
+  - script: .\vcpkg\bootstrap-vcpkg.bat
+    displayName: Bootstrap vcpkg
+  - script: .\vcpkg\vcpkg.exe install tcl zlib --triplet x64-uwp --vcpkg-root .\vcpkg
+    displayName: vcpkg install dependencies
+  - script: mkdir build.common
+    displayName: Make Build Directory
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build.common'
+      cmakeArgs: '-A x64 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake'
+  - task: MSBuild@1
+    inputs:
+      solution: 'build.common/ALL_BUILD.vcxproj'
+      maximumCpuCount: true
+      platform: 'x64'
 
