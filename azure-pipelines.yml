@@ -1,7 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
 trigger:
 - master
@@ -18,10 +14,12 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
-  # CMake
-# Build with the CMake cross-platform build system
+# Starter pipeline
 - task: CMake@1
   inputs:
-    workingDirectory: 'build' # Optional
-    #cmakeArgs: # Optional
+    cmakeArgs: '-DGTEST=ON ..'
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 
