@@ -39,4 +39,5 @@ jobs:
       solution: 'build/ALL_BUILD.vcxproj'
       maximumCpuCount: true
       platform: 'x64'
-  - script: build/gtest/scid_tests
+      configuration: 'Release'
+
