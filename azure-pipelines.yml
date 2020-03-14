@@ -26,17 +26,17 @@ jobs:
     displayName: Checkout vcpkg submodule
   - script: .\vcpkg\bootstrap-vcpkg.bat
     displayName: Bootstrap vcpkg
-  - script: .\vcpkg\vcpkg.exe install tcl --vcpkg-root .\vcpkg
+  - script: .\vcpkg\vcpkg.exe install tcl --triplet x64-windows --vcpkg-root .\vcpkg
     displayName: vcpkg install dependencies
   - script: mkdir build
     displayName: Make Build Directory
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-A x64 -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake'
+      cmakeArgs: '-A x64 -DGTEST=ON -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..'
   - task: MSBuild@1
     inputs:
       solution: 'build/ALL_BUILD.vcxproj'
       maximumCpuCount: true
       platform: 'x64'
-
+  - script: build/gtest/scid_tests
