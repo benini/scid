@@ -40,5 +40,6 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - script: build\gtest\Release\scid_tests.exe
+  - script: objdump /IMPORTS build\Release\scid.exe
+    displayName: Make Build Directory
 
