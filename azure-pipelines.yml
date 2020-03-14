@@ -6,6 +6,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- script: sudo apt-get install tcl-dev tk-dev
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
