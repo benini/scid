@@ -23,4 +23,6 @@ steps:
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+- script: cmake --build .
+
 
