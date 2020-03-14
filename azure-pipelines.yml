@@ -40,6 +40,12 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - script: objdump /IMPORTS build\Release\scid.exe
-    displayName: Make Build Directory
+  - task: CopyFiles@2
+    inputs:
+      Contents: '**\$(BuildConfiguration)\**\?(*.exe|*.dll|*.pdb)'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: MyBuildOutputs
 
