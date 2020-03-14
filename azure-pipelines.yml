@@ -16,6 +16,7 @@ jobs:
       workingDirectory: 'build'
       cmakeArgs: '-DGTEST=ON ..'
   - script: cmake --build build
+  - script: build/gtest/scid_tests
 
 - job: Windows_VS2019_UWP
   pool:
@@ -25,7 +26,7 @@ jobs:
     displayName: Checkout vcpkg submodule
   - script: .\vcpkg\bootstrap-vcpkg.bat
     displayName: Bootstrap vcpkg
-  - script: .\vcpkg\vcpkg.exe install tcl zlib --triplet x64-uwp --vcpkg-root .\vcpkg
+  - script: .\vcpkg\vcpkg.exe install tcl --vcpkg-root .\vcpkg
     displayName: vcpkg install dependencies
   - script: mkdir build
     displayName: Make Build Directory
