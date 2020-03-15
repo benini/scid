@@ -69,6 +69,17 @@ jobs:
       for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cd tcltk
+      git clone --branch core-8-6-10 https://github.com/tcltk/tk.git
+      cd tk & cd win
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\install
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\install
+    displayName: Generate tk library
+  - script: |
+      pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+      for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+      popd
+      call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir build & cd build
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
