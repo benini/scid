@@ -40,14 +40,25 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - task: CopyFiles@2
+  
+- job: Windows_tests
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: vcpkg.exe install tcl --triplet x64-windows
+    displayName: vcpkg install dependencies
+  - task: CMake@1
     inputs:
-      Contents: '**\$(BuildConfiguration)\**\?(*.exe|*.dll|*.pdb)'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
+      workingDirectory: 'build'
+      cmakeArgs: '-A x64 -DGTEST=ON -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT) ..'
+  - task: MSBuild@1
     inputs:
-      pathToPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: MyBuildOutputs
+      solution: 'build/ALL_BUILD.vcxproj'
+      maximumCpuCount: true
+      platform: 'x64'
+      configuration: 'Release'
+  - script: choco install innosetup
+  - script: build/Release/gtest/scid_tests
 
 - job: Windows_nmake
   pool:
@@ -85,6 +96,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=../install ^
             -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\install\include ^
+            -DCMAKE_RULE_MESSAGES=OFF ^
              $(Build.SourcesDirectory)
       nmake /N install
       nmake install
