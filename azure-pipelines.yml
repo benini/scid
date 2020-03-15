@@ -61,8 +61,8 @@ jobs:
       mkdir tcltk & cd tcltk
       git clone --branch core-8-6-10 https://github.com/tcltk/tcl.git
       cd tcl & cd win
-      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcltk
-      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcltk
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\install
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\install
     displayName: Generate tcl library
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
@@ -73,7 +73,7 @@ jobs:
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=../install ^
-            -DTCL_LIBRARY_PATH=$(Build.SourcesDirectory)\tcltk ^
+            -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\install\include ^
              $(Build.SourcesDirectory)
       nmake /N install
       nmake install
