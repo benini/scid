@@ -34,8 +34,8 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - script: build/Release/gtest/scid_tests.exe
-    displayName: run tests
+  - script: build\Release\gtest\scid_tests.exe
+    displayName: run scid_tests.exe
   - script: choco install innosetup
 
 - job: windows_latest
