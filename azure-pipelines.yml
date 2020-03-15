@@ -1,24 +1,9 @@
 
 trigger:
 - master
-
-jobs:
-- job: ubuntu_latest
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: |
-       sudo apt-get update &&
-       sudo apt-get -y install tcl-dev tk-dev
-    displayName: download tclk
-  - task: CMake@1
-    inputs:
-      workingDirectory: 'build'
-      cmakeArgs: '-DGTEST=ON ..'
-  - script: cmake --build build
-  - script: build/gtest/scid_tests
   
-- job: Windows_tests
+jobs:
+- job: windows_tests
   pool:
     vmImage: 'windows-latest'
   steps:
@@ -34,7 +19,7 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - script: build\Release\gtest\scid_tests.exe
+  - script: build\gtest\Release\scid_tests.exe
     displayName: run scid_tests.exe
   - script: choco install innosetup
 
@@ -87,3 +72,18 @@ jobs:
     displayName: 'Publish Artifact: drop'
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
+
+- job: ubuntu_latest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+       sudo apt-get update &&
+       sudo apt-get -y install tcl-dev tk-dev
+    displayName: download tclk
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: '-DGTEST=ON ..'
+  - script: cmake --build build
+  - script: build/gtest/scid_tests
