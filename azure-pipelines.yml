@@ -10,36 +10,13 @@ jobs:
   - script: |
        sudo apt-get update &&
        sudo apt-get -y install tcl-dev tk-dev
-    displayName: 'download tclt'
+    displayName: download tclk
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
       cmakeArgs: '-DGTEST=ON ..'
   - script: cmake --build build
   - script: build/gtest/scid_tests
-
-- job: Windows_VS2019
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - script: git clone --depth=1 https://github.com/microsoft/vcpkg.git
-    displayName: Checkout vcpkg submodule
-  - script: .\vcpkg\bootstrap-vcpkg.bat
-    displayName: Bootstrap vcpkg
-  - script: .\vcpkg\vcpkg.exe install tcl --triplet x64-windows --vcpkg-root .\vcpkg
-    displayName: vcpkg install dependencies
-  - script: mkdir build
-    displayName: Make Build Directory
-  - task: CMake@1
-    inputs:
-      workingDirectory: 'build'
-      cmakeArgs: '-A x64 -DGTEST=ON -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..'
-  - task: MSBuild@1
-    inputs:
-      solution: 'build/ALL_BUILD.vcxproj'
-      maximumCpuCount: true
-      platform: 'x64'
-      configuration: 'Release'
   
 - job: Windows_tests
   pool:
@@ -47,7 +24,6 @@ jobs:
   steps:
   - script: vcpkg.exe install tcl --triplet x64-windows
     displayName: vcpkg install dependencies
-  - script: choco install innosetup
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
@@ -58,7 +34,9 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-  - script: build/Release/gtest/scid_tests
+  - script: build/Release/gtest/scid_tests.exe
+    displayName: run tests
+  - script: choco install innosetup
 
 - job: windows_latest
   pool:
