@@ -9,10 +9,7 @@ jobs:
   steps:
   - script: |
       git config --global core.autocrlf false
-      set
-    displayName: Print environment variables
-  - checkout: self
-    fetchDepth: 1
+    displayName: git config
   - script: vcpkg.exe install tcl --triplet x64-windows
     displayName: vcpkg install dependencies
   - task: CMake@1
