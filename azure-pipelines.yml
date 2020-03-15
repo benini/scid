@@ -59,18 +59,24 @@ jobs:
     displayName: Bootstrap vcpkg
   - script: .\vcpkg\vcpkg.exe install tcl --triplet x64-windows --vcpkg-root .\vcpkg
     displayName: vcpkg install dependencies
-  - script: mkdir build
-    displayName: Make Build Directory
-  - task: CMake@1
-    inputs:
-      workingDirectory: 'build'
-      cmakeArgs: '-G"NMake Makefiles" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..'
+  - script: |
+      pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+      for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+      popd
+      call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      mkdir build & cd build
+      cmake -G"NMake Makefiles" ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_INSTALL_PREFIX=../install ^
+            -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ^
+             $(Build.SourcesDirectory)
+    displayName: Generating with CMake
   - script: nmake /N install
     displayName: nmake commands
   - script: nmake install
     displayName: nmake build and install
   - task: CopyFiles@2
     inputs:
-      SourceFolder: '$(agent.builddirectory)\install'
+      SourceFolder: '$(Build.SourcesDirectory)\install'
       Contents: '**'
       TargetFolder: '$(build.artifactstagingdirectory)'
