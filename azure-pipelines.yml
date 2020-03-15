@@ -63,20 +63,21 @@ jobs:
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcltk
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcltk
+    displayName: Generate tcl library
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
       for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
-      set TCL_DIR=$(Build.SourcesDirectory)\tcltk
       mkdir build & cd build
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=../install ^
+            -DTCL_LIBRARY_PATH=$(Build.SourcesDirectory)\tcltk ^
              $(Build.SourcesDirectory)
       nmake /N install
       nmake install
-    displayName: Generating with CMake
+    displayName: Generate SCID
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)\install'
