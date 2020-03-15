@@ -53,17 +53,20 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - script: git clone --depth=1 https://github.com/microsoft/vcpkg.git
-    displayName: Checkout vcpkg submodule
-  - script: .\vcpkg\bootstrap-vcpkg.bat
-    displayName: Bootstrap vcpkg
-  - script: .\vcpkg\vcpkg.exe install tcl --triplet x64-windows --vcpkg-root .\vcpkg
-    displayName: vcpkg install dependencies
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
       for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      mkdir tcltk & cd tcltk
+      git clone --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      nmake -f tcl/win/makefile.vc INSTALLDIR=. install
+  - script: |
+      pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+      for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+      popd
+      call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      set TCL_DIR=tcltk
       mkdir build & cd build
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
