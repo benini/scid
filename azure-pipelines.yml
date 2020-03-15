@@ -70,11 +70,9 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../install ^
             -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ^
              $(Build.SourcesDirectory)
+      nmake /N install
+      nmake install
     displayName: Generating with CMake
-  - script: nmake /N install
-    displayName: nmake commands
-  - script: nmake install
-    displayName: nmake build and install
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)\install'
