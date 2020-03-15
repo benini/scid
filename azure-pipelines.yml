@@ -64,8 +64,11 @@ jobs:
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-A x64  -G"NMake Makefiles" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..'
-  - script: nmake VERBOSE=1 install
+      cmakeArgs: '-G"NMake Makefiles" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..'
+  - script: nmake /N install
+    displayName: nmake commands
+  - script: nmake install
+    displayName: nmake build and install
   - task: CopyFiles@2
     inputs:
       SourceFolder: '$(agent.builddirectory)\install'
