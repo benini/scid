@@ -61,13 +61,14 @@ jobs:
       mkdir tcltk & cd tcltk
       git clone --branch core-8-6-10 https://github.com/tcltk/tcl.git
       cd tcl & cd win
-      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcltk install
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcltk
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcltk
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
       for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
-      set TCL_DIR=tcltk
+      set TCL_DIR=$(Build.SourcesDirectory)\tcltk
       mkdir build & cd build
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
