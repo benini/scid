@@ -73,7 +73,6 @@ jobs:
       cmake -G"NMake Makefiles" ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_INSTALL_PREFIX=../install ^
-            -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ^
              $(Build.SourcesDirectory)
       nmake /N install
       nmake install
