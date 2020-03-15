@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.9)
 project(scid)
 set(CPACK_PACKAGE_VERSION 4.7.1)
 set(
@@ -32,6 +32,10 @@ endif()
 
 if(MSVC)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
+  string(APPEND CMAKE_CXX_FLAGS_RELEASE " /MT")
+  # To run/debug using Visual Studio set "scid" as startup project and add:
+  # Command Arguments: ../tcl/start.tcl
+  # Environment:       PATH=C:\tcl\bin
 endif()
 
 
@@ -40,8 +44,15 @@ file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
 add_library(polyglot ${POLYGLOT_SRC})
 
 # scid
-file(GLOB SCID_SRC src/*.cpp)
-add_executable(scid ${SCID_SRC})
+file(GLOB SCID_SRC src/*.h src/*.cpp)
+if(MSVC)
+  add_executable(scid WIN32 ${SCID_SRC})
+  target_link_options(scid PRIVATE /ENTRY:mainCRTStartup)
+else()
+  add_executable(scid ${SCID_SRC})
+endif()
+set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
+
 
 option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
 if(SCID_MULTITHREADING)

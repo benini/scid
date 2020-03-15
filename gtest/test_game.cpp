@@ -361,7 +361,8 @@ auto make_invalid(unsigned char movecode, std::string_view pgn) {
 	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{g});
 	g.Encode(data, ie);
 	auto comment_tag = std::find(data.begin(), data.end(), 12);
-	*++comment_tag = movecode;
+	if (comment_tag != data.end())
+		*++comment_tag = movecode;
 	return data;
 }
 

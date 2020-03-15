@@ -57,6 +57,7 @@ matrix:
           - clang-9
           - clang-tidy-9
           - libstdc++-9-dev
+          - llvm-9-dev
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
       - run-clang-tidy-9.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
@@ -108,6 +109,7 @@ matrix:
         packages:
           - clang-9
           - libstdc++-9-dev
+          - llvm-9-dev
     script:
       - mkdir Test && cd Test
       - cmake .. -DGTEST=ON -DCMAKE_CXX_FLAGS="-g -O3 -Wall -Wextra -Werror -fsanitize=address,undefined,integer -Wno-missing-field-initializers"
