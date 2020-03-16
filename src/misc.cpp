@@ -157,30 +157,6 @@ eco_LastSubCode (ecoT eco)
 //   String Routines
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// strCopyExclude(): copies original to target, filtering out any
-//      characters in excludeChars.
-void
-strCopyExclude (char * target, const char * original,
-                const char * excludeChars)
-{
-    while (*original != 0) {
-        int exclude = 0;
-        for (char * s = (char *) excludeChars; *s; s++) {
-            if (*original == *s) {
-                exclude = 1;
-                break;
-            }
-        }
-        if (!exclude) {
-            *target = *original;
-            target++;
-        }
-        original++;
-    }
-    *target = 0;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strAppend():
 //      Appends extra to the end of target, and returns a pointer
 //      to the new END of the string target.

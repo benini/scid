@@ -5545,6 +5545,26 @@ sc_pos_isLegal (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_pos_matchMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
+	// copies original to target, filtering out any characters in excludeChars.
+	auto strCopyExclude = [](char* target, const char* original,
+	                         const char* excludeChars) {
+		while (*original != 0) {
+			int exclude = 0;
+			for (auto s = excludeChars; *s; s++) {
+				if (*original == *s) {
+					exclude = 1;
+					break;
+				}
+			}
+			if (!exclude) {
+				*target = *original;
+				target++;
+			}
+			original++;
+		}
+		*target = 0;
+	};
+
     if (argc != 3  &&  argc != 4) {
         return errorResult (ti, "Usage: sc_pos matchMoves <movetext-prefix>");
     }

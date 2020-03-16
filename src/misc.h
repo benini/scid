@@ -143,8 +143,6 @@ inline uint32_t strStartHash(const char* str) {
 
 char * strDuplicate (const char * str);
 
-void   strCopyExclude (char * target, const char * original,
-                       const char * excludeChars);
 char * strAppend (char * target, const char * extra);
 uint   strPad (char * target, const char * orig, int length, char pad);
 const char * strFirstChar (const char * target, char matchChar);
