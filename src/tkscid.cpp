@@ -3620,7 +3620,8 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return UI_Result(ti, OK, g->GetCurrentPly());
         }
 
-        if (!progress.report(g->GetCurrentPly() +1, g->GetNumHalfMoves())) {
+        auto work_done = g->GetCurrentPly() + 1;
+        if (!progress.report(work_done, g->GetNumHalfMoves())) {
             base->deleteFilter(filtername.c_str());
             return UI_Result(ti, ERROR_UserCancel);
         }

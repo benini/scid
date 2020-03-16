@@ -1733,15 +1733,14 @@ void
 Game::WriteComment (TextBuffer * tb, const char * preStr,
               const char * comment, const char * postStr)
 {
-
-    char * s = NULL;
+    char* s_duplicate = nullptr;
+    const char* s = comment;
 
     if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-        s = strDuplicate (comment);
-        strTrimMarkCodes (s);
-    } else {
-      s = (char *) comment;
-    }
+		s_duplicate = strDuplicate(comment);
+		strTrimMarkCodes(s_duplicate);
+		s = s_duplicate;
+	}
 
     if (s[0] != '\0') {
 
@@ -1770,7 +1769,7 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
     }
 
     if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-        delete[] s;
+        delete[] s_duplicate;
     }
 }
 

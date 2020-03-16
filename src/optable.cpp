@@ -16,6 +16,7 @@
 #include "crosstab.h"
 #include "dstring.h"
 #include "pbook.h"
+#include <algorithm>
 
 uint
 endgameTheme (matSigT msig)
@@ -439,11 +440,15 @@ OpLine::PrintSummary (DString * dstr, uint format, bool fullDate, bool nmoves)
     if (BlackElo > 0) { dstr->Append (preElo, BlackElo, postElo); }
     dstr->Append (", ", Site, " ");
     if (fullDate) {
-        char dateStr [16];
+        char dateStr[16] = {};
         date_DecodeToString (Date, dateStr);
         // Remove any unknown date fields:
-        char * s = (char *) strFirstChar (dateStr+4, '?');
-        if (s != NULL) { s--; *s = 0; }
+        auto s_end = dateStr + 16;
+        auto s = std::find(dateStr + 4, s_end, '?');
+        if (s != s_end) {
+            s--;
+            *s = 0;
+        }
         dstr->Append (dateStr);
     } else {
         dstr->Append (date_GetYear (Date));
