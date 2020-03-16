@@ -1069,11 +1069,11 @@ sc_eco (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     int index = -1;
     static const char * options [] = {
-        "base", "game", "read", "reset", "size", "summary",
+        "base", "game", "read", "reset", "summary",
         "translate", NULL
     };
     enum {
-        ECO_BASE, ECO_GAME, ECO_READ, ECO_RESET, ECO_SIZE, ECO_SUMMARY,
+        ECO_BASE, ECO_GAME, ECO_READ, ECO_RESET, ECO_SUMMARY,
         ECO_TRANSLATE
     };
 
@@ -1092,9 +1092,6 @@ sc_eco (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case ECO_RESET:
         if (ecoBook) { ecoBook = NULL; }
         break;
-
-    case ECO_SIZE:
-        return setUintResult (ti, ecoBook == NULL ? 0 : ecoBook->Size());
 
     case ECO_SUMMARY:
         return sc_eco_summary (cd, ti, argc, argv);
