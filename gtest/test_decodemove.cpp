@@ -58,7 +58,7 @@ TEST(Test_decodeMove, pawn_black) {
 }
 
 TEST(Test_decodeMove, bishop) {
-	const squareT from = B3;
+	const squareT from = G7;
 	ByteBuffer bbuf(nullptr, 0);
 	for (unsigned char moveCode = 0; moveCode < 16; ++moveCode) {
 		auto [to, promo] = bbuf.decodeMove<WHITE>(BISHOP, from, moveCode);

@@ -1268,7 +1268,7 @@ sc_eco_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return book.first;
     }
     ecoBook = std::move(book.second);
-    return setUintResult (ti, ecoBook->Size());
+    return UI_Result(ti, OK, ecoBook->Size());
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1514,7 +1514,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return UI_Result(ti, OK);
 
     case FILTER_COUNT:
-        return setUintResult (ti, filter->size());
+        return UI_Result(ti, OK, filter->size());
 
     case FILTER_RELEASE:
         dbase->deleteFilter(argv[3]);
@@ -7006,7 +7006,7 @@ sc_name_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     UI_List res(NUM_NAME_TYPES);
     for (nameT i = 0; i < NUM_NAME_TYPES; i++) {
-        uint n = (spellChk == NULL) ? 0 : spellChk->numCorrectNames(i);
+        size_t n = (spellChk == NULL) ? 0 : spellChk->numCorrectNames(i);
         res.push_back(n);
     }
     return UI_Result(ti, OK, res);
@@ -7645,13 +7645,13 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case TREE_POSITIONS:
         // Return the number of positions cached:
-        return setUintResult (ti, db->treeCache.UsedSize());
+        return UI_Result(ti, OK, db->treeCache.UsedSize());
 
     case TREE_SEARCH:
         return sc_tree_search (cd, ti, argc, argv);
 
     case TREE_SIZE:
-        return setUintResult (ti, db->treeCache.Size());
+        return UI_Result(ti, OK, db->treeCache.Size());
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);

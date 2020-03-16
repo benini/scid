@@ -169,11 +169,11 @@ private:
 	template <int nBytes> uint32_t read() {
 		uint32_t res = 0;
 		if (nBytes > 3)
-			res += ReadOneByte() << 24;
+			res += static_cast<uint32_t>(ReadOneByte()) << 24;
 		if (nBytes > 2)
-			res += ReadOneByte() << 16;
+			res += static_cast<uint32_t>(ReadOneByte()) << 16;
 		if (nBytes > 1)
-			res += ReadOneByte() << 8;
+			res += static_cast<uint32_t>(ReadOneByte()) << 8;
 		return res + ReadOneByte();
 	}
 };

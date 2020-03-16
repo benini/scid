@@ -237,13 +237,12 @@ public:
 	void insert_or_assign(gamenumT gnum, uint8_t ply) {
 		return main_->Set(gnum, ply + 1);
 	}
-	size_t size() const {
-		if (mask_ == 0)
+	gamenumT size() const {
+		if (!mask_ || mask_->Count() == mask_->Size())
 			return main_->Count();
 		if (main_->Count() == main_->Size())
 			return mask_->Count();
-		const_iterator::difference_type res = std::distance(begin(), end());
-		return static_cast<size_t>(res);
+		return static_cast<gamenumT>(std::distance(begin(), end()));
 	}
 
 	/// Returns the number of games included in the main filter

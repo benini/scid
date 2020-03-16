@@ -162,7 +162,7 @@ size_t SortCache::select(size_t row_offset, size_t row_count,
 	ASSERT(filter != NULL && filter->size() <= nGames_);
 	ASSERT(result != NULL);
 
-	size_t maxResults = filter->size();
+	const size_t maxResults = filter->size();
 	if (row_count == 0 || row_offset >= maxResults)
 		return 0;
 
