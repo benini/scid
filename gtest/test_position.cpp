@@ -408,3 +408,167 @@ TEST(Test_ReadFromFen, GetList) {
 	EXPECT_EQ(std::pair(E5, BP), getPiece(bl_list[7]));
 	EXPECT_EQ(std::pair(E4, BQ), getPiece(bl_list[8]));
 }
+
+TEST(Test_MoveGeneration, GetCastling) {
+	simpleMoveT sm;
+	sm.from = E1;
+	sm.to = G1;
+	sm.promote = EMPTY;
+	sm.movingPiece = WK;
+	{
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/8/5k2/8/4K2R w K -"));
+		sm.to = G1;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+	}
+	{	// Adjacent enemy king
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/8/8/6k1/4K2R w K -"));
+		sm.to = G1;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+	}
+	{	// King in check
+		Position pos;
+		ASSERT_EQ(
+		    OK, pos.ReadFromFEN(
+		            "r3k2r/pppp1ppp/5n1b/4p3/4P3/5N2/PP3PPP/r3KB1R w KQkq -"));
+		sm.to = G1;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		sm.to = C1;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+	}
+	{	// Obstacles
+		Position pos;
+		ASSERT_EQ(
+		    OK, pos.ReadFromFEN(
+		            "rn2k2r/pppp1ppp/5n2/4p3/4P3/5N2/PP3PPP/R3KB1R b KQkq"));
+		sm.movingPiece = BK;
+		sm.from = E8;
+		sm.to = G8;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		sm.to = C8;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+
+		pos.SetToMove(WHITE);
+		sm.movingPiece = WK;
+		sm.from = E1;
+		sm.to = G1;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		sm.to = C1;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+	}
+	{	// Destination in check
+		Position pos;
+		ASSERT_EQ(OK,
+		          pos.ReadFromFEN(
+		              "r3k2r/pppp1ppp/5n1b/4p2r/4P3/5N2/PP3PP1/R3K2R b KQkq -"));
+		sm.movingPiece = BK;
+		sm.from = E8;
+		sm.to = G8;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		sm.to = C8;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+
+		pos.SetToMove(WHITE);
+		sm.movingPiece = WK;
+		sm.from = E1;
+		sm.to = G1;
+		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		sm.to = C1;
+		EXPECT_FALSE(pos.IsLegalMove(&sm));
+	}
+}
+
+TEST(Test_PositionDoSimpleMove, castling_flags) {
+	auto makeSMove = [](auto from, auto to, auto movingPiece) {
+		simpleMoveT sm;
+		sm.from = from;
+		sm.to = to;
+		sm.movingPiece = movingPiece;
+		sm.promote = EMPTY;
+		return sm;
+	};
+	std::vector<simpleMoveT> sm;
+	char buf[1024];
+	Position pos;
+	ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
+
+	sm.push_back(makeSMove(E1, G1, WK));
+	pos.DoSimpleMove(&sm.back());
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
+
+	sm.push_back(makeSMove(H8, G8, BR));
+	pos.DoSimpleMove(&sm.back());
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
+
+	sm.push_back(makeSMove(G1, H2, WK));
+	pos.DoSimpleMove(&sm.back());
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
+
+	sm.push_back(makeSMove(E8, C8, BK));
+	pos.DoSimpleMove(&sm.back());
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "2kr2r1/8/8/8/8/8/7K/R4R2 w - - 4 3");
+
+	// UndoSimpleMove
+	auto it = sm.crbegin();
+	pos.UndoSimpleMove(&(*it++));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
+
+	pos.UndoSimpleMove(&(*it++));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
+
+	pos.UndoSimpleMove(&(*it++));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
+
+	pos.UndoSimpleMove(&(*it++));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
+}
+
+TEST(Test_PositionDoSimpleMove, castling_flags_capture) {
+	auto makeSMove = [](auto from, auto to, auto movingPiece) {
+		simpleMoveT sm;
+		sm.from = from;
+		sm.to = to;
+		sm.movingPiece = movingPiece;
+		sm.promote = EMPTY;
+		return sm;
+	};
+	char buf[1024];
+	Position pos;
+	{
+		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
+		auto sm = makeSMove(H1, H8, WR);
+		pos.DoSimpleMove(&sm);
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, "r3k2R/8/8/8/8/8/8/R3K3 b Qq - 0 1");
+	}
+	{
+		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
+		auto sm = makeSMove(A1, A8, WR);
+		pos.DoSimpleMove(&sm);
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, "R3k2r/8/8/8/8/8/8/4K2R b Kk - 0 1");
+	}
+	{
+		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
+		auto sm = makeSMove(H8, H1, BR);
+		pos.DoSimpleMove(&sm);
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, "r3k3/8/8/8/8/8/8/R3K2r w Qq - 0 2");
+	}
+	{
+		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
+		auto sm = makeSMove(A8, A1, BR);
+		pos.DoSimpleMove(&sm);
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(buf, "4k2r/8/8/8/8/8/8/r3K2R w Kk - 0 2");
+	}
+}

@@ -7880,6 +7880,7 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 FullMove m = StoredLine::getMove(ie->GetStoredLineCode(), ply);
                 if (m) {
                     sm.from = m.getFrom();
+                    sm.movingPiece = piece_Make(m.getColor(), m.getPiece());
                     sm.to = m.getTo();
                     if (m.isCastle()) sm.to = sm.from + ((sm.to > sm.from) ? 2 : -2);
                     sm.promote = EMPTY;

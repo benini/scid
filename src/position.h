@@ -125,6 +125,8 @@ private:
 
     void  AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
     void  GenCastling (MoveList * mlist);
+    squareT castlingKingSq(colorT color) const;
+    template <bool king_side> squareT castlingRookSq(colorT color) const;
     void  GenKingMoves (MoveList * mlist, genMovesT genType, bool castling);
     void  AddPromotions (MoveList * mlist, squareT from, squareT dest);
     bool  IsValidEnPassant (squareT from, squareT to);
@@ -183,13 +185,13 @@ public:
     inline uint RankCount (pieceT p, rankT r) const {
         return NumOnRank[p][r];
     }
-    inline uint LeftDiagCount (pieceT p, leftDiagT diag) {
+    inline uint LeftDiagCount (pieceT p, leftDiagT diag) const {
         return NumOnLeftDiag[p][diag];
     }
-    inline uint RightDiagCount (pieceT p, rightDiagT diag) {
+    inline uint RightDiagCount (pieceT p, rightDiagT diag) const {
         return NumOnRightDiag[p][diag];
     }
-    inline uint SquareColorCount (pieceT p, colorT sqColor) {
+    inline uint SquareColorCount (pieceT p, colorT sqColor)  const {
         return NumOnSquareColor[p][sqColor];
     }
 
@@ -205,11 +207,14 @@ public:
 
     // Other one-line methods
     squareT     GetKingSquare (colorT c) const { return List[c][0]; }
-    squareT     GetKingSquare ()          { return List[ToMove][0]; }
-    squareT     GetEnemyKingSquare ()     { return List[1-ToMove][0]; }
+    squareT     GetKingSquare () const         { return List[ToMove][0]; }
+    squareT     GetEnemyKingSquare () const    { return List[1-ToMove][0]; }
 
     // Castling flags
     inline void SetCastling (colorT c, castleDirT dir, bool flag);
+    void ClearCastlingFlags(colorT c) {
+        Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
+    }
     bool GetCastling(colorT c, castleDirT dir) const {
         int b = (c == WHITE) ? 1 : 4;
         if (dir == KSIDE)
@@ -217,7 +222,6 @@ public:
         // Now b == 1 or 2 (white flags), or 4 or 8 (black flags)
         return Castling & b;
     }
-    inline bool CastlingPossible () { return (Castling ? true : false); }
     byte        GetCastlingFlags () { return Castling; }
 
     // Hashing
@@ -237,15 +241,22 @@ public:
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);
 
-    uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares);
+    /// Check that the minimum requirements for castling are satisfied:
+    /// - both the king and the rook exists in the position
+    /// - the final squares of the king and the rook are empty
+    /// @param check_legal: also test for checks or blocking pieces.
+    /// Ignore the castling flags and if the king is already in check.
+    bool validCastling(bool king_side, bool check_legal) const;
+
+    uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares) const;
     int         TreeCalcAttacks (colorT toMove, squareT target);
-    uint        CalcNumChecks () {
+    uint        CalcNumChecks () const {
                     return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }
-    uint        CalcNumChecks (squareT kingSq) {
+    uint        CalcNumChecks (squareT kingSq) const {
                     return CalcAttacks (1-ToMove, kingSq, NULL);
                 }
-    uint        CalcNumChecks (squareT kingSq, SquareList * checkSquares) {
+    uint        CalcNumChecks (squareT kingSq, SquareList * checkSquares) const {
                     return CalcAttacks (1-ToMove, kingSq, checkSquares);
                 }
 
@@ -261,7 +272,7 @@ public:
                 // TODO: replace with DoSimpleMove(const simpleMoveT&)
     void        DoSimpleMove(simpleMoveT sm) { return DoSimpleMove(&sm); }
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
-    void        UndoSimpleMove (simpleMoveT * sm);  // ... and taking back
+    void        UndoSimpleMove (simpleMoveT const* sm);  // ... and taking back
 
     errorT      RelocatePiece (squareT fromSq, squareT toSq);
 

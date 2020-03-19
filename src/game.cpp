@@ -2790,7 +2790,7 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 		if (promo == PAWN) // NULL MOVE
 			return OK;
 
-		if (square_Fyle(sm->from) != E_FYLE)
+		if (!pos->validCastling(promo == KING, false))
 			return ERROR_Decode;
 
 		sm->to += (promo == KING) ? 2 : -2;

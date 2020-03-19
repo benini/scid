@@ -281,56 +281,64 @@ Position::GenKnightMoves (MoveList * mlist, colorT c, squareT fromSq,
     }
 }
 
+squareT Position::castlingKingSq(colorT color) const {
+	return square_Relative(color, E1);
+}
+
+template <bool king_side> squareT Position::castlingRookSq(colorT color) const {
+	return king_side ? square_Relative(color, H1)
+	                 : square_Relative(color, A1);
+}
+
+bool Position::validCastling(bool king_side, bool check_legal) const {
+	const squareT kingFrom = castlingKingSq(ToMove);
+	const squareT rookFrom = king_side ? castlingRookSq<true>(ToMove)
+	                                   : castlingRookSq<false>(ToMove);
+	const squareT rookTo = king_side ? square_Relative(ToMove, F1)
+	                                 : square_Relative(ToMove, D1);
+	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
+	                                 : square_Relative(ToMove, C1);
+	if (Board[kingFrom] != piece_Make(ToMove, KING) ||
+	    Board[rookFrom] != piece_Make(ToMove, ROOK))
+		return false;
+
+	const int stepRook = rookFrom < rookTo ? -1 : 1;
+	for (int sq = rookTo; sq != rookFrom; sq += stepRook) {
+		if (Board[sq] != EMPTY && sq != kingFrom)
+			return false;
+
+		if (!check_legal)
+			break;
+	}
+
+	const int stepKing = kingFrom < kingTo ? -1 : 1;
+	for (int sq = kingTo; sq != kingFrom; sq += stepKing) {
+		if (Board[sq] != EMPTY && sq != rookFrom)
+			return false;
+
+		if (!check_legal)
+			break;
+
+		if (CalcNumChecks(sq) > 0)
+			return false;
+	}
+	return true;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::GenCastling():
 //    Generate the legal castling moves.
 //    Assumes the side to move is NOT in check, so the caller
 //    should verify this first.
 //
-void
-Position::GenCastling (MoveList * mlist)
-{
-    ASSERT (! IsKingInCheck());
-    squareT from = GetKingSquare(ToMove);
-    if (from != (ToMove == WHITE ? E1 : E8))  { return; }
-    squareT enemyKingSq = GetEnemyKingSquare();
-    squareT target, skip, rookSq;
-    pieceT rookPiece;
+void Position::GenCastling(MoveList* mlist) {
+	const squareT from = square_Relative(ToMove, E1);
 
-    // Try kingside first
+	if (GetCastling(ToMove, KSIDE) && validCastling(true, true))
+		AddLegalMove(mlist, from, from + 2, EMPTY);
 
-    // Kingside Castling:
-    if (GetCastling (ToMove, KSIDE)) {
-        if (ToMove == WHITE) {
-            target = G1; skip = F1; rookSq = H1; rookPiece = WR;
-        } else {
-            target = G8; skip = F8; rookSq = H8; rookPiece = BR;
-        }
-        if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
-                &&  Board[rookSq] == rookPiece
-                &&  CalcNumChecks (target) == 0
-                &&  CalcNumChecks (skip) == 0
-                &&  ! square_Adjacent (target, enemyKingSq)) {
-            AddLegalMove (mlist, from, target, EMPTY);
-        }
-    }
-
-    // Queenside Castling:
-    if (GetCastling (ToMove, QSIDE)) {
-        if (ToMove == WHITE) {
-            target = C1; skip = D1; rookSq = A1; rookPiece = WR;
-        } else {
-            target = C8; skip = D8; rookSq = A8; rookPiece = BR;
-        }
-        if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
-                &&  Board[rookSq] == rookPiece
-                &&  Board[target - 1] == EMPTY // B1 or B8 must be empty too!
-                &&  CalcNumChecks (target) == 0
-                &&  CalcNumChecks (skip) == 0
-                &&  ! square_Adjacent (target, enemyKingSq)) {
-            AddLegalMove (mlist, from, target, EMPTY);
-        }
-    }
+	if (GetCastling(ToMove, QSIDE) && validCastling(false, true))
+		AddLegalMove(mlist, from, from - 2, EMPTY);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -936,7 +944,6 @@ Position::IsLegalMove (simpleMoveT * sm) {
 
     } else /* (mover == KING) */ {
         colorT enemy = color_Flip(ToMove);
-        if (square_Adjacent (to, GetKingSquare(enemy))) { return false; }
         if (! square_Adjacent (from, to)) {
             // The move must be castling, or illegal.
             if (IsKingInCheck()) { return false; }
@@ -944,6 +951,7 @@ Position::IsLegalMove (simpleMoveT * sm) {
             GenCastling (&mlist);
             return std::find(mlist.begin(), mlist.end(), cmpMove(*sm)) != mlist.end();
         }
+        if (square_Adjacent (to, GetKingSquare(enemy))) { return false; }
     }
 
     // The move looks good, but does it leave the king in check?
@@ -1195,7 +1203,7 @@ Position::TreeCalcAttacks(colorT side, squareT target)
 //      Material[]) and detect whether they leave the king in check,
 //      without having to update other information.
 uint
-Position::CalcAttacks (colorT side, squareT target, SquareList * fromSquares)
+Position::CalcAttacks (colorT side, squareT target, SquareList * fromSquares) const
 {
     // If squares is NULL, caller doesn't want a list of the squares of
     // attacking pieces. To avoid comparing fromSquares with NULL every time
@@ -1578,15 +1586,11 @@ void
 Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
-    squareT from = sm->from;
-    squareT to = sm->to;
-    pieceT p = Board[from];
-    pieceT ptype = piece_Type(p);
-    colorT enemy = color_Flip(ToMove);
-    ASSERT (p != EMPTY);
+    const squareT from = sm->from;
+    const squareT to = sm->to;
+    const auto ptype = piece_Type(sm->movingPiece);
 
     // update move fields that (maybe) have not yet been set:
-
     sm->pieceNum = ListPos[from];
     sm->capturedPiece = Board[to];
     sm->capturedSquare = to;
@@ -1597,29 +1601,58 @@ Position::DoSimpleMove (simpleMoveT * sm)
     HalfMoveClock++;
     PlyCounter++;
 
-    // Check for a null (empty) move:
-    if (sm->isNullMove()) {
-        ToMove = enemy;
-        EPTarget = NULL_SQUARE;
-        return;
-    }
+	auto finalUpdate = [&](auto enPassantSq) {
+		EPTarget = enPassantSq;
+		ToMove = color_Flip(ToMove);
+	};
+
+	auto addPiece = [&](auto idx, auto pieceType, squareT destSq) {
+		List[ToMove][idx] = destSq;
+		ListPos[destSq] = idx;
+		AddToBoard(piece_Make(ToMove, pieceType), destSq);
+	};
+
+	if (sm->isNullMove())
+		return finalUpdate(NULL_SQUARE);
+
+	if (ptype == KING) {
+		ClearCastlingFlags(ToMove);
+		if (auto castleSide = sm->isCastle()) {
+			squareT rookfrom, rookto;
+			if (castleSide == 1) {
+				rookfrom = castlingRookSq<true>(ToMove);
+				rookto = to - 1;
+			} else {
+				rookfrom = castlingRookSq<false>(ToMove);
+				rookto = to + 1;
+			}
+			const int kingIdx = 0;
+			const int rookIdx = ListPos[rookfrom];
+			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
+			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
+			addPiece(kingIdx, KING, to);
+			addPiece(rookIdx, ROOK, rookto);
+
+			sm->pieceNum = kingIdx;
+			sm->capturedPiece = EMPTY;
+			return finalUpdate(NULL_SQUARE);
+		}
+	}
+
+    colorT enemy = color_Flip(ToMove);
+    ASSERT(ptype == piece_Type(Board[from]));
 
     // Handle en passant capture:
-
     if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
             && square_Fyle(from) != square_Fyle(to)) {
-
         // This was an EP capture. We do not need to check it was a capture
         // since if a pawn lands on EPTarget it must capture to get there.
-
-        pieceT enemyPawn = piece_Make(enemy, PAWN);
         sm->capturedSquare = (ToMove == WHITE ? (to - 8) : (to + 8));
-        ASSERT (Board[sm->capturedSquare] == enemyPawn);
-        sm->capturedPiece = enemyPawn;
+        ASSERT (Board[sm->capturedSquare] == piece_Make(enemy, PAWN));
+        sm->capturedPiece = Board[sm->capturedSquare];
     }
 
     // handle captures:
-
     if (sm->capturedPiece != EMPTY) {
         ASSERT (piece_Type(sm->capturedPiece) != KING);
         sm->capturedNum = ListPos[sm->capturedSquare];
@@ -1632,61 +1665,30 @@ Position::DoSimpleMove (simpleMoveT * sm)
         RemoveFromBoard (sm->capturedPiece, sm->capturedSquare);
     }
 
-    // handle promotion:
-
-    if (sm->promote != EMPTY) {
-        ASSERT (p == piece_Make(ToMove, PAWN));
-        Material[p]--;
-        RemoveFromBoard (p, from);
-        p = piece_Make(ToMove, sm->promote);
-        Material[p]++;
-        AddToBoard (p, from);
-    }
-
     // now make the move:
-    List[ToMove][sm->pieceNum] = to;
-    ListPos[to] = sm->pieceNum;
-    RemoveFromBoard (p, from);
-    AddToBoard (p, to);
-
-    // handle Castling:
-
-    if (ptype == KING  &&  square_Fyle(from) == E_FYLE  &&
-            (square_Fyle(to) == C_FYLE  ||  square_Fyle(to) == G_FYLE)) {
-        squareT rookfrom, rookto;
-        pieceT rook = piece_Make (ToMove, ROOK);
-        if (square_Fyle(to) == C_FYLE) {
-            rookfrom = to - 2;
-            rookto = to + 1;
-        } else {
-            rookfrom = to + 1;
-            rookto = to - 1;
-        }
-        ListPos[rookto] = ListPos[rookfrom];
-        List[ToMove][ListPos[rookto]] = rookto;
-        RemoveFromBoard (rook, rookfrom);
-        AddToBoard (rook, rookto);
+    ASSERT(sm->movingPiece == Board[from]);
+    const pieceT movingPiece = Board[from];
+    RemoveFromBoard(movingPiece, from);
+    if (sm->promote != EMPTY) {
+        ASSERT(movingPiece == piece_Make(ToMove, PAWN));
+        Material[movingPiece]--;
+        Material[piece_Make(ToMove, sm->promote)]++;
+        addPiece(sm->pieceNum, sm->promote, to);
+    } else {
+        addPiece(sm->pieceNum, ptype, to);
     }
 
     // Handle clearing of castling flags:
-
     if (Castling) {
-        if (ptype == KING) {   // The king moved.
-            SetCastling (ToMove, QSIDE, false);
-            SetCastling (ToMove, KSIDE, false);
-        }
         // See if a rook moved or was captured:
-        if (ToMove == WHITE) {
-            if (from == A1)  { SetCastling (WHITE, QSIDE, false); }
-            if (from == H1)  { SetCastling (WHITE, KSIDE, false); }
-            if (to == A8)    { SetCastling (BLACK, QSIDE, false); }
-            if (to == H8)    { SetCastling (BLACK, KSIDE, false); }
-        } else {
-            if (from == A8)  { SetCastling (BLACK, QSIDE, false); }
-            if (from == H8)  { SetCastling (BLACK, KSIDE, false); }
-            if (to == A1)    { SetCastling (WHITE, QSIDE, false); }
-            if (to == H1)    { SetCastling (WHITE, KSIDE, false); }
-        }
+		if (from == castlingRookSq<false>(ToMove))
+			SetCastling(ToMove, QSIDE, false);
+		if (from == castlingRookSq<true>(ToMove))
+			SetCastling(ToMove, KSIDE, false);
+		if (to == castlingRookSq<false>(enemy))
+			SetCastling(enemy, QSIDE, false);
+		if (to == castlingRookSq<true>(enemy))
+			SetCastling(enemy, KSIDE, false);
     }
 
     // Set the EPTarget square, if a pawn advanced two squares and an
@@ -1718,7 +1720,7 @@ Position::DoSimpleMove (simpleMoveT * sm)
 //      Take back a simple move that has been made with DoSimpleMove().
 //
 void
-Position::UndoSimpleMove (simpleMoveT * m)
+Position::UndoSimpleMove (simpleMoveT const* m)
 {
     ASSERT (m != NULL);
     squareT from = m->from;
@@ -1729,19 +1731,45 @@ Position::UndoSimpleMove (simpleMoveT * m)
     HalfMoveClock = m->oldHalfMoveClock;
     PlyCounter--;
     ToMove = color_Flip(ToMove);
-    m->pieceNum = ListPos[to];
+    ASSERT(m->pieceNum == ListPos[to]);
 
     // Check for a null move:
     if (m->isNullMove()) {
         return;
     }
 
+	auto addPiece = [&](auto idx, auto pieceType, squareT destSq) {
+		List[ToMove][idx] = destSq;
+		ListPos[destSq] = idx;
+		AddToBoard(piece_Make(ToMove, pieceType), destSq);
+	};
+
+	// handle Castling:
+	if (piece_Type(p) == KING) {
+		if (auto castleSide = m->isCastle()) {
+			squareT rookfrom, rookto;
+			if (castleSide == 1) {
+				rookfrom = to - 1;
+				rookto = castlingRookSq<true>(ToMove);
+			} else {
+				rookfrom = to + 1;
+				rookto = castlingRookSq<false>(ToMove);
+			}
+			const int kingIdx = 0;
+			const int rookIdx = ListPos[rookfrom];
+			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
+			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
+			addPiece(rookIdx, ROOK, rookto);
+			addPiece(kingIdx, KING, castlingKingSq(ToMove));
+			return;
+		}
+	}
+
     // Handle a capture: insert piece back into piecelist.
     // This works for EP captures too, since the square of the captured
     // piece is in the "capturedSquare" field rather than assuming the
     // value of the "to" field. The only time these two fields are
     // different is for an en passant move.
-
     if (m->capturedPiece != EMPTY) {
         colorT c = color_Flip(ToMove);
         ListPos[List[c][m->capturedNum]] = Count[c];
@@ -1753,7 +1781,6 @@ Position::UndoSimpleMove (simpleMoveT * m)
     }
 
     // handle promotion:
-
     if (m->promote != EMPTY) {
         Material[p]--;
         RemoveFromBoard (p, to);
@@ -1763,7 +1790,6 @@ Position::UndoSimpleMove (simpleMoveT * m)
     }
 
     // now make the move:
-
     List[ToMove][m->pieceNum] = from;
     ListPos[from] = m->pieceNum;
     RemoveFromBoard (p, to);
@@ -1771,24 +1797,6 @@ Position::UndoSimpleMove (simpleMoveT * m)
     if (m->capturedPiece != EMPTY) {
         AddToBoard (m->capturedPiece, m->capturedSquare);
     }
-
-    // handle Castling:
-
-    if ((piece_Type(p) == KING) && square_Fyle(from) == E_FYLE
-            && (square_Fyle(to) == C_FYLE || square_Fyle(to) == G_FYLE)) {
-        squareT rookfrom, rookto;
-        pieceT rook = (ToMove == WHITE? WR : BR);
-        if (square_Fyle(to) == C_FYLE) {
-            rookfrom = to - 2;   rookto = to + 1;
-        } else {
-            rookfrom = to + 1;   rookto = to - 1;
-        }
-        ListPos[rookfrom] = ListPos[rookto];
-        List[ToMove][ListPos[rookto]] = rookfrom;
-        RemoveFromBoard (rook, rookto);
-        AddToBoard (rook, rookfrom);
-    }
-    return;
 }
 
 
@@ -2333,41 +2341,26 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 		return slen == len && std::equal(str, str + len, const_str);
 	};
 
-	// short castle
+	sm->from = square_Relative(ToMove, E1);
+	sm->promote = EMPTY;
+	sm->movingPiece = piece_Make(ToMove, KING);
+	sm->capturedPiece = EMPTY;
+
 	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
-		squareT kingSq = GetKingSquare(ToMove);
-		if (kingSq != (ToMove == WHITE ? E1 : E8))
-			return ERROR_InvalidMove;
+		sm->to = sm->from + 2;
+		if (!IsKingInCheck() && validCastling(true, true)) // short castle
+			return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
 
-		if (Board[kingSq + 1] != EMPTY || Board[kingSq + 2] != EMPTY ||
-		    CalcNumChecks(kingSq) > 0 || CalcNumChecks(kingSq + 1) > 0 ||
-		    CalcNumChecks(kingSq + 2) > 0) {
-			return ERROR_InvalidMove;
-		}
-		sm->from = kingSq;
-		sm->to = kingSq + 2;
-		sm->promote = EMPTY;
-		sm->movingPiece = piece_Make(ToMove, KING);
-		sm->capturedPiece = EMPTY;
-		return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
+		return validCastling(true, false) ? ERROR_CastlingAvailability
+		                                  : ERROR_InvalidMove;
 	}
-	// long castle
 	if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
-		squareT kingSq = GetKingSquare(ToMove);
-		if (kingSq != (ToMove == WHITE ? E1 : E8))
-			return ERROR_InvalidMove;
+		sm->to = sm->from - 2;
+		if (!IsKingInCheck() && validCastling(false, true)) // long castle
+			return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
 
-		if (Board[kingSq - 1] != EMPTY || Board[kingSq - 2] != EMPTY ||
-		    Board[kingSq - 3] != EMPTY || CalcNumChecks(kingSq) > 0 ||
-		    CalcNumChecks(kingSq - 1) > 0 || CalcNumChecks(kingSq - 2) > 0) {
-			return ERROR_InvalidMove;
-		}
-		sm->from = kingSq;
-		sm->to = kingSq - 2;
-		sm->promote = EMPTY;
-		sm->movingPiece = piece_Make(ToMove, KING);
-		sm->capturedPiece = EMPTY;
-		return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
+		return validCastling(false, false) ? ERROR_CastlingAvailability
+		                                   : ERROR_InvalidMove;
 	}
 	return ERROR_InvalidMove;
 }

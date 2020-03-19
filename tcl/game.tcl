@@ -196,6 +196,7 @@ proc ::game::Load { selection {ply ""} } {
 
   if {[catch {sc_game load $selection}]} {
     ERROR::MessageBox
+    ::notify::GameChanged
     return 0
   }
 

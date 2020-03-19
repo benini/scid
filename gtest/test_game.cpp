@@ -406,12 +406,26 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	    "[FEN bnrbkrqn/pppppppp/8/8/8/8/PPPPPPPP/BNRBKRQN w KQkq - 0 1]\n"
 	    "1.b3 Ng6 2.e4 e5 3.Ng3 Nc6 4.f3 Bg5 5.Be2 a6 6.Nc3 d6 7.Nd5 {_} -- "
 	    "8.Nf5");
-	// TODO:
-	// EXPECT_EQ(decode_game(chess960),
-	//           "b3 Ng6 e4 e5 Ng3 Nc6 f3 Bg5 Be2 a6 Nc3 d6 Nd5 ");
+	EXPECT_EQ(decode_game(chess960),
+	          "b3 Ng6 e4 e5 Ng3 Nc6 f3 Bg5 Be2 a6 Nc3 d6 Nd5 ");
 	EXPECT_EQ(decode_gameview(chess960),
 	          "1.b3 Ng6  2.e4 e5  3.Ng3 Nc6  4.f3 Bg5  5.Be2 a6  6.Nc3 d6  "
 	          "7.Nd5 O-O-O  8.Nf5");
+
+	// Illegal castling. Allowed by both gameview and game.
+	// The chess rules for castling (king not in check, empty squares between
+	// the rook and the king final positions) are not enforced.
+	auto obstacles = make_invalid(0, // unchanged,
+	                              "1.d4 d5 2.Qd3 Nf6 3.Bg5 Nc6 4.O-O-O");
+	EXPECT_EQ(decode_game(obstacles), "d4 d5 Qd3 Nf6 Bg5 Nc6 O-O-O ");
+	EXPECT_EQ(decode_gameview(obstacles),
+	          "1.d4 d5  2.Qd3 Nf6  3.Bg5 Nc6  4.O-O-O");
+
+	auto check = make_invalid(0, // unchanged,
+	                          "1.d4 d5 2.Nf3 e6 3.e3 Nf6 4.Nc3 Be7 5.Bb5+ O-O");
+	EXPECT_EQ(decode_game(check), "d4 d5 Nf3 e6 e3 Nf6 Nc3 Be7 Bb5+ O-O ");
+	EXPECT_EQ(decode_gameview(check),
+	          "1.d4 d5  2.Nf3 e6  3.e3 Nf6  4.Nc3 Be7  5.Bb5+ O-O");
 
 	// Castle twice. Allowed by gameview: no changes to the board; the notations
 	// is wrongly reported as O-O-O because the rook is to the left of the king.
@@ -427,8 +441,7 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	    9, // replace 2.c4 with O-O-O
 	    "[FEN r3k2r/2p2p2/2pq1p2/p2pp2p/P2PP2P/2PQ1P2/2P2P2/R3K2R w KQkq]\n"
 	    "1.Ra3 Rh6 {_} 2.c4 O-O-O 3. Ra2");
-	// TODO:
-	// EXPECT_EQ(decode_game(moved_rook), "Ra3 Rh6");
+	EXPECT_EQ(decode_game(moved_rook), "Ra3 Rh6 ");
 	EXPECT_EQ(decode_gameview(moved_rook), "1.Ra3 Rh6  2.O-O O-O-O  3.Rd2");
 
 	// No rook
@@ -436,8 +449,7 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	    9, // replace 2.c4 with O-O-O
 	    "[FEN 2k2r2/ppp5/8/8/8/2P1N2R/5PP1/4K3 b - - 0 1]\n"
 	    "1...a5 {_} 2.c4 a4 3.Rh5");
-	// TODO:
-	// EXPECT_EQ(decode_game(no_rook), "a5 ");
+	EXPECT_EQ(decode_game(no_rook), "a5 ");
 	EXPECT_EQ(decode_gameview(no_rook), "1...a5");
 
 	// Captured rook
@@ -445,8 +457,7 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	    9, // replace 4..f5 with O-O-O
 	    "[FEN r3k2r/2p2p2/2pq1p2/p2pp2p/P2PP2P/2PQ1P2/2P2P2/R3K2R w KQkq]\n"
 	    "1.Qa6 c5 2.Qxa8+ Qd8 3.Qc6+ Qd7 4.O-O {_} f5 5.Kh1 Kd8");
-	// TODO:
-	// EXPECT_EQ(decode_game(captured_rook), "Qa6 c5 Qxa8+ Qd8 Qc6+ Qd7 O-O ");
+	EXPECT_EQ(decode_game(captured_rook), "Qa6 c5 Qxa8+ Qd8 Qc6+ Qd7 O-O ");
 	EXPECT_EQ(decode_gameview(captured_rook),
 	          "1.Qa6 c5  2.Qxa8+ Qd8  3.Qc6+ Qd7  4.O-O");
 
@@ -455,16 +466,14 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	auto occ_king = make_invalid(
 	    0, // replace 2.Nf3 with a null move
 	    "1.e4 e5 {_} 2.Nf3 Nf6 3.Be2 Be7 4.O-O O-O 5.Kh1 a5 6.Nxe5");
-	// TODO:
-	// EXPECT_EQ(decode_game(occ_king), "e4 e5 -- Nf6 Be2 Be7 ");
+	EXPECT_EQ(decode_game(occ_king), "e4 e5 -- Nf6 Be2 Be7 ");
 	EXPECT_EQ(decode_gameview(occ_king),
 	          "1.e4 e5  2.-- Nf6  3.Be2 Be7  4.O-O O-O  5.Kh1 a5  6.Nf3");
 
 	auto occ_rook = make_invalid(
 	    0, // replace 3...Be7 with a null move
 	    "1.e4 e5 2.Nf3 Nf6 3.Be2 {_} Be7 4.O-O O-O 5.Kh1");
-	// TODO:
-	// EXPECT_EQ(decode_game(occ_rook), "e4 e5 Nf3 Nf6 Be2 -- O-O");
+	EXPECT_EQ(decode_game(occ_rook), "e4 e5 Nf3 Nf6 Be2 -- O-O ");
 	EXPECT_EQ(decode_gameview(occ_rook),
 	          "1.e4 e5  2.Nf3 Nf6  3.Be2 --  4.O-O O-O  5.Kh1");
 }
