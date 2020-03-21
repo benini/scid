@@ -374,7 +374,9 @@ namespace eval ::notify {
     ::windows::switcher::Refresh
     ::windows::stats::refresh_wnd
     ::maint::Refresh
-    updateStatusBar
+    if {$filter == -1} {
+      updateStatusBar
+    }
     ::search::DatabaseModified $dbase $filter
     ::tools::graphs::filter::Refresh
     ::tools::graphs::absfilter::Refresh
