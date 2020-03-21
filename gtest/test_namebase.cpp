@@ -121,8 +121,15 @@ TEST(Test_Namebase, sort_order) {
 	EXPECT_EQ(OK, nb.addName(nt, "ÜA", 255, 1000).first);
 	EXPECT_EQ(OK, nb.addName(nt, "ÜÜ", 255, 1000).first);
 	auto names = nb.getFirstMatches(nt, "", 4);
-	EXPECT_STREQ(nb.GetName(nt, names[0]), "AÜ");
-	EXPECT_STREQ(nb.GetName(nt, names[1]), "AA");
-	EXPECT_STREQ(nb.GetName(nt, names[2]), "ÜÜ");
-	EXPECT_STREQ(nb.GetName(nt, names[3]), "ÜA");
+	if (std::is_signed_v<char>) {
+		EXPECT_STREQ(nb.GetName(nt, names[0]), "AÜ");
+		EXPECT_STREQ(nb.GetName(nt, names[1]), "AA");
+		EXPECT_STREQ(nb.GetName(nt, names[2]), "ÜÜ");
+		EXPECT_STREQ(nb.GetName(nt, names[3]), "ÜA");
+	} else {
+		EXPECT_STREQ(nb.GetName(nt, names[1]), "AA");
+		EXPECT_STREQ(nb.GetName(nt, names[0]), "AÜ");
+		EXPECT_STREQ(nb.GetName(nt, names[3]), "ÜA");
+		EXPECT_STREQ(nb.GetName(nt, names[2]), "ÜÜ");
+	}
 }
