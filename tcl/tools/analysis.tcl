@@ -99,6 +99,8 @@ proc resetEngine {n} {
     set analysis(maxmovenumber$n) 0     ;# the number of moves in this position
     set analysis(lockEngine$n) 0        ;# the engine is locked to current position
     set analysis(fen$n) {}              ;# the position that engine is analyzing
+    array unset ::uciOptions$n
+    unset -nocomplain ::uci::sendUCIoptions_delay$n
 }
 
 resetEngine 1
@@ -1882,7 +1884,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     ::utils::tooltip::Set $w.b1.move $::tr(AddMove)
 
     ttk::spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state disabled -width 2 \
-            -command "changePVSize $n"
+            -command "after idle changePVSize $n"
     ::utils::tooltip::Set $w.b1.multipv $::tr(Lines)
     
     # add a button to start/stop engine analysis
@@ -1991,9 +1993,10 @@ proc onUciOk {{n} {multiPv_spin} {autostart} {uci_options}} {
             break
         }
     }
-    ::uci::sendUCIoptions $n $uci_options
-
-    if {$autostart} { startEngineAnalysis $n }
+    foreach {option} $uci_options {
+        array set ::uciOptions$n $option
+    }
+    ::uci::sendUCIoptions $n $autostart
 }
 
 
@@ -2028,19 +2031,8 @@ proc changePVSize { n } {
     }
     if { ! $analysis(uci$n) } { return }
 
-    # if the UCI engine was analysing, stop and restart
-    if {$analysis(analyzeMode$n)} {
-        stopAnalyzeMode $n
-        set analysis(waitForReadyOk$n) 1
-        sendToEngine $n "isready"
-        set dont_stuck [ after 60000 "set ::analysis(waitForReadyOk$n) 0" ]
-        vwait analysis(waitForReadyOk$n)
-        after cancel $dont_stuck
-        sendToEngine $n "setoption name MultiPV value $analysis(multiPVCount$n)"
-        startAnalyzeMode $n
-    } else {
-        sendToEngine $n "setoption name MultiPV value $analysis(multiPVCount$n)"
-    }
+    array set ::uciOptions$n [list "MultiPv" "$analysis(multiPVCount$n)"]
+    ::uci::sendUCIoptions $n $analysis(analyzeMode$n)
 }
 ################################################################################
 # setAnalysisPriority

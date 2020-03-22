@@ -646,16 +646,33 @@ namespace eval uci {
     # The engine replied readyok, so it's time to configure it (sends the options to the engine)
     # It seems necessary to ask first if engine is ready
     ################################################################################
-    proc sendUCIoptions { n uci_options} {
-        global analysis
-        foreach opt $uci_options {
-            set name [lindex $opt 0]
-            set value [lindex $opt 1]
-            set analysis(waitForReadyOk$n) 1
-            ::sendToEngine $n "isready"
-            vwait analysis(waitForReadyOk$n)
-            ::sendToEngine $n "setoption name $name value $value"
-            if { $name == "MultiPV" } { set analysis(multiPVCount$n) $value }
+    proc sendUCIoptions {n {startEngine 0} {delay 0}} {
+        if {[info exists ::uci::sendUCIoptions_delay$n]} {
+            if {$delay < [set ::uci::sendUCIoptions_delay$n]} { return }
+        }
+        unset -nocomplain ::uci::sendUCIoptions_delay$n
+
+        if {[array exists ::uciOptions$n]} {
+            stopAnalyzeMode $n
+            if { $::analysis(waitForReadyOk$n) } {
+                if {$delay < 1000} {
+                    incr delay 50
+                    set ::uci::sendUCIoptions_delay$n $delay
+                    after $delay "::uci::sendUCIoptions $n $startEngine $delay"
+                    return
+                } else {
+                    set analysis(waitForReadyOk$n) 0
+                }
+            }
+            foreach {name value} [array get ::uciOptions$n] {
+                ::sendToEngine $n "setoption name $name value $value"
+                if { $name == "MultiPV" } { set analysis(multiPVCount$n) $value }
+            }
+            array unset ::uciOptions$n
+        }
+
+        if {$startEngine} {
+            startEngineAnalysis $n
         }
     }
     ################################################################################

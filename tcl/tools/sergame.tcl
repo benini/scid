@@ -267,7 +267,10 @@ namespace eval sergame {
     
     ::uci::startEngine $::sergame::engineListBox($engine) $n
     set engineData [lindex $::engines(list) $::sergame::engineListBox($engine)]
-    ::uci::sendUCIoptions $n [ lindex $engineData 8 ]
+    foreach {option} [lindex $engineData 8] {
+      array set ::uciOptions$n $option
+    }
+    ::uci::sendUCIoptions $n
     
     set ::uci::uciInfo(prevscore$n) 0.0
     set ::uci::uciInfo(score$n) 0.0
