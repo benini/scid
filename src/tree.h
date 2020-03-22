@@ -21,7 +21,8 @@
 #define SCID_TREE_H
 
 #include "common.h"
-#include "filter.h"
+#include "hfilter.h"
+#include "position.h"
 #include <vector>
 #include <algorithm>
 
@@ -84,6 +85,29 @@ struct treeT {
     uint      totalCount;
 };
 
+//////////////////////////////////////////////////////////////////////
+// CompressedFilter class:
+//    Holds the same data as a filter, in compressed format.
+//    Random access to individual values is not possible.
+//    A CompressedFilter is created from, or restored to, a regular
+//    filter with the methods CompressFrom() and UncompressTo().
+class CompressedFilter {
+	gamenumT CFilterSize = 0;
+	gamenumT CFilterCount = 0;
+	gamenumT CompressedLength = 0;
+	byte* CompressedData = nullptr;
+
+public:
+	CompressedFilter() = default;
+	CompressedFilter(CompressedFilter&&) = default;
+	~CompressedFilter(void) { delete[] CompressedData; }
+
+	void CompressFrom(Filter* filter);
+	errorT UncompressTo(Filter* filter) const;
+
+private:
+	errorT Verify(Filter* filter);
+};
 
 // cachedTreeT:
 //    Stores a board position and its associated tree of all moves
@@ -112,9 +136,6 @@ public:
     const treeT& getTree() const {
         return tree_;
     }
-    static bool cmpTime(const cachedTreeT& a, const cachedTreeT& b) {
-        return a.time_ < b.time_;
-    }
 };
 
 
@@ -124,113 +145,50 @@ public:
 // position, the basic opening positions like 1.e4, 1.d4, etc) will
 // be have their tree information stored in a cache to save doing a
 // position search.
-
-
 class TreeCache {
-    size_t NumInUse;
-    cachedTreeT* Cache;
-    size_t CacheSize;
-    uint32_t counter_;
+	std::vector<cachedTreeT> cache_;
+	uint32_t counter_ = 0;
 
 public:
-    TreeCache()
-    : NumInUse(0),
-      Cache(NULL),
-      CacheSize(0),
-      counter_(0) {
-    }
-    ~TreeCache() {
-        if (Cache) delete [] Cache;
-    }
+	void Clear() { cache_.clear(); }
+	size_t Size() { return cache_.capacity(); }
+	size_t UsedSize() { return cache_.size(); }
+	void CacheResize(size_t max_size) {
+		cache_.clear();
+		cache_.reserve(max_size);
+	}
 
-    void Clear() {
-        NumInUse = 0;
-        counter_ = 0;
-    }
-    size_t Size() {
-        return CacheSize;
-    }
-    size_t UsedSize() {
-        return NumInUse;
-    }
-    void CacheResize(size_t max_size) {
-        if (max_size != CacheSize) {
-            CacheSize = max_size;
-            if (Cache) delete [] Cache;
-            if (max_size == 0) Cache = NULL;
-            else Cache = new cachedTreeT[max_size];
-        }
-        Clear();
-    }
+	const cachedTreeT* Lookup(Position* pos) {
+		auto it = std::find_if(
+		    cache_.begin(), cache_.end(), [pos](auto const& e) {
+			    return pos->GetToMove() == e.toMove_ &&
+			           std::equal(e.board_, e.board_ + 64, pos->GetBoard());
+		    });
+		if (it == cache_.end())
+			return nullptr;
 
-    const cachedTreeT* Lookup(Position* pos) {
-        int idx = LookupIndex(pos);
-        if (idx == -1) return NULL;
-        return &(Cache[idx]);
-    }
-    bool Add(Position* pos, treeT* tree, Filter* filter);
+		it->time_ = counter_++;
+		return &(*it);
+	}
 
-private:
-    TreeCache(const TreeCache&);
-    void operator=(const TreeCache&);
+	void Add(Position* pos, treeT* pTree, Filter* filter) {
+		ASSERT(!Lookup(pos));
 
-    int LookupIndex(Position* pos);
+		if (UsedSize() < Size()) {
+			// Cache is not yet full. Add the position to the cache:
+			cache_.emplace_back().set(pos, pTree, filter, counter_++);
+		} else {
+			// Cache is full!
+			// Replace the oldest node:
+			auto replace = std::min_element(
+			    cache_.begin(), cache_.end(),
+			    [](auto const& a, auto const& b) { return a.time_ < b.time_; });
+
+			if (replace != cache_.end())
+				replace->set(pos, pTree, filter, counter_++);
+		}
+	}
 };
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TreeCache::LookupIndex():
-//      Lookup a position in the tree cache, and return its index or -1
-//      if it is not in the cache.
-//
-inline int
-TreeCache::LookupIndex (Position * pos)
-{
-    for (uint i=0; i < NumInUse; i++) {
-        if (Cache[i].toMove_ != pos->GetToMove()) { continue; }
-
-        const pieceT* board = pos->GetBoard();
-        const pieceT* board2 = Cache[i].board_;
-        bool found = true;
-        for (squareT sq=A1; sq <= H8; sq++, board++, board2++) {
-            if (*board != *board2) { found = false; break; }
-        }
-        if (found) {
-            Cache[i].time_ = counter_++;
-            return static_cast<int>(i);
-        }
-    }
-    // Ended the search, no match:
-    return -1;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TreeCache::Add():
-//      Add a position to the cache if applicable..
-//
-inline bool
-TreeCache::Add (Position * pos, treeT * pTree, Filter * filter)
-{
-    ASSERT(LookupIndex(pos) == -1);
-
-    if (NumInUse < CacheSize) {
-        // Cache is not yet full. Add the position to the cache:
-        Cache[NumInUse++].set(pos, pTree, filter, counter_++);
-    } else {
-        // Cache is full!
-        // Replace the oldest node:
-        cachedTreeT* end = Cache + CacheSize;
-        cachedTreeT* replace = std::min_element(Cache, end, cachedTreeT::cmpTime);
-        if (replace == end) return false;
-
-        ASSERT(replace->time_ <= counter_);
-        replace->set(pos, pTree, filter, counter_++);
-    }
-    return true;
-}
 
 
 #endif

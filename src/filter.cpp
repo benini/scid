@@ -12,8 +12,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "hfilter.h"
-#include "filter.h"
+#include "tree.h"
 #include <cstring>
 
 
@@ -76,7 +75,7 @@ CompressedFilter::Verify (Filter * filter)
 void
 CompressedFilter::CompressFrom (Filter * filter)
 {
-    Clear();
+    delete[] CompressedData;
 
     CFilterSize = filter->Size();
     CFilterCount = filter->Count();
