@@ -1,6 +1,6 @@
 /*
 * Copyright (C) 1999 Shane Hudson
-* Copyright (C) 2015 Fulvio Benini
+* Copyright (C) 2015-2020 Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -20,9 +20,11 @@
 #ifndef SCID_TREE_H
 #define SCID_TREE_H
 
-#include "common.h"
+#include "board_def.h"
+#include "fullmove.h"
 #include "hfilter.h"
 #include "position.h"
+#include <cmath>
 #include <vector>
 #include <algorithm>
 
@@ -37,6 +39,59 @@
 //
 
 #define MAX_TREE_NODES 60
+
+
+struct TreeNode {
+	FullMove move;
+	gamenumT freq[NUM_RESULT_TYPES] = {}; // freq[0] is the total count.
+	gamenumT eloCount = 0;          // Count of games with an Elo.
+	gamenumT yearCount = 0;         // Count of games with year != 0.
+	gamenumT expectedPerfCount = 0;
+	unsigned long long eloSum = 0;  // Sum of Elos.
+	unsigned long long yearSum = 0; // Sum of years.
+	double expectedPerf = 0;
+
+public:
+	explicit TreeNode(FullMove m) : move(m) {
+		if (expVect_[0] == 0) {
+			for (int i = -800; i < 800; i++)
+				expVect_[i + 800] = 1 / (1 + std::pow(10, i / 400.0));
+		}
+	}
+
+	void add(resultT result, int eloW, int eloB, unsigned year) {
+		static_assert(RESULT_None == 0);
+		freq[0]++; // total count of games
+		if (result != RESULT_None) {
+			freq[result]++;
+			double r = RESULT_SCORE[result] / 2.0;
+			int eloDiff = eloB - eloW;
+			if (eloDiff < 800 && eloDiff >= -800) {
+				expectedPerf += r - expVect_[eloDiff + 800];
+				expectedPerfCount++;
+			}
+		}
+		auto elo = (move.getColor() == WHITE) ? eloW : eloB;
+		if (elo > 0) {
+			eloSum += elo;
+			++eloCount;
+		}
+		if (year > 0) {
+			yearSum += year;
+			++yearCount;
+		}
+	}
+
+	static auto cmp_ngames_desc() {
+		return
+		    [](auto const& a, auto const& b) { return a.freq[0] > b.freq[0]; };
+	}
+
+private:
+	static double expVect_[1600];
+};
+
+
 
 // treeNodeT:
 //    Stores the move data, frequency, score, results by result type,

@@ -70,22 +70,6 @@ struct scidBaseT {
 		Eco ecoGroup3_[(1 + (1<<16)/131)];
 	};
 
-	struct TreeStat {
-		colorT toMove;
-		std::string SAN;
-		int resultW, resultD, resultB;
-		double exp;
-		int ngames, nexp;
-
-	public:
-		TreeStat();
-		void add(int result, int eloW, int eloB);
-		bool operator<(const TreeStat& cmp) const { return ngames > cmp.ngames; }
-
-	private:
-		static double expVect_[1600];
-	};
-
 	scidBaseT();
 	~scidBaseT();
 
@@ -215,7 +199,7 @@ struct scidBaseT {
 	HFilter getFilter(std::string_view filterId) const;
 
 	const Stats& getStats() const;
-	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
+	std::vector<TreeNode> getTreeStat(const HFilter& filter) const;
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0)
 			nameFreq_ = idx->calcNameFreq(*getNameBase());
@@ -465,23 +449,6 @@ private:
 		return std::make_pair(OK, nCorrections);
 	}
 };
-
-inline void scidBaseT::TreeStat::add(int result, int eloW, int eloB) {
-	ngames++;
-	double r = 0;
-	switch (result) {
-		case RESULT_White: resultW++; r = 1; break;
-		case RESULT_Draw: resultD++; r = 0.5; break;
-		case RESULT_Black: resultB++; break;
-		default: return;
-	}
-	if (eloW == 0 || eloB == 0) return;
-	int eloDiff = eloB - eloW;
-	if (eloDiff < 800 && eloDiff >= -800) {
-		exp += r - expVect_[eloDiff+800];
-		nexp++;
-	}
-}
 
 template <typename TInitFunc, typename TMapFunc>
 std::pair<errorT, size_t>

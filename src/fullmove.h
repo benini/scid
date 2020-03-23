@@ -58,8 +58,8 @@ public:
 		m_ = to | (from << 6) | (pt << 24) | (c << 27);
 	}
 
-	operator bool() const { return m_ != 0; }
-	bool operator!=(const FullMove& f) const { return m_ != f.m_; }
+	explicit operator bool() const { return m_ != 0; }
+	bool operator==(FullMove const& f) const { return m_ == f.m_; }
 	bool    isPromo()     const { return (m_ & (3 << 14)) == (1 << 14); }
 	bool    isEnpassant() const { return (m_ & (3 << 14)) == (2 << 14); }
 	bool    isCastle()    const { return (m_ & (3 << 14)) == (3 << 14); }

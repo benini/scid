@@ -467,21 +467,10 @@ const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) c
 
 
 
-double scidBaseT::TreeStat::expVect_[1600];
+double TreeNode::expVect_[1600];
 
-scidBaseT::TreeStat::TreeStat()
-: toMove(NOCOLOR), resultW(0), resultD(0), resultB(0), exp(0), ngames(0), nexp(0)
-{
-	if (TreeStat::expVect_[0] == 0) {
-		for (int i=-800; i < 800; i++) TreeStat::expVect_[i+800] = 1/(1 + pow(10, i/400.0));
-	}
-}
-
-std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
-	ASSERT(filter != 0);
-
-	std::vector<scidBaseT::TreeStat> res;
-	std::vector<FullMove> v;
+std::vector<TreeNode> scidBaseT::getTreeStat(const HFilter& filter) const {
+	std::vector<TreeNode> res;
 	auto nb = getNameBase();
 	for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
 		uint ply = filter.get(gnum);
@@ -493,20 +482,16 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 		if (!move)
 			move = getGame(ie).getMove(ply);
 
-		size_t i = 0;
-		while (i < v.size() && v[i] != move) i++;
-		if (i == v.size()) {
-			v.push_back(move);
-			res.push_back(scidBaseT::TreeStat());
-		}
-		res[i].add(ie->GetResult(), ie->GetWhiteElo(nb), ie->GetBlackElo(nb));
+		auto it = std::find_if(
+		    res.begin(), res.end(),
+		    [move](auto const& stat) { return stat.move == move; });
+
+		auto& node = (it != res.end()) ? *it : res.emplace_back(move);
+		node.add(ie->GetResult(), ie->GetWhiteElo(nb), ie->GetBlackElo(nb),
+		         ie->GetYear());
 	}
 
-	for (size_t i = 0, n = v.size(); i < n; i++) {
-		res[i].SAN = !v[i] ? "[end]" : v[i].getSAN(&(res[i].toMove));
-	}
-
-	std::sort(res.begin(), res.end());
+	std::sort(res.begin(), res.end(), TreeNode::cmp_ngames_desc());
 	return res;
 }
 

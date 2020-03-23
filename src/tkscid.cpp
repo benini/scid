@@ -1534,21 +1534,19 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
 
     case FILTER_TREESTATS: {
-            std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
+            const auto stats = dbase->getTreeStat(filter);
             UI_List res (stats.size());
             UI_List ginfo(8);
-            for (uint i=0; i < stats.size(); i++) {
+            for (auto const& node : stats) {
                 ginfo.clear();
-                ginfo.push_back(stats[i].SAN);
-                ginfo.push_back(stats[i].ngames);
-                ginfo.push_back(stats[i].resultW);
-                ginfo.push_back(stats[i].resultD);
-                ginfo.push_back(stats[i].resultB);
-                ginfo.push_back(stats[i].exp);
-                ginfo.push_back(stats[i].nexp);
-                if (stats[i].toMove == WHITE) ginfo.push_back("W");
-                else ginfo.push_back(stats[i].toMove == BLACK ? "B" : " ");
-
+                ginfo.push_back(node.move ? node.move.getSAN() : "[end]");
+                ginfo.push_back(node.freq[0]);
+                ginfo.push_back(node.freq[RESULT_White]);
+                ginfo.push_back(node.freq[RESULT_Draw]);
+                ginfo.push_back(node.freq[RESULT_Black]);
+                ginfo.push_back(node.expectedPerf);
+                ginfo.push_back(node.expectedPerfCount);
+                ginfo.push_back(node.move.getColor() == WHITE ? "W" : "B");
                 res.push_back(ginfo);
             }
             return UI_Result(ti, OK, res);
