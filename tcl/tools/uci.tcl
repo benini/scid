@@ -661,12 +661,12 @@ namespace eval uci {
                     after $delay "::uci::sendUCIoptions $n $startEngine $delay"
                     return
                 } else {
-                    set analysis(waitForReadyOk$n) 0
+                    set ::analysis(waitForReadyOk$n) 0
                 }
             }
             foreach {name value} [array get ::uciOptions$n] {
                 ::sendToEngine $n "setoption name $name value $value"
-                if { $name == "MultiPV" } { set analysis(multiPVCount$n) $value }
+                if { $name == "MultiPV" } { set ::analysis(multiPVCount$n) $value }
             }
             array unset ::uciOptions$n
         }
