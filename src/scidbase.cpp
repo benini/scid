@@ -293,8 +293,8 @@ std::string scidBaseT::newFilter() {
 	return newname;
 }
 
-std::string scidBaseT::composeFilter(const std::string& mainFilter,
-                                     const std::string& maskFilter) const {
+std::string scidBaseT::composeFilter(std::string_view mainFilter,
+                                     std::string_view maskFilter) const {
 	std::string res;
 	if (mainFilter.empty()) return res;
 
@@ -307,7 +307,8 @@ std::string scidBaseT::composeFilter(const std::string& mainFilter,
 	}
 
 	if (!maskFilter.empty()) {
-		res = '+' + res + "+" + maskFilter;
+		res = '+' + res + "+";
+		res.append(maskFilter);
 	}
 
 	if (getFilter(res) == 0) res.clear();
@@ -350,6 +351,23 @@ HFilter scidBaseT::getFilter(std::string_view filterId) const {
 		}
 	}
 	return HFilter(main, mask);
+}
+
+std::pair<std::string, std::string>
+scidBaseT::getFilterComponents(std::string_view filterID) const {
+	if (filterID.empty())
+		return {};
+
+	if (filterID[0] != '+')
+		return {std::string(filterID), {}};
+
+	size_t maskName = filterID.find('+', 1);
+	ASSERT(maskName != std::string::npos);
+	ASSERT(getFilter(filterID.substr(1, maskName - 1)) != nullptr);
+	ASSERT(getFilter(filterID.substr(maskName + 1)) != nullptr);
+
+	return {std::string(filterID.substr(1, maskName - 1)),
+	        std::string(filterID.substr(maskName + 1))};
 }
 
 /**

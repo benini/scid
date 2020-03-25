@@ -407,6 +407,11 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0} {msg ""}} {
   }
 
   update
+
+  if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
+    #Interrupted
+    return -code break
+  }
 }
 
 proc changeProgressWindow {newtext} {

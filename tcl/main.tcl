@@ -264,7 +264,53 @@ proc updateMainToolbar {} {
   set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
 }
 
+# Update the "tree" filter of databases that have a view (gamelist or tree windows)
+# which depends on the current position.
+proc ::updateTreeFilter {{base ""}} {
+    if { [info exists ::treeFilterUpdating_] } {
+        incr ::treeFilterUpdating_
+        sc_tree search -cancel all
+        return
+    }
 
+    set all_bases [::windows::gamelist::listTreeBases $base]
+    lappend all_bases {*}[::tree::listTreeBases $base]
+
+    #TODO: don't do a full database search if there is only one filter.
+    set bases [lsort -unique -integer -index 0 $all_bases]
+
+    set ::treeFilterUpdating_ 1
+    foreach base_filter $bases {
+        lassign $base_filter base filter
+
+        #TODO: set progressbar and cancel (problem with multiple windows)
+
+        #TODO: ::tree::dorefresh should be called by ::notify::DatabaseModified
+        #      and should not change the filter
+        update idletasks
+        ::tree::dorefresh $base
+        if { $::treeFilterUpdating_ != 1 } {
+            after idle {
+                unset ::treeFilterUpdating_
+                ::updateTreeFilter
+            }
+            return
+        }
+
+        update idletasks
+        sc_filter new $base FEN
+        if { $::treeFilterUpdating_ != 1 } {
+            # Restart if the position changed before the update finished.
+            after idle {
+                unset ::treeFilterUpdating_
+                ::updateTreeFilter
+            }
+            return
+        }
+        ::notify::DatabaseModified $base tree
+    }
+    unset ::treeFilterUpdating_
+}
 
 proc toggleRotateBoard {} {
     ::board::flip .main.board

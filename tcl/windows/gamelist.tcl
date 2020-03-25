@@ -83,62 +83,34 @@ proc ::windows::gamelist::DatabaseModified {{dbase} {filter -1}} {
 		if {$::gamelistBase($w) == $dbase} {
 			if {$filter == -1} {
 				::windows::gamelist::update_ $w 0
+				::windows::gamelist::updateStats_ $w
 			} elseif {$filter == $::gamelistFilter($w) || \
-			          $filter == [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]} {
+			          [lsearch -exact [sc_filter components $::gamelistBase($w) $::gamelistFilter($w)] $filter] != -1} {
 				::windows::gamelist::update_ $w 1
+				::windows::gamelist::updateStats_ $w
 			}
-			::windows::gamelist::updateStats_ $w
 		}
 	}
 }
 
 proc ::windows::gamelist::PosMaskProgress {} {
 	update
-	if { $::gamelistUpdating != 1 } { break }
+	if { $::treeFilterUpdating_ != 1 } { break }
 }
 
-proc ::windows::gamelist::PosChanged {{wlist ""}} {
-	if { [info exists ::gamelistUpdating] } {
-		incr ::gamelistUpdating
-		return
-	}
-	set ::gamelistUpdating 1
-
+# Returns the list of databases whose tree filter needs to be updated when
+# the position of the main board changes.
+# It must also disable commands that depend on the current position.
+proc ::windows::gamelist::listTreeBases {{base ""}} {
 	set bases {}
-	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
-	foreach w $wlist {
-		if { $::gamelistPosMask($w) != 0 } {
+	foreach w $::windows::gamelist::wins {
+		if { $::gamelistPosMask($w) != 0 && ($base == "" || $base == $::gamelistBase($w)) } {
 			$w.games.glist tag configure fsmall -foreground #bababa
 			$w.buttons.boardFilter configure -image tb_BoardMaskBusy
-			if { [lsearch -exact $bases $::gamelistBase($w)] == -1 } {
-				lappend bases $::gamelistBase($w)
-			}
+			lappend bases [list $::gamelistBase($w) $::gamelistFilter($w)]
 		}
 	}
-
-	foreach base $bases {
-		update idletasks
-		#TODO: [sc_filter release $base $f]
-		set f [sc_filter new $base FEN]
-		if { $::gamelistUpdating != 1 } {
-			after idle {
-				unset ::gamelistUpdating
-				::windows::gamelist::PosChanged
-			}
-			return
-		}
-		if {$f != ""} {
-			foreach w $::windows::gamelist::wins {
-				if { $::gamelistBase($w) == $base && $::gamelistPosMask($w) != 0 } {
-					$w.games.glist tag configure fsmall -foreground ""
-					$w.buttons.boardFilter configure -image tb_BoardMask
-					set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) $f]
-					::notify::DatabaseModified $base $::gamelistFilter($w)
-				}
-			}
-		}
-	}
-	unset ::gamelistUpdating
+	return $bases
 }
 
 proc ::windows::gamelist::FilterReset {{w} {base}} {
@@ -213,14 +185,13 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 	after idle "::windows::gamelist::filterRelease_ $::gamelistBase($w) $::gamelistFilter($w)"
 	set ::gamelistBase($w) $base
 	set ::gamelistFilter($w) $filter
-	busyCursor $w
-	update idletasks
 	if { $::gamelistPosMask($w) != 0 } {
-		::windows::gamelist::PosChanged $w
+		#hack: set gamelistPosMask to trick searchpos_
+		set ::gamelistPosMask($w) 0
+		::windows::gamelist::searchpos_ $w
 	} else {
 		::windows::gamelist::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 	}
-	unbusyCursor $w
 }
 
 #Examples
@@ -576,7 +547,10 @@ proc ::windows::gamelist::filter_ {{w} {type}} {
 
 proc ::windows::gamelist::update_ {{w} {moveUp}} {
 	set f $::gamelistFilter($w)
-	foreach {filterSz gameSz mainSz} [sc_filter sizes $::gamelistBase($w) $f] {}
+	lassign [sc_filter sizes $::gamelistBase($w) $f] filterSz gameSz mainSz
+
+	$w.games.glist tag configure fsmall -foreground ""
+	$w.buttons.boardFilter configure -image tb_BoardMask
 
 	if {$gameSz == $mainSz} {
 		$w.buttons.filter configure -image tb_search_on
@@ -598,13 +572,12 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 	if {$::gamelistPosMask($w) == 0} {
 		set ::gamelistPosMask($w) 1
 		$w.buttons.boardFilter state pressed
-		::windows::gamelist::PosChanged $w
+		set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) "tree"]
+		::updateTreeFilter $::gamelistBase($w)
 	} else {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
 		set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]
-		$w.games.glist tag configure fsmall -foreground ""
-		$w.buttons.boardFilter configure -image tb_BoardMask
 		::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 	}
 }

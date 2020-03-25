@@ -36,6 +36,23 @@ namespace {
 * Every database has a default filter with id "dbfilter".
 */
 
+/// @baseId: valid database identifier
+/// @filterId: valid identifier of a filter.
+/// @return the ids of the "main" and "mask" filters of the composed filter
+///         @e filterId (if it is not composed returns @filterId and empty).
+UI_res_t sc_filter_components(UI_handle_t ti, const scidBaseT& dbase, int argc,
+                              const char** argv) {
+	const char* usage = "Usage: sc_filter components baseId filterId";
+	if (argc != 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	auto filters = dbase.getFilterComponents(argv[3]);
+	UI_List res(2);
+	res.push_back(filters.first);
+	res.push_back(filters.second);
+	return UI_Result(ti, OK, res);
+}
+
 /**
  * sc_filter_compose() - compose a new filter
  * @baseId: valid database identifier
@@ -159,7 +176,7 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	const char* usage = "Usage: sc_filter <cmd> baseId filterId [args]";
 	if (argc < 2) return UI_Result(ti, ERROR_BadArg, usage);
 
-	static const char* options[] = {"compose", "remove", "reset", "sizes", NULL};
+	static const char* options[] = {"components", "compose", "remove", "reset", "sizes", NULL};
 	if (strUniqueMatch(argv[1], options) == - 1)
 		return sc_filter_old(cd, ti, argc, argv);
 
@@ -175,6 +192,8 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 		return UI_Result(ti, ERROR_BadArg, usage);
 
 	const char* cmd = argv[1];
+	if (strcmp("components", cmd) == 0)
+		return sc_filter_components(ti, *dbase, argc, argv);
 	if (strcmp("compose", cmd) == 0)
 		return sc_filter_compose(ti, *dbase, argc, argv);
 	if (strcmp("remove", cmd) == 0)

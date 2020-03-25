@@ -188,15 +188,26 @@ struct scidBaseT {
 	 * A Filter is a selection of games, usually obtained searching the
 	 * database. A new Filter is created calling the function newFilter()
 	 * and must be released calling the function deleteFilter().
-	 * A composed Filter is a special construct created combining two Filters
-	 * and includes only the games contained in both Filters.
-	 * A composed Filter should NOT be released.
 	 */
 	std::string newFilter();
-	std::string composeFilter(const std::string& mainFilter,
-	                          const std::string& maskFilter) const;
 	void deleteFilter(const char* filterId);
 	HFilter getFilter(std::string_view filterId) const;
+
+	/// A composed filter is a special construct created combining two filters
+	/// and includes only the games contained in both filters. It should NOT be
+	/// deleted and became invalid if any of its components is deleted.
+	/// @mainFilter: valid identifier of the main filter (the filter which is
+	///              modified by non-const operations).
+	/// @maskFilter: valid identifier of the mask filter (const).
+	/// @return the id of the composed filter.
+	std::string composeFilter(std::string_view mainFilter,
+	                          std::string_view maskFilter) const;
+
+	/// Get the components of a composed filter.
+	/// @filterId: valid identifier of a filter.
+	/// @return the components (second is empty if its not a a composed filter).
+	std::pair<std::string, std::string>
+	getFilterComponents(std::string_view filterId) const;
 
 	const Stats& getStats() const;
 	std::vector<TreeNode> getTreeStat(const HFilter& filter) const;

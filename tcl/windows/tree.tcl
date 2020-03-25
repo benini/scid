@@ -210,7 +210,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   wm minsize $w 40 5
   ::createToplevelFinalize $w
   
-  wm protocol $w WM_DELETE_WINDOW " .treeWin$baseNumber.buttons.close invoke "
   ::tree::refresh $baseNumber
   set ::tree::cachesize($baseNumber) [lindex [sc_tree cacheinfo $baseNumber] 1]
 }
@@ -224,11 +223,6 @@ proc ::tree::hideCtxtMenu { baseNumber } {
 }
 ################################################################################
 proc ::tree::selectCallback { baseNumber move } {
-  
-  if { $::tree(refresh) } {
-    return
-  }
-  
   if {$::tree(autorefresh$baseNumber)} {
     tree::select $move $baseNumber
   }
@@ -366,20 +360,34 @@ proc ::tree::select { move baseNumber } {
   catch { addSanMove $move }
 }
 
-set tree(refresh) 0
-
 ################################################################################
-proc ::tree::refresh { { baseNumber "" }} {
-  set tree(refresh) 1
-  if {$baseNumber == "" } {
-    sc_tree search -cancel all
-    foreach i [sc_base list] {
-      if { [::tree::dorefresh $i] == "canceled" } { break }
+
+# Returns the list of databases whose tree filter needs to be updated when
+# the position of the main board changes.
+# It must also disable commands that depend on the current position.
+proc ::tree::listTreeBases {{base ""}} {
+    if { $base == "" } {
+        set base [sc_base list]
     }
-  } else {
-    ::tree::dorefresh $baseNumber
-  }
-  set tree(refresh) 0
+    set bases {}
+    foreach baseNumber $base {
+        if { [winfo exists .treeWin$baseNumber] } {
+            set filter ""
+            if { $::tree(allgames$baseNumber) == 0 } {
+                set filter "dbfilter"
+            }
+            lappend bases [list $baseNumber $filter]
+        }
+    }
+    return $bases
+}
+
+proc ::tree::refresh { { baseNumber "" }} {
+    if { $baseNumber != "" && [lsearch -exact [sc_base list] $baseNumber] == -1 } {
+        displayLines $baseNumber "Error: the file is not open."
+        return
+    }
+    ::updateTreeFilter $baseNumber
 }
 
 ################################################################################
@@ -390,9 +398,10 @@ proc ::tree::dorefresh { baseNumber } {
   if {![winfo exists $w]} { return }
   if { ! $tree(autorefresh$baseNumber) } { return }
 
+  $w.progress coords bar 0 0 0 0
   grid $w.progress -in $w.statusframe -column 0 -row 0 -sticky nsew
-  
-  progressBarSet $w.progress [$w.progress cget -width] 100
+
+  progressBarSet $w.progress [lindex [grid bbox $w.statusframe] 2] 100
   foreach button {best graph training allgames close} {
     $w.buttons.$button configure -state disabled
   }
@@ -402,7 +411,7 @@ proc ::tree::dorefresh { baseNumber } {
   if { $tree(allgames$baseNumber) == 0 } {
     set filtered 1
   }
-  
+
   set err [ catch { sc_tree search -hide $tree(training$baseNumber) \
                                    -sort $tree(order$baseNumber) \
                                    -base $baseNumber \
@@ -421,10 +430,10 @@ proc ::tree::dorefresh { baseNumber } {
   ::tree::status "" $baseNumber
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
   
+  grid forget $w.progress
   if { $moves == "canceled" } { return "canceled"}
   displayLines $baseNumber $moves  
 
-  grid forget $w.progress
   if {$::tree::trainingBase != 0 && $::tree::trainingColor == [sc_pos side]} {
     ::tree::doTraining
   }

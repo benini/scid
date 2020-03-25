@@ -461,7 +461,7 @@ TEST_F(Test_Scidbase, new_compose_delete_get_Filter) {
 	ASSERT_EQ(OK, dbase.open("MEMORY", FMODE_Create, "Memory"));
 
 	std::vector<std::pair<std::string, bool>> tests = {
-	    {" dbfilter", false},   {"dbfilter ", false}, {"+dbfilter+", true},
+	    {" dbfilter", false},   {"dbfilter ", false}, {"dbfilter", true},
 	    {"tree", true},         {"+dbfilter", false}, {"++dbfilter", false},
 	    {"++dbfilter+", false}, {"", false},          {"+", false},
 	    {"++", false},          {"+++", false},       {" +", false},
@@ -477,10 +477,12 @@ TEST_F(Test_Scidbase, new_compose_delete_get_Filter) {
 			auto composed = dbase.composeFilter(e.first, mask);
 			EXPECT_EQ(valid, dbase.getFilter(composed) != nullptr);
 			if (valid) {
+				auto [f1, f2] = dbase.getFilterComponents(composed);
+				EXPECT_EQ(f1, e.first);
+				EXPECT_EQ(f2, mask);
+				EXPECT_EQ(e.first, dbase.composeFilter(composed, ""));
+
 				mask = e.first;
-				if (e.first[0] != '+') {
-					EXPECT_EQ(e.first, dbase.composeFilter(composed, ""));
-				}
 			}
 		}
 	};

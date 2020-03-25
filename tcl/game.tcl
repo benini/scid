@@ -344,14 +344,13 @@ namespace eval ::notify {
     if {$::showGameInfo} { updateGameInfo }
     updateAnalysis 1
     updateAnalysis 2
-    ::windows::gamelist::PosChanged
     ::windows::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     updateNoveltyWin
-    ::tree::refresh
+    ::updateTreeFilter
   }
 
   # To be called when the current database change or a new base is opened
