@@ -333,8 +333,23 @@ proc ::tree::doTraining { { n 0 } } {
     }
   }
   
-  set move [sc_tree move $::tree::trainingBase random]
-  addSanMove $move
+  set moves [sc_filter treestats $::tree::trainingBase "tree"]
+  set tot_freq 0
+  foreach move $moves {
+      lassign $move san freq
+      if { $san ne {[end]} } { incr tot_freq $freq }
+  }
+  set random_move [expr {int( rand()*$tot_freq )}]
+  set freq_move 0
+  foreach move $moves {
+      lassign $move san freq
+      if { $san ne {[end]} } {
+          incr freq_move $freq
+          if {$random_move <= $freq_move } {
+              return [addSanMove $move]
+          }
+      }
+  }
 }
 
 ################################################################################

@@ -7632,11 +7632,11 @@ int
 sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "best", "move", "positions", "search", "size",
+        "best", "positions", "search", "size",
         "cachesize", "cacheinfo", NULL
     };
     enum {
-        TREE_BEST, TREE_MOVE, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
+        TREE_BEST, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
         TREE_CACHESIZE, TREE_CACHEINFO
     };
 
@@ -7644,9 +7644,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case TREE_MOVE:
-        return sc_tree_move (cd, ti, argc, argv);
-
     case TREE_POSITIONS:
         // Return the number of positions cached:
         return UI_Result(ti, OK, db->treeCache.UsedSize());
@@ -7670,55 +7667,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_tree_move:
-//    Returns the move for a tree line.
-//    Arg can be in the range [1.. numTreeLines].
-//    It can also be "random" to request a random move selected
-//    according to the frequency of each move in the tree.
-int
-sc_tree_move (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 4) {
-        return errorResult (ti, "Usage: sc_tree move <baseNum> <lineNum>");
-    }
-
-    const scidBaseT* base = DBasePool::getBase(strGetUnsigned(argv[2]));
-    if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
-
-    int selection = strGetInteger (argv[3]);
-    if (argv[3][0] == 'r'  &&  strIsPrefix (argv[3], "random")) {
-        uint total = base->tree.totalCount;
-        if (total == 0) { return TCL_OK; }
-        uint r = rand() % total;
-        uint sum = 0;
-        for (uint i=0; i < base->tree.moveCount; i++) {
-            sum += base->tree.node[i].total;
-            if (r <= sum) {
-                selection = i + 1;
-                break;
-            }
-        }
-    }
-
-    if (selection < 1  ||  selection > (int)(base->tree.moveCount)) {
-        // Not a valid selection. We ignore it (e.g. the user clicked on a
-        // line with no move on it).
-        return TCL_OK;
-    }
-
-    const treeNodeT* node = &(base->tree.node[selection - 1]);
-
-    // If the san string first char is not a letter, it is the
-    // empty move (e.g. "[end]") so we do NOT add a move:
-    if (! isalpha(node->san[0])) {
-        return TCL_OK;
-    }
-
-    Tcl_AppendResult (ti, node->san, NULL);
-    return TCL_OK;
-}
 
 // Enumeration of possible move-sorting methods for tree mode:
 enum moveSortE { SORT_ALPHA, SORT_ECO, SORT_FREQUENCY, SORT_SCORE };

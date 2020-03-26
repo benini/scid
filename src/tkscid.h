@@ -90,7 +90,6 @@ int sc_pos_probe      (TCL_ARGS);
 int sc_pos_probe_board (TCL_ARGS);
 int sc_pos_setComment (TCL_ARGS);
 
-int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);
