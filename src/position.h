@@ -277,7 +277,6 @@ public:
     errorT      RelocatePiece (squareT fromSq, squareT toSq);
 
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
-    void        MakeUCIString (simpleMoveT * sm, char * s);
 	void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
 
     errorT      ReadCoordMove(simpleMoveT* m, const char* s, int slen, bool reverse);

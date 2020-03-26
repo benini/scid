@@ -1974,8 +1974,8 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (err != OK)
                 return UI_Result(ti, err);
 
-            char buf[16];
-            pos->MakeUCIString(&sm, buf);
+            char buf[16] = {};
+            sm.toLongNotation(buf);
             return UI_Result(ti, OK, buf);
         }
         return errorResult(ti, "usage sc_game SANtoUCI move");

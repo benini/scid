@@ -2040,46 +2040,6 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::MakeUCIString():
-//      Make the UCI string for a simpleMove.
-//
-void
-Position::MakeUCIString (simpleMoveT * m, char * s)
-{
-    ASSERT (m != NULL  &&  s != NULL);
-
-    // Make sure m->pieceNum is updated:
-    m->pieceNum = ListPos[m->from];
-    pieceT  p    = piece_Type (Board[List[ToMove][m->pieceNum]]);
-    squareT from = List[ToMove][m->pieceNum];
-    squareT to   = m->to;
-
-    char * c     = s;
-
-    if (from == to && to != NULL_SQUARE) {
-      // UCI standard for null move
-        c[0] = '0';
-        c[1] = '0';
-        c[2] = '0';
-        c[3] = '0';
-        c[4] = 0;
-        return;
-    }
-
-    *c++ = square_FyleChar(from);
-    *c++ = square_RankChar(from);
-    *c++ = square_FyleChar(to);
-    *c++ = square_RankChar(to);
-    if (p == PAWN) {
-        if ((square_Rank(to)==RANK_1) || (square_Rank(to)==RANK_8)) {
-            *c++ = piece_Char(m->promote);
-        }
-    }
-
-    *c = 0;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ReadCoordMove():
 //      Given a move in coordinate notation,
 //      e.g. "e2e4" or "g1f3", generates the legal move it represents.

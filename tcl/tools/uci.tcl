@@ -814,14 +814,12 @@ namespace eval uci {
             set s2 [::board::sq $s2]
             if {[string length $m] > 4} {
                 set promo [string range $m 4 end]
-                # inverse transformation : const char PIECE_CHAR [] = "xKQRBNP.xkqrbnpxMm";
-                # it seems capitalisation does not matter (see addMove proc in main.tcl)
                 switch -- $promo {
                     q { set p 2}
                     r { set p 3}
                     b { set p 4}
                     n { set p 5}
-                    default {puts "Promo error $promo for moves $moves"}
+                    default { return 1 }
                 }
                 if { [catch { sc_move add $s1 $s2 $p } ] } { return 1 }
             } else  {

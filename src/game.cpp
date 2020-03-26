@@ -1664,14 +1664,11 @@ Game::GetPrevSAN (char * str)
 //      Prints an empty string ("") if not at a move.
 void Game::GetPrevMoveUCI(char* str) const {
     ASSERT(str != NULL);
-    moveT* m = CurrentMove->prev;
-    if (m->marker == START_MARKER) {
-        str[0] = 0;
-    } else {
-        Position pos(*CurrentPos);
-        pos.UndoSimpleMove(&m->moveData);
-        pos.MakeUCIString(&m->moveData, str);
-    }
+    const auto m = CurrentMove->prev;
+    if (!m->startMarker())
+        str = m->moveData.toLongNotation(str);
+
+    *str = '\0';
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1682,12 +1679,10 @@ void
 Game::GetNextMoveUCI (char * str)
 {
     ASSERT (str != NULL);
-    moveT * m = CurrentMove;
-    if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
-      str[0] = 0;
-      return;
-    }
-    CurrentPos->MakeUCIString (&(m->moveData), str);
+    if (!CurrentMove->endMarker())
+        str = CurrentMove->moveData.toLongNotation(str);
+
+    *str = '\0';
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
