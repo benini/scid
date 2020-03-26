@@ -229,18 +229,22 @@ proc updateStatusBar {} {
 
 proc updateMainToolbar {} {
   if {[sc_pos isAt start]} {
+    ::board::setButtonCmd .main.board leavevar ""
     ::board::setButtonCmd .main.board back ""
     catch { unset ::gameInfoBar(tb_BD_Start) }
   } else {
+    ::board::setButtonCmd .main.board leavevar "::move::ExitVarOrStart"
     ::board::setButtonCmd .main.board back "::move::Back"
     set ::gameInfoBar(tb_BD_Start) "::move::Start"
   }
   if {[sc_pos isAt end] || [sc_pos isAt vend]} {
     ::board::setButtonCmd .main.board forward ""
+    ::board::setButtonCmd .main.board endvar ""
     catch { unset ::gameInfoBar(tb_BD_End) }
     catch { unset ::gameInfoBar(tb_BD_Autoplay) }
   } else {
     ::board::setButtonCmd .main.board forward "::move::Forward"
+    ::board::setButtonCmd .main.board endvar "::move::EndVar"
     set ::gameInfoBar(tb_BD_End) "::move::End"
     set ::gameInfoBar(tb_BD_Autoplay) "startAutoplay"
   }

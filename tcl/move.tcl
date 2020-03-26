@@ -83,6 +83,15 @@ proc ::move::End {} {
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
 }
 
+proc ::move::EndVar {} {
+	if {[info exists ::playMode] && [eval "$::playMode moveEnd"] == 0} {
+		return
+	}
+	sc_move endVar
+	updateBoard
+	if {[::move::drawVarArrows]} { ::move::showVarArrows }
+}
+
 proc ::move::ExitVar {} {
 	if {[sc_var level] == 0 } { return 0; }
 	if {[info exists ::playMode] && [eval "$::playMode moveExitVar"] == 0} {
@@ -91,6 +100,12 @@ proc ::move::ExitVar {} {
 	sc_var exit;
 	updateBoard
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
+}
+
+proc ::move::ExitVarOrStart {} {
+	if {[::move::ExitVar] eq 0} {
+		::move::Start
+	}
 }
 
 proc ::move::Back {{count 1}} {

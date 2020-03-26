@@ -417,17 +417,29 @@ proc ::board::addInfoBar {w varname} {
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
   grid propagate $w.bar.info 0
+  ttk::button $w.bar.leavevar -image tb_BD_BackStart -style Toolbutton
   ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
   ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
+  ttk::button $w.bar.endvar -image tb_BD_ForwardEnd -style Toolbutton
   set menu [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
     -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
-  grid $w.bar.back -row 0 -column 0 -sticky news
-  grid $w.bar.cmd -in $w.bar -row 0 -column 1 -sticky news -padx 8
-  grid $w.bar.info -in $w.bar -row 0 -column 2 -sticky news
+  grid $w.bar.leavevar -row 0 -column 0 -sticky news
+  grid $w.bar.back -row 0 -column 1 -sticky news
+  grid $w.bar.cmd -in $w.bar -row 0 -column 2 -sticky news -padx 8
+  grid $w.bar.info -in $w.bar -row 0 -column 3 -sticky news
   grid $w.bar.forward -row 0 -column 4 -sticky news
-  grid columnconfigure $w.bar 2 -weight 1
+  grid $w.bar.endvar -row 0 -column 5 -sticky news
+  grid columnconfigure $w.bar 3 -weight 1
   grid $w.bar -row 20 -column 3 -columnspan 8 -sticky news -pady 4
+  ::bind $w.bar <Configure> {+
+	grid remove %W.leavevar
+	grid remove %W.endvar
+	if {%w > 450} {
+	  grid %W.leavevar
+	  grid %W.endvar
+	}
+  }
 }
 
 proc ::board::addInfo {{w} {msg}} {

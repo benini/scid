@@ -4782,12 +4782,12 @@ int
 sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "add", "addSan", "addUCI", "back", "end", "forward",
+        "add", "addSan", "addUCI", "back", "end", "endVar", "forward",
         "pgn", "ply", "start", NULL
     };
     enum {
-        MOVE_ADD, MOVE_ADDSAN, MOVE_ADDUCI, MOVE_BACK, MOVE_END, MOVE_FORWARD,
-        MOVE_PGN, MOVE_PLY, MOVE_START
+        MOVE_ADD, MOVE_ADDSAN, MOVE_ADDUCI, MOVE_BACK, MOVE_END, MOVE_ENDVAR,
+        MOVE_FORWARD, MOVE_PGN, MOVE_PLY, MOVE_START
     };
     int index = -1;
 
@@ -4808,6 +4808,11 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case MOVE_END:
         db->game->MoveToEnd();
+        break;
+
+    case MOVE_ENDVAR:
+        while (db->game->MoveForward() == OK) {
+        }
         break;
 
     case MOVE_FORWARD:
