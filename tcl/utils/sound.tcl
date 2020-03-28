@@ -214,21 +214,6 @@ proc ::utils::sound::OptionsDialog {} {
   set f $w.f
   set r 0
   
-  ttk::label $f.ftitle -text $::tr(SoundsFolder) -font font_Bold
-  grid $f.ftitle -row $r -column 0 -columnspan 3 -pady 4
-  incr r
-  
-  ttk::entry $f.folderEntry -width 40 -textvariable ::utils::sound::soundFolder_temp
-  grid $f.folderEntry -row $r -column 0 -columnspan 2 -sticky we
-  ttk::button $f.folderBrowse -text " $::tr(Browse)... " \
-      -command ::utils::sound::OptionsDialogChooseFolder
-  grid $f.folderBrowse -row $r -column 2
-  incr r
-  
-  ttk::label $f.folderHelp -text $::tr(SoundsFolderHelp)
-  grid $f.folderHelp -row $r -column 0 -columnspan 3
-  incr r
-  
   grid [ttk::frame $f.gap$r -height 5] -row $r -column -0; incr r
   
   ttk::label $f.title -text $::tr(SoundsAnnounceOptions) -font font_Bold
@@ -261,17 +246,28 @@ proc ::utils::sound::OptionsDialog {} {
   wm resizable $w 0 0
   raiseWin $w
   grab $w
-  focus $w.f.folderEntry
 }
 
-proc ::utils::sound::OptionsDialogChooseFolder {} {
-  set newFolder [tk_chooseDirectory \
-      -initialdir $::utils::sound::soundFolder_temp \
-      -parent .soundOptions \
-      -title "Scid: $::tr(SoundsFolder)"]
-  if {$newFolder != ""} {
-    set ::utils::sound::soundFolder_temp [file nativename $newFolder]
-  }
+proc ::utils::sound::GetDialogChooseFolder { widget } {
+    set newFolder [tk_chooseDirectory \
+                       -initialdir $::utils::sound::soundFolder \
+                       -title "Scid: $::tr(SoundsFolder)" -parent [winfo toplevel $widget] ]
+    # If the user selected a different folder to look in, read it
+    # and tell the user how many sound files were found there.
+    if {$newFolder != "" && $newFolder != $::utils::sound::soundFolder } {
+        if { [::utils::sound::OptionsDialogChooseFolder $newFolder] } {
+            $widget delete 0 end
+            $widget insert end $newFolder
+        }
+    }
+}
+
+proc ::utils::sound::OptionsDialogChooseFolder { newFolder } {
+    set ::utils::sound::soundFolder [file nativename $newFolder]
+    set numSoundFiles [::utils::sound::ReadFolder]
+    tk_messageBox -title "Scid: Sound Files" -type ok -icon info -parent .resDialog \
+        -message "Found $numSoundFiles of [llength $::utils::sound::soundFiles] sound files in $::utils::sound::soundFolder"
+    return $numSoundFiles
 }
 
 proc ::utils::sound::OptionsDialogOK {} {

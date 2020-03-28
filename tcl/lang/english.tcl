@@ -313,20 +313,21 @@ menuText E OptionsWindowsIconify "Auto-Iconify" 5 \
 menuText E OptionsWindowsRaise "Auto-Raise" 5 \
   {Raise certain windows (e.g. progress bars) whenever they are obscured}
 menuText E OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
+menuText E OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows (needs restart)}
 menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText E OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText E OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText E OptionsECO "Load ECO File..." 7 {Load the ECO classification file}
-menuText E OptionsSpell "Load Spellcheck File..." 11 \
+menuText E OptionsECO "Load ECO File" 7 {Load the ECO classification file}
+menuText E OptionsSpell "Load Spellcheck File" 11 \
   {Load the Scid spellcheck file}
-menuText E OptionsTable "Tablebase Directory..." 10 \
+menuText E OptionsTable "Tablebase Directory" 10 \
   {Select a tablebase file; all tablebases in its directory will be used}
 menuText E OptionsRecent "Recent Files..." 0 {Change the number of recent files displayed in the File menu}
-menuText E OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
-menuText E OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
-menuText E OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText E OptionsBooksDir "Books directory" 0 {Sets the opening books directory}
+menuText E OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
+menuText E OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 menuText E OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText E OptionsSave "Save Options" 0 "Save all settable options to the file $::optionsFile"
 menuText E OptionsAutoSave "Auto-Save Options on Exit" 0 \
@@ -1770,5 +1771,6 @@ translate E OptionsBoardPieces "Piece Style"
 translate E MenuColorForeground "Textcolor"
 translate E MenuColorBackground "Background"
 translate E MenuColorSelect "Select"
+translate E OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of english.tcl

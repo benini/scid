@@ -66,3 +66,73 @@ proc ::preferences::Open { {toggle ""} } {
   replaceConfig 0 $w.c
   focus $t
 }
+
+### wrapper function: checking for valid file or directory and changed value then calling the setter function
+proc ::preferences::checkFileDir { widget command type oldvalue} {
+    global spellCheckFile
+
+    set filename [$widget get]
+    if {$filename ne "" && ![file $type $filename]} {
+        $widget configure -style Error.TEntry
+        return
+    }
+    $widget configure -style TEntry
+    if {$filename eq [set $oldvalue]} {
+        return
+    }
+    grab [winfo toplevel $widget]
+    $command "$filename"
+}
+
+proc ::preferences::resources { } {
+    # Directories
+    set w .resDialog
+    win::createDialog $w
+    ::setTitle $w "Scid Resources"
+
+    set idx 0
+    foreach file { ::spellCheckFile ::ecoFile ::scidBooksDir ::scidBasesDir ::scidPhotoDir ::utils::sound::soundFolder } \
+        label { OptionsSpell OptionsECO OptionsBooksDir OptionsTacticsBasesDir OptionsPhotosDir SoundsFolder} \
+        valtype { isfile isfile isdirectory isdirectory isdirectory isdirectory } \
+        command { getSpellCheckFile getECOFile getBooksDir getTacticsBasesDir getPhotoDir ::utils::sound::GetDialogChooseFolder } \
+        checkvaluecommand { readSpellCheckFile readECOFile setBooksDir setTacticsBasesDir setPhotoDir ::utils::sound::OptionsDialogChooseFolder } {
+        incr idx
+        ttk::label $w.$file -text [tr $label]:
+        ttk::frame $w.$idx
+        set temp ""
+        if { [info exists $file] } { set temp [set $file] }
+        ttk::entry $w.$idx.file -width 80
+        $w.$idx.file insert end $temp
+        ttk::button $w.$idx.b -text "..." -command "$command $w.$idx.file"
+        $w.$idx.file configure -validate key -validatecommand "
+              after cancel ::preferences::checkFileDir $w.$idx.file $checkvaluecommand $valtype $file
+              after 200 ::preferences::checkFileDir $w.$idx.file $checkvaluecommand $valtype $file
+              return true"
+        pack $w.$file $w.$idx -anchor w -fill x
+        pack $w.$idx.b -side right -padx 2
+        pack $w.$idx.file -side left -padx 2 -fill x -expand yes
+    }
+    ttk::label $w.folderHelp -text $::tr(SoundsFolderHelp)
+    pack $w.folderHelp -side top -anchor w
+
+    # Prompt user to select a tablebase file; all the files in its
+    # directory will be used.
+    ttk::label $w.title -text [tr OptionsTablebaseDir]
+    pack $w.title -side top -fill x -pady "10 0"
+    foreach i {1 2 3 4} {
+        pack [ttk::frame $w.f$i] -side top -fill x -expand yes
+        ttk::entry $w.f$i.e -width 80
+        $w.f$i.e insert end $::initialDir(tablebase$i)
+        $w.f$i.e configure -validate key -validatecommand "
+              after cancel ::openTableBaseDirs $i $w.f$i.e
+              after 200 ::openTableBaseDirs $i $w.f$i.e
+              return true"
+        ttk::button $w.f$i.b -text "..." -command "chooseTableBaseDir $w.f$i.e"
+
+        pack $w.f$i.b -side right -padx 2
+        pack $w.f$i.e -side left -padx 2 -fill x -expand yes
+    }
+
+    wm resizable $w 1 0
+    grab $w
+}

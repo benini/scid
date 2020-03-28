@@ -298,21 +298,22 @@ menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
 menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
+menuText D OptionsResources "Ressourcen..." 0 {Standard Dateien und Verzeichnisse einstellen}
 menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
 menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
 menuText D OptionsWindowsAutoLoadLayout "Automatisch laden: 1. Layout" 0 {Lädt das erste definierte Layout automatisch beim Programmstart}
-menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
-menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
-  {Datei für Scid-Rechtschreibprüfung laden}
-menuText D OptionsTable "Endspieltabellenverzeichnis..." 16 \
-  {Eine Endspieltabellendatei wählen (und damit alle Tabellen in diesem Verzeichnis)}
+menuText D OptionsECO "ECO-Datei laden" 0 {ECO-Klassifikationsdatei laden}
+menuText D OptionsSpell "Schreibkorrekturdatei laden" 7 \
+  {Datei f<FC>r Scid-Rechtschreibpr<FC>fung laden}
+menuText D OptionsTable "Endspieltabellenverzeichnis" 16 \
+  {Eine Endspieltabellendatei w<E4>hlen (und damit alle Tabellen in diesem Verzeichnis)}
 menuText D OptionsRecent "Aktuelle Dateien..." 9 \
-  {Anzahl der aktuellen Dateien im Dateimenü ändern}
-menuText D OptionsBooksDir "Buchverzeichnis..." 0 {Eröffnungsbuchverzeichnis einstellen}
-menuText D OptionsTacticsBasesDir "Bases Verzeichnis..." 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
-menuText D OptionsPhotosDir "Bilder Verzeichnis..." 0 {Verzeichnis für Bilder einstellen}
+   {Anzahl der aktuellen Dateien im Dateimen<FC> <E4>ndern}
+menuText D OptionsBooksDir "Buchverzeichnis" 0 {Er<F6>ffnungsbuchverzeichnis einstellen}
+menuText D OptionsTacticsBasesDir "Bases Verzeichnis" 0 {Verzeichnis f<FC>r taktische Trainingsdatenbanken einstellen}
+menuText D OptionsPhotosDir "Bilder Verzeichnis" 0 {Verzeichnis f<FC>r Bilder einstellen}
 menuText D OptionsThemeDir "Design(s) laden..."  0 { Packetdatei für GUI Design Themen einstellen }
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
@@ -1748,6 +1749,7 @@ translate D OptionsMenuColor "Menüfarben"
 translate D MenuColorForeground "Text"
 translate D MenuColorBackground "Hintergrund"
 translate D MenuColorSelect "Auswahl"
+translate D OptionsTablebaseDir "Bis zu 4 TableBase Ordner auswählen:"
 
 ##########
 #

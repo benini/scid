@@ -26,25 +26,32 @@ set spellstate idle
 #    (which is the default), a message box indicating the results
 #    is displayed.
 #
-proc readSpellCheckFile {{message 1}} {
+proc getSpellCheckFile { widget } {
+    global spellCheckFile
+    set ftype { { "Scid Spellcheck files" {".ssp"} } }
+    set fullname [tk_getOpenFile -initialdir [file dirname $spellCheckFile] -filetypes $ftype -title "Open Spellcheck file" -parent [winfo toplevel $widget]]
+    if { $fullname != "" && [readSpellCheckFile $fullname] } {
+        $widget delete 0 end
+        $widget insert end $fullname
+    }
+}
+
+proc readSpellCheckFile { fullname {message 1}} {
   global spellCheckFile
-  set ftype { { "Scid Spellcheck files" {".ssp"} } }
-  set fullname [tk_getOpenFile -initialdir [file dirname $spellCheckFile] -filetypes $ftype -title "Open Spellcheck file"]
-  if {![string compare $fullname ""]} { return 0 }
 
   progressWindow "Scid - [tr Spellcheking]" "Loading $fullname ..."
   set err [catch {sc_name read $fullname} result]
   closeProgressWindow
   if {$err} {
       if {$message} {
-        tk_messageBox -title "ERROR: Unable to read file" -type ok \
-          -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result"
+        tk_messageBox -title "ERROR: Unable to read file" -type ok -parent .resDialog \
+          -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result\n$fullname"
       }
     return 0
   }
   set spellCheckFile $fullname
   if {$message} {
-    tk_messageBox -title "Spellcheck file loaded." -type ok -icon info \
+    tk_messageBox -title "Spellcheck file loaded." -type ok -icon info -parent .resDialog \
       -message "Spellcheck file [file tail $fullname] loaded:\n[lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds.\n\nTo have this file automatically loaded every time you start Scid, select the \"Save Options\" from the Options menu before exiting."
   }
   return 1

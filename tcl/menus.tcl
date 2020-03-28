@@ -321,6 +321,7 @@ menu $m.windows
   $m.windows add cascade -label OptionsStartup -menu $m.windows.startup
 $m add cascade -label OptionsWindows -menu $m.windows
 $m add command -label ConfigureScid -command { ::preferences::Open toggle }
+$m add command -label OptionsResources -command ::preferences::resources
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add separator
 $m add command -label OptionsRecent -command ::recentFiles::configure
@@ -370,14 +371,6 @@ menu $m.entry
   $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
       -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
 $m add cascade -label OptionsMoves -menu $m.entry
-$m add separator
-$m add command -label OptionsECO -command ::readECOFile
-$m add command -label OptionsSpell -command readSpellCheckFile
-$m add command -label OptionsTable -command setTableBaseDir \
-    -state [expr {[sc_info tb] ? "normal" : "disabled"}]
-$m add command -label OptionsBooksDir -command setBooksDir
-$m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
-$m add command -label OptionsPhotosDir -command setPhotoDir
 $m add separator
 $m add command -label OptionsSave -command options.write
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
@@ -714,37 +707,6 @@ proc setAutoplayDelay {} {
     focus $w.spDelay
 }
 
-# setTableBaseDir:
-#    Prompt user to select a tablebase file; all the files in its
-#    directory will be used.
-#
-proc setTableBaseDir {} {
-  set w .tbDialog
-  win::createDialog $w
-  ::setTitle $w Scid
-
-  ttk::label $w.title -text "Select up to 4 table base directories:"
-  pack $w.title -side top -fill x
-
-  foreach i {1 2 3 4} {
-    pack [ttk::frame $w.f$i] -side top -fill x -expand yes
-    ttk::entry $w.f$i.e -width 80
-    $w.f$i.e insert end $::initialDir(tablebase$i)
-    $w.f$i.e configure -validate key -validatecommand "
-      after cancel ::openTableBaseDirs $i $w.f$i.e
-      after 200 ::openTableBaseDirs $i $w.f$i.e
-      return true
-    "
-    ttk::button $w.f$i.b -text "..." -command "chooseTableBaseDir $w.f$i.e"
-
-    pack $w.f$i.b -side right -padx 2
-    pack $w.f$i.e -side left -padx 2 -fill x -expand yes
-  }
-
-  wm resizable $w 1 0
-  grab $w
-}
-
 proc openTableBaseDirs {nr widget} {
   set dirname [$widget get]
   if {$dirname ne "" && ![file isdirectory $dirname]} {
@@ -776,14 +738,14 @@ proc openTableBaseDirs {nr widget} {
     append msg "Options menu before you exit Scid."
   }
   tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
-      -message $msg
+      -message $msg -parent [winfo toplevel $widget]
 
   grab [winfo toplevel $widget]
 }
 
 proc chooseTableBaseDir {widget} {
   set fullname [tk_chooseDirectory -initialdir [$widget get] -mustexist 1 \
-      -title "Scid: Select a Tablebase directory"]
+      -title "Scid: Select a Tablebase directory" -parent [winfo toplevel $widget] ]
   if {$fullname ne ""} {
     $widget delete 0 end
     $widget insert end [file nativename $fullname]
@@ -791,39 +753,56 @@ proc chooseTableBaseDir {widget} {
 }
 ################################################################################
 
-proc setBooksDir {} {
+proc getBooksDir { widget } {
   global scidBooksDir
-  set dir [tk_chooseDirectory -initialdir $scidBooksDir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
-    set scidBooksDir $dir
+  set dir [tk_chooseDirectory -initialdir $scidBooksDir -parent [winfo toplevel $widget] -mustexist 1]
+  if {$dir != ""} {
+      setBooksDir $dir
+      $widget delete 0 end
+      $widget insert end $dir
   }
 }
 
-proc setTacticsBasesDir {} {
+proc setBooksDir { dir } {
+  global scidBooksDir
+  set scidBooksDir $dir
+}
+
+proc getTacticsBasesDir { widget } {
   global scidBasesDir
-  set dir [tk_chooseDirectory -initialdir $scidBasesDir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
-    set scidBasesDir $dir
+  set dir [tk_chooseDirectory -initialdir $scidBasesDir -parent [winfo toplevel $widget] -mustexist 1]
+  if {$dir != ""} {
+      setTacticsBasesDir $dir
+      $widget delete 0 end
+      $widget insert end $dir
   }
 }
 
-proc setPhotoDir {} {
+proc setTacticsBasesDir { dir } {
+  global scidBasesDir
+  set scidBasesDir $dir
+}
+
+proc getPhotoDir { widget } {
   set idir [pwd]
   if { [info exists ::scidPhotoDir] } { set idir $::scidPhotoDir }
-  set dir [tk_chooseDirectory -initialdir $idir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
+  set dir [tk_chooseDirectory -initialdir $idir -parent [winfo toplevel $widget] -mustexist 1]
+  if {$dir != ""} {
+      if { [setPhotoDir $dir] } {
+          $widget delete 0 end
+          $widget insert end $dir
+      }
+  }
+}
+
+proc setPhotoDir { dir } {
     set ::scidPhotoDir $dir
     options.save ::scidPhotoDir
     set n [loadPlayersPhoto]
-    tk_messageBox -message "Found [lindex $n 0] images in [lindex $n 1] file(s)"
+    set ret [lindex $n 0]
+    tk_messageBox -parent .resDialog -message "Found $ret images in [lindex $n 1] file(s)"
     ::notify::GameChanged
-  }
+    return $ret
 }
 
 proc setThemePkgFile {} {
@@ -837,20 +816,29 @@ proc setThemePkgFile {} {
   }
 }
 
-proc readECOFile {} {
+proc getECOFile { widget } {
   global ecoFile
   set ftype { { "Scid ECO files" {".eco"} } }
-  set fullname [tk_getOpenFile -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file"]
+  set fullname [tk_getOpenFile -parent [winfo toplevel $widget] -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file"]
+  if { [readECOFile $fullname] } {
+      $widget delete 0 end
+      $widget insert end $fullname
+  }
+}
+
+proc readECOFile { fullname } {
+  global ecoFile
   if {[string compare $fullname ""]} {
     if {[catch {sc_eco read $fullname} result]} {
-      tk_messageBox -title "Scid" -type ok \
-          -icon warning -message $result
+      tk_messageBox -title "Scid" -type ok -icon warning -message $result -parent .resDialog
     } else {
       set ecoFile $fullname
-      tk_messageBox -title "Scid: ECO file loaded." -type ok -icon info \
+      tk_messageBox -title "Scid: ECO file loaded." -type ok -icon info -parent .resDialog \
           -message "ECO file $fullname loaded: $result positions.\n\nTo have this file automatically loaded when you start Scid, select \"Save Options\" from the Options menu before exiting."
+      return 1
     }
   }
+  return 0
 }
 
 proc updateLocale {} {
