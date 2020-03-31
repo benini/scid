@@ -837,6 +837,8 @@ proc readECOFile { fullname } {
           -message "ECO file $fullname loaded: $result positions.\n\nTo have this file automatically loaded when you start Scid, select \"Save Options\" from the Options menu before exiting."
       return 1
     }
+  } else {
+      set ecoFile $fullname
   }
   return 0
 }

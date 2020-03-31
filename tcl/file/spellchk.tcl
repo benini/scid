@@ -39,22 +39,24 @@ proc getSpellCheckFile { widget } {
 proc readSpellCheckFile { fullname {message 1}} {
   global spellCheckFile
 
-  progressWindow "Scid - [tr Spellcheking]" "Loading $fullname ..."
-  set err [catch {sc_name read $fullname} result]
-  closeProgressWindow
-  if {$err} {
-      if {$message} {
-        tk_messageBox -title "ERROR: Unable to read file" -type ok -parent .resDialog \
-          -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result\n$fullname"
-      }
-    return 0
-  }
-  set spellCheckFile $fullname
-  if {$message} {
-    tk_messageBox -title "Spellcheck file loaded." -type ok -icon info -parent .resDialog \
-      -message "Spellcheck file [file tail $fullname] loaded:\n[lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds.\n\nTo have this file automatically loaded every time you start Scid, select the \"Save Options\" from the Options menu before exiting."
-  }
-  return 1
+    if { $fullname != ""} {
+        progressWindow "Scid - [tr Spellcheking]" "Loading $fullname ..."
+        set err [catch {sc_name read $fullname} result]
+        closeProgressWindow
+        if {$err} {
+            if {$message} {
+                tk_messageBox -title "ERROR: Unable to read file" -type ok -parent .resDialog \
+                    -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result\n$fullname"
+            }
+            return 0
+        }
+        if {$message} {
+            tk_messageBox -title "Spellcheck file loaded." -type ok -icon info -parent .resDialog \
+                -message "Spellcheck file [file tail $fullname] loaded:\n[lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds.\n\nTo have this file automatically loaded every time you start Scid, select the \"Save Options\" from the Options menu before exiting."
+        }
+    }
+    set spellCheckFile $fullname
+    return 1
 }
 
 # Set the environment when the correction scan starts

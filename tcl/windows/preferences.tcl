@@ -87,6 +87,8 @@ proc ::preferences::checkFileDir { widget command type oldvalue} {
 proc ::preferences::resources { } {
     # Directories
     set w .resDialog
+    if { [winfo exists $w] } return
+
     win::createDialog $w
     ::setTitle $w "Scid Resources"
 
