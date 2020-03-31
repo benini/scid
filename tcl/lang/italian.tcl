@@ -230,11 +230,6 @@ menuText I CCEditCopy "Copia la lista di partite nella clipboard" 0 {Copia le pa
 
 # Options menu:
 menuText I Options "Opzioni" 0
-menuText I OptionsBoard "Scacchiera" 0 {Opzioni di visualizzazione della scacchiera}
-menuText I OptionsBoardSize "Dimensione della scacchiera" 0 {Cambia la dimensione della scacchiera}
-menuText I OptionsBoardPieces "Stile dei pezzi" 0 \
-  {Modifica lo stile dei pezzi della scacchiera}
-menuText I OptionsBoardColors "Colori..." 0 {Cambia i colori della scacchiera}
 menuText I OptionsBoardGraphics "Caselle..." 0 {Seleziona l'aspetto delle caselle}
 translate I OptionsBGW {Seleziona l'aspetto delle caselle}
 translate I OptionsBoardGraphicsText {Seleziona i file grafici per le caselle bianche e nere:}
@@ -280,38 +275,30 @@ menuText I OptionsWindowsIconify "Minimizza automaticamente" 2 \
 menuText I OptionsWindowsRaise "Ingrandisci automaticamente" 0 \
   {Aumenta alcune finestre (p. es. le barre di progresso) ogni volta che sono oscurate}
 menuText I OptionsSounds "Suoni..." 2 {Configura i suoni per l'annuncio delle mosse} ;# ***
+# ====== TODO To be translated ======
+menuText I OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText I OptionsWindowsDock "Aggancia le finestre" 0 {Aggancia le finestre}
 menuText I OptionsWindowsSaveLayout "Salva layout" 0 {Salva il layout}
 menuText I OptionsWindowsRestoreLayout "Ripristina layout" 0 {Ripristina il layout}
 menuText I OptionsWindowsShowGameInfo "Mostra informazioni partita" 0 {Mostra le informazioni sulla partita}
 menuText I OptionsWindowsAutoLoadLayout "Carica automaticamente il primo layout" 0 {Carica automaticamente il primo layout all'avvio}
-menuText I OptionsToolbar "Barra degli strumenti" 0 \
-  {Mostra/nasconde la barra degli strumenti nella finestra principale}
 menuText I OptionsECO "Carica il file ECO..." 15 {Carica il file di classificazione ECO}
-menuText I OptionsSpell "Carica il file di controllo ortografico..." 0 \
+menuText I OptionsSpell "Carica il file di controllo ortografico" 0 \
   {Carica il file di controllo ortografico}
-menuText I OptionsTable "Directory di tablebase..." 8 \
+menuText I OptionsTable "Directory di tablebase" 8 \
   {Seglie un file tablebase; tutte le tablebase nella directory saranno utilizzate}
 menuText I OptionsRecent "File utilizzati di recente..." 10 \
   {Cambia il numero di file recentemente utilizzati visualizzato nel menu File}
-menuText I OptionsBooksDir "Directory del libro di aperture..." 0 {Configura la directory per il libro delle aperture}
-menuText I OptionsTacticsBasesDir "Directory dei database..." 15 {Configura la directory per i database di allenamento}
+menuText I OptionsBooksDir "Directory del libro di aperture" 0 {Configura la directory per il libro delle aperture}
+menuText I OptionsTacticsBasesDir "Directory dei database" 15 {Configura la directory per i database di allenamento}
 # ====== TODO To be translated ======
-menuText I OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText I OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText I OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText I OptionsSave "Salva opzioni" 3 \
   "Salva tutte le opzioni definibili nel file $::optionsFile"
 menuText I OptionsAutoSave "Salva opzioni all'uscita" 17 \
   {Salva automaticamente tutte le opzioni quando si esce da Scid}
-# ====== TODO To be translated ======
-menuText I OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate I MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate I MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate I MenuColorSelect "Select"
 
 # Help menu:
 menuText I Help "Aiuto" 0
@@ -705,12 +692,6 @@ translate I EngineTime {Data}
 translate I EngineNew {Nuovo}
 translate I EngineEdit {Modifica}
 translate I EngineRequired {I campi in grassetto sono obbligatori; gli altri sono opzionali}
-
-# Stats window menus:
-menuText I StatsFile "File" 0
-menuText I StatsFilePrint "Stampa su file..." 0
-menuText I StatsFileClose "Chiudi la finestra" 0
-menuText I StatsOpt "Opzioni" 0
 
 # PGN window menus:
 menuText I PgnFile "File" 0
@@ -1756,16 +1737,22 @@ translate I MakeCorrections {Make Corrections}
 translate I Surnames {Surnames}
 # ====== TODO To be translated ======
 translate I Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate I OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate I OptionsBoard "Chessboard"
+translate I OptionsToolbar "Barra degli strumenti"
+translate I OptionsBoard "Scacchiera"
 # ====== TODO To be translated ======
 translate I OptionsMenuColor "Menu colors"
 # ====== TODO To be translated ======
-translate I OptionsBoardSize "Board size"
+translate I OptionsBoardSize "Dimensione della scacchiera"
 # ====== TODO To be translated ======
-translate I OptionsBoardPieces "Piece Style"
+translate I OptionsBoardPieces "Stile dei pezzi"
+# ====== TODO To be translated ======
+translate I MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate I MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate I MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate I OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 ############################################################

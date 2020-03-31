@@ -247,11 +247,6 @@ menuText K CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list 
 
 # Options menu:
 menuText K Options "Opcions" 0
-menuText K OptionsBoard "Escaquer" 0 {Opcions sobre l'aspecte de l'escaquer}
-menuText K OptionsBoardSize "Tamany de l'escaquer" 0 {Canvia el tamany de l'escaquer}
-menuText K OptionsBoardPieces "Estil de peces" 10 \
-  {Canvia l'estil de les peces de l'escaquer}
-menuText K OptionsBoardColors "Colors..." 0 {Canvia els colors de l'escaquer}
 menuText K OptionsBoardGraphics "Casselles..." 0 {Escollir textures per les casselles}
 translate K OptionsBGW {Escollir textura per les casselles}
 translate K OptionsBoardGraphicsText {Escollir arxiu gràfic per casselles blanques i negres}
@@ -305,13 +300,13 @@ menuText K OptionsWindowsIconify "Autominimitzar" 4 \
 menuText K OptionsWindowsRaise "Posar automáticamente en primer pla" 0 \
   {Fa visibles algunes finestres (ex. barres de progrés) quan estiguin cobertes}
 menuText K OptionsSounds "Sons..." 2 {Configura el so d'anunci de les jugades}
+# ====== TODO To be translated ======
+menuText K OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText K OptionsWindowsDock "Bloqueja finestres" 0 {Bloqueja i agrupa finestres}
 menuText K OptionsWindowsSaveLayout "Salvar disposició" 0 {Salvar disposició}
 menuText K OptionsWindowsRestoreLayout "Restaurar disposició" 0 {Restaurar disposició}
 menuText K OptionsWindowsShowGameInfo "Mostrar informació de la partida" 0 {Mostrar informació de la partida}
 menuText K OptionsWindowsAutoLoadLayout "Auto cargar primera disposició" 0 {Autocargar primera disposició en començar}
-menuText K OptionsToolbar "Barra d'eines de la finestra principal" 9 \
-  {Mostra/amaga la barra d'eines de la finestra principal}
 menuText K OptionsECO "Cargar arxiu ECO..." 7 \
   {Cargar l'arxiu de clasificació ECO}
 menuText K OptionsSpell "Cargar arxiu de comprovació ortogràfica..." 2 \
@@ -330,14 +325,6 @@ menuText K OptionsSave "Salvar opcions" 0 \
   {Salva totes les opcions a l'arxiu $::optionsFile}
 menuText K OptionsAutoSave "Autoguardar opcions en sortir" 0 \
   {Guarda automàticament totes les opcions quan es surt de Scid}
-# ====== TODO To be translated ======
-menuText K OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate K MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate K MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate K MenuColorSelect "Select"
 
 # Help menu:
 menuText K Help "Ajut" 1
@@ -738,12 +725,6 @@ translate K EngineTime {Data}
 translate K EngineNew {Nova}
 translate K EngineEdit {Editar}
 translate K EngineRequired {Els camps en negreta son obligatoris; la resta opcionals}
-
-# Stats window menús:
-menuText K StatsFile "Arxiu" 0
-menuText K StatsFilePrint "Imprimir a arxiu..." 0
-menuText K StatsFileClose "Tancar finestra" 0
-menuText K StatsOpt "Opcions" 0
 
 # PGN window menús:
 menuText K PgnFile "Arxiu" 0
@@ -1871,16 +1852,19 @@ translate K MakeCorrections {Make Corrections}
 translate K Surnames {Surnames}
 # ====== TODO To be translated ======
 translate K Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate K OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate K OptionsBoard "Chessboard"
+translate K OptionsToolbar "Barra d'eines de la finestra principal"
+translate K OptionsBoard "Escaquer"
 # ====== TODO To be translated ======
 translate K OptionsMenuColor "Menu colors"
+translate K OptionsBoardSize "Tamany de l'escaquer"
+translate K OptionsBoardPieces "Estil de peces"
 # ====== TODO To be translated ======
-translate K OptionsBoardSize "Board size"
+translate K MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate K OptionsBoardPieces "Piece Style"
-
+translate K MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate K MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate K OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of catalan.tcl

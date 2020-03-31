@@ -231,10 +231,6 @@ menuText W CCEditCopy "Kopiera partilista till Clipbase" 0 {Kopiera partierna so
 
 # Options menu:
 menuText W Options "Alternativ" 2
-menuText W OptionsBoard "Brädet" 0 {Ändra brädets utseende}
-menuText W OptionsBoardSize "Brädstorlek" 0 {Ändra brädets storlek}
-menuText W OptionsBoardPieces "Pjäsutseende" 1 {Ändra pjäsernas utseende} 
-menuText W OptionsBoardColors "Färger..." 0 {Ändra brädets färger}
 menuText W OptionsBoardGraphics "Rutor..." 0 {Välj texturer för rutor}
 translate W OptionsBGW {Välj textur för rutor}
 translate W OptionsBoardGraphicsText {Välj grafikfiler för vita och svarta rutor:}
@@ -282,38 +278,30 @@ menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
 menuText W OptionsWindowsRaise "Autofokus" 0 \
   {Visa åter vissa fönster (t ex. resultaträknare) automatiskt när de döljs}
 menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
+# ====== TODO To be translated ======
+menuText W OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText W OptionsWindowsDock "Dockningsfönster" 0 {Dockningsfönster}
 menuText W OptionsWindowsSaveLayout "Spara layout" 0 {Sparar layout}
 menuText W OptionsWindowsRestoreLayout "Återställ layout" 0 {Återställer layout}
 menuText W OptionsWindowsShowGameInfo "Visa partiinformation" 0 {Visar partiinformation}
 menuText W OptionsWindowsAutoLoadLayout "Automatiskt öppna första layouten" 0 {Öppnar automatiskt första layouten vid uppstart}
-menuText W OptionsToolbar "Verktygsfält" 0 \
-  {Visa/ dölj huvudfönstrets verktygsfält}
-menuText W OptionsECO "Ladda ECO fil..." 7 {Ladda ECO-klassificeringen vid start}
-menuText W OptionsSpell "Ladda Rättstavningsfil..." 7 \
+menuText W OptionsECO "Ladda ECO fil" 7 {Ladda ECO-klassificeringen vid start}
+menuText W OptionsSpell "Ladda Rättstavningsfil" 7 \
   {Ladda rättstavningsfilen vid start}
-menuText W OptionsTable "Katalog för slutspelsdatabaser..." 0 \
+menuText W OptionsTable "Katalog för slutspelsdatabaser" 0 \
   {Välj en fil som innehåller en slutspelsdatabas; alla övriga filer i samma katalog kommer att användas}
 menuText W OptionsRecent "Senast använda filer..." 16 \
   {Ãndra antalet senast använda filer som visas i Arkivmenyn} 
-menuText W OptionsBooksDir "Öppningsbokskatalog..." 0 {Anger Öppningsbokskatalogen}
-menuText W OptionsTacticsBasesDir "Taktikbaskatalog..." 0 {Anger Taktikbaskatalog (för träning)}
+menuText W OptionsBooksDir "Öppningsbokskatalog" 0 {Anger Öppningsbokskatalogen}
+menuText W OptionsTacticsBasesDir "Taktikbaskatalog" 0 {Anger Taktikbaskatalog (för träning)}
 # ====== TODO To be translated ======
-menuText W OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText W OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText W OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText W OptionsSave "Spara alternativ" 7 \
   "Spara alla alternativ till en inställningsfil"
 menuText W OptionsAutoSave "Autospara vid avslut" 1 \
   {Spara alla alternativ när du avslutar Scid}
-# ====== TODO To be translated ======
-menuText W OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate W MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate W MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate W MenuColorSelect "Select"
 
 # Help menu:
 menuText W Help "Hjälp" 0
@@ -704,12 +692,6 @@ translate W EngineTime {Datum}
 translate W EngineNew {Ny}
 translate W EngineEdit {Redigera}
 translate W EngineRequired {Fet stil indikerar obligatoriska fält; övriga fält är frivilliga} 
-
-# Stats window menus:
-menuText W StatsFile "Fil" 0
-menuText W StatsFilePrint "Skriv ut till fil..." 0
-menuText W StatsFileClose "Stäng fönster" 0
-menuText W StatsOpt "Alternativ" 0
 
 # PGN window menus:
 menuText W PgnFile "Fil" 0
@@ -1758,15 +1740,20 @@ translate W Surnames {Surnames}
 # ====== TODO To be translated ======
 translate W Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
-translate W OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate W OptionsBoard "Chessboard"
+translate W OptionsToolbar "Verktygsfält"
+translate W OptionsBoard "Brädet"
 # ====== TODO To be translated ======
 translate W OptionsMenuColor "Menu colors"
+translate W OptionsBoardSize "Brädstorlek"
+translate W OptionsBoardPieces "Pjäsutseende"
 # ====== TODO To be translated ======
-translate W OptionsBoardSize "Board size"
+translate W MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate W OptionsBoardPieces "Piece Style"
+translate W MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate W MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate W OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 ############################################################

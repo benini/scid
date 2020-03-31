@@ -263,11 +263,6 @@ menuText G CCEditCopy "Αντιγραφή λίστας παρτίδων στην
 
 # Options menu:
 menuText G Options "Επιλογές" 0
-menuText G OptionsBoard "Σκακιέρα" 0 {Επιλογές εμφάνισης σκακιέρας}
-menuText G OptionsBoardSize "Μέγεθος" 0 {Αλλάξτε το μέγεθος της σκακιέρας}
-menuText G OptionsBoardPieces "Είδος κομματιών" 6 {Αλλάξτε το είδος των κομματιών της σκακιέρας}
-menuText G OptionsBoardColors "Χρώματα..." 0 {Αλλάξτε τα χρώματα της σκακιέρας}
-#Klimmek
 menuText G OptionsBoardGraphics "Τετράγωνα..." 0 {Επιλέξτε την υφή των τετραγώνων}
 translate G OptionsBGW {Επιλέξτε την υφή των τετραγώνων}
 translate G OptionsBoardGraphicsText {Επιλέξτε το αρχείο γραφικών για τα λευκά και τα μαύρα τετράγωνα:}
@@ -315,35 +310,28 @@ menuText G OptionsWindowsIconify "Αυτόματο εικονίδιο" 5 \
 menuText G OptionsWindowsRaise "Αυτόματη μεγέθυνση" 5 \
   {Μεγέθυνση συγκεκριμένων παραθύρων (π.χ. των γραμμών προόδου) κάθε φορά που αποκρύπτονται}
 menuText G OptionsSounds "Ήχοι..." 2 {Ρυθμίστε τους ήχους αναγγελίας κίνησης}
+# ====== TODO To be translated ======
+menuText G OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText G OptionsWindowsDock "Προσκόληση παραθύρων" 0 {Προσκολήστε τα παράθυρα (χρειάζεται επανεκκίνηση)}
 menuText G OptionsWindowsSaveLayout "Αποθήκευση διάταξης" 0 {Αποθηκεύστε την διάταξη των παραθύρων}
 menuText G OptionsWindowsRestoreLayout "Αποκατάσταση διάταξης" 0 {Αποκαταστήστε προηγούμενη διάταξη παραθύρων}
 menuText G OptionsWindowsShowGameInfo "Εμφάνιση πληροφοριών παρτίδας" 0 {Εμφανίστε τις πληροφορίες για την παρτίδα}
 menuText G OptionsWindowsAutoLoadLayout "Αυτόματη φόρτωση της πρώτης διάταξης" 0 {Αυτόματη φόρτωση κατά την εκκίνηση της πρώτης διάταξης}
-menuText G OptionsToolbar "Γραμμή εργαλειών..." 0 {Προσαρμόστε την εργαλειοθήκη του κύριου παραθύρου}
 menuText G OptionsECO "Φόρτωση αρχείου ECO..." 7 {Φορτώστε το αρχείο ταξινόμησης κατά ECO}
-menuText G OptionsSpell "Φόρτωση αρχείου ορθογραφικού ελέγχου..." 11 \
+menuText G OptionsSpell "Φόρτωση αρχείου ορθογραφικού ελέγχου" 11 \
   {Φορτώστε το αρχείο ορθογραφικού ελέγχου του Scid}
-menuText G OptionsTable "Κατάλογος βάσης φινάλε..." 10 \
+menuText G OptionsTable "Κατάλογος βάσης φινάλε" 10 \
   {Επιλέξτε μια βάση δεδομένων φινάλες. Θα χρησιμοποιηθούν όλες οι βάσεις δεδομένων φινάλε του καταλόγου αυτού}
 menuText G OptionsRecent "Πρόσφατα αρχεία..." 0 {Αλλάξτε το πλήθος των πρόσφατων αρχείων που εμφανίζονται στο μενού Αρχείο}
-menuText G OptionsBooksDir "Κατάλογος βιβλίων..." 0 {Καθορίζει τον κατάλογο των βιβλίων ανοιγμάτων}
-menuText G OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText G OptionsBooksDir "Κατάλογος βιβλίων" 0 {Καθορίζει τον κατάλογο των βιβλίων ανοιγμάτων}
+menuText G OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
-menuText G OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText G OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText G OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText G OptionsSave "Αποθήκευση επιλογών" 0 "Αποθηκεύστε όλες τις μεταβολές ρυθμίσεων στο αρχείο $::optionsFile"
 menuText G OptionsAutoSave "Αυτόματη αποθήκευση επιλογών κατά την έξοδο" 0 \
   {Να αποθηκεύονται αυτόματα οι επιλογές κατά την έξοδο από το Scid}
-# ====== TODO To be translated ======
-menuText G OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate G MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate G MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate G MenuColorSelect "Select"
 
 # Help menu:
 menuText G Help "Βοήθεια" 0
@@ -736,12 +724,6 @@ translate G EngineTime {Ημερομηνία}
 translate G EngineNew {Νέα}
 translate G EngineEdit {Επεξεργασία}
 translate G EngineRequired {Τα παιδία με έντονη γραμματοσειρά είναι απαραίτητα, τα άλλα είναι προαιρετικά}
-
-# Stats window menus:
-menuText G StatsFile "Αρχείο" 0
-menuText G StatsFilePrint "Εκτύπωση σε αρχείο..." 0
-menuText G StatsFileClose "Κλείσιμο παραθύρου" 0
-menuText G StatsOpt "Επιλογές" 0
 
 # PGN window menus:
 menuText G PgnFile "Αρχείο" 0
@@ -1859,15 +1841,19 @@ translate G Surnames {Surnames}
 # ====== TODO To be translated ======
 translate G Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
-translate G OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate G OptionsBoard "Chessboard"
+translate G OptionsToolbar "Γραμμή εργαλειών"
+translate G OptionsBoard "Σκακιέρα"
 # ====== TODO To be translated ======
 translate G OptionsMenuColor "Menu colors"
+translate G OptionsBoardSize "Μέγεθος"
+translate G OptionsBoardPieces "Είδος κομματιών"
 # ====== TODO To be translated ======
-translate G OptionsBoardSize "Board size"
+translate G MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate G OptionsBoardPieces "Piece Style"
-
+translate G MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate G MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate G OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of greek.tcl

@@ -275,11 +275,6 @@ menuText P CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 menuText P CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 menuText P Options "Opcje" 0
-menuText P OptionsBoard "Szachownica" 0 {Konfiguracja wygl±du szachownicy}
-menuText P OptionsBoardSize "Wielko¶æ" 0 {Zmieñ wielko¶æ szachownicy}
-menuText P OptionsBoardPieces "Typ figur" 4 \
-  {Zmienia typ wyswietlanych figur} 
-menuText P OptionsBoardColors "Kolory..." 0 {Zmieñ kolory szachownicy}
 # ====== TODO To be translated ======
 menuText P OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
 # ====== TODO To be translated ======
@@ -341,6 +336,8 @@ menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
   {Automatycznie uaktywniaj niektóre okna (np. pasek postêpu), gdy s± zas³oniête}
 menuText P OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
+menuText P OptionsResources "Resources..." 0 {Choose resource files and folders}
+# ====== TODO To be translated ======
 menuText P OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
 menuText P OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
@@ -350,36 +347,26 @@ menuText P OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText P OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 # ====== TODO To be translated ======
 menuText P OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText P OptionsToolbar "Pasek narzêdziowy" 6 \
-  {Schowaj/poka¿ pasek narzêdziowy}
-menuText P OptionsECO "Wczytaj ksi±¿kê debiutow±..." 16 \
+menuText P OptionsECO "Wczytaj ksi±¿kê debiutow±" 16 \
   {Wczytaj plik z klasyfikacja debiutów}
 menuText P OptionsSpell "Wczytaj plik sprawdzania pisowni..." 13 \
   {Wczytaj plik do sprawdzania pisowni nazwisk i nazw}
-menuText P OptionsTable "Katalog z baz± koñcówek..." 10 \
+menuText P OptionsTable "Katalog z baz± koñcówek" 10 \
   {Wybierz bazê koñcówek; u¿yte zostan± wszystkie bazy z tego katalogu}
 menuText P OptionsRecent "Ostatnie pliki..." 0 \
   {Zmieñ liczbê ostatnio otwartych plików, wy¶wietlanych w menu Plik} 
 # ====== TODO To be translated ======
-menuText P OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
+menuText P OptionsBooksDir "Books directory" 0 {Sets the opening books directory}
 # ====== TODO To be translated ======
-menuText P OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText P OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
-menuText P OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText P OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText P OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \
   {Automatycznie zapisz opcje przy zamykaniu programu}
-# ====== TODO To be translated ======
-menuText P OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate P MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate P MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate P MenuColorSelect "Select"
 
 menuText P Help "Pomoc" 2
 menuText P HelpContents "Contents" 0 {Poka¿ spis tre¶ci pomocy} 
@@ -856,12 +843,6 @@ translate P EngineTime {Data}
 translate P EngineNew {Dodaj}
 translate P EngineEdit {Edytuj}
 translate P EngineRequired {Pola wyt³uszczone s± konieczne; reszta opcjonalna} 
-
-# Stats window menus:
-menuText P StatsFile "Plik" 0
-menuText P StatsFilePrint "Zapisz do pliku..." 7
-menuText P StatsFileClose "Zamknij" 0
-menuText P StatsOpt "Opcje" 0
 
 # PGN window menus:
 menuText P PgnFile "Plik" 0
@@ -2312,17 +2293,20 @@ translate P MakeCorrections {Make Corrections}
 translate P Surnames {Surnames}
 # ====== TODO To be translated ======
 translate P Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate P OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate P OptionsBoard "Chessboard"
+translate P OptionsToolbar "Pasek narzêdziowy"
+translate P OptionsBoard "Szachownica"
 # ====== TODO To be translated ======
 translate P OptionsMenuColor "Menu colors"
+translate P OptionsBoardSize "Wielko¶æe"
+translate P OptionsBoardPieces "Typ figur"
 # ====== TODO To be translated ======
-translate P OptionsBoardSize "Board size"
+translate P MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate P OptionsBoardPieces "Piece Style"
+translate P MenuColorBackground "Background"
 # ====== TODO To be translated ======
+translate P MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate P OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 ### Tips of the day in Polish:

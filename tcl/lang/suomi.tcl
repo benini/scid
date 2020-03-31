@@ -268,11 +268,6 @@ menuText U CCEditCopy "Kopioi pelilista leikekantaan" 0 {Kopioi pelit leikekanta
 
 # Options menu:
 menuText U Options "Asetukset" 0
-menuText U OptionsBoard "Shakkilauta" 0 {Shakkilaudan ulkonäköön liittyvät asetukset}
-menuText U OptionsBoardSize "Koko" 0 {Muuta laudan kokoa}
-menuText U OptionsBoardPieces "Nappulat" 0 {Muuta nappuloiden ulkomuotoa}
-menuText U OptionsBoardColors "Värit" 0 {Vaihda laudan värejä}
-#Klimmek
 menuText U OptionsBoardGraphics "Ruudut" 0 {Valitse ruuduissa käytettävä tekstuuri}
 translate U OptionsBGW {Valitse ruuduissa käytettävä tekstuuri}
 translate U OptionsBoardGraphicsText {Valitse ruuduissa käytettävä grafiikkatiedosto:}
@@ -319,12 +314,13 @@ menuText U OptionsWindowsIconify "Pienennä automaattisesti" 0 \
 menuText U OptionsWindowsRaise "Nosta automaattisesti" 0 \
   {Nosta eräät ikkunat automaattisesti ylimmäksi}
 menuText U OptionsSounds "Äänet" 0 {Muokaa siirtoilmoitusääniä}
+# ====== TODO To be translated ======
+menuText U OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText U OptionsWindowsDock "Telakoi ikkunat" 0 {Telakoi irti olevat ikkunat (vaatii uudelleenkäynnistyksen)}
 menuText U OptionsWindowsSaveLayout "Tallenna layout" 0 {Tallenna nimelle ikkunoiden ja työkalupalkkien sijainti}
 menuText U OptionsWindowsRestoreLayout "Palauta layout" 0 {Palauta tallennettu layout}
 menuText U OptionsWindowsShowGameInfo "Pelin tiedot" 0 {Näytä/piilota pelin tiedot (pelaajanimet, turnaus...)}
 menuText U OptionsWindowsAutoLoadLayout "Ensimmäinen layout automaattisesti" 0 {Lataa ensimmäinen tallennettu layout automaattisesti}
-menuText U OptionsToolbar "Työkalupalkki" 0 {Muokkaa pääikkunan työkalupalkkia}
 menuText U OptionsECO "Lataa ECO-tiedosto" 7 {Lataa ECO avausluokittelu tiedostosta}
 menuText U OptionsSpell "Lataa oikeinkirjoitustiedosto" 0 \
   {Lataa Scidin oikeinkirjoitustiedosto}
@@ -334,20 +330,12 @@ menuText U OptionsRecent "Viimeaikaiset tiedostot" 0 {Kuinka monta tiedostoa näy
 menuText U OptionsBooksDir "Avauskirjat" 0 {Hakemisto, jossa avauskirjat sijaitsevat}
 menuText U OptionsTacticsBasesDir "Taktiikkakannat" 0 {Hakemisto, jossa taktiikka (harjoitus) tietokannat sijaitsevat}
 # ====== TODO To be translated ======
-menuText U OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText U OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText U OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText U OptionsSave "Tallenna asetukset" 0 "Tallenna kaikki asetukset tiedostoon $::optionsFile"
 menuText U OptionsAutoSave "Automaattinen asetusten tallennus" 0 \
   {Tallenna asetukset automaattisesti ohjelmasta poistuttaessa}
-# ====== TODO To be translated ======
-menuText U OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate U MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate U MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate U MenuColorSelect "Select"
 
 # Help menu:
 menuText U Help "Ohje" 0
@@ -740,12 +728,6 @@ translate U EngineTime {Pvm}
 translate U EngineNew {Uusi}
 translate U EngineEdit {Muokkaa}
 translate U EngineRequired {Lihavoidut kentät ovat pakollisia}
-
-# Stats window menus:
-menuText U StatsFile "Tiedosto" 0
-menuText U StatsFilePrint "Tulosta tiedostoon..." 1
-menuText U StatsFileClose "Sulje ikkuna" 0
-menuText U StatsOpt "Asetukset" 0
 
 # PGN window menus:
 menuText U PgnFile "Tiedosto" 0
@@ -1818,16 +1800,19 @@ translate U MakeCorrections {Make Corrections}
 translate U Surnames {Surnames}
 # ====== TODO To be translated ======
 translate U Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate U OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate U OptionsBoard "Chessboard"
+translate U OptionsToolbar "Työkalupalkki"
+translate U OptionsBoard "Shakkilauta"
 # ====== TODO To be translated ======
 translate U OptionsMenuColor "Menu colors"
+translate U OptionsBoardSize "Koko"
+translate U OptionsBoardPieces "Nappulat"
 # ====== TODO To be translated ======
-translate U OptionsBoardSize "Board size"
+translate U MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate U OptionsBoardPieces "Piece Style"
-
+translate U MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate U MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate U OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of suomi.tcl

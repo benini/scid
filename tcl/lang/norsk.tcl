@@ -272,11 +272,6 @@ menuText O CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list 
 
 # Options menu:
 menuText O Options "Innstillinger" 0
-menuText O OptionsBoard "Chessboard" 0 {Chess board appearance options} ;# ***
-menuText O OptionsBoardSize "Brettstørrelse" 0 {Endre brettstørrelse}
-menuText O OptionsBoardPieces "Brikkeutseende" 6 \
-  {Endrer utseendet på brikkene}
-menuText O OptionsBoardColors "Farger..." 0 {Endre farger på brettet}
 # ====== TODO To be translated ======
 menuText O OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
 # ====== TODO To be translated ======
@@ -338,6 +333,8 @@ menuText O OptionsWindowsRaise "Autoheving" 0 \
   {Hever visse vinduer (fremdriftsvisere etc) når de er skjult}
 menuText O OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
+menuText O OptionsResources "Resources..." 0 {Choose resource files and folders}
+# ====== TODO To be translated ======
 menuText O OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
 menuText O OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
@@ -347,35 +344,25 @@ menuText O OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText O OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 # ====== TODO To be translated ======
 menuText O OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText O OptionsToolbar "Verktøylinje i hovedvindu" 0 \
-  {Vis/skjul menylinjen i hovedvinduet}
-menuText O OptionsECO "Hent ECO-fil..." 0 {Henter filen med ECO-klassifiseringer}
-menuText O OptionsSpell "Hent stavekontrollfil..." 0 \
+menuText O OptionsECO "Hent ECO-fil" 0 {Henter filen med ECO-klassifiseringer}
+menuText O OptionsSpell "Hent stavekontrollfil" 0 \
   {Henter filen med stavekontrollen til Scid}
-menuText O OptionsTable "Tabellbasekatalog..." 0 \
+menuText O OptionsTable "Tabellbasekatalog" 0 \
   {Velg en tabellbase; Alle tabellbaser i katalogen vil bli brukt}
 menuText O OptionsRecent "Recent files..." 0 \
   {Change the number of recent files displayed in the File menu} ;# ***
 # ====== TODO To be translated ======
-menuText O OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
+menuText O OptionsBooksDir "Books directory" 0 {Sets the opening books directory}
 # ====== TODO To be translated ======
-menuText O OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText O OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
-menuText O OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText O OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText O OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText O OptionsSave "Lagre innstillinger" 0 \
   "Lagre alle instillinger til $::optionsFile"
 menuText O OptionsAutoSave "Autolagre innstillinger ved avslutning" 0 \
   {Autolagre alle innstillinger når Scid avsluttes}
-# ====== TODO To be translated ======
-menuText O OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate O MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate O MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate O MenuColorSelect "Select"
 
 # Help menu:
 menuText O Help "Hjelp" 0
@@ -852,12 +839,6 @@ translate O EngineTime {Dato}
 translate O EngineNew {Ny}
 translate O EngineEdit {Rediger}
 translate O EngineRequired {Fete felter er nødvendige, de øvrige er valgfrie}
-
-# Stats window menus:
-menuText O StatsFile "Fil" 0
-menuText O StatsFilePrint "Skriv til fil..." 0
-menuText O StatsFileClose "Lukk vindu" 0
-menuText O StatsOpt "Innstillinger" 0
 
 # PGN window menus:
 menuText O PgnFile "Fil" 0
@@ -2300,17 +2281,20 @@ translate O MakeCorrections {Make Corrections}
 translate O Surnames {Surnames}
 # ====== TODO To be translated ======
 translate O Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate O OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate O OptionsBoard "Chessboard"
+translate O OptionsToolbar "Verktøylinje i hovedvindu"
+translate O OptionsBoard "Brett"
 # ====== TODO To be translated ======
 translate O OptionsMenuColor "Menu colors"
+translate O OptionsBoardSize "Brettstørrelse"
+translate O OptionsBoardPieces "Brikkeutseende"
 # ====== TODO To be translated ======
-translate O OptionsBoardSize "Board size"
+translate O MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate O OptionsBoardPieces "Piece Style"
+translate O MenuColorBackground "Background"
 # ====== TODO To be translated ======
+translate O MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate O OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 # norsk.tcl

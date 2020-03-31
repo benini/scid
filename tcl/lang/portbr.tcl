@@ -228,11 +228,6 @@ menuText B CCEditCopy "Copiar Lista de Jogos para a base de cópia" 0 {Copia os j
 
 # Options menu:
 menuText B Options "Opcoes" 0
-menuText B OptionsBoard "Tabuleiro" 0 {Opções de aparência do tabuleiro} 
-menuText B OptionsBoardSize "Tamanho do Tabuleiro" 0 {Muda o tamanho do tabuleiro}
-menuText B OptionsBoardPieces "Estilo de Pecas no Tabuleiro" 10 \
-  {Muda o estilo das pecas mostradas no tabuleiro}
-menuText B OptionsBoardColors "Cores..." 0 {Muda as cores do tabuleiro}
 menuText B OptionsBoardGraphics "Casas..." 0 {Seleciona texturas para as casas}
 translate B OptionsBGW {Seleciona texturas para as casas}
 translate B OptionsBoardGraphicsText {Seleciona arquivos gráficos para as casas brancas e pretas:}
@@ -279,32 +274,28 @@ menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
 menuText B OptionsWindowsRaise "Manter no topo" 0 \
   {Mantem no topo certas janelas (ex. barras de progresso) sempre que sao obscurecidas por outras}
 menuText B OptionsSounds "Sons..." 2 {Configura sons para anunciar os movimentos} 
+# ====== TODO To be translated ======
+menuText B OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText B OptionsWindowsDock "Estacionar janelas" 0 {Estaciona as janelas}
 menuText B OptionsWindowsSaveLayout "Salvar layout" 0 {Salva o layout das janelas}
 menuText B OptionsWindowsRestoreLayout "Restaurar layout" 0 {Restaura layout}
 menuText B OptionsWindowsShowGameInfo "Mostrar Informações do Jogo" 0 {Mostra informações do jogo}
 menuText B OptionsWindowsAutoLoadLayout "Carregar primeiro layout na entrada" 0 {Carrega automaticamente o primeiro layout ao entrar na aplicação}
-menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
-  {Exibe/Oculta a barra de ferramentas da janela principal}
-menuText B OptionsECO "Carregar arquivo ECO..." 7 {Carrega o arquivo com a classificacao ECO}
-menuText B OptionsSpell "Carregar arquivo de verificacao ortografica..." 6 \
+menuText B OptionsECO "Carregar arquivo ECO" 7 {Carrega o arquivo com a classificacao ECO}
+menuText B OptionsSpell "Carregar arquivo de verificacao ortografica" 6 \
   {Carrega o arquivo de verificacao ortografica do Scid}
-menuText B OptionsTable "Diretorio de tabelas de base..." 0 \
+menuText B OptionsTable "Diretorio de tabelas de base" 0 \
   {Selecione um arquivo de tabela de base; todas as tabelas nesse diretorio serao usadas}
 menuText B OptionsRecent "Arquivos recentes..." 0 \
   {Muda o número de arquivos recentes no menu Arquivo} 
-menuText B OptionsBooksDir "Diretório de Livros..." 0 {Define o diretório para os livros de aberturas}
-menuText B OptionsTacticsBasesDir "Diretório de bases..." 0 {Define o diretório para as bases de treinamento de táticas}
-menuText B OptionsPhotosDir "Diretorio de Fotos..." 0 {Define o diretorio base de fotos}
+menuText B OptionsBooksDir "Diretório de Livros" 0 {Define o diretório para os livros de aberturas}
+menuText B OptionsTacticsBasesDir "Diretório de bases" 0 {Define o diretório para as bases de treinamento de táticas}
+menuText B OptionsPhotosDir "Diretorio de Fotos" 0 {Define o diretorio base de fotos}
 menuText B OptionsThemeDir "Carregar Tema(s)..."  0 {Carrega arquivo de tema para a tela}
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
   {Salva automaticamente todas as opcoes quando sair do Scid}
-menuText B OptionsMenuColor "Define Cores dos Menus..." 0 { }
-translate B MenuColorForeground "Cor do Texto"
-translate B MenuColorBackground "Cor de Fundo"
-translate B MenuColorSelect "Selecionar"
 
 # Help menu:
 menuText B Help "Ajuda" 0
@@ -690,12 +681,6 @@ translate B EngineTime {Data}
 translate B EngineNew {Novo}
 translate B EngineEdit {Editar}
 translate B EngineRequired {Campos em negrito são obrigatórios; os demais são opcionais}
-
-# Stats window menus:
-menuText B StatsFile "Arquivo" 0
-menuText B StatsFilePrint "Imprimir para arquivo..." 0
-menuText B StatsFileClose "Fecha janela" 0
-menuText B StatsOpt "Opcoes" 0
 
 # PGN window menus:
 menuText B PgnFile "Arquivo" 0
@@ -1705,16 +1690,15 @@ translate B FilterStatistic {Estatisticas de Filtro}
 translate B MakeCorrections {Fazer Correcoes}
 translate B Surnames {Sobrenomes}
 translate B Ambiguous {Ambiguo}
-# ====== TODO To be translated ======
-translate B OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate B OptionsBoard "Chessboard"
-# ====== TODO To be translated ======
-translate B OptionsMenuColor "Menu colors"
-# ====== TODO To be translated ======
-translate B OptionsBoardSize "Board size"
-# ====== TODO To be translated ======
-translate B OptionsBoardPieces "Piece Style"
+translate B OptionsToolbar "Barra de Ferramentas da Janela Principal"
+translate B OptionsBoard "Tabuleiro"
+translate B OptionsMenuColor "Define Cores dos Menus"
+translate B OptionsBoardSize "Tamanho do Tabuleiro"
+translate B OptionsBoardPieces "Estilo de Pecas no Tabuleiro"
+translate B MenuColorForeground "Cor do Texto"
+translate B MenuColorBackground "Cor de Fundo"
+translate B MenuColorSelect "Selecionar"
+translate B OptionsTablebaseDir "Selecione até 4 pastas tabela base de finais:"
 }
 
 # end of portbr.tcl

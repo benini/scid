@@ -249,11 +249,6 @@ menuText N CCEditCopy "Kopieer de Partijlijst naar het Clipbord" 0 {Kopieer de P
 
 # Options menu:
 menuText N Options "Opties" 0
-menuText N OptionsBoard "Bord" 0 {Opties  Uitzicht Schaakbord} ;
-menuText N OptionsBoardSize "Grootte van bord" 0 {Wijzig bord grootte}
-menuText N OptionsBoardPieces "Bord Stukken Stijl" 6 \
-  {Wijzig de stijl van bord en/of stukken}
-menuText N OptionsBoardColors "Kleuren..." 0 {Wijzig bord kleuren}
 menuText N OptionsBoardGraphics "Vakken..." 0 {Selecteer textures voor de vakken}
 translate N OptionsBGW {Selecteer het texture voor de vakken}
 translate N OptionsBoardGraphicsText {Selecteer graphische bestanden voor de witte en de zwarte vakken:}
@@ -304,39 +299,31 @@ menuText N OptionsWindowsIconify "Auto-icoon" 5 \
 menuText N OptionsWindowsRaise "Auto-voorgrond" 0 \
   {Breng sommige vensters terug op de voorgrond (bvb. voortgangsbalken) gelijk wanneer ze verdwijnen.}
 menuText N OptionsSounds "Geluiden ..." 2 {Configureer zet aankondigingsgeluiden} ;
+# ====== TODO To be translated ======
+menuText N OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText N OptionsWindowsDock "Veranker de vensters" 0 {Veranker de vensters}
 menuText N OptionsWindowsSaveLayout "Opmaak opslaan" 0 {Opmaak opslaan}
 menuText N OptionsWindowsRestoreLayout "Opmaak herstellen" 0 {Opmaak herstellen}
 menuText N OptionsWindowsShowGameInfo "Toon de informatie over de partij" 0 {Toon de informatie over de partij}
 menuText N OptionsWindowsAutoLoadLayout "Auto laad eerste layout" 0 {Auto laad eerste layout bij opstarten}
-menuText N OptionsToolbar "Gereedschappenbalk" 12 \
-  {Weergeven/verbergen hoofdvenster gereedschappenbalk}
-menuText N OptionsECO "ECO data laden..." 0 \
+menuText N OptionsECO "ECO data laden" 0 \
   {Laad het ECO classificatie bestand}
-menuText N OptionsSpell "Laad spelling (namen)..." 5 \
+menuText N OptionsSpell "Laad spelling (namen)" 5 \
   {Laad het Scid spellingbestand}
-menuText N OptionsTable "Eindspel database laden..." 9 \
+menuText N OptionsTable "Eindspel database" 9 \
   {Kies een eindspel database, alle in de directory aanwezige worden gebruikt}
 menuText N OptionsRecent "Recente bestanden..." 0 \
   {Wijzig het aantal recent gebruikte bestanden in het Bestand menu}
-menuText N OptionsBooksDir "Boeken map..." 0 {Stel de map met openingsboeken in}
-menuText N OptionsTacticsBasesDir "Databases map..." 0 {Stel de map met de  taktiek (training) databases in}
+menuText N OptionsBooksDir "Boeken map" 0 {Stel de map met openingsboeken in}
+menuText N OptionsTacticsBasesDir "Databases map" 0 {Stel de map met de  taktiek (training) databases in}
 # ====== TODO To be translated ======
-menuText N OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText N OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText N OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \
   {Automatisch bewaren alle gewijzigde opties bij het afsluiten van Scid}
-# ====== TODO To be translated ======
-menuText N OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate N MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate N MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate N MenuColorSelect "Select"
 
 # Help menu:
 menuText N Help "Help" 0
@@ -729,12 +716,6 @@ translate N EngineTime {Datum}
 translate N EngineNew {Nieuw}
 translate N EngineEdit {Bewerk}
 translate N EngineRequired {Velden in <b>vet</b> zijn vereist; de andere facultatief}
-
-# Stats window menus:
-menuText N StatsFile "Bestand" 0
-menuText N StatsFilePrint "Data als tekstbestand Bewaren..." 0
-menuText N StatsFileClose "Venster sluiten" 0
-menuText N StatsOpt "Opties" 0
 
 # PGN window menus:
 menuText N PgnFile "Bestand" 0
@@ -1948,15 +1929,19 @@ translate N MakeCorrections {Make Corrections}
 translate N Surnames {Surnames}
 # ====== TODO To be translated ======
 translate N Ambiguous {Ambiguous}
+translate N OptionsToolbar "Gereedschappenbalk"
 # ====== TODO To be translated ======
-translate N OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate N OptionsBoard "Chessboard"
+translate N OptionsBoard "Bord"
 # ====== TODO To be translated ======
 translate N OptionsMenuColor "Menu colors"
+translate N OptionsBoardSize "Grootte van bord"
+translate N OptionsBoardPieces "Bord Stukken Stijl"
 # ====== TODO To be translated ======
-translate N OptionsBoardSize "Board size"
+translate N MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate N OptionsBoardPieces "Piece Style"
+translate N MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate N MenuColorSelect "Select"
+translate N OptionsTablebaseDir "Selecteer tot 4 tabelbasismappen:"
 }
 # End of nederlan.tcl

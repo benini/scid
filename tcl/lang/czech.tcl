@@ -223,11 +223,6 @@ menuText C CCEditCopy "Zkopírovat seznam partií do schránky" 0 {Zkopírovat parti
 
 # Options menu:
 menuText C Options "Volby" 0
-menuText C OptionsBoard "©achovnice" 1 {Volby zobrazení ¹achovnice}
-menuText C OptionsBoardSize "Velikost ¹achovnice" 0 {Zmìnit velikost ¹achovnice}
-menuText C OptionsBoardPieces "Styl figur" 0 \
-  {Zmìnit styl zobrazení figur}
-menuText C OptionsBoardColors "Barvy..." 0 {Zmìnit barvy ¹achovnice}
 menuText C OptionsBoardGraphics "Pole..." 0 {Vybrat vzorek pro pole}
 translate C OptionsBGW {Vybrat vzorek pro pole}
 translate C OptionsBoardGraphicsText {Vybrat grafické soubory pro bílá a èerná pole:}
@@ -276,38 +271,30 @@ menuText C OptionsWindowsIconify "Automatická minimalizace" 12 \
 menuText C OptionsWindowsRaise "Automaticky do popøedí" 15 \
   {Dát do popøedí jistá okna, jsou-li zakrytá}
 menuText C OptionsSounds "Zvuky..." 2 {Konfigurovat zvuky oznamující tah}
+# ====== TODO To be translated ======
+menuText C OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText C OptionsWindowsDock "Zaparkovat okna" 0 {Zaparkovat okna}
 menuText C OptionsWindowsSaveLayout "Ulo¾it rozlo¾ení" 0 {Ulo¾it rozlo¾ení}
 menuText C OptionsWindowsRestoreLayout "Obnovit rozlo¾ení" 0 {Obnovit rozlo¾ení}
 menuText C OptionsWindowsShowGameInfo "Ukázat informace o partii" 0 {Ukázat informace o partii}
 menuText C OptionsWindowsAutoLoadLayout "Automaticky natáhnout první rozlo¾ení" 0 {Automaticky na zaèátku natáhnout první rozlo¾ení}
-menuText C OptionsToolbar "Nástrojová li¹ta..." 11 \
-  {Konfigurovat nástrojovou li¹tu hlavního okna}
-menuText C OptionsECO "Natáhnout ECO soubor..." 10 {Natáhnout soubor s klasifikací ECO}
-menuText C OptionsSpell "Natáhnout soubor pro kontrolu pravopisu..." 21 \
+menuText C OptionsECO "Natáhnout ECO soubor" 10 {Natáhnout soubor s klasifikací ECO}
+menuText C OptionsSpell "Natáhnout soubor pro kontrolu pravopisu" 21 \
   {Natáhnout soubor Scidu pro kontrolu pravopisu}
-menuText C OptionsTable "Adresáø pro tabulky koncovek..." 14 \
+menuText C OptionsTable "Adresáø pro tabulky koncovek" 14 \
   {Vybrat soubor s tabulkami koncovek; v¹echny tabulky koncovek v jeho adresáøi budou pou¾ity}
 menuText C OptionsRecent "Nedávné soubory..." 0 \
   {Zmìnit poèet nedávných souborù zobrazovaných v menu Soubor}
-menuText C OptionsBooksDir "Adresáø knihoven zahájení..." 0 {Nastavení adresáøe knihoven zahájení}
-menuText C OptionsTacticsBasesDir "Adresáø databází..." 0 {Nastavení adresáøù taktických (tréninkových) databází}
+menuText C OptionsBooksDir "Adresáø knihoven zahájení" 0 {Nastavení adresáøe knihoven zahájení}
+menuText C OptionsTacticsBasesDir "Adresáø databází" 0 {Nastavení adresáøù taktických (tréninkových) databází}
 # ====== TODO To be translated ======
-menuText C OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText C OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText C OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText C OptionsSave "Ulo¾it volby" 0 \
   "Ulo¾it v¹echny nastavitelné volby do souboru $::optionsFile"
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 20 \
   {Automaticky ukládat v¹echny volby pøi ukonèení Scidu}
-# ====== TODO To be translated ======
-menuText C OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate C MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate C MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate C MenuColorSelect "Select"
 
 # Help menu:
 menuText C Help "Nápovìda" 0
@@ -699,12 +686,6 @@ translate C EngineTime {Datum}
 translate C EngineNew {Nový}
 translate C EngineEdit {Editace}
 translate C EngineRequired {Tuènì vyznaèené polo¾ky jsou povinné; ostatní jsou volitelné}
-
-# Stats window menus:
-menuText C StatsFile "Soubor" 0
-menuText C StatsFilePrint "Vytisknout do souboru..." 0
-menuText C StatsFileClose "Zavøít okno" 0
-menuText C StatsOpt "Volby" 0
 
 # PGN window menus:
 menuText C PgnFile "Soubor" 0
@@ -1807,16 +1788,20 @@ translate C MakeCorrections {Make Corrections}
 translate C Surnames {Surnames}
 # ====== TODO To be translated ======
 translate C Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate C OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate C OptionsBoard "Chessboard"
+translate C OptionsToolbar "Nástrojová li¨ta"
+translate C OptionsBoard "©achovnice"
 # ====== TODO To be translated ======
 translate C OptionsMenuColor "Menu colors"
+translate C OptionsBoardSize "Velikost ¹achovnice"
+translate C OptionsBoardPieces "Styl figur"
 # ====== TODO To be translated ======
-translate C OptionsBoardSize "Board size"
+translate C MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate C OptionsBoardPieces "Piece Style"
+translate C MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate C MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate C OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 

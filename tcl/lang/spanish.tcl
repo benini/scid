@@ -258,11 +258,6 @@ menuText S CCEditCopy "Copiar lista de partidas a Clipbase" 0 \
 
 # Options menu:
 menuText S Options "Opciones" 0
-menuText S OptionsBoard "Tablero" 0 {Opciones sobre el aspecto del tablero}
-menuText S OptionsBoardSize "Tamaño del tablero" 0 {Cambia el tamaño del tablero}
-menuText S OptionsBoardPieces "Estilo de piezas" 10 \
-  {Cambia el estilo de piezas del tablero}
-menuText S OptionsBoardColors "Colores..." 0 {Cambia los colores del tablero}
 menuText S OptionsBoardGraphics "Escaques..." 0 {Elige texturas para escaques}
 translate S OptionsBGW {Elegir textura para escaques}
 translate S OptionsBoardGraphicsText {Elegir fichero gráfico para escaques blancos y negros}
@@ -319,6 +314,8 @@ menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
   {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
 menuText S OptionsSounds "Sonidos..." 2 \
   {Configura el sonido del anuncio de las jugadas}
+# ====== TODO To be translated ======
+menuText S OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText S OptionsWindowsDock "Ventanas en dique" 0 {Ventanas en dique}
 menuText S OptionsWindowsSaveLayout "Salvar disposición" 0 {Salva la disposición}
 menuText S OptionsWindowsRestoreLayout "Restaurar disposición" 0 \
@@ -327,36 +324,26 @@ menuText S OptionsWindowsShowGameInfo "Mostrar información de la partida" 0 \
   {Muestrar información de la partida}
 menuText S OptionsWindowsAutoLoadLayout "Auto cargar primera disposición" 0 \
   {Autocarga la primera disposición al iniciar}
-menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
-  {Muestra/oculta la barra de herramientas de la ventana principal}
-menuText S OptionsECO "Cargar archivo ECO..." 7 \
+menuText S OptionsECO "Cargar archivo ECO" 7 \
   {Cargar el archivo de clasificación ECO}
-menuText S OptionsSpell "Cargar archivo de comprobación ortográfica..." 2 \
+menuText S OptionsSpell "Cargar archivo de comprobación ortográfica" 2 \
   {Carga el archivo de comprobación ortográfica Scid}
-menuText S OptionsTable "Directorio de las tablas de finales (TB)..." 19 \
+menuText S OptionsTable "Directorio de las tablas de finales (TB)" 19 \
   {Selecciona el directorio de tablas finales; todas las TB de ese directorio serán usadas}
 menuText S OptionsRecent "Archivos recientes..." 9 \
   {Cambia el número de archivos recientes mostrados en el menú Archivo}
-menuText S OptionsBooksDir "Carpeta de libros de aperturas..." 0 \
+menuText S OptionsBooksDir "Carpeta de libros de aperturas" 0 \
   {Fija la carpeta de los libros de aperturas (Books)}
-menuText S OptionsTacticsBasesDir "Carpeta de bases de datos..." 0 \
+menuText S OptionsTacticsBasesDir "Carpeta de bases de datos" 0 \
   {Fija la carpeta de la base de entrenamiento táctico}
 # ====== TODO To be translated ======
-menuText S OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText S OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText S OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText S OptionsSave "Guardar opciones" 0 \
   "Guarda todas las opciones en el fichero $::optionsFile"
 menuText S OptionsAutoSave "Autoguardar opciones al salir" 0 \
   {Guarda automáticamente todas las opciones cuando se sale de Scid}
-# ====== TODO To be translated ======
-menuText S OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate S MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate S MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate S MenuColorSelect "Select"
 
 # Help menu:
 menuText S Help "Ayuda" 1
@@ -764,12 +751,6 @@ translate S EngineTime {Fecha}
 translate S EngineNew {Nuevo}
 translate S EngineEdit {Editar}
 translate S EngineRequired {Los campos en negrita son obligatorios; los demás opcionales}
-
-# Stats window menus:
-menuText S StatsFile "Archivo" 0
-menuText S StatsFilePrint "Imprimir en archivo..." 0
-menuText S StatsFileClose "Cerrar ventana" 0
-menuText S StatsOpt "Opciones" 0
 
 # PGN window menus:
 menuText S PgnFile "Archivo" 0
@@ -1847,16 +1828,18 @@ translate S MakeCorrections {Make Corrections}
 translate S Surnames {Surnames}
 # ====== TODO To be translated ======
 translate S Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate S OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate S OptionsBoard "Chessboard"
+translate S OptionsToolbar "Barra de herramientas ventana principal"
+translate S OptionsBoard "Tablero"
 # ====== TODO To be translated ======
 translate S OptionsMenuColor "Menu colors"
+translate S OptionsBoardSize "Tamaño del tablero"
+translate S OptionsBoardPieces "Estilo de piezas"
 # ====== TODO To be translated ======
-translate S OptionsBoardSize "Board size"
+translate S MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate S OptionsBoardPieces "Piece Style"
-
+translate S MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate S MenuColorSelect "Select"
+translate S OptionsTablebaseDir "Seleccione hasta 4 carpetas de la tablas de finales:"
 }
 # end of spanish.tcl

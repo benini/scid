@@ -288,22 +288,23 @@ menuText F OptionsWindowsIconify "Mise en icône automatique" 0 \
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
+menuText F OptionsResources "Ressources..." 0 {Choose resource files and folders}
 menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées (nécessite un redémarrage)}
 menuText F OptionsWindowsSaveLayout "Enregistrer disposition" 0 {Enregistrer disposition}
 menuText F OptionsWindowsRestoreLayout "Remettre disposition" 0 {Remettre disposition}
 menuText F OptionsWindowsShowGameInfo "Montrer le panneau d'info" 0 {Montrer le panneau d'information}
 menuText F OptionsWindowsAutoLoadLayout "Chargement auto 1ère disposition" 0 {Chargement auto de la première disposition au démarrage}
-menuText F OptionsECO "Charger le fichier ECO..." 19 \
+menuText F OptionsECO "Charger le fichier ECO" 19 \
   {Charger un fichier au format ECO}
-menuText F OptionsSpell "Charger le fichier d'orthographe..." 21 \
+menuText F OptionsSpell "Charger le fichier d'orthographe" 21 \
   {Charger un fichier de correction orthographique scid}
-menuText F OptionsTable "Répertoire des tables de finales TB..." 5 \
+menuText F OptionsTable "Répertoire des tables de finales TB" 5 \
   {Sélectionner un répertoire de fichiers TB, tous les fichiers de ce répertoire seront utilisés}
 menuText F OptionsRecent "Fichiers récents..." 1 \
   {Changer le nombre de fichiers récents affichés dans le menu Fichier}
-menuText F OptionsBooksDir "Répertoire des bibliothèques..." 15 {Répertoire des bibliothèques d'ouverture}
-menuText F OptionsTacticsBasesDir "Répertoire des bases d'entraînement..." 11 {Répertoire des bases pour l'entraînement tactique}
-menuText F OptionsPhotosDir "Répertoire des images..." 16 {Répertoire des bases pour les images}
+menuText F OptionsBooksDir "Répertoire des bibliothèques" 15 {Répertoire des bibliothèques d'ouverture}
+menuText F OptionsTacticsBasesDir "Répertoire des bases d'entraînement" 11 {Répertoire des bases pour l'entraînement tactique}
+menuText F OptionsPhotosDir "Répertoire des images" 16 {Répertoire des bases pour les images}
 menuText F OptionsThemeDir "Charger thème(s)..."  0 { Charger un fichier de thèmes pour l'interface graphique }
 menuText F OptionsSave "Enregistrer les options" 0 "Enregistrer les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
@@ -685,12 +686,6 @@ translate F EngineTime {Date}
 translate F EngineNew {Nouveau}
 translate F EngineEdit {Éditer}
 translate F EngineRequired {Les champs en gras sont requis; les autres sont optionnels}
-
-# Stats window menus:
-menuText F StatsFile "Fichier" 0
-menuText F StatsFilePrint "Enregistrer sous..." 0
-menuText F StatsFileClose "Fermer la fenêtre" 0
-menuText F StatsOpt "Options" 0
 
 # PGN window menus:
 menuText F PgnFile "Fichier" 0
@@ -1743,12 +1738,10 @@ translate F OptionsMenuColor "Couleurs des menus..."
 translate F OptionsBoardSize "Taille d'échiquier"
 translate F OptionsBoardPieces "Style des pièces"
 #menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
-# ====== TODO To be translated ======
 translate F MenuColorForeground "Texte"
-# ====== TODO To be translated ======
 translate F MenuColorBackground "Fond"
-# ====== TODO To be translated ======
 translate F MenuColorSelect "Sélection"
+translate F OptionsTablebaseDir "Sélectionnez jusqu'à 4 dossiers de tables de finales:"
 
 ##########
 #

@@ -270,11 +270,6 @@ menuText Y CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list 
 
 # Options menu:
 menuText Y Options "Opcije" 0
-menuText Y OptionsBoard "Chessboard" 0 {Chess board appearance options} ;# ***
-menuText Y OptionsBoardSize "Velièina table" 0 {Promeni velièinu table}
-menuText Y OptionsBoardPieces "Board Piece Style" 6 \
-  {Change the board piece style} ;# ***
-menuText Y OptionsBoardColors "Boje" 0 {Promeni boje table}
 # ====== TODO To be translated ======
 menuText Y OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
 # ====== TODO To be translated ======
@@ -336,6 +331,8 @@ menuText Y OptionsWindowsRaise "Auto podizanje" 0 \
   {Podigni odreðene prozore kad god su pokriveni}
 menuText Y OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
+menuText Y OptionsResources "Resources..." 0 {Choose resource files and folders}
+# ====== TODO To be translated ======
 menuText Y OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
 menuText Y OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
@@ -345,35 +342,25 @@ menuText Y OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText Y OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 # ====== TODO To be translated ======
 menuText Y OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText Y OptionsToolbar "Toolbar glavnog prozora" 12 \
-  {Prika¾i/sakrij toolbar glavnog prozora}
-menuText Y OptionsECO "Uèitaj E©O fajl..." 7 {Uèitaj E©O klasifikacioni fajl}
-menuText Y OptionsSpell "Uèitaj fajl za kontrolu pravopisa..." 13 \
+menuText Y OptionsECO "Uèitaj E©O fajl" 7 {Uèitaj E©O klasifikacioni fajl}
+menuText Y OptionsSpell "Uèitaj fajl za kontrolu pravopisa" 13 \
   {Uèitaj fajl za kontrolu pravopisa}
-menuText Y OptionsTable "Direktorijum baza zavr¹nica..." 0 \
+menuText Y OptionsTable "Direktorijum baza zavr¹nica" 0 \
   {Izaberi fajl baze zavr¹nica; sve baze u direktorijumu æe biti kori¹æene}
 menuText Y OptionsRecent "Recent files..." 0 \
   {Change the number of recent files displayed in the File menu} ;# ***
 # ====== TODO To be translated ======
-menuText Y OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
+menuText Y OptionsBooksDir "Books directory" 0 {Sets the opening books directory}
 # ====== TODO To be translated ======
-menuText Y OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText Y OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
 # ====== TODO To be translated ======
-menuText Y OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText Y OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText Y OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText Y OptionsSave "Saèuvaj opcije" 0 \
   "Saèuvaj sve opcije u fajl $::optionsFile"
 menuText Y OptionsAutoSave "Auto-saèuvaj opcije na izlasku" 0 \
   {Auto-saèuvaj sve opcije pri izlasku iz Scid-a}
-# ====== TODO To be translated ======
-menuText Y OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate Y MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate Y MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate Y MenuColorSelect "Select"
 
 # Help menu:
 menuText Y Help "Pomoæ" 2
@@ -850,12 +837,6 @@ translate Y EngineTime {Datum}
 translate Y EngineNew {New} ;# ***
 translate Y EngineEdit {Edit} ;# ***
 translate Y EngineRequired {Fields in bold are required; others are optional} ;# ***
-
-# Stats window menus:
-menuText Y StatsFile "Fajl" 0
-menuText Y StatsFilePrint "Print to file..." 0 ;# ***
-menuText Y StatsFileClose "Close window" 0 ;# ***
-menuText Y StatsOpt "Opcije" 0
 
 # PGN window menus:
 menuText Y PgnFile "Fajl" 0
@@ -2305,15 +2286,22 @@ translate Y Surnames {Surnames}
 # ====== TODO To be translated ======
 translate Y Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
-translate Y OptionsToolbar "Toolbar"
+translate Y OptionsToolbar "Toolbar glavnog prozora"
 # ====== TODO To be translated ======
 translate Y OptionsBoard "Chessboard"
 # ====== TODO To be translated ======
 translate Y OptionsMenuColor "Menu colors"
-# ====== TODO To be translated ======
-translate Y OptionsBoardSize "Board size"
+translate Y OptionsBoardSize "Velièina table"
 # ====== TODO To be translated ======
 translate Y OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
+# ====== TODO To be translated ======
+translate Y MenuColorForeground "Textcolor"
+# ====== TODO To be translated ======
+translate Y MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate Y MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate Y OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of serbian.tcl

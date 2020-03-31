@@ -235,11 +235,6 @@ menuText R CCEditCopy "Копировать список партий в буф�
 
 # Options menu:
 menuText R Options "Настройки" 0
-menuText R OptionsBoard "Шахматная доска" 0 {Настройки внешнего вида шахматной доски}
-menuText R OptionsBoardSize "Размер доски" 0 {Изменить размер доски}
-menuText R OptionsBoardPieces "Стиль фигур" 0 {Изменить стиль фигур}
-menuText R OptionsBoardColors "Цвета..." 0 {Изменить цвета доски}
-#Klimmek
 menuText R OptionsBoardGraphics "Поле..." 0 {Выбор текстур для полей}
 translate R OptionsBGW {Выбор текстур для полей}
 translate R OptionsBoardGraphicsText {Выбор графических файлов для белых и чёрных полей:}
@@ -286,35 +281,28 @@ menuText R OptionsWindowsIconify "Автоуменьшение" 0 \
 menuText R OptionsWindowsRaise "Автовыдвижение" 1 \
   {Выдвигать определённые окна (например, полосу прогресса) всякий раз, когда они скрыты}
 menuText R OptionsSounds "Звуки..." 2 {Настройки звука оповещения о ходе}
+# ====== TODO To be translated ======
+menuText R OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText R OptionsWindowsDock "Закрепить окна" 0 {Закрепить окна}
 menuText R OptionsWindowsSaveLayout "Сохранить расположение" 0 {Сохранить расположение}
 menuText R OptionsWindowsRestoreLayout "Восстановить расположение" 0 {Восстановить расположение}
 menuText R OptionsWindowsShowGameInfo "Показать информацию о партии" 0 {Показать информацию о партии}
 menuText R OptionsWindowsAutoLoadLayout "Автозагрузка первого расположения" 0 {Автозагрузка первого расположения на старте}
-menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
-menuText R OptionsECO "Загрузить файл ECO..." 2 {Загрузить файл классификации ECO}
-menuText R OptionsSpell "Загрузить файл проверки правописания..." 4 {Загрузить в Scid файл проверки правописания}
-menuText R OptionsTable "Директория таблиц..." 15 \
+menuText R OptionsECO "Загрузить файл ECO" 2 {Загрузить файл классификации ECO}
+menuText R OptionsSpell "Загрузить файл проверки правописания" 4 {Загрузить в Scid файл проверки правописания}
+menuText R OptionsTable "Директория таблиц" 15 \
   {Выбрать файл таблицы; все таблицы в этой директории будут использованы}
 menuText R OptionsRecent "Недавно используемые файлы..." 2 \
   {Изменить количество недавно используемых файлов в меню "Файл"}
-menuText R OptionsBooksDir "Директория книг..." 0 {Установить директорию книг дебютов}
-menuText R OptionsTacticsBasesDir "Директория баз..." 0 {Установить директорию баз тактик (тренировок)}
+menuText R OptionsBooksDir "Директория книг" 0 {Установить директорию книг дебютов}
+menuText R OptionsTacticsBasesDir "Директория баз" 0 {Установить директорию баз тактик (тренировок)}
 # ====== TODO To be translated ======
-menuText R OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText R OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText R OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText R OptionsSave "Сохранить установки" 0 "Сохранить все установки в файл $::optionsFile"
 menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
   {Автосохранение всех установок при выходе из программы}
-# ====== TODO To be translated ======
-menuText R OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate R MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate R MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate R MenuColorSelect "Select"
 
 # Help menu:
 menuText R Help "Помощь" 2
@@ -707,12 +695,6 @@ translate R EngineTime {Дата}
 translate R EngineNew {Новый}
 translate R EngineEdit {Редактор}
 translate R EngineRequired {Поля, отмеченные жирным шрифтом, заполнять обязательно, остальные - по желанию}
-
-# Stats window menus:
-menuText R StatsFile "Файл" 0
-menuText R StatsFilePrint "Печатать в файл..." 0
-menuText R StatsFileClose "Закрыть окно" 0
-menuText R StatsOpt "Установки" 0
 
 # PGN window menus:
 menuText R PgnFile "Файл" 0
@@ -1797,16 +1779,19 @@ translate R MakeCorrections {Make Corrections}
 translate R Surnames {Surnames}
 # ====== TODO To be translated ======
 translate R Ambiguous {Ambiguous}
-# ====== TODO To be translated ======
-translate R OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate R OptionsBoard "Chessboard"
+translate R OptionsToolbar "Инструментальная панель"
+translate R OptionsBoard "Шахматная доска"
 # ====== TODO To be translated ======
 translate R OptionsMenuColor "Menu colors"
+translate R OptionsBoardSize "Размер доски"
+translate R OptionsBoardPieces "Стиль фигур"
 # ====== TODO To be translated ======
-translate R OptionsBoardSize "Board size"
+translate R MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate R OptionsBoardPieces "Piece Style"
-
+translate R MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate R MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate R OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 # end of russian.tcl

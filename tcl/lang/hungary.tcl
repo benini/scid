@@ -233,10 +233,6 @@ menuText H CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list 
 
 # Options menu:
 menuText H Options "Beállítások" 0
-menuText H OptionsBoard "Sakktábla" 0 {Sakktábla megjelenésének megváltoztatása}
-menuText H OptionsBoardSize "Táblaméret" 0 {A tábla méretének megváltoztatása}
-menuText H OptionsBoardPieces "Figurák stílusa" 0 {A figurák megjelenési formájának megváltoztatása}
-menuText H OptionsBoardColors "Színek..." 0 {A tábla színeinek megváltoztatása}
 menuText H OptionsBoardGraphics "Mezõk..." 0 {A mezõk rajzolatának megváltoztatása}
 translate H OptionsBGW {A mezõk rajzolatának kiválasztása}
 translate H OptionsBoardGraphicsText {A világos és sötét mezõk grafikus fájljai:}
@@ -290,37 +286,30 @@ menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
 menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
   {Elõhoz bizonyos ablakokat (pl. elõrehaladás-sávokat), amikor el vannak takarva.}
 menuText H OptionsSounds "Hangok..." 3 {Lépéseket bejelentõ hangok definiálása}
+# ====== TODO To be translated ======
+menuText H OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText H OptionsWindowsDock "Ablakok helyhez rögzítése" 8 {Dock windows}
 menuText H OptionsWindowsSaveLayout "Elrendezés mentése" 11 {Ablakelrendezés mentése}
 menuText H OptionsWindowsRestoreLayout "Elrendezés visszaállítása" 11 {Ablakelrendezés visszaállítása}
 menuText H OptionsWindowsShowGameInfo "Játszmainformáció" 0 {Játszma adatainak megjelenítése ablakban}
 menuText H OptionsWindowsAutoLoadLayout "Az elsõ elrendezés automatikus betöltése" 19 {Induláskor automatikusan betölti az elsõ ablakelrendezést.}
-menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
-menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
-menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése..." 0 \
+menuText H OptionsECO "ECO-fájl betöltése" 2 {Betölti az ECO-osztályozó fájlt.}
+menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése" 0 \
   {Betölti a helyesírás-ellenõrzõ fájlt.}
-menuText H OptionsTable "Végjátéktáblázatok könyvtára..." 0 \
+menuText H OptionsTable "Végjátéktáblázatok könyvtára" 0 \
   {Végjátéktáblázat-fájl kiválasztása; a könyvtárban levõ összes végjátéktáblázatot használatba veszi.}
 menuText H OptionsRecent "Aktuális fájlok..." 3 \
   {A Fájl menüben megjelenített aktuális fájlok számának megváltoztatása}
 menuText H OptionsBooksDir "A megnyitástár könyvtára" 6 {Kijelöli a megnyitástár könyvtárát.}
 menuText H OptionsTacticsBasesDir "Az adatbázisok könyvtára" 4 {Kijelöli a taktikai (edzés) adatbázisok könyvtárát.}
 # ====== TODO To be translated ======
-menuText H OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
+menuText H OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
 menuText H OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
 menuText H OptionsSave "Beállítások mentése" 12 \
   "Minden beállítható értéket elment a $::optionsFile fájlba."
 menuText H OptionsAutoSave "Beállítások automatikus mentése kilépéskor." 0 \
   {Automatikusan elment minden beállítást, amikor kilépsz SCID-bõl.}
-# ====== TODO To be translated ======
-menuText H OptionsMenuColor "Setup Menu Colors..." 0 { }
-# ====== TODO To be translated ======
-translate H MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate H MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate H MenuColorSelect "Select"
 
 # Help menu:
 menuText H Help "Segítség" 0
@@ -715,12 +704,6 @@ translate H EngineTime {Dátum}
 translate H EngineNew {Új}
 translate H EngineEdit {Szerkesztés}
 translate H EngineRequired {A vastagbetûs mezõk szükségesek, a többiek kihagyhatók.}
-
-# Stats window menus:
-menuText H StatsFile "Fájl" 0
-menuText H StatsFilePrint "Nyomtatás fájlba..." 0
-menuText H StatsFileClose "Ablak bezárása" 8
-menuText H StatsOpt "Beállítások" 0
 
 # PGN window menus:
 menuText H PgnFile "Fájl" 0
@@ -1853,15 +1836,20 @@ translate H Surnames {Surnames}
 # ====== TODO To be translated ======
 translate H Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
-translate H OptionsToolbar "Toolbar"
-# ====== TODO To be translated ======
-translate H OptionsBoard "Chessboard"
+translate H OptionsToolbar "Eszköztár"
+translate H OptionsBoard "Sakktábla"
 # ====== TODO To be translated ======
 translate H OptionsMenuColor "Menu colors"
+translate H OptionsBoardSize "Táblaméret"
+translate H OptionsBoardPieces "Figurák stílusa"
 # ====== TODO To be translated ======
-translate H OptionsBoardSize "Board size"
+translate H MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate H OptionsBoardPieces "Piece Style"
+translate H MenuColorBackground "Background"
+# ====== TODO To be translated ======
+translate H MenuColorSelect "Select"
+# ====== TODO To be translated ======
+translate H OptionsTablebaseDir "Select up to 4 table base folders:"
 }
 
 # Tips of the day in Hungarian

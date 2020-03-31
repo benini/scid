@@ -319,8 +319,8 @@ menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText E OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText E OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText E OptionsECO "Load ECO File" 7 {Load the ECO classification file}
-menuText E OptionsSpell "Load Spellcheck File" 11 \
+menuText E OptionsECO "ECO File" 7 {Load the ECO classification file}
+menuText E OptionsSpell "Spellcheck File" 11 \
   {Load the Scid spellcheck file}
 menuText E OptionsTable "Tablebase Directory" 10 \
   {Select a tablebase file; all tablebases in its directory will be used}
