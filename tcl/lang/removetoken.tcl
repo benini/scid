@@ -3,9 +3,9 @@
 ### removetoken.tcl
 ###
 
-# (C) Pascal Georges 2007
+# (C) Pascal Georges 2007, Uwe Klimmek 2020
 #
-# Will remove a line containing the token in argument
+# Will remove entries containing a token from the argumentlist
 
 array set encodings {
   czech iso8859-2
@@ -31,25 +31,56 @@ set languages {czech deutsch francais hungary italian nederlan norsk polish
 }
 
 ################################################################################
-proc remove {langfile enc token} {
+proc remove {langfile enc tokens} {
   # Read the language file
-  
+
   set f [open $langfile.tcl r]
   fconfigure $f -encoding $enc
   set data [read $f]
   close $f
   set langData [split $data "\n"]
-  
+  set tokenList [split $tokens " "]
+  #split generates an additional "\n", delete this
+  set langData [lreplace $langData end end]
+
   set fnew [open $langfile.tcl.new w]
   fconfigure $fnew -encoding $enc
-  
+  set removenext 0
+  set removebrace 0
   foreach line $langData {
     set fields [split $line]
     set command [lindex $fields 0]
     set lang [lindex $fields 1]
     set name [lindex $fields 2]
-    if {$name != $token} {
-      puts $fnew $line
+    if { $removebrace } {
+        set removebrace 0
+        if { [string first "\}" $line] < 0 } {
+          set removebrace 1
+        }
+    } elseif { $removenext } {
+        set removenext 0
+        if { [string index $line end] == "\\" } {
+          set removenext 1
+        }
+    } elseif { $command == "translate" || $command == "menuText" } {
+        foreach token $tokenList {
+            set found 0
+            if { $name == $token } {
+                set found 1
+                break
+            }
+        }
+        if { ! $found } {
+            puts $fnew $line
+        } else {
+            if { [string index $line end] == "\\" } {
+                set removenext 1
+            } elseif { [string first "\{" $line] >= 0 &&  [string first "\}" $line] < 0} {
+                set removebrace 1
+            }
+        }
+    } else {
+        puts $fnew $line
     }
   }
   close $fnew
