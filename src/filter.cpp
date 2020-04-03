@@ -78,7 +78,6 @@ CompressedFilter::CompressFrom (Filter * filter)
     delete[] CompressedData;
 
     CFilterSize = filter->Size();
-    CFilterCount = filter->Count();
     if(filter->data() == NULL) {
         CompressedLength = 0;
         CompressedData = NULL;

@@ -24,7 +24,6 @@
 #include "sortcache.h"
 #include "stored.h"
 #include <algorithm>
-#include <math.h>
 
 std::pair<ICodecDatabase*, errorT>
 ICodecDatabase::open(Codec codec, fileModeT fMode, const char* filename,
@@ -58,7 +57,6 @@ scidBaseT::scidBaseT() {
 	gameNumber = -1;
 	gameAltered = false;
 	inUse = false;
-	tree.moveCount = tree.totalCount = 0;
 	fileMode_ = FMODE_None;
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
@@ -483,9 +481,6 @@ const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) c
 	return 0;
 }
 
-
-
-double TreeNode::expVect_[1600];
 
 std::vector<TreeNode> scidBaseT::getTreeStat(const HFilter& filter) const {
 	std::vector<TreeNode> res;

@@ -269,7 +269,7 @@ proc updateMainToolbar {} {
 proc ::updateTreeFilter {{base ""}} {
     if { [info exists ::treeFilterUpdating_] } {
         incr ::treeFilterUpdating_
-        sc_tree search -cancel all
+        ::progressBarCancel
         return
     }
 

@@ -1536,7 +1536,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_TREESTATS: {
             const auto stats = dbase->getTreeStat(filter);
             UI_List res (stats.size());
-            UI_List ginfo(8);
+            UI_List ginfo(9);
             for (auto const& node : stats) {
                 ginfo.clear();
                 ginfo.push_back(node.move ? node.move.getSAN() : "[end]");
@@ -1544,8 +1544,9 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 ginfo.push_back(node.freq[RESULT_White]);
                 ginfo.push_back(node.freq[RESULT_Draw]);
                 ginfo.push_back(node.freq[RESULT_Black]);
-                ginfo.push_back(node.expectedPerf);
-                ginfo.push_back(node.expectedPerfCount);
+                ginfo.push_back(node.avgElo());
+                ginfo.push_back(node.eloPerformance());
+                ginfo.push_back(node.eloCount);
                 ginfo.push_back(node.move.getColor() == WHITE ? "W" : "B");
                 res.push_back(ginfo);
             }
@@ -7667,59 +7668,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-
-// Enumeration of possible move-sorting methods for tree mode:
-enum moveSortE { SORT_ALPHA, SORT_ECO, SORT_FREQUENCY, SORT_SCORE };
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sortTreeMoves():
-//    Sorts the moves of a tree node according to a specified order.
-//    Slow sort method, but the typical number of moves is under 20
-//    so it is easily fast enough.
-void
-sortTreeMoves (treeT * tree, int sortMethod, colorT toMove)
-{
-    // Only sort if there are at least two moves in the tree node:
-    if (tree->moveCount <= 1) { return; }
-
-    for (uint outer=0; outer < tree->moveCount - 1; outer++) {
-        for (uint inner=outer+1; inner < tree->moveCount; inner++) {
-            int result = 0;
-
-            switch (sortMethod) {
-            case SORT_FREQUENCY:  // Most frequent moves first:
-                result = tree->node[outer].total - tree->node[inner].total;
-                break;
-
-            case SORT_ALPHA:  // Alphabetical order:
-                result = strCompare (tree->node[inner].san,
-                                     tree->node[outer].san);
-                break;
-
-            case SORT_ECO:  // ECO code order:
-                result = tree->node[outer].ecoCode - tree->node[inner].ecoCode;
-                break;
-
-            case SORT_SCORE:  // Order by success:
-                result = tree->node[outer].score - tree->node[inner].score;
-                if (toMove == BLACK) { result = -result; }
-                break;
-
-            default:  // Unreachable:
-                return;
-            }
-
-            if (result < 0) {
-                // Swap the nodes:
-                treeNodeT temp = tree->node[outer];
-                tree->node[outer] = tree->node[inner];
-                tree->node[inner] = temp;
-            }
-        }  // for (inner)
-    } // for (outer)
-    return;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_tree_search:
 //    Returns the tree for the current position
@@ -7733,15 +7681,14 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * sortOptions[] = {
         "alpha", "eco", "frequency", "score", NULL
     };
+    // Enumeration of possible move-sorting methods for tree mode:
+    enum moveSortE { SORT_ALPHA, SORT_ECO, SORT_FREQUENCY, SORT_SCORE };
 
-    char tempTrans[10];
     bool hideMoves = false;
-    const bool listMode = false;
     bool inFilterOnly = false;
     int sortMethod = SORT_FREQUENCY; // default move order: frequency
 
     scidBaseT * base = db;
-    static std::set<scidBaseT**> search_pool;
 
     // Check that there is an even number of optional arguments and
     // parse them as option-value pairs:
@@ -7759,9 +7706,6 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
         } else if (strIsPrefix (argv[arg], "-filtered")) {
             inFilterOnly = strGetBoolean (argv[arg+1]);
-        } else if (strIsPrefix (argv[arg], "-cancel")) {
-        	search_pool.clear();
-        	return TCL_OK;
         } else {
             return errorResult (ti, usageStr);
         }
@@ -7771,390 +7715,157 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (sortMethod < 0) { return errorResult (ti, usageStr); }
     if (!base->inUse) { return UI_Result(ti, ERROR_FileNotOpen);  }
 
-    search_pool.insert(&base);
-    base->treeFilter->Fill(0);
-    const HFilter filter = base->getFilter("dbfilter");
+    auto treeFilter = base->getFilter("tree");
+    Position searchPos = *(db->game->GetCurrentPos());
 
-    Progress progress = UI_CreateProgress(ti);
-    Timer timer;  // Start timing this search.
+    if (!base->treeCache.cacheRestore(searchPos, *base->treeFilter)) {
+        Progress progress = UI_CreateProgress(ti);
+        if (!SearchPos(&searchPos).setFilter(*base, treeFilter, progress))
+            return UI_Result(ti, OK, "canceled");
 
-    // 1. Cache Search
-    bool foundInCache = false;
-    // #TODO: cache even filtered searches (requires a filter hash)
-    if (! inFilterOnly) {
-        // Lookup the cache before searching:
-        const cachedTreeT* pct = base->treeCache.Lookup (db->game->GetCurrentPos());
-        if (pct != NULL) {
-            // It was in the cache! Use it to save time:
-                if (pct->restoreFilter(base->treeFilter) == OK) {
-                    base->tree = pct->getTree();
-                    foundInCache = true;
-                }
-        }
+        base->treeCache.cacheAdd(searchPos, *base->treeFilter);
     }
 
-    if (!foundInCache) {
-        // OK, not in the cache so do the search:
-        // 2. Set vars
-        Position* pos = db->game->GetCurrentPos();
-        treeT* tree = &(base->tree);
-        tree->moveCount = tree->totalCount = 0;
-        matSigT msig = matsig_Make (pos->GetMaterial());
-        uint hpSig = pos->GetHPSig();
-        simpleMoveT sm;
-        base->treeFilter->Fill (0); // Reset the filter to be empty
-
-    	// 3. Set up the stored line code matches:
-    	StoredLine stored_line(pos->GetBoard(), pos->GetToMove());
-
-    	// 4. Search through each game:
-    	for (uint i=0, n = base->numGames(); i < n; i++) {
-            if ((i % 5000) == 0) {  // Update the percentage done slider:
-                if (!progress.report(i,n) || search_pool.count(&base) == 0) {
-                    return setResult (ti, "canceled");
-                }
-            }
-
-            if (inFilterOnly && filter.get(i) == 0) { continue; }
-
-    		const IndexEntry* ie = base->getIndexEntry(i);
-    		if (ie->GetLength() == 0) { continue; }
-    		// We do not skip deleted games, so next line is commented out:
-    		// if (ie->GetDeleteFlag()) { skipcount++; continue; }
-
-    		bool foundMatch = false;
-
-            // Check the stored line result for this game:
-            int ply = stored_line.match(ie->GetStoredLineCode());
-            if (ply < -1) { continue; }
-            if (ply >= 0) {
-                FullMove m = StoredLine::getMove(ie->GetStoredLineCode(), ply);
-                if (m) {
-                    sm.from = m.getFrom();
-                    sm.movingPiece = piece_Make(m.getColor(), m.getPiece());
-                    sm.to = m.getTo();
-                    if (m.isCastle()) sm.to = sm.from + ((sm.to > sm.from) ? 2 : -2);
-                    sm.promote = EMPTY;
-                    ply += 1;
-                    foundMatch = true;
-                }
-            }
-            if (!foundMatch) {
-                const pieceT* bd = pos->GetBoard();
-                bool isStartPos =
-                    (bd[A1]==WR  &&  bd[B1]==WN  &&  bd[C1]==WB  &&  bd[D1]==WQ  &&
-                     bd[E1]==WK  &&  bd[F1]==WB  &&  bd[G1]==WN  &&  bd[H1]==WR  &&
-                     bd[A2]==WP  &&  bd[B2]==WP  &&  bd[C2]==WP  &&  bd[D2]==WP  &&
-                     bd[E2]==WP  &&  bd[F2]==WP  &&  bd[G2]==WP  &&  bd[H2]==WP  &&
-                     bd[A7]==BP  &&  bd[B7]==BP  &&  bd[C7]==BP  &&  bd[D7]==BP  &&
-                     bd[E7]==BP  &&  bd[F7]==BP  &&  bd[G7]==BP  &&  bd[H7]==BP  &&
-                     bd[A8]==BR  &&  bd[B8]==BN  &&  bd[C8]==BB  &&  bd[D8]==BQ  &&
-                     bd[E8]==BK  &&  bd[F8]==BB  &&  bd[G8]==BN  &&  bd[H8]==BR);
-                if (!isStartPos  &&  ie->GetNumHalfMoves() == 0) {
-                    continue;
-                }
-
-                if (! ie->GetStartFlag()) {
-                    // Speedups that only apply to standard start games:
-                    if (hpSig != HPSIG_StdStart) { // Not the start mask
-                        if (! hpSig_PossibleMatch(hpSig, ie->GetHomePawnData())) { continue; }
-                    }
-                }
-
-                if (msig != MATSIG_StdStart
-                    &&  !matsig_isReachable (msig, ie->GetFinalMatSig(),
-                                ie->GetPromotionsFlag(),
-                                ie->GetUnderPromoFlag()))
-                {
-                    continue;
-                }
-
-                auto bbuf = base->getGame(*ie);
-                if (!bbuf) {
-                    search_pool.erase(&base);
-                    return errorResult (ti, "Error reading game file.");
-    			}
-    			Game *g = scratchGame;
-    			if (g->ExactMatch (pos, &bbuf, &sm)) {
-    				ply = g->GetCurrentPly() + 1;
-    				foundMatch = true;
-    			}
-    		}
-
-    		// If match was found, add it to the list of found moves:
-    		if (foundMatch) {
-    			if (ply > 255) { ply = 255; }
-    			base->treeFilter->Set (i, (byte) ply);
-    			uint search;
-    			treeNodeT* node = tree->node;
-    			for (search = 0; search < tree->moveCount; search++, node++) {
-    				if (sm.from == node->sm.from
-    						&&  sm.to == node->sm.to
-    						&&  sm.promote == node->sm.promote) {
-    					break;
-    				}
-    			}
-
-    			// Now node is the node to update or add.
-    			// Check for exceeding max number of nodes:
-    			if (search >= MAX_TREE_NODES) {
-    				search_pool.erase(&base);
-    				return errorResult (ti, "Too many moves.");
-    			}
-
-    			if (search == tree->moveCount) {
-    				// A new move to add:
-    				initTreeNode (node);
-    				node->sm = sm;
-    				if (sm.from == NULL_SQUARE) {
-    					strCopy(node->san, "[end]");
-    				} else {
-    					pos->MakeSANString (&sm, node->san, SAN_CHECKTEST);
-    				}
-    				tree->moveCount++;
-    			}
-    			node->total++;
-    			node->freq[ie->GetResult()]++;
-    			eloT elo = 0;
-    			eloT oppElo = 0;
-    			uint year = ie->GetYear();
-    			if (pos->GetToMove() == WHITE) {
-    				elo = ie->GetWhiteElo();
-    				oppElo = ie->GetBlackElo();
-    			} else {
-    				elo = ie->GetBlackElo();
-    				oppElo = ie->GetWhiteElo();
-    			}
-    			if (elo > 0) {
-    				node->eloSum += elo;
-    				node->eloCount++;
-    			}
-    			if (oppElo > 0) {
-    				node->perfSum += oppElo;
-    				node->perfCount++;
-    			}
-    			if (year != 0) {
-    				node->yearSum += year;
-    				node->yearCount++;
-    			}
-    			tree->totalCount++;
-    		} // end: if (foundMatch) ...
-    	} // end: for
+    if (inFilterOnly) {
+        treeFilter = base->getFilter(base->composeFilter("dbfilter", "tree"));
+        ASSERT(treeFilter != nullptr);
     }
+    auto tree = base->getTreeStat(treeFilter);
 
-    treeT* tree = &(base->tree);
-    treeNodeT* node = tree->node;
-    if (!foundInCache) {
-        // Now we generate the score of each move: it is the expected score per
-        // 1000 games. Also generate the ECO code of each move.
 
-        for (uint i=0; i < tree->moveCount; i++, node++) {
-            node->score = (node->freq[RESULT_White] * 2
-                    + node->freq[RESULT_Draw] + node->freq[RESULT_None])
-                    * 500 / node->total;
+    auto calc_eco = [&](auto const& move) {
+        ecoT eco = ECO_None;
+        if (ecoBook && move) {
+            simpleMoveT sm;
+            sm.from = move.getFrom();
+            sm.to = move.getTo();
+            sm.movingPiece = piece_Make(move.getColor(), move.getPiece());
+            sm.promote = move.isPromo() ? move.getPromo() : EMPTY;
 
-            node->ecoCode = 0;
-            if (ecoBook != NULL) {
-                Position tmpPos = *(db->game->GetCurrentPos());
-                if (node->sm.from != NULL_SQUARE) {
-                    tmpPos.DoSimpleMove (&(node->sm));
-                }
-                ecoT eco = ecoBook->findECO(&tmpPos);
-                if (eco != ECO_None)
-                    node->ecoCode = eco;
-            }
+            searchPos.DoSimpleMove(&sm);
+            eco = ecoBook->findECO(&searchPos);
+            searchPos.UndoSimpleMove(&sm);
         }
+        return eco;
+    };
 
-        // Now we sort the move list:
-        sortTreeMoves (tree, sortMethod, db->game->GetCurrentPos()->GetToMove());
-
-        // If it wasn't in the cache, maybe it belongs there:
-        if (!foundInCache  && !inFilterOnly) {
-            base->treeCache.Add (db->game->GetCurrentPos(), tree, base->treeFilter);
-        }
-    }
-
-    progress.report(1,1);
-    search_pool.erase(&base);
-
-    DString * output = new DString;
-    char temp [200];
-    if (! listMode) {
-        const char * titleRow =
-            "    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws";
-        titleRow = translate (ti, "TreeTitleRow", titleRow);
-        output->Append (titleRow);
-    }
-
-    // Now we print the list into the return string:
-    node = tree->node;
-    for (uint count=0; count < tree->moveCount; count++, node++) {
-        ecoStringT ecoStr;
-        eco_ToExtendedString (node->ecoCode, ecoStr);
-        uint avgElo = 0;
-        if (node->eloCount >= 1)
-        	avgElo = node->eloSum / node->eloCount;
-
-        uint perf = 0;
-        if (node->perfCount >= 10) {
-            perf = node->perfSum / node->perfCount;
-            uint score = (node->score + 5) / 10;
-            if (db->game->GetCurrentPos()->GetToMove() == BLACK) { score = 100 - score; }
-            perf = Crosstable::Performance (perf, score);
-        }
-        uint avgYear = 0;
-        if (node->yearCount > 0) {
-            avgYear = (node->yearSum + (node->yearCount/2)) / node->yearCount;
-        }
-        node->san[6] = 0;
-
-        strcpy(tempTrans, node->san);
+    char tempTrans[10];
+    auto calc_san = [&](auto const& move) {
+        strcpy(tempTrans, move ? move.getSAN().c_str() : "[end]");
         transPieces(tempTrans);
+    };
 
-        if (listMode) {
-            if (ecoStr[0] == 0) { strCopy (ecoStr, "{}"); }
-            sprintf (temp, "%2u %-6s %-5s %7u %3d%c%1d %3d%c%1d",
-                     count + 1,
-                     hideMoves ? "---" : tempTrans,//node->san,
-                     hideMoves ? "{}" : ecoStr,
-                     node->total,
-                     100 * node->total / tree->totalCount,
-                     decimalPointChar,
-                     (1000 * node->total / tree->totalCount) % 10,
-                     node->score / 10,
-                     decimalPointChar,
-                     node->score % 10);
-            output->Append (temp);
+    if (sortMethod == SORT_ALPHA) { // icase alphabetical order
+        std::sort(tree.begin(), tree.end(), [&](auto const& a, auto const& b) {
+            calc_san(a.move);
+            std::string temp = tempTrans;
+            calc_san(b.move);
+            return temp < std::string_view(tempTrans);
+        });
+
+    } else if (sortMethod == SORT_ECO) { // Order by eco code
+        std::sort(tree.begin(), tree.end(), [&](auto const& a, auto const& b) {
+            return calc_eco(a.move) < calc_eco(b.move);
+        });
+
+    } else if (sortMethod == SORT_SCORE) { // Order by success
+        if (searchPos.GetToMove() == WHITE) {
+            std::sort(tree.begin(), tree.end(),
+                      [&](auto const& a, auto const& b) {
+                          return a.score() > b.score();
+                      });
         } else {
-            sprintf (temp, "\n%2u: %-6s %-5s %7u:%3d%c%1d%%  %3d%c%1d%%",
-                     count + 1,
+            std::sort(tree.begin(), tree.end(),
+                      [&](auto const& a, auto const& b) {
+                          return a.score() < b.score();
+                      });
+        }
+    }
+
+    char temp[256];
+    std::string output;
+    const char * titleRow =
+        "    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws";
+    titleRow = translate (ti, "TreeTitleRow", titleRow);
+    output.append(titleRow);
+
+    auto format_output = [&](auto const& node, auto& dest) {
+        const auto avgElo = static_cast<int>(node.avgElo());
+        const auto avgYear = static_cast<int>(node.avgYear());
+        const auto pctDraws = static_cast<int>(node.percDraws());
+        const auto score = node.score();
+        const auto perf = node.eloCount < 10
+                              ? 0
+                              : static_cast<int>(node.eloPerformance());
+
+        sprintf(temp, "  %3d%c%1d%%", score / 10, decimalPointChar, score % 10);
+        dest.append(temp);
+        if (avgElo == 0) {
+            dest.append("      ");
+        } else {
+            sprintf(temp, "  %4d", avgElo);
+            dest.append(temp);
+        }
+        if (perf == 0) {
+            dest.append("      ");
+        } else {
+            sprintf(temp, "  %4d", perf);
+            dest.append(temp);
+        }
+        if (avgYear == 0) {
+            dest.append("      ");
+        } else {
+            sprintf(temp, "  %4d", avgYear);
+            dest.append(temp);
+        }
+        sprintf(temp, "  %3d%%", pctDraws);
+        dest.append(temp);
+    };
+
+    if (tree.size() > 0) {
+        TreeNode totals({});
+        for (auto const& node : tree) { // reduce
+            totals.freq[0] += node.freq[0];
+            totals.freq[RESULT_White] += node.freq[RESULT_White];
+            totals.freq[RESULT_Black] += node.freq[RESULT_Black];
+            totals.freq[RESULT_Draw] += node.freq[RESULT_Draw];
+            totals.eloWhiteSum += node.eloWhiteSum;
+            totals.eloBlackSum += node.eloBlackSum;
+            totals.eloCount += node.eloCount;
+            totals.yearSum += node.yearSum;
+            totals.yearCount += node.yearCount;
+        }
+
+        // Now we print the list into the return string:
+        unsigned count = 0;
+        for (auto const& node : tree) {
+            calc_san(node.move);
+            ecoT eco = calc_eco(node.move);
+            ecoStringT ecoStr;
+            eco_ToExtendedString(eco, ecoStr);
+            auto freq = long(1000ll * node.freq[0] / totals.freq[0]);
+            sprintf (temp, "\n%2u: %-6s %-5s %7u:%3ld%c%1ld%%",
+                     ++count,
                      hideMoves ? "---" : tempTrans,//node->san,
                      hideMoves ? "" : ecoStr,
-                     node->total,
-                     100 * node->total / tree->totalCount,
+                     node.freq[0],
+                     freq / 10,
                      decimalPointChar,
-                     (1000 * node->total / tree->totalCount) % 10,
-                     node->score / 10,
-                     decimalPointChar,
-                     node->score % 10);
-            output->Append (temp);
+                     freq % 10);
+            output.append(temp);
+            format_output(node, output);
         }
 
-        if (avgElo == 0) {
-            strCopy (temp, listMode ? " {}" : "      ");
-        } else {
-            sprintf (temp, "  %4u", avgElo);
-        }
-        output->Append (temp);
-        if (perf == 0) {
-            strCopy (temp, listMode ? " {}" : "      ");
-        } else {
-            sprintf (temp, "  %4u", perf);
-        }
-        output->Append (temp);
-        if (avgYear == 0) {
-            strCopy (temp, listMode ? " {}" : "      ");
-        } else {
-            sprintf (temp, "  %4u", avgYear);
-        }
-        output->Append (temp);
-        uint pctDraws = node->freq[RESULT_Draw] * 1000 / node->total;
-        sprintf (temp, "  %3d%%", (pctDraws + 5) / 10);
-        output->Append (temp);
-
-        if (listMode) {
-            Tcl_AppendElement (ti, (char *) output->Data());
-            output->Clear();
-        }
+        // Print a totals line as well, if there are any moves in the tree:
+        const char * totalString = translate (ti, "TreeTotal:", "TOTAL:");
+        output.append("\n_______________________________________________________________\n");
+        sprintf (temp, "%-12s     %7u:100%c0%%",
+                 totalString, totals.freq[0], decimalPointChar);
+        output.append(temp);
+        format_output(totals, output);
+        output.append("\n");
     }
-
-    // Print a totals line as well, if there are any moves in the tree:
-
-    if (tree->moveCount > 0) {
-        int totalScore = 0;
-        uint64_t eloSum = 0;
-        uint64_t eloCount = 0;
-        uint64_t perfSum = 0;
-        uint64_t perfCount = 0;
-        uint64_t yearCount = 0;
-        uint64_t yearSum = 0;
-        uint nDraws = 0;
-        node = tree->node;
-        for (uint count=0; count < tree->moveCount; count++, node++) {
-            totalScore += node->freq[RESULT_White] * 2;
-            totalScore += node->freq[RESULT_Draw] + node->freq[RESULT_None];
-            eloCount += node->eloCount;
-            eloSum += node->eloSum;
-            perfCount += node->perfCount;
-            perfSum += node->perfSum;
-            yearCount += node->yearCount;
-            yearSum += node->yearSum;
-            nDraws += node->freq[RESULT_Draw];
-        }
-        totalScore = totalScore * 500 / tree->totalCount;
-        uint avgElo = 0;
-        if (eloCount >= 10) {
-            avgElo = eloSum / eloCount;
-        }
-        uint perf = 0;
-        if (perfCount >= 10) {
-            perf = perfSum / perfCount;
-            uint score = (totalScore + 5) / 10;
-            if (db->game->GetCurrentPos()->GetToMove() == BLACK) { score = 100 - score; }
-            perf = Crosstable::Performance (perf, score);
-        }
-
-        if (listMode) {
-            sprintf (temp, "%2u %-6s %-5s %7u %3d%c%1d %3d%c%1d",
-                     0,
-                     "TOTAL",
-                     "{}",
-                     tree->totalCount,
-                     100, decimalPointChar, 0,
-                     totalScore / 10, decimalPointChar, totalScore % 10);
-            output->Append (temp);
-        } else {
-            const char * totalString = translate (ti, "TreeTotal:", "TOTAL:");
-            output->Append ("\n_______________________________________________________________\n");
-            sprintf (temp, "%-12s     %7u:100%c0%%  %3d%c%1d%%",
-                     totalString, tree->totalCount, decimalPointChar,
-                     totalScore / 10, decimalPointChar, totalScore % 10);
-            output->Append (temp);
-        }
-        if (avgElo == 0) {
-            output->Append (listMode ? " {}" : "      ");
-        } else {
-            sprintf (temp, "  %4u", avgElo);
-            output->Append (temp);
-        }
-        if (perf == 0) {
-            output->Append (listMode ? " {} " : "      ");
-        } else {
-            sprintf (temp, "  %4u", perf);
-            output->Append (temp);
-        }
-        if (yearCount == 0) {
-            output->Append (listMode ? " {}" : "      ");
-        } else {
-            sprintf (temp, "  %4u", static_cast<uint>((yearSum + (yearCount/2)) / yearCount));
-            output->Append (temp);
-        }
-        uint pctDraws = nDraws * 1000 / tree->totalCount;
-        sprintf (temp, "  %3d%%", (pctDraws + 5) / 10);
-        output->Append (temp);
-        if (listMode) {
-            Tcl_AppendElement (ti, (char *) output->Data());
-            output->Clear();
-        } else {
-            output->Append ("\n");
-        }
-    }
-
-    if (! listMode) {
-    	Tcl_AppendResult (ti, output->Data(), NULL);
-    }
-    delete output;
-    return TCL_OK;
+    return UI_Result(ti, OK, output);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

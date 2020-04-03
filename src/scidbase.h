@@ -381,7 +381,6 @@ struct scidBaseT {
 
 public:
 	bool inUse;       // true if the database is open (in use).
-	treeT tree;
 	TreeCache treeCache;
 	Filter* dbFilter;
 	Filter* treeFilter;

@@ -17,69 +17,76 @@
 * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCID_TREE_H
-#define SCID_TREE_H
+#pragma once
 
-#include "board_def.h"
 #include "fullmove.h"
 #include "hfilter.h"
 #include "position.h"
-#include <cmath>
-#include <vector>
 #include <algorithm>
-
-
-//
-// Our tree structures:
-//
-
-// MAX_TREE_NODES: Fixed maximum number of moves a treeT can store.
-//    The number of played legal moves in a position rarely is over
-//    20, so 60 is a sane limit.
-//
-
-#define MAX_TREE_NODES 60
-
+#include <vector>
 
 struct TreeNode {
-	FullMove move;
+	unsigned long long eloWhiteSum = 0;   // Sum of white Elos.
+	unsigned long long eloBlackSum = 0;   // Sum of bLack Elos.
+	unsigned long long yearSum = 0;       // Sum of years.
 	gamenumT freq[NUM_RESULT_TYPES] = {}; // freq[0] is the total count.
-	gamenumT eloCount = 0;          // Count of games with an Elo.
-	gamenumT yearCount = 0;         // Count of games with year != 0.
-	gamenumT expectedPerfCount = 0;
-	unsigned long long eloSum = 0;  // Sum of Elos.
-	unsigned long long yearSum = 0; // Sum of years.
-	double expectedPerf = 0;
+	gamenumT eloCount = 0;                // Count of games with an Elo.
+	gamenumT yearCount = 0;               // Count of games with year != 0.
+	FullMove move;
 
 public:
-	explicit TreeNode(FullMove m) : move(m) {
-		if (expVect_[0] == 0) {
-			for (int i = -800; i < 800; i++)
-				expVect_[i + 800] = 1 / (1 + std::pow(10, i / 400.0));
-		}
-	}
+	explicit TreeNode(FullMove m) : move(m) {}
 
 	void add(resultT result, int eloW, int eloB, unsigned year) {
 		static_assert(RESULT_None == 0);
 		freq[0]++; // total count of games
 		if (result != RESULT_None) {
 			freq[result]++;
-			double r = RESULT_SCORE[result] / 2.0;
-			int eloDiff = eloB - eloW;
-			if (eloDiff < 800 && eloDiff >= -800) {
-				expectedPerf += r - expVect_[eloDiff + 800];
-				expectedPerfCount++;
-			}
 		}
-		auto elo = (move.getColor() == WHITE) ? eloW : eloB;
-		if (elo > 0) {
-			eloSum += elo;
+		if (eloW > 0 && eloB > 0) {
 			++eloCount;
+			eloWhiteSum += eloW;
+			eloBlackSum += eloB;
 		}
 		if (year > 0) {
 			yearSum += year;
 			++yearCount;
 		}
+	}
+
+	/// @return a value in the range [0, 1000] representing the score percentage
+	/// from the white prospective (999 = white won 99.9% of the games).
+	int score() const {
+		auto n = freq[RESULT_White] + freq[RESULT_Draw] + freq[RESULT_Black];
+		auto res = 2ull * freq[RESULT_White] + freq[RESULT_Draw];
+		return static_cast<int>(500 * res / n);
+	}
+
+	double eloPerformance() const {
+		if (eloCount == 0)
+			return 0;
+
+		int score = (this->score() + 5) / 10;
+		auto eloOpp = eloBlackSum;
+		if (move.getColor() != WHITE) {
+			score = 100 - score;
+			eloOpp = eloWhiteSum;
+		}
+		return 1.0 * eloOpp / eloCount + FIDE_ratingTable[score];
+	}
+
+	double avgElo() const {
+		if (eloCount == 0)
+			return 0;
+
+		auto elo = (move.getColor() == WHITE) ? eloWhiteSum : eloBlackSum;
+		return 1.0 * elo / eloCount;
+	}
+
+	double avgYear() const { return yearCount ? 1.0 * yearSum / yearCount : 0; }
+
+	double percDraws() const {
+		return freq[0] ? 100.0 * freq[RESULT_Draw] / freq[0] : 0;
 	}
 
 	static auto cmp_ngames_desc() {
@@ -88,56 +95,18 @@ public:
 	}
 
 private:
-	static double expVect_[1600];
-};
-
-
-
-// treeNodeT:
-//    Stores the move data, frequency, score, results by result type,
-//    and eco code of a single move played from a position.
-//
-struct treeNodeT {
-    simpleMoveT sm;
-    char        san[8];
-    uint        freq [NUM_RESULT_TYPES];
-    uint        total;      // Total count
-    uint        score;      // Score for white, in points per 1000 games, so
-                            // 55.1% would be a score of 551.
-    ecoT        ecoCode;
-    uint        eloCount;   // Count of games with an Elo.
-    uint        eloSum;     // Sum of Elos.
-    uint        perfCount;  // Count of games with an opponent Elo.
-    uint        perfSum;    // Sum of opponent Elos.
-    uint64_t    yearCount;  // Count of games with year != 0.
-    uint64_t    yearSum;    // Sum of years.
-};
-
-inline void initTreeNode (treeNodeT * tnode) {
-    tnode->freq[RESULT_White] = tnode->freq[RESULT_Black]
-        = tnode->freq[RESULT_Draw] = tnode->freq[RESULT_None] = 0;
-    for (uint i=0; i < 8; i++) { tnode->san[i] = 0; }
-    tnode->total = 0;
-    tnode->score = 0;
-    tnode->ecoCode = 0;
-    tnode->eloCount = 0;
-    tnode->eloSum = 0;
-    tnode->perfCount = 0;
-    tnode->perfSum = 0;
-    tnode->yearCount = 0;
-    tnode->yearSum = 0;
-}
-
-
-
-// treeT:
-//    Stores an array of tree nodes (each has a move, its frequency,
-//    score and ECO code) for a certain position.
-//
-struct treeT {
-    treeNodeT node [MAX_TREE_NODES];
-    uint      moveCount;
-    uint      totalCount;
+	// FIDE table 8.1a of conversion from fractional score (from 0 to 1 with
+	// 0.01 increments) into rating differences.
+	static constexpr short FIDE_ratingTable[] = {
+	    -800, -677, -589, -538, -501, -470, -444, -422, -401, -383, -366, -351,
+	    -336, -322, -309, -296, -284, -273, -262, -251, -240, -230, -220, -211,
+	    -202, -193, -184, -175, -166, -158, -149, -141, -133, -125, -117, -110,
+	    -102, -95,  -87,  -80,  -72,  -65,  -57,  -50,  -43,  -36,  -29,  -21,
+	    -14,  -7,   0,    7,    14,   21,   29,   36,   43,   50,   57,   65,
+	    72,   80,   87,   95,   102,  110,  117,  125,  133,  141,  149,  158,
+	    166,  175,  184,  193,  202,  211,  220,  230,  240,  251,  262,  273,
+	    284,  296,  309,  322,  336,  351,  366,  383,  401,  422,  444,  470,
+	    501,  538,  589,  677,  800};
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -147,15 +116,14 @@ struct treeT {
 //    A CompressedFilter is created from, or restored to, a regular
 //    filter with the methods CompressFrom() and UncompressTo().
 class CompressedFilter {
-	gamenumT CFilterSize = 0;
-	gamenumT CFilterCount = 0;
-	gamenumT CompressedLength = 0;
 	byte* CompressedData = nullptr;
+	gamenumT CFilterSize = 0;
+	gamenumT CompressedLength = 0;
 
 public:
 	CompressedFilter() = default;
 	CompressedFilter(CompressedFilter&&) = default;
-	~CompressedFilter(void) { delete[] CompressedData; }
+	~CompressedFilter() { delete[] CompressedData; }
 
 	void CompressFrom(Filter* filter);
 	errorT UncompressTo(Filter* filter) const;
@@ -164,91 +132,66 @@ private:
 	errorT Verify(Filter* filter);
 };
 
-// cachedTreeT:
-//    Stores a board position and its associated tree of all moves
-//    played at that position.
-//
-class cachedTreeT {
-    pieceT board_[64];
-    colorT toMove_;
-    treeT tree_;
-    CompressedFilter cfilter_;
-    uint32_t time_;
-
-    friend class TreeCache;
-
-public:
-    void set(Position* pos, treeT* tree, Filter* filter, uint32_t time) {
-        std::copy(pos->GetBoard(), pos->GetBoard() + 64, board_);
-        toMove_ = pos->GetToMove();
-        tree_ = *tree;
-        cfilter_.CompressFrom(filter);
-        time_ = time;
-    }
-    errorT restoreFilter(Filter* filter) const {
-        return cfilter_.UncompressTo(filter);
-    }
-    const treeT& getTree() const {
-        return tree_;
-    }
+struct CachedFilter {
+	CompressedFilter cfilter_;
+	pieceT board_[64];
+	colorT toMove_;
 };
 
-
-
-// A TreeCache object stores a fixed number of positions and their
-// tree data. The idea is that the common positions (the starting
-// position, the basic opening positions like 1.e4, 1.d4, etc) will
-// be have their tree information stored in a cache to save doing a
-// position search.
 class TreeCache {
-	std::vector<cachedTreeT> cache_;
-	uint32_t counter_ = 0;
+	std::vector<CachedFilter> cache_;
+	std::vector<uint32_t> cacheTime_;
+	uint32_t cacheTimeCounter_ = 0;
 
 public:
-	void Clear() { cache_.clear(); }
-	size_t Size() { return cache_.capacity(); }
-	size_t UsedSize() { return cache_.size(); }
-	void CacheResize(size_t max_size) {
+	void Clear() {
 		cache_.clear();
-		cache_.reserve(max_size);
+		cacheTime_.clear();
 	}
 
-	const cachedTreeT* Lookup(Position* pos) {
+	size_t UsedSize() { return cache_.size(); }
+
+	size_t Size() const { return cache_.capacity(); }
+
+	void CacheResize(size_t max_size) {
+		Clear();
+		cache_.reserve(max_size);
+		cacheTime_.reserve(max_size);
+	}
+
+	template <typename PosT> void cacheAdd(PosT const& pos, Filter& filter) {
+		size_t idx;
+		if (cache_.size() < Size() || cache_.empty()) {
+			idx = cache_.size();
+			cache_.emplace_back();
+			cacheTime_.emplace_back();
+		} else {
+			auto it = std::min_element(cacheTime_.begin(), cacheTime_.end());
+			idx = std::distance(cacheTime_.begin(), it);
+		}
+		auto board = pos.GetBoard();
+		std::copy(board, board + 64, cache_[idx].board_);
+		cache_[idx].toMove_ = pos.GetToMove();
+		cache_[idx].cfilter_.CompressFrom(&filter);
+		cacheTime_[idx] = cacheTimeCounter_++;
+	}
+
+	template <typename PosT>
+	bool cacheRestore(PosT const& pos, Filter& filter) {
 		auto it = std::find_if(
-		    cache_.begin(), cache_.end(), [pos](auto const& e) {
-			    return pos->GetToMove() == e.toMove_ &&
-			           std::equal(e.board_, e.board_ + 64, pos->GetBoard());
+		    cache_.begin(), cache_.end(), [&pos](auto const& e) {
+			    return e.toMove_ == pos.GetToMove() &&
+			           std::equal(e.board_, e.board_ + 64, pos.GetBoard());
 		    });
 		if (it == cache_.end())
-			return nullptr;
+			return false;
 
-		it->time_ = counter_++;
-		return &(*it);
-	}
-
-	void Add(Position* pos, treeT* pTree, Filter* filter) {
-		ASSERT(!Lookup(pos));
-
-		if (UsedSize() < Size()) {
-			// Cache is not yet full. Add the position to the cache:
-			cache_.emplace_back().set(pos, pTree, filter, counter_++);
-		} else {
-			// Cache is full!
-			// Replace the oldest node:
-			auto replace = std::min_element(
-			    cache_.begin(), cache_.end(),
-			    [](auto const& a, auto const& b) { return a.time_ < b.time_; });
-
-			if (replace != cache_.end())
-				replace->set(pos, pTree, filter, counter_++);
+		auto idx = std::distance(cache_.begin(), it);
+		if (it->cfilter_.UncompressTo(&filter) != OK) {
+			ASSERT(false); // corrupted data: should not happen
+			return false;
 		}
+		cacheTime_[idx] = cacheTimeCounter_++;
+		return true;
 	}
 };
-
-
-#endif
-
-//////////////////////////////////////////////////////////////////////
-//  EOF: tree.h
-//////////////////////////////////////////////////////////////////////
-

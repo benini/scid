@@ -628,24 +628,21 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 	$w.stats.b.c delete all
 	set i_add 0
 	foreach move $stats {
-		set performance [lindex $move 5]
-		set n_ratedgames [lindex $move 6]
-		set toMove [lindex $move 7]
+		lassign $move moveSAN n_totgames n_white n_draw	n_black	avgElo performance n_ratedgames toMove
+
 		set pColor "#707070"
 		set perfCmd ""
 		if { $n_ratedgames > 5 } {
-			if { $toMove == "B" } { set performance [expr { $performance * -1 }] }
-			set rate [expr { $performance / $n_ratedgames }]
-			if { $rate > 0.1 } { set pColor "#47a148" }
-			if { $rate < -0.1 } { set pColor "#f40000" }
-			#TODO:
-			set perfCmd "tk_messageBox -message \"$rate   ($performance / $n_ratedgames)\" "
+			set rate [expr { $performance - $avgElo }]
+			if { $rate > 150 } { set pColor "#47a148" }
+			if { $rate < -150 } { set pColor "#f40000" }
+			set perfCmd "tk_messageBox -message"
+			lappend perfCmd [format {Performance: %.0f (%+.0f)} $performance $rate]
 		}
 		$w.stats.b.c create rectangle 4 [expr { $line - $rectH }] $rectW [expr { $line -$rectB }] \
 		    -fill $pColor -outline "" -tag perf$i_add
 		$w.stats.b.c bind perf$i_add <ButtonPress-1> "$perfCmd"
 
-		set moveSAN [lindex $move 0]
 		$w.stats.b.c bind add$i_add <ButtonPress-1> "
 			if {\[addSanMove \{$moveSAN\}\] && \$::gamelistPosMask($w) == 0} {
 				$w.buttons.boardFilter invoke
@@ -657,12 +654,9 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 
 		incr i_add
 		$w.stats.b.c create text $moveW $line -anchor se \
-		    -text [lindex $move 1] -fill #707070 -font font_Italic
+		    -text $n_totgames -fill #707070 -font font_Italic
 		set barh1 [expr { $line - 2*$rectB }]
 		set barh2 [expr { $line - $rectB }]
-		set n_white [lindex $move 2]
-		set n_draw [lindex $move 3]
-		set n_black [lindex $move 4]
 		set n_tot [expr { $n_white + $n_draw + $n_black }]
 		if {$n_tot != 0} {
 			set p_white [expr { 100.0 * $n_white / $n_tot }]
