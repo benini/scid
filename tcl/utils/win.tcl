@@ -716,7 +716,7 @@ proc ::docking::layout_restore_pw { data } {
 
 proc ::docking::create_window {wnd} {
       switch -regexp -matchvar regmatch -- $wnd {
-      "\.(fdock)?main"                { ::docking::insert_tab $wnd $::docking::layout_dest_notebook end [list -text $::tr(Board)] }
+      "\.(fdock)?main"                { ::docking::insert_tab $wnd $::docking::layout_dest_notebook end [list -text $::tr(Board) -compound none] }
       "\.(fdock)?pgnWin"              { ::pgn::OpenClose
                                         ::pgn::Refresh 1 }
       "\.(fdock)?baseWin"             { ::windows::switcher::Open }
