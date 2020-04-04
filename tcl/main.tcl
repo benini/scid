@@ -298,7 +298,7 @@ proc ::updateTreeFilter {{base ""}} {
         }
 
         update idletasks
-        sc_filter new $base FEN
+        sc_filter search $base "tree" board
         if { $::treeFilterUpdating_ != 1 } {
             # Restart if the position changed before the update finished.
             after idle {

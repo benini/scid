@@ -1427,23 +1427,13 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case FILTER_NEW:
-        if (argc == 3 || argc == 4) {
-            scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
-            if (dbase == NULL) return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
-            if (argc == 4) {
-                //TODO: Use argv[4] (FEN) instead of current Position
-                SearchPos fp(db->game->GetCurrentPos());
-                //TODO: use a dedicated filter instead of treeFilter
-                HFilter maskfilter = HFilter(dbase->treeFilter);
-                std::string val;
-                if (fp.setFilter(*dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
-                    val = "tree";
-                }
-                return UI_Result(ti, OK, val);
-            }
-            return UI_Result(ti, OK, dbase->newFilter());
+        if (argc == 3) {
+            if (auto dbase = DBasePool::getBase(strGetUnsigned(argv[2])))
+                return UI_Result(ti, OK, dbase->newFilter());
+
+            return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
         }
-        return UI_Result(ti, ERROR_BadArg, "Usage: sc_filter new baseId [FEN]");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_filter new baseId");
 
     case FILTER_FIRST:
         return sc_filter_first (cd, ti, argc, argv);
@@ -1521,14 +1511,23 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return TCL_OK;
 
     case FILTER_SEARCH:
-        if (argc > 5) {
-            if (strCompare("header", argv[4]) == 0)
+        if (argc >= 5) {
+            std::string_view subcmd = argv[4];
+            if (subcmd == "header")
                 return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
 
-            if (strCompare("board", argv[4]) == 0 && argc == 10) {
-                const char* args[6] = {argv[3], argv[4], argv[9], argv[5],
-                                       argv[6], argv[7]};
-                return sc_search_board(ti, dbase, filter, 6, args);
+            if (subcmd == "board") {
+                if (argc == 5) {
+                    SearchPos fp(db->game->GetCurrentPos());
+                    fp.setFilter(*dbase, filter, UI_CreateProgressPosMask(ti));
+                    return UI_Result(ti, OK);
+                }
+
+                if (argc == 10) {
+                    const char* args[6] = {argv[3], argv[4], argv[9],
+                                           argv[5], argv[6], argv[7]};
+                    return sc_search_board(ti, dbase, filter, 6, args);
+                }
             }
         }
         return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
