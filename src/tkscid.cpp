@@ -7633,27 +7633,18 @@ int
 sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "best", "positions", "search", "size",
-        "cachesize", "cacheinfo", NULL
+        "search", "cachesize", "cacheinfo", NULL
     };
     enum {
-        TREE_BEST, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
-        TREE_CACHESIZE, TREE_CACHEINFO
+        TREE_SEARCH, TREE_CACHESIZE, TREE_CACHEINFO
     };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case TREE_POSITIONS:
-        // Return the number of positions cached:
-        return UI_Result(ti, OK, db->treeCache.UsedSize());
-
     case TREE_SEARCH:
         return sc_tree_search (cd, ti, argc, argv);
-
-    case TREE_SIZE:
-        return UI_Result(ti, OK, db->treeCache.Size());
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);
@@ -7891,14 +7882,10 @@ sc_tree_cacheinfo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
   }
   scidBaseT* base = DBasePool::getBase(strGetInteger(argv[2]));
-  if (base) {
-    appendUintElement (ti, base->treeCache.UsedSize());
-    appendUintElement (ti, base->treeCache.Size());
-  } else {
-    appendUintElement (ti, 0);
-    appendUintElement (ti, 0);
-  }
-  return TCL_OK;
+  if (base)
+      return UI_Result(ti, OK, base->treeCache.Size());
+
+  return UI_Result(ti, OK, 0);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_search:

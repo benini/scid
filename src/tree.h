@@ -149,8 +149,6 @@ public:
 		cacheTime_.clear();
 	}
 
-	size_t UsedSize() { return cache_.size(); }
-
 	size_t Size() const { return cache_.capacity(); }
 
 	void CacheResize(size_t max_size) {

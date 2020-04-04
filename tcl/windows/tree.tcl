@@ -18,7 +18,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4} tag {File Mask Sort Opt Help} {
     configMenuText $m $idx Tree$tag $lang
   }
-  foreach idx {0 1 2 3 5 7 9} tag {FillWithBase FillWithGame SetCacheSize CacheInfo Graph Copy Close} {
+  foreach idx {0 1 2 3} tag {SetCacheSize Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
   foreach idx {0 1 2 3 4 5 6 7 8 9} tag {New Open OpenRecent Save Close FillWithGame FillWithBase Search Info Display} {
@@ -90,12 +90,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     menu $w.menu.$i -tearoff 0
   }
   
-  #TODO: remove this
-  $w.menu.file add command -label TreeFileFillWithBase
-  set helpMessage($w.menu.file,0) TreeFileFillWithBase
-  $w.menu.file add command -label TreeFileFillWithGame
-  set helpMessage($w.menu.file,1) TreeFileFillWithGame
-  
   menu $w.menu.file.size
   foreach i { 250 500 1000 2000 5000 10000 } {
     $w.menu.file.size add radiobutton -label "$i" -value $i -variable ::tree::cachesize($baseNumber) -command "::tree::setCacheSize $baseNumber $i"
@@ -103,17 +97,11 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   
   $w.menu.file add cascade -menu $w.menu.file.size -label TreeFileSetCacheSize
   set helpMessage($w.menu.file,2) TreeFileSetCacheSize
-  
-  $w.menu.file add command -label TreeFileCacheInfo -command "::tree::getCacheInfo $baseNumber"
-  set helpMessage($w.menu.file,3) TreeFileCacheInfo
-  
-  $w.menu.file add separator
+
   $w.menu.file add command -label TreeFileGraph -command "::tree::graph $baseNumber 1"
   set helpMessage($w.menu.file,5) TreeFileGraph
-  $w.menu.file add separator
   $w.menu.file add command -label TreeFileCopy -command "::tree::menuCopyToSelection $baseNumber"
   set helpMessage($w.menu.file,7) TreeFileCopy
-  $w.menu.file add separator
   $w.menu.file add command -label TreeFileClose -command ".treeWin$baseNumber.buttons.close invoke"
   set helpMessage($w.menu.file,9) TreeFileClose
   
@@ -156,8 +144,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.menu.opt add checkbutton -label TreeOptTraining -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
   set helpMessage($w.menu.opt,1) TreeOptTraining
   
-  $w.menu.opt add separator
-
   $w.menu.helpmenu add command -label TreeHelpTree -accelerator F1 -command {helpWindow Tree}
   $w.menu.helpmenu add command -label TreeHelpIndex -command {helpWindow Index}
   
@@ -211,7 +197,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   ::createToplevelFinalize $w
   
   ::tree::refresh $baseNumber
-  set ::tree::cachesize($baseNumber) [lindex [sc_tree cacheinfo $baseNumber] 1]
+  set ::tree::cachesize($baseNumber) [sc_tree cacheinfo $baseNumber]
 }
 ################################################################################
 proc ::tree::hideCtxtMenu { baseNumber } {
@@ -1006,12 +992,6 @@ proc ::tree::setCacheSize { base size } {
 ################################################################################
 #
 ################################################################################
-proc ::tree::getCacheInfo { base } {
-  set ci [sc_tree cacheinfo $base]
-  tk_messageBox -title "Scid" -type ok -icon info \
-      -message "Cache used : [lindex $ci 0] / [lindex $ci 1]"
-  
-}
 
 
 ################################################################################
