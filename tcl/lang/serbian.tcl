@@ -329,7 +329,7 @@ menuText Y OptionsWindowsIconify "Auto-iconify" 5 \
   {Iconify all windows when the main window is iconified} ;# ***
 menuText Y OptionsWindowsRaise "Auto podizanje" 0 \
   {Podigni odreðene prozore kad god su pokriveni}
-menuText Y OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+menuText Y OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText Y OptionsResources "Resources..." 0 {Choose resource files and folders}
 # ====== TODO To be translated ======
@@ -1546,6 +1546,8 @@ translate Y SoundsAnnounceOptions {Move Announcement Options} ;# ***
 translate Y SoundsAnnounceNew {Announce new moves as they are made} ;# ***
 translate Y SoundsAnnounceForward {Announce moves when moving forward one move} ;# ***
 translate Y SoundsAnnounceBack {Announce when retracting or moving back one move} ;# ***
+# ====== TODO To be translated ======
+translate Y SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate Y Upgrading {Unapreðivanje}

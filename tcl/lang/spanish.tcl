@@ -312,7 +312,7 @@ menuText S OptionsWindowsIconify "Autominimizar" 4 \
   {Minimiza todas las ventanas cuando la ventana principal es minimizada}
 menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
   {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
-menuText S OptionsSounds "Sonidos..." 2 \
+menuText S OptionsSounds "Sonidos" 2 \
   {Configura el sonido del anuncio de las jugadas}
 # ====== TODO To be translated ======
 menuText S OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -727,7 +727,7 @@ translate S BlundersThreshold {Umbral del error }
 translate S ScoreAllMoves {Puntuar todos los movimientos}
 translate S LowPriority {Baja prioridad del procesador}
 translate S ClickHereToSeeMoves {Pulsa aquí para ver movimientos}
-translate S ConfigureInformant {Configurar informaciones}
+translate S ConfigureInformant {Informaciones}
 translate S Informant!? {Movimiento interesante}
 translate S Informant? {Movimiento malo}
 translate S Informant?? {Desastroso}
@@ -1413,6 +1413,7 @@ translate S SoundsAnnounceOptions {Opciones de anunciamiento de movimientos}
 translate S SoundsAnnounceNew {Anunciar nuevos movimientos cuando sean hechos}
 translate S SoundsAnnounceForward {Anunciar movimientos cuando avancemos un movimiento}
 translate S SoundsAnnounceBack {Anunciar movimiento cuando rectifiquemos o retrocedamos una jugada}
+translate S SoundsSoundDisabled {Scid no pudo encontrar el paquete de audio de Snack al inicio.\nEl sonido está desactivado.}
 
 # Upgrading databases:
 translate S Upgrading {Actualización}

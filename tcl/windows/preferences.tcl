@@ -29,7 +29,7 @@ proc ::preferences::updateScrollBar { w } {
 
 proc ::preferences::Open { {toggle ""} } {
   set w .preferences
-  if {! [::win::createWindow $w "Scid: $::menuLabel($::language,ConfigureScid)"]} {
+  if {! [::win::createWindow $w "$::menuLabel($::language,ConfigureScid)"]} {
     if {$toggle eq "toggle"} { ::win::closeWindow $w }
     return
   }
@@ -49,7 +49,7 @@ proc ::preferences::Open { {toggle ""} } {
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar]
+    set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMoves] ::preferences::moves [tr OptionsToolbar] ConfigToolbar [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr ConfigureInformant] configInformant [tr OptionsSounds] ::utils::sound::OptionsDialog]
   set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
@@ -137,4 +137,46 @@ proc ::preferences::resources { } {
 
     wm resizable $w 1 0
     grab $w
+}
+
+# preferences dialog for moves
+proc ::preferences::moves { w } {
+    global autoplayDelay tempdelay
+
+    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
+    set t $w
+    ttk::frame $t.ani
+    ttk::label $t.ani.al -text [tr OptionsMovesAnimate]
+    ttk::label $t.ani.ms -text "ms"
+    ttk::combobox $t.ani.animate -width 4 -textvar animateDelay -values {0 100 150 200 250 300 400 500 600 800 1000}
+    pack $t.ani.al $t.ani.animate $t.ani.ms -side left -anchor w -padx "0 5"
+    ttk::checkbutton $t.oma -variable askToReplaceMoves -text [tr OptionsMovesAsk]
+    ttk::checkbutton $t.omc -variable  moveEntry(Coord) -text [tr OptionsMovesCoord]
+    ttk::checkbutton $t.omk -variable  moveEntry(AutoExpand) -text [tr OptionsMovesKey]
+    ttk::checkbutton $t.oms -variable  suggestMoves -text [tr OptionsMovesSuggest]
+    ttk::checkbutton $t.osv -variable  showVarPopup -text [tr OptionsShowVarPopup]
+    ttk::checkbutton $t.osp -variable ::pgn::moveNumberSpaces -text [tr OptionsMovesSpace]
+    ttk::checkbutton $t.tp -variable ::translatePieces -text [tr OptionsMovesTranslatePieces]
+    ttk::checkbutton $t.sva -variable showVarArrows -text [tr OptionsMovesShowVarArrows]
+    ttk::checkbutton $t.god -variable glossOfDanger -text [tr OptionsMovesGlossOfDanger] -command updateBoard
+
+    ttk::frame $t.auto
+    ttk::label $t.auto.label -text "[tr OptionsMovesDelay]\n$::tr(AnnotateTime:)"
+    ttk::spinbox $t.auto.spDelay -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
+    ttk::labelframe $t.high -text [tr OptionsMovesHighlightLastMove]
+    ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
+    ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
+    ttk::label $t.high.tl -text [tr OptionsMovesHighlightLastMoveWidth]
+    ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
+    ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
+    grid $t.high.hlm -row 0 -column 0 -sticky w
+    grid $t.high.tl -row 0 -column 1 -padx "10 5"
+    grid $t.high.thick -row 0 -column 2
+    grid $t.high.color -row 1 -column 2 -pady "2 0"
+    grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
+    pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
+    pack $t.oma $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.tp $t.auto $t.sva $t.god -side top -anchor w
+    pack $t.high -side top -anchor w -pady "5 0"
 }

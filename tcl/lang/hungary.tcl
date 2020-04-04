@@ -285,7 +285,7 @@ menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
   {A fõ ablak ikonizálásakor az összes többit is ikonizálja.}
 menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
   {Elõhoz bizonyos ablakokat (pl. elõrehaladás-sávokat), amikor el vannak takarva.}
-menuText H OptionsSounds "Hangok..." 3 {Lépéseket bejelentõ hangok definiálása}
+menuText H OptionsSounds "Hangok" 3 {Lépéseket bejelentõ hangok definiálása}
 # ====== TODO To be translated ======
 menuText H OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText H OptionsWindowsDock "Ablakok helyhez rögzítése" 8 {Dock windows}
@@ -1374,6 +1374,8 @@ translate H SoundsAnnounceOptions {Lépésbemondások beállításai}
 translate H SoundsAnnounceNew {Új lépés bemondása amint megtesszük}
 translate H SoundsAnnounceForward {Lépés bemondása amikor egy lépést elõre lépünk}
 translate H SoundsAnnounceBack {Lépés bemondása amikor visszaveszünk vagy egy lépést hátra lépünk}
+# ====== TODO To be translated ======
+translate H SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate H Upgrading {Felújítás}

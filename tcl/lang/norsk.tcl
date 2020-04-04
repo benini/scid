@@ -331,7 +331,7 @@ menuText O OptionsWindowsIconify "Auto-minimer" 5 \
   {Minimerer alle vinduer sammen med hovedvinduet}
 menuText O OptionsWindowsRaise "Autoheving" 0 \
   {Hever visse vinduer (fremdriftsvisere etc) når de er skjult}
-menuText O OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+menuText O OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText O OptionsResources "Resources..." 0 {Choose resource files and folders}
 # ====== TODO To be translated ======
@@ -804,7 +804,7 @@ translate O LowPriority {Low CPU priority} ;# ***
 # ====== TODO To be translated ======
 translate O ClickHereToSeeMoves {Click here to see moves}
 # ====== TODO To be translated ======
-translate O ConfigureInformant {Configure Informant}
+translate O ConfigureInformant {Informant}
 # ====== TODO To be translated ======
 translate O Informant!? {Interesting move}
 # ====== TODO To be translated ======
@@ -1542,6 +1542,8 @@ translate O SoundsAnnounceOptions {Move Announcement Options} ;# ***
 translate O SoundsAnnounceNew {Announce new moves as they are made} ;# ***
 translate O SoundsAnnounceForward {Announce moves when moving forward one move} ;# ***
 translate O SoundsAnnounceBack {Announce when retracting or moving back one move} ;# ***
+# ====== TODO To be translated ======
+translate O SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate O Upgrading {Oppgraderer}

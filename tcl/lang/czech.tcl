@@ -270,7 +270,7 @@ menuText C OptionsWindowsIconify "Automatická minimalizace" 12 \
    {Minimalizovat v¹echna okna pøi minimalizování hlavního okna}
 menuText C OptionsWindowsRaise "Automaticky do popøedí" 15 \
   {Dát do popøedí jistá okna, jsou-li zakrytá}
-menuText C OptionsSounds "Zvuky..." 2 {Konfigurovat zvuky oznamující tah}
+menuText C OptionsSounds "Zvuky" 2 {Konfigurovat zvuky oznamující tah}
 # ====== TODO To be translated ======
 menuText C OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText C OptionsWindowsDock "Zaparkovat okna" 0 {Zaparkovat okna}
@@ -663,7 +663,7 @@ translate C BlundersThreshold {Hranice}
 translate C ScoreAllMoves {Score all moves}
 translate C LowPriority {Nízká priorita procesoru}
 translate C ClickHereToSeeMoves {Kliknìte sem pro zobrazení tahù}
-translate C ConfigureInformant {Konfigurovat informátor}
+translate C ConfigureInformant {Informátor}
 translate C Informant!? {Zajímavý tah}
 translate C Informant? {Slabý tah}
 translate C Informant?? {Hrubá chyba}
@@ -1354,6 +1354,8 @@ translate C SoundsAnnounceOptions {Volby oznamování tahu}
 translate C SoundsAnnounceNew {Oznamovat tahy pøi jejich provedení}
 translate C SoundsAnnounceForward {Oznamovat tahy pøi posunu o tah vpøed}
 translate C SoundsAnnounceBack {Oznamovat pøi vzetí tahu zpìt nebo posunu o tah zpìt}
+# ====== TODO To be translated ======
+translate C SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate C Upgrading {Upgrade}

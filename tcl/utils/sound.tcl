@@ -189,63 +189,17 @@ proc ::utils::sound::CheckSoundQueue {} {
 #
 #   Dialog window for configuring move sounds.
 #
-#   TODO: language translations for this dialog.
-#
-proc ::utils::sound::OptionsDialog {} {
-  set w .soundOptions
-  
-  foreach v {soundFolder announceNew announceForward announceBack} {
-    set ::utils::sound::${v}_temp [set ::utils::sound::$v]
-  }
-  
-  toplevel $w -background [ttk::style lookup . -background]
-  wm title $w "Scid: Sound Options"
-  # wm transient $w .
-  
-  
-  ttk::label $w.status -text ""
-  if {! $::utils::sound::hasSound} {
-    $w.status configure -text "Scid could not find the Snack audio package at startup; Sound is disabled."
-    pack $w.status -side bottom
-  }
-  pack [ttk::frame $w.b] -side bottom -fill x
-  pack [ttk::frame $w.f] -side top -fill x -padx 5 -pady 5 -ipadx 4 -ipady 4
-  
-  set f $w.f
-  set r 0
-  
-  grid [ttk::frame $f.gap$r -height 5] -row $r -column -0; incr r
-  
-  ttk::label $f.title -text $::tr(SoundsAnnounceOptions) -font font_Bold
-  grid $f.title -row $r -column 0 -columnspan 3 -pady 4
-  incr r
-  
-  ttk::checkbutton $f.announceNew -text $::tr(SoundsAnnounceNew) \
-      -variable ::utils::sound::announceNew_temp
-  grid $f.announceNew -row $r -column 0 -columnspan 2 -sticky w
-  incr r
-  
-  grid [ttk::frame $f.gap$r -height 5] -row $r -column -0; incr r
-  
-  ttk::checkbutton $f.announceForward -text $::tr(SoundsAnnounceForward) \
-      -variable ::utils::sound::announceForward_temp
-  grid $f.announceForward -row $r -column 0 -columnspan 2 -sticky w
-  incr r
-  
-  grid [ttk::frame $f.gap$r -height 5] -row $r -column -0; incr r
-  
-  ttk::checkbutton $f.announceBack -text $::tr(SoundsAnnounceBack) \
-      -variable ::utils::sound::announceBack_temp
-  grid $f.announceBack -row $r -column 0 -columnspan 2 -sticky w
-  addHorizontalRule $w
-  dialogbutton $w.b.ok -text OK -command ::utils::sound::OptionsDialogOK
-  dialogbutton $w.b.cancel -text $::tr(Cancel) -command [list destroy $w]
-  packbuttons right $w.b.cancel $w.b.ok
-  bind $w <Return> [list $w.b.ok invoke]
-  bind $w <Escape> [list $w.b.cancel invoke]
-  wm resizable $w 0 0
-  raiseWin $w
-  grab $w
+proc ::utils::sound::OptionsDialog { w } {
+    global autoplayDelay tempdelay
+
+    if { ! $::utils::sound::hasSound} {
+        ttk::label $w.status -text [tr SoundsSoundDisabled]
+        pack $w.status -side bottom
+    }
+    ttk::checkbutton $w.n -variable ::utils::sound::announceNew -text [tr SoundsAnnounceNew]
+    ttk::checkbutton $w.f -variable ::utils::sound::announceForward -text [tr SoundsAnnounceForward]
+    ttk::checkbutton $w.b -variable ::utils::sound::announceBack -text [tr SoundsAnnounceBack]
+    pack $w.n $w.f $w.b -side top -anchor w
 }
 
 proc ::utils::sound::GetDialogChooseFolder { widget } {

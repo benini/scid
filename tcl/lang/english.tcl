@@ -312,7 +312,7 @@ menuText E OptionsWindowsIconify "Auto-Iconify" 5 \
   {Iconify all windows when the main window is iconified}
 menuText E OptionsWindowsRaise "Auto-Raise" 5 \
   {Raise certain windows (e.g. progress bars) whenever they are obscured}
-menuText E OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
+menuText E OptionsSounds "Sounds" 2 {Configure move announcement sounds}
 menuText E OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows (needs restart)}
 menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
@@ -686,7 +686,7 @@ translate E BlundersThreshold {Threshold}
 translate E ScoreAllMoves {Score all moves}
 translate E LowPriority {Low CPU Priority}
 translate E ClickHereToSeeMoves {Click here to see moves}
-translate E ConfigureInformant {Configure Informant}
+translate E ConfigureInformant {Informant values}
 translate E Informant!? {Interesting move}
 translate E Informant? {Poor move}
 translate E Informant?? {Blunder}
@@ -1348,6 +1348,7 @@ translate E SoundsAnnounceOptions {Move Announcement Options}
 translate E SoundsAnnounceNew {Announce new moves as they are made}
 translate E SoundsAnnounceForward {Announce moves when moving forward one move}
 translate E SoundsAnnounceBack {Announce when retracting or moving back one move}
+translate E SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate E Upgrading {Upgrading}

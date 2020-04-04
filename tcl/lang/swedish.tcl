@@ -277,7 +277,7 @@ menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
   {Minimera alla fönster när huvudfönstret minimeras}
 menuText W OptionsWindowsRaise "Autofokus" 0 \
   {Visa åter vissa fönster (t ex. resultaträknare) automatiskt när de döljs}
-menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
+menuText W OptionsSounds "Ljud" 2 {Konfigurera ljud för att annonsera drag}
 # ====== TODO To be translated ======
 menuText W OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText W OptionsWindowsDock "Dockningsfönster" 0 {Dockningsfönster}
@@ -668,7 +668,7 @@ translate W BlundersThreshold {Tröskelvärde}
 translate W ScoreAllMoves {Score all moves}
 translate W LowPriority {Kör som lågprioriterad process} 
 translate W ClickHereToSeeMoves {Klicka här för att se drag}
-translate W ConfigureInformant {Konfigurera Informant-parametrar}
+translate W ConfigureInformant {Informant-parametrar}
 translate W Informant!? {Intressant drag}
 translate W Informant? {Dåligt drag}
 translate W Informant?? {Blunder}
@@ -1324,6 +1324,8 @@ translate W SoundsAnnounceOptions {Inställningar för Dragannonsering}
 translate W SoundsAnnounceNew {Annonsera nya drag när de görs}
 translate W SoundsAnnounceForward {Annonsera drag när du går fram ett drag}
 translate W SoundsAnnounceBack {Annonsera drag när du går fram eller tillbaka ett drag}
+# ====== TODO To be translated ======
+translate W SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate W Upgrading {Uppdaterar}

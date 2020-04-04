@@ -322,55 +322,13 @@ menu $m.windows
 $m add cascade -label OptionsWindows -menu $m.windows
 $m add command -label ConfigureScid -command { ::preferences::Open toggle }
 $m add command -label OptionsResources -command ::preferences::resources
-$m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add separator
 $m add command -label OptionsRecent -command ::recentFiles::configure
-$m add command -label GInfoInformant -command configInformant
 menu $m.export
   $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
   $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
   $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
 $m add cascade -label OptionsExport -menu $m.export
-menu $m.entry
-  $m.entry add checkbutton -label OptionsMovesAsk \
-      -variable askToReplaceMoves -offvalue 0 -onvalue 1
-  menu $m.entry.animate
-    foreach i {0 100 150 200 250 300 400 500 600 800 1000} {
-        $m.entry.animate add radiobutton -label "$i ms" \
-            -variable animateDelay -value $i
-    }
-  $m.entry add cascade -label OptionsMovesAnimate -menu $m.entry.animate
-  $m.entry add command -label OptionsMovesDelay -command setAutoplayDelay
-  $m.entry add checkbutton -label OptionsMovesCoord \
-      -variable moveEntry(Coord) -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsMovesKey \
-      -variable moveEntry(AutoExpand) -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsMovesSuggest \
-      -variable suggestMoves -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsShowVarPopup \
-      -variable showVarPopup -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsMovesSpace \
-      -variable ::pgn::moveNumberSpaces -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsMovesTranslatePieces \
-      -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
-  menu $m.entry.highlightlastmove
-    $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay \
-        -variable ::highlightLastMove -command updateBoard
-    menu $m.entry.highlightlastmove.width
-      foreach i {1 2 3 4 5} {
-          $m.entry.highlightlastmove.width add radiobutton -label $i -value $i \
-              -variable ::highlightLastMoveWidth -command updateBoard
-      }
-    $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
-    $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command chooseHighlightColor
-    $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow \
-        -variable ::arrowLastMove -command updateBoard
-  $m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
-  $m.entry add checkbutton -label OptionsMovesShowVarArrows \
-      -variable showVarArrows -offvalue 0 -onvalue 1
-  $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
-      -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
-$m add cascade -label OptionsMoves -menu $m.entry
 $m add separator
 $m add command -label OptionsSave -command options.write
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
@@ -634,17 +592,9 @@ proc checkMenuUnderline {menu} {
 ################################################################################
 #
 ################################################################################
-proc configInformant {} {
+proc configInformant { w } {
   global informant
   
-  set w .configInformant
-  if {[winfo exists $w]} {
-    destroy $w
-  }
-  
-  win::createDialog $w
-  ::setTitle $w $::tr(ConfigureInformant)
-  setWinLocation $w
   ttk::frame $w.spinF
   set idx 0
   set row 0
@@ -666,10 +616,6 @@ proc configInformant {} {
     incr idx
   }
   pack $w.spinF
-#  addHorizontalRule $w
-  ttk::button $w.close -textvar ::tr(Close) -command "destroy $w"
-  packdlgbuttons $w.close
-  bind $w <Configure> "recordWinSize $w"
 }
 
 # ################################################################################

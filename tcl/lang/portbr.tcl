@@ -273,7 +273,7 @@ menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
   {Iconizar todas as janelas quando a janela principal eh iconizada}
 menuText B OptionsWindowsRaise "Manter no topo" 0 \
   {Mantem no topo certas janelas (ex. barras de progresso) sempre que sao obscurecidas por outras}
-menuText B OptionsSounds "Sons..." 2 {Configura sons para anunciar os movimentos} 
+menuText B OptionsSounds "Sons" 2 {Configura sons para anunciar os movimentos} 
 # ====== TODO To be translated ======
 menuText B OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText B OptionsWindowsDock "Estacionar janelas" 0 {Estaciona as janelas}
@@ -657,7 +657,7 @@ translate B BlundersThreshold {Limite}
 translate B ScoreAllMoves {Analise todos os movimentos}
 translate B LowPriority {Baixa prioridade da CPU} 
 translate B ClickHereToSeeMoves {Clique aqui para ver os movimentos}
-translate B ConfigureInformant {Configurar Informante}
+translate B ConfigureInformant {Informante}
 translate B Informant!? {Movimento interessante}
 translate B Informant? {Movimento pobre}
 translate B Informant?? {Erro crasso}
@@ -1309,6 +1309,7 @@ translate B SoundsAnnounceOptions {Opções de anuncio de movimentos}
 translate B SoundsAnnounceNew {Anuncia novos movimentos quando eles são feitos} 
 translate B SoundsAnnounceForward {Anuncia movimentos quando avançar um movimento} 
 translate B SoundsAnnounceBack {Anuncia movimentos quando retroceder um movimento} 
+translate B SoundsSoundDisabled {O Scid não conseguiu encontrar o pacote de áudio Snack na inicialização;\nSound está desativado.}
 
 # Upgrading databases:
 translate B Upgrading {Atualizando}

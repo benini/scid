@@ -297,7 +297,7 @@ menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
   {Alle Fenster mit dem Hauptfenster minimieren}
 menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
-menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
+menuText D OptionsSounds "Sprachausgabe" 0 {Sprachausgabe für Zugankündigung einstellen}
 menuText D OptionsResources "Ressourcen..." 0 {Standard Dateien und Verzeichnisse einstellen}
 menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
 menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
@@ -309,7 +309,7 @@ menuText D OptionsSpell "Schreibkorrekturdatei" 7 \
   {Datei für Scid-Rechtschreibprüfung laden}
 menuText D OptionsTable "Verzeichnisse der Endspieltabellen" 16 \
   {Eine Endspieltabellendatei wählen (und damit alle Tabellen in diesem Verzeichnis)}
-menuText D OptionsRecent "Aktuelle Dateien..." 9 \
+menuText D OptionsRecent "Letzte Dateien..." 9 \
    {Anzahl der aktuellen Dateien im Dateimenü ändern}
 menuText D OptionsBooksDir "Verzeichnis für Eröffnungsbücher" 0 {Eröffnungsbuchverzeichnis einstellen}
 menuText D OptionsTacticsBasesDir "Verzeichnis für Taktikdatenbanken" 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
@@ -679,7 +679,7 @@ translate D BlundersThreshold {Schwelle}
 translate D ScoreAllMoves {Alle Züge bewerten}
 translate D LowPriority {Niedrige CPU-Priorität}
 translate D ClickHereToSeeMoves {Hier klicken um Züge anzuzeigen}
-translate D ConfigureInformant {Informator konfigurieren}
+translate D ConfigureInformant {Informatorwerte}
 translate D Informant!? {Interessanter Zug}
 translate D Informant? {Schwacher Zug}
 translate D Informant?? {Fehler}
@@ -1347,10 +1347,10 @@ translate D NoveltyHelp {Scid wird den ersten Zug aus der aktuellen Partie finde
 translate D SoundsFolder {Verzeichnis für Sprachausgabedateien}
 translate D SoundsFolderHelp {Das Verzeichnis sollte enthalten: King.wav, a.wav, 1.wav etc.}
 translate D SoundsAnnounceOptions {Optionen für Zugankündigung}
-	# *** Ist das so gemeint? Ich kann's nicht ausprobieren (keine Soundkarte...).
 translate D SoundsAnnounceNew {Kündige neue Züge an, wenn sie ausgeführt werden}
 translate D SoundsAnnounceForward {Künde Zug an beim Vorwärtspielen}
 translate D SoundsAnnounceBack {Kündige Zug an beim Zurückgehen}
+translate D SoundsSoundDisabled {Scid hat das Snack Audio Paket beim Start nicht gefunden.\nTon ist abgeschaltet.}
 
 # Upgrading databases:
 translate D Upgrading {Upgrading}
@@ -1373,8 +1373,8 @@ Soll das Erstellen der Datenbank im neuen Format jetzt durchgeführt werden?
 }
 
 # Recent files options:
-translate D RecentFilesMenu {Anzahl der aktuellen Dateien im Dateimenü}
-translate D RecentFilesExtra {Anzahl der aktuellen Dateien im zusätzlichen Untermenü}
+translate D RecentFilesMenu {Anzahl der letzten Dateien im Dateimenü}
+translate D RecentFilesExtra {Anzahl der letzten Dateien im zusätzlichen Untermenü}
 
 # My Player Names options:
 translate D MyPlayerNamesDescription {

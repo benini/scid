@@ -702,7 +702,7 @@ translate U BlundersThreshold {Virhekynnys}
 translate U ScoreAllMoves {Pisteytä kaikki siirrot}
 translate U LowPriority {Matala CPUn käyttöaste}
 translate U ClickHereToSeeMoves {Klikkaa nähdäksesi siirrot}
-translate U ConfigureInformant {Tee Informant-asetukset}
+translate U ConfigureInformant {Informant-asetukset}
 translate U Informant!? {Mielenkiintoinen siirto}
 translate U Informant? {Heikko siirto}
 translate U Informant?? {Virhe}
@@ -1361,6 +1361,8 @@ translate U SoundsAnnounceOptions {Siirtoilmoitusasetukset}
 translate U SoundsAnnounceNew {Ilmoita uudet siirrot}
 translate U SoundsAnnounceForward {Ilmoita, kun siirrytään eteenpäin yksi siirto}
 translate U SoundsAnnounceBack {Ilmoita, kun siirrytään taaksepäin yksi siirto}
+# ====== TODO To be translated ======
+translate U SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate U Upgrading {Päivitys}

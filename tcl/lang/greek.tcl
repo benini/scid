@@ -309,7 +309,7 @@ menuText G OptionsWindowsIconify "Αυτόματο εικονίδιο" 5 \
   {Μετατροπή όλων των παραθύρων σε εικονίδια όταν το κυρίως παράθυρο έχει γίνει εικονίδιο}
 menuText G OptionsWindowsRaise "Αυτόματη μεγέθυνση" 5 \
   {Μεγέθυνση συγκεκριμένων παραθύρων (π.χ. των γραμμών προόδου) κάθε φορά που αποκρύπτονται}
-menuText G OptionsSounds "Ήχοι..." 2 {Ρυθμίστε τους ήχους αναγγελίας κίνησης}
+menuText G OptionsSounds "Ήχοι" 2 {Ρυθμίστε τους ήχους αναγγελίας κίνησης}
 # ====== TODO To be translated ======
 menuText G OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText G OptionsWindowsDock "Προσκόληση παραθύρων" 0 {Προσκολήστε τα παράθυρα (χρειάζεται επανεκκίνηση)}
@@ -698,7 +698,7 @@ translate G BlundersThreshold {Αφετηρία}
 translate G ScoreAllMoves {Βαθμολόγηση όλων των κινήσεων}
 translate G LowPriority {Χαμηλή προτεραιότητα της CPU}
 translate G ClickHereToSeeMoves {Πατήστε εδώ για να δείτε τις κινήσεις}
-translate G ConfigureInformant {Προσαρμογή Informant}
+translate G ConfigureInformant {Informant}
 translate G Informant!? {Ενδιαφέρουσα κίνησηInteresting move}
 translate G Informant? {Φτωχή κίνηση}
 translate G Informant?? {Σφάλμα}
@@ -1394,6 +1394,8 @@ translate G SoundsAnnounceOptions {Επιλογές αναγγελίας κίν�
 translate G SoundsAnnounceNew {Αναγγελία των νέων κινήσεων καθώς εκτελούνται}
 translate G SoundsAnnounceForward {Αναγγελία όταν πρόκειται για μια κίνηση προς τα εμπρός}
 translate G SoundsAnnounceBack {Αναγγελία όταν πρόκειται για αναδρομή ή για κίνηση προς τα πίσω}
+# ====== TODO To be translated ======
+translate G SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate G Upgrading {Ενημέρωση}

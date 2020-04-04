@@ -274,7 +274,7 @@ menuText I OptionsWindowsIconify "Minimizza automaticamente" 2 \
   {Minimizza tutte le finestre quando la finestra principale viene minimizzata}
 menuText I OptionsWindowsRaise "Ingrandisci automaticamente" 0 \
   {Aumenta alcune finestre (p. es. le barre di progresso) ogni volta che sono oscurate}
-menuText I OptionsSounds "Suoni..." 2 {Configura i suoni per l'annuncio delle mosse} ;# ***
+menuText I OptionsSounds "Suoni" 2 {Configura i suoni per l'annuncio delle mosse} ;# ***
 # ====== TODO To be translated ======
 menuText I OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText I OptionsWindowsDock "Aggancia le finestre" 0 {Aggancia le finestre}
@@ -668,7 +668,7 @@ translate I BlundersThreshold {Limite}
 translate I ScoreAllMoves {Punteggio ad ogni mossa}
 translate I LowPriority {Imposta la priorità della CPU a bassa}
 translate I ClickHereToSeeMoves {Clicca qui per vedere le mosse}
-translate I ConfigureInformant {Configura il valore dei simboli per i commenti}
+translate I ConfigureInformant {Valore dei simboli per i commenti}
 translate I Informant!? {Mossa interessante}
 translate I Informant? {Mossa debole}
 translate I Informant?? {Errore grave}
@@ -1323,6 +1323,7 @@ translate I SoundsAnnounceOptions {Opzioni per l'annuncio delle mosse}
 translate I SoundsAnnounceNew {Annuncia l'esecuzione di una nuova mossa}
 translate I SoundsAnnounceForward {Annuncia quando si va avanti di una mossa}
 translate I SoundsAnnounceBack {Annuncia quando si va indietro di una mossa}
+translate I SoundsSoundDisabled {Scid non è riuscito a trovare il pacchetto audio Snack all'avvio;\nSound è disabilitato.}
 
 # Upgrading databases:
 translate I Upgrading {Aggiornamento}

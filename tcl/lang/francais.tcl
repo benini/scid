@@ -287,7 +287,7 @@ menuText F OptionsWindowsIconify "Mise en icône automatique" 0 \
   {Mettre toutes les fenêtres en icônes quand la fenêtre principale est mise en icône}
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
-menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
+menuText F OptionsSounds "Sons" 2 {Configurer l'annonce des sonore des coups}
 menuText F OptionsResources "Ressources..." 0 {Choose resource files and folders}
 menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées (nécessite un redémarrage)}
 menuText F OptionsWindowsSaveLayout "Enregistrer disposition" 0 {Enregistrer disposition}
@@ -660,7 +660,7 @@ translate F BlundersThreshold {Seuil de l'erreur}
 translate F ScoreAllMoves {Valider tous les coups}
 translate F LowPriority {Priorité processeur basse}
 translate F ClickHereToSeeMoves {Cliquer ici pour afficher les coups}
-translate F ConfigureInformant {Configurer les valeurs des notations}
+translate F ConfigureInformant {Valeurs des notations}
 translate F Informant!? {Coup intéressant}
 translate F Informant? {Coup faible}
 translate F Informant?? {Mauvais coup}
@@ -1347,6 +1347,7 @@ translate F SoundsAnnounceOptions {Options d'annonce des coups}
 translate F SoundsAnnounceNew {Annoncer les coups joués}
 translate F SoundsAnnounceForward {Annoncer les coups quand avance d'un coup}
 translate F SoundsAnnounceBack {Annoncer quand retour arrière d'un coup}
+translate F SoundsSoundDisabled {Scid n'a pas pu trouver le paquet audio de Snack au démarrage;\nle son est désactivé.}
 
 # Upgrading databases:
 translate F Upgrading {Mise à jour}

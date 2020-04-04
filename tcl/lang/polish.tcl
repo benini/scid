@@ -334,7 +334,7 @@ menuText P OptionsWindowsIconify "Minimalizuj wszystkie okna" 0 \
   {Schowaj wszystkie okna przy minimalizacji g³ównego okna}
 menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
   {Automatycznie uaktywniaj niektóre okna (np. pasek postêpu), gdy s± zas³oniête}
-menuText P OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+menuText P OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText P OptionsResources "Resources..." 0 {Choose resource files and folders}
 # ====== TODO To be translated ======
@@ -1553,6 +1553,8 @@ translate P SoundsAnnounceOptions {Move Announcement Options} ;# ***
 translate P SoundsAnnounceNew {Announce new moves as they are made} ;# ***
 translate P SoundsAnnounceForward {Announce moves when moving forward one move} ;# ***
 translate P SoundsAnnounceBack {Announce when retracting or moving back one move} ;# ***
+# ====== TODO To be translated ======
+translate P SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate P Upgrading {Konwersja}

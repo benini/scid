@@ -298,7 +298,7 @@ menuText N OptionsWindowsIconify "Auto-icoon" 5 \
   {Breng alle vensters in icoonvorm als het hoofdvenster naar icoon gaat.}
 menuText N OptionsWindowsRaise "Auto-voorgrond" 0 \
   {Breng sommige vensters terug op de voorgrond (bvb. voortgangsbalken) gelijk wanneer ze verdwijnen.}
-menuText N OptionsSounds "Geluiden ..." 2 {Configureer zet aankondigingsgeluiden} ;
+menuText N OptionsSounds "Geluiden" 2 {Configureer zet aankondigingsgeluiden} ;
 # ====== TODO To be translated ======
 menuText N OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText N OptionsWindowsDock "Veranker de vensters" 0 {Veranker de vensters}
@@ -692,7 +692,7 @@ translate N BlundersThreshold {Ondergrens}
 translate N ScoreAllMoves {Waardeer alle zetten}
 translate N LowPriority {Lage CPU prioriteit} ;
 translate N ClickHereToSeeMoves {Klik hier om de zetten te zien}
-translate N ConfigureInformant {Configureer de Informant}
+translate N ConfigureInformant {Informant}
 translate N Informant!? {Interessante zet}
 translate N Informant? {Slechte zet}
 translate N Informant?? {Blunder}
@@ -1391,6 +1391,7 @@ translate N SoundsAnnounceOptions {Zet Aankondigingen Opties} ;
 translate N SoundsAnnounceNew {Kondig nieuwe zetten aan als ze gedaan worden} ;
 translate N SoundsAnnounceForward {Kondig  aan als één zet vooruit gedaan wordt} ;
 translate N SoundsAnnounceBack {Kondig  aan als één zet terug gedaan of genomen wordt} ;
+translate N SoundsSoundDisabled {Scid kon het snack-audiopakket niet vinden bij het opstarten;\nhet geluid is uitgeschakeld.}
 
 # Upgrading databases:
 translate N Upgrading {Bijwerken}

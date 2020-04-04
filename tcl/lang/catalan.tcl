@@ -299,7 +299,7 @@ menuText K OptionsWindowsIconify "Autominimitzar" 4 \
   {Minimitza totes les finestres quan la finestra principal es minimitzada}
 menuText K OptionsWindowsRaise "Posar automáticamente en primer pla" 0 \
   {Fa visibles algunes finestres (ex. barres de progrés) quan estiguin cobertes}
-menuText K OptionsSounds "Sons..." 2 {Configura el so d'anunci de les jugades}
+menuText K OptionsSounds "Sons" 2 {Configura el so d'anunci de les jugades}
 # ====== TODO To be translated ======
 menuText K OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText K OptionsWindowsDock "Bloqueja finestres" 0 {Bloqueja i agrupa finestres}
@@ -701,7 +701,7 @@ translate K BlundersThreshold {Marge d'error }
 translate K ScoreAllMoves {Score all moves}
 translate K LowPriority {Baixa prioritat del processador}
 translate K ClickHereToSeeMoves {Clic aquí per veure les jugades}
-translate K ConfigureInformant {Configurar informacions}
+translate K ConfigureInformant {Informacions}
 translate K Informant!? {Jugada interesant}
 translate K Informant? {Jugada dolenta}
 translate K Informant?? {Desastrosa}
@@ -1394,6 +1394,8 @@ translate K SoundsAnnounceOptions {Opcions d'anunci de jugades}
 translate K SoundsAnnounceNew {Anunciar noves jugades quan estiguin fetes}
 translate K SoundsAnnounceForward {Anunciar jugades quan avancem una jugada}
 translate K SoundsAnnounceBack {Anunciar jugada quan rectifiquem o retrocedim una jugada}
+# ====== TODO To be translated ======
+translate K SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
 
 # Upgrading databases:
 translate K Upgrading {Actualització}

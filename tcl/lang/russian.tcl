@@ -280,7 +280,7 @@ menuText R OptionsWindowsIconify "Автоуменьшение" 0 \
   {Уменьшать все окна, когда уменьшается основное окно}
 menuText R OptionsWindowsRaise "Автовыдвижение" 1 \
   {Выдвигать определённые окна (например, полосу прогресса) всякий раз, когда они скрыты}
-menuText R OptionsSounds "Звуки..." 2 {Настройки звука оповещения о ходе}
+menuText R OptionsSounds "Звуки" 2 {Настройки звука оповещения о ходе}
 # ====== TODO To be translated ======
 menuText R OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText R OptionsWindowsDock "Закрепить окна" 0 {Закрепить окна}
@@ -669,7 +669,7 @@ translate R BlundersThreshold {Порог}
 translate R ScoreAllMoves {Пересчитать все ходы}
 translate R LowPriority {Низкий приоритет CPU}
 translate R ClickHereToSeeMoves {Кликнуть сюда, чтобы увидеть ходы}
-translate R ConfigureInformant {Настройка подсказчика}
+translate R ConfigureInformant {Подсказчика}
 translate R Informant!? {Ход подсказчика}
 translate R Informant? {Плохой ход}
 translate R Informant?? {Грубая ошибка}
@@ -1334,6 +1334,7 @@ translate R SoundsAnnounceOptions {Опции уведомления о ходе
 translate R SoundsAnnounceNew {Уведомлять о новых ходах, когда они сделаны}
 translate R SoundsAnnounceForward {Уведомлять о ходе, когда сделан один ход вперёд}
 translate R SoundsAnnounceBack {Уведомлять о сокращении или отмене одного хода}
+translate R SoundsSoundDisabled {Scid не смог найти аудио пакет Snack при запуске; \nSound отключен.}
 
 # Upgrading databases:
 translate R Upgrading {Модернизация}
