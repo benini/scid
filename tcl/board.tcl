@@ -424,13 +424,13 @@ proc ::board::addInfoBar {w varname} {
   set menu [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
     -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
-  grid $w.bar.leavevar -row 0 -column 0 -sticky news
-  grid $w.bar.back -row 0 -column 1 -sticky news
-  grid $w.bar.cmd -in $w.bar -row 0 -column 2 -sticky news -padx 8
-  grid $w.bar.info -in $w.bar -row 0 -column 3 -sticky news
+  grid $w.bar.cmd -in $w.bar -row 0 -column 0 -sticky news -padx 8
+  grid $w.bar.info -in $w.bar -row 0 -column 1 -sticky news
+  grid $w.bar.leavevar -row 0 -column 2 -sticky news
+  grid $w.bar.back -row 0 -column 3 -sticky news
   grid $w.bar.forward -row 0 -column 4 -sticky news
   grid $w.bar.endvar -row 0 -column 5 -sticky news
-  grid columnconfigure $w.bar 3 -weight 1
+  grid columnconfigure $w.bar 1 -weight 1
   grid $w.bar -row 20 -column 3 -columnspan 8 -sticky news -pady 4
   ::bind $w.bar <Configure> {+
 	grid remove %W.leavevar
