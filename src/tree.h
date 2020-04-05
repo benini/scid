@@ -58,8 +58,8 @@ public:
 	/// from the white prospective (999 = white won 99.9% of the games).
 	int score() const {
 		auto n = freq[RESULT_White] + freq[RESULT_Draw] + freq[RESULT_Black];
-		auto res = 2ull * freq[RESULT_White] + freq[RESULT_Draw];
-		return static_cast<int>(500 * res / n);
+		auto res = 1000ull * freq[RESULT_White] + 500ull * freq[RESULT_Draw];
+		return n ? static_cast<int>(res / n) : 500;
 	}
 
 	double eloPerformance() const {
