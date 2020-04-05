@@ -81,23 +81,17 @@ public:
 	explicit tcl_Progress(UI_handle_t ti) : ti_(ti) {}
 
 	bool report(size_t done, size_t total, const char* msg) final {
-		ASSERT(done <= static_cast<size_t>(std::numeric_limits<int>::max()));
-		ASSERT(total <= static_cast<size_t>(std::numeric_limits<int>::max()));
-
 		const std::chrono::duration<double> elapsed = clock::now() - timer_;
 		const double estimated = (done) ? elapsed.count() * total / done : 0;
-		Tcl_Obj* tmp[5];
+		Tcl_Obj* tmp[4];
 		tmp[0] = Tcl_NewStringObj("::progressCallBack", -1);
-		tmp[1] = Tcl_NewIntObj(static_cast<int>(done));
-		tmp[2] = Tcl_NewIntObj(static_cast<int>(total));
-		tmp[3] = Tcl_NewIntObj(static_cast<int>(elapsed.count()));
-		tmp[4] = Tcl_NewIntObj(static_cast<int>(estimated));
-		Tcl_Obj* cmd = Tcl_NewListObj(5, tmp);
+		tmp[1] = Tcl_NewDoubleObj(total ? (1.0 * done / total) : 1);
+		tmp[2] = Tcl_NewIntObj(static_cast<int>(elapsed.count()));
+		tmp[3] = Tcl_NewIntObj(static_cast<int>(estimated));
+		Tcl_Obj* cmd = Tcl_NewListObj(4, tmp);
 		if (msg != NULL)
 			Tcl_ListObjAppendElement(ti_, cmd, Tcl_NewStringObj(msg, -1));
-		Tcl_IncrRefCount(cmd);
 		int res = Tcl_EvalObjEx(ti_, cmd, TCL_EVAL_GLOBAL);
-		Tcl_DecrRefCount(cmd);
 		return res == TCL_OK;
 	}
 };

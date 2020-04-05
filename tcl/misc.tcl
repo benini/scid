@@ -366,7 +366,7 @@ proc progressBarCancel { } {
 }
 
 
-proc progressCallBack {done {total 1} {elapsed 0} {estimated 0} {msg ""}} {
+proc progressCallBack {done {elapsed 0} {estimated 0} {msg ""}} {
   if {$done == "init"} {
     if {[info exists ::progressCanvas(init)]} {
       return $::progressCanvas(init)
@@ -386,10 +386,7 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0} {msg ""}} {
     set ::progressCanvas(show) {}
   }
 
-  set width $::progressCanvas(w)
-  if {$total > 0} {
-    set width [expr {int(double($width) * double($done) / double($total))}]
-  }
+  set width [expr { int(double($::progressCanvas(w)) * double($done)) }]
   $::progressCanvas(name) coords bar 0 0 $width $::progressCanvas(h)
 
   set t [format "%d:%02d / %d:%02d" \
@@ -430,7 +427,12 @@ proc updateProgressWindow {done total} {
   if {$done != 0} {
     set estimated [expr {int(double($elapsed) * double($total) / double($done))}]
   }
-  ::progressCallBack "$done" "$total" "$elapsed" "$estimated"
+  if {$total != 0} {
+    set done [expr { double($done) / double($total) }]
+  } else {
+    set done 1
+  }
+  ::progressCallBack $done $elapsed $estimated
 }
 
 proc closeProgressWindow {{force false}} {
