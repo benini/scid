@@ -972,7 +972,6 @@ errorT
 Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote)
 {
     ASSERT(mlist != NULL);
-    pieceT promote2 = promote;
 
     mlist->Clear();
 
@@ -1006,7 +1005,7 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
         // if (promote == EMPTY)  { return ERROR_InvalidMove; }
         if (promote == EMPTY)  {
           // autopromote to queen
-          promote2 = (ToMove == WHITE ? WQ : BQ);
+          promote = QUEEN;
         }
     } else {
         if (promote != EMPTY)  { return ERROR_InvalidMove; }
@@ -1075,7 +1074,7 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
     }
 
     if (legal == 1) {
-        AddLegalMove (mlist, from, to, promote2);
+        AddLegalMove (mlist, from, to, promote);
         return OK;
     }
     return ERROR_InvalidMove;
