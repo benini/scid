@@ -304,14 +304,8 @@ menuText S OptionsMovesShowVarArrows "Mostrar flechas para las variaciones" 0 \
 menuText S OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText S OptionsNumbers "Formato de números" 11 \
   {Selecciona el formato de números}
-menuText S OptionsStartup "Inicio" 3 \
-  {Selecciona las ventanas que se abren al comenzar}
 menuText S OptionsTheme "Tema" 0 {Cambia el aspecto del interfaz}
 menuText S OptionsWindows "Ventanas" 0 {Opciones de ventana}
-menuText S OptionsWindowsIconify "Autominimizar" 4 \
-  {Minimiza todas las ventanas cuando la ventana principal es minimizada}
-menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
-  {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
 menuText S OptionsSounds "Sonidos" 2 \
   {Configura el sonido del anuncio de las jugadas}
 # ====== TODO To be translated ======
@@ -1835,6 +1829,8 @@ translate S OptionsBoard "Tablero"
 translate S OptionsMenuColor "Menu colors"
 translate S OptionsBoardSize "Tamaño del tablero"
 translate S OptionsBoardPieces "Estilo de piezas"
+# ====== TODO To be translated ======
+translate S OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate S MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

@@ -291,13 +291,8 @@ menuText N OptionsMovesShowVarArrows "Toon Pijlen voor Varianten" 0 {Zet aan/af 
 menuText N OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText N OptionsNumbers "Getalformaat" 5 \
   {Kies de manier waarop getallen te zien zijn}
-menuText N OptionsStartup "Opstarten" 3 {Selecteer de vensters die tijdens starten geopend worden}
 menuText N OptionsTheme "Theme" 0 {Verander het uitzicht van de interface}
 menuText N OptionsWindows "Vensters" 0 {Venster opties}
-menuText N OptionsWindowsIconify "Auto-icoon" 5 \
-  {Breng alle vensters in icoonvorm als het hoofdvenster naar icoon gaat.}
-menuText N OptionsWindowsRaise "Auto-voorgrond" 0 \
-  {Breng sommige vensters terug op de voorgrond (bvb. voortgangsbalken) gelijk wanneer ze verdwijnen.}
 menuText N OptionsSounds "Geluiden" 2 {Configureer zet aankondigingsgeluiden} ;
 # ====== TODO To be translated ======
 menuText N OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1937,6 +1932,8 @@ translate N OptionsBoard "Bord"
 translate N OptionsMenuColor "Menu colors"
 translate N OptionsBoardSize "Grootte van bord"
 translate N OptionsBoardPieces "Bord Stukken Stijl"
+# ====== TODO To be translated ======
+translate N OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate N MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

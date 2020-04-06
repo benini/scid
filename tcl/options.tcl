@@ -388,8 +388,6 @@ array set geometry {}
 # startup:
 #   Stores which windows should be opened on startup.
 set startup(tip) 1
-set startup(finder) 0
-set startup(stats) 0
 
 
 # Game information area options:
@@ -551,15 +549,6 @@ proc raiseWin {w} {
   return
 }
 
-# autoIconify:
-#   Specified whether Scid should iconify all other Scid windows when
-#   the main window is iconified. Most people like this behaviour but
-#   some window managers send an "UnMap" event when the user switches
-#   to another virtual window without iconifying the Scid window so
-#   users of such managers will probably want to turn this off.
-
-set autoIconify 1
-
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]
 set email(oldlogfile) [file join $scidUserDir "scidmail.log"]
@@ -684,7 +673,7 @@ proc options.write {} {
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           glossOfDanger askToReplaceMoves locale(numeric) \
-          spellCheckFile autoRaise autoIconify windowsDock showGameInfo \
+          spellCheckFile autoRaise windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \

@@ -321,14 +321,9 @@ menuText Y OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off
 # ====== TODO To be translated ======
 menuText Y OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText Y OptionsNumbers "Format brojeva" 0 {Izaberi format brojeva}
-menuText Y OptionsStartup "Startup" 3 {Select windows to open at startup} ;# ***
 # ====== TODO To be translated ======
 menuText Y OptionsTheme "Theme" 0 {Change look of interface}
 menuText Y OptionsWindows "Prozori" 0 {Opcije prozora}
-menuText Y OptionsWindowsIconify "Auto-iconify" 5 \
-  {Iconify all windows when the main window is iconified} ;# ***
-menuText Y OptionsWindowsRaise "Auto podizanje" 0 \
-  {Podigni odreðene prozore kad god su pokriveni}
 menuText Y OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText Y OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1617,8 +1612,6 @@ translate Y Noinfo {-- No info --}
 # ====== TODO To be translated ======
 translate Y PhalanxOrTogaMissing {Phalanx or Toga not found}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate Y moveblunderthreshold {move is a blunder if loss is greater than}
 # ====== TODO To be translated ======
 translate Y limitanalysis {limit engine analysis time}
@@ -1703,9 +1696,6 @@ translate Y DubiousMoves {Dubious moves}
 # ====== TODO To be translated ======
 translate Y OutOfRepertoire {OutOfRepertoire}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate Y ConfigureTactics {Configure tactics}
 # ====== TODO To be translated ======
 translate Y ResetScores {Reset scores}
@@ -1780,12 +1770,9 @@ translate Y TimeMode {Time mode}
 # ====== TODO To be translated ======
 translate Y TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate Y TimeMin {min}
 # ====== TODO To be translated ======
 translate Y TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate Y AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1824,7 +1811,6 @@ translate Y BookPartiallyLoaded {Book partially loaded}
 translate Y Calvar {Calculation of variations}
 # ====== TODO To be translated ======
 translate Y ConfigureCalvar {Configuration}
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate Y Reti {Reti}
 # ====== TODO To be translated ======
@@ -2297,6 +2283,7 @@ translate Y OptionsBoardSize "Velièina table"
 # ====== TODO To be translated ======
 translate Y OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
+translate Y OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate Y MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

@@ -278,13 +278,8 @@ menuText H OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off
 # ====== TODO To be translated ======
 menuText H OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText H OptionsNumbers "Számformátum" 1 {Számformátum kiválasztása}
-menuText H OptionsStartup "Indítás" 0 {Az indításkor kinyitandó ablakok kiválasztása}
 menuText H OptionsTheme "Téma" 0 {A program megjelenésének megváltoztatása}
 menuText H OptionsWindows "Ablakok" 0 {Ablakbeállítások}
-menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
-  {A fõ ablak ikonizálásakor az összes többit is ikonizálja.}
-menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
-  {Elõhoz bizonyos ablakokat (pl. elõrehaladás-sávokat), amikor el vannak takarva.}
 menuText H OptionsSounds "Hangok" 3 {Lépéseket bejelentõ hangok definiálása}
 # ====== TODO To be translated ======
 menuText H OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1844,6 +1839,8 @@ translate H OptionsBoard "Sakktábla"
 translate H OptionsMenuColor "Menu colors"
 translate H OptionsBoardSize "Táblaméret"
 translate H OptionsBoardPieces "Figurák stílusa"
+# ====== TODO To be translated ======
+translate H OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate H MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

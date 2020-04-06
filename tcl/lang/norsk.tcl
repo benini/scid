@@ -323,14 +323,9 @@ menuText O OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off
 # ====== TODO To be translated ======
 menuText O OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText O OptionsNumbers "Tallformat" 0 {Angi tallformat}
-menuText O OptionsStartup "Oppstart" 0 {Angi vinduer som skal åpne ved oppstart}
 # ====== TODO To be translated ======
 menuText O OptionsTheme "Theme" 0 {Change look of interface}
 menuText O OptionsWindows "Vinduer" 0 {Vindusinnstillinger}
-menuText O OptionsWindowsIconify "Auto-minimer" 5 \
-  {Minimerer alle vinduer sammen med hovedvinduet}
-menuText O OptionsWindowsRaise "Autoheving" 0 \
-  {Hever visse vinduer (fremdriftsvisere etc) når de er skjult}
 menuText O OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText O OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1613,8 +1608,6 @@ translate O Noinfo {-- No info --}
 # ====== TODO To be translated ======
 translate O PhalanxOrTogaMissing {Phalanx or Toga not found}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate O moveblunderthreshold {move is a blunder if loss is greater than}
 # ====== TODO To be translated ======
 translate O limitanalysis {limit engine analysis time}
@@ -1699,9 +1692,6 @@ translate O DubiousMoves {Dubious moves}
 # ====== TODO To be translated ======
 translate O OutOfRepertoire {OutOfRepertoire}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate O ConfigureTactics {Configure tactics}
 # ====== TODO To be translated ======
 translate O ResetScores {Reset scores}
@@ -1776,12 +1766,9 @@ translate O TimeMode {Time mode}
 # ====== TODO To be translated ======
 translate O TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate O TimeMin {min}
 # ====== TODO To be translated ======
 translate O TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1820,7 +1807,6 @@ translate O BookPartiallyLoaded {Book partially loaded}
 translate O Calvar {Calculation of variations}
 # ====== TODO To be translated ======
 translate O ConfigureCalvar {Configuration}
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O Reti {Reti}
 # ====== TODO To be translated ======
@@ -2289,6 +2275,8 @@ translate O OptionsBoard "Brett"
 translate O OptionsMenuColor "Menu colors"
 translate O OptionsBoardSize "Brettstørrelse"
 translate O OptionsBoardPieces "Brikkeutseende"
+# ====== TODO To be translated ======
+translate O OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate O MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

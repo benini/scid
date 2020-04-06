@@ -267,13 +267,8 @@ menuText I OptionsMovesKey "Completamento da tastiera" 1 \
 menuText I OptionsMovesShowVarArrows "Mostra frecce per le varianti" 4 {Attiva/disattiva le freccie indicanti le mosse delle varianti}
 menuText I OptionsMovesGlossOfDanger "Codici di pericolo a colori" 1 {Attiva/disattiva i codici di pericolo a colori}
 menuText I OptionsNumbers "Formato dei numeri" 13 {Seglie il formato dei numeri}
-menuText I OptionsStartup "Apertura all'avvio" 3 {Sceglie le finestre da aprire all'avvio}
 menuText I OptionsTheme "Tema" 0 {Cambia l'aspetto dell'interfaccia}
 menuText I OptionsWindows "Finestre" 2 {Opzioni di finestra}
-menuText I OptionsWindowsIconify "Minimizza automaticamente" 2 \
-  {Minimizza tutte le finestre quando la finestra principale viene minimizzata}
-menuText I OptionsWindowsRaise "Ingrandisci automaticamente" 0 \
-  {Aumenta alcune finestre (p. es. le barre di progresso) ogni volta che sono oscurate}
 menuText I OptionsSounds "Suoni" 2 {Configura i suoni per l'annuncio delle mosse} ;# ***
 # ====== TODO To be translated ======
 menuText I OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1746,6 +1741,8 @@ translate I OptionsMenuColor "Menu colors"
 translate I OptionsBoardSize "Dimensione della scacchiera"
 # ====== TODO To be translated ======
 translate I OptionsBoardPieces "Stile dei pezzi"
+# ====== TODO To be translated ======
+translate I OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate I MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

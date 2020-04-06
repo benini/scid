@@ -306,13 +306,8 @@ menuText U OptionsMovesShowVarArrows "Muunnelmat nuolin" 0 {Näytä/älä näytä muun
 # ====== TODO To be translated ======
 menuText U OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText U OptionsNumbers "Numerointi" 0 {Numeroformaatit, 1-3 desimaalipisteellä, 4-6 -pilkulla}
-menuText U OptionsStartup "Käynnistys" 0 {Valitse lisäikkunat, jotka avataan ohjelmaa käynnistettäessä}
 menuText U OptionsTheme "Teema" 0 {Valitse käyttöliittymän teema}
 menuText U OptionsWindows "Ikkunat" 0 {Ikkunoiden asetukset}
-menuText U OptionsWindowsIconify "Pienennä automaattisesti" 0 \
-  {Pienennä myös muut ikkunat, kun pääikkuna pienennetään}
-menuText U OptionsWindowsRaise "Nosta automaattisesti" 0 \
-  {Nosta eräät ikkunat automaattisesti ylimmäksi}
 menuText U OptionsSounds "Äänet" 0 {Muokaa siirtoilmoitusääniä}
 # ====== TODO To be translated ======
 menuText U OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1808,6 +1803,8 @@ translate U OptionsBoard "Shakkilauta"
 translate U OptionsMenuColor "Menu colors"
 translate U OptionsBoardSize "Koko"
 translate U OptionsBoardPieces "Nappulat"
+# ====== TODO To be translated ======
+translate U OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate U MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

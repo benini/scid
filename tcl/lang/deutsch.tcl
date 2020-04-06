@@ -258,7 +258,7 @@ translate D OptionsBGW {Grafikdatei für Felder auswählen}
 translate D OptionsBoardGraphicsText {Grafikdateien für helle und dunkle Felder auswählen:}
 menuText D OptionsBoardNames "Meine Spielernamen..." 0 {Editiere meine Spielernamen}
 menuText D OptionsExport "Export" 1 {Textausgabeoptionen ändern}
-menuText D OptionsFonts "Schriftarten" 3 {Schriftart wechseln}
+menuText D OptionsFonts "Schriftarten" 3 {Schriftarten auswählen}
 menuText D OptionsFontsRegular "Normal" 0 {Standardzeichensatz}
 menuText D OptionsFontsMenu "Menü" 0 {Schriftart für Menüs}
 menuText D OptionsFontsSmall "Klein" 0 {Kleine Zeichen}
@@ -290,18 +290,13 @@ menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
 menuText D OptionsMovesShowVarArrows "Pfeile für Varianten anzeigen" 0 {Zeige Pfeile in Varianten an: ja/nein}
 menuText D OptionsMovesGlossOfDanger "Bedrohte Figuren einfärben" 0 {Markieren von gefärdeten Figuren ein/ausschalten}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
-menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
 menuText D OptionsTheme "Design" 0 {Verändert das Aussehen der Oberfläche}
 menuText D OptionsWindows "Fenster" 6 {Fenster-Optionen}
-menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
-  {Alle Fenster mit dem Hauptfenster minimieren}
-menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
-  {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsSounds "Sprachausgabe" 0 {Sprachausgabe für Zugankündigung einstellen}
 menuText D OptionsResources "Ressourcen..." 0 {Standard Dateien und Verzeichnisse einstellen}
-menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
-menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
-menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+menuText D OptionsWindowsDock "Fenster anheften" 0 {Fenster in der Hauptanwendung öffnen}
+menuText D OptionsWindowsSaveLayout "Layout speichern" 0 {Speichern des aktuellen Fensterlayout}
+menuText D OptionsWindowsRestoreLayout "Layout laden" 0 {Gespeichertes Fensterlayout wieder herstellen}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
 menuText D OptionsWindowsAutoLoadLayout "Automatisch laden: 1. Layout" 0 {Lädt das erste definierte Layout automatisch beim Programmstart}
 menuText D OptionsECO "ECO-Datei" 0 {ECO-Klassifikationsdatei laden}
@@ -309,7 +304,7 @@ menuText D OptionsSpell "Schreibkorrekturdatei" 7 \
   {Datei für Scid-Rechtschreibprüfung laden}
 menuText D OptionsTable "Verzeichnisse der Endspieltabellen" 16 \
   {Eine Endspieltabellendatei wählen (und damit alle Tabellen in diesem Verzeichnis)}
-menuText D OptionsRecent "Letzte Dateien..." 9 \
+menuText D OptionsRecent "Letzte Dateien" 9 \
    {Anzahl der aktuellen Dateien im Dateimenü ändern}
 menuText D OptionsBooksDir "Verzeichnis für Eröffnungsbücher" 0 {Eröffnungsbuchverzeichnis einstellen}
 menuText D OptionsTacticsBasesDir "Verzeichnis für Taktikdatenbanken" 0 {Verzeichnis für taktische Trainingsdatenbanken einstellen}
@@ -317,7 +312,7 @@ menuText D OptionsPhotosDir "Verzeichnis für Spielerbilder" 0 {Verzeichnis für B
 menuText D OptionsThemeDir "Design(s) laden..."  0 { Packetdatei für GUI Design Themen einstellen }
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
-menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
+menuText D OptionsAutoSave "Speichern beim Beenden" 0 \
   {Alle Optionen beim Beenden von Scid automatisch speichern}
 
 # Help menu:
@@ -1373,8 +1368,8 @@ Soll das Erstellen der Datenbank im neuen Format jetzt durchgeführt werden?
 }
 
 # Recent files options:
-translate D RecentFilesMenu {Anzahl der letzten Dateien im Dateimenü}
-translate D RecentFilesExtra {Anzahl der letzten Dateien im zusätzlichen Untermenü}
+translate D RecentFilesMenu {Anzahl letzter Dateien im Dateimenü}
+translate D RecentFilesExtra {Anzahl letzter Dateien im Untermenü}
 
 # My Player Names options:
 translate D MyPlayerNamesDescription {
@@ -1745,6 +1740,7 @@ translate D OptionsBoard "Schachbrett"
 translate D OptionsMenuColor "Menüfarben"
 translate D OptionsBoardSize "Brettgröße"
 translate D OptionsBoardPieces "Figurensatz"
+translate D OptionsInternationalization "Sprachumgebung"
 translate D MenuColorForeground "Text"
 translate D MenuColorBackground "Hintergrund"
 translate D MenuColorSelect "Auswahl"

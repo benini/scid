@@ -265,14 +265,8 @@ menuText B OptionsMovesKey "Auto completar" 0 \
 menuText B OptionsMovesShowVarArrows "Mostrar Setas para variantes" 0 {Liga/Desliga as setas que mostram movimentos em variantes}
 menuText B OptionsMovesGlossOfDanger "Codigos de Cor para Perigo" 0 {Liga/Desliga os codigos de cor para perigo}
 menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para numeros}
-menuText B OptionsStartup "Iniciar" 1 \
-  {Seleciona janelas que serao abertas ao iniciar o programa}
 menuText B OptionsTheme "Tema" 0 {Muda a aparência da interface}
 menuText B OptionsWindows "Janelas" 0 {Opcoes para Janelas}
-menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
-  {Iconizar todas as janelas quando a janela principal eh iconizada}
-menuText B OptionsWindowsRaise "Manter no topo" 0 \
-  {Mantem no topo certas janelas (ex. barras de progresso) sempre que sao obscurecidas por outras}
 menuText B OptionsSounds "Sons" 2 {Configura sons para anunciar os movimentos} 
 # ====== TODO To be translated ======
 menuText B OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1696,6 +1690,8 @@ translate B OptionsBoard "Tabuleiro"
 translate B OptionsMenuColor "Define Cores dos Menus"
 translate B OptionsBoardSize "Tamanho do Tabuleiro"
 translate B OptionsBoardPieces "Estilo de Pecas no Tabuleiro"
+# ====== TODO To be translated ======
+translate B OptionsInternationalization "Internationalization"
 translate B MenuColorForeground "Cor do Texto"
 translate B MenuColorBackground "Cor de Fundo"
 translate B MenuColorSelect "Selecionar"

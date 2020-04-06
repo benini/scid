@@ -182,37 +182,19 @@ proc ::recentFiles::menuname {fname} {
 #   Produces a dialog box for configuring the number of recent files
 #   to display in the File menu and in a submenu.
 #
-proc ::recentFiles::configure {} {
+proc ::recentFiles::configure { w } {
   global recentFiles
-  set recentFiles(temp_menu) $recentFiles(menu)
-  set recentFiles(temp_extra) $recentFiles(extra)
-  set w .recentFilesDlg
-  win::createDialog $w
-  wm title $w "Scid: [tr OptionsRecent]"
-  ttk::frame $w.m
-  ttk::frame $w.e
-  ttk::label $w.lmenu -text $::tr(RecentFilesMenu)
+
   set tmpcombo {}
   for {set x 1} {$x <= 10} {incr x} {
       lappend tmpcombo $x
   }
-  ttk::combobox $w.menu -textvariable recentFiles(temp_menu) -width 3 -values $tmpcombo -justify right -state readonly
+  ttk::label $w.lmenu -text $::tr(RecentFilesMenu)
   ttk::label $w.lextra -text $::tr(RecentFilesExtra)
-  ttk::combobox $w.extra -textvariable recentFiles(temp_extra) -width 3 -values $tmpcombo -justify right -state readonly
-  pack $w.m $w.e -side top -anchor e
-  pack $w.lmenu $w.menu -side left -padx "0 5" -pady "0 5" -in $w.m -anchor e
-  pack $w.lextra $w.extra -side left -padx "0 5" -in $w.e -anchor e
-  pack [ttk::frame $w.b] -side bottom -fill x
-  ttk::button $w.b.ok -text "OK" -command {
-    set recentFiles(menu) $recentFiles(temp_menu)
-    set recentFiles(extra) $recentFiles(temp_extra)
-    catch {grab release .recentFilesDlg}
-    destroy .recentFilesDlg
-    ::recentFiles::save
-  }
-  ttk::button $w.b.cancel -text $::tr(Cancel) \
-      -command "catch {grab release $w}; destroy $w"
-  packdlgbuttons $w.b.cancel $w.b.ok
-  catch {grab $w}
+  ttk::combobox $w.menu -textvariable recentFiles(menu) -width 2 -values $tmpcombo -justify right -state readonly
+  ttk::combobox $w.extra -textvariable recentFiles(extra) -width 2 -values $tmpcombo -justify right -state readonly
+  grid $w.lmenu -row 0 -column 0 -sticky w
+  grid $w.menu -row 0 -column 1 -sticky w -pady 5 -padx 5
+  grid $w.lextra -row 1 -column 0 -sticky w
+  grid $w.extra -row 1 -column 1 -sticky w -pady 5 -padx 5
 }
-

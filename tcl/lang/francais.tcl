@@ -280,13 +280,8 @@ menuText F OptionsMovesKey "Auto-complétion clavier" 1 \
 menuText F OptionsMovesShowVarArrows "Montrer flèches pour les variantes" 2 {Montrer des flèches pour les prochains coups des variantes existantes}
 menuText F OptionsMovesGlossOfDanger "Couleur codée Gloss of Danger" 0 {Afficher/Cacher les cases colorées avec le code Gloss of Danger}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
-menuText F OptionsStartup "Démarrage" 0 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}
 menuText F OptionsWindows "Fenêtres" 0 {Options des fenêtres}
-menuText F OptionsWindowsIconify "Mise en icône automatique" 0 \
-  {Mettre toutes les fenêtres en icônes quand la fenêtre principale est mise en icône}
-menuText F OptionsWindowsRaise "Apparition automatique" 0 \
-  {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons" 2 {Configurer l'annonce des sonore des coups}
 menuText F OptionsResources "Ressources..." 0 {Choose resource files and folders}
 menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées (nécessite un redémarrage)}
@@ -1738,6 +1733,8 @@ translate F OptionsBoard "Échiquier"
 translate F OptionsMenuColor "Couleurs des menus..."
 translate F OptionsBoardSize "Taille d'échiquier"
 translate F OptionsBoardPieces "Style des pièces"
+# ====== TODO To be translated ======
+translate F OptionsInternationalization "Internationalization"
 #menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
 translate F MenuColorForeground "Texte"
 translate F MenuColorBackground "Fond"

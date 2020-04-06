@@ -263,13 +263,8 @@ menuText C OptionsMovesShowVarArrows "Zobrazit ¹ipky pro varianty" 0 {Zapnout/vy
 # ====== TODO To be translated ======
 menuText C OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText C OptionsNumbers "Formát èísel" 0 {Zvolit formát èísel}
-menuText C OptionsStartup "Pøi spu¹tìní" 4 {Zvolit okna, která se otevøou pøi spu¹tìní}
 menuText C OptionsTheme "Téma" 0 {Zmìnit vzhled u¾ivatelského rozhraní}
 menuText C OptionsWindows "Okna" 0 {Volby oken}
-menuText C OptionsWindowsIconify "Automatická minimalizace" 12 \
-   {Minimalizovat v¹echna okna pøi minimalizování hlavního okna}
-menuText C OptionsWindowsRaise "Automaticky do popøedí" 15 \
-  {Dát do popøedí jistá okna, jsou-li zakrytá}
 menuText C OptionsSounds "Zvuky" 2 {Konfigurovat zvuky oznamující tah}
 # ====== TODO To be translated ======
 menuText C OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1796,6 +1791,8 @@ translate C OptionsBoard "©achovnice"
 translate C OptionsMenuColor "Menu colors"
 translate C OptionsBoardSize "Velikost ¹achovnice"
 translate C OptionsBoardPieces "Styl figur"
+# ====== TODO To be translated ======
+translate C OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate C MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

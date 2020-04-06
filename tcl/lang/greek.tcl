@@ -302,13 +302,8 @@ menuText G OptionsMovesShowVarArrows "Εμφάνιση βέλους για βα�
 # ====== TODO To be translated ======
 menuText G OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText G OptionsNumbers "Μορφή αριθμών" 0 {Επιλέξτε τη μορφή των αριθμών}
-menuText G OptionsStartup "Εκκίνηση" 3 {Επιλέξτε τα παράθυρα που θα ανοίγουν κατά την εκκίνηση του Scid}
 menuText G OptionsTheme "Θέμα" 0 {Αλλάξτε την όψη του προγράμματος}
 menuText G OptionsWindows "Παράθυρα" 0 {Επιλογές παραθύρων}
-menuText G OptionsWindowsIconify "Αυτόματο εικονίδιο" 5 \
-  {Μετατροπή όλων των παραθύρων σε εικονίδια όταν το κυρίως παράθυρο έχει γίνει εικονίδιο}
-menuText G OptionsWindowsRaise "Αυτόματη μεγέθυνση" 5 \
-  {Μεγέθυνση συγκεκριμένων παραθύρων (π.χ. των γραμμών προόδου) κάθε φορά που αποκρύπτονται}
 menuText G OptionsSounds "Ήχοι" 2 {Ρυθμίστε τους ήχους αναγγελίας κίνησης}
 # ====== TODO To be translated ======
 menuText G OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1849,6 +1844,8 @@ translate G OptionsBoard "Σκακιέρα"
 translate G OptionsMenuColor "Menu colors"
 translate G OptionsBoardSize "Μέγεθος"
 translate G OptionsBoardPieces "Είδος κομματιών"
+# ====== TODO To be translated ======
+translate G OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate G MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

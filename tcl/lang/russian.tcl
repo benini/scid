@@ -273,13 +273,8 @@ menuText R OptionsMovesShowVarArrows "Показывать стрелки в в�
 # ====== TODO To be translated ======
 menuText R OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText R OptionsNumbers "Числовой формат" 0 {Выбрать числовой формат}
-menuText R OptionsStartup "Запуск" 0 {Выбрать окна, открывающиеся при запуске}
 menuText R OptionsTheme "Темы" 0 {Смена внешнего вида интерфейса}
 menuText R OptionsWindows "Окна" 0 {Установки окон}
-menuText R OptionsWindowsIconify "Автоуменьшение" 0 \
-  {Уменьшать все окна, когда уменьшается основное окно}
-menuText R OptionsWindowsRaise "Автовыдвижение" 1 \
-  {Выдвигать определённые окна (например, полосу прогресса) всякий раз, когда они скрыты}
 menuText R OptionsSounds "Звуки" 2 {Настройки звука оповещения о ходе}
 # ====== TODO To be translated ======
 menuText R OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1786,6 +1781,8 @@ translate R OptionsBoard "Шахматная доска"
 translate R OptionsMenuColor "Menu colors"
 translate R OptionsBoardSize "Размер доски"
 translate R OptionsBoardPieces "Стиль фигур"
+# ====== TODO To be translated ======
+translate R OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate R MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

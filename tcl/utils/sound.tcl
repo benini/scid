@@ -190,16 +190,14 @@ proc ::utils::sound::CheckSoundQueue {} {
 #   Dialog window for configuring move sounds.
 #
 proc ::utils::sound::OptionsDialog { w } {
-    global autoplayDelay tempdelay
-
-    if { ! $::utils::sound::hasSound} {
+     if { ! $::utils::sound::hasSound} {
         ttk::label $w.status -text [tr SoundsSoundDisabled]
         pack $w.status -side bottom
     }
     ttk::checkbutton $w.n -variable ::utils::sound::announceNew -text [tr SoundsAnnounceNew]
     ttk::checkbutton $w.f -variable ::utils::sound::announceForward -text [tr SoundsAnnounceForward]
     ttk::checkbutton $w.b -variable ::utils::sound::announceBack -text [tr SoundsAnnounceBack]
-    pack $w.n $w.f $w.b -side top -anchor w
+    pack $w.n $w.f $w.b -side top -anchor w -padx "0 5"
 }
 
 proc ::utils::sound::GetDialogChooseFolder { widget } {

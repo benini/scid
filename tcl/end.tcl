@@ -1221,40 +1221,6 @@ proc getTopLevel {} {
   }
   return $topl
 }
-################################################################################
-#
-################################################################################
-# showHideAllWindows:
-#   Arranges for all major Scid windows to be shown/hidden
-#   Should be called type = "iconify" or "deiconify"
-#
-proc showHideAllWindows {type} {
-  
-  # Don't do this if user option is off:
-  if {! $::autoIconify} { return }
-  
-  # Some window managers like KDE generate Unmap events for other
-  # situations like switching to another desktop, etc.
-  # So if the main window is still mapped, do not iconify others:
-  if {($type == "iconify")  && ([winfo ismapped .main] == 1)} { return }
-  
-  # Now iconify/deiconify all the major Scid windows that exist:
-  foreach w [getTopLevel] {
-    if {[winfo exists $w]} { catch {wm $type $w} }
-  }
-  
-}
-
-proc raiseAllWindows {} {
-  # Don't do this if auto-raise option is turned off:
-  if {! $::autoRaise} { return }
-  
-  showHideAllWindows deiconify
-  
-  foreach w [getTopLevel] {
-    if {[winfo exists $w]} { catch { raise $w } }
-  }
-}
 
 # Disable ttk default left/right key bindings (they invoke ttk::notebook::CycleTab)
 bind TNotebook <Key-Right> {}
@@ -1271,8 +1237,6 @@ menuUpdateBases
 menuUpdateThemes
 setLanguageMenus
 
-if {$startup(stats)} { ::windows::stats::Open }
-if {$startup(finder)} { ::file::finder::Open }
 if {$startup(tip)} { ::tip::show }
 
 # Try to load the spellcheck file:

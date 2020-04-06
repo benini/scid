@@ -62,23 +62,23 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   set tl .fontdialog
   toplevel $tl
   set dlg $tl.f
-  pack [ttk::frame $tl.f] -expand 1 -fill both
+  pack [ttk::frame $tl.f] -expand 1 -fill both -padx 5
   wm protocol $tl WM_DELETE_WINDOW "set fd_close 0"
-  wm title $tl Font
+  wm title $tl [tr OptionsFonts]
 
-  ttk::label $dlg.family_lbl -text "Font:" -anchor w
+  ttk::label $dlg.family_lbl -text [tr OptionsFonts] -anchor w
   ttk::entry $dlg.family_ent -textvariable fd_family -background white
   bind  $dlg.family_ent <Key-Return> "FontDialogRegen $font_name"
   grid config $dlg.family_lbl -column 0 -row 0 -sticky w
   grid config $dlg.family_ent -column 0 -row 1 -sticky snew
 
-  ttk::label $dlg.style_lbl  -text "Font Style:" -anchor w
+  ttk::label $dlg.style_lbl  -text "Font Style" -anchor w
   ttk::entry $dlg.style_ent  -textvariable fd_style -width 11 -background white
   bind  $dlg.style_ent  <Key-Return>  "FontDialogRegen $font_name"
   grid config $dlg.style_lbl  -column 1 -row 0 -sticky w
   grid config $dlg.style_ent  -column 1 -row 1 -sticky snew
 
-  ttk::label $dlg.size_lbl   -text "Size:" -anchor w
+  ttk::label $dlg.size_lbl   -text [tr FinderSortSize] -anchor w
   ttk::entry $dlg.size_ent   -textvariable fd_size -width 4 -background white
   bind  $dlg.size_ent   <Key-Return> "FontDialogRegen $font_name"
   grid config $dlg.size_lbl   -column 2 -row 0 -sticky w
@@ -138,24 +138,22 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   ttk::frame $fr
 
   ttk::button $fr.ok -text "OK" -command "set fd_close 1"
-  ttk::button $fr.cancel  -text "Cancel" -command "set fd_close 0"
+  ttk::button $fr.cancel  -text [tr Cancel] -command "set fd_close 0"
   pack $fr.ok -side top -fill x
   pack $fr.cancel -side top -fill x -pady 2
-  ttk::button $fr.help -text "Help" -command "helpWindow Options"
+  ttk::button $fr.help -text [tr Help] -command "helpWindow Options"
   pack $fr.help -side top -fill x -pady 10
-  grid config $fr -column 4 -row 1 -rowspan 2 -sticky snew -padx 12
+  grid config $fr -column 4 -row 1 -rowspan 2 -sticky snew -padx "10 0"
 
   # Sample text
   set fr $dlg.sample
-  ttk::frame $fr -borderwidth 3 -relief groove
-  ttk::label $fr.l_sample -text "Sample" -anchor w
+  ttk::labelframe $fr -text "Sample"
 
-  ttk::label $fr.sample -font $font_name -relief sunken -text "This is some sample text\nAaBbCcDdEeFfGgHhIiJjKkLlMm\n 0123456789. +=-\n\u2654 \u2655 \u2656 \u2657 \u2658"
+  ttk::label $fr.sample -font $font_name -text "This is some sample text\nAaBbCcDdEeFfGgHhIiJjKkLlMm\n 0123456789. +=-\n\u2654 \u2655 \u2656 \u2657 \u2658"
 
-  pack  $fr.l_sample -side top -fill x -pady 4
-  pack  $fr.sample -side top -pady 4 -ipadx 10 -ipady 10
+  pack  $fr.sample -side top -pady 4
 
-  grid config $fr -column 0 -columnspan 3 -row 20 -rowspan 2 -sticky snew -pady 10 -padx 2
+  grid config $fr -column 0 -columnspan 3 -sticky snew  -pady 5
 
   # Make this a modal dialog.
   tkwait variable fd_close

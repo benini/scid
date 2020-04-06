@@ -292,13 +292,8 @@ menuText K OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off
 # ====== TODO To be translated ======
 menuText K OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText K OptionsNumbers "Format de números" 11 {Selecciona el format de números}
-menuText K OptionsStartup "Inici" 3 {Seleccionar les finestres que s'obren al començar}
 menuText K OptionsTheme "Tema" 0 {Canviar l'aspecte del programari}
 menuText K OptionsWindows "Finestres" 0 {Opcions de finestra}
-menuText K OptionsWindowsIconify "Autominimitzar" 4 \
-  {Minimitza totes les finestres quan la finestra principal es minimitzada}
-menuText K OptionsWindowsRaise "Posar automáticamente en primer pla" 0 \
-  {Fa visibles algunes finestres (ex. barres de progrés) quan estiguin cobertes}
 menuText K OptionsSounds "Sons" 2 {Configura el so d'anunci de les jugades}
 # ====== TODO To be translated ======
 menuText K OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1860,6 +1855,8 @@ translate K OptionsBoard "Escaquer"
 translate K OptionsMenuColor "Menu colors"
 translate K OptionsBoardSize "Tamany de l'escaquer"
 translate K OptionsBoardPieces "Estil de peces"
+# ====== TODO To be translated ======
+translate K OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate K MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

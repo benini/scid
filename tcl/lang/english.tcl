@@ -324,7 +324,7 @@ menuText E OptionsSpell "Spellcheck File" 11 \
   {Load the Scid spellcheck file}
 menuText E OptionsTable "Tablebase Directory" 10 \
   {Select a tablebase file; all tablebases in its directory will be used}
-menuText E OptionsRecent "Recent Files..." 0 {Change the number of recent files displayed in the File menu}
+menuText E OptionsRecent "Recent Files" 0 {Change the number of recent files displayed in the File menu}
 menuText E OptionsBooksDir "Books directory" 0 {Sets the opening books directory}
 menuText E OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (training) bases directory}
 menuText E OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
@@ -1769,6 +1769,7 @@ translate E OptionsBoard "Chessboard"
 translate E OptionsMenuColor "Menu colors"
 translate E OptionsBoardSize "Board size"
 translate E OptionsBoardPieces "Piece Style"
+translate E OptionsInternationalization "Internationalization"
 translate E MenuColorForeground "Textcolor"
 translate E MenuColorBackground "Background"
 translate E MenuColorSelect "Select"

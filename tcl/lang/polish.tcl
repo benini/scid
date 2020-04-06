@@ -326,14 +326,9 @@ menuText P OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off
 # ====== TODO To be translated ======
 menuText P OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText P OptionsNumbers "Format zapisu liczb" 0 {Wybierz format zapisu liczb}
-menuText P OptionsStartup "Start" 0 {Wybierz okna, które maj± byæ widoczne po uruchomieniu programu}
 # ====== TODO To be translated ======
 menuText P OptionsTheme "Theme" 0 {Change look of interface}
 menuText P OptionsWindows "Okna" 0 {Opcje okien}
-menuText P OptionsWindowsIconify "Minimalizuj wszystkie okna" 0 \
-  {Schowaj wszystkie okna przy minimalizacji g³ównego okna}
-menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
-  {Automatycznie uaktywniaj niektóre okna (np. pasek postêpu), gdy s± zas³oniête}
 menuText P OptionsSounds "Sounds" 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText P OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1625,8 +1620,6 @@ translate P Noinfo {-- No info --}
 # ====== TODO To be translated ======
 translate P PhalanxOrTogaMissing {Phalanx or Toga not found}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate P moveblunderthreshold {move is a blunder if loss is greater than}
 # ====== TODO To be translated ======
 translate P limitanalysis {limit engine analysis time}
@@ -1711,9 +1704,6 @@ translate P DubiousMoves {Dubious moves}
 # ====== TODO To be translated ======
 translate P OutOfRepertoire {OutOfRepertoire}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate P ConfigureTactics {Configure tactics}
 # ====== TODO To be translated ======
 translate P ResetScores {Reset scores}
@@ -1788,12 +1778,9 @@ translate P TimeMode {Time mode}
 # ====== TODO To be translated ======
 translate P TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate P TimeMin {min}
 # ====== TODO To be translated ======
 translate P TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1832,7 +1819,6 @@ translate P BookPartiallyLoaded {Book partially loaded}
 translate P Calvar {Calculation of variations}
 # ====== TODO To be translated ======
 translate P ConfigureCalvar {Configuration}
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P Reti {Reti}
 # ====== TODO To be translated ======
@@ -2301,6 +2287,8 @@ translate P OptionsBoard "Szachownica"
 translate P OptionsMenuColor "Menu colors"
 translate P OptionsBoardSize "Wielko¶æe"
 translate P OptionsBoardPieces "Typ figur"
+# ====== TODO To be translated ======
+translate P OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate P MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======

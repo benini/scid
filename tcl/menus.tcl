@@ -277,58 +277,29 @@ menu $m.language
           -command setLanguage
   }
 $m add cascade -label OptionsLanguage -menu $m.language
-menu $m.fonts
-  $m.fonts add command -label OptionsFontsRegular -command {chooseFont Regular}
-  $m.fonts add command -label OptionsFontsMenu    -command {chooseFont Menu}
-  $m.fonts add command -label OptionsFontsSmall   -command {chooseFont Small}
-  $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
-  $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
-$m add cascade -label OptionsFonts -menu $m.fonts
 if { $::macOS } { $m entryconfigure end -state disabled }
-menu $m.numbers
-  foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
-          underline {  0     1      2     4      5      6} {
-      set decimal [string index $numeric 0]
-      set thousands [string index $numeric 1]
-      $m.numbers add radiobutton -label "12${thousands}345${decimal}67" \
-          -underline $underline \
-          -variable locale(numeric) -value $numeric -command updateLocale
-  }
-$m add cascade -label OptionsNumbers -menu $m.numbers
 menu $m.theme -tearoff 1
 $m.theme add command -label OptionsThemeDir -command setThemePkgFile
 $m.theme add separator
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
 $m add cascade -label OptionsTheme -menu $m.theme
-menu $m.windows
-  $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
-  $m.windows add checkbutton -label OptionsWindowsRaise -variable autoRaise
-  $m.windows add checkbutton -label OptionsWindowsDock -variable windowsDock
-
-    menu $m.windows.savelayout
-    menu $m.windows.restorelayout
+menu $m.savelayout
+menu $m.restorelayout
     foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
-      $m.windows.savelayout add command -label $i -command "::docking::layout_save $slot"
-      $m.windows.restorelayout add command -label $i -command "::docking::layout_restore $slot"
+      $m.savelayout add command -label $i -command "::docking::layout_save $slot"
+      $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
     }
-    $m.windows add cascade -label OptionsWindowsSaveLayout -menu $m.windows.savelayout
-    $m.windows add cascade -label OptionsWindowsRestoreLayout -menu $m.windows.restorelayout
-
-  menu $m.windows.startup
-    $m.windows.startup add checkbutton -label HelpTip -variable startup(tip)
-    $m.windows.startup add checkbutton -label FileFinder -variable startup(finder)
-    $m.windows.startup add checkbutton -label WindowsStats -variable startup(stats)
-  $m.windows add cascade -label OptionsStartup -menu $m.windows.startup
-$m add cascade -label OptionsWindows -menu $m.windows
 $m add command -label ConfigureScid -command { ::preferences::Open toggle }
 $m add command -label OptionsResources -command ::preferences::resources
-$m add separator
-$m add command -label OptionsRecent -command ::recentFiles::configure
 menu $m.export
   $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
   $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
   $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
 $m add cascade -label OptionsExport -menu $m.export
+$m add separator
+$m add checkbutton -label OptionsWindowsDock -variable windowsDock
+$m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
+$m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
 $m add separator
 $m add command -label OptionsSave -command options.write
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
@@ -611,46 +582,11 @@ proc configInformant { w } {
     grid $w.spinF.labelExpl$idx -row $row -column 0 -sticky w
     incr row
     grid $w.spinF.label$idx -row $row -column 0 -sticky w
-    grid $w.spinF.sp$idx -row $row -column 1 -sticky w
+    grid $w.spinF.sp$idx -row $row -column 1 -sticky w -padx "0 5" -pady "0 5"
     incr row
     incr idx
   }
   pack $w.spinF
-}
-
-# ################################################################################
-# Set the delay between moves in options menu
-################################################################################
-proc setAutoplayDelay {} {
-    global autoplayDelay tempdelay
-    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
-    set w .apdialog
-    if { [winfo exists $w] } { focus $w ; return }
-    win::createDialog $w
-    ::setTitle $w "Scid"
-    wm resizable $w 0 0
-    ttk::label $w.label -text $::tr(AnnotateTime:)
-    pack $w.label -side top -pady 5 -padx 5
-    ttk::spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
-        -validate key -validatecommand { return [string is digit %S] }
-    pack $w.spDelay -side top -pady 5
-    
-    set b [ttk::frame $w.buttons]
-    pack $b -side top -fill x
-    ttk::button $b.cancel -text $::tr(Cancel) -command {
-        destroy .apdialog
-        focus .
-    }
-    ttk::button $b.ok -text "OK" -command {
-        if {$tempdelay < 0.1} { set tempdelay 0.1 }
-        set autoplayDelay [expr {int($tempdelay * 1000)}]
-        destroy .apdialog
-        focus .
-    }
-    packdlgbuttons $b.cancel $b.ok
-    bind $w <Escape> { .apdialog.buttons.cancel invoke }
-    bind $w <Return> { .apdialog.buttons.ok invoke }
-    focus $w.spDelay
 }
 
 proc openTableBaseDirs {nr widget} {

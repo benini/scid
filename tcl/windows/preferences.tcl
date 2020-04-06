@@ -49,7 +49,7 @@ proc ::preferences::Open { {toggle ""} } {
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-    set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsMoves] ::preferences::moves [tr OptionsToolbar] ConfigToolbar [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr ConfigureInformant] configInformant [tr OptionsSounds] ::utils::sound::OptionsDialog]
+    set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsFonts] ::preferences::fonts [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar [tr OptionsInternationalization] ::preferences::internationalization [tr OptionsRecent] ::recentFiles::configure [tr OptionsSounds] ::utils::sound::OptionsDialog [tr OptionsMoves] ::preferences::moves [tr ConfigureInformant] configInformant]
   set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
@@ -139,12 +139,24 @@ proc ::preferences::resources { } {
     grab $w
 }
 
+proc ::preferences::validateautoplay { } {
+    global autoplayDelay tempdelay
+    if { ! [string is digit $tempdelay] } {
+        set tempdelay 1
+        return 0
+    }
+    if { $tempdelay != "" } {
+        set autoplayDelay [expr {int($tempdelay * 1000)}]
+    }
+    if {$autoplayDelay < 0.1} { set autoplayDelay 0.1 }
+    return 1
+}
+
 # preferences dialog for moves
-proc ::preferences::moves { w } {
+proc ::preferences::moves { t } {
     global autoplayDelay tempdelay
 
     set tempdelay [expr {int($autoplayDelay / 1000.0)}]
-    set t $w
     ttk::frame $t.ani
     ttk::label $t.ani.al -text [tr OptionsMovesAnimate]
     ttk::label $t.ani.ms -text "ms"
@@ -156,14 +168,13 @@ proc ::preferences::moves { w } {
     ttk::checkbutton $t.oms -variable  suggestMoves -text [tr OptionsMovesSuggest]
     ttk::checkbutton $t.osv -variable  showVarPopup -text [tr OptionsShowVarPopup]
     ttk::checkbutton $t.osp -variable ::pgn::moveNumberSpaces -text [tr OptionsMovesSpace]
-    ttk::checkbutton $t.tp -variable ::translatePieces -text [tr OptionsMovesTranslatePieces]
     ttk::checkbutton $t.sva -variable showVarArrows -text [tr OptionsMovesShowVarArrows]
     ttk::checkbutton $t.god -variable glossOfDanger -text [tr OptionsMovesGlossOfDanger] -command updateBoard
 
     ttk::frame $t.auto
     ttk::label $t.auto.label -text "[tr OptionsMovesDelay]\n$::tr(AnnotateTime:)"
     ttk::spinbox $t.auto.spDelay -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
-        -validate key -validatecommand { return [string is digit %S] }
+        -validate all -validatecommand { ::preferences::validateautoplay }
     ttk::labelframe $t.high -text [tr OptionsMovesHighlightLastMove]
     ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
     ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
@@ -177,6 +188,52 @@ proc ::preferences::moves { w } {
     grid $t.high.color -row 1 -column 2 -pady "2 0"
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
-    pack $t.oma $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.tp $t.auto $t.sva $t.god -side top -anchor w
+    pack $t.oma $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
     pack $t.high -side top -anchor w -pady "5 0"
+}
+
+proc ::preferences::numbers { w } {
+    global locale
+    set numeric {".,"   ". "   ",."   ", "   "."   ","}
+    set locale(numeric) [lindex $numeric [$w current]]
+    updateLocale
+}
+
+# preferences dialog for internationalization settings
+proc ::preferences::internationalization { w } {
+    global locale
+
+    ttk::checkbutton $w.tp -variable ::translatePieces -text [tr OptionsMovesTranslatePieces] -command setLanguage
+    set numList { }
+    set pre ""
+    foreach numeric {".,"   ". "   ",."   ", "   "."   ","} {
+        set decimal [string index $numeric 0]
+        set thousands [string index $numeric 1]
+        if { [string length $numeric] < 2 } { set pre " " }
+        lappend numList "${pre}12${thousands}345${decimal}67"
+        if { $numeric == $locale(numeric) } { set ::newNumbers "12${thousands}345${decimal}67" }
+    }
+    ttk::frame $w.n
+    ttk::label $w.n.nlb -text [tr OptionsNumbers]
+    ttk::combobox $w.n.number -width 9 -textvar ::newNumbers -values $numList -state readonly -font font_Fixed
+    set popdown [ttk::combobox::PopdownWindow $w.n.number]
+    $popdown.f.l configure -font font_Fixed
+    bind $w.n.number <<ComboboxSelected>> "::preferences::numbers $w.n.number"
+    pack $w.n.nlb $w.n.number -side left -padx "0 5"
+    pack $w.n $w.tp  -side top -anchor w
+}
+
+# preferences dialog for fonts
+proc ::preferences::fonts { w } {
+    global locale
+
+    set idx 0
+    foreach font { Regular Menu Small Tiny Fixed } {
+        set f [string tolower $font]
+        ttk::label $w.lb$f -font font_$font -text "[tr OptionsFonts$font]: AaBbCcDdEe 01234"
+        ttk::button $w.font$f  -text "..." -command "chooseFont $font"
+        grid $w.lb$f -row $idx -column 0 -sticky w -pady 5
+        grid $w.font$f -row $idx -column 1 -sticky w -padx 5 -pady 5
+        incr idx
+    }
 }

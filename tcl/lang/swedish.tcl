@@ -270,13 +270,8 @@ menuText W OptionsMovesShowVarArrows "Visa pilar för variationer" 0 {Växlar på/a
 # ====== TODO To be translated ======
 menuText W OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
-menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
 menuText W OptionsTheme "Tema" 0 {Ändra utseende på gränssnitt}
 menuText W OptionsWindows "Fönster" 1 {Fönsteralternativ}
-menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
-  {Minimera alla fönster när huvudfönstret minimeras}
-menuText W OptionsWindowsRaise "Autofokus" 0 \
-  {Visa åter vissa fönster (t ex. resultaträknare) automatiskt när de döljs}
 menuText W OptionsSounds "Ljud" 2 {Konfigurera ljud för att annonsera drag}
 # ====== TODO To be translated ======
 menuText W OptionsResources "Resources..." 0 {Choose resource files and folders}
@@ -1748,6 +1743,8 @@ translate W OptionsBoard "Brädet"
 translate W OptionsMenuColor "Menu colors"
 translate W OptionsBoardSize "Brädstorlek"
 translate W OptionsBoardPieces "Pjäsutseende"
+# ====== TODO To be translated ======
+translate W OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
 translate W MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
