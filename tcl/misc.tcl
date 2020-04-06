@@ -344,7 +344,6 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   grab $w
   wm withdraw $w
 
-  set ::progressWin_time [clock seconds]
   progressBarSet $w.f.c 401 21
 
   set ::progressCanvas(show) "catch {wm deiconify $w}"
@@ -358,6 +357,7 @@ proc progressBarSet { canvasname width height } {
   set ::progressCanvas(cancel) 0
   set ::progressCanvas(init) 1
   set ::progressCanvas(show) {}
+  set ::progressCanvas(time) [clock milliseconds]
   after idle { unset ::progressCanvas(init) }
 }
 
@@ -366,7 +366,7 @@ proc progressBarCancel { } {
 }
 
 
-proc progressCallBack {done {elapsed 0} {estimated 0} {msg ""}} {
+proc progressCallBack {done {msg ""}} {
   if {$done == "init"} {
     if {[info exists ::progressCanvas(init)]} {
       return $::progressCanvas(init)
@@ -378,6 +378,15 @@ proc progressCallBack {done {elapsed 0} {estimated 0} {msg ""}} {
   if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
     #Interrupted
     return -code break
+  }
+
+  set elapsed [expr { [clock milliseconds] - $::progressCanvas(time) }]
+  if {$done != 0} {
+    set estimated [expr { int($elapsed / double($done) / 1000) }]
+    set elapsed [expr { $elapsed / 1000 }]
+  } else {
+    set elapsed [expr { $elapsed / 1000 }]
+    set estimated $elapsed
   }
 
   if {$::progressCanvas(show) != ""} {
@@ -422,17 +431,12 @@ proc changeProgressWindow {newtext} {
 proc updateProgressWindow {done total} {
   set w .progressWin
   if {! [winfo exists $w]} { return }
-  set elapsed [expr {[clock seconds] - $::progressWin_time}]
-  set estimated $elapsed
-  if {$done != 0} {
-    set estimated [expr {int(double($elapsed) * double($total) / double($done))}]
-  }
   if {$total != 0} {
     set done [expr { double($done) / double($total) }]
   } else {
     set done 1
   }
-  ::progressCallBack $done $elapsed $estimated
+  ::progressCallBack $done
 }
 
 proc closeProgressWindow {{force false}} {

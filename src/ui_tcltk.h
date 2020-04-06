@@ -81,17 +81,17 @@ public:
 	explicit tcl_Progress(UI_handle_t ti) : ti_(ti) {}
 
 	bool report(size_t done, size_t total, const char* msg) final {
-		const std::chrono::duration<double> elapsed = clock::now() - timer_;
-		const double estimated = (done) ? elapsed.count() * total / done : 0;
-		Tcl_Obj* tmp[4];
-		tmp[0] = Tcl_NewStringObj("::progressCallBack", -1);
-		tmp[1] = Tcl_NewDoubleObj(total ? (1.0 * done / total) : 1);
-		tmp[2] = Tcl_NewIntObj(static_cast<int>(elapsed.count()));
-		tmp[3] = Tcl_NewIntObj(static_cast<int>(estimated));
-		Tcl_Obj* cmd = Tcl_NewListObj(4, tmp);
-		if (msg != NULL)
-			Tcl_ListObjAppendElement(ti_, cmd, Tcl_NewStringObj(msg, -1));
-		int res = Tcl_EvalObjEx(ti_, cmd, TCL_EVAL_GLOBAL);
+		Tcl_Obj* cmd[3] = {};
+		cmd[0] = Tcl_NewStringObj("::progressCallBack", -1);
+		cmd[1] = Tcl_NewDoubleObj(total ? (1.0 * done / total) : 1);
+		int n = 2;
+		if (msg) {
+			cmd[2] = Tcl_NewStringObj(msg, -1);
+			n = 3;
+		}
+		std::for_each(cmd, cmd + n, [](Tcl_Obj* e) { Tcl_IncrRefCount(e); });
+		auto res = Tcl_EvalObjv(ti_, n, cmd, 0);
+		std::for_each(cmd, cmd + n, [](Tcl_Obj* e) { Tcl_DecrRefCount(e); });
 		return res == TCL_OK;
 	}
 };
@@ -108,10 +108,19 @@ public:
 	}
 };
 
-inline Progress CreateProgress(UI_handle_t data) {
-	int err = Tcl_EvalEx(data, "::progressCallBack init", -1, 0);
-	if (err != TCL_OK) return Progress();
-	return Progress(new UI_impl::tcl_Progress(data));
+inline Progress CreateProgress(UI_handle_t ti) {
+	Tcl_Obj* cmd[2];
+	cmd[0] = Tcl_NewStringObj("::progressCallBack", -1);
+	cmd[1] = Tcl_NewStringObj("init", -1);
+	Tcl_IncrRefCount(cmd[0]);
+	Tcl_IncrRefCount(cmd[1]);
+	auto err = Tcl_EvalObjv(ti, 2, cmd, 0);
+	Tcl_DecrRefCount(cmd[0]);
+	Tcl_DecrRefCount(cmd[1]);
+	if (err != TCL_OK)
+		return {};
+
+	return Progress(new UI_impl::tcl_Progress(ti));
 }
 
 inline Progress CreateProgressPosMask(UI_handle_t data) {

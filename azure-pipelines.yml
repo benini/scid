@@ -63,7 +63,7 @@ jobs:
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
-      msbuildArguments: "/p:SpectreMitigation=false /p:LinkTimeCodeGeneration=UseLinkTimeCodeGeneration"
+      msbuildArguments: "/p:SpectreMitigation=false /p:RuntimeTypeInfo=false /p:EnableCOMDATFolding=true /p:LinkTimeCodeGeneration=UseLinkTimeCodeGeneration"
     displayName: Generate SCID
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"

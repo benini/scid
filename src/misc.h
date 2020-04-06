@@ -68,8 +68,7 @@ public:
 	};
 
 	Progress(Impl* f = NULL) : f_(f) {}
-	Progress(const Progress&);
-	Progress& operator=(const Progress&);
+	Progress(const Progress&) = delete;
 	~Progress() { delete f_; }
 
 	bool report(size_t done, size_t total) const {
