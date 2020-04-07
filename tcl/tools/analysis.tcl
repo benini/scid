@@ -99,8 +99,8 @@ proc resetEngine {n} {
     set analysis(maxmovenumber$n) 0     ;# the number of moves in this position
     set analysis(lockEngine$n) 0        ;# the engine is locked to current position
     set analysis(fen$n) {}              ;# the position that engine is analyzing
+    set analysis(whenReady$n) {}        ;# list of commands to eval when the engine is ready
     array unset ::uciOptions$n
-    unset -nocomplain ::uci::sendUCIoptions_delay$n
 }
 
 resetEngine 1
@@ -1996,7 +1996,10 @@ proc onUciOk {{n} {multiPv_spin} {autostart} {uci_options}} {
     foreach {option} $uci_options {
         array set ::uciOptions$n $option
     }
-    ::uci::sendUCIoptions $n $autostart
+    ::uci::sendUCIoptions $n
+    if {$autostart} {
+        ::uci::whenReady $n [list startEngineAnalysis $n]
+    }
 }
 
 
@@ -2032,7 +2035,10 @@ proc changePVSize { n } {
     if { ! $analysis(uci$n) } { return }
 
     array set ::uciOptions$n [list "MultiPv" "$analysis(multiPVCount$n)"]
-    ::uci::sendUCIoptions $n $analysis(analyzeMode$n)
+    ::uci::sendUCIoptions $n
+    if {$analysis(analyzeMode$n)} {
+        ::uci::whenReady $n [list updateAnalysis $n]
+    }
 }
 ################################################################################
 # setAnalysisPriority
@@ -2086,7 +2092,6 @@ proc checkAnalysisStarted {n} {
         # in order to get options
         sendToEngine $n "uci"
         # egine should respond uciok
-        sendToEngine $n "isready"
         set analysis(seen$n) 1
     } else  {
         sendToEngine $n "xboard"
@@ -2619,13 +2624,7 @@ proc stopAnalyzeMode { {n 1} } {
     if {! $analysis(analyzeMode$n)} { return }
     set analysis(analyzeMode$n) 0
     if { $analysis(uci$n) } {
-        if {$analysis(after$n) != ""} {
-            after cancel $analysis(after$n)
-            set analysis(after$n) ""
-        }
-        sendToEngine $n "stop"
-        set analysis(waitForReadyOk$n) 1
-        sendToEngine $n "isready"
+        ::uci::sendStop $n
     } else  {
         sendToEngine $n "exit"
     }
@@ -2964,31 +2963,6 @@ proc updateAnalysisBoard {n moves} {
 }
 
 ################################################################################
-# sendFENtoEngineUCI
-#   Wait for the engine to be ready then send position and go infinite
-#   engine_n: number of the engine that will receive the commands
-#   delay: delay the commands - INTERNAL - DON'T USE OUTSIDE sendFENtoEngineUCI
-################################################################################
-proc sendFENtoEngineUCI {engine_n  {delay 0}} {
-    global analysis
-    set analysis(after$engine_n) ""
-
-    if {$analysis(waitForReadyOk$engine_n) } {
-        #If too slow something is wrong: give up
-        if {$delay > 250} { return }
-
-        # Engine is not ready: process events, idle tasks and then call me back
-        incr delay
-        set cmd "set ::analysis(after$engine_n) "
-        append cmd { [ } " after $delay sendFENtoEngineUCI $engine_n $delay " { ] }
-        set analysis(after$engine_n) [eval [list after idle $cmd]]
-    } else {
-        sendToEngine $engine_n "$analysis(movelist$engine_n)"
-        sendToEngine $engine_n "go infinite"
-    }
-}
-
-################################################################################
 # updateAnalysis
 #   Update an analysis window by sending the current board
 #   to the engine.
@@ -3004,16 +2978,14 @@ proc updateAnalysis {{n 1}} {
     if { $analysis(lockEngine$n) } { return }
 
     if { $analysis(uci$n) } {
-        if {$analysis(after$n) == "" } {
-            if { $analysis(fen$n) != "" } { sendToEngine $n "stop" }
-            set analysis(waitForReadyOk$n) 1
-            sendToEngine $n "isready"
-            set analysis(after$n) [after idle "sendFENtoEngineUCI $n"]
-        }
+        set analysis(depth$n) 0
+        set analysis(multiPV$n) {}
+        set analysis(multiPVraw$n) {}
         set analysis(fen$n) [sc_pos fen]
         set analysis(maxmovenumber$n) 0
         set analysis(movelist$n) [sc_game UCI_currentPos]
         set analysis(nonStdStart$n) [sc_game startBoard]
+        ::uci::sendPositionGo $n "infinite"
     } else {
         #TODO: remove 0.3s delay even for other engines
 

@@ -124,7 +124,8 @@ namespace eval uci {
             } else {
                 set uciInfo(ponder$n) ""
             }
-            set analysis(waitForBestMove$n) 0
+            after cancel "::uci::onReady_ $n"
+            ::uci::onReady_ $n
             return
         }
         
@@ -296,7 +297,8 @@ namespace eval uci {
         
         # the UCI engine answers to <isready> command
         if { $line == "readyok"} {
-            set analysis(waitForReadyOk$n) 0
+            after cancel "::uci::onReady_ $n"
+            ::uci::onReady_ $n
             return
         }
         
@@ -642,39 +644,90 @@ namespace eval uci {
         
         ::enginelist::write
     }
-    ################################################################################
-    # The engine replied readyok, so it's time to configure it (sends the options to the engine)
-    # It seems necessary to ask first if engine is ready
-    ################################################################################
-    proc sendUCIoptions {n {startEngine 0} {delay 0}} {
-        if {[info exists ::uci::sendUCIoptions_delay$n]} {
-            if {$delay < [set ::uci::sendUCIoptions_delay$n]} { return }
-        }
-        unset -nocomplain ::uci::sendUCIoptions_delay$n
 
-        if {[array exists ::uciOptions$n]} {
-            stopAnalyzeMode $n
-            if { $::analysis(waitForReadyOk$n) } {
-                if {$delay < 1000} {
-                    incr delay 50
-                    set ::uci::sendUCIoptions_delay$n $delay
-                    after $delay "::uci::sendUCIoptions $n $startEngine $delay"
-                    return
-                } else {
-                    set ::analysis(waitForReadyOk$n) 0
-                }
+    # Send the options in the array ::uciOptions$n to the engine.
+    # If the engine is analyzing, send "stop" and wait for "bestmove" (max 5 sec).
+    # Send "isready" after the options.
+    proc sendUCIoptions {n} {
+        ::uci::sendStop $n
+        ::uci::whenReady $n [list ::uci::sendOptions_ $n] 5000
+    }
+
+    # Send the current position and "go" to the engine.
+    # If the engine is analyzing, send "stop" and wait for "bestmove".
+    # Send the position when the engine is ready, or after 5 seconds send it anyway.
+    proc sendPositionGo {n go_time} {
+        ::uci::sendStop $n
+        ::uci::whenReady $n [list ::uci::sendPositionGo_ $n $go_time] 5000
+    }
+
+    # If the engine is analyzing, send "stop" to ask it to stop as soon as possible.
+    proc sendStop {n} {
+        if {[info exists ::analysis(thinking$n)] && ! $::analysis(waitForBestMove$n)} {
+            set ::analysis(waitForBestMove$n) 1
+            ::sendToEngine $n "stop"
+        }
+        set ::analysis(fen$n) {}
+    }
+
+    # Send "isready" if we are not already waiting for "readyok".
+    proc sendIsReady {n} {
+        if { ! $::analysis(waitForReadyOk$n) } {
+            set ::analysis(waitForReadyOk$n) 1
+            ::sendToEngine $n "isready"
+        }
+    }
+
+    # Execute $cmd when the engine is ready (not waiting for bestmove or readyok).
+    proc whenReady {n cmd {max_wait -1}} {
+        if { $::analysis(waitForBestMove$n) || $::analysis(waitForReadyOk$n) } {
+            set idx [lsearch  -index 0 $::analysis(whenReady$n) [lindex $cmd 0]]
+            if {$idx == -1} {
+                lappend ::analysis(whenReady$n) $cmd
+            } else {
+                lreplace $::analysis(whenReady$n) $idx $idx $cmd
             }
+            if {$max_wait > 0} {
+                after cancel "::uci::onReady_ $n"
+                after $max_wait "::uci::onReady_ $n"
+            }
+        } else {
+            eval {*}$cmd
+        }
+    }
+
+    proc sendOptions_ {n} {
+        if {[array exists ::uciOptions$n]} {
             foreach {name value} [array get ::uciOptions$n] {
                 ::sendToEngine $n "setoption name $name value $value"
                 if { $name == "MultiPV" } { set ::analysis(multiPVCount$n) $value }
             }
             array unset ::uciOptions$n
-        }
 
-        if {$startEngine} {
-            startEngineAnalysis $n
+            ::uci::sendIsReady $n
         }
     }
+
+    proc sendPositionGo_ {engine_n time} {
+        set ::analysis(thinking$engine_n) 1
+        ::sendToEngine $engine_n "$::analysis(movelist$engine_n)"
+        ::sendToEngine $engine_n "go $time"
+    }
+
+    proc onReady_ {n} {
+        unset -nocomplain ::analysis(thinking$n)
+        set ::analysis(waitForBestMove$n) 0
+        set ::analysis(waitForReadyOk$n) 0
+        while { [llength $::analysis(whenReady$n)] } {
+            set cmd [lindex $::analysis(whenReady$n) 0]
+            set ::analysis(whenReady$n) [lrange $::analysis(whenReady$n) 1 end]
+            eval {*}$cmd
+            if { $::analysis(waitForReadyOk$n) || \
+                 $::analysis(waitForBestMove$n) || \
+                 [info exists ::analysis(thinking$n)] } {  break }
+        }
+    }
+
     ################################################################################
     # will start an engine for playing (not analysis)
     ################################################################################
