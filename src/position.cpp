@@ -1692,24 +1692,19 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
     // Set the EPTarget square, if a pawn advanced two squares and an
     // enemy pawn is on a square where en passant may be possible.
-    ToMove = enemy;
     EPTarget = NULL_SQUARE;
     if (ptype == PAWN) {
         rankT fromRank = square_Rank(from);
         rankT toRank = square_Rank(to);
-        squareT left = square_Move(to,LEFT);
-        squareT right = square_Move(to,RIGHT);
-        squareT targ = square_Move(from, UP);
         if (fromRank == RANK_2  &&  toRank == RANK_4
-              && ((Board[left] == BP && IsValidEnPassant(left,targ))
-                  || (Board[right] == BP && IsValidEnPassant(right,targ)))) {
-            EPTarget = targ;
+              &&  (Board[square_Move(to,LEFT)] == BP
+                     ||  Board[square_Move(to,RIGHT)] == BP)) {
+            EPTarget = square_Move(from, UP);
         }
-        targ = square_Move(from, DOWN);
         if (fromRank == RANK_7  &&  toRank == RANK_5
-              && ((Board[left] == WP && IsValidEnPassant(left,targ))
-                  || (Board[right] == WP && IsValidEnPassant(right,targ)))) {
-            EPTarget = targ;
+              &&  (Board[square_Move(to,LEFT)] == WP
+                     ||  Board[square_Move(to,RIGHT)] == WP)) {
+            EPTarget = square_Move(from, DOWN);
         }
         HalfMoveClock = 0; // 50-move clock resets on pawn moves.
     }
