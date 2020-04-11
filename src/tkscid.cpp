@@ -1517,9 +1517,22 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
 
             if (subcmd == "board") {
-                if (argc == 5) {
-                    SearchPos fp(db->game->GetCurrentPos());
-                    fp.setFilter(*dbase, filter, UI_CreateProgressPosMask(ti));
+                if (argc == 5 || argc == 6) {
+                    // sc_filter search baseId filterTo board [filterFrom]
+                    bool useCache = (argc == 5);
+
+                    auto const& pos = *db->game->GetCurrentPos();
+                    if (useCache &&
+                        dbase->treeCache.cacheRestore(pos, *dbase->treeFilter))
+                        return UI_Result(ti, OK);
+
+                    if (!SearchPos(&pos).setFilter(
+                            *dbase, filter, UI_CreateProgress(ti)))
+                        return UI_Result(ti, ERROR_UserCancel);
+
+                    if (useCache)
+                        dbase->treeCache.cacheAdd(pos, *dbase->treeFilter);
+
                     return UI_Result(ti, OK);
                 }
 
@@ -1530,7 +1543,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             }
         }
-        return errorResult (ti, "Usage: sc_filter search baseId filterName <header> [args]");
+        return errorResult (ti, "Usage: sc_filter search baseId filterName <header|board> [args]");
 
     case FILTER_TREESTATS: {
             const auto stats = dbase->getTreeStat(filter);
@@ -7632,18 +7645,18 @@ int
 sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "search", "cachesize", "cacheinfo", NULL
+        "stats", "cachesize", "cacheinfo", NULL
     };
     enum {
-        TREE_SEARCH, TREE_CACHESIZE, TREE_CACHEINFO
+        TREE_STATS, TREE_CACHESIZE, TREE_CACHEINFO
     };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case TREE_SEARCH:
-        return sc_tree_search (cd, ti, argc, argv);
+    case TREE_STATS:
+        return sc_tree_stats(cd, ti, argc, argv);
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);
@@ -7658,14 +7671,12 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_tree_search:
-//    Returns the tree for the current position
+// @returns the tree stats of the specified filter
 int
-sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
+sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    static const char * usageStr =
-      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score]";
+    static const char * usage =
+      "Usage: sc_tree stats baseId filterId [<0|1>] [alpha|eco|frequency|score]";
 
     // Sort options: these should match the moveSortE enumerated type.
     static const char * sortOptions[] = {
@@ -7674,54 +7685,25 @@ sc_tree_search (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Enumeration of possible move-sorting methods for tree mode:
     enum moveSortE { SORT_ALPHA, SORT_ECO, SORT_FREQUENCY, SORT_SCORE };
 
-    bool hideMoves = false;
-    bool inFilterOnly = false;
-    int sortMethod = SORT_FREQUENCY; // default move order: frequency
+    if (argc < 4)
+        return UI_Result(ti, ERROR_BadArg, usage);
 
-    scidBaseT * base = db;
+    scidBaseT* base = DBasePool::getBase(strGetUnsigned(argv[2]));
+    if (!base)
+        return UI_Result(ti, ERROR_BadArg, usage);
 
-    // Check that there is an even number of optional arguments and
-    // parse them as option-value pairs:
-    int arg = 2;
-    int argsLeft = (argc - arg);
-    if (argsLeft % 2 != 0) { return errorResult (ti, usageStr); }
+    HFilter filter = base->getFilter(argv[3]);
+    if (filter == nullptr)
+        return UI_Result(ti, ERROR_BadArg, usage);
 
-    while (arg < argc) {
-        if (strIsPrefix (argv[arg], "-sort")) {
-            sortMethod = strUniqueMatch (argv[arg+1], sortOptions);
-        } else if (strIsPrefix (argv[arg], "-hideMoves")) {
-            hideMoves = strGetBoolean (argv[arg+1]);
-        } else if (strIsPrefix (argv[arg], "-base")) {
-            base = DBasePool::getBase(strGetUnsigned(argv[arg+1]));
-            if (base == 0) return UI_Result(ti, ERROR_FileNotOpen);
-        } else if (strIsPrefix (argv[arg], "-filtered")) {
-            inFilterOnly = strGetBoolean (argv[arg+1]);
-        } else {
-            return errorResult (ti, usageStr);
-        }
-        arg += 2;
-    }
+    bool hideMoves = (argc > 4) ? strGetBoolean(argv[4]) : false;
+    int sortMethod = (argc > 5) ? strUniqueMatch(argv[5], sortOptions)
+                                : SORT_FREQUENCY;
+    if (sortMethod < 0)
+        return UI_Result(ti, ERROR_BadArg, usage);
 
-    if (sortMethod < 0) { return errorResult (ti, usageStr); }
-    if (!base->inUse) { return UI_Result(ti, ERROR_FileNotOpen);  }
-
-    auto treeFilter = base->getFilter("tree");
     Position searchPos = *(db->game->GetCurrentPos());
-
-    if (!base->treeCache.cacheRestore(searchPos, *base->treeFilter)) {
-        Progress progress = UI_CreateProgress(ti);
-        if (!SearchPos(&searchPos).setFilter(*base, treeFilter, progress))
-            return UI_Result(ti, OK, "canceled");
-
-        base->treeCache.cacheAdd(searchPos, *base->treeFilter);
-    }
-
-    if (inFilterOnly) {
-        treeFilter = base->getFilter(base->composeFilter("dbfilter", "tree"));
-        ASSERT(treeFilter != nullptr);
-    }
-    auto tree = base->getTreeStat(treeFilter);
-
+    auto tree = base->getTreeStat(filter);
 
     auto calc_eco = [&](auto const& move) {
         ecoT eco = ECO_None;

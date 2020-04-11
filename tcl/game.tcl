@@ -370,6 +370,7 @@ namespace eval ::notify {
   # To be called after modifying data in a database
   # The filter name is provided if it was the only thing modified (searches)
   proc DatabaseModified {{dbase} {filter -1}} {
+    ::tree::dorefresh $dbase
     ::windows::gamelist::DatabaseModified $dbase $filter
     ::windows::switcher::Refresh
     ::windows::stats::refresh_wnd

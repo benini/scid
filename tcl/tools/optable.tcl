@@ -130,7 +130,7 @@ proc ::optable::makeReportWin {args} {
   }
 
   sc_search board RESET Exact false 0
-  set newTreeData [sc_tree search]
+  set newTreeData [sc_tree stats $::curr_db "dbfilter"]
   if {$showProgress} {
     if {$::optable::_interrupt} {
       grab release $w.b.cancel
@@ -514,17 +514,6 @@ proc ::optable::saveReport {fmt} {
     close $tempfile
   }
   unbusyCursor .
-}
-
-proc ::optable::create {} {
-  set ::optable::_data(tree) [sc_tree search]
-  ::optable::latexifyTree
-  set ::optable::_data(bdLaTeX) [sc_pos tex]
-  set ::optable::_data(bdHTML) [sc_pos html]
-  set ::optable::_data(bdLaTeX_flip) [sc_pos tex flip]
-  set ::optable::_data(bdHTML_flip) [sc_pos html -flip 1]
-  sc_report opening create $::optable(ExtraMoves) $::optable(MaxGames)
-  ::optable::setupRatios
 }
 
 # latexifyTree

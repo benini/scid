@@ -93,11 +93,6 @@ proc ::windows::gamelist::DatabaseModified {{dbase} {filter -1}} {
 	}
 }
 
-proc ::windows::gamelist::PosMaskProgress {} {
-	update
-	if { $::treeFilterUpdating_ != 1 } { break }
-}
-
 # Returns the list of databases whose tree filter needs to be updated when
 # the position of the main board changes.
 # It must also disable commands that depend on the current position.
@@ -107,7 +102,8 @@ proc ::windows::gamelist::listTreeBases {{base ""}} {
 		if { $::gamelistPosMask($w) != 0 && ($base == "" || $base == $::gamelistBase($w)) } {
 			$w.games.glist tag configure fsmall -foreground #bababa
 			$w.buttons.boardFilter configure -image tb_BoardMaskBusy
-			lappend bases [list $::gamelistBase($w) $::gamelistFilter($w)]
+			set progressbar "$w.progress 100 100"
+			lappend bases [list $::gamelistBase($w) $::gamelistFilter($w) $progressbar]
 		}
 	}
 	return $bases
@@ -423,6 +419,9 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 		if {$idx != -1} { set ::glist_Sort(ly$w) [lindex $::recentSort [expr $idx +1]] }
 	}
 	::windows::gamelist::createGList_ $w
+	#TODO:
+	canvas $w.progress
+
 	grid rowconfigure $w 0 -weight 1
 	grid columnconfigure $w 0 -weight 0
 	grid columnconfigure $w 1 -weight 0
@@ -578,6 +577,7 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
 		set ::gamelistFilter($w) [sc_filter compose $::gamelistBase($w) $::gamelistFilter($w) ""]
+		::cancelUpdateTreeFilter "$w.progress 100 100"
 		::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 	}
 }

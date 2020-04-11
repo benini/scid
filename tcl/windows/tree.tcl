@@ -74,7 +74,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set tree(allgames$baseNumber) 1
   
   bind $w <Destroy> "::tree::closeTree $baseNumber"
-  bind $w <Escape> "::tree::hideCtxtMenu $baseNumber ; .treeWin$baseNumber.buttons.stop invoke "
   
   # Bind left button to close ctxt menu:
   bind $w <ButtonPress-1> "::tree::hideCtxtMenu $baseNumber"
@@ -185,7 +184,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     set helpMessage($w.buttons.$b) $t
   }
   
-  dialogbutton $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel }
+  dialogbutton $w.buttons.stop -textvar ::tr(Stop)
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber"
   
   pack $w.buttons.best $w.buttons.graph $w.buttons.bStartStop $w.buttons.allgames $w.buttons.training \
@@ -357,15 +356,43 @@ proc ::tree::listTreeBases {{base ""}} {
     }
     set bases {}
     foreach baseNumber $base {
-        if { [winfo exists .treeWin$baseNumber] } {
-            set filter ""
+        set w .treeWin$baseNumber
+        if { [winfo exists $w] && $::tree(autorefresh$baseNumber) } {
+            $w.buttons.best configure -state disabled
+            $w.buttons.graph configure -state disabled
+            $w.buttons.bStartStop configure -state disabled
+            $w.buttons.training configure -state disabled
+            $w.buttons.allgames configure -state disabled
+            $w.buttons.close configure -state disabled
+            $w.buttons.stop configure -state normal
+            $w.progress coords bar 0 0 0 0
+            grid $w.progress -in $w.statusframe -column 0 -row 0 -sticky nsew
+            set progress "$w.progress [lindex [grid bbox $w.statusframe] 2] 100"
+            $w.buttons.stop configure -command "
+                ::cancelUpdateTreeFilter [list $progress]
+                ::tree::restoreButtons $w
+            "
+
+            set filter "tree"
             if { $::tree(allgames$baseNumber) == 0 } {
-                set filter "dbfilter"
+                set filter [sc_filter compose $baseNumber "dbfilter" "tree"]
             }
-            lappend bases [list $baseNumber $filter]
+
+            lappend bases [list $baseNumber $filter $progress]
         }
     }
     return $bases
+}
+
+proc ::tree::restoreButtons {w} {
+    grid forget $w.progress
+    $w.buttons.best configure -state normal
+    $w.buttons.graph configure -state normal
+    $w.buttons.bStartStop configure -state normal
+    $w.buttons.training configure -state normal
+    $w.buttons.allgames configure -state normal
+    $w.buttons.close configure -state normal
+    $w.buttons.stop configure -state disabled -command {}
 }
 
 proc ::tree::refresh { { baseNumber "" }} {
@@ -384,40 +411,22 @@ proc ::tree::dorefresh { baseNumber } {
   if {![winfo exists $w]} { return }
   if { ! $tree(autorefresh$baseNumber) } { return }
 
-  $w.progress coords bar 0 0 0 0
-  grid $w.progress -in $w.statusframe -column 0 -row 0 -sticky nsew
-
-  progressBarSet $w.progress [lindex [grid bbox $w.statusframe] 2] 100
-  foreach button {best graph training allgames close} {
-    $w.buttons.$button configure -state disabled
-  }
-  $w.buttons.stop configure -state normal
-  
-  set filtered 0
+  set filter "tree"
   if { $tree(allgames$baseNumber) == 0 } {
-    set filtered 1
+    set filter [sc_filter compose $baseNumber "dbfilter" "tree"]
   }
-
-  set err [ catch { sc_tree search -hide $tree(training$baseNumber) \
-                                   -sort $tree(order$baseNumber) \
-                                   -base $baseNumber \
-                                   -filtered $filtered } moves]
+  set err [ catch { sc_tree stats $baseNumber $filter $tree(training$baseNumber) \
+                                  $tree(order$baseNumber) } moves]
   if { $err } {
     set tree(status$baseNumber) ""
     set moves [ERROR::getErrorMsg]
   }
   catch {$w.f.tl itemconfigure 0 -foreground darkBlue}
 
-  foreach button {best graph training allgames close} {
-    $w.buttons.$button configure -state normal
-  }
-  $w.buttons.stop configure -state disabled
-
+  ::tree::restoreButtons $w
   ::tree::status "" $baseNumber
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
-  
-  grid forget $w.progress
-  if { $moves == "canceled" } { return "canceled"}
+
   displayLines $baseNumber $moves  
 
   if {$::tree::trainingBase != 0 && $::tree::trainingColor == [sc_pos side]} {

@@ -36,9 +36,6 @@ inline int Main (int argc, char* argv[], void (*exit) (void*)) {
 inline Progress CreateProgress(UI_handle_t) {
 	return Progress();
 }
-inline Progress CreateProgressPosMask(UI_handle_t) {
-	return Progress();
-}
 class List {
 public:
 	explicit List(size_t) {}
@@ -122,10 +119,6 @@ inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
 inline Progress UI_CreateProgress(UI_handle_t ti) {
 	return UI_impl::CreateProgress(ti);
 }
-inline Progress UI_CreateProgressPosMask(UI_handle_t ti) {
-	return UI_impl::CreateProgressPosMask(ti);
-}
-
 
 /**
  * UI_Result() - pass the result of an operation from c++ to UI

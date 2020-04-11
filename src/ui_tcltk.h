@@ -96,18 +96,6 @@ public:
 	}
 };
 
-class tcl_ProgressPosMask : public Progress::Impl {
-	UI_handle_t ti_;
-
-public:
-	tcl_ProgressPosMask(UI_handle_t ti) : ti_(ti) {}
-	virtual ~tcl_ProgressPosMask() {}
-
-	virtual bool report(size_t, size_t, const char*) {
-		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
-	}
-};
-
 inline Progress CreateProgress(UI_handle_t ti) {
 	Tcl_Obj* cmd[2];
 	cmd[0] = Tcl_NewStringObj("::progressCallBack", -1);
@@ -122,11 +110,6 @@ inline Progress CreateProgress(UI_handle_t ti) {
 
 	return Progress(new UI_impl::tcl_Progress(ti));
 }
-
-inline Progress CreateProgressPosMask(UI_handle_t data) {
-	return Progress(new UI_impl::tcl_ProgressPosMask(data));
-}
-
 
 class List {
 	Tcl_Obj** list_;

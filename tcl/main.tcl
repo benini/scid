@@ -268,38 +268,32 @@ proc updateMainToolbar {} {
 # which depends on the current position.
 proc ::updateTreeFilter {{base ""}} {
     if { [info exists ::treeFilterUpdating_] } {
-        incr ::treeFilterUpdating_
+        set ::treeFilterUpdating_ {}
         ::progressBarCancel
         return
     }
 
-    set all_bases [::windows::gamelist::listTreeBases $base]
-    lappend all_bases {*}[::tree::listTreeBases $base]
+    set ::treeFilterUpdating_ {}
+    set ::treeFilterUpdatingBases_ [::windows::gamelist::listTreeBases $base]
+    lappend ::treeFilterUpdatingBases_ {*}[::tree::listTreeBases $base]
+    foreach elem [lsort -unique -index 0 $::treeFilterUpdatingBases_] {
+        lassign $elem base filter progressbar
 
-    #TODO: don't do a full database search if there is only one filter.
-    set bases [lsort -unique -integer -index 0 $all_bases]
-
-    set ::treeFilterUpdating_ 1
-    foreach base_filter $bases {
-        lassign $base_filter base filter
-
-        #TODO: set progressbar and cancel (problem with multiple windows)
-
-        #TODO: ::tree::dorefresh should be called by ::notify::DatabaseModified
-        #      and should not change the filter
-        update idletasks
-        ::tree::dorefresh $base
-        if { $::treeFilterUpdating_ != 1 } {
-            after idle {
-                unset ::treeFilterUpdating_
-                ::updateTreeFilter
-            }
-            return
+        set ::treeFilterUpdating_ [lsearch -all -inline -exact -index 0 $::treeFilterUpdatingBases_ $base]
+        if { [llength $::treeFilterUpdating_] == 0 } {
+            # canceled while updating another base
+            continue
         }
 
-        update idletasks
-        sc_filter search $base "tree" board
-        if { $::treeFilterUpdating_ != 1 } {
+        #TODO: don't do a full database search if there is only one filter.
+        #set n_filters [llength [lsort -unique -index 1 $::treeFilterUpdating_]]
+
+        eval progressBarSet $progressbar
+        set err [catch {sc_filter search $base "tree" board}]
+        if {$err && $::errorCode != $::ERROR::UserCancel} {
+            ERROR::MessageBox
+        }
+        if { [llength $::treeFilterUpdating_] == 0 } {
             # Restart if the position changed before the update finished.
             after idle {
                 unset ::treeFilterUpdating_
@@ -310,6 +304,25 @@ proc ::updateTreeFilter {{base ""}} {
         ::notify::DatabaseModified $base tree
     }
     unset ::treeFilterUpdating_
+}
+
+proc ::cancelUpdateTreeFilter {progressbar} {
+    if {![info exists ::treeFilterUpdating_]} {
+        return
+    }
+    set idx [lsearch -exact -index 2 $::treeFilterUpdating_ $progressbar]
+    if {$idx != -1} {
+        if {[llength $::treeFilterUpdating_] == 1} {
+            ::progressBarCancel
+        } else {
+            set ::treeFilterUpdating_ [lreplace $::treeFilterUpdating_ $idx $idx]
+        }
+    } else {
+        set idx [lsearch -exact -index 2 $::treeFilterUpdatingBases_ $progressbar]
+        if {$idx != -1} {
+            set ::treeFilterUpdatingBases_ [lreplace $::treeFilterUpdatingBases_ $idx $idx]
+        }
+    }
 }
 
 proc toggleRotateBoard {} {
