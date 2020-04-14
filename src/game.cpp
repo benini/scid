@@ -882,16 +882,25 @@ unsigned Game::GetPgnOffset() const {
 
 std::string Game::currentPosUCI() const {
 	std::string res = "position startpos moves";
-	char FEN[256];
-	if (HasNonStandardStart(FEN)) {
-		res.replace(9, 4, "fen ");
-		res.replace(13, 4, FEN);
-	}
+	char FEN[256] = {};
 
 	std::vector<const moveT*> moves;
 	const moveT* move = CurrentMove;
 	while ((move = move->getPrevMove())) {
+		if (move->moveData.isNullMove()) {
+			Position lastValidPos = *currentPos();
+			for (const moveT* m : moves) {
+				lastValidPos.UndoSimpleMove(&m->moveData);
+			}
+			lastValidPos.PrintFEN(FEN, FEN_ALL_FIELDS);
+			break;
+		}
 		moves.emplace_back(move);
+	}
+
+	if (*FEN || HasNonStandardStart(FEN)) {
+		res.replace(9, 4, "fen ");
+		res.replace(13, 4, FEN);
 	}
 
 	const auto allocSpeedup = res.size();
