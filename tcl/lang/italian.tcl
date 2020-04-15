@@ -289,7 +289,7 @@ menuText I OptionsTacticsBasesDir "Directory dei database" 15 {Configura la dire
 # ====== TODO To be translated ======
 menuText I OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText I OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText I OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText I OptionsSave "Salva opzioni" 3 \
   "Salva tutte le opzioni definibili nel file $::optionsFile"
 menuText I OptionsAutoSave "Salva opzioni all'uscita" 17 \

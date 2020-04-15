@@ -300,7 +300,7 @@ menuText F OptionsRecent "Fichiers récents..." 1 \
 menuText F OptionsBooksDir "Répertoire des bibliothèques" 15 {Répertoire des bibliothèques d'ouverture}
 menuText F OptionsTacticsBasesDir "Répertoire des bases d'entraînement" 11 {Répertoire des bases pour l'entraînement tactique}
 menuText F OptionsPhotosDir "Répertoire des images" 16 {Répertoire des bases pour les images}
-menuText F OptionsThemeDir "Charger thème(s)..."  0 { Charger un fichier de thèmes pour l'interface graphique }
+menuText F OptionsThemeDir "Charger thème(s)"  0 { Charger un fichier de thèmes pour l'interface graphique }
 menuText F OptionsSave "Enregistrer les options" 0 "Enregistrer les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options" 0 \
   {Sauvegarder automatiquement toutes les options en quittant Scid}

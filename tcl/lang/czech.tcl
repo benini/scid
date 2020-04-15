@@ -285,7 +285,7 @@ menuText C OptionsTacticsBasesDir "Adresáø databází" 0 {Nastavení adresáøù takti
 # ====== TODO To be translated ======
 menuText C OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText C OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText C OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText C OptionsSave "Ulo¾it volby" 0 \
   "Ulo¾it v¹echny nastavitelné volby do souboru $::optionsFile"
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 20 \

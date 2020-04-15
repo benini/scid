@@ -323,7 +323,7 @@ menuText G OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (trainin
 # ====== TODO To be translated ======
 menuText G OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText G OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText G OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText G OptionsSave "Αποθήκευση επιλογών" 0 "Αποθηκεύστε όλες τις μεταβολές ρυθμίσεων στο αρχείο $::optionsFile"
 menuText G OptionsAutoSave "Αυτόματη αποθήκευση επιλογών κατά την έξοδο" 0 \
   {Να αποθηκεύονται αυτόματα οι επιλογές κατά την έξοδο από το Scid}

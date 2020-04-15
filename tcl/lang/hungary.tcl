@@ -300,7 +300,7 @@ menuText H OptionsTacticsBasesDir "Az adatbázisok könyvtára" 4 {Kijelöli a takti
 # ====== TODO To be translated ======
 menuText H OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText H OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText H OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText H OptionsSave "Beállítások mentése" 12 \
   "Minden beállítható értéket elment a $::optionsFile fájlba."
 menuText H OptionsAutoSave "Beállítások automatikus mentése kilépéskor." 0 \

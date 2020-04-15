@@ -279,8 +279,6 @@ menu $m.language
 $m add cascade -label OptionsLanguage -menu $m.language
 if { $::macOS } { $m entryconfigure end -state disabled }
 menu $m.theme -tearoff 1
-$m.theme add command -label OptionsThemeDir -command setThemePkgFile
-$m.theme add separator
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
 $m add cascade -label OptionsTheme -menu $m.theme
 menu $m.savelayout
@@ -687,15 +685,32 @@ proc setPhotoDir { dir } {
     return $ret
 }
 
-proc setThemePkgFile {} {
+proc getThemePkgFile { widget} {
   global initialDir
-  set f [tk_getOpenFile -title "Select a pkgIndex.tcl file for themes" -initialdir [file dirname $::ThemePackageFile] -initialfile $::ThemePackageFile \
+  set fullname [tk_getOpenFile -parent [winfo toplevel $widget] -title "Select a pkgIndex.tcl file for themes" -initialdir [file dirname $::ThemePackageFile] -initialfile $::ThemePackageFile \
 	       -filetypes { {Theme "pkgIndex.tcl"} }]
-  if {$f ne ""} {
-      ::safeSourceStyle $f
-      menuUpdateThemes
-      set ::ThemePackageFile $f
+  if { $fullname != "" && $fullname != $::ThemePackageFile && ! [readThemePkgFile $fullname] } {
+      $widget delete 0 end
+      $widget insert end $fullname
   }
+}
+
+proc readThemePkgFile { fullname } {
+    if {$fullname ne "" && $fullname != $::ThemePackageFile } {
+        set count [llength [ttk::style theme names]]
+        set ret [ catch { ::safeSourceStyle $fullname } ]
+        set newthemes [expr [llength [ttk::style theme names]] - $count]
+        if { $ret == 0 && $newthemes > 0  } {
+            menuUpdateThemes
+            set ::ThemePackageFile $fullname
+        }
+        tk_messageBox -parent .resDialog -message "$newthemes new theme(s) found."
+    } else {
+        set ::ThemePackageFile $fullname
+        tk_messageBox -parent .resDialog -message "No new themes loaded."
+        set ret 0
+    }
+    return $ret
 }
 
 proc getECOFile { widget } {

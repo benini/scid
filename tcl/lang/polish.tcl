@@ -357,7 +357,7 @@ menuText P OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (trainin
 # ====== TODO To be translated ======
 menuText P OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText P OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText P OptionsThemeDir "Theme(s) File"  0 { Load a GUI theme package file }
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \

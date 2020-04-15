@@ -294,7 +294,7 @@ menuText R OptionsTacticsBasesDir "Директория баз" 0 {Устано�
 # ====== TODO To be translated ======
 menuText R OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText R OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText R OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText R OptionsSave "Сохранить установки" 0 "Сохранить все установки в файл $::optionsFile"
 menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
   {Автосохранение всех установок при выходе из программы}

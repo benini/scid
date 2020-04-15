@@ -327,7 +327,7 @@ menuText U OptionsTacticsBasesDir "Taktiikkakannat" 0 {Hakemisto, jossa taktiikk
 # ====== TODO To be translated ======
 menuText U OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText U OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText U OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText U OptionsSave "Tallenna asetukset" 0 "Tallenna kaikki asetukset tiedostoon $::optionsFile"
 menuText U OptionsAutoSave "Automaattinen asetusten tallennus" 0 \
   {Tallenna asetukset automaattisesti ohjelmasta poistuttaessa}

@@ -315,7 +315,7 @@ menuText K OptionsTacticsBasesDir "Carpeta de bases de dades..." 0 {Fixa la carp
 # ====== TODO To be translated ======
 menuText K OptionsPhotosDir "Photos directory..." 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText K OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText K OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText K OptionsSave "Salvar opcions" 0 \
   {Salva totes les opcions a l'arxiu $::optionsFile}
 menuText K OptionsAutoSave "Autoguardar opcions en sortir" 0 \

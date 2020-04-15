@@ -353,7 +353,7 @@ menuText O OptionsTacticsBasesDir "Bases directory" 0 {Sets the tactics (trainin
 # ====== TODO To be translated ======
 menuText O OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText O OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText O OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText O OptionsSave "Lagre innstillinger" 0 \
   "Lagre alle instillinger til $::optionsFile"
 menuText O OptionsAutoSave "Autolagre innstillinger ved avslutning" 0 \

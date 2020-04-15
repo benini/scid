@@ -285,7 +285,7 @@ menuText B OptionsRecent "Arquivos recentes..." 0 \
 menuText B OptionsBooksDir "Diretório de Livros" 0 {Define o diretório para os livros de aberturas}
 menuText B OptionsTacticsBasesDir "Diretório de bases" 0 {Define o diretório para as bases de treinamento de táticas}
 menuText B OptionsPhotosDir "Diretorio de Fotos" 0 {Define o diretorio base de fotos}
-menuText B OptionsThemeDir "Carregar Tema(s)..."  0 {Carrega arquivo de tema para a tela}
+menuText B OptionsThemeDir "Carregar Tema(s)"  0 {Carrega arquivo de tema para a tela}
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \

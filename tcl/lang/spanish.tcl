@@ -333,7 +333,7 @@ menuText S OptionsTacticsBasesDir "Carpeta de bases de datos" 0 \
 # ====== TODO To be translated ======
 menuText S OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText S OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText S OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText S OptionsSave "Guardar opciones" 0 \
   "Guarda todas las opciones en el fichero $::optionsFile"
 menuText S OptionsAutoSave "Autoguardar opciones al salir" 0 \

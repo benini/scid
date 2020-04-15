@@ -292,7 +292,7 @@ menuText W OptionsTacticsBasesDir "Taktikbaskatalog" 0 {Anger Taktikbaskatalog (
 # ====== TODO To be translated ======
 menuText W OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText W OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText W OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText W OptionsSave "Spara alternativ" 7 \
   "Spara alla alternativ till en inställningsfil"
 menuText W OptionsAutoSave "Autospara vid avslut" 1 \

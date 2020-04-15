@@ -314,7 +314,7 @@ menuText N OptionsTacticsBasesDir "Databases map" 0 {Stel de map met de  taktiek
 # ====== TODO To be translated ======
 menuText N OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
 # ====== TODO To be translated ======
-menuText N OptionsThemeDir "Load Theme(s)..."  0 { Load a GUI theme package file }
+menuText N OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \

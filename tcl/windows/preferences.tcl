@@ -93,11 +93,11 @@ proc ::preferences::resources { } {
     ::setTitle $w "Scid Resources"
 
     set idx 0
-    foreach file { ::spellCheckFile ::ecoFile ::scidBooksDir ::scidBasesDir ::scidPhotoDir ::utils::sound::soundFolder } \
-        label { OptionsSpell OptionsECO OptionsBooksDir OptionsTacticsBasesDir OptionsPhotosDir SoundsFolder} \
-        valtype { isfile isfile isdirectory isdirectory isdirectory isdirectory } \
-        command { getSpellCheckFile getECOFile getBooksDir getTacticsBasesDir getPhotoDir ::utils::sound::GetDialogChooseFolder } \
-        checkvaluecommand { readSpellCheckFile readECOFile setBooksDir setTacticsBasesDir setPhotoDir ::utils::sound::OptionsDialogChooseFolder } {
+    foreach file { ::ThemePackageFile ::spellCheckFile ::ecoFile ::scidBooksDir ::scidBasesDir ::scidPhotoDir ::utils::sound::soundFolder } \
+        label { OptionsThemeDir OptionsSpell OptionsECO OptionsBooksDir OptionsTacticsBasesDir OptionsPhotosDir SoundsFolder} \
+        valtype { isfile isfile isfile isdirectory isdirectory isdirectory isdirectory } \
+        command { getThemePkgFile getSpellCheckFile getECOFile getBooksDir getTacticsBasesDir getPhotoDir ::utils::sound::GetDialogChooseFolder } \
+        checkvaluecommand { readThemePkgFile readSpellCheckFile readECOFile setBooksDir setTacticsBasesDir setPhotoDir ::utils::sound::OptionsDialogChooseFolder } {
         incr idx
         ttk::label $w.$file -text [tr $label]:
         ttk::frame $w.$idx
@@ -134,6 +134,10 @@ proc ::preferences::resources { } {
         pack $w.f$i.b -side right -padx 2
         pack $w.f$i.e -side left -padx 2 -fill x -expand yes
     }
+    ttk::frame $w.b
+    pack $w.b -side bottom -fill x
+    dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
+    packbuttons right $w.b.close
 
     wm resizable $w 1 0
     grab $w
