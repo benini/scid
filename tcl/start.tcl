@@ -379,7 +379,9 @@ proc createFonts {} {
 }
 createFonts
 
-# Load theme
+# Load darktheme, must load here to have it in place if used
+source -encoding utf-8 [file nativename [file join $::scidTclDir "darktheme.tcl"]]
+# Load more theme
 if { [file exists $::ThemePackageFile] } {
   catch { ::safeSourceStyle $::ThemePackageFile }
 }
