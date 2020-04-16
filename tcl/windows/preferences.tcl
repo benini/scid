@@ -136,8 +136,8 @@ proc ::preferences::resources { } {
     }
     ttk::frame $w.b
     pack $w.b -side bottom -fill x
-    dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
-    packbuttons right $w.b.close
+    dialogbutton $w.b.ok -text "OK" -command "destroy $w"
+    packbuttons right $w.b.ok
 
     wm resizable $w 1 0
     grab $w
