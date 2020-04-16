@@ -1,6 +1,12 @@
-### darktheme.tcl: part of Scid.
-### Copyright (C) 2020 Uwe Klimmek
-##################################
+#
+# Copyright (C) 2020 Uwe Klimmek
+#
+# This file is part of Scid (Shane's Chess Information Database).
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
+
+### Implements a "dark" theme.
 
 namespace eval ttk::theme::dark {
     array set colors {
