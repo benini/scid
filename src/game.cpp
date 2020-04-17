@@ -1071,7 +1071,12 @@ void Game::TruncateStart() {
     NumHalfMoves -= GetCurrentPly();
     StartPos = std::move(pos);
     *CurrentPos = *StartPos;
-	FirstMove->setNext(CurrentMove);
+    FirstMove->setNext(CurrentMove);
+
+    // Do all the moves to update moveData.pieceNum to the new StartPos
+    while (MoveForwardInPGN() == OK) {
+    }
+    MoveToStart();
 }
 
 namespace {
