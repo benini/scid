@@ -1585,12 +1585,15 @@ void
 Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
+    // The caller must have set the first 4 members of sm
     const squareT from = sm->from;
     const squareT to = sm->to;
+    const auto promo = sm->promote;
     const auto ptype = piece_Type(sm->movingPiece);
+    const auto pieceNum = ListPos[from];
 
     // update move fields that (maybe) have not yet been set:
-    sm->pieceNum = ListPos[from];
+    sm->pieceNum = pieceNum;
     sm->capturedPiece = Board[to];
     sm->capturedSquare = to;
     sm->castleFlags = Castling;
@@ -1668,13 +1671,13 @@ Position::DoSimpleMove (simpleMoveT * sm)
     ASSERT(sm->movingPiece == Board[from]);
     const pieceT movingPiece = Board[from];
     RemoveFromBoard(movingPiece, from);
-    if (sm->promote != EMPTY) {
+    if (promo != EMPTY) {
         ASSERT(movingPiece == piece_Make(ToMove, PAWN));
         Material[movingPiece]--;
-        Material[piece_Make(ToMove, sm->promote)]++;
-        addPiece(sm->pieceNum, sm->promote, to);
+        Material[piece_Make(ToMove, promo)]++;
+        addPiece(pieceNum, promo, to);
     } else {
-        addPiece(sm->pieceNum, ptype, to);
+        addPiece(pieceNum, ptype, to);
     }
 
     // Handle clearing of castling flags:
@@ -1722,15 +1725,15 @@ void
 Position::UndoSimpleMove (simpleMoveT const* m)
 {
     ASSERT (m != NULL);
-    squareT from = m->from;
-    squareT to = m->to;
+    const squareT from = m->from;
+    const squareT to = m->to;
+    const auto pieceNum = ListPos[to];
     pieceT p = Board[to];
     EPTarget = m->epSquare;
     Castling = m->castleFlags;
     HalfMoveClock = m->oldHalfMoveClock;
     PlyCounter--;
     ToMove = color_Flip(ToMove);
-    ASSERT(m->pieceNum == ListPos[to]);
 
     // Check for a null move:
     if (m->isNullMove()) {
@@ -1789,8 +1792,8 @@ Position::UndoSimpleMove (simpleMoveT const* m)
     }
 
     // now make the move:
-    List[ToMove][m->pieceNum] = from;
-    ListPos[from] = m->pieceNum;
+    List[ToMove][pieceNum] = from;
+    ListPos[from] = pieceNum;
     RemoveFromBoard (p, to);
     AddToBoard (p, from);
     if (m->capturedPiece != EMPTY) {
@@ -1898,10 +1901,9 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 
     auto isOccupied = [this](auto square) { return Board[square] != EMPTY; };
 
-    // Make sure m->pieceNum is updated:
-    m->pieceNum = ListPos[m->from];
-    squareT from = List[ToMove][m->pieceNum];
-    squareT to   = m->to;
+    ASSERT(m->from == List[ToMove][ListPos[m->from]]);
+    const squareT from = m->from;
+    const squareT to   = m->to;
     char * c     = s;
     pieceT piece = Board[from];
     pieceT p = piece_Type(piece);
@@ -2382,7 +2384,6 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str,
 	if ((length == 2 && std::equal(str, str + 2, "--")) ||
 	    (length == 2 && std::equal(str, str + 2, "Z0")) ||
 	    (length == 4 && std::equal(str, str + 4, "null"))) {
-		sm->pieceNum = 0;
 		sm->from = GetKingSquare(ToMove);
 		sm->to = sm->from;
 		sm->movingPiece = Board[sm->from];
