@@ -74,6 +74,7 @@ namespace eval ttk::theme::dark {
 
         ttk::style configure TSpinbox -fieldbackground $colors(fieldbg) -lightcolor $colors(fieldbg) -arrowsize 12 -arrowcolor $basecol
         ttk::style configure TLabelframe -bordercolor $colors(labelframe) -relief raised -padding 4
+        ttk::style configure TProgressbar -background $basecol
 
         ttk::style configure TScrollbar -troughcolor $colors(through) -bordercolor $colors(buttonbg) -background $colors(through)
         ttk::style map TScrollbar -background $scrollbars -lightcolor $scrollbarsl -darkcolor $scrollbarsd
@@ -83,7 +84,7 @@ namespace eval ttk::theme::dark {
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children { Horizontal.Scrollbar.thumb -expand true }
         }
-        ttk::style map Treeview -background [list selected $colors(selectbg)] \
+        ttk::style map Treeview -background [list selected $basecol] \
             -foreground [list selected $colors(selectfg)]
     }
 }
