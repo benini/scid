@@ -2843,46 +2843,42 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 	dest.emplace_back(encoded);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// encodeVariation(): Used by Encode() to encode the game's moves.
-//      Recursive; calls itself to encode subvariations.
-//
-static void encodeVariation(std::vector<byte>* buf, moveT* m, uint* subVarCount,
-                            uint* nagCount, uint depth) {
-    ASSERT(m != NULL);
+/// Encode the moves, the nags, the comment mark and the variations.
+template <typename MoveT, typename DestT>
+std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
+	ASSERT(m && m->startMarker());
 
-    // Check if there is a pre-game or start-of-variation comment:
-    if (! m->prev->comment.empty()) {
-        buf->emplace_back(ENCODE_COMMENT);
-    }
+	// Check if there is a pre-game comment
+	if (!m->comment.empty())
+		dest.emplace_back(ENCODE_COMMENT);
 
-    while (m->marker != END_MARKER) {
-        encodeMove(m->moveData, *buf);
-        for (uint i=0; i < (uint) m->nagCount; i++) {
-            buf->emplace_back(ENCODE_NAG);
-            buf->emplace_back(m->nags[i]);
-            *nagCount += 1;
-        }
-        if (! m->comment.empty()) {
-            buf->emplace_back(ENCODE_COMMENT);
-        }
-        if (m->numVariations > 0) {
-            moveT * subVar = m->varChild;
-            for (uint i=0; i < m->numVariations; i++) {
-                *subVarCount += 1;
-                buf->emplace_back(ENCODE_START_MARKER);
-                encodeVariation (buf, subVar->next, subVarCount, nagCount, depth+1);
-                subVar = subVar->varChild;
-            }
-        }
-        m = m->next;
-    }
-    // At end, we output the end-variation or end-game token.
-    if (depth == 0) {
-        buf->emplace_back(ENCODE_END_GAME);
-    } else {
-        buf->emplace_back(ENCODE_END_MARKER);
-    }
+	unsigned n_vars = 0;
+	unsigned n_nags = 0;
+	while ((m = m->nextMoveInPGN())) {
+		if (m->startMarker()) {
+			++n_vars;
+			dest.emplace_back(ENCODE_START_MARKER);
+			if (!m->comment.empty())
+				dest.emplace_back(ENCODE_COMMENT);
+
+		} else if (m->endMarker()) {
+			if (m->nextMoveInPGN())
+				dest.emplace_back(ENCODE_END_MARKER);
+
+		} else {
+			encodeMove(m->moveData, dest);
+
+			for (int i = 0, n = m->nagCount; i < n; ++i) {
+				dest.emplace_back(ENCODE_NAG);
+				dest.emplace_back(m->nags[i]);
+				++n_nags;
+			}
+			if (!m->comment.empty())
+				dest.emplace_back(ENCODE_COMMENT);
+		}
+	}
+	dest.emplace_back(ENCODE_END_GAME);
+	return {n_vars, n_nags};
 }
 
 /// Decodes the game moves
@@ -3071,9 +3067,7 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
                      HasNonStandardStart(FEN) ? FEN : nullptr, dest);
 
     // Now the movelist:
-    uint varCount = 0;
-    uint nagCount = 0;
-    encodeVariation(&dest, FirstMove->next, &varCount, &nagCount, 0);
+    auto [varCount, nagCount] = encodeMovelist(FirstMove, dest);
 
     // Now do the comments
     const auto commentCount = encodeComments(FirstMove, dest);
