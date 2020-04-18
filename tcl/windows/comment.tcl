@@ -147,9 +147,8 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	ttk::frame $w_.cf
 	ttk::label $w_.cf.label -font font_Bold -text [tr Comment]
 	ttk::button $w_.cf.clear -text [tr Clear] -command "::windows::commenteditor::clearComment_"
-	ttk::frame $w_.cf.txtframe
-	autoscrollframe -bars y $w_.cf.txtframe text $w_.cf.txtframe.text \
-		-background white -wrap word -font font_Regular
+	autoscrollText y $w_.cf.txtframe $w_.cf.txtframe.text Treeview
+	$w_.cf.txtframe.text configure -wrap word -state normal
 	grid rowconfig $w_.cf 1 -weight 1
 	grid columnconfig $w_.cf 0 -weight 1
 	grid $w_.cf.label $w_.cf.clear -sticky nsew
