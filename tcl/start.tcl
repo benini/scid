@@ -394,9 +394,10 @@ ttk::style configure TButton -font font_Regular
 ttk::style configure TRadiobutton -font font_Regular
 ttk::style configure TCheckbutton -font font_Regular
 ttk::style configure TMenubutton -font font_Regular
-ttk::style configure TCombobox -font font_Regular
-ttk::style configure TEntry -font font_Regular
+option add *TCombobox*font font_Regular
+option add *TEntry.font font_Regular
 ttk::style configure TNotebook.Tab -font font_Regular
+ttk::style configure Treeview -font font_Regular
 
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold
@@ -417,9 +418,6 @@ ttk::style configure Error.TEntry -foreground red
 #TODO: recalculate the value if font_Small is changed
 set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
 ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
-
-# font_Regular is the default font for widgets:
-option add *Font font_Regular
 
 # Use font_Menu for menu entries:
 option add *Menu*Font font_Menu
