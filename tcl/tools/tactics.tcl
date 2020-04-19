@@ -128,12 +128,11 @@ namespace eval tactics {
         $win.pbar coords bar 0 0 0 0
         $win.fbutton.cancel configure -text [tr Cancel] -command "focus .; destroy $win"
         if {[file isdirectory $::scidBasesDir]} {
-            $win.d.basedir configure -foreground black
             $win.d.search configure -state normal \
                 -command "::tactics::configBases $win"
             after idle "after 1 ::tactics::configBases $win"
         } else {
-            $win.d.basedir configure -foreground red
+            $win.d.basedir configure -style Error.TEntry
             $win.d.search configure -state disabled -command {}
         }
     }
@@ -214,10 +213,10 @@ namespace eval tactics {
         ttk::label $w.d.lbl -font font_Bold -text "[tr ChooseTrainingBase]:"
         grid $w.d.lbl -sticky w -columnspan 3
         grid columnconfigure $w.d 1 -weight 1
-        ttk::button $w.d.selectDir -image tb_open -command "setTacticsBasesDir; ::tactics::configValidDir $w"
-        ttk::label $w.d.basedir -textvariable scidBasesDir
+        ttk::button $w.d.selectDir -text "..." -command "getTacticsBasesDir $w.d.basedir; ::tactics::configValidDir $w"
+        ttk::entry $w.d.basedir -textvariable scidBasesDir  -width 30
         ttk::button $w.d.search -text [tr Search]
-        grid $w.d.selectDir $w.d.basedir $w.d.search -sticky w
+        grid $w.d.basedir $w.d.selectDir $w.d.search -sticky w -padx "5 0"
 
 
         #Base selection
