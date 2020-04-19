@@ -128,6 +128,7 @@ namespace eval tactics {
         $win.pbar coords bar 0 0 0 0
         $win.fbutton.cancel configure -text [tr Cancel] -command "focus .; destroy $win"
         if {[file isdirectory $::scidBasesDir]} {
+            $win.d.basedir configure -style {}
             $win.d.search configure -state normal \
                 -command "::tactics::configBases $win"
             after idle "after 1 ::tactics::configBases $win"
