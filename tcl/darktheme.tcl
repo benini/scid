@@ -18,7 +18,7 @@ namespace eval ttk::theme::dark {
     }
 
     ttk::style theme create dark -parent clam -settings {
-        set basecol "#3b6dce" ;# Basecolor, change here to have new topic for the theme
+        set basecol "#4864c4" ;# Alternative: #3b6dce Basecolor, change here to have new topic for the theme
         # -----------------------------------------------------------------------------
         # Theme defaults
         ttk::style configure "." \
@@ -29,6 +29,8 @@ namespace eval ttk::theme::dark {
             -troughcolor $colors(through) \
             -selectbackground $basecol \
             -selectforeground $colors(selectfg) \
+            -activebackground $basecol \
+            -activeforeground $colors(selectfg) \
             -bordercolor $colors(fieldborder) -selectborderwidth 0 \
             ;
 
@@ -69,12 +71,17 @@ namespace eval ttk::theme::dark {
             -fieldbackground $colors(fieldbg) -arrowcolor $basecol -lightcolor $colors(fieldbg)
 
         ttk::style configure TNotebook.Tab -bordercolor $colors(fieldborder) -border {4 2 4 2} -padding {3 2 3 2} -lightcolor $colors(background)
-        ttk::style map TNotebook.Tab -background [list selected $colors(background)  !selected $colors(notebookborder)]
+        ttk::style map TNotebook.Tab -background [list active $colors(background) selected $colors(background) \
+             !selected $colors(buttonbg)] -bordercolor [list active $basecol ] -lightcolor [list active $basecol ]
         ttk::style configure TPanedwindow -sashrelief raised
 
         ttk::style configure TSpinbox -fieldbackground $colors(fieldbg) -lightcolor $colors(fieldbg) -arrowsize 12 -arrowcolor $basecol
         ttk::style configure TLabelframe -bordercolor $colors(labelframe) -relief raised -padding 4
         ttk::style configure TProgressbar -background $basecol
+
+        ttk::style configure Toolbutton -padding 0
+        ttk::style map Toolbutton -background [list pressed $basecol {selected active} $basecol \
+             selected $basecol active $colors(buttonbg) disabled $colors(buttonbglight) ]
 
         ttk::style configure TScrollbar -troughcolor $colors(through) -bordercolor $colors(buttonbg) -background $colors(through)
         ttk::style map TScrollbar -background $scrollbars -lightcolor $scrollbarsl -darkcolor $scrollbarsd
