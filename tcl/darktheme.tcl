@@ -72,7 +72,7 @@ namespace eval ttk::theme::dark {
 
         ttk::style configure TNotebook.Tab -bordercolor $colors(fieldborder) -border {4 2 4 2} -padding {3 2 3 2} -lightcolor $colors(background)
         ttk::style map TNotebook.Tab -background [list active $colors(background) selected $colors(background) \
-             !selected $colors(buttonbg)] -bordercolor [list active $basecol ] -lightcolor [list active $basecol ]
+             !selected $colors(buttonbgdark)] -bordercolor [list active $basecol ] -lightcolor [list active $basecol ]
         ttk::style configure TPanedwindow -sashrelief raised
 
         ttk::style configure TSpinbox -fieldbackground $colors(fieldbg) -lightcolor $colors(fieldbg) -arrowsize 12 -arrowcolor $basecol
@@ -91,7 +91,8 @@ namespace eval ttk::theme::dark {
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children { Horizontal.Scrollbar.thumb -expand true }
         }
-        ttk::style map Treeview -background [list selected $basecol] \
+        ttk::style configure Treeview -background $colors(fieldbg)
+        ttk::style map Treeview -background [list selected $basecol disabled $colors(darkcolor)] \
             -foreground [list selected $colors(selectfg)]
     }
 }
