@@ -49,11 +49,9 @@ proc ::file::finder::Open {} {
   pack $w.d.help $w.d.up -side right -padx "5 0"
   pack $w.d.mbn -side left -fill x -expand yes
   
-  ttk::frame $w.t
-  text $w.t.text -width 65 -height 25 -font font_Small -wrap none \
-      -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
-      -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
-  autoscrollBars both $w.t $w.t.text
+	autoscrollText both $w.t $w.t.text Treeview
+  $w.t.text configure -width 65 -height 25 -font font_Small -wrap none \
+      -setgrid 1 -cursor top_left_arrow
   $w.t.text tag configure Dir -foreground brown
   $w.t.text tag configure Vol -foreground gray25
   $w.t.text tag configure PGN -foreground blue
