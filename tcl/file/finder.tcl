@@ -49,7 +49,7 @@ proc ::file::finder::Open {} {
   pack $w.d.help $w.d.up -side right -padx "5 0"
   pack $w.d.mbn -side left -fill x -expand yes
   
-	autoscrollText both $w.t $w.t.text Treeview
+  autoscrollText both $w.t $w.t.text Treeview
   $w.t.text configure -width 65 -height 25 -font font_Small -wrap none \
       -setgrid 1 -cursor top_left_arrow
   $w.t.text tag configure Dir -foreground brown
