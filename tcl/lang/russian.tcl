@@ -2,6 +2,7 @@
 #  Russian language support for Scid.
 #  Contributed by Alex Sedykh.
 #  Contributed by Sergey Nikolaevich Koyankin (koyankin(at)yandex.ru).
+#  Contributed by Stepan Kashuba (ihaterabbids(at)gmail.com).
 #  Untranslated messages are marked with a "***" comment.
 #  Untranslated help page sections are in <NEW>...</NEW> tags.
 
@@ -89,8 +90,7 @@ menuText R EditCopyBoard "Копировать позицию" 4 \
   {Копировать текущую позицию в нотации FEN в выбранный текст (буфер обмена)}
 menuText R EditPasteBoard "Вставить начальную позицию" 3 \
   {Вставить начальную позицию из текущего выбранного текста (буфера обмена)}
-# ====== TODO To be translated ======
-menuText R ConfigureScid "Preferences..." 0 {Configure all options for SCID}
+menuText R ConfigureScid "Настройки..." 0 {Настроить все опции SCID}
 
 # Game menu:
 menuText R Game "Партия" 0
@@ -270,14 +270,12 @@ menuText R OptionsMovesSpace "Добавлять пробелы после но�
 menuText R OptionsMovesKey "Клавиатурное завершение" 0 \
   {Включить/выключить автозавершение клавиатурных ходов}
 menuText R OptionsMovesShowVarArrows "Показывать стрелки в вариантах" 0 {Включить/выключить отображение стрелок ходов в вариантах}
-# ====== TODO To be translated ======
-menuText R OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
+menuText R OptionsMovesGlossOfDanger "Подсветка угроз" 0 {Вкл./выкл. подсветку угроз}
 menuText R OptionsNumbers "Числовой формат" 0 {Выбрать числовой формат}
 menuText R OptionsTheme "Темы" 0 {Смена внешнего вида интерфейса}
 menuText R OptionsWindows "Окна" 0 {Установки окон}
 menuText R OptionsSounds "Звуки" 2 {Настройки звука оповещения о ходе}
-# ====== TODO To be translated ======
-menuText R OptionsResources "Resources..." 0 {Choose resource files and folders}
+menuText R OptionsResources "Ресурсы..." 0 {Выбрать ресурсные каталоги и файлы}
 menuText R OptionsWindowsDock "Закрепить окна" 0 {Закрепить окна}
 menuText R OptionsWindowsSaveLayout "Сохранить расположение" 0 {Сохранить расположение}
 menuText R OptionsWindowsRestoreLayout "Восстановить расположение" 0 {Восстановить расположение}
@@ -291,10 +289,8 @@ menuText R OptionsRecent "Недавно используемые файлы..."
   {Изменить количество недавно используемых файлов в меню "Файл"}
 menuText R OptionsBooksDir "Директория книг" 0 {Установить директорию книг дебютов}
 menuText R OptionsTacticsBasesDir "Директория баз" 0 {Установить директорию баз тактик (тренировок)}
-# ====== TODO To be translated ======
-menuText R OptionsPhotosDir "Photos directory" 0 {Sets the photos bases directory}
-# ====== TODO To be translated ======
-menuText R OptionsThemeDir "Theme(s) File:"  0 { Load a GUI theme package file }
+menuText R OptionsPhotosDir "Директория фото" 0 {Установить директорию фото}
+menuText R OptionsThemeDir "Файл/ы тем:"  0 { Загрузить файл темы интерфейса }
 menuText R OptionsSave "Сохранить установки" 0 "Сохранить все установки в файл $::optionsFile"
 menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
   {Автосохранение всех установок при выходе из программы}
@@ -330,7 +326,7 @@ translate R Back {Назад}
 translate R Browse {Просмотр}
 translate R Cancel {Отмена}
 translate R Continue {Продолжить}
-translate R Clear {Отчистить}
+translate R Clear {Очистить}
 translate R Close {Закрыть}
 translate R Contents {Содержание}
 translate R Defaults {По-умолчанию}
@@ -390,8 +386,7 @@ translate R Month {Месяц}
 translate R Months {Январь Февраль Март Апрель Май Июнь Июль Август Сентябрь Октябрь Ноябрь Декабрь}
 translate R Days {Вс Пн Вт Ср Чт Пт Сб}
 translate R YearToToday {Текущий год}
-# ====== TODO To be translated ======
-translate R YearToTodayTooltip {Set date from 1 year back to today}
+translate R YearToTodayTooltip {Установить дату за прошедший год}
 translate R Result {Результат}
 translate R Round {Раунд}
 translate R Length {Длина}
@@ -437,8 +432,7 @@ translate R PInfoMostBlack {Наиболее частые дебюты за чё
 translate R PInfoRating {История рейтинга}
 translate R PInfoBio {Биография}
 translate R PInfoEditRatings {Редактировать рейтинги}
-# ====== TODO To be translated ======
-translate R PInfoEloFile {File}
+translate R PInfoEloFile {Файл}
 
 # Tablebase information:
 translate R Draw {Ничья}
@@ -457,22 +451,14 @@ translate R WinningMoves {Выигрышные ходы}
 translate R DrawingMoves {Ничейные ходы}
 translate R LosingMoves {Проигрышные ходы}
 translate R UnknownMoves {Ходы, приводящие к неизвестному результату}
-# ====== TODO To be translated ======
-translate R SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate R toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate R NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate R MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate R SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate R WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate R BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate R AllLoss {" Whoever moves loses:     " }
+translate R SideLongest {Сторона    Самый длинный    %     %     %\n}
+translate R toNoveMate {право хода   мат    Победа  Ничья  Поражение\n}
+translate R NoSummary {\nНет отчета для этой таблицы.}
+translate R MutualZugzwang {Взаимный цугцванг: }
+translate R SelectetZugzwang {\nВыбранные позиции цугцванга:}
+translate R WdrawBloss {Белыми ничья, Черные проигрывают:}
+translate R BdrawWloss {Черными ничья, Белые проигрывают:}
+translate R AllLoss {" Прогрывает любой ход:     " }
 
 # Tip of the day:
 translate R Tip {Совет}
@@ -629,10 +615,8 @@ menuText R GraphOptionsWhite "Белые" 0
 menuText R GraphOptionsBlack "Чёрные" 0
 menuText R GraphOptionsBoth "Оба" 0
 menuText R GraphOptionsPInfo "Игрок - информация об игроке" 0
-# ====== TODO To be translated ======
-menuText R GraphOptionsEloFile "Elo from rating file" 0
-# ====== TODO To be translated ======
-menuText R GraphOptionsEloDB "Elo from database" 0
+menuText R GraphOptionsEloFile "ЭЛО из файла рейтинга" 0
+menuText R GraphOptionsEloDB "ЭЛО из базы партий" 0
 translate R GraphFilterTitle "Диаграмма фильтра: частота на 1000 партий"
 translate R GraphAbsFilterTitle "Диаграмма фильтра: частота на все партии"
 translate R ConfigureFilter {Настройка оси Х по годам, рейтингу и ходам}
@@ -1462,7 +1446,7 @@ translate R TimeBonus {Время + премия}
 translate R TimeMin {Мин}
 translate R TimeSec {с}
 translate R AllExercisesDone {Все задания выполнены}
-translate R MoveOutOfBook {Двигаться не по книге}
+translate R MoveOutOfBook {Ходы не по дебютной книге}
 translate R LastBookMove {Ход из последней книги}
 translate R AnnotateSeveralGames {Аннотировать несколько партий\nот текущей до:}
 translate R FindOpeningErrors {Поиск ошибок дебюта}
@@ -1654,8 +1638,7 @@ translate R CCHelpBtn {Помощь на иконках и статусных и
 translate R CCDlgServerName {Имя сервера:}
 translate R CCDlgLoginName  {Логин:}
 translate R CCDlgPassword   {Пароль:}
-# ====== TODO To be translated ======
-translate R CCDlgShowPassword {Show password}
+translate R CCDlgShowPassword {Показать пароль}
 translate R CCDlgURL        {Адрес Xfcc:}
 translate R CCDlgRatingType {Тип рейтинга:}
 
@@ -1707,89 +1690,49 @@ translate R Undock {Расстыковать}
 
 # Switcher window
 translate R ChangeIcon {Сменить иконку...}
-# ====== TODO To be translated ======
-translate R NewGameListWindow {New Game List Window}
-# ====== TODO To be translated ======
-translate R LoadatStartup {Load at startup}
-# ====== TODO To be translated ======
-translate R ShowHideDB {Show/Hide databases}
-# ====== TODO To be translated ======
-translate R ChangeFilter {Change filter}
-# ====== TODO To be translated ======
-translate R ChangeLayout {Load/Save/Change sorting criteria and column layout}
-# ====== TODO To be translated ======
-translate R ShowHideStatistic {Show/Hide statistics}
-# ====== TODO To be translated ======
-translate R BoardFilter {Show only games that matches the current board position}
-# ====== TODO To be translated ======
-translate R CopyGameTo {Copy Game to}
-# ====== TODO To be translated ======
-translate R FindBar {Find Bar}
-# ====== TODO To be translated ======
-translate R FindCurrentGame {Find current game}
-# ====== TODO To be translated ======
-translate R DeleteGame {Delete game}
-# ====== TODO To be translated ======
-translate R UndeleteGame {Undelete game}
-# ====== TODO To be translated ======
-translate R ResetSort {Reset sort}
-# ====== TODO To be translated ======
-translate R ConvertNullMove {Convert null moves to comments}
-# ====== TODO To be translated ======
-translate R SetupBoard {Setup Board}
-# ====== TODO To be translated ======
-translate R Rotate {Rotate}
-# ====== TODO To be translated ======
-translate R SwitchColors {Switch colors}
-# ====== TODO To be translated ======
-translate R FlipBoard {Flip Board}
-# ====== TODO To be translated ======
-translate R ImportPGN {Import PGN game}
-# ====== TODO To be translated ======
-translate R ImportingFiles {Importing PGN files in}
-# ====== TODO To be translated ======
-translate R ImportingFrom {Importing from}
-# ====== TODO To be translated ======
-translate R ImportingIn {Import games in}
-# ====== TODO To be translated ======
-translate R UseLastTag {Use last\ngame's tags}
-# ====== TODO To be translated ======
-translate R Random {Random}
-# ====== TODO To be translated ======
-translate R BackToMainline {Go back to mainline}
-# ====== TODO To be translated ======
-translate R LeaveVariant {Leave variant}
-# ====== TODO To be translated ======
-translate R Autoplay {Autoplay}
-# ====== TODO To be translated ======
-translate R ShowHideCoords {Show/Hide Coord.}
-# ====== TODO To be translated ======
-translate R ShowHideMaterial {Show/Hide Material}
-# ====== TODO To be translated ======
-translate R FullScreen {Full Screen}
-# ====== TODO To be translated ======
-translate R FilterStatistic {Filter Statistics}
-# ====== TODO To be translated ======
-translate R MakeCorrections {Make Corrections}
-# ====== TODO To be translated ======
-translate R Surnames {Surnames}
-# ====== TODO To be translated ======
-translate R Ambiguous {Ambiguous}
+translate R NewGameListWindow {Новое окно списка партий}
+translate R LoadatStartup {Загружать при запуске программы}
+translate R ShowHideDB {Показать базы партий}
+translate R ChangeFilter {Изменить фильтр}
+translate R ChangeLayout {Загрузить/Сохранить/Изменить сортировку и расположение столбцов}
+translate R ShowHideStatistic {Показать статистику}
+translate R BoardFilter {Показать игры с текущей позицией на доске}
+translate R CopyGameTo {Копировать игру в}
+translate R FindBar {Строка поиска}
+translate R FindCurrentGame {Найти текущую игру}
+translate R DeleteGame {Удалить игру}
+translate R UndeleteGame {Отменить удаление игры}
+translate R ResetSort {Сбросить сортировку}
+translate R ConvertNullMove {Преобразовать пустые ходы в комментарии}
+translate R SetupBoard {Настроить доску}
+translate R Rotate {Повернуть}
+translate R SwitchColors {Переключить цвета}
+translate R FlipBoard {Повернуть доску}
+translate R ImportPGN {Импортировать файл PGN}
+translate R ImportingFiles {Импортировать файлы PGN в}
+translate R ImportingFrom {Импортировать из}
+translate R ImportingIn {Импортировать игры в}
+translate R UseLastTag {Использовать теги\nпоследней игры}
+translate R Random {Случайный}
+translate R BackToMainline {Вернуться к основной линии}
+translate R LeaveVariant {Покинуть вариант}
+translate R Autoplay {Автоходы}
+translate R ShowHideCoords {Показать координаты}
+translate R ShowHideMaterial {Показать материал}
+translate R FullScreen {На весь экран}
+translate R FilterStatistic {Статистика фильтра}
+translate R MakeCorrections {Внести исправления}
+translate R Surnames {Отчества}
+translate R Ambiguous {Неясный}
 translate R OptionsToolbar "Инструментальная панель"
 translate R OptionsBoard "Шахматная доска"
-# ====== TODO To be translated ======
-translate R OptionsMenuColor "Menu colors"
+translate R OptionsMenuColor "Цвета меню"
 translate R OptionsBoardSize "Размер доски"
 translate R OptionsBoardPieces "Стиль фигур"
-# ====== TODO To be translated ======
-translate R OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate R MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate R MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate R MenuColorSelect "Select"
-# ====== TODO To be translated ======
-translate R OptionsTablebaseDir "Select up to 4 table base folders:"
+translate R OptionsInternationalization "Локализация"
+translate R MenuColorForeground "Цвет текста"
+translate R MenuColorBackground "Фон"
+translate R MenuColorSelect "Выбрать"
+translate R OptionsTablebaseDir "Выберите до 4 директорий с базами таблиц:"
 }
 # end of russian.tcl
