@@ -255,8 +255,6 @@ menuText R OptionsMovesHighlightLastMoveWidth "Толщина" 0 {Толщина
 menuText R OptionsMovesHighlightLastMoveColor "Цвет" 0 {Цвет линии}
 menuText R OptionsMovesHighlightLastMoveArrow "Включить стрелки" 0 {Включить стрелки с подсветкой}
 menuText R OptionsMoves "Ходы" 0 {Установки для ходов}
-menuText R OptionsMovesAsk "Спросить перед заменой ходов" 0 \
-  {Спросить перед перезаписью любых ходов}
 menuText R OptionsMovesAnimate "Время анимации" 1 \
   {Установить количество времени, используемое для анимации ходов}
 menuText R OptionsMovesDelay "Временная задержка автоигры..." 0 \

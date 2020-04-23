@@ -300,8 +300,6 @@ menuText Y OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText Y OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText Y OptionsMoves "Potezi" 0 {Opcije uno¹enja poteza}
-menuText Y OptionsMovesAsk "Pitaj pre zamene poteza" 0 \
-  {Pitaj, da li se mo¾e postojeæi zameniti novim potezom}
 menuText Y OptionsMovesAnimate "Animation time" 1 \
   {Set the amount of time used to animate moves} ;# ***
 menuText Y OptionsMovesDelay "Odlaganje izmeðu poteza..." 1 \

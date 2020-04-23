@@ -252,8 +252,6 @@ menuText W OptionsMovesHighlightLastMoveColor "Färg" 0 {Färg på rad}
 # ====== TODO To be translated ======
 menuText W OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
-menuText W OptionsMovesAsk "Fråga före ersätt drag" 0 \
-  {Fråga innan du ersätter befintliga drag}
 menuText W OptionsMovesAnimate "Fördröjning vid manuellt spel" 1 \
   {Ange tid mellan varje drag när dragen görs automatiskt}
 menuText W OptionsMovesDelay "Fördröjning vid automatspel..." 1 \

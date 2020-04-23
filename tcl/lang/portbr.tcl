@@ -248,8 +248,6 @@ menuText B OptionsMovesHighlightLastMoveWidth "Espessura" 0 {Espessura da linha}
 menuText B OptionsMovesHighlightLastMoveColor "Cor" 0 {Cor da linha}
 menuText B OptionsMovesHighlightLastMoveArrow "seta de inclusao" 0 {Seta de Inclusao Destacada}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
-menuText B OptionsMovesAsk "Perguntar antes de substituir movimentos" 0 \
-  {Pergunta antes de substituir movimentos existentes}
 menuText B OptionsMovesAnimate "Tempo de animação" 1 \
   {Define a quantidade de tempo usada para animar os movimentos} 
 menuText B OptionsMovesDelay "Tempo de atraso p/ Jogo automatico..." 1 \

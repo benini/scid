@@ -223,9 +223,6 @@ set highlightLastMovePattern {} ; # this option is not saved
 # Gloss Of Danger
 set glossOfDanger 0
 
-# Ask before replacing existing moves: on by default
-set askToReplaceMoves 1
-
 # Show suggested moves: on by default
 set suggestMoves 1
 
@@ -672,7 +669,7 @@ proc options.write {} {
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
-          glossOfDanger askToReplaceMoves locale(numeric) \
+          glossOfDanger locale(numeric) \
           spellCheckFile autoRaise windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \

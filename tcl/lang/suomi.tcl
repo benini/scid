@@ -288,8 +288,6 @@ menuText U OptionsMovesHighlightLastMoveWidth "Viiva" 0 {Laudalla näytettävän vi
 menuText U OptionsMovesHighlightLastMoveColor "Väri" 0 {Laudalla näytettävän viivan väri}
 menuText U OptionsMovesHighlightLastMoveArrow "Sis. nuoli" 0 {Korostettuun siirtoon sisällytetään nuoli}
 menuText U OptionsMoves "Siirrot" 0 {Siirtojen syöttämiseen liittyvät asetukset}
-menuText U OptionsMovesAsk "Kysy ennen korvaamista" 0 \
-  {Ohjelma kysyy luvan ennen kuin kirjoittaa vanhojen tietojen päälle}
 menuText U OptionsMovesAnimate "Animaation nopeus" 1 \
   {Siirtojen animoinnin nopeus}
 menuText U OptionsMovesDelay "Toiston siirtonopeus" 1 \

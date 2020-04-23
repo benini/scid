@@ -746,9 +746,6 @@ proc confirmReplaceMove {} {
     if {[winfo exists $::reviewgame::window]} {
         return "var"
     }
-    if {! $::askToReplaceMoves} {
-        return "replace"
-    }
 
     option add *Dialog.msg.wrapLength 4i interactive
     catch {tk_dialog .dialog "Scid: $::tr(ReplaceMove)?" \
@@ -1211,56 +1208,56 @@ proc CreateGameInfo {} {
   autoscrollframe .main.gameInfo text .main.gameInfo.text
   .main.gameInfo.text configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
   ::htext::init .main.gameInfo.text
-  
+
   # Set up player photos:
   label .main.photoW -background white -image photoW -anchor ne
   label .main.photoB -background white -image photoB -anchor ne
   bind .main.photoW <ButtonPress-1> "togglePhotosSize"
   bind .main.photoB <ButtonPress-1> "togglePhotosSize"
-  
+
   # Right-mouse button menu for gameInfo frame:
   menu .main.gameInfo.menu -tearoff 0
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoHideNext \
           -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
           -command { toggleShowMaterial }
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoFEN \
           -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoMarks \
           -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoWrap \
           -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoFullComment \
           -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
-  
+
   .main.gameInfo.menu add checkbutton -label GInfoPhotos \
           -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
           -command {togglePhotosSize 0}
-  
+
   .main.gameInfo.menu add separator
-  
+
   .main.gameInfo.menu add radiobutton -label GInfoTBNothing \
           -variable gameInfo(showTB) -value 0 -command updateBoard
-  
+
   .main.gameInfo.menu add radiobutton -label GInfoTBResult \
           -variable gameInfo(showTB) -value 1 -command updateBoard
-  
+
   .main.gameInfo.menu add radiobutton -label GInfoTBAll \
           -variable gameInfo(showTB) -value 2 -command updateBoard
-  
+
   .main.gameInfo.menu add separator
-  
+
   .main.gameInfo.menu add command -label GInfoDelete -command {
       sc_base gameflag [sc_base current] [sc_game number] invert del
       ::notify::DatabaseModified [sc_base current]
   }
-  
+
   bind .main.gameInfo.text <ButtonPress-$::MB3> {
     tk_popup .main.gameInfo.menu %X %Y
   }

@@ -273,8 +273,6 @@ menuText K OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText K OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText K OptionsMoves "Jugades" 0 {Opcions d'entrada de jugades}
-menuText K OptionsMovesAsk "Preguntar abans de substituir jugades" 0 \
-  {Pregunta abans de sobreescriure qualsevol jugada existent}
 menuText K OptionsMovesAnimate "Velocitat d'animació" 1 \
   {Posa el temps d'animació entre jugades}
 menuText K OptionsMovesDelay "Retard de la jugada automàtica..." 0 \

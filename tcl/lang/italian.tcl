@@ -250,8 +250,6 @@ menuText I OptionsMovesHighlightLastMoveWidth "Larghezza" 0 {Spessore della line
 menuText I OptionsMovesHighlightLastMoveColor "Colore" 0 {Colore della linea}
 menuText I OptionsMovesHighlightLastMoveArrow "Includi freccia" 0 {Include una freccia}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione delle mosse}
-menuText I OptionsMovesAsk "Chiedi conferma prima di sostituire le mosse" 0 \
-  {Chiede prima di sovrascrivere ogni mossa esistente}
 menuText I OptionsMovesAnimate "Intervallo di tempo per l'animazione delle mosse" 4 \
   {Definisce l'intervallo di tempo per l'animazione delle mosse}
 menuText I OptionsMovesDelay "Intervallo di tempo per il gioco automatico..." 1 \

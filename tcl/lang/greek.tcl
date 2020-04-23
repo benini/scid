@@ -284,8 +284,6 @@ menuText G OptionsMovesHighlightLastMoveColor "Χρώμα" 0 {Το χρώμα τ
 # ====== TODO To be translated ======
 menuText G OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText G OptionsMoves "Κινήσεις" 0 {Επιλογές εισαγωγής κίνησης}
-menuText G OptionsMovesAsk "Ερώτηση πριν την αντικατάσταση κινήσεων" 0 \
-  {Να ερωτάστε πριν την αντικατάσταση κάθε κίνησης που έγινε}
 menuText G OptionsMovesAnimate "Χρόνος απεικόνισης κίνησης" 1 \
   {Καθορίστε την διάρκεια απεικόνισης της κίνησης}
 menuText G OptionsMovesDelay "Χρονική καθυστέρηση αυτόματου παιχνιδιού..." 1 \

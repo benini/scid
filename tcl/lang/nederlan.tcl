@@ -271,8 +271,6 @@ menuText N OptionsMovesHighlightLastMoveColor "Kleur" 0 {Varinatkleur}
 # ====== TODO To be translated ======
 menuText N OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
-menuText N OptionsMovesAsk "Bevestiging voor overschrijven" 0 \
-  {Bevestig het overschrijven van bestaande zetten}
 menuText N OptionsMovesAnimate "Stuk Animatietijd " 1 \
   {Zet animatietijd van de stukkenbewegingen} ;
 menuText N OptionsMovesDelay "Tijdinstelling voor auto-spelen" 10 \

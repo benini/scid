@@ -263,8 +263,6 @@ menuText F OptionsMovesHighlightLastMoveWidth "Epaisseur" 0 {Epaisseur de la lig
 menuText F OptionsMovesHighlightLastMoveColor "Couleur" 0 {Couleur de la ligne}
 menuText F OptionsMovesHighlightLastMoveArrow "inclure Flèche" 0 {Afficher la flèche de déplacement du dernier coup}
 menuText F OptionsMoves "Coups" 2 {Gestion des coups}
-menuText F OptionsMovesAsk "Demander avant d'écraser les coups" 0 \
-  {Demander avant d'écraser un coup existant}
 menuText F OptionsMovesAnimate "Temps d'animation" 1 \
   {Régler le temps utilisé pour l'animation des coups}
 menuText F OptionsMovesDelay "Délai entre les coups" 3 \

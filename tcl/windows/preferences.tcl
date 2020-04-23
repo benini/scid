@@ -166,7 +166,6 @@ proc ::preferences::moves { t } {
     ttk::label $t.ani.ms -text "ms"
     ttk::combobox $t.ani.animate -width 4 -textvar animateDelay -values {0 100 150 200 250 300 400 500 600 800 1000}
     pack $t.ani.al $t.ani.animate $t.ani.ms -side left -anchor w -padx "0 5"
-    ttk::checkbutton $t.oma -variable askToReplaceMoves -text [tr OptionsMovesAsk]
     ttk::checkbutton $t.omc -variable  moveEntry(Coord) -text [tr OptionsMovesCoord]
     ttk::checkbutton $t.omk -variable  moveEntry(AutoExpand) -text [tr OptionsMovesKey]
     ttk::checkbutton $t.oms -variable  suggestMoves -text [tr OptionsMovesSuggest]
@@ -192,7 +191,7 @@ proc ::preferences::moves { t } {
     grid $t.high.color -row 1 -column 2 -pady "2 0"
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
-    pack $t.oma $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
+    pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
     pack $t.high -side top -anchor w -pady "5 0"
 }
 

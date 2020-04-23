@@ -121,25 +121,18 @@ proc importMoveList {line} {
 #
 ################################################################################
 proc importMoveListTrans {line} {
-  
   set doImport 0
-  
-  if { $::askToReplaceMoves } {
     if {[llength [sc_game firstMoves 1]] == 0} {
       set doImport 1
     } elseif {[tk_messageBox -message [::tr "OverwriteExistingMoves"] -type yesno -icon question ] == yes} {
       set doImport 1
     }
-  } else  {
-    set doImport 1
-  }
   if {$doImport} {
     set line [untrans $line]
     sc_move start
     sc_move addSan $line
     updateBoard -pgn
   }
-  
 }
 
 

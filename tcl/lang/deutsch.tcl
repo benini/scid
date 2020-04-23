@@ -273,8 +273,6 @@ menuText D OptionsMovesHighlightLastMoveWidth "Dicke" 0 {Dicke der Linie}
 menuText D OptionsMovesHighlightLastMoveColor "Farbe" 0 {Farbe der Linie}
 menuText D OptionsMovesHighlightLastMoveArrow "inklusive Pfeil" 0 {Pfeil ebenfalls hervorheben}
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
-menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
-  {Vor Überschreiben existierender Züge nachfragen}
 menuText D OptionsMovesAnimate "Animation" 0 \
   {Zeit für Zuganimation einstellen}
 menuText D OptionsMovesDelay "Autom. Vorspielen..." 7 \

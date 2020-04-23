@@ -305,8 +305,6 @@ menuText P OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
-menuText P OptionsMovesAsk "Zapytaj przed zast±pieniem posuniêæ" 0 \
-  {Zapytaj przed zast±pieniem aktualnych posuniêæ}
 menuText P OptionsMovesAnimate "Szybko¶æ animacji" 1 \
   {Ustaw czas przeznaczony na animacjê jednego posuniêcia} 
 menuText P OptionsMovesDelay "Automatyczne przegl±danie..." 0 \

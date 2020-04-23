@@ -302,8 +302,6 @@ menuText O OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText O OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText O OptionsMoves "Trekk" 0 {Innstillinger for hvordan trekk angis}
-menuText O OptionsMovesAsk "Spør før trekk erstattes" 0 \
-  {Spør før eksisterende trekk erstattes av et nytt}
 menuText O OptionsMovesAnimate "Animation time" 1 \
   {Set the amount of time used to animate moves} ;# ***
 menuText O OptionsMovesDelay "Autospillforsinkelse..." 0 \
