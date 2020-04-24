@@ -91,6 +91,8 @@ namespace eval ttk::theme::dark {
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children { Horizontal.Scrollbar.thumb -expand true }
         }
+        ttk::style configure Heading -relief raised
+        ttk::style map Heading -bordercolor $buttonborder -background $buttonsbg
         ttk::style configure Treeview -background $colors(fieldbg)
         ttk::style map Treeview -background [list selected $basecol disabled $colors(darkcolor)] \
             -foreground [list selected $colors(selectfg)]
