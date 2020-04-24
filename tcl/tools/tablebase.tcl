@@ -133,7 +133,6 @@ proc ::tb::Open {} {
   pack [ttk::frame $w.b] -side bottom -fill x
   pack [ttk::frame $w.info] -side left -fill y
   addVerticalRule $w
-  pack [ttk::frame $w.pos] -side right -fill both -expand yes
   
   # Left frame: tablebase browser and summary info
   
@@ -144,16 +143,13 @@ proc ::tb::Open {} {
     ttk::radiobutton $f.sec.b$i -text " $name " -variable tbInfo(section) -value $i -command "::tb::section $i" ;# -indicatoron 0
     pack $f.sec.b$i -side left -pady 1 -padx 1
   }
-  autoscrollframe $f.list text $f.list.text \
-      -width 35 -height 7 -font font_Fixed -wrap none \
-      -foreground black -background white -cursor top_left_arrow
+  autoscrollText y $f.list $f.list.text Treeview
+  $f.list.text configure -width 35 -height 7 -font font_Fixed -wrap none
   pack $f.list -side top
   pack [ttk::frame $f.separator -height 2]
-  # addHorizontalRule $f
   
-  autoscrollframe $f.data text $f.data.text \
-      -width 35 -height 0 -font font_Fixed -wrap none \
-      -foreground black -background white -cursor top_left_arrow
+  autoscrollText y $f.data $f.data.text Treeview
+  $f.data.text configure -width 35 -height 0 -font font_Fixed -wrap none
   pack $f.data -side top -fill y -expand yes
   
   $f.list.text tag configure avail -foreground blue
@@ -163,10 +159,10 @@ proc ::tb::Open {} {
   # Right frame: tablebase results for current position
   
   set f $w.pos
-  autoscrollframe $f text $f.text -width 30 -height 20 -font font_Small \
-      -wrap word -foreground black -background white -setgrid 1
+  autoscrollText y $f $f.text Treeview
+  $f.text configure -width 30 -height 20 -font font_Small -wrap word -state normal
   $f.text tag configure indent -lmargin2 [font measure font_Fixed  "        "]
-  
+  pack $w.pos -side right -fill both -expand yes
   ::board::new $f.board 25
   $f.board configure -relief solid -borderwidth 1
   for {set i 0} {$i < 64} {incr i} {

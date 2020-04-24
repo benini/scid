@@ -75,10 +75,10 @@ namespace eval book {
     global ::book::oppMovesVisible
     if { $::book::oppMovesVisible == 0} {
       set ::book::oppMovesVisible 1
-      pack .bookWin.f.text1 -expand yes -fill both
+      pack .bookWin.f.fscroll1 -expand yes -fill both
     } else {
       set ::book::oppMovesVisible 0
-      pack forget .bookWin.f.text1
+      pack forget .bookWin.f.fscroll1
     }
   }
   
@@ -134,18 +134,20 @@ namespace eval book {
     pack $w.f.combo
     
     # text displaying book moves
-    ttk::frame $w.f.fscroll
-    autoscrollframe -bars y $w.f.fscroll text $w.f.text -wrap word -state disabled -width 12
+    autoscrollText y $w.f.fscroll $w.f.text Treeview
+    $w.f.text configure -wrap word -state disabled -width 12
     
     ttk::button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
     ::utils::tooltip::Set $w.f.b $::tr(OtherBookMovesTooltip)
-    
-    text $w.f.text1 -wrap word -state disabled -width 12
-    
+
+    autoscrollText y $w.f.fscroll1 $w.f.text1 Treeview
+    $w.f.text1 configure -wrap word -state disabled -width 12
+
     pack $w.f.fscroll -expand yes -fill both
-    pack $w.f.b
-    pack $w.f.text1 -expand yes -fill both
-    
+    pack $w.f.b -fill x
+    if { $::book::oppMovesVisible == 1 } {
+        pack $w.f.fscroll1 -expand yes -fill both
+    }
     pack $w.f -expand 1 -fill both
     
     bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
@@ -211,7 +213,7 @@ namespace eval book {
     }
     .bookWin.f.text1 configure -state disabled -height [llength $oppBookMoves]
     if { $::book::oppMovesVisible == 0 } {
-      pack forget .bookWin.f.text1
+      pack forget .bookWin.f.scroll1
     }
   }
   ################################################################################
