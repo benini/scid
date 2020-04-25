@@ -439,7 +439,9 @@ proc applyThemeStyle {style widget} {
   $widget configure -background [ttk::style lookup $style -background "" #d9d9d9]
   $widget configure -foreground [ttk::style lookup $style -foreground "" black]
   $widget configure -relief [ttk::style lookup $style -relief "" flat]
-  $widget configure {*}[ttk::style configure $style]
+  foreach {option value} [ttk::style configure $style] {
+    catch { $widget configure $option $value }
+  }
   bind $widget <<ThemeChanged>> "::applyThemeStyle $style $widget"
 }
 
