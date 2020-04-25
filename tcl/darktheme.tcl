@@ -94,6 +94,7 @@ namespace eval ttk::theme::dark {
         ttk::style configure Heading -relief raised
         ttk::style map Heading -bordercolor $buttonborder -background $buttonsbg
         ttk::style configure Treeview -background $colors(fieldbg)
+        ttk::style configure Treeview -fieldbackground $colors(fieldbg)
         ttk::style map Treeview -background [list selected $basecol disabled $colors(darkcolor)] \
             -foreground [list selected $colors(selectfg)]
     }

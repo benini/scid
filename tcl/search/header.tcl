@@ -667,15 +667,19 @@ proc chooseEcoRange {} {
   wm title $w "Scid: Choose ECO Range"
   wm minsize $w 30 5
   
-  listbox $w.list -yscrollcommand "$w.ybar set" -height 20 -width 60 -background white -setgrid 1
-  foreach i $ecoCommonRanges { $w.list insert end $i }
+  ttk::treeview $w.list -yscrollcommand "$w.ybar set" -columns {0} -show {} -selectmode browse
+  $w.list column 0 -width 400
+  set i -1
+  foreach elem $ecoCommonRanges {
+    $w.list insert {} end -id [incr i] -values [list $elem]
+  }
   ttk::scrollbar $w.ybar -command "$w.list yview" -takefocus 0
   pack [ttk::frame $w.b] -side bottom -fill x
   pack $w.ybar -side right -fill y
   pack $w.list -side left -fill both -expand yes
   
   ttk::button $w.b.ok -text "OK" -command {
-    set sel [.ecoRangeWin.list curselection]
+    set sel [.ecoRangeWin.list selection]
     if {[llength $sel] > 0} {
       set scid_ecoRangeChosen [lindex $ecoCommonRanges [lindex $sel 0]]
       set ::sEco No

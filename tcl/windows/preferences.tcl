@@ -17,8 +17,6 @@ proc ::preferences::replaceConfig { nr w } {
   }
   set ::preferences::aktConfig $w.f.$nr
   grid $w.f.$nr -row 0 -column 1 -sticky news -pady "5 0"
-  $w.f.list selection clear 0 end
-  $w.f.list selection set $nr
 }
 
 proc ::preferences::updateScrollBar { w } {
@@ -41,29 +39,29 @@ proc ::preferences::Open { {toggle ""} } {
   $w.c create window 0 0 -window $w.c.f -anchor nw
 
   set t $w.c.f
-  listbox $t.list -width 11 -exportselection 0
-  applyThemeStyle Treeview $t.list
-  bind $t.list <<ListboxSelect>> "::preferences::replaceConfig \[$t.list curselection\] $w.c"
+  ttk::treeview $t.list -columns {0} -show {} -selectmode browse
+  bind $t.list <<TreeviewSelect>> "::preferences::replaceConfig \[$t.list selection\] $w.c"
   grid $t.list -sticky nsw -padx 10 -pady "5 0"
   grid columnconfigure $t 1 -weight 1
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-    set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsFonts] ::preferences::fonts [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar [tr OptionsInternationalization] ::preferences::internationalization [tr OptionsRecent] ::recentFiles::configure [tr OptionsSounds] ::utils::sound::OptionsDialog [tr OptionsMoves] ::preferences::moves [tr ConfigureInformant] configInformant]
+  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsFonts] ::preferences::fonts [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar [tr OptionsInternationalization] ::preferences::internationalization [tr OptionsRecent] ::recentFiles::configure [tr OptionsSounds] ::utils::sound::OptionsDialog [tr OptionsMoves] ::preferences::moves [tr ConfigureInformant] configInformant]
   set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
-    $t.list insert end $m
-    set mlen [string length $m]
-    if { $maxlen < $mlen } { set $maxlen $mlen }
+    $t.list insert {} end -id $idx -values [list $m]
+    set mlen [font measure font_Regular $m]
+    if { $maxlen < $mlen } { set maxlen $mlen }
     ttk::frame $t.$idx
     $init $t.$idx
     incr idx
   }
-  $t.list configure -height $idx -width $maxlen
+  $t.list column 0 -width [incr maxlen 12]
+  $t.list configure -height $idx
 
   unset -nocomplain ::preferences::aktConfig
-  replaceConfig 0 $w.c
+  $t.list selection set 0
   focus $t
 }
 

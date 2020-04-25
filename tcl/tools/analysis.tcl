@@ -407,6 +407,7 @@ proc ::enginelist::choose {} {
     listbox $f.list -height 10 -width 55  -selectmode browse \
             -background white -setgrid 1 \
             -yscrollcommand "$f.ybar set" -font font_Fixed -exportselection 0
+    applyThemeStyle Treeview $f.list
     bind $f.list <Double-ButtonRelease-1> "$w.buttons.ok invoke; break"
     ttk::scrollbar $f.ybar -command "$f.list yview"
     pack $f.ybar -side right -fill y
