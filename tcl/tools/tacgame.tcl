@@ -192,8 +192,15 @@ namespace eval tacgame {
     pack $w.fopening.cbSpecific -anchor w
     
     ttk::frame $w.fopening.fOpeningList
-    listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
-        -height 5 -width 40 -list ::tacgame::openingList
+    ttk::treeview $w.fopening.fOpeningList.lbOpening -columns {0} -show {} -selectmode browse \
+        -yscrollcommand "$w.fopening.fOpeningList.ybar set"
+    $w.fopening.fOpeningList.lbOpening column 0 -width 250
+    $w.fopening.fOpeningList.lbOpening configure -height 5
+    set idx 0
+    foreach o $::tacgame::openingList {
+        $w.fopening.fOpeningList.lbOpening insert {} end -id $idx -values [list $o]
+        incr idx
+    }
     $w.fopening.fOpeningList.lbOpening selection set $::tacgame::chosenOpening
     $w.fopening.fOpeningList.lbOpening see $::tacgame::chosenOpening
     
@@ -216,7 +223,7 @@ namespace eval tacgame {
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
-      set ::tacgame::chosenOpening [.configWin.fopening.fOpeningList.lbOpening curselection]
+      set ::tacgame::chosenOpening [.configWin.fopening.fOpeningList.lbOpening selection]
       destroy .configWin
       ::tacgame::play
     }

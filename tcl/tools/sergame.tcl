@@ -57,26 +57,30 @@ namespace eval sergame {
     
     # builds the list of UCI engines
     ttk::frame $w.fengines.fEnginesList
-    listbox $w.fengines.fEnginesList.lbEngines -yscrollcommand "$w.fengines.fEnginesList.ybar set" \
-        -height 5 -width 20 -exportselection 0
+    ttk::treeview $w.fengines.fEnginesList.lbEngines -columns {0} -show {} -selectmode browse \
+        -yscrollcommand "$w.fengines.fEnginesList.ybar set"
+    $w.fengines.fEnginesList.lbEngines column 0 -width 100
+    $w.fengines.fEnginesList.lbEngines configure -height 5
     ttk::scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
     pack $w.fengines.fEnginesList.ybar -side right -fill y
     pack $w.fengines.fEnginesList.lbEngines -side left -fill x -expand 1
     pack $w.fengines.fEnginesList -expand yes -fill x -side top
+
+
     set i 0
     set idx 0
     foreach e $::engines(list) {
       if { [lindex $e 7] != 1} { incr idx ; continue }
       set ::sergame::engineListBox($i) $idx
       set name [lindex $e 0]
-      $w.fengines.fEnginesList.lbEngines insert end $name
+      $w.fengines.fEnginesList.lbEngines insert {} end -id $idx -values [list $name]
       incr i
       incr idx
     }
     
     # Engine configuration (limit strength for example)
     ttk::button $w.fengines.bEngineConfig -text $::tr(ConfigureUCIengine) -command {
-      set sel [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
+      set sel [.configSerGameWin.fengines.fEnginesList.lbEngines selection]
       set index $::sergame::engineListBox($sel)
       set engineData [lindex $::engines(list) $index]
       set name [lindex $engineData 0]
@@ -208,8 +212,16 @@ namespace eval sergame {
     # choose a specific opening
     ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
     ttk::frame $w.fopening.fOpeningList
-    listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
-        -height 5 -width 36 -list ::tacgame::openingList -exportselection 0
+    ttk::treeview $w.fopening.fOpeningList.lbOpening -columns {0} -show {} -selectmode browse \
+        -yscrollcommand "$w.fopening.fOpeningList.ybar set"
+    $w.fopening.fOpeningList.lbOpening column 0 -width 250
+    $w.fopening.fOpeningList.lbOpening configure -height 5
+    set idx 0
+    foreach o $::tacgame::openingList {
+        $w.fopening.fOpeningList.lbOpening insert {} end -id $idx -values [list $o]
+        incr idx
+    }
+
     $w.fopening.fOpeningList.lbOpening selection set $::sergame::chosenOpening
     $w.fopening.fOpeningList.lbOpening see $::sergame::chosenOpening
     
@@ -221,9 +233,9 @@ namespace eval sergame {
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
-      set ::sergame::chosenEngine [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
-      set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines get $::sergame::chosenEngine]
-      set ::sergame::chosenOpening [.configSerGameWin.fopening.fOpeningList.lbOpening curselection]
+      set ::sergame::chosenEngine [.configSerGameWin.fengines.fEnginesList.lbEngines selection]
+      set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines set $::sergame::chosenEngine 0]
+      set ::sergame::chosenOpening [.configSerGameWin.fopening.fOpeningList.lbOpening selection]
       if {$::sergame::useBook} {
         set ::sergame::bookToUse [.configSerGameWin.fconfig.combo get]
         if {$::sergame::bookToUse == "" } {
@@ -237,7 +249,7 @@ namespace eval sergame {
       set ::uci::uciInfo(fixeddepth3) [.configSerGameWin.ftime.depth.value get]
       set ::uci::uciInfo(fixednodes3) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
       set ::uci::uciInfo(movetime3) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
-      
+
       destroy .configSerGameWin
       ::sergame::play $::sergame::chosenEngine
     }
