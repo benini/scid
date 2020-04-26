@@ -513,6 +513,7 @@ proc ::windows::gamelist::createGList_ {{w}} {
 	if {[winfo exists $w.games]} { destroy $w.games }
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games "ly$w"
+
 	grid $w.games -row 0 -column 2 -sticky news
 }
 
@@ -887,7 +888,7 @@ proc glist.create {{w} {layout}} {
   bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
   ttk::frame $w.find.t
   ttk::label $w.find.t_text -text $::tr(Search)
-  entry $w.find.text -width 20 -bg white
+  ttk::entry $w.find.text -width 20
   ttk::button $w.find.filter -image tb_search16 -command "glist.findgame_ $w awe"
   ttk::button $w.find.b1_text -image tb_down -command \
     "after cancel glist.findgame_ $w 1; after idle glist.findgame_ $w 1"
@@ -1039,7 +1040,7 @@ proc glist.findgame_ {{w_parent} {dir}} {
   set w $w_parent.glist
   set w_entryT $w_parent.find.text
   set txt [$w_entryT get]
-  $w_entryT configure -bg white
+  $w_entryT configure -style TEntry
   if { $dir == "awe" } {
     ::windows::gamelist::Awesome [winfo toplevel $w_parent] "$txt"
     $w_entryT selection range 0 end
@@ -1063,7 +1064,7 @@ proc glist.findgame_ {{w_parent} {dir}} {
             $txt $gstart $dir]
   }
   if {$r == "none"} {
-    $w_entryT configure -bg red
+    $w_entryT configure -style Error.TEntry
   } else {
     if {$r >= [expr $::glistFirst($w) + $::glistVisibleLn($w)] || $r < $::glistFirst($w)} {
       set ::glistFirst($w) $r
@@ -1400,126 +1401,127 @@ proc glist.release_ {{w} {x} {y} {layout}} {
   ttk::treeview::Release $w $x $y
 }
 
-image create bitmap ::glist_Arrows(0) -foreground blue -data {
+set arrowcolor blue
+image create bitmap ::glist_Arrows(0) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x10, 0x02,
        0x38, 0x07, 0x7c, 0x00, 0xfe, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(1) -foreground blue -data {
+image create bitmap ::glist_Arrows(1) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0xfe, 0x02,
        0x7c, 0x07, 0x38, 0x00, 0x10, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(2) -foreground blue -data {
+image create bitmap ::glist_Arrows(2) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x08, 0x01,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(3) -foreground blue -data {
+image create bitmap ::glist_Arrows(3) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x7f, 0x01,
        0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(4) -foreground blue -data {
+image create bitmap ::glist_Arrows(4) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x08, 0x04,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(5) -foreground blue -data {
+image create bitmap ::glist_Arrows(5) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x7f, 0x04,
        0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(6) -foreground blue -data {
+image create bitmap ::glist_Arrows(6) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0x88, 0x07,
        0x1c, 0x02, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(7) -foreground blue -data {
+image create bitmap ::glist_Arrows(7) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0xff, 0x07,
        0x3e, 0x02, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(8) -foreground blue -data {
+image create bitmap ::glist_Arrows(8) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x08, 0x04,
        0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(9) -foreground blue -data {
+image create bitmap ::glist_Arrows(9) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x7f, 0x04,
        0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(10) -foreground blue -data {
+image create bitmap ::glist_Arrows(10) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x07, 0x80, 0x00, 0x80, 0x00, 0x80, 0x03, 0x88, 0x04,
        0x1c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(11) -foreground blue -data {
+image create bitmap ::glist_Arrows(11) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x07, 0x80, 0x01, 0x80, 0x00, 0x80, 0x07, 0xff, 0x04,
        0x3e, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(12) -foreground blue -data {
+image create bitmap ::glist_Arrows(12) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x08, 0x02,
        0x1c, 0x01, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(13) -foreground blue -data {
+image create bitmap ::glist_Arrows(13) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x7f, 0x02,
        0x3e, 0x01, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(14) -foreground blue -data {
+image create bitmap ::glist_Arrows(14) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0x88, 0x04,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(15) -foreground blue -data {
+image create bitmap ::glist_Arrows(15) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0xff, 0x04,
        0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(16) -foreground blue -data {
+image create bitmap ::glist_Arrows(16) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x07, 0x00, 0x04, 0x08, 0x06,
        0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(17) -foreground blue -data {
+image create bitmap ::glist_Arrows(17) -foreground $arrowcolor -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
