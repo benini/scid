@@ -513,7 +513,6 @@ proc ::windows::gamelist::createGList_ {{w}} {
 	if {[winfo exists $w.games]} { destroy $w.games }
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games "ly$w"
-
 	grid $w.games -row 0 -column 2 -sticky news
 }
 
@@ -1040,7 +1039,7 @@ proc glist.findgame_ {{w_parent} {dir}} {
   set w $w_parent.glist
   set w_entryT $w_parent.find.text
   set txt [$w_entryT get]
-  $w_entryT configure -style TEntry
+  $w_entryT configure -style {}
   if { $dir == "awe" } {
     ::windows::gamelist::Awesome [winfo toplevel $w_parent] "$txt"
     $w_entryT selection range 0 end
