@@ -313,14 +313,15 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 			       strAlphaContains(ie->GetSiteName(nb), text);
 		};
 		if (strGetBoolean(argv[8])) {
-			std::vector<gamenumT> buf(filter->size() - start);
+			std::vector<gamenumT> buf(
+			    start >= filter->size() ? 1 : filter->size() - start);
 			buf.resize(
 			    dbase->listGames(sort, start, buf.size(), filter, buf.data()));
 			auto it = std::find_if(buf.begin(), buf.end(), contains);
 			if (it != buf.end())
 				location = start + std::distance(buf.begin(), it);
 		} else {
-			std::vector<gamenumT> buf(start);
+			std::vector<gamenumT> buf(start ? start : 1);
 			buf.resize(dbase->listGames(sort, 0, start, filter, buf.data()));
 			auto it = std::find_if(buf.rbegin(), buf.rend(), contains);
 			if (it != buf.rend())
