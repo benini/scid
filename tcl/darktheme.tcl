@@ -10,15 +10,25 @@
 
 namespace eval ttk::theme::dark {
     array set colors {
-        background  "#454649" foreground   "#d0d0d0" disabledfg    "#a0a0a0"
-        buttonbg    "#3b3b3e" buttonbgdark "#2b2b2e" buttonbglight "#4b4b4e"
-        labelframe  "#a5a6a9" fieldbg      "#353639" fieldborder   "#242529"
-        darkcolor   "#222222" lightcolor   "#656669" notebookborder "#555659"
-        selectbg    "#555659" selectfg     "#ffffff" through       "#353639"
+        background     "#292929"
+        foreground     "#d0d0d0"
+        disabledfg     "#a0a0a0"
+        buttonbg       "#3b3b3e"
+        buttonbgdark   "#2b2b2e"
+        buttonbglight  "#4b4b4e"
+        labelframe     "#a5a6a9"
+        fieldbg        "#1e1e1e"
+        fieldborder    "#242529"
+        darkcolor      "#222222"
+        lightcolor     "#656669"
+        notebookborder "#555659"
+        selectbg       "#555659"
+        selectfg       "#ffffff"
+        through        "#353639"
     }
 
     ttk::style theme create dark -parent clam -settings {
-        set basecol "#4864c4" ;# Alternative: #3b6dce Basecolor, change here to have new topic for the theme
+        set basecol "#0178d6" ;# Alternative: #3b6dce Basecolor, change here to have new topic for the theme
         # -----------------------------------------------------------------------------
         # Theme defaults
         ttk::style configure "." \
