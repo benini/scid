@@ -148,9 +148,8 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   
   ::tree::doConfigMenus $baseNumber
   
-  autoscrollframe $w.f text $w.f.tl \
-      -wrap none -selectbackground lightgrey -selectforeground black \
-      -font font_Fixed -foreground black -background white -setgrid 1 -exportselection 1
+  autoscrollText y $w.f $w.f.tl Treeview
+  $w.f.tl configure -wrap none  -setgrid 1 -exportselection 1 -font font_Fixed
   #define default tags
   $w.f.tl tag configure greybg -background gray95
   $w.f.tl tag configure whitebg -background white

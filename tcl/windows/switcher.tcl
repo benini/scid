@@ -510,20 +510,7 @@ proc selectBaseType {type} {
   global temp_dbtype
   set w .btypeWin
   if {![winfo exists $w]} { return }
-  $w.t configure -state normal
   set temp_dbtype $type
-  set linenum [expr $type + 1]
-  $w.t tag remove sel 1.0 end
-  $w.t tag remove selected 1.0 end
-  $w.t tag add selected "${linenum}.2 linestart" "$linenum.2 lineend"
-  $w.t see $linenum.2
-  $w.t configure -state disabled
-}
-
-proc clickBaseType {x y} {
-  set type [.btypeWin.t index "@$x,$y linestart"]
-  set type [expr int($type) - 1]
-  selectBaseType $type
 }
 
 proc changeBaseType {baseNum} {
@@ -535,10 +522,11 @@ proc changeBaseType {baseNum} {
   win::createDialog $w
   wm title $w "Scid: $::tr(ChangeIcon)"
 
-  text $w.t -yscrollcommand "$w.yscroll set" -font font_Regular \
-    -height 25 -width 40 -background white -wrap none \
-    -cursor top_left_arrow
-  $w.t tag configure selected -background lightSteelBlue
+  ttk::style configure btypeWin.Treeview -rowheight 36
+  ttk::treeview $w.t -columns {} -show tree -selectmode browse \
+        -yscrollcommand "$w.yscroll set" -style btypeWin.Treeview
+  bind $w.t <<TreeviewSelect>> "selectBaseType \[$w.t selection\]"
+  $w.t configure -height 9
 
   ttk::scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
   pack [ttk::frame $w.b] -side bottom -anchor e
@@ -554,14 +542,8 @@ proc changeBaseType {baseNum} {
 
   set numtypes [llength $base_types]
   for {set i  0} {$i < $numtypes} {incr i} {
-    if {$i > 0} { $w.t insert end "\n" }
-    $w.t image create end -image dbt$i -pady 3 -padx 3
-    $w.t insert end "   [lindex $base_types $i]  "
+      $w.t insert {} end -id $i -image dbt$i -text " [lindex $base_types $i]"
   } 
-
-  bind $w.t <Double-ButtonRelease-1> "clickBaseType %x %y; $w.b.set invoke"
-  bind $w.t <ButtonRelease-1> "clickBaseType %x %y"
-  bind $w.t <Button1-Motion> "clickBaseType %x %y; break"
 
   bind $w <Up> {
     if {$temp_dbtype != 0} { selectBaseType [expr $temp_dbtype - 1] }
@@ -569,14 +551,14 @@ proc changeBaseType {baseNum} {
   }
 
   bind $w <Down> {
-    if {$temp_dbtype < [expr [llength $base_types] - 1]} {
+    if {$temp_dbtype < [expr [llength $::windows::switcher::base_types] - 1]} {
       selectBaseType [expr $temp_dbtype + 1]
     }
     break
   }
 
   bind $w <Home> { selectBaseType 0 }
-  bind $w <End> { selectBaseType [expr [llength $base_types] - 1] }
+  bind $w <End> { selectBaseType [expr [llength $::windows::switcher::base_types] - 1] }
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.set invoke"
 
@@ -674,7 +656,7 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   bind $w <Escape> "focus .; destroy $w"
   bind $w <Destroy> "+ if {\[string equal $w %W\]} {set ::baseWin 0}"
   bind $w <F1> { helpWindow Switcher }
-  label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
+  ttk::label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
   ::createToplevelFinalize $w
   after idle "::windows::switcher::Update_ $w"

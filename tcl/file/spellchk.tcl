@@ -194,19 +194,12 @@ proc openSpellCheckWin {type {parent .}} {
 
     # Prepare the text pad
     #
-    set f [ttk::frame $w.text]
+    set f $w.text
+    autoscrollText both $w.text $f.text Treeview
     pack $w.text -side top -expand true -fill both
-    ttk::scrollbar $f.ybar -command "$f.text yview"
-    ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
-    text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
-                 -setgrid 1 -width $::winWidth($w) -height $::winHeight($w) \
-                 -background white -wrap none
-    $f.text configure -tabs \
-        [font measure font_Regular  "xxxxxxxxxxxxxxxxxxxxxxxxx"]
-
+    $f.text configure -tabs [font measure font_Regular  "xxxxxxxxxxxxxxxxxxxxxxxxx"] \
+        -width $::winWidth($w) -height $::winHeight($w) -wrap none -state normal -setgrid 1
     grid $f.text -row 0 -column 0 -sticky nswe
-    grid $f.ybar -row 0 -column 1 -sticky nswe
-    grid $f.xbar -row 1 -column 0 -sticky nswe
 
     grid rowconfig $w.text 0 -weight 1 -minsize 0
     grid columnconfig $w.text 0 -weight 1 -minsize 0

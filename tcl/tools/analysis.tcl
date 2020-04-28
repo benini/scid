@@ -405,9 +405,9 @@ proc ::enginelist::choose {} {
     set f $w.list
     pack [ttk::frame $f] -side top -expand yes -fill both
     listbox $f.list -height 10 -width 55  -selectmode browse \
-            -background white -setgrid 1 \
-            -yscrollcommand "$f.ybar set" -font font_Fixed -exportselection 0
+            -setgrid 1 -yscrollcommand "$f.ybar set"
     applyThemeStyle Treeview $f.list
+    $f.list configure -font font_Fixed -exportselection 0
     bind $f.list <Double-ButtonRelease-1> "$w.buttons.ok invoke; break"
     ttk::scrollbar $f.ybar -command "$f.list yview"
     pack $f.ybar -side right -fill y
@@ -1931,14 +1931,18 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     } else {
 	pack $w.b1.showinfo -side right
     }
+    text $w.text
+    applyThemeStyle Treeview $w.text
     if {$analysis(uci$n)} {
-        text $w.text -width 60 -height 1 -fg black -bg white -font font_Bold -wrap word -setgrid 1 ;# -spacing3 2
+        $w.text configure -width 60 -height 1 -font font_Bold -wrap word -setgrid 1 ;# -spacing3 2
     } else {
-        text $w.text -width 60 -height 4 -fg black -bg white -font font_Fixed -wrap word -setgrid 1
+        $w.text configure -width 60 -height 4 -font font_Fixed -wrap word -setgrid 1
     }
     ttk::frame $w.hist
-    text $w.hist.text -width 60 -height 8 -fg black -bg white -font font_Fixed \
+    text $w.hist.text -width 60 -height 8 -font font_Fixed \
             -wrap word -setgrid 1 -yscrollcommand "$w.hist.ybar set"
+    applyThemeStyle Treeview $w.hist.text
+    $w.hist.text configure -font font_Fixed
     $w.hist.text tag configure indent -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
     ttk::scrollbar $w.hist.ybar -command "$w.hist.text yview" -takefocus 0
     pack $w.text -side top -fill both

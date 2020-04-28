@@ -80,7 +80,10 @@ namespace eval calvar {
     # builds the list of UCI engines
     ttk::frame $w.fengines
     ttk::label $w.fengines.eng -text $::tr(Engine)
-    listbox $w.fengines.lbEngines -yscrollcommand "$w.fengines.ybar set" -height 5 -width 50 -exportselection 0
+    ttk::treeview $w.fengines.lbEngines -columns {0} -show {} -selectmode browse \
+        -yscrollcommand "$w.fengines.ybar set"
+    $w.fengines.lbEngines column 0 -width 100
+    $w.fengines.lbEngines configure -height 5
     ttk::scrollbar $w.fengines.ybar -command "$w.fengines.lbEngines yview"
     pack $w.fengines.eng -side top -anchor w
     pack $w.fengines.ybar -side right -fill y
@@ -92,7 +95,7 @@ namespace eval calvar {
       if { [lindex $e 7] != 1} { incr idx ; continue }
       set ::calvar::engineListBox($i) $idx
       set name [lindex $e 0]
-      $w.fengines.lbEngines insert end $name
+      $w.fengines.lbEngines insert {} end -id $idx -values [list $name]
       incr i
       incr idx
     }
@@ -125,8 +128,8 @@ namespace eval calvar {
     pack $w.fbuttons -expand yes -fill both
     ttk::button $w.fbuttons.start -text Start -command {
       focus .
-      set chosenEngine [.configCalvarWin.fengines.lbEngines curselection]
-      set ::calvar::engineName [.configCalvarWin.fengines.lbEngines get $chosenEngine]
+      set chosenEngine [.configCalvarWin.fengines.lbEngines selection]
+      set ::calvar::engineName [.configCalvarWin.fengines.lbEngines set $chosenEngine 0]
       destroy .configCalvarWin
       ::calvar::start $chosenEngine
     }
@@ -169,6 +172,7 @@ namespace eval calvar {
     set f $w.fText
     ttk::frame $f
     text $f.t -height 12 -width 50
+    applyThemeStyle Treeview $f.t
     pack $f.t -expand 1 -fill both
     pack $f -expand 1 -fill both
     

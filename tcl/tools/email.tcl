@@ -34,9 +34,10 @@ proc ::tools::email {} {
 
   set f $w.f
   ttk::label $f.title -text "Opponent list" -font font_Bold
-  listbox $f.list -height 16 -width 40 -exportselection false \
-    -selectmode browse -selectbackground lightBlue -font font_Fixed \
-    -yscrollcommand "$f.scroll set" -background white -setgrid 1
+  ttk::treeview $f.list -columns {0} -show {} -selectmode browse \
+        -yscrollcommand "$f.scroll set" -height 9
+  $f.list column 0 -width 150
+
   ttk::scrollbar $f.scroll -command "$w.list yview" -takefocus 0
   pack $f -side left -expand true -fill both
   pack $f.title -side top
@@ -60,6 +61,7 @@ proc ::tools::email {} {
   ttk::button $b.add -text "Add..." -underline 0 -command {
     set idx [llength $emailData]
     lappend emailData [list "" "" "" "" ""]
+    .emailWin.f.list insert {} end -id $idx -values ""
     modifyEmailDetails $idx
     ::tools::email::refresh
   }
@@ -86,6 +88,17 @@ proc ::tools::email {} {
 
   bind $w <Destroy> { set emailWin 0 }
   set emailData [::tools::email::readOpponentFile]
+  set idx 0
+  foreach i $emailData {
+    set name [lindex $i 0]
+    set time ""
+    if {[llength $i] == 6} {
+      set timeList [lindex $i 5]
+      set time [lindex $timeList end]
+    }
+    $f.list insert {} end -id $idx -values [format "%-14s %s" $name $time]
+    incr idx
+  }
   focus $w.f.list
   ::tools::email::refresh
 }
@@ -134,7 +147,7 @@ proc ::tools::email::config {} {
 
 proc ::tools::email::EditButton {} {
   global emailData
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] == 1} {
     set idx [lindex $sel 0]
     if {[llength $emailData] > $idx} {
@@ -146,7 +159,7 @@ proc ::tools::email::EditButton {} {
 
 proc ::tools::email::DeleteButton {} {
   global emailData
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] != 1} { return }
   set idx [lindex $sel 0]
   if {[llength $emailData] <= $idx} { return }
@@ -156,13 +169,14 @@ proc ::tools::email::DeleteButton {} {
   if {$confirm == "yes"} {
       set emailData [lreplace $emailData $idx $idx]
     ::tools::email::writeOpponentFile $emailData
+    .emailWin.f.list delete $sel
     ::tools::email::refresh
   }
 }
 
 proc ::tools::email::LoadButton {} {
   global emailData
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] != 1} { return }
   set idx [lindex $sel 0]
   if {[llength $emailData] <= $idx} { return }
@@ -178,7 +192,7 @@ proc ::tools::email::LoadButton {} {
 
 proc ::tools::email::SendButton {} {
   global emailData
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] != 1} { return }
   set idx [lindex $sel 0]
   if {[llength $emailData] <= $idx} { return }
@@ -191,7 +205,7 @@ set emailTimesIdx 0
 
 proc ::tools::email::TimesButton {type} {
   global emailData emailTimesIdx
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] != 1} { return }
   set idx [lindex $sel 0]
   if {[llength $emailData] <= $idx} { return }
@@ -211,10 +225,8 @@ proc ::tools::email::TimesButton {type} {
   win::createDialog $w
   wm title $w "Scid: Email Times"
   ttk::label $w.title -text "Email Times for [lindex $details 0]"
-  ttk::frame $w.t
-  text $w.t.text -height 15 -width 30 -font font_Fixed -setgrid 1 \
-    -yscrollcommand "$w.t.ybar set" -bg white -fg black
-  ttk::scrollbar $w.t.ybar -command "$w.t.text yview"
+  autoscrollText y $w.t $w.t.text Treeview
+  $w.t.text configure -height 15 -width 30 -font font_Fixed -setgrid 1 -state normal
   ttk::frame $w.b
   ttk::button $w.b.ok -text "OK" -command {
     set details [lindex $emailData $emailTimesIdx]
@@ -231,8 +243,6 @@ proc ::tools::email::TimesButton {type} {
     -command "grab release $w; catch {focus .emailWin}; destroy $w"
   pack $w.title -side top -fill x
   pack $w.t -side top -fill both
-  pack $w.t.ybar -side right -fill y
-  pack $w.t.text -side left -fill both -expand yes
   pack $w.b -side bottom -fill x
   packdlgbuttons $w.b.cancel $w.b.ok
   foreach i $timeList {
@@ -279,7 +289,7 @@ proc ::tools::email::addSentReceived {idx type} {
 }
 
 proc ::tools::email::refreshButtons {} {
-  set sel [.emailWin.f.list curselection]
+  set sel [.emailWin.f.list selection]
   if {[llength $sel] > 0} {
     .emailWin.b.edit configure -state normal
     .emailWin.b.delete configure -state normal
@@ -298,20 +308,8 @@ proc ::tools::email::refresh {{clearSelection 1}} {
   if {! [winfo exists .emailWin]} { return }
   if {$clearSelection} {
     set sel ""
-    .emailWin.f.list selection clear 0 end
   } else {
-    set sel [lindex [.emailWin.f.list curselection] 0]
-  }
-  .emailWin.f.list delete 0 end
-  # set emailData [lsort -dictionary -index 0 $emailData]
-  foreach i $emailData {
-    set name [lindex $i 0]
-    set time ""
-    if {[llength $i] == 6} {
-      set timeList [lindex $i 5]
-      set time [lindex $timeList end]
-    }
-    .emailWin.f.list insert end [format "%-14s %s" $name $time]
+    set sel [.emailWin.f.list selection]
   }
   if {$sel != ""} {
     .emailWin.f.list selection set $sel
@@ -377,18 +375,12 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   grid $f.bcc -row 3 -column 1 -sticky ew
   grid columnconfigure $f 1 -weight 1
 
-  set f [ttk::frame $w.message]
+  set f $w.message
+  autoscrollText both $f $f.text Treeview
+  $f.text configure -width 72 -height 20 -wrap none -state normal
   pack $w.fields -fill x -padx 4 -pady 4
   pack $w.message -expand yes -fill both -padx 4 -pady 4
 
-  ttk::scrollbar $f.ybar -command "$f.text yview"
-  ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
-  text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
-    -setgrid 1 -width 72 -height 20 -background white -wrap none
-
-  grid $f.text -row 0 -column 0 -sticky news
-  grid $f.ybar -row 0 -column 1 -sticky nse
-  grid $f.xbar -row 1 -column 0 -sticky news
   ttk::frame $f.buttons
   ttk::button $f.send -text " Send " -command "::tools::email::processMessage $w $idx"
   ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w"
@@ -494,7 +486,7 @@ proc ::tools::email::sendMessage {from to subject bcc message} {
 }
 
 proc modifyEmailDetails {i} {
-  global emailData emailData_name emailData_addr emailData_glist emailData_subj
+  global emailData emailData_name emailData_addr emailData_glist emailData_subj emailAdd
   global emailData_sig emailData_index emailData_helpBar ::tools::email::helpBar
 
   win::createDialog .emailEditor
@@ -503,8 +495,10 @@ proc modifyEmailDetails {i} {
   set emailData_index $i
   if {[lindex [lindex $emailData $i] 0] == ""} {
     wm title $w "Add opponent details"
+    set emailAdd 1
   } else {
     wm title $w "Edit opponent details"
+    set emailAdd 0
   }
   set f [ttk::frame $w.name]
   ttk::label $f.label -text "Name: "
@@ -531,19 +525,16 @@ proc modifyEmailDetails {i} {
     pack $w.$f -side top -fill x
     pack $w.$f.entry $w.$f.label -side right -anchor e
     set e $w.$f.entry
-    bind $e <FocusIn> "$e configure -background lightYellow;
-      set emailData_helpBar \$::tools::email::helpBar($f)"
-    bind $e <FocusOut> "$e configure -background white"
+    bind $e <FocusIn> " set emailData_helpBar \$::tools::email::helpBar($f)"
   }
 
   addHorizontalRule $w
 
   set f [ttk::frame $w.sig]
   ttk::label $f.label -text "Signature: " -anchor n
-  text $f.entry -width 30 -height 5 -background white
-  bind $f.entry <FocusIn> "$f.entry configure -background lightYellow
-    set emailData_helpBar {Enter the closing text for each message}"
-  bind $f.entry <FocusOut> "$f.entry configure -background white"
+  text $f.entry -width 30 -height 5
+  applyThemeStyle Treeview $f.entry
+  bind $f.entry <FocusIn> " set emailData_helpBar {Enter the closing text for each message}"
 
   pack $f -side top -fill x -pady 5
   pack $f.entry $f.label -side right -anchor n
@@ -563,12 +554,16 @@ proc modifyEmailDetails {i} {
                        [list $emailData_name $emailData_addr $emailData_subj \
                           $emailData_glist \
                           [.emailEditor.sig.entry get 1.0 end-1c]]]
+      .emailWin.f.list set $emailData_index 0 [format "%-14s" $emailData_name ]
       ::tools::email::writeOpponentFile $emailData
       destroy .emailEditor
       ::tools::email::refresh
     }
   }
   ttk::button $f.cancel -text $::tr(Cancel) -command {
+    if { $emailAdd } {
+        .emailWin.f.list delete $emailData_index
+    }
     set emailData [::tools::email::readOpponentFile]
     destroy .emailEditor
     ::tools::email::refresh
