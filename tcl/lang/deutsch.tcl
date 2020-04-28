@@ -1549,8 +1549,8 @@ translate D NimzoIndian {Nimzoindische Verteidigung}
 translate D NimzoIndianClassical {Nimzoindisch, Klassische Variante}
 translate D NimzoIndianRubinstein {Nimzoinsisch, Rubinstein}
 translate D KingsIndian {Königsindische Verteidigung}
-translate D KingsIndianSamisch {Königsinsisch, Sämisch}
-translate D KingsIndianMainLine {Königsinsisch, Hauptvariante}
+translate D KingsIndianSamisch {Königsindisch, Sämisch}
+translate D KingsIndianMainLine {Königsindisch, Hauptvariante}
 translate D ConfigureFics {FICS Konfigurieren}
 translate D FICSGuest {Gastlogin}
 translate D FICSServerPort {Serverport}
