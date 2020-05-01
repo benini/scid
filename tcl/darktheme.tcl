@@ -80,7 +80,7 @@ namespace eval ttk::theme::dark {
         ttk::style configure TCombobox -anchor center -padding {5 1} -relief raised -borderwidth 1 \
             -fieldbackground $colors(fieldbg) -arrowcolor $basecol -lightcolor $colors(fieldbg)
 
-        ttk::style configure TNotebook.Tab -bordercolor $colors(fieldborder) -border {4 2 4 2} -padding {3 2 3 2} -lightcolor $colors(background)
+        ttk::style configure TNotebook.Tab -bordercolor $colors(notebookborder) -border {4 2 4 2} -padding {3 2 3 2} -lightcolor $colors(background)
         ttk::style map TNotebook.Tab -background [list active $colors(background) selected $colors(background) \
              !selected $colors(buttonbgdark)] -bordercolor [list active $basecol ] -lightcolor [list active $basecol ]
         ttk::style configure TPanedwindow -sashrelief raised
