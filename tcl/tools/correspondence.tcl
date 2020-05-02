@@ -1435,21 +1435,21 @@ namespace eval CorrespondenceChess {
 			toplevel $w
 			::setTitle $w [::tr "CCDlgConfigRelay"]
 
-			autoscrollframe $w.desc text $w.desc.text \
-					-background gray90 -foreground black \
-					-width 60 -height 7 -wrap word -cursor top_left_arrow
+			autoscrollText y $w.desc $w.desc.text Treeview
+			$w.desc.text configure -width 60 -height 7 -wrap word -cursor top_left_arrow -state normal
 			$w.desc.text insert end [::tr "CCDlgConfigRelayHelp"]
 			$w.desc.text configure -state disabled
 			pack $w.desc -side top -fill x
 
-			pack [ttk::frame $w.b] -side bottom -fill x
-			autoscrollframe $w.f text $w.f.text -width 60 -height 10 -wrap none
+			autoscrollText y $w.f $w.f.text Treeview
+			$w.f.text configure -width 60 -height 10 -wrap none -state normal -relief sunken
 
 			foreach g $::CorrespondenceChess::RelayGames {
 				$w.f.text insert end "$g\n"
 			}
 			pack $w.f -side top -fill both -expand yes
 
+			pack [ttk::frame $w.b] -side bottom -fill x
 			ttk::button $w.b.ok -text OK -command {
 					::CorrespondenceChess::RelaysOK
 			}

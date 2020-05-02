@@ -114,13 +114,11 @@ proc mergeGame {base gnum} {
   ttk::label $w.title -text $::tr(Preview:) -font font_Bold -anchor center
   pack $w.title -side top -fill x
   pack [ttk::frame $w.b] -side bottom -fill x
-  ttk::frame $w.f
-  text $w.f.text -background white -wrap word -width 60 -height 20 \
-      -font font_Small -yscrollcommand "$w.f.ybar set"
-  ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.text yview"
+
+  autoscrollText y $w.f $w.f.text Treeview
+  $w.f.text configure -wrap word -width 60 -height 20 \
+      -font font_Small -state normal
   event generate $w.f.text <ButtonRelease-1>
-  pack $w.f.ybar -side right -fill y
-  pack $w.f.text -side left -fill both -expand yes
   pack $w.f -fill both -expand yes
   set small font_Small
   ttk::label $w.b.label -text "Up to move:" -font $small
@@ -166,8 +164,8 @@ proc updateMergeGame {{w} {n_moves}} {
   set pgn [sc_game pgn -indentV 1 -short 1 -width 60]
   sc_game pop
   $w.f.text configure -state normal
-  $w.f.text tag configure red -foreground darkRed
-  $w.f.text tag configure blue -foreground darkBlue
+  $w.f.text tag configure red -foreground Red
+  $w.f.text tag configure blue -foreground Blue
   $w.f.text delete 1.0 end
   foreach line [split $pgn "\n"] {
     if {[string index $line 0] == " "} {
@@ -221,8 +219,6 @@ proc setExportText {exportType} {
         -yscroll "$f.ybar set" -xscroll "$f.xbar set"
     ttk::scrollbar $f.ybar -orient vertical -command "$f.text yview"
     ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
-    bind $f.text <FocusIn> {%W configure -background lightYellow}
-    bind $f.text <FocusOut> {%W configure -background white}
     grid $f.title -row 0 -column 0 -sticky w
     grid $f.text -row 1 -column 0 -sticky nesw
     grid $f.ybar -row 1 -column 1 -sticky nesw
@@ -641,7 +637,10 @@ proc nameEditor {} {
     grid $w.selectButtons.$i -row $row -column 0 -sticky w
   }
   
-  pack [ttk::frame $w.g] -side top -fill x
+  autoscrollText y $w.g $w.g.list Treeview
+  $w.g.list configure -height 9 -width 40 -relief sunken \
+      -tabs {2c right 2.5c left} -wrap none
+  pack $w.g -side top -fill x
   ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
   ttk::entry $w.g.fromE -width 40 -textvariable editName
   ttk::entry $w.g.fromD -width 15 -textvariable editDate
@@ -664,18 +663,12 @@ proc nameEditor {} {
   
   ttk::label $w.g.title -textvar ::tr(NameEditMatches) \
       -font font_Bold
-  text $w.g.list -height 9 -width 40 -relief sunken \
-      -background grey90 -tabs {2c right 2.5c left} -wrap none
   
   grid $w.g.title -row 2 -column 1 -columnspan 2 -sticky n
   grid $w.g.list -row 3 -column 1 -rowspan 9 -columnspan 2 -sticky e
   
   updateMatchList $w.g.list "" 9 editName "" w
   
-  foreach i {fromE toE ratingE fromD toD} {
-    bind $w.g.$i <FocusIn> { %W configure -background lightYellow }
-    bind $w.g.$i <FocusOut> { %W configure -background white }
-  }
   foreach {i j} {.nedit.g.fromE "editName"  .nedit.g.toE "editNameNew" } {
     for {set z 1} {$z <= 9} {incr z} {
       bind $i [format "<Control-Key-%d>" $z] \
@@ -754,12 +747,12 @@ proc gameSave { gnum } {
   set gsaveNum $gnum
   catch {grab $w}
   
-  set f [ttk::frame $w.g]
-  pack $f -side top -anchor w
-  
-  ttk::label $f.title -textvar ::tr(NameEditMatches)
-  text $f.list -height 9 -width 40 -relief sunken -background grey90 \
+  set f $w.g
+  autoscrollText y $f $f.list Treeview
+  $f.list configure -height 9 -width 40 -state disabled \
       -tabs {2c right 2.5c left} -wrap none
+  ttk::label $f.title -textvar ::tr(NameEditMatches)
+  pack $f -side top -anchor w
   
   # Get current values of tags:
   set year [sc_game tag get Year];    set eyear [sc_game tag get EYear]
@@ -898,34 +891,28 @@ proc gameSave { gnum } {
   grid $f.title -row 0 -column 8 -sticky w  -padx "10 0"
   grid $f.list -row 1 -column 8 -rowspan 9 -sticky nw -padx "10 0"
   
-  ttk::labelframe .save.extra -text "Extra Tags: (example format: Annotator \"Anand, V\") "
-  pack .save.extra -side top -fill both -expand 1
-  text .save.extra.text -height 4 -width 40 -bg white -wrap none \
-      -yscrollcommand ".save.extra.scroll set"
+  ttk::labelframe .save.extrafr -text "Extra Tags: (example format: Annotator \"Anand, V\") "
+  autoscrollText y .save.extra .save.extra.text Treeview
+  .save.extra.text configure -height 4 -width 40 -wrap none -state normal -relief sunken
+  pack .save.extrafr -side top -fill both -expand 1
+  pack .save.extra -in .save.extrafr -side left -fill both -expand 1
   # Override tab-binding for this text widget:
   bind .save.extra.text <Key-Tab> "[bind all <Key-Tab>]; break"
-  ttk::scrollbar .save.extra.scroll -command ".save.extra.text yview" -takefocus 0
-  ttk::button .save.extra.last -text $::tr(UseLastTag) -command {
+  ttk::button .save.extrafr.last -text $::tr(UseLastTag) -command {
     set extraTags [sc_game tag get -last Extra]
     .save.extra.text delete 1.0 end
     .save.extra.text insert 1.0 $extraTags
   }
-  pack .save.extra.text -side left -fill both -expand 1
   if {$gnum == 0} {
-    pack .save.extra.last -side right -padx 10
+    pack .save.extrafr.last -side right -padx 10
   }
-  pack .save.extra.scroll -side right -fill y
   .save.extra.text insert 1.0 $extraTags
   
   foreach i {entryevent entrysite dateyear datemonth dateday \
         entryround entrywhite entryblack resentry \
         weloentry beloentry ecoentry edateyear edatemonth edateday} {
     bind $f.$i <Return> {.save.buttons.save invoke}
-    # bind $f.$i <FocusIn> {%W configure -background lightYellow }
-    # bind $f.$i <FocusOut> {%W configure -background white }
   }
-  bind .save.extra.text <FocusIn> {%W configure -background lightYellow }
-  bind .save.extra.text <FocusOut> {%W configure -background white }
   
   # Bindings so Ctrl-1 to Ctrl-9 select a matching name in the player,
   # site, event and round entryboxes:

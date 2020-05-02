@@ -26,9 +26,11 @@ proc ::windows::stats::Open {} {
   bind $w <Configure> "recordWinSize $w"
 
 #  use autoscrollframe to display large infos
-  autoscrollframe $w.statsasb text $w.stats -width 64 -height 40\
-      -foreground black -background white -font font_Fixed\
-       -wrap none
+  autoscrollText y $w.statsasb $w.stats Treeview
+  $w.stats configure -width 64 -height 40 -state normal -font font_Fixed -wrap none
+#  autoscrollframe $w.statsasb text $w.stats -width 64 -height 40\
+#      -foreground black -background white -font font_Fixed\
+#       -wrap none
 
   ttk::frame $w.fbuttons
   ttk::button $w.fbuttons.print -image tb_save -command {
@@ -266,9 +268,10 @@ proc ::windows::stats::refresh_wnd {} {
   $w tag configure bgGray -background gray95
   # Shade every second line to help readability:
   set lastLineNum [expr {int([$w index end])}]
-  for {set i 2} {$i <= $lastLineNum} {incr i 2} {
-    $w tag add bgGray $i.0 "$i.0 lineend +1c"
-  }
+#TODO: active code when second color for textbox available
+#  for {set i 2} {$i <= $lastLineNum} {incr i 2} {
+#    $w tag add bgGray $i.0 "$i.0 lineend +1c"
+#  }
   $w tag configure blue -foreground darkBlue
   $w tag configure red -foreground red
   $w tag add blue 1.0 2.0

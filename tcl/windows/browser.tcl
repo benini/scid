@@ -22,21 +22,14 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   ::board::new $w.bd $::gbrowser::size
   pack $w.bd -side left -padx 4 -pady 4
   
-  #pack [frame $w.t] -side right -fill both -expand yes
-  #text $w.t.text -foreground black -background white -wrap word \
-  #  -width 45 -height 12 -font font_Small -yscrollcommand "$w.t.ybar set" \
-  #  -setgrid 1
-  #scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
-  #pack $w.t.ybar -side right -fill y
-  #pack $w.t.text -side left -fill both -expand yes
-  autoscrollframe $w.t text $w.t.text \
-      -foreground black -background white -wrap word \
+  autoscrollText y $w.t $w.t.text Treeview
+  $w.t.text configure -wrap word -state normal \
       -width 45 -height 12 -font font_Small -setgrid 1
   pack $w.t -side right -fill both -expand yes
   
   set t $w.t.text
   event generate $t <ButtonRelease-1>
-  $t tag configure header -foreground darkBlue
+  $t tag configure header -foreground Blue
   $t tag configure next -foreground yellow -background darkBlue
   $t insert end "$header" header
   $t insert end "\n\n"

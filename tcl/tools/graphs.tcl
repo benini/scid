@@ -90,23 +90,27 @@ proc configureFilterGraph {} {
   if { [winfo exists .statsWin]} {
       ttk::labelframe $w.filterold -text "Config StatYear StatElo OldYear OldElo"
       foreach { i h v s } { Elo OprepStatBoth r* "+" Year OprepStatSince y* ".01.01" } {
-	  ttk::frame $w.filterold.old$i
-	  ttk::label $w.filterold.old$i.label -textvariable ::tr($h) -font font_Bold
-	  ttk::scrollbar $w.filterold.old$i.ybar -command "$w.filterold.old$i.list yview"
-	  listbox $w.filterold.old$i.list -yscrollcommand "$w.filterold.old$i.ybar set" \
-	      -height 7 -width 10 -selectmode multiple -exportselection 0
-	  pack $w.filterold.old$i.label -side top -anchor w
-	  pack $w.filterold.old$i.ybar -side right -fill y
-	  pack $w.filterold.old$i.list -side left -fill both -expand 1
-	  set j 0
-	  foreach y [lsort -decreasing [array names ::windows::stats::display $v]] {
-	      set value [string range $y 1 end]
-	      $w.filterold.old$i.list insert end "$value$s"
-	      if { $::windows::stats::display($y) } {
-	      $w.filterold.old$i.list selection set $j
-	      }
-	      incr j
-	  }
+         ttk::frame $w.filterold.old$i
+         ttk::label $w.filterold.old$i.label -textvariable ::tr($h) -font font_Bold
+         ttk::treeview $w.filterold.old$i.list -columns {0} -show {} -selectmode extended \
+             -yscrollcommand "$w.filterold.old$i.ybar set"
+         $w.filterold.old$i.list column 0 -width 100
+         $w.filterold.old$i.list configure -height 7
+         ttk::scrollbar $w.filterold.old$i.ybar -command "$w.filterold.old$i.list yview"
+         pack $w.filterold.old$i.label -side top -anchor w
+         pack $w.filterold.old$i.ybar -side right -fill y
+         pack $w.filterold.old$i.list -side left -fill both -expand 1
+         set j 0
+         set il {}
+         foreach y [lsort -decreasing [array names ::windows::stats::display $v]] {
+             set value [string range $y 1 end]
+             $w.filterold.old$i.list insert {} end -id $j -values "$value$s"
+             if { $::windows::stats::display($y) } {
+                 lappend il $j
+             }
+             incr j
+         }
+         $w.filterold.old$i.list selection set $il
       }
       pack $w.filterold.oldElo -side left -expand 1 -in $w.filterold -fill both -padx "0 10"
       pack $w.filterold.oldYear -side left -expand 1 -fill both -in $w.filterold
@@ -130,24 +134,32 @@ proc configureFilterGraph {} {
   }
   if { [winfo exists .statsWin]} {
      ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
-	  set j 0
-	  foreach i [lsort -decreasing [array names ::windows::stats::display y*]] {
-	      set ::windows::stats::display($i) [.configFilterGraph.filterold.oldYear.list selection includes $j]
-	      incr j
-	  }
-	  set j 0
-	  foreach i [lsort -decreasing [array names ::windows::stats::display r*]] {
-	      set ::windows::stats::display($i) [.configFilterGraph.filterold.oldElo.list selection includes $j]
-	      incr j
-	  }
-	 ::tools::graphs::absfilter::Refresh;
-	 ::tools::graphs::filter::Refresh
-	 ::windows::stats::refresh_wnd
+       set j 0
+       set sel [.configFilterGraph.filterold.oldYear.list selection]
+       foreach i [lsort -decreasing [array names ::windows::stats::display y*]] {
+           set ::windows::stats::display($i) 0
+           incr j
+       }
+       foreach i $sel {
+           set ::windows::stats::display(y[string range [.configFilterGraph.filterold.oldYear.list set $i 0] 0 3]) 1
+       }
+       set j 0
+       set sel [.configFilterGraph.filterold.oldElo.list selection]
+       foreach i [lsort -decreasing [array names ::windows::stats::display r*]] {
+           set ::windows::stats::display($i) 0
+           incr j
+       }
+       foreach i $sel {
+           set ::windows::stats::display(r[string range [.configFilterGraph.filterold.oldElo.list set $i 0] 0 3]) 1
+       }
+       ::tools::graphs::absfilter::Refresh;
+       ::tools::graphs::filter::Refresh
+       ::windows::stats::refresh_wnd
      }
   } else {
      ttk::button $w.buttons.update -textvar ::tr(Update) -command { checkConfigFilterGraph
-	 ::tools::graphs::absfilter::Refresh;
-	 ::tools::graphs::filter::Refresh
+        ::tools::graphs::absfilter::Refresh;
+        ::tools::graphs::filter::Refresh
      }
   }
   

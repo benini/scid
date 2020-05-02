@@ -235,19 +235,15 @@ proc ::ptrack::make {} {
   ::ptrack::select $plist
 
   set f $w.t.text
-  pack [ttk::frame $f] -side top -fill both -expand yes -padx 2 -pady 2
-  text $f.text -width 28 -height 1 -foreground black -background white \
-    -yscrollcommand "$f.ybar set" -relief sunken -takefocus 0 \
-    -wrap none -font font_Small
+  autoscrollText y $f $f.text Treeview
+  pack $f -side top -fill both -expand yes -padx 2 -pady 2
   set xwidth [font measure [$f.text cget -font] "x"]
   foreach {tab justify} {3 r 5 l 19 r 29 r} {
     set tabwidth [expr {$xwidth * $tab} ]
     lappend tablist $tabwidth $justify
   }
-  $f.text configure -tabs $tablist
-  ttk::scrollbar $f.ybar -takefocus 0 -command "$f.text yview"
-  pack $f.ybar -side right -fill y
-  pack $f.text -side left -fill y -expand yes
+  $f.text configure -tabs $tablist -state normal -width 28 -height 1 \
+      -relief sunken -takefocus 0 -wrap none -font font_Small
 
   set f $w.t.color
 
