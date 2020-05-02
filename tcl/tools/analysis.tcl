@@ -1938,7 +1938,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     } else {
         $w.text configure -width 60 -height 4 -font font_Fixed -wrap word -setgrid 1
     }
-    ttk::frame $w.hist
+    ttk::frame $w.hist -relief sunken -borderwidth 1
     text $w.hist.text -width 60 -height 8 -font font_Fixed \
             -wrap word -setgrid 1 -yscrollcommand "$w.hist.ybar set"
     applyThemeStyle Treeview $w.hist.text
