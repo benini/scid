@@ -216,6 +216,7 @@ $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose 
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator
 $m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
+$m add command -label "Engine" -command ::enginewin::Open
 $m add checkbutton -label WindowsSwitcher -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
 $m add command -label ToolsCross -accelerator "Ctrl+Shift+X" -command ::crosstab::Open
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}

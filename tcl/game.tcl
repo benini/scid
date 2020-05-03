@@ -344,6 +344,7 @@ namespace eval ::notify {
     if {$::showGameInfo} { updateGameInfo }
     updateAnalysis 1
     updateAnalysis 2
+    ::enginewin::onPosChanged
     ::windows::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }

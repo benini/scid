@@ -546,6 +546,7 @@ utils/string.tcl
 utils/tooltip.tcl
 utils/validate.tcl
 utils/win.tcl
+enginecomm.tcl
 misc.tcl
 htext.tcl
 file.tcl
@@ -564,6 +565,7 @@ windows/preferences.tcl
 windows/book.tcl
 windows/comment.tcl
 windows/eco.tcl
+windows/engine.tcl
 windows/stats.tcl
 windows/tree.tcl
 windows/crosstab.tcl
