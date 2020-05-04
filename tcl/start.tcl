@@ -414,9 +414,16 @@ ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
 ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
 
-ttk::style configure Error.TCombobox -fieldbackground #b80f0a
-ttk::style configure Error.TEntry -fieldbackground #b80f0a
-ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
+# Some themes (e.g. vista and xpnative) use custom field elements and ignore -fieldbackground
+if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element names]]} {
+    ttk::style configure Error.TCombobox -foreground #b80f0a
+    ttk::style configure Error.TEntry -foreground #b80f0a
+    ttk::style configure Error.TSpinbox -foreground #b80f0a
+} else {
+    ttk::style configure Error.TCombobox -fieldbackground #b80f0a
+    ttk::style configure Error.TEntry -fieldbackground #b80f0a
+    ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
+}
 
 #TODO: recalculate the value if font_Small is changed
 set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
