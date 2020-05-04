@@ -734,11 +734,6 @@ namespace eval ::glist_Ly {
 	proc New_ {w} {
 		set newLy $::gamelistNewLayout
 		Copy_ $newLy ly$w
-		options.save ::glist_ColOrder($newLy)
-		options.save ::glist_ColWidth($newLy)
-		options.save ::glist_ColAnchor($newLy)
-		options.save ::glist_Sort($newLy)
-		options.save ::glist_FindBar($newLy)
 		set replaced [lsearch -exact $::glist_Layouts $newLy]
 		if {$replaced == -1 }  { lappend ::glist_Layouts $newLy }
 		set ::gamelistNewLayout [::glist_Ly::createName_]
@@ -746,11 +741,6 @@ namespace eval ::glist_Ly {
 	}
 	proc Del_ {w idx} {
 		set old_layout [lindex $::glist_Layouts $idx]
-		options.save_cancel ::glist_ColOrder($old_layout)
-		options.save_cancel ::glist_ColWidth($old_layout)
-		options.save_cancel ::glist_ColAnchor($old_layout)
-		options.save_cancel ::glist_Sort($old_layout)
-		options.save_cancel ::glist_FindBar($old_layout)
   		set ::glist_Layouts [lreplace $::glist_Layouts $idx $idx]
 		::glist_Ly::UpdateAll_
 	}
@@ -910,11 +900,11 @@ proc glist.create {{w} {layout}} {
   bind [winfo toplevel $w] <Control-f> "set ::glist_FindBar($layout) 1; glist.showfindbar_ $w.glist $layout"
 
   # On exit save layout in options.dat
-  options.save ::glist_ColOrder($layout)
-  options.save ::glist_ColWidth($layout)
-  options.save ::glist_ColAnchor($layout)
-  options.save ::glist_Sort($layout)
-  options.save ::glist_FindBar($layout)
+  options.save ::glist_ColOrder
+  options.save ::glist_ColWidth
+  options.save ::glist_ColAnchor
+  options.save ::glist_Sort
+  options.save ::glist_FindBar
 
   set ::glistLoaded($w.glist) 0
   set ::glistTotal($w.glist) 0

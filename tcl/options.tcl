@@ -803,8 +803,11 @@ proc options.write {} {
       puts $optionF ""
       puts $optionF "set ::autosave_opt [list $::autosave_opt]"
       foreach {var} $::autosave_opt {
-        upvar #0 $var a
-        puts $optionF "set $var [list $a]"
+        if {[array exists $var]} {
+            puts $optionF "array set $var [list [array get $var]]"
+        } else {
+            puts $optionF "set $var [list [set $var]]"
+        }
       }
     }
     
