@@ -99,7 +99,6 @@ proc ::enginewin::frameConfig {w id} {
     grid columnconfigure $w.header 1 -weight 1
 
     autoscrollText both $w.options $w.options.text Treeview
-    $w.options.text tag configure bold -font font_Bold
 
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 1
@@ -113,7 +112,6 @@ proc ::enginewin::frameDisplay {w id} {
     ttk::frame $w.header
     autoscrollText y $w.header.info $w.header.info.text TLabel
     $w.header.info.text configure -wrap word -height 1
-    $w.header.info.text tag configure bold -font font_Bold
     ttk::button $w.header.config -style Toolbutton -image tb_config
     grid $w.header.info $w.header.config -sticky news
     grid columnconfigure $w.header 0 -weight 1
@@ -122,12 +120,10 @@ proc ::enginewin::frameDisplay {w id} {
     autoscrollText both $w.pv $w.pv.lines Treeview
     $w.pv.lines configure -wrap word -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $w.pv.lines tag configure pv -lmargin2 [expr {$tab * 3}]
-    $w.pv.lines tag configure bold -font font_Bold
     grid propagate $w.pv 0
 
     autoscrollText y $w.debug $w.debug.lines TLabel
     $w.debug.lines configure -state normal -relief sunken
-    $w.debug.lines tag configure bold -font font_Bold
     grid propagate $w.debug 0
 
     ttk::frame $w.btn
@@ -159,7 +155,7 @@ proc ::enginewin::showDebug {w id} {
         grid rowconfigure $w 2 -weight 1
         ::engine::setLogCmd $id \
             [list ::enginewin::logEngine $w.debug.lines "" ""]\
-            [list ::enginewin::logEngine $w.debug.lines bold ">>"]
+            [list ::enginewin::logEngine $w.debug.lines header ">>"]
     }
 }
 
@@ -327,7 +323,7 @@ proc ::enginewin::updateConfig {id msgData} {
         if {$value eq $default} {
             $w insert end "$name\t"
         } else {
-            $w insert end "$name\t" bold
+            $w insert end "$name\t" header
         }
         set endline "\n"
         set btn ""
@@ -465,13 +461,13 @@ proc ::enginewin::updateDisplay {id msgData} {
     set w .engineWin$id.display
     $w.header.info.text configure -state normal
     $w.header.info.text delete 1.0 end
-    $w.header.info.text insert end "[tr Time]: " bold
+    $w.header.info.text insert end "[tr Time]: " header
     $w.header.info.text insert end [format "%.2f s" [expr {$time / 1000.0}]]
-    $w.header.info.text insert end "   [tr Nodes]: " bold
+    $w.header.info.text insert end "   [tr Nodes]: " header
     $w.header.info.text insert end [format "%.2f Kn/s" [expr {$nps / 1000.0}]]
-    $w.header.info.text insert end "   Hash: " bold
+    $w.header.info.text insert end "   Hash: " header
     $w.header.info.text insert end [format "%.1f%%" [expr {$hashfull / 10.0}]]
-    $w.header.info.text insert end "   TB Hits: " bold
+    $w.header.info.text insert end "   TB Hits: " header
     $w.header.info.text insert end $tbhits
     $w.header.info.text configure -state disabled
 
@@ -519,7 +515,7 @@ proc ::enginewin::updateDisplay {id msgData} {
     set firstMove [string wordend $pv 0]
     if {$multipv == 1} {
         set line $multipv
-        $w.pv.lines tag remove bold 1.0 1.end
+        $w.pv.lines tag remove header 1.0 1.end
     } else {
         #TODO: this assumes that the lines are sent in order
         set line $multipv
@@ -527,8 +523,8 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
     $w.pv.lines insert $line.0 "\n"
     $w.pv.lines insert $line.end "$depth"
-    $w.pv.lines insert $line.end "\t$score" bold
-    $w.pv.lines insert $line.end "\t[string range $pv 0 $firstMove]" bold
+    $w.pv.lines insert $line.end "\t$score" header
+    $w.pv.lines insert $line.end "\t[string range $pv 0 $firstMove]" header
     $w.pv.lines insert $line.end "[string range $pv [incr firstMove] end]" pv
     if {[info exists extraInfo]} {
         $w.pv.lines insert $line.end "  ([join $extraInfo {  }])" pv

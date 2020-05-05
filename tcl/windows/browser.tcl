@@ -29,7 +29,6 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   
   set t $w.t.text
   event generate $t <ButtonRelease-1>
-  $t tag configure header -foreground Blue
   $t tag configure next -foreground yellow -background darkBlue
   $t insert end "$header" header
   $t insert end "\n\n"

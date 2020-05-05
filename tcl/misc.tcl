@@ -169,6 +169,7 @@ proc autoscrollframe {args} {
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame
   text $widget -cursor arrow -state disabled -highlightthickness 0
+  $widget tag configure header -font font_Bold
   applyThemeStyle $style $widget
   autoscrollBars $bars $frame $widget
 }
