@@ -178,7 +178,7 @@ proc updateStatusBar {} {
 
     if {[info exists ::guessedAddMove]} {
         set ::gameLastMove [lindex $::guessedAddMove 1]
-        ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "blue" ".main.menuaddchoice"
+        ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "DodgerBlue3" ".main.menuaddchoice"
         unset ::guessedAddMove
         return
     }
@@ -189,7 +189,7 @@ proc updateStatusBar {} {
         foreach thisMove $moveEntry(List) {
             append msg "$thisMove "
         }
-        ::board::setInfoAlert .main.board "Enter Move:" "$msg" "blue" ""
+        ::board::setInfoAlert .main.board "Enter Move:" "$msg" "DodgerBlue3" ""
         return
     }
 
@@ -222,7 +222,7 @@ proc updateStatusBar {} {
       ::board::setInfo .main.board "$statusBar"
     } else {
       set msg "[sc_game info date] - [sc_game info event]"
-      ::board::setInfoAlert .main.board "[tr Event]:" $msg "blue" "::crosstab::Open"
+      ::board::setInfoAlert .main.board "[tr Event]:" $msg "DodgerBlue3" "::crosstab::Open"
     }
     ::board::addInfo .main.board [sc_game info ECO]
 }

@@ -28,7 +28,7 @@ namespace eval ttk::theme::dark {
     }
 
     ttk::style theme create dark -parent clam -settings {
-        set basecol "#0178d6" ;# Alternative: #3b6dce Basecolor, change here to have new topic for the theme
+        set basecol DodgerBlue3 ;# Alternative: #3b6dce Basecolor, change here to have new topic for the theme
         # -----------------------------------------------------------------------------
         # Theme defaults
         ttk::style configure "." \

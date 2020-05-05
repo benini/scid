@@ -1390,127 +1390,126 @@ proc glist.release_ {{w} {x} {y} {layout}} {
   ttk::treeview::Release $w $x $y
 }
 
-set arrowcolor blue
-image create bitmap ::glist_Arrows(0) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(0) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x10, 0x02,
        0x38, 0x07, 0x7c, 0x00, 0xfe, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(1) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(1) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0xfe, 0x02,
        0x7c, 0x07, 0x38, 0x00, 0x10, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(2) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(2) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x08, 0x01,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(3) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(3) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x7f, 0x01,
        0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(4) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(4) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x08, 0x04,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(5) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(5) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x7f, 0x04,
        0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(6) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(6) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0x88, 0x07,
        0x1c, 0x02, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(7) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(7) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0xff, 0x07,
        0x3e, 0x02, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(8) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(8) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x08, 0x04,
        0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(9) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(9) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x7f, 0x04,
        0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(10) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(10) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x07, 0x80, 0x00, 0x80, 0x00, 0x80, 0x03, 0x88, 0x04,
        0x1c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(11) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(11) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x07, 0x80, 0x01, 0x80, 0x00, 0x80, 0x07, 0xff, 0x04,
        0x3e, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(12) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(12) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x08, 0x02,
        0x1c, 0x01, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(13) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(13) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x7f, 0x02,
        0x3e, 0x01, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(14) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(14) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0x88, 0x04,
        0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(15) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(15) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0xff, 0x04,
        0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(16) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(16) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
        0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x07, 0x00, 0x04, 0x08, 0x06,
        0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
 }
-image create bitmap ::glist_Arrows(17) -foreground $arrowcolor -data {
+image create bitmap ::glist_Arrows(17) -foreground DodgerBlue3 -data {
     #define arrows_width 12
     #define arrows_height 10
     static unsigned char arrows_bits[] = {
