@@ -249,23 +249,25 @@ proc ::bookmarks::Edit {} {
   # wm transient $w .
   bind $w <F1> {helpWindow Bookmarks}
   ttk::entry $w.e -width 40 \
-    -textvariable bookmarks(edit) -font font_Small -exportselection 0
-  bind $w.e <FocusIn>  {.bmedit.e configure -background lightYellow}
-  bind $w.e <FocusOut> {.bmedit.e configure -background white}
+    -textvariable bookmarks(edit) -font font_Small
+  $w.e configure -validate key -validatecommand "after 200 ::bookmarks::EditRefresh;  return true"
 
-  trace variable bookmarks(edit) w ::bookmarks::EditRefresh
   pack $w.e -side top -fill x
   pack [ttk::frame $w.b2] -side bottom -fill x
   pack [ttk::frame $w.b1] -side bottom -fill x
   pack [ttk::frame $w.f] -side top -fill both -expand 1
-  listbox $w.f.list -width 50 -height 10 -yscrollcommand "$w.f.ybar set" \
-    -fg black -bg white -exportselection 0 -font font_Small -setgrid 1
+  ttk::treeview $w.f.list -columns {0} -show {} -selectmode browse \
+             -yscrollcommand "$w.f.ybar set"
+  $w.f.list configure -height 10
+  $w.f.list column 0 -width 50
   ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.list yview"
-  bind $w.f.list <<ListboxSelect>>  ::bookmarks::EditSelect
+  bind $w.f.list <<TreeviewSelect>>  ::bookmarks::EditSelect
   pack $w.f.ybar -side right -fill y
-  pack $w.f.list -side left -fill x -expand 1
+  pack $w.f.list -side left -fill both -expand 1
+  set i 0
   foreach entry $bookmarks(data) {
-    $w.f.list insert end [::bookmarks::IndexText $entry]
+      $w.f.list insert {} end -id $i -values [list [::bookmarks::IndexText $entry]]
+      incr i
   }
   dialogbutton $w.b1.newFolder -text $::tr(NewSubmenu) \
     -command {::bookmarks::EditNew folder}
@@ -306,19 +308,17 @@ proc ::bookmarks::EditDone {} {
 #   Updates the bookmarks whenever the contents of the bookmark
 #   editing entry box are changed.
 #
-proc ::bookmarks::EditRefresh {args} {
+proc ::bookmarks::EditRefresh {} {
   global bookmarks
   set list .bmedit.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set text $bookmarks(edit)
   set e [lindex $bookmarks(data) $sel]
   set e [::bookmarks::SetText $e $text]
   set text [::bookmarks::IndexText $e]
   set bookmarks(data) [lreplace $bookmarks(data) $sel $sel $e]
-  $list insert $sel $text
-  $list delete [expr {$sel + 1} ]
-  $list selection clear 0 end
+  $list item $sel -values [list $text]
   $list selection set $sel
 }
 
@@ -329,13 +329,12 @@ proc ::bookmarks::EditRefresh {args} {
 proc ::bookmarks::EditSelect {{sel ""}} {
   global bookmarks
   set list .bmedit.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} {
     .bmedit.e delete 0 end
     return
   }
   if {$sel >= [llength $bookmarks(data)]} {
-    $list selection clear 0 end
     set bookmarks(edit) ""
     return
   }
@@ -381,7 +380,7 @@ proc ::bookmarks::EditMove {{dir "up"}} {
   global bookmarks
   set w .bmedit
   set list $w.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set e [lindex $bookmarks(data) $sel]
   set text [::bookmarks::IndexText $e]
@@ -391,13 +390,15 @@ proc ::bookmarks::EditMove {{dir "up"}} {
     if {$newsel < 0} { return }
   } else {
     incr newsel
-    if {$newsel >= [$list index end]} { return }
+    if { [$list next $sel] == {} } { return }
   }
   set bookmarks(data) [lreplace $bookmarks(data) $sel $sel]
   set bookmarks(data) [linsert $bookmarks(data) $newsel $e]
-  $list selection clear 0 end
-  $list delete $sel
-  $list insert $newsel $text
+  set i 0
+  foreach entry $bookmarks(data) {
+      $w.f.list item $i -values [list [::bookmarks::IndexText $entry]]
+      incr i
+  }
   $list selection set $newsel
 }
 
@@ -409,10 +410,9 @@ proc ::bookmarks::EditDelete {} {
   global bookmarks
   set w .bmedit
   set list $w.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set bookmarks(data) [lreplace $bookmarks(data) $sel $sel]
-  $list selection clear 0 end
   $list delete $sel
   set bookmarks(edit) ""
 }
@@ -433,12 +433,11 @@ proc ::bookmarks::EditNew {{type "folder"}} {
   } else {
     set entry [::bookmarks::New game]
   }
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
+  set id [llength $bookmarks(data)]
   if {$sel == ""} {
     lappend bookmarks(data) $entry
-    set sel [$list index end]
-    $list insert end [::bookmarks::IndexText $entry]
-    $list selection clear 0 end
+    set sel [$list insert {} end -id $id -values [list [::bookmarks::IndexText $entry]]]
     $list selection set $sel
     $list see $sel
     ::bookmarks::EditSelect
@@ -446,8 +445,7 @@ proc ::bookmarks::EditNew {{type "folder"}} {
   }
   incr sel
   set bookmarks(data) [linsert $bookmarks(data) $sel $entry]
-  $list insert $sel [::bookmarks::IndexText $entry]
-  $list selection clear 0 end
+  set sel [$list insert {} end  -id $id -values [list [::bookmarks::IndexText $entry]]]
   $list selection set $sel
   $list see $sel
   ::bookmarks::EditSelect

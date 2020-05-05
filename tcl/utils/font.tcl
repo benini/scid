@@ -13,6 +13,9 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   global fd_family fd_style fd_size fd_close
   global fd_strikeout fd_underline
 
+  set tl .fontdialog
+  if { [winfo exists $tl] } return
+
   set fd_family {}; set fd_style {}; set fd_size {}
   set fd_close  -1
 
@@ -62,7 +65,7 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   set tl .fontdialog
   toplevel $tl
   set dlg $tl.f
-  pack [ttk::frame $tl.f] -expand 1 -fill both -padx 5
+  pack [ttk::frame $tl.f] -expand 1 -fill both
   wm protocol $tl WM_DELETE_WINDOW "set fd_close 0"
   wm title $tl [tr OptionsFonts]
 
@@ -87,29 +90,38 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   # Font family listbox.
   set fr $dlg.family_list
   ttk::frame $fr
-  listbox $fr.list -height 6 -selectmode single -width 30 -background white -yscrollcommand "$fr.scroll set"
+  ttk::treeview $fr.list -columns {0} -show {} -selectmode browse \
+             -yscrollcommand "$fr.scroll set"
+  $fr.list configure -height 7
+  $fr.list column 0 -width 140
   ttk::scrollbar $fr.scroll -command "$fr.list yview"
 
+  set i 0
   foreach f $families {
-    $fr.list insert end $f
+      $fr.list insert {} end -id $i -values [list $f]
+      incr i
   }
 
   bind $fr.list <Double-Button-1> "FontDialogFamily $fr.list $font_name $dlg.family_ent"
 
   pack $fr.scroll -side right -fill y
-  pack $fr.list -side left
+  pack $fr.list -side left -fill x
   grid config $fr -column 0 -row 2 -rowspan 16
 
   # Font style listbox.
   set fr $dlg.style_list
   ttk::frame $fr
-  listbox $fr.list -height 6 -selectmode single -width 11 -background white -yscrollcommand "$fr.scroll set"
+  ttk::treeview $fr.list -columns {0} -show {} -selectmode browse \
+             -yscrollcommand "$fr.scroll set"
+  $fr.list configure -height 7
+  $fr.list column 0 -width 60
   ttk::scrollbar $fr.scroll -command "$fr.list yview"
 
-  $fr.list insert end "Regular"
-  $fr.list insert end "Bold"
-  $fr.list insert end "Italic"
-  $fr.list insert end "Bold Italic"
+  set i 0
+  foreach style { "Regular" "Bold" "Italic" "Bold Italic" } {
+      $fr.list insert {} end -id $i -values $style
+      incr i
+  }
 
   bind $fr.list <Double-Button-1> "FontDialogStyle $fr.list $font_name $dlg.style_ent"
 
@@ -120,11 +132,16 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   # Font size listbox.
   set fr $dlg.size_list
   ttk::frame $fr
-  listbox $fr.list -height 6 -selectmode single -width 4 -background white -yscrollcommand "$fr.scroll set"
+  ttk::treeview $fr.list -columns {0} -show {} -selectmode browse \
+             -yscrollcommand "$fr.scroll set"
+  $fr.list configure -height 7
+  $fr.list column 0 -width 30
   ttk::scrollbar $fr.scroll -command "$fr.list yview"
 
-  for {set i 7} {$i <= 20} {incr i} {
-    $fr.list insert end $i
+  set i 0
+  for {set j 7} {$j <= 20} {incr j} {
+      $fr.list insert {} end -id $i -values $j
+      incr i
   }
 
   bind $fr.list <Double-Button-1> "FontDialogSize $fr.list $font_name $dlg.size_ent"
@@ -174,8 +191,8 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
 proc FontDialogFamily { listname font_name entrywidget } {
   # Get selected text from list.
   catch {
-    set item_num [$listname curselection]
-    set item [$listname get $item_num]
+    set item_num [$listname selection]
+    set item [$listname set $item_num 0]
 
     # Set selected list item into entry for font family.
     $entrywidget delete 0 end
@@ -190,8 +207,8 @@ proc FontDialogFamily { listname font_name entrywidget } {
 proc FontDialogStyle { listname font_name entrywidget } {
   # Get selected text from list.
   catch {
-    set item_num [$listname curselection]
-    set item [$listname get $item_num]
+    set item_num [$listname selection]
+    set item [$listname set $item_num 0]
 
     # Set selected list item into entry for font family.
     $entrywidget delete 0 end
@@ -206,8 +223,8 @@ proc FontDialogStyle { listname font_name entrywidget } {
 proc FontDialogSize { listname font_name entrywidget } {
   # Get selected text from list.
   catch {
-    set item_num [$listname curselection]
-    set item [$listname get $item_num]
+    set item_num [$listname selection]
+    set item [$listname set $item_num 0]
 
     # Set selected list item into entry for font family.
     $entrywidget delete 0 end
