@@ -393,15 +393,19 @@ proc showVars {} {
     setWinLocation $w
     set h [expr $numVars + 1]
     if { $h> 19} { set h 19 }
-    listbox $w.lbVar -selectmode browse -height $h -width 20
-    pack $w.lbVar -expand yes -fill both -side top
+    ttk::treeview $w.lbVar -columns {0} -show {} -selectmode browse
+    $w.lbVar configure -height $h
+    $w.lbVar column 0 -width 250
+    pack $w.lbVar -side left -fill both -expand 1
     
     #insert main line
     set move [sc_game info nextMove]
+    set j 0
     if {$move == ""} {
         set move "($::tr(empty))"
     } else  {
-        $w.lbVar insert end "0: [getNextMoves 5]"
+        $w.lbVar insert {} end -id $j -values [list "0: [getNextMoves 5]"]
+        incr j
     }
     
     # insert variations
@@ -415,7 +419,8 @@ proc showVars {} {
             sc_var exit
         }
         set str "[expr {$i + 1}]: $move"
-        $w.lbVar insert end $str
+        $w.lbVar insert {} end -id $j -values [list "$str"]
+        incr j
     }
     $w.lbVar selection set 0
     # bindings
@@ -423,7 +428,7 @@ proc showVars {} {
     bind .variations <Return> {catch { event generate .variations <Right> } }
     bind .variations <ButtonRelease-1> {catch { event generate .variations <Right> } }
     bind .variations <Right> {
-        set cur [.variations.lbVar curselection]
+        set cur [.variations.lbVar selection]
         destroy .variations
         if {$cur == 0} {
             sc_move forward; updateBoard -animate
@@ -431,13 +436,13 @@ proc showVars {} {
             sc_var moveInto [expr $cur - 1]; updateBoard -animate
         }
     }
-    bind .variations <Up> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
+    bind .variations <Up> { set cur [.variations.lbVar selection]
         set sel [expr $cur - 1]
         if {$sel < 0} { set sel 0 }
         .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
-    bind .variations <Down> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
+    bind .variations <Down> { set cur [.variations.lbVar selection]
+        if {[.variations.lbVar next $cur] == {} } { return }
         set sel [expr $cur + 1]
-        if {$sel >= [.variations.lbVar index end]} { set sel end }
         .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
     bind .variations <Left> { destroy .variations }
     bind .variations <Escape> { catch { event generate .variations <Destroy> } }
@@ -1205,8 +1210,8 @@ proc CreateMainBoard { {w} } {
 proc CreateGameInfo {} {
   # .gameInfo is the game information widget:
   #
-  autoscrollframe .main.gameInfo text .main.gameInfo.text
-  .main.gameInfo.text configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
+  autoscrollText y .main.gameInfo .main.gameInfo.text Treeview
+  .main.gameInfo.text configure -width 20 -height 6 -wrap none -state disabled -cursor top_left_arrow -setgrid 1
   ::htext::init .main.gameInfo.text
 
   # Set up player photos:

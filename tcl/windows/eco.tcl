@@ -32,9 +32,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow ECO}
     bind $w <Destroy> {set ::windows::eco::isOpen 0}
-    text $w.title -relief flat -height 1 -width 1 -wrap word -font font_Bold
-    $w.title tag configure center -justify center
-    $w.title configure -cursor top_left_arrow
+    ttk::entry $w.title -width 15 -font font_Bold
     pack $w.title -side top -fill x
     ttk::frame $w.b
     pack $w.b -side bottom -fill x
@@ -51,8 +49,8 @@ proc ::windows::eco::Refresh {{code "x"}} {
     canvas $graph.c -width 500 -height 250 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
     pack $graph.c -side top -fill both -expand yes
     text $text.text -height 12 -width 75 -wrap word -font font_Regular \
-      -background white -selectbackground lightBlue \
       -yscroll "$text.ybar set" -xscroll "$text.xbar set"
+    applyThemeStyle Treeview $text.text
     $text.text tag configure bold -font font_Bold
     $text.text tag configure indent -lmargin2 20
     $text.text configure -cursor top_left_arrow
@@ -190,9 +188,9 @@ proc ::windows::eco::update {} {
   append header "[lindex $stats 0] $::tr(games): +[lindex $stats 1] =[lindex $stats 2] -[lindex $stats 3]  ([lindex $stats 5]%)</center>\n\n"
   ::htext::display $text.text "$header[sc_eco summary $code 1]"
   $text.text configure -state disabled
-  $w.title configure -state normal
-  $w.title delete 1.0 end
-  $w.title insert end "$::tr(ECOFrequency) $section" center
+  $w.title configure -state normal -justify center
+  $w.title delete 0 end
+  $w.title insert end "$::tr(ECOFrequency) $section"
   $w.title configure -state disabled
   set ::windows::eco::count $count
 }

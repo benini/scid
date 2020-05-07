@@ -1178,19 +1178,14 @@ proc ::optable::addFavoriteDlg {} {
   wm title $w "Scid: Add Opening Report Favorite"
   ttk::label $w.name -text "Enter a name for the opening report of this position:"
   pack $w.name -side top
-  # label $w.name2 -text "(Use letters, digits, spaces and underscores only)"
-  # pack $w.name2 -side top
   ttk::entry $w.e -width 40
   pack $w.e -side top -fill x -padx 2
   addHorizontalRule $w
   ttk::label $w.old -text "Existing favorite report names:"
   pack $w.old -side top
-  pack [ttk::frame $w.existing] -side top -fill x -padx 2
-  text $w.existing.list -width 30 -height 10 -background gray90 \
-      -yscrollcommand [list $w.existing.ybar set]
-  ttk::scrollbar $w.existing.ybar -command [list $w.existing.list yview]
-  pack $w.existing.ybar -side right -fill y
-  pack $w.existing.list -side left -fill both -expand yes
+  autoscrollText y $w.existing $w.existing.list Treeview
+  $w.existing.list configure -width 30 -height 10 -state normal
+  pack $w.existing -side top -fill both -expand yes
   foreach entry $::reportFavorites {
     $w.existing.list insert end "[lindex $entry 0]\n"
   }
@@ -1243,20 +1238,25 @@ proc ::optable::editFavoritesDlg {} {
   bind $w <F1> {helpWindow Reports Opening}
   ttk::entry $w.e -width 60 \
       -textvariable reportFavoritesName -exportselection 0
-  bind $w.e <FocusIn>  "$w.e configure -background lightYellow"
-  bind $w.e <FocusOut> "$w.e configure -background white"
-  
-  trace variable reportFavoritesName w ::optable::editFavoritesRefresh
+  $w.e configure -validate key -validatecommand "after 200 ::optable::editFavoritesRefresh; return true"
   pack $w.e -side top -fill x
   pack [ttk::frame $w.b] -side bottom -fill x
-  autoscrollframe $w.f listbox $w.f.list -width 50 -height 10 \
-      -fg black -bg white -exportselection 0 -font font_Small -setgrid 1
+  ttk::frame $w.f
+  ttk::treeview $w.f.list -columns {0} -show {} -selectmode browse \
+             -yscrollcommand "$w.f.ybar set"
+  $w.f.list configure -height 10
+  $w.f.list column 0 -width 50
+  ttk::scrollbar $w.f.ybar -takefocus 0 -command "$w.f.list yview"
+  pack $w.f.ybar -side right -fill y
+  pack $w.f.list -side left -fill both -expand 1
   pack $w.f -side top -fill both -expand yes
-  bind $w.f.list <<ListboxSelect>>  ::optable::editFavoritesSelect
+  bind $w.f.list <<TreeviewSelect>>  ::optable::editFavoritesSelect
+  set i 0
   foreach entry $::reportFavoritesTemp {
     set name [lindex $entry 0]
     set moves [lindex $entry 1]
-    $w.f.list insert end "$name \[$moves\]"
+    $w.f.list insert {} end -id $i -values [list "$name \[$moves\]"]
+    incr i
   }
   ttk::button $w.b.delete -text $::tr(Delete)  -command ::optable::editFavoritesDelete
   ttk::button $w.b.up -image tb_up -command {::optable::editFavoritesMove up}
@@ -1278,28 +1278,25 @@ proc ::optable::editFavoritesDlg {} {
 proc ::optable::editFavoritesRefresh {args} {
   global reportFavoritesTemp reportFavoritesName
   set list .editFavoritesDlg.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set name $reportFavoritesName
   set e [lindex $reportFavoritesTemp $sel]
   set moves [lindex $e 1]
   set e [lreplace $e 0 0 $name]
   set reportFavoritesTemp [lreplace $reportFavoritesTemp $sel $sel $e]
-  $list insert $sel "$name \[$moves\]"
-  $list delete [expr $sel + 1]
-  $list selection clear 0 end
+  $list item $sel -values [list "$name \[$moves\]"]
   $list selection set $sel
 }
 
 proc ::optable::editFavoritesSelect {} {
   set list .editFavoritesDlg.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} {
     set ::reportFavoritesName ""
     return
   }
   if {$sel >= [llength $::reportFavoritesTemp]} {
-    $list selection clear 0 end
     set ::reportFavoritesName ""
     return
   }
@@ -1311,10 +1308,9 @@ proc ::optable::editFavoritesDelete {} {
   global reportFavoritesTemp
   set w .editFavoritesDlg
   set list $w.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set reportFavoritesTemp [lreplace $reportFavoritesTemp $sel $sel]
-  $list selection clear 0 end
   $list delete $sel
   set ::reportFavoritesName ""
   
@@ -1324,7 +1320,7 @@ proc ::optable::editFavoritesMove {dir} {
   global reportFavoritesTemp
   set w .editFavoritesDlg
   set list $w.f.list
-  set sel [lindex [$list curselection] 0]
+  set sel [lindex [$list selection] 0]
   if {$sel == ""} { return }
   set e [lindex $reportFavoritesTemp $sel]
   set name [lindex $e 0]
@@ -1337,13 +1333,17 @@ proc ::optable::editFavoritesMove {dir} {
     if {$newsel < 0} { return }
   } else {
     incr newsel
-    if {$newsel >= [$list index end]} { return }
+    if {[$list next $sel] == {} } { return }
   }
   set reportFavoritesTemp [lreplace $reportFavoritesTemp $sel $sel]
   set reportFavoritesTemp [linsert $reportFavoritesTemp $newsel $e]
-  $list selection clear 0 end
-  $list delete $sel
-  $list insert $newsel $text
+  set i 0
+  foreach entry $::reportFavoritesTemp {
+    set name [lindex $entry 0]
+    set moves [lindex $entry 1]
+    $w.f.list item $i -values [list "$name \[$moves\]"]
+    incr i
+  }
   $list selection set $newsel
 }
 
