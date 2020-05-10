@@ -229,13 +229,9 @@ proc ::crosstab::Open {} {
   ::crosstab::ConfigMenus
   
   ttk::frame $w.b
-  ttk::frame $w.f
-  text $w.f.text \
-      -wrap none -font font_Fixed \
-      -background white -cursor top_left_arrow
+  autoscrollText both $w.f $w.f.text Treeview
+  $w.f.text configure -wrap none -font font_Fixed -state normal
   ::htext::init $w.f.text
-  $w.f.text tag configure bgGray -background gray95
-  autoscrollframe $w.f "" $w.f.text
   ttk::button $w.b.stop -textvar ::tr(Stop) -state disabled \
       -command { set ::htext::interrupt 1 }
   ttk::menubutton $w.b.type -text "" -menu $w.b.type.menu

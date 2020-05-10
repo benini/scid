@@ -208,11 +208,10 @@ proc ::optable::makeReportWin {args} {
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
     
-    text $w.text -height 30 -width 85 -font font_Small -setgrid 1 \
-        -wrap word -bg white -foreground black -yscrollcommand "$w.ybar set" \
-        -cursor top_left_arrow
+    autoscrollText y $w.scroll $w.text Treeview
+    $w.text configure -height 30 -width 85 -font font_Small -state normal
     ::htext::init $w.text
-    ttk::scrollbar $w.ybar -command "$w.text yview"
+    ::htext::init $w.text
     ttk::frame $w.b
     ttk::button $w.b.previewLaTeX -textvar ::tr(OprepViewLaTeX) \
         -command ::optable::previewLaTeX
@@ -232,8 +231,7 @@ proc ::optable::makeReportWin {args} {
     ttk::button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Opening}
     ttk::button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
     pack $w.b -side bottom -fill x
-    pack $w.ybar -side right -fill y
-    pack $w.text -side left -fill both -expand yes
+    pack $w.scroll -side left -fill both -expand yes
     pack $w.b.close $w.b.update -side right -padx 1 -pady 2
     if {! $::windowsOS} {
       pack $w.b.previewLaTeX -side left -padx 1 -pady 2

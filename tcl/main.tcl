@@ -1215,8 +1215,8 @@ proc CreateGameInfo {} {
   ::htext::init .main.gameInfo.text
 
   # Set up player photos:
-  label .main.photoW -background white -image photoW -anchor ne
-  label .main.photoB -background white -image photoB -anchor ne
+  ttk::label .main.photoW -image photoW -anchor ne
+  ttk::label .main.photoB -image photoB -anchor ne
   bind .main.photoW <ButtonPress-1> "togglePhotosSize"
   bind .main.photoB <ButtonPress-1> "togglePhotosSize"
 

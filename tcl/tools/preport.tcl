@@ -247,10 +247,9 @@ proc ::preport::makeReportWin {args} {
     bind $w <Next> "$w.text yview scroll 1 pages"
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
-    
-    autoscrollframe -bars y $w.scroll text $w.text \
-        -height 30 -width 85 -font font_Small -setgrid 1 -wrap word \
-        -background white -foreground black -cursor top_left_arrow
+
+    autoscrollText y $w.scroll $w.text Treeview
+    $w.text configure -height 30 -width 85 -font font_Small -state normal
     ::htext::init $w.text
     ttk::frame $w.b
     ttk::button $w.b.opts -text [tr OprepFileOptions] -command ::preport::setOptions

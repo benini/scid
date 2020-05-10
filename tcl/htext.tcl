@@ -163,19 +163,19 @@ proc ::htext::updateRate {w rate} {
 proc ::htext::init {w} {
   set cyan "\#007000"
   set maroon "\#990000"
-  set green "darkgreen"
+  set green "green"
   
   set ::htext::updates($w) 100
   $w tag configure black -foreground black
   $w tag configure white -foreground white
   $w tag configure red -foreground red
-  $w tag configure blue -foreground blue
-  $w tag configure darkblue -foreground darkBlue
+  $w tag configure blue -foreground RoyalBlue3
+  $w tag configure darkblue -foreground DodgerBlue3
   $w tag configure green -foreground $green
   $w tag configure cyan -foreground $cyan
   $w tag configure yellow -foreground yellow
   $w tag configure maroon -foreground $maroon
-  $w tag configure gray -foreground gray20
+  $w tag configure gray -foreground gray50
   
   $w tag configure bgBlack -background black
   $w tag configure bgWhite -background white
@@ -334,9 +334,9 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         set tagName "run"
         $w tag bind "$runTag" <ButtonRelease-1> "catch {$runName}"
         $w tag bind $runTag <Any-Enter> \
-            "$w tag configure \"$runTag\" -foreground yellow
-        $w tag configure \"$runTag\" -background darkBlue
-        $w configure -cursor hand2"
+            "$w tag configure \"$runTag\" -foreground white
+             $w tag configure \"$runTag\" -background DodgerBlue4
+             $w configure -cursor hand2"
         $w tag bind $runTag <Any-Leave> \
             "$w tag configure \"$runTag\" -foreground {}
         $w tag configure \"$runTag\" -background {}
@@ -349,8 +349,8 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         $w tag bind "$goTag" <ButtonRelease-1> \
             "catch {$w see \[lindex \[$w tag nextrange $goName 1.0\] 0\]}"
         $w tag bind $goTag <Any-Enter> \
-            "$w tag configure \"$goTag\" -foreground yellow
-        $w tag configure \"$goTag\" -background maroon
+            "$w tag configure \"$goTag\" -foreground white
+        $w tag configure \"$goTag\" -background DodgerBlue4
         $w configure -cursor hand2"
         $w tag bind $goTag <Any-Leave> \
             "$w tag configure \"$goTag\" -foreground {}
@@ -361,16 +361,16 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         set playerTag $tagName
         set playerName [string range $playerTag 3 end]
         set tagName "pi"
-        $w tag configure "$playerTag" -foreground darkBlue
+        $w tag configure "$playerTag" -foreground DodgerBlue3
         $w tag bind "$playerTag" <ButtonRelease-1> "::pinfo::playerInfo \"$playerName\""
         $w tag bind $playerTag <Any-Enter> \
-            "$w tag configure \"$playerTag\" -foreground yellow
-        $w tag configure \"$playerTag\" -background darkBlue
-        $w configure -cursor hand2"
+           "$w tag configure \"$playerTag\" -foreground white
+            $w tag configure \"$playerTag\" -background DodgerBlue4
+            $w configure -cursor hand2"
         $w tag bind $playerTag <Any-Leave> \
-            "$w tag configure \"$playerTag\" -foreground darkBlue
-        $w tag configure \"$playerTag\" -background {}
-        $w configure -cursor {}"
+           "$w tag configure \"$playerTag\" -foreground DodgerBlue3
+            $w tag configure \"$playerTag\" -background {}
+            $w configure -cursor {}"
       } elseif {[strIsPrefix "g_" $tagName]} {
         # Check if it is a game-load tag:
         set gameTag $tagName
@@ -381,9 +381,9 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         $w tag bind $gameTag <ButtonPress-$::MB3> \
             "::gbrowser::new [sc_base current] $gnum"
         $w tag bind $gameTag <Any-Enter> \
-            "$w tag configure $gameTag -foreground yellow
-        $w tag configure $gameTag -background darkBlue
-        $w configure -cursor hand2"
+            "$w tag configure $gameTag -foreground white
+             $w tag configure $gameTag -background DodgerBlue4
+             $w configure -cursor hand2"
         $w tag bind $gameTag <Any-Leave> \
             "$w tag configure $gameTag -foreground {}
         $w tag configure $gameTag -background {}

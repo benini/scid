@@ -147,15 +147,13 @@ namespace eval pgn {
     
     ::pgn::ConfigMenus
     
-    frame $w.frame
-    text $w.text -wrap word \
-        -background $pgnColor(Background) -cursor crosshair \
+    autoscrollText y $w.frame $w.text Treeview
+    $w.text configure -wrap word -state normal \
         -tabs {1c right 2c 4c}
     if { $::pgn::boldMainLine } {
         $w.text configure -font font_Bold
     }
 
-    autoscrollframe -bars y $w.frame "" $w.text
     grid $w.frame -sticky news
     grid rowconfigure $w 0 -weight 1
     grid columnconfigure $w 0 -weight 1

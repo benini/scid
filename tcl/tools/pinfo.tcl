@@ -368,11 +368,9 @@ proc playerInfo {{player ""}} {
     packbuttons left $w.b.graph $w.b.edit
     packbuttons left $w.b2.report
 
-    autoscrollframe $w.frame text $w.text -font font_Regular -background white \
-      -setgrid 1 -wrap none
-
-    ttk::label $w.photo -background white
-    #pack $w.text -side top -fill both -expand yes
+    autoscrollText both $w.frame $w.text Treeview
+    $w.text configure -font font_Regular -wrap none -state normal
+    ttk::label $w.photo
     pack $w.frame -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"
     ::htext::init $w.text
