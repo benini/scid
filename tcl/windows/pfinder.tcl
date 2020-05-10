@@ -42,10 +42,8 @@ proc ::plist::Open {} {
   ::createToplevel $w
   ::setTitle $w "Scid: [tr WindowsPList]"
 
-  ttk::frame $w.t -relief sunken -borderwidth 1
-  text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
-    -fg black -bg white -cursor top_left_arrow -borderwidth 0
-  autoscrollBars both $w.t $w.t.text
+  autoscrollText both $w.t $w.t.text Treeview
+  $w.t.text configure -width 55 -height 25 -font font_Small -wrap none  -state normal
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {4 r 10 r 18 r 24 r 32 r 35 l} {
@@ -53,11 +51,10 @@ proc ::plist::Open {} {
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
-  $w.t.text tag configure ng -foreground darkBlue
-  $w.t.text tag configure date -foreground darkRed
-  $w.t.text tag configure elo -foreground darkGreen
-  $w.t.text tag configure name -foreground black
-  $w.t.text tag configure title -background lightSteelBlue; #-font font_SmallBold
+  $w.t.text tag configure ng -foreground DodgerBlue3
+  $w.t.text tag configure date -foreground firebrick3
+  $w.t.text tag configure elo -foreground Green
+  $w.t.text tag configure title -background DodgerBlue2
 
   set font font_Small
   set fbold font_SmallBold
@@ -158,7 +155,7 @@ proc ::plist::refresh {} {
     return
   }
 
-  set hc yellow
+  set hc LightYellow4
   set count 0
   foreach player $pdata {
     incr count

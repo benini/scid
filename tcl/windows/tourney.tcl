@@ -51,11 +51,9 @@ proc ::tourney::Open {} {
   bind $w <Key-Home> "$w.t.text yview moveto 0"
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
 
-  foreach i {t o1 o2 o3 b} {ttk::frame $w.$i}
-  text $w.t.text -width 75 -height 22 -font font_Small -wrap none \
-    -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
-    -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
-  autoscrollBars both $w.t $w.t.text
+  foreach i {o1 o2 o3 b} {ttk::frame $w.$i}
+  autoscrollText both $w.t $w.t.text Treeview
+  $w.t.text configure -width 75 -height 22 -font font_Small -wrap none  -state normal
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {3 r 4 l 18 r 23 r 30 r 32 l 55 l} {
@@ -63,12 +61,12 @@ proc ::tourney::Open {} {
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
-  $w.t.text tag configure date -foreground darkRed
-  $w.t.text tag configure np -foreground darkBlue
-  $w.t.text tag configure elo -foreground darkGreen
+  $w.t.text tag configure date -foreground firebrick3
+  $w.t.text tag configure np -foreground DodgerBlue3
+  $w.t.text tag configure elo -foreground Green
   $w.t.text tag configure best -foreground steelBlue
-  $w.t.text tag configure event -foreground darkRed
-  $w.t.text tag configure title -font font_SmallBold
+  $w.t.text tag configure event -foreground firebrick3
+  $w.t.text tag configure title -font font_SmallBold -background DodgerBlue2
 
   set font font_Small
   set fbold font_SmallBold
@@ -216,33 +214,25 @@ proc ::tourney::refresh {{option ""}} {
   }
 
   if {[llength $tlist] > 0} {
+    $t insert end "\t" title
     foreach i {Date Players Games Elo Site Event} {
       $t tag configure s$i -font font_SmallBold
       $t tag bind s$i <1> "set ::tourney::sort $i; ::tourney::refresh"
       $t tag bind s$i <Any-Enter> "$t tag config s$i -foreground red"
       $t tag bind s$i <Any-Leave> "$t tag config s$i -foreground {}"
+      if { $i == "Event" } { set tab ":" } else { set tab "\t" }
+      $t insert end $tab title
+      $t insert end [tr TmtSort$i] [list s$i title]
     }
+    $t insert end "\t" title
     $t tag configure sWinner -font font_SmallBold
-    $t insert end "\t\t"
-    $t insert end [tr TmtSortDate] sDate
-    $t insert end "\t"
-    $t insert end [tr TmtSortPlayers] sPlayers
-    $t insert end "\t"
-    $t insert end [tr TmtSortGames] sGames
-    $t insert end "\t"
-    $t insert end [tr TmtSortElo] sElo
-    $t insert end "\t"
-    $t insert end [tr TmtSortSite] sSite
-    $t insert end ": "
-    $t insert end [tr TmtSortEvent] sEvent
-    $t insert end "\t"
-    $t insert end [tr TmtSortWinner] sWinner
+    $t insert end [tr TmtSortWinner] [list sWinner title]
     $t insert end "\n"
   } else {
     $t insert end $::tr(TmtNone)
   }
 
-  set hc yellow
+  set hc LightYellow4
   set count 0
   foreach tmt $tlist {
     incr count
