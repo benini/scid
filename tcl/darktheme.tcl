@@ -98,14 +98,9 @@ namespace eval ttk::theme::dark {
         ttk::style configure TLabelframe -bordercolor $colors(labelframe) -relief raised -padding 4
         ttk::style configure TProgressbar -background $basecol
 
-        ttk::style configure TScrollbar -troughcolor $colors(through) -bordercolor $colors(buttonbg) -background $colors(through)
+        ttk::style configure TScrollbar -troughcolor $colors(through) -bordercolor $colors(buttonbg) \
+			-background $colors(through) -arrowcolor $colors(lightcolor)
         ttk::style map TScrollbar -background $scrollbars -lightcolor $scrollbarsl -darkcolor $scrollbarsd
-        ttk::style layout Vertical.TScrollbar {
-            Vertical.Scrollbar.trough -sticky ns -children { Vertical.Scrollbar.thumb -expand true }
-        }
-        ttk::style layout Horizontal.TScrollbar {
-            Horizontal.Scrollbar.trough -sticky ew -children { Horizontal.Scrollbar.thumb -expand true }
-        }
         ttk::style configure Heading -relief raised
         ttk::style map Heading -bordercolor $buttonborder -background $buttonsbg
         ttk::style configure Treeview -background $colors(fieldbg)
