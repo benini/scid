@@ -45,16 +45,19 @@ namespace eval ttk::theme::dark {
             -indicatorforeground $basecol \
             -fieldbackground $colors(fieldbg) \
             -bordercolor $colors(fieldborder) -selectborderwidth 0 \
+            -arrowcolor $basecol \
             ;
 
         ttk::style map "." \
             -foreground [list disabled $colors(disabledfg)] \
             -background [list active $colors(buttonbglight)] \
+            -fieldbackground [list disabled $colors(background)] \
             -indicatorbackground [list \
                 pressed $colors(background) \
                 alternate $colors(disabledfg) \
                 disabled $colors(background)] \
             -indicatorforeground [list disabled $colors(disabledfg)] \
+            -arrowcolor [list disabled $colors(disabledfg)] \
         ;
 
         set borders [list disabled $colors(fieldborder) {active pressed} $basecol \
@@ -71,8 +74,7 @@ namespace eval ttk::theme::dark {
         set scrollbarsd [list pressed $colors(lightcolor) active $colors(darkcolor) disabled $colors(through) ]
         ttk::style configure TButton -anchor center -relief raised -padding 4 -background $colors(buttonbg)
         ttk::style map TButton -bordercolor $buttonborder -background $buttonsbg
-        ttk::style map TMenubutton -bordercolor $borders -background $buttonsbg \
-            -foreground [list disabled $colors(disabledfg)] -arrowcolor [list disabled $colors(disabledfg)]
+        ttk::style map TMenubutton -bordercolor $borders -background $buttonsbg
         ttk::style map Toolbutton -relief [list active raised] -bordercolor $borders -foreground [list disabled $colors(disabledfg)]
         ttk::style map TSpinbox -bordercolor $borders -background $buttonsbg
         ttk::style map TCombobox -bordercolor $borders -background $buttonsbg -lightcolor $borders
@@ -80,13 +82,13 @@ namespace eval ttk::theme::dark {
         ttk::style map TScale -bordercolor [list active $basecol ]
 
         ttk::style configure Toolbutton -padding 0
-        ttk::style configure TMenubutton -anchor center -padding 4 -relief raised -arrowcolor $basecol -background $colors(buttonbg)
+        ttk::style configure TMenubutton -anchor center -padding 4 -relief raised -background $colors(buttonbg)
         ttk::style configure TScale -troughcolor $colors(through)
         ttk::style configure TEntry -foreground $colors(selectfg) \
             -padding {2 0} -lightcolor $colors(fieldbg)
         ttk::style configure TCombobox -anchor center -padding {5 1} -relief raised -borderwidth 1 \
-            -arrowcolor $basecol -lightcolor $colors(fieldbg)
-        ttk::style configure TSpinbox -lightcolor $colors(fieldbg) -arrowsize 12 -arrowcolor $basecol
+            -lightcolor $colors(fieldbg)
+        ttk::style configure TSpinbox -lightcolor $colors(fieldbg) -arrowsize 12
 
         ttk::style configure TNotebook.Tab -bordercolor $colors(notebookborder) -border {4 2 4 2} -padding {3 2 3 2} -lightcolor $colors(background)
         ttk::style map TNotebook.Tab -background [list active $colors(background) selected $colors(background) \
