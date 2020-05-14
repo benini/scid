@@ -825,22 +825,19 @@ proc options.autoSaveHack {} {
   }
 }
 
-# For better modularity default value can be set in a module with:
-# if {![info exists varname]} { set varname defaultvalue }
-# options.save varname
-#
+# Sets an option whose value is restored when the program starts
+proc options.persistent {varname default_value} {
+  if {![info exists $varname]} {
+    set $varname $default_value
+  }
+  options.save $varname
+}
+
 proc options.save {varname} {
   if {![info exists ::autosave_opt] || [lsearch -exact $::autosave_opt $varname] == -1} {
     lappend ::autosave_opt $varname
   }
 }
-proc options.save_cancel {varname} {
-  set idx [lsearch -exact $::autosave_opt $varname]
-  if {$idx != -1} {
-    set ::autosave_opt [lreplace $::autosave_opt $idx $idx]
-  }
-}
-
 
 ###
 ### End of file: options.tcl
