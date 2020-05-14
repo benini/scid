@@ -175,7 +175,7 @@ proc ::htext::init {w} {
   $w tag configure cyan -foreground $cyan
   $w tag configure yellow -foreground yellow
   $w tag configure maroon -foreground $maroon
-  $w tag configure gray -foreground gray50
+  $w tag configure gray -foreground gray20
   
   $w tag configure bgBlack -background black
   $w tag configure bgWhite -background white
