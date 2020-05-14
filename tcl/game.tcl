@@ -333,6 +333,10 @@ namespace eval ::notify {
     if {$pgnNeedsUpdate} {
         ::tools::graphs::score::Refresh 0
     }
+
+    # During the idle loop the engines can send Info messages for
+    # the old position. Send now the new position to avoid that.
+    ::enginewin::onPosChanged
   }
 
   # To be called when the position of the current game change
@@ -344,7 +348,6 @@ namespace eval ::notify {
     if {$::showGameInfo} { updateGameInfo }
     updateAnalysis 1
     updateAnalysis 2
-    ::enginewin::onPosChanged
     ::windows::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }

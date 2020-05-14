@@ -650,7 +650,7 @@ proc ::docking::layout_save { slot } {
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
   set ret {}
-  
+
   # record sash position for each panes
   set sashpos {}
   for {set i 0} {$i < [ expr [llength [$pw panes]] -1]} {incr i} {
@@ -689,14 +689,14 @@ proc ::docking::layout_restore_pw { data } {
 
     } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
-      
+
     } elseif {$type == "TNotebook"} {
       ::docking::create_notebook_ $pathName
       ::docking::insert_notebook_ $pw end $pathName
       foreach wnd [lindex $elt 2] {
         lappend ::docking::restore_wnds [list $pathName $wnd]
       }
-      
+
     } else {
       lassign $elt pw orient sash_positions
       if {$sash_positions ne ""} {
@@ -731,6 +731,7 @@ proc ::docking::create_window {wnd} {
       "\.(fdock)?sgraph"              { ::tools::graphs::score::Refresh }
       "\.(fdock)?glistWin([0-9]+)"    { ::windows::gamelist::Open }
       "\.(fdock)?treeWin([0-9]+)"     { ::tree::make [lindex $regmatch end]}
+      "\.(fdock)?engineWin([0-9]+)"   { ::enginewin::Open [lindex $regmatch end]}
       "\.(fdock)?analysisWin([0-9]+)" { ::makeAnalysisWin [lindex $regmatch end] 0 0}
       "\.(fdock)?crosstableWin"       { ::crosstab::Open }
       }

@@ -13,31 +13,30 @@ array set ::enginewin::engState {} ; # closed idle run locked
 
 # Sends the updated position to the active engines
 proc ::enginewin::onPosChanged { {ids ""} } {
-    set msgData ""
+    set position ""
     foreach {id state} [array get ::enginewin::engState] {
         if {$state ne "run"} { continue }
         if {$ids ne "" && $id ni $ids} { continue }
-        if {$msgData eq ""} {
-            set msgData [list [sc_game UCI_currentPos]]
+        if {$position eq ""} {
+            set position [sc_game UCI_currentPos]
         }
-        ::engine::send $id Go $msgData
+        ::enginewin::updateDisplay $id ""
+        ::engine::send $id Go [list $position]
     }
 }
 
 proc ::enginewin::toggleStartStop {id} {
     if {![winfo exists .engineWin$id]} {
         ::enginewin::Open $id
-        .engineWin$id.display.btn.showDebug invoke
-        ::enginewin::connectEngine $id [lindex $::engines(list) 0]
-        .engineWin$id.config.header.go invoke
+        after 300 ".engineWin$id.config.header.go invoke"
         return
     }
     if {$::enginewin::engState($id) eq "idle"} {
-        set ::enginewin::engState($id) "run"
+        ::enginewin::changeState $id run
         ::enginewin::onPosChanged $id
     } else {
-        set ::enginewin::engState($id) "idle"
-        ::engine::send $id Stop
+        ::enginewin::changeState $id idle
+        ::engine::send $id StopGo
     }
 }
 
@@ -49,12 +48,15 @@ proc ::enginewin::Open { {id ""} } {
         }
     }
     set w .engineWin$id
-    ::win::createWindow $w "Engine Window"
+    if {! [::win::createWindow $w ""]} {
+        ::win::makeVisible $w
+        return
+    }
     set btn1 [::enginewin::frameConfig [ttk::frame $w.config] $id]
     $btn1 configure -command "
         grid forget $w.config
         grid $w.display -sticky news
-        set ::enginewin::engState($id) run
+        ::enginewin::changeState $id run
         ::enginewin::onPosChanged $id
     "
     set btn2 [::enginewin::frameDisplay [ttk::frame $w.display] $id]
@@ -67,13 +69,21 @@ proc ::enginewin::Open { {id ""} } {
 
     # The engine should be closed before the debug .text is destroyed
     bind $w.config <Destroy> "
-        ::engine::close $id
         unset ::enginewin::engState($id)
+        unset ::enginewin::position($id)
+        ::engine::close $id
+        ::enginelist::save \$::enginewin::engConfig($id)
+        unset ::enginewin::engConfig($id)
     "
     grid $w.config -sticky news
 
-    ::engine::setLogCmd $id
-    ::enginewin::clearAll $id
+    options.persistent ::enginewin_lastengine($id) ""
+    set lastEngine [lsearch -exact -inline -index 0 $::engines(list) $::enginewin_lastengine($id)]
+    set ::enginewin::engState($id) {}
+    ::enginewin::changeState $id closed
+    if {$lastEngine ne ""} {
+        catch { ::enginewin::connectEngine $id $lastEngine }
+    }
 }
 
 proc ::enginewin::frameConfig {w id} {
@@ -83,22 +93,23 @@ proc ::enginewin::frameConfig {w id} {
         $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
     "
     bind $w.header.engine <<ComboboxSelected>> "
-        set config \[lindex \$::engines(list) \[$w.header.engine current\]\]
-        lset config 4 {}
-        ::enginewin::connectEngine $id \$config
+        ::enginewin::connectEngine $id \[lindex \$::engines(list) \[$w.header.engine current\]\]
     "
     ttk::button $w.header.addpipe -text "add local" -command "::enginewin::addLocal $id"
     ttk::button $w.header.addnetwork -text "add remote" -command "::enginewin::addNetwork $id"
     ttk::button $w.header.clone -text "clone"
     ttk::button $w.header.delete -text "delete" -command "
-        set name \[lindex \$::enginewin::engConfig($id) 0 \]
-        ::enginelist::delete \[lsearch -exact -index 0 \$::engines(list) \$name \]
+        $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
+        ::enginelist::delete \[$w.header.engine current\]
+        ::engine::close $id
+        ::enginewin::changeState $id closed
     "
     grid $w.header.go $w.header.engine $w.header.addpipe $w.header.addnetwork \
          $w.header.clone $w.header.delete -sticky news
     grid columnconfigure $w.header 1 -weight 1
 
     autoscrollText both $w.options $w.options.text Treeview
+    $w.options.text configure -wrap none
 
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 1
@@ -112,13 +123,13 @@ proc ::enginewin::frameDisplay {w id} {
     ttk::frame $w.header
     autoscrollText y $w.header.info $w.header.info.text TLabel
     $w.header.info.text configure -wrap word -height 1
-    ttk::button $w.header.config -style Toolbutton -image tb_config
-    grid $w.header.info $w.header.config -sticky news
-    grid columnconfigure $w.header 0 -weight 1
+    ttk::button $w.header.config -style Toolbutton -image tb_tabmenu
+    grid $w.header.config $w.header.info -sticky news
+    grid columnconfigure $w.header 1 -weight 1
 
     set tab [font measure font_Regular "xxxxxxx"]
     autoscrollText both $w.pv $w.pv.lines Treeview
-    $w.pv.lines configure -wrap word -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
+    $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $w.pv.lines tag configure pv -lmargin2 [expr {$tab * 3}]
     grid propagate $w.pv 0
 
@@ -130,9 +141,8 @@ proc ::enginewin::frameDisplay {w id} {
     ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
         -command "::enginewin::toggleStartStop $id"
     ttk::button $w.btn.threats -text "Threats"
-    ttk::button $w.btn.showDebug -text "showDebug" \
-        -command "::enginewin::showDebug $w $id"
-    grid $w.btn.startStop $w.btn.threats $w.btn.showDebug
+    ttk::spinbox $w.btn.multipv -increment 1 -width 4
+    grid $w.btn.startStop $w.btn.threats $w.btn.multipv
 
     grid $w.header -sticky news
     grid $w.pv -sticky news
@@ -145,18 +155,89 @@ proc ::enginewin::frameDisplay {w id} {
     return $w.header.config
 }
 
-proc ::enginewin::showDebug {w id} {
-    if {[grid rowconfigure $w 2 -weight]} {
-        $w.btn.showDebug state !pressed
-        grid rowconfigure $w 2 -weight 0
-        ::engine::setLogCmd $id "" ""
-    } else {
-        $w.btn.showDebug state pressed
-        grid rowconfigure $w 2 -weight 1
-        ::engine::setLogCmd $id \
-            [list ::enginewin::logEngine $w.debug.lines "" ""]\
-            [list ::enginewin::logEngine $w.debug.lines header ">>"]
+proc ::enginewin::changeDisplayLayout {id param value} {
+    set w .engineWin$id.display
+    switch $param {
+        "scoreside" {
+            set idx 0
+        }
+        "notation" {
+            set idx 1
+        }
+        "wrap" {
+            set idx 2
+            $w.pv.lines configure -wrap $value
+        }
+        "debug" {
+            set idx 3
+            if {$value} {
+                grid rowconfigure $w 2 -weight 1
+                ::engine::setLogCmd $id \
+                    [list ::enginewin::logEngine $w.debug.lines "" ""]\
+                    [list ::enginewin::logEngine $w.debug.lines header ">>"]
+            } else {
+                grid rowconfigure $w 2 -weight 0
+                ::engine::setLogCmd $id "" ""
+            }
+        }
+        "multipv" {
+            if {$value eq ""} {
+                $w.btn.multipv configure -state disabled
+            } else {
+                lassign $value idx value min max
+                # TODO: bind focusout
+                $w.btn.multipv configure -state normal -from $min -to $max \
+                  -command "after idle {
+                    set go \[expr { \$::enginewin::engState($id) in {run lock} }\]
+                    ::enginewin::updateConfigSetOption $id $idx $w.btn.multipv
+                    if {\$go} {
+                        ::enginewin::onPosChanged $id
+                    }
+                }"
+            }
+            $w.btn.multipv set $value
+            return
+        }
+        default { error "changeDisplayLayout unknown $param" }
     }
+    lset ::enginewin::engConfig($id) 6 $idx $value
+}
+
+proc ::enginewin::changeState {id newState} {
+    if {$::enginewin::engState($id) eq $newState} { return }
+
+    set w .engineWin$id
+    if {$::enginewin::engState($id) eq "closed"} {
+        $w.config.header.go configure -state normal
+        $w.config.header.clone configure -state normal
+        $w.config.header.delete configure -state normal
+        $w.display.btn.startStop configure -state normal
+    }
+    switch $newState {
+      "closed" {
+          $w.config.header.go configure -state disabled
+          $w.config.header.clone configure -state disabled
+          $w.config.header.delete configure -state disabled
+          $w.display.btn.startStop state !pressed
+          $w.display.btn.startStop configure -state disabled
+
+          set ::enginewin_lastengine($id) ""
+          set ::enginewin::engConfig($id) {}
+          set ::enginewin::position($id) ""
+          ::setTitle .engineWin$id "Engine Window"
+          $w.config.header.engine set "[tr Engine]:"
+          $w.config.options.text configure -state normal
+          $w.config.options.text delete 1.0 end
+          $w.config.options.text configure -state disabled
+      }
+      "idle" {
+          $w.display.btn.startStop state !pressed
+      }
+      "run" {
+          $w.display.btn.startStop state pressed
+      }
+    }
+    set ::enginewin::engState($id) $newState
 }
 
 proc ::enginewin::logEngine {widget tag prefix msg} {
@@ -164,26 +245,24 @@ proc ::enginewin::logEngine {widget tag prefix msg} {
     $widget see end
 }
 
-proc ::enginewin::clearAll {id} {
-    unset -nocomplain ::enginewin::engConfig($id)
-    set ::enginewin::engState($id) "idle"
-
-    ::setTitle .engineWin$id "Engine Window"
-    ::enginewin::updateDisplay $id ""
-    .engineWin$id.config.header.engine set ""
-    .engineWin$id.config.options.text configure -state normal
-    .engineWin$id.config.options.text delete 1.0 end
-    .engineWin$id.config.options.text configure -state disabled
-
-    #TODO: disable buttons
-}
-
 proc ::enginewin::connectEngine {id config} {
-    lassign $config name cmd args dir netport time url uci options
-    set ::enginewin::engConfig($id) [lrange $config 0 3]
+    ::enginelist::save $::enginewin::engConfig($id)
 
-    ::setTitle .engineWin$id "Engine: $name"
+    lassign $config name cmd args dir elo time url uci options
+    if {[llength $url] != 5} {
+        set url [list white SAN word false ""]
+    }
+    lassign $url scoreside notation pvwrap debugframe netport
+    set ::enginewin::engConfig($id) [list $name $cmd $args $dir $elo $time $url $uci {}]
+
+    ::setTitle .engineWin$id "[tr Engine]: $name"
     ::enginewin::updateDisplay $id ""
+    ::enginewin::changeDisplayLayout $id scoreside $scoreside
+    ::enginewin::changeDisplayLayout $id notation $notation
+    ::enginewin::changeDisplayLayout $id wrap $pvwrap
+    ::enginewin::changeDisplayLayout $id debug $debugframe
+    ::enginewin::changeDisplayLayout $id multipv ""
+
     .engineWin$id.config.options.text configure -state normal
     .engineWin$id.config.options.text delete 1.0 end
     .engineWin$id.config.options.text insert 1.0 "Connecting..."
@@ -200,16 +279,16 @@ proc ::enginewin::connectEngine {id config} {
         ::engine::connect $id [list ::enginewin::callback $id] $cmd $args $protocol
     }]} {
         ERROR::MessageBox
-        ::enginewin::clearAll $id
+        ::enginelist::delete [lsearch -exact -index 0 $::engines(list) $name]
+        ::enginewin::changeState $id closed
         return
     }
-    #TODO: enable buttons
 
     if {[catch {
         if {[string match "auto_*" $netport]} {
-            lappend ::enginewin::engConfig($id) "auto_[::engine::netserver $id 0]"
+            lset ::enginewin::engConfig($id) 6 4 "auto_[::engine::netserver $id 0]"
         } else {
-            lappend ::enginewin::engConfig($id) [::engine::netserver $id $netport]
+            lset ::enginewin::engConfig($id) 6 4 [::engine::netserver $id $netport]
         }
     }]} {
         ERROR::MessageBox
@@ -224,15 +303,23 @@ proc ::enginewin::connectEngine {id config} {
 proc ::enginewin::callback {id msg} {
     lassign $msg msgType msgData
     switch $msgType {
-        "InfoConfig" { ::enginewin::updateConfig $id $msgData }
-        "InfoPV" { ::enginewin::updateDisplay $id $msgData }
+        "InfoConfig" {
+            ::enginewin::updateConfig $id $msgData
+            ::enginewin::changeState $id idle
+        }
+        "InfoGo" {
+            lassign $msgData ::enginewin::position($id)
+            ::enginewin::changeState $id run
+        }
+        "InfoPV" {
+            ::enginewin::updateDisplay $id $msgData
+        }
         "InfoReady" {
-            set ::enginewin::engState($id) "idle"
-            .engineWin$id.display.btn.startStop state !pressed
+            ::enginewin::changeState $id idle
         }
         "Disconnected" {
             tk_messageBox -message "The connection with the engine terminated unexpectedly."
-            ::enginewin::clearAll $id
+            ::enginewin::changeState $id closed
         }
     }
 }
@@ -240,7 +327,7 @@ proc ::enginewin::callback {id msg} {
 proc ::enginewin::addLocal {id} {
     if {[set fName [tk_getOpenFile]] != ""} {
         ::engine [list Name $fName Cmd $fName Dir .]
-        lset ::engines(list) end 7 {}
+        lset ::engines(list) end 7 {} ; # Change protocol from xboard to auto
         ::enginewin::connectEngine $id [lindex $::engines(list) end]
     }
 }
@@ -258,124 +345,228 @@ proc ::enginewin::addNetwork {id} {
     grid $w.cancel $w.ok
 }
 
-proc ::enginewin::updateConfig {id msgData} {
-    lassign $::enginewin::engConfig($id) name cmd args dir netport
-    lassign $msgData protocol netclients ::enginewin::options
-
+proc ::enginewin::createConfigWidgets {id options} {
     set w .engineWin$id.config.options.text
-    set focus [focus -displayof $w]
-    $w configure -state normal -wrap none
-    $w delete 1.0 end
 
-    $w insert end "[tr EngineName]:\t$name\n"
-    $w insert end "[tr EngineCmd]:\t$cmd\n"
-    $w insert end "[tr EngineArgs]:\t$args\n"
+    $w insert end "[tr EngineName]:\t"
+    ttk::entry $w.name
+    $w window create end -window $w.name
+
+    $w insert end "\n[tr EngineCmd]:\t"
+    $w insert end "\n" engcmd
+
+    $w insert end "[tr EngineArgs]:\t"
+    $w insert end "\n" engargs
 
     $w insert end "Protocol:\t"
-    ttk::combobox $w.protocol -width 9 -values {uci xboard2 xboard}
-    $w.protocol insert 0 $protocol
-    $w.protocol configure -state readonly
+    ttk::combobox $w.protocol -width 9 -values {xboard uci}
+    bind $w.protocol <<ComboboxSelected>> "
+        lset ::enginewin::engConfig($id) 7 \[ $w.protocol current \]
+        lset ::enginewin::engConfig($id) 8 {}
+        ::enginewin::connectEngine $id \$::enginewin::engConfig($id)
+    "
     $w window create end -window $w.protocol
-    $w insert end "\n"
 
-    $w insert end "Score as white\n"
-    $w insert end "SAN notation\n"
-    $w insert end "Wrap lines\n"
+    foreach {layout label values} [list \
+        scoreside "Score perspective" [list engine white] \
+        notation "Move lines notation" [list engine SAN] \
+        wrap "Wrap move lines" [list word char none] \
+        debug "Show debug frame" [list false true]
+    ] {
+        $w insert end "\n$label:\t"
+        ttk::combobox $w.$layout -state readonly -width 9 -values $values
+        bind $w.$layout <<ComboboxSelected>> "
+            ::enginewin::changeDisplayLayout $id $layout \[ $w.$layout get \]
+        "
+        $w window create end -window $w.$layout
+    }
 
-    $w insert end "Accept Network Connections:\t"
+    $w insert end "\nAccept Network Connections:\t"
     ttk::combobox $w.netd -state readonly -width 9 -values {off on auto_port}
     $w window create end -window $w.netd
     $w insert end "  port:"
     ttk::entry $w.netport -width 6 -validate key -validatecommand { string is integer %P }
     $w window create end -window $w.netport
-    $w insert end "\n"
-    if {$netport eq ""} {
-        $w.netd set "off"
-        $w.netport configure -state disabled
-    } elseif {[string match "auto_*" $netport]} {
-        $w.netd set "auto_port"
-        $w.netport insert 0 [string range $netport 5 end]
-        $w.netport configure -state readonly
-    } else {
-        $w.netd set "on"
-        $w.netport insert 0 $netport
-        bind $w.netport <FocusOut> "::enginewin::updateConfigNetd $id $w"
-    }
     bind $w.netd <<ComboboxSelected>> "::enginewin::updateConfigNetd $id $w"
-    if {[llength $netclients]} {
-        $w insert end "Network Connections:"
-        foreach client $netclients {
-            $w insert end "\t$client\n"
-        }
-    }
-    $w insert end "\n"
+    $w insert end "\n" netclients
 
-    if {[llength $::enginewin::options]} {
+    if {[llength $options]} {
+        $w insert end "\n"
         ttk::button $w.reset -style Pad0.Small.TButton -text "Reset Options" \
             -command "::enginewin::updateConfigReset $id"
         $w window create end -window $w.reset
-        $w insert end "\n"
     }
-
-    for {set i 0} {$i < [llength $::enginewin::options]} {incr i} {
-        lassign [lindex $::enginewin::options $i] name value type default min max var_list internal
+    for {set i 0} {$i < [llength $options]} {incr i} {
+        lassign [lindex $options $i] name value type default min max var_list internal
         if {$internal} { continue }
-        if {$value eq $default} {
-            $w insert end "$name\t"
-        } else {
-            $w insert end "$name\t" header
-        }
-        set endline "\n"
+
+        $w insert end "\n$name\t"
         set btn ""
         if {$type eq "button" || $type eq "save" || $type eq "reset"} {
             set btn $name
         } else {
             if {$type eq "spin" || $type eq "slider"} {
                 ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1
-                set endline " (Range: $min ... $max)\n"
             } elseif {$type eq "combo"} {
                 lassign [lsort -decreasing -integer [lmap elem $var_list { string length $elem }]] maxlen
                 ttk::combobox $w.value$i -width [incr maxlen] -values $var_list
             } elseif {$type eq "check"} {
                 ttk::combobox $w.value$i -width 6 -values {false true}
             } else {
-                set wd [string length $value]
-                if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
-                ttk::entry $w.value$i -width $wd
-                $w window create end -window $w.value$i
+                ttk::entry $w.value$i
                 if {$type eq "file" || $type eq "path"} {
                     set btn "..."
                 }
             }
+            bind $w.value$i <FocusOut> "::enginewin::updateConfigSetOption $id $i $w.value$i"
             $w window create end -window $w.value$i
-            $w.value$i insert 0 $value
-            bind $w.value$i <FocusOut> "::enginewin::updateConfigSetOption $id $i %W"
         }
-        if {$btn != ""} {
-            ttk::button $w.openfile$i -style Pad0.Small.TButton -text $btn \
+        if {$btn ne ""} {
+            ttk::button $w.button$i -style Pad0.Small.TButton -text $btn \
                 -command "::enginewin::updateConfigBtn $id \"$name\" $type"
-            $w window create end -window $w.openfile$i
+            $w window create end -window $w.button$i
+        } elseif {$type eq "spin" || $type eq "slider"} {
+            $w insert end " (Range: $min ... $max)"
         }
-        $w insert end $endline
     }
-    $w configure -tabs {5c}
+    $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
+}
+
+proc ::enginewin::updateConfig {id msgData} {
+    lassign $msgData protocol netclients options
+    lassign $::enginewin::engConfig($id) name cmd args dir elo time url uci
+    lassign $url scoreside notation pvwrap debugframe netport
+
+    if {$uci == ""} {
+        if {[set idx [lsearch -index 0 $options "myname"]] >=0} {
+            set name [::enginelist::rename $name [lindex $options $idx 1]]
+            lset ::enginewin::engConfig($id) 0 $name
+        }
+        lset ::enginewin::engConfig($id) 7 [expr { $protocol eq "uci" }]
+    }
+
+    .engineWin$id.config.header.engine set $name
+    set ::enginewin_lastengine($id) $name
+
+    set w .engineWin$id.config.options.text
+    $w configure -state normal
+
+    set oldOptions [lindex $::enginewin::engConfig($id) 8]
+    lset ::enginewin::engConfig($id) 8 $options
+    if {![winfo exists $w.name] || ![string equal \
+        [lmap elem $oldOptions {lreplace $elem 1 1}] \
+        [lmap elem $options {lreplace $elem 1 1}] \
+    ]} {
+        set oldOptions {}
+        $w delete 1.0 end
+        ::enginewin::createConfigWidgets $id $options
+    }
+
+    $w.name delete 0 end
+    $w.name insert end "$name"
+    set wd [string length $name]
+    if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
+    $w.name configure -width $wd
+    bind $w.name <FocusOut> "
+        if {\[ lindex \$::enginewin::engConfig($id) 0 \] ne \[ $w.name get \]} {
+            lset ::enginewin::engConfig($id) 0 \[::enginelist::rename \[ lindex \$::enginewin::engConfig($id) 0 \] \[ $w.name get \]\]
+            .engineWin$id.config.header.engine set \[ lindex \$::enginewin::engConfig($id) 0 \]
+            set ::enginewin_lastengine($id) \[ lindex \$::enginewin::engConfig($id) 0 \]
+        }
+    "
+
+    $w replace engcmd.first engcmd.last "$cmd\n" engcmd
+
+    $w replace engargs.first engargs.last "$args\n" engargs
+
+    $w.protocol set $protocol
+    $w.protocol configure -state [expr { $uci == 2 ? "disabled" : "readonly" }]
+
+    $w.scoreside set $scoreside
+
+    $w.notation set $notation
+    foreach elem [lsearch -all -inline -index 0 $options "san"] {
+        # Check if it is an internal option (an xboard engine with san=1)
+        if {[lindex $elem 7]} {
+            $w.notation set "engine"
+            $w.notation configure -state disabled
+            ::enginewin::changeDisplayLayout $id notation "engine"
+            break
+        }
+    }
+
+    $w.wrap set $pvwrap
+
+    $w.debug set $debugframe
+
+    if {$netport eq ""} {
+        $w.netd set "off"
+        $w.netport configure -state disabled
+        bind $w.netport <FocusOut> {}
+    } elseif {[string match "auto_*" $netport]} {
+        $w.netd set "auto_port"
+        $w.netport insert 0 [string range $netport 5 end]
+        $w.netport configure -state readonly
+        bind $w.netport <FocusOut> {}
+    } else {
+        $w.netd set "on"
+        $w.netport insert 0 $netport
+        bind $w.netport <FocusOut> "::enginewin::updateConfigNetd $id $w"
+    }
+    set strclients "\n"
+    if {[llength $netclients]} {
+        append strclients "Network Connections:"
+        foreach client $netclients {
+            append strclients "\t$client\n"
+        }
+    }
+    $w replace netclients.first netclients.last $strclients netclients
+
+    set statereset 2
+    for {set i 0} {$i < [llength $options]} {incr i} {
+        lassign [lindex $options $i] name value type default min max var_list internal
+        if {$internal || $type in [list button save reset]} { continue }
+        if {$statereset} {
+            if {$value ne $default} {
+                $w.reset configure -state normal
+                set statereset 0
+            } elseif {$statereset != 1} {
+                $w.reset configure -state disabled
+                set statereset 1
+            }
+        }
+        if {$oldOptions ne "" && $value eq [lindex $oldOptions $i 1]} { continue }
+
+        if {$value eq $default} {
+            $w tag remove header "$w.value$i linestart" $w.value$i
+        } else {
+            $w tag add header "$w.value$i linestart" $w.value$i
+        }
+        if {$type eq "string" || $type eq "file" || $type eq "path"} {
+            set wd [string length $value]
+            if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
+            $w.value$i configure -width $wd
+        }
+        $w.value$i delete 0 end
+        $w.value$i insert 0 $value
+
+        if {[string equal -nocase $name "multipv"]} {
+            ::enginewin::changeDisplayLayout $id multipv [list $i $value $min $max]
+        }
+    }
+
     $w configure -state disabled
-    if {[lsearch -exact [winfo children $w] $focus] != -1} {
-        focus $focus
-        $w see $focus
-    }
 }
 
 proc ::enginewin::updateConfigSetOption {idEngine idx widgetValue} {
-    lassign [lindex $::enginewin::options $idx] name oldValue type default min max
+    lassign [lindex [lindex $::enginewin::engConfig($idEngine) 8] $idx] name oldValue type default min max
     set value [$widgetValue get]
     if {$value eq $oldValue} {
         return
     }
     if {$value eq ""} {
         set value $default
-    }
-    if {$min != "" && $max != ""} {
+    } elseif {$min != "" && $max != ""} {
         if {$value < $min || $value > $max} {
             $widgetValue configure -style Error.TSpinbox
             return
@@ -405,48 +596,57 @@ proc ::enginewin::updateConfigBtn {idEngine name type} {
     ::engine::send $idEngine SetOptions [list [list $name $value]]
 }
 
-proc ::enginewin::updateConfigReset {idEngine} {
+proc ::enginewin::updateConfigReset {id} {
+    if {[lindex $::enginewin::engConfig($id) 7] != 2} {
+        # Local engine: re-open
+        lset ::enginewin::engConfig($id) 8 {}
+        ::enginewin::connectEngine $id $::enginewin::engConfig($id)
+        return
+    }
+
     set options {}
-    foreach option $::enginewin::options {
+    foreach option [lindex $::enginewin::engConfig($id) 8] {
         lassign $option name value type default min max var_list internal
         if {! $internal && $value ne $default} {
             lappend options [list $name $default]
         }
     }
     if {[llength $options]} {
-        ::engine::send $idEngine SetOptions $options
+        ::engine::send $id SetOptions $options
     }
 }
 
 proc ::enginewin::updateConfigNetd {id w} {
     bind $w.netport <FocusOut> {}
-    $w.netport configure -state normal
+    $w.netport configure -state normal -style {}
     set port [$w.netport get]
     $w.netport delete 0 end
-    $w.netport configure -style {}
     if {[catch {
         switch [$w.netd get] {
           "auto_port" {
               set port [::engine::netserver $id 0]
               $w.netport insert 0 $port
               $w.netport configure -state readonly
-              lset ::enginewin::engConfig($id) 4 "auto_$port"
+              lset ::enginewin::engConfig($id) 6 4 "auto_$port"
           }
           "on" {
               bind $w.netport <FocusOut> "::enginewin::updateConfigNetd $id $w"
               set port [::engine::netserver $id $port]
               $w.netport insert 0 $port
-              lset ::enginewin::engConfig($id) 4 $port
+              lset ::enginewin::engConfig($id) 6 4 $port
           }
           default {
               set port [::engine::netserver $id ""]
               $w.netport insert 0 $port
               $w.netport configure -state disabled
-              lset ::enginewin::engConfig($id) 4 $port
+              lset ::enginewin::engConfig($id) 6 4 $port
           }
         }
     }]} {
         $w.netport configure -style Error.TEntry
+        if {[$w.netd get] ne "on"} {
+            $w.netport configure -state disabled
+        }
         ERROR::MessageBox
     }
 }
@@ -475,12 +675,24 @@ proc ::enginewin::updateDisplay {id msgData} {
     if {$msgData eq ""} {
         $w.pv.lines delete 1.0 end
         $w.pv.lines configure -state disabled
-        set ::enginewin::engState($id) "run"
-        $w.btn.startStop state pressed
         return
     }
 
+    # Debug:
+    # if {[sc_game UCI_currentPos] ne $::enginewin::position($id)} {
+    #     puts "PV line for a wrong position:"
+    #     puts "Current: [sc_pos fen]"
+    #     puts "Was: $::enginewin::position($id)"
+    #     puts "Time: $time"
+    # }
+    lassign [lindex $::enginewin::engConfig($id) 6] scoreside notation
+    if {$notation eq "SAN"} {
+        set pv [::uci::formatPv $pv]
+    }
     if {$score ne ""} {
+        if {$scoreside eq "white" && [sc_pos side] eq "black"} {
+            set score [expr { - $score }]
+        }
         if {$score_type eq "mate"} {
             if {$score >= 0} {
                 set score "+M$score"

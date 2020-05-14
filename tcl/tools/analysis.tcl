@@ -185,11 +185,44 @@ proc ::enginelist::read {} {
     catch {source [scidConfigFile engines]}
 }
 
+# Change the name of an engine and write the "Engine list" file.
+# Returns the new name on success or the old name on error.
+proc ::enginelist::rename {oldname newname} {
+    set idx [lsearch -exact -index 0 $::engines(list) $oldname]
+    if {$idx <0 || [lsearch -exact -index 0 $::engines(list) $newname] >= 0} {
+        return $oldname
+    }
+    lset ::engines(list) $idx 0 $newname
+    ::enginelist::write
+    return $newname
+}
+
+# Search a previous configuration with the same name and replace it.
+# If necessary write the "Engine list" file.
+proc ::enginelist::save {enginecfg} {
+    lassign $enginecfg name
+    set idx [lsearch -exact -index 0 $::engines(list) $name]
+    if {$idx < 0} {
+        return 0
+    }
+    lset enginecfg 8 [lmap elem [lindex $enginecfg 8] {
+        lassign $elem name value type default min max var_list internal
+        if {$internal || $value eq $default} { continue }
+        list $name $value
+    }]
+    if {[lindex $::engines(list) $idx] eq $enginecfg} {
+        return 0
+    }
+    lset ::engines(list) $idx $enginecfg
+    ::enginelist::write
+    return 1
+}
+
 # ::enginelist::write:
 #   Writes the user Engine list file.
 #
 proc ::enginelist::write {} {
-    global engines ::uci::newOptions
+    global engines
     
     set enginesFile [scidConfigFile engines]
     set enginesBackupFile [scidConfigFile engines.bak]

@@ -8,6 +8,22 @@
 
 ### Manage the communication with chess engines
 
+# Communication takes place through the exchange of messages.
+# Every local or remote client can send a message and the reply will be
+# broadcasted to all the clients.
+# Events:
+# connection local or remote    >> InfoConfig
+# net client disconnect         >> InfoConfig
+# engine crash/local disconnect >> Disconnected
+# Messages:
+# SetOptions >> InfoConfig
+# NewGame    >> InfoReady
+# StopGo     >> InfoReady
+# Go         >> InfoGo
+#            >> the engine will repeatedly send InfoPV replies until a new
+#               message is received or one of the Go's limits is reached.
+
+
 namespace eval engine {}
 
 # Sets the hooks for logging the received and sent i/o (default: none).
@@ -59,7 +75,9 @@ proc ::engine::close {id} {
     if {[info exists ::engconn(channel_$id)]} {
         chan event $::engconn(channel_$id) readable {}
         if {$::engconn(protocol_$id) ne "network"} {
-            ::engine::send $id Stop
+            if {$::engconn(waitReply_$id) eq "Go"} {
+                {*}$::engconn(StopGo$id)
+            }
             ::engine::rawsend $id "quit"
         }
         ::engine::destroy_ $id
@@ -69,7 +87,8 @@ proc ::engine::close {id} {
 # Sends a message to the engine.
 # If the engine is local and a reply to a previous message is expected,
 # the message is queued and sent after the reply has arrived.
-# The "Stop" message is always sent immediately, but only if the engine is thinking.
+# Sending a message also cancels queued "Go" messages.
+# The "StopGo" message is always sent immediately, but only if the engine is thinking.
 proc ::engine::send {id msg {msgData ""}} {
     if {![info exists ::engconn(channel_$id)]} {
         error "The engine is not open"
@@ -80,18 +99,19 @@ proc ::engine::send {id msg {msgData ""}} {
         return
     }
     if {$::engconn(waitReply_$id) eq "Go"} {
-        set ::engconn(waitReply_$id) "Stop"
-        {*}$::engconn(Stop$id)
+        set ::engconn(waitReply_$id) "StopGo"
+        {*}$::engconn(StopGo$id)
     }
-    if {$msg ne "Stop"} {
-        if {[set idx [lsearch -index 0 $::engconn(sendQueue_$id) $msg]] != -1} {
-            lset ::engconn(sendQueue_$id) $idx $msgData
-        } else {
-            lappend ::engconn(sendQueue_$id) [list $msg $msgData]
-        }
-        if {$::engconn(waitReply_$id) == ""} {
-            ::engine::done_ $id
-        }
+    if {[set idx [lsearch -index 0 $::engconn(sendQueue_$id) "Go"]] != -1} {
+        set ::engconn(sendQueue_$id) [lreplace $::engconn(sendQueue_$id) $idx $idx]
+    }
+    if {$msg eq "StopGo"} {
+        set ::engconn(sendQueue_$id) [linsert $::engconn(sendQueue_$id) 0 [list $msg $msgData]]
+    } else {
+        lappend ::engconn(sendQueue_$id) [list $msg $msgData]
+    }
+    if {$::engconn(waitReply_$id) == ""} {
+        ::engine::done_ $id
     }
 }
 
@@ -131,7 +151,7 @@ proc ::engine::destroy_ {id} {
     unset -nocomplain ::engconn(SetOptions$id)
     unset -nocomplain ::engconn(NewGame$id)
     unset -nocomplain ::engconn(Go$id)
-    unset -nocomplain ::engconn(Stop$id)
+    unset -nocomplain ::engconn(StopGo$id)
     unset -nocomplain ::engconn(parseline$id)
 }
 
@@ -148,18 +168,12 @@ proc ::engine::closeServer_ {id} {
 
 proc ::engine::handshake_ {id protocols} {
     set ::engconn(protocol_$id) [lindex $protocols 0]
-    if {[llength $protocols] > 1} {
-        set next [list [lrange $protocols 1 end]]
-        set ::engconn(nextHandshake_$id) [after 3000 ::engine::handshake_ $id $next]
-    } else {
-        unset -nocomplain ::engconn(nextHandshake_$id)
-    }
     switch $::engconn(protocol_$id) {
       "uci" {
         set ::engconn(SetOptions$id) [list ::uci::sendOptions $id]
         set ::engconn(NewGame$id) [list ::uci::sendNewGame $id]
         set ::engconn(Go$id) [list ::uci::sendGo $id]
-        set ::engconn(Stop$id) [list ::engine::rawsend $id "stop"]
+        set ::engconn(StopGo$id) [list ::engine::rawsend $id "stop"]
         set ::engconn(parseline$id) "::uci::parseline"
 
         set ::engconn(waitReply_$id) "hello"
@@ -169,19 +183,25 @@ proc ::engine::handshake_ {id protocols} {
         set ::engconn(SetOptions$id) [list ::xboard::sendOptions $id]
         set ::engconn(NewGame$id) [list ::xboard::sendNewGame $id]
         set ::engconn(Go$id) [list ::xboard::sendGo $id]
-        set ::engconn(Stop$id) [list ::xboard::sendStop $id]
+        set ::engconn(StopGo$id) [list ::xboard::sendStopGo $id]
         set ::engconn(parseline$id) "::xboard::parseline"
 
         set ::engconn(waitReply_$id) "hello"
         ::engine::rawsend $id "xboard"
         ::engine::rawsend $id "protover 2"
-        after 2000 "::engine::done_ $id"
       }
       "network" {
       }
       default {
         error "Unknown engine protocol"
       }
+    }
+    if {[llength $protocols] > 1} {
+        set next [list [lrange $protocols 1 end]]
+        set ::engconn(nextHandshake_$id) [after 2000 ::engine::handshake_ $id $next]
+    } else {
+        unset -nocomplain ::engconn(nextHandshake_$id)
+        after 2000 "::engine::done_ $id"
     }
 }
 
@@ -235,7 +255,7 @@ proc ::engine::onMessages_ {id channel} {
             ::engine::done_ $id
         }
         if {[info exists ::engconn(InfoPV_$id)]} {
-            if {$::engconn(waitReply_$id) ne "Stop"} {
+            if {$::engconn(waitReply_$id) ne "StopGo"} {
                 ::engine::reply $id [list InfoPV $::engconn(InfoPV_$id)]
             }
             unset ::engconn(InfoPV_$id)
@@ -245,23 +265,29 @@ proc ::engine::onMessages_ {id channel} {
 }
 
 proc ::engine::done_ {id} {
+    after cancel "::engine::done_ $id"
     switch $::engconn(waitReply_$id) {
         "hello" {
             if {[info exists ::engconn(nextHandshake_$id)]} {
                 after cancel $::engconn(nextHandshake_$id)
-                unset -nocomplain ::engconn(nextHandshake_$id)
+                unset ::engconn(nextHandshake_$id)
             }
             ::engine::replyInfoConfig $id
          }
         "SetOptions" { ::engine::replyInfoConfig $id }
-        "Stop"    { ::engine::reply $id [list InfoReady ""] }
         "NewGame" { ::engine::reply $id [list InfoReady ""] }
     }
     set ::engconn(waitReply_$id) ""
 
-    if { [llength $::engconn(sendQueue_$id)] } {
+    while { [llength $::engconn(sendQueue_$id)] } {
         lassign [lindex $::engconn(sendQueue_$id) 0] msg msgData
         set ::engconn(sendQueue_$id) [lrange $::engconn(sendQueue_$id) 1 end]
+
+        if {$msg eq "StopGo"} {
+            # The "StopGo" message was already sent in ::engine::send
+            ::engine::reply $id [list InfoReady ""]
+            continue
+        }
         set ::engconn(waitReply_$id) $msg
         if {$msgData eq ""} {
             {*}$::engconn($msg$id)
@@ -269,9 +295,10 @@ proc ::engine::done_ {id} {
             {*}$::engconn($msg$id) $msgData
         }
         if {$msg eq "Go"} {
-            # Immediately send an empty InfoPV in respose to a Go message
-            ::engine::reply $id [list InfoPV ""]
+            # Immediately send an InfoGo reply
+            ::engine::reply $id [list InfoGo $msgData]
         }
+        break
     }
 }
 
@@ -327,13 +354,15 @@ proc ::xboard::sendOptions {id msgData} {
     foreach option $msgData {
         lassign $option name value
         set type [::engine::updateOption $id $name $value]
-        if {$type eq "button" || $type eq "save"} {
-            ::engine::rawsend $id "$name"
+        if {$name in {memory cores egtpath} } {
+            ::engine::rawsend $id "$name $value"
+        } elseif {$value eq ""} {
+            ::engine::rawsend $id "option $name"
         } else {
-            ::engine::rawsend $id "$name=$value"
+            ::engine::rawsend $id "option $name=$value"
         }
     }
-    ::engine::rawsend $id "ping 1"
+    after 200 "::engine::done_ $id"
 }
 
 proc ::uci::sendNewGame {id msgData} {
@@ -367,14 +396,19 @@ proc ::xboard::sendNewGame {id msgData} {
     if {[lsearch -index 0 $::engconn(options_$id) "ping"] != -1} {
         ::engine::rawsend $id "ping 1"
     } else {
-        after 300 "::engine::done_ $id"
+        after 500 "::engine::done_ $id"
     }
 }
 
 proc ::uci::sendGo {id msgData} {
-    lassign $msgData position
+    lassign $msgData position limits
+    if {$limits == ""} {
+        set limits "infinite"
+    } else {
+        set limits [join $limits]
+    }
     ::engine::rawsend $id $position
-    ::engine::rawsend $id "go infinite"
+    ::engine::rawsend $id "go $limits"
 }
 
 proc ::xboard::sendGo {id msgData} {
@@ -393,16 +427,11 @@ proc ::xboard::sendGo {id msgData} {
         ::engine::rawsend $id "$usermove$move"
     }
     ::engine::rawsend $id "analyze"
-    if {[lsearch -index 0 $::engconn(options_$id) "ping"] != -1} {
-        ::engine::rawsend $id "ping 1"
-    }
 }
 
-proc ::xboard::sendStop {id} {
+proc ::xboard::sendStopGo {id} {
     ::engine::rawsend $id "exit"
-    if {[lsearch -index 0 $::engconn(options_$id) "ping"] == -1} {
-        after 500 "::engine::done_ $id"
-    }
+    after 500 "::engine::done_ $id"
 }
 
 proc ::xboard::parseline {id line} {
@@ -427,37 +456,72 @@ proc ::xboard::parseline {id line} {
         set line [string range $line 8 end]
         foreach {feat name default} [regexp -all -inline {(\w+)\s*=\s*("[^"]*"|\d+)} $line] {
             set default [string trim $default \"]
-            if {$name eq "done"} {
-                after cancel "::engine::done_ $id"
-                if {$default} {
-                    return 1
+            set type {}
+            set min {}
+            set max {}
+            set var {}
+            if {$name eq "option"} {
+                set internal 0
+                # everything before " -" is considered the name
+                lassign [regexp -inline {^(.*?)\s+-(\w+)\s*(.*)$} $default] -> name type extra
+                if {$type eq "check" || $type eq "spin" || $type eq "slider"} {
+                    lassign [split $extra] default min max
+                } elseif {$type eq "string" || $type eq "file" || $type eq "path"} {
+                    set default $extra
+                } elseif {$type eq "combo"} {
+                    set var [split [string map [list " /// " \0] $extra] \0]
+                    set idx [lsearch $var {\**}]
+                    if {$idx >= 0} {
+                        set default [string range [lindex $var $idx] 1 end]
+                        lset var $idx $default
+                    } else {
+                        set default [lindex $var 0]
+                    }
+                } elseif {$type eq "button" || type eq "save"} {
+                    set default ""
+                } else {
+                    # Unknown type: ignore
+                    set type ""
                 }
             } else {
-                set type {}
-                set min {}
-                set max {}
-                set var {}
-                if {$name eq "option"} {
-                    # everything before " -" is considered the name
-                    regexp {^(.*?)\s+-(\w+)\s*(.*)$} $default -> name type extra
-                    if {![info exists extra]} {
-                        set default {}
-                    } elseif {$type eq "check" || $type eq "spin" || $type eq "slider"} {
-                        lassign [split $extra] default min max
-                    } elseif {$type eq "string" || $type eq "file" || $type eq "path"} {
-                        set default $extra
-                    } elseif {$type eq "combo"} {
-                        set var [split [string map [list " /// " \0] $extra] \0]
-                        set idx [lsearch $var {\**}]
-                        if {$idx >= 0} {
-                            set default [string range [lindex $var $idx] 1 end]
-                            lset var $idx $default
-                        } else {
-                            set default [lindex $var 0]
-                        }
+                if {$name in {done ping setboard san usermove nps time reuse memory smp \
+                              variants name myname egt } } {
+                    set internal 1
+                    ::engine::rawsend $id "accepted $name"
+                } else {
+                    ::engine::rawsend $id "rejected $name"
+                    continue
+                }
+                if {$name eq "done"} {
+                    after cancel "::engine::done_ $id"
+                    if {$default} {
+                        return 1
                     }
                 }
-                set internal [expr {$name in {ping usermove}}]
+                if {$name eq "time" || $name eq "reuse"} {
+                    set default [expr {! $default }]
+                }
+                if {$default == 0} {
+                    continue
+                }
+                if {$name eq "memory"} {
+                    set internal 0
+                    set type spin
+                    set default 1
+                    set min 1
+                    set max 2147483646
+                } elseif {$name eq "smp"} {
+                    set internal 0
+                    set name "cores"
+                    set type spin
+                    set default 1
+                    set min 1
+                    set max 2147483646
+                } else {
+                    set type "string"
+                }
+            }
+            if {$name ne "" && $type ne ""} {
                 lappend ::engconn(options_$id) \
                     [list $name $default $type $default $min $max $var $internal]
             }
@@ -551,6 +615,12 @@ proc ::uci::parseline {id line} {
         }
         lappend ::engconn(options_$id) [list [join $name] [join $default] \
             [join $type] [join $default] [join $min] [join $max] $var $internal]
+        return 0
+    }
+
+    if {[string match "id name *" $line]} {
+        set name [string range $line 8 end]
+        lappend ::engconn(options_$id) [list myname $name string $name {} {} {} 1]
         return 0
     }
 
