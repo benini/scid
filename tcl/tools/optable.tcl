@@ -208,9 +208,9 @@ proc ::optable::makeReportWin {args} {
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
     
+    # TODO: Is it really ok for the text to not be a child of the frame (grid propagate)?
     autoscrollText y $w.scroll $w.text Treeview
     $w.text configure -height 30 -width 85 -font font_Small -wrap word -state normal
-    ::htext::init $w.text
     ::htext::init $w.text
     ttk::frame $w.b
     ttk::button $w.b.previewLaTeX -textvar ::tr(OprepViewLaTeX) \
