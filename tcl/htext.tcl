@@ -349,8 +349,8 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         $w tag bind "$goTag" <ButtonRelease-1> \
             "catch {$w see \[lindex \[$w tag nextrange $goName 1.0\] 0\]}"
         $w tag bind $goTag <Any-Enter> \
-            "$w tag configure \"$goTag\" -foreground white
-        $w tag configure \"$goTag\" -background DodgerBlue4
+            "$w tag configure \"$goTag\" -foreground yellow
+        $w tag configure \"$goTag\" -background maroon
         $w configure -cursor hand2"
         $w tag bind $goTag <Any-Leave> \
             "$w tag configure \"$goTag\" -foreground {}
