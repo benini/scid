@@ -209,7 +209,7 @@ proc ::optable::makeReportWin {args} {
     bind $w <Key-End> "$w.text yview moveto 0.99"
     
     autoscrollText y $w.scroll $w.text Treeview
-    $w.text configure -height 30 -width 85 -font font_Small -state normal
+    $w.text configure -height 30 -width 85 -font font_Small -wrap word -state normal
     ::htext::init $w.text
     ::htext::init $w.text
     ttk::frame $w.b
