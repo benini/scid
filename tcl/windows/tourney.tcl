@@ -66,7 +66,7 @@ proc ::tourney::Open {} {
   $w.t.text tag configure elo -foreground Green
   $w.t.text tag configure best -foreground steelBlue
   $w.t.text tag configure event -foreground firebrick3
-  $w.t.text tag configure title -font font_SmallBold -background DodgerBlue2
+  $w.t.text tag configure title -font font_SmallBold -background lightSteelBlue
 
   set font font_Small
   set fbold font_SmallBold
@@ -232,7 +232,7 @@ proc ::tourney::refresh {{option ""}} {
     $t insert end $::tr(TmtNone)
   }
 
-  set hc LightYellow4
+  set hc yellow
   set count 0
   foreach tmt $tlist {
     incr count

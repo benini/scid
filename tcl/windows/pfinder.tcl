@@ -54,7 +54,7 @@ proc ::plist::Open {} {
   $w.t.text tag configure ng -foreground DodgerBlue3
   $w.t.text tag configure date -foreground firebrick3
   $w.t.text tag configure elo -foreground Green
-  $w.t.text tag configure title -background DodgerBlue2
+  $w.t.text tag configure title -background lightSteelBlue
 
   set font font_Small
   set fbold font_SmallBold
@@ -155,7 +155,7 @@ proc ::plist::refresh {} {
     return
   }
 
-  set hc LightYellow4
+  set hc yellow
   set count 0
   foreach player $pdata {
     incr count
