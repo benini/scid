@@ -72,7 +72,7 @@ jobs:
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
       cd stockfish\src
-      cl /DNDEBUG /DUSE_POPCNT /GS- /MT /O2 /Oi /Ot /Oy /GL *.cpp syzygy/*.cpp /link /STACK:reserve=8388608 /OUT:stockfish.exe
+      cl /DNDEBUG /DUSE_POPCNT /GS- /MT /O2 /Oi /Ot /Oy /GL *.cpp syzygy/*.cpp /link /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
     displayName: Generate stockfish
   - script: |
@@ -217,4 +217,51 @@ jobs:
     displayName: 'Publish Artifact: macOS static x64'
     inputs:
       artifactName: macOS_static_x64
+      PathtoPublish: '$(build.artifactstagingdirectory)'
+
+- job: macOS_mojave_static
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+  - script: |
+      mkdir tcltk && cd tcltk
+      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      cd tcl && cd unix
+      ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
+      make && make install
+    displayName: Generate tcl library
+  - script: |
+      cd tcltk
+      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      cd tk && cd unix
+      ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
+      make && make install
+    displayName: Generate tk library
+  - script: |
+      mkdir build && cd build
+      export LDFLAGS="-lz -framework CoreFoundation"
+      cmake -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS="-fno-exceptions -fno-rtti" \
+            -DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/scid_macos \
+            -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)/tcltk/include \
+            -DTCL_LIBRARY=$(Build.SourcesDirectory)/tcltk/lib/libtcl8.6.a \
+             $(Build.SourcesDirectory)
+      make VERBOSE=1
+      make install
+    displayName: Generate SCID
+  - script: |
+      cd scid_macos
+      mv bin engines
+      mkdir lib
+      cp $(Build.SourcesDirectory)/tcltk/lib/*.dylib lib/
+      cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8 lib/
+      cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8.6 lib/
+      cp -R $(Build.SourcesDirectory)/tcltk/lib/tk8.6 lib/
+      cd ..
+      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.14.tar.gz' scid_macos
+    displayName: Add the tcl/tk library to the package
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: macOS-10.14 static x64'
+    inputs:
+      artifactName: macOS_10_14_static_x64
       PathtoPublish: '$(build.artifactstagingdirectory)'
