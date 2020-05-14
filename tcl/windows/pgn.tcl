@@ -148,7 +148,7 @@ namespace eval pgn {
     ::pgn::ConfigMenus
     
     autoscrollText y $w.frame $w.text Treeview
-    $w.text configure -wrap word -state normal \
+    $w.text configure -wrap word -background $pgnColor(Background) -state normal \
         -tabs {1c right 2c 4c}
     if { $::pgn::boldMainLine } {
         $w.text configure -font font_Bold
