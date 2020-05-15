@@ -6,8 +6,6 @@
 ############################################################
 ### Main window menus:
 
-option add *Menu*TearOff 0
-
 menu .menu
 
 ## Mac Application menu has to be before any call to configure.

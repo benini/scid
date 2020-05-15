@@ -379,12 +379,40 @@ proc createFonts {} {
 }
 createFonts
 
+# Workaround: set the options of ttkEntry.c widgets that don't work with ttk::style
+set ::themeOptions {}
+proc styleOption {themeName pattern value} {
+  lappend ::themeOptions [list $themeName $pattern $value]
+}
+
 # Load darktheme, must load here to have it in place if used
 source -encoding utf-8 [file nativename [file join $::scidTclDir "darktheme.tcl"]]
 # Load more theme
 if { [file exists $::ThemePackageFile] } {
   catch { ::safeSourceStyle $::ThemePackageFile }
 }
+
+# The font for ttkEntry.c widgets cannot be set with ttk::style
+option add *TCombobox*font font_Regular
+option add *TEntry.font font_Regular
+option add *TSpinbox.font font_Regular
+
+# Set the menu options
+option add *Menu*TearOff 0
+option add *Menu*Font font_Menu
+foreach col [array names ::menuColor] {
+  option add *Menu.$col $::menuColor($col)
+}
+
+# Add the theme's options only when the theme is in use
+bind . <<ThemeChanged>> {
+  if {[string equal %W "."]} {
+    foreach elem [lsearch -all -inline -exact -index 0 $::themeOptions [ttk::style theme use]] {
+      option add [lindex $elem 1] [lindex $elem 2]
+    }
+  }
+}
+
 catch { ttk::style theme use $::lookTheme }
 
 #TODO: all the style configurations should be re-applied when the theme is changed
@@ -394,9 +422,6 @@ ttk::style configure TButton -font font_Regular
 ttk::style configure TRadiobutton -font font_Regular
 ttk::style configure TCheckbutton -font font_Regular
 ttk::style configure TMenubutton -font font_Regular
-option add *TCombobox*font font_Regular
-option add *TEntry.font font_Regular
-option add *TSpinbox.font font_Regular
 ttk::style configure TNotebook.Tab -font font_Regular
 ttk::style configure Treeview -font font_Regular
 
@@ -428,14 +453,6 @@ if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element n
 #TODO: recalculate the value if font_Small is changed
 set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
 ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
-
-# Use font_Menu for menu entries:
-option add *Menu*Font font_Menu
-
-# Use custom menu colors (if they exists)
-foreach col [array names ::menuColor] {
-  option add *Menu.$col $::menuColor($col)
-}
 
 # Apply the theme's background color to a widget
 proc applyThemeColor_background { widget } {
