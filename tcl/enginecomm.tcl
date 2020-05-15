@@ -84,6 +84,13 @@ proc ::engine::close {id} {
     }
 }
 
+proc ::engine::pid {id} {
+    if {![info exists ::engconn(channel_$id)]} {
+        error "The engine is not open"
+    }
+    return [::pid $::engconn(channel_$id)]
+}
+
 # Sends a message to the engine.
 # If the engine is local and a reply to a previous message is expected,
 # the message is queued and sent after the reply has arrived.
