@@ -177,7 +177,7 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.dl2 -text "-"
   ttk::label $f.dl3 -text " "
   ttk::entry $f.demin -textvariable sEventDateMin -width 10
-  button $f.deminCal -image tb_calendar -padx 0 -pady 0 -command {
+  ttk::button $f.deminCal -image tb_calendar -command {
     regsub -all {[.]} $sEventDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
@@ -185,7 +185,7 @@ proc search::headerCreateFrame { w } {
     }
   }
   ttk::entry $f.demax -textvariable sEventDateMax -width 10
-  button $f.demaxCal -image tb_calendar -padx 0 -pady 0 -command {
+  ttk::button $f.demaxCal -image tb_calendar -command {
     regsub -all {[.]} $sEventDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
@@ -216,7 +216,7 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.l2 -text "-"
   ttk::label $f.l3 -text " "
   ttk::entry $f.emin -textvariable sDateMin -width 10
-  button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
+  ttk::button $f.eminCal -image tb_calendar -command {
     regsub -all {[.]} $sDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
@@ -224,7 +224,7 @@ proc search::headerCreateFrame { w } {
     }
   }
   ttk::entry $f.emax -textvariable sDateMax -width 10
-  button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
+  ttk::button $f.emaxCal -image tb_calendar -command {
     regsub -all {[.]} $sDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
