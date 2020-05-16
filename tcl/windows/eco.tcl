@@ -53,7 +53,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
     autoscrollText y $text.f $text.text Treeview
     $text.text tag configure bold -font font_Bold
     $text.text tag configure indent -lmargin2 20
-    $text.text configure -cursor top_left_arrow -height 12 -width 75 -wrap word -font font_Regular -state normal
+    $text.text configure -height 12 -width 75 -wrap word -state normal
     ::htext::init $text.text
     grid $text.f -row 0 -column 0 -sticky nesw
     grid rowconfig $text 0 -weight 1 -minsize 0

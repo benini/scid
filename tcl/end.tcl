@@ -216,7 +216,7 @@ proc setExportText {exportType} {
   foreach f [list $pane.start $pane.end] type {start end} {
     ttk::label $f.title -font font_Bold -text "Text at $type of $exportType file:"
     autoscrollText both $f.f $f.text Treeview
-    $f.text configure -state normal
+    $f.text configure -state normal -wrap none
     grid $f.title -row 0 -column 0 -sticky w
     grid $f.f -row 1 -column 0 -sticky nesw
     grid rowconfig $f 1 -weight 1 -minsize 0
