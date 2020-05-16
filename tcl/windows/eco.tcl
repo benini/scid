@@ -46,20 +46,16 @@ proc ::windows::eco::Refresh {{code "x"}} {
     ::utils::pane::SetDrag $w.pane 0
     pack $pane -side top -expand true -fill both
 
-    canvas $graph.c -width 500 -height 250 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    canvas $graph.c -width 500 -height 250 -selectforeground [ttk::style lookup . -foreground]
+    applyThemeColor_background $graph.c
+
     pack $graph.c -side top -fill both -expand yes
-    text $text.text -height 12 -width 75 -wrap word -font font_Regular \
-      -yscroll "$text.ybar set" -xscroll "$text.xbar set"
-    applyThemeStyle Treeview $text.text
+    autoscrollText y $text.f $text.text Treeview
     $text.text tag configure bold -font font_Bold
     $text.text tag configure indent -lmargin2 20
-    $text.text configure -cursor top_left_arrow
+    $text.text configure -cursor top_left_arrow -height 12 -width 75 -wrap word -font font_Regular -state normal
     ::htext::init $text.text
-    ttk::scrollbar $text.ybar -command "$text.text yview"
-    ttk::scrollbar $text.xbar -orient horizontal -command "$text.text xview"
-    grid $text.text -row 0 -column 0 -sticky nesw
-    grid $text.ybar -row 0 -column 1 -sticky nesw
-    #grid $text.xbar -row 1 -column 0 -sticky nesw
+    grid $text.f -row 0 -column 0 -sticky nesw
     grid rowconfig $text 0 -weight 1 -minsize 0
     grid columnconfig $text 0 -weight 1 -minsize 0
 

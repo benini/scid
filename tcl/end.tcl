@@ -215,14 +215,10 @@ proc setExportText {exportType} {
   pack $pane -side top -expand true -fill both
   foreach f [list $pane.start $pane.end] type {start end} {
     ttk::label $f.title -font font_Bold -text "Text at $type of $exportType file:"
-    text $f.text -wrap none -background white \
-        -yscroll "$f.ybar set" -xscroll "$f.xbar set"
-    ttk::scrollbar $f.ybar -orient vertical -command "$f.text yview"
-    ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
+    autoscrollText both $f.f $f.text Treeview
+    $f.text configure -state normal
     grid $f.title -row 0 -column 0 -sticky w
-    grid $f.text -row 1 -column 0 -sticky nesw
-    grid $f.ybar -row 1 -column 1 -sticky nesw
-    grid $f.xbar -row 2 -column 0 -sticky nesw
+    grid $f.f -row 1 -column 0 -sticky nesw
     grid rowconfig $f 1 -weight 1 -minsize 0
     grid columnconfig $f 0 -weight 1 -minsize 0
   }
