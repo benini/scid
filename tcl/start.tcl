@@ -417,13 +417,8 @@ catch { ttk::style theme use $::lookTheme }
 
 #TODO: all the style configurations should be re-applied when the theme is changed
 # Use default font everywhere
-ttk::style configure TLabel -font font_Regular
-ttk::style configure TButton -font font_Regular
-ttk::style configure TRadiobutton -font font_Regular
-ttk::style configure TCheckbutton -font font_Regular
-ttk::style configure TMenubutton -font font_Regular
-ttk::style configure TNotebook.Tab -font font_Regular
-ttk::style configure Treeview -font font_Regular
+ttk::style configure . -font font_Regular
+ttk::style configure Heading -font font_Regular
 
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold
@@ -453,6 +448,14 @@ if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element n
 #TODO: recalculate the value if font_Small is changed
 set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
 ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
+
+proc autoscrollText {bars frame widget style} {
+  ttk::frame $frame
+  text $widget -cursor arrow -state disabled -highlightthickness 0 -font font_Regular
+  $widget tag configure header -font font_Bold
+  applyThemeStyle $style $widget
+  autoscrollBars $bars $frame $widget
+}
 
 # Apply the theme's background color to a widget
 proc applyThemeColor_background { widget } {
@@ -531,7 +534,7 @@ proc InitImg {} {
 			lappend textureSquare [string range $iname 0 end-2]
 		}
 	}
-	
+
 	#Search available piece sets
 	set boardStyles {}
 	set dname [file join $::scidImgDir pieces]
