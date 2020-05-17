@@ -134,17 +134,15 @@ proc ::engine::init_ {id channel callback} {
     set ::engconn(options_$id) {}
 }
 
-proc ::engine::destroy_ {id} {
+proc ::engine::destroy_ {id {localReply ""}} {
     after cancel "::engine::done_ $id"
 
     chan close $::engconn(channel_$id)
     ::engine::closeServer_ $id
 
     unset ::engconn(protocol_$id)
-    unset ::engconn(callback_$id)
     unset ::engconn(channel_$id)
     unset ::engconn(serverchannel_$id)
-    unset ::engconn(netclients_$id)
     unset ::engconn(waitReply_$id) ; # the message to be answered
     unset ::engconn(sendQueue_$id) ; # the queue of messages waiting to be sent
 
@@ -160,6 +158,13 @@ proc ::engine::destroy_ {id} {
     unset -nocomplain ::engconn(Go$id)
     unset -nocomplain ::engconn(StopGo$id)
     unset -nocomplain ::engconn(parseline$id)
+
+    if {$localReply != ""} {
+        set ::engconn(netclients_$id) {}
+        ::engine::reply $id $localReply
+    }
+    unset ::engconn(netclients_$id)
+    unset ::engconn(callback_$id)
 }
 
 proc ::engine::closeServer_ {id} {
@@ -247,9 +252,7 @@ proc ::engine::onMessages_ {id channel} {
 
     # A disconnected channel creates a readable event with no input
     if {[chan eof $channel]} {
-        ::engine::closeServer_ $id
-        ::engine::reply $id [list Disconnected ""]
-        ::engine::destroy_ $id
+        ::engine::destroy_ $id [list Disconnected ""]
         return
     }
     while {[set line [chan gets $channel]] != ""} {
