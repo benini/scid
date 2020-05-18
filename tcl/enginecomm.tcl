@@ -288,7 +288,15 @@ proc ::engine::done_ {id} {
 
     while { [llength $::engconn(sendQueue_$id)] } {
         lassign [lindex $::engconn(sendQueue_$id) 0] msg msgData
-        set ::engconn(sendQueue_$id) [lrange $::engconn(sendQueue_$id) 1 end]
+        set idx 1
+        if {$msg eq "SetOptions"} {
+            # Squash sequential SetOptions messages
+            while {[lindex $::engconn(sendQueue_$id) $idx 0] eq "SetOptions"} {
+                lappend msgData {*}[lindex $::engconn(sendQueue_$id) $idx 1]
+                incr idx
+            }
+        }
+        set ::engconn(sendQueue_$id) [lrange $::engconn(sendQueue_$id) $idx end]
 
         if {$msg eq "StopGo"} {
             # The "StopGo" message was already sent in ::engine::send
