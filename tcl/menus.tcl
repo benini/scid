@@ -276,7 +276,6 @@ menu $m.language
           -command setLanguage
   }
 $m add cascade -label OptionsLanguage -menu $m.language
-if { $::macOS } { $m entryconfigure end -state disabled }
 menu $m.theme -tearoff 1
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
 $m add cascade -label OptionsTheme -menu $m.theme

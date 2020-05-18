@@ -162,7 +162,6 @@ set boardSize 40
 
 # boardStyle: Default board piece set.
 set boardStyle Merida1
-if { $macOS } { set boardStyle Merida }
 
 # Colors: dark and lite are square colors
 #     whitecolor/blackcolor are piece colors
