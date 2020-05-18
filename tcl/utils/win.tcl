@@ -534,10 +534,9 @@ proc ::docking::identify_tab_ {noteb localX localY} {
 		set icon [$noteb tab $tab -image]
 		if {$icon ne ""} {
 			set iconW [expr { 4 + [image width $icon] }]
-			if {$tab == 0} {
-				set isIcon [expr {$localX < $iconW ? 1 : 0}]
-			} else {
-				set isIcon [expr [$noteb identify tab [expr $localX - $iconW] $localY] != $tab]
+			set localX [expr { $localX - $iconW }]
+			if {$localX <= 0 || [$noteb identify tab $localX $localY] != $tab} {
+				set isIcon 1
 			}
 		}
 	}
