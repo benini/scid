@@ -19,6 +19,8 @@
 #include "common.h"
 #include "movelist.h"
 #include <stdio.h>
+#include <string>
+#include <string_view>
 
 class DString;
 class SquareSet;
@@ -162,6 +164,7 @@ public:
     squareT     GetEPTarget () const     { return EPTarget; }
     void        SetToMove (colorT c)     { ToMove = c; }
     colorT      GetToMove () const       { return ToMove; }
+    bool        WhiteToMove () const     { return ToMove == WHITE; }
     void        SetPlyCounter (ushort x) { PlyCounter = x; }
     ushort      GetPlyCounter () const   { return PlyCounter; }
     ushort      GetFullMoveCount() const { return PlyCounter / 2 + 1; }
@@ -240,6 +243,8 @@ public:
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);
+    bool  IsLegalMove(squareT from, squareT to, pieceT promo);
+
 
     /// Check that the minimum requirements for castling are satisfied:
     /// - both the king and the rook exists in the position
@@ -279,7 +284,8 @@ public:
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
 	void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
 
-    errorT      ReadCoordMove(simpleMoveT* m, const char* s, int slen, bool reverse);
+    errorT      MakeCoordMoves(const char* moves, size_t movesLen, std::string* toSAN = nullptr);
+    errorT      ReadCoordMove(simpleMoveT* m, const char* s, size_t slen, bool reverse);
     errorT      ParseMove(simpleMoveT* sm, const char* str);
     errorT      ParseMove(simpleMoveT* sm, const char* begin, const char* end);
 
@@ -288,6 +294,7 @@ public:
     errorT      ReadFromLongStr (const char * str);
     errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
+    errorT      ReadFromFENorUCI (std::string_view str);
     void        PrintCompactStr (char * cboard);
     void        PrintCompactStrFlipped (char * cboard);
     byte        CompactStrFirstByte () {

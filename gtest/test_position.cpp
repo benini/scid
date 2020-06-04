@@ -125,6 +125,7 @@ TEST(Test_movegen, UCItoSAN) {
 		pos.MakeSANString(&sm, buf, SAN_MATETEST);
 		EXPECT_STREQ(*it, buf);
 
+		pos.DoSimpleMove(&sm);
 		FullMove fullmove;
 		colorT col = piece_Color(sm.movingPiece);
 		pieceT pt = piece_Type(sm.movingPiece);
@@ -144,7 +145,6 @@ TEST(Test_movegen, UCItoSAN) {
 			else
 				fullmove = FullMove(BLACK, E8, (castle == 1) ? H8 : A8);
 		}
-		pos.DoSimpleMove(&sm);
 		FastBoard fastboard(pos);
 		pos.UndoSimpleMove(&sm);
 		fastboard.fillSANInfo(fullmove);
@@ -407,6 +407,58 @@ TEST(Test_ReadFromFen, GetList) {
 	EXPECT_EQ(std::pair(A6, BP), getPiece(bl_list[6]));
 	EXPECT_EQ(std::pair(E5, BP), getPiece(bl_list[7]));
 	EXPECT_EQ(std::pair(E4, BQ), getPiece(bl_list[8]));
+}
+
+TEST(Test_PositionReadCoordMoves, ReadFromFENorUCI) {
+	char buf[1024];
+	Position pos;
+	EXPECT_EQ(OK, pos.ReadFromFENorUCI("position startpos"));
+	EXPECT_TRUE(pos.IsStdStart());
+
+	EXPECT_EQ(OK, pos.ReadFromFENorUCI("   position startpos    "));
+	EXPECT_TRUE(pos.IsStdStart());
+
+	EXPECT_EQ(OK, pos.ReadFromFENorUCI("position startpos moves"));
+	EXPECT_TRUE(pos.IsStdStart());
+
+	EXPECT_EQ(OK, pos.ReadFromFENorUCI("   position startpos moves   "));
+	EXPECT_TRUE(pos.IsStdStart());
+
+	EXPECT_NE(OK, pos.ReadFromFENorUCI(""));
+
+	EXPECT_EQ(OK,
+	          pos.ReadFromFENorUCI("   position startpos moves e2e4 c7c5 "));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(
+	    buf, "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+
+	EXPECT_EQ(OK, pos.ReadFromFENorUCI("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/"
+	                                   "RNBQKBNR w KQkq - 0 2 moves g1f3 "));
+	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	EXPECT_STREQ(
+	    buf, "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
+}
+
+TEST(Test_PositionReadCoordMoves, ReadCoordMoves) {
+	std::tuple<const char*, const char*, const char*, const char*> expectOK[] =
+	    {{"position startpos", "1.e4 c5",
+	      "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+	      "e2e4 c7c5"},
+	     {"position startpos", "1.e4 c5",
+	      "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+	      " e2e4 c7c5 "}};
+
+	for (auto [startpos, sanMoves, endpos, coordMoves] : expectOK) {
+		Position pos;
+		EXPECT_EQ(OK, pos.ReadFromFENorUCI(startpos));
+		std::string san;
+		EXPECT_EQ(
+		    OK, pos.MakeCoordMoves(coordMoves, std::strlen(coordMoves), &san));
+		char buf[1024];
+		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		EXPECT_STREQ(endpos, buf);
+		EXPECT_STREQ(sanMoves, san.c_str());
+	}
 }
 
 TEST(Test_MoveGeneration, GetCastling) {

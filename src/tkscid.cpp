@@ -5033,7 +5033,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "isAt", "isCheck", "isLegal", "isPromotion",
         "matchMoves", "moveNumber", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location",
-        "attacks", "getPrevComment", NULL
+        "attacks", "getPrevComment", "coordToSAN", NULL
     };
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
@@ -5041,7 +5041,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
-        POS_ATTACKS, POS_GETPREVCOMMENT
+        POS_ATTACKS, POS_GETPREVCOMMENT, POS_COORDTOSAN
     };
 
     char boardStr[200];
@@ -5166,6 +5166,21 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
         break;
+
+    case POS_COORDTOSAN: {
+        if (argc != 4)
+            return UI_Result(ti, ERROR_BadArg,
+                             "Usage: sc_pos coordToSAN position moves");
+
+        Position pos;
+        if (auto err = pos.ReadFromFENorUCI(argv[2]))
+            return UI_Result(ti, err);
+
+        std::string sanMoves;
+        auto res = pos.MakeCoordMoves(argv[3], std::strlen(argv[3]), &sanMoves);
+        return UI_Result(ti, res, sanMoves);
+
+        }
 
     default:
         return InvalidCommand (ti, "sc_pos", options);

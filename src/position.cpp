@@ -880,6 +880,10 @@ Position::GenerateMoves (MoveList* mlist, pieceT pieceType,
 //   without requiring move generation (except for castling moves).
 bool
 Position::IsLegalMove (simpleMoveT * sm) {
+    // TODO:
+    // return IsLegalMove(sm->from, sm->to, sm->promote) &&
+    //        sm->movingPiece == Board[sm->from]
+
     squareT from = sm->from;
     squareT to = sm->to;
     if (from > H8  ||  to > H8) { return false; }
@@ -961,6 +965,42 @@ Position::IsLegalMove (simpleMoveT * sm) {
     uint nchecks = CalcAttacks (enemy, kingSq, NULL);
     UndoSimpleMove (sm);
     return (nchecks == 0);
+}
+
+bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
+    if (from > H8 || to > H8)
+        return false;
+
+    const auto mover = Board[from];
+    const auto captured = Board[to];
+    const auto pt = piece_Type(mover);
+    if (piece_Color(mover) != ToMove ||    // Wrong side to move
+        piece_Color(captured) == ToMove || // Capturing its own piece
+        piece_Type(captured) == KING ||    // Capturing the king
+        (pt != PAWN && promo != EMPTY))    // Only pawn can promote
+        return false;
+
+    if (pt == KING || pt == PAWN) {
+        simpleMoveT sm;
+        sm.from = from;
+        sm.to = to;
+        sm.promote = promo;
+        sm.movingPiece = mover;
+        return IsLegalMove(&sm);
+    }
+
+    auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
+    if (!movegen::pseudo(from, to, ToMove, pt, isOccupied))
+        return false;
+
+    const auto pin = movegen::opens_ray(from, to, GetKingSquare(), isOccupied);
+    if (pin.first != INVALID_PIECE) {
+        auto p = Board[pin.second];
+        if (piece_Color_NotEmpty(p) != ToMove &&
+            (piece_Type(p) == QUEEN || piece_Type(p) == pin.first))
+            return false;
+    }
+    return true;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2040,6 +2080,48 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
     *c = 0;
 }
 
+// Make on the board a sequence of moves in coordinate notation.
+// Convert and store the moves in SAN notation if @e toSAN is not nullptr.
+errorT Position::MakeCoordMoves(const char* moves, size_t moveslen,
+                                std::string* toSAN) {
+    auto is_space = [](char ch) {
+        return isspace(static_cast<unsigned char>(ch));
+    };
+
+    while (moveslen > 0 && is_space(moves[moveslen - 1])) {
+        --moveslen; // Trim right
+    }
+    const char* end = moves + moveslen;
+    moves = std::find_if_not(moves, end, is_space);
+
+    while (auto len = std::find_if(moves, end, is_space) - moves) {
+        simpleMoveT sm;
+        if (auto err = ReadCoordMove(&sm, moves, len, false))
+            return err;
+
+        moves = std::find_if_not(moves + len, end, is_space);
+
+        if (toSAN) {
+            char san[8];
+            MakeSANString(&sm, san,
+                          moves != end ? SAN_CHECKTEST : SAN_MATETEST);
+            if (WhiteToMove()) {
+                toSAN->append(std::to_string(GetFullMoveCount()));
+                toSAN->push_back('.');
+            } else if (toSAN->empty()) {
+                toSAN->append(std::to_string(GetFullMoveCount()));
+                toSAN->append("...");
+            }
+            toSAN->append(san);
+            if (moves != end)
+                toSAN->push_back(' ');
+        }
+
+        DoSimpleMove(&sm);
+    }
+    return OK;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ReadCoordMove():
 //      Given a move in coordinate notation,
@@ -2048,44 +2130,37 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 //      If "reverse" is true, coordinates in reverse order are acceptable,
 //      e.g. "f3g1" for 1.Nf3.
 //
-errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, int slen,
+errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, size_t slen,
                                bool reverse) {
-    ASSERT (m != NULL  &&  str != NULL);
-    fyleT fromFyle, toFyle;
-    rankT fromRank, toRank;
-    squareT from, to;
-    pieceT promo = EMPTY;
+    ASSERT(m != NULL && str != NULL);
 
+    auto promote = EMPTY;
     if (slen == 5) {
-        promo = piece_FromChar(toupper(str[4]));
-    } else if (slen != 4) { return ERROR_InvalidMove; }
-
-    fromFyle = fyle_FromChar (str[0]);
-    fromRank = rank_FromChar (str[1]);
-    from = square_Make (fromFyle, fromRank);
-    if (from == NS) { return ERROR_InvalidMove; }
-
-    toFyle = fyle_FromChar (str[2]);
-    toRank = rank_FromChar (str[3]);
-    to = square_Make (toFyle, toRank);
-    if (to == NS) { return ERROR_InvalidMove; }
-
-    MoveList mlist;
-    GenerateMoves(&mlist);
-    for (size_t i = 0, n = mlist.Size(); i < n; i++) {
-        simpleMoveT* sm = mlist.Get(i);
-        if (sm->promote == promo) {
-            if (sm->from == from  &&  sm->to == to) {
-                *m = *sm;
-                return OK;
-            }
-            if (reverse  &&  sm->to == from  &&  sm->from == to) {
-                *m = *sm;
-                return OK;
-            }
-        }
+        promote = piece_FromChar(toupper(str[4]));
+    } else if (slen != 4) {
+        return ERROR_InvalidMove;
     }
-    return ERROR_InvalidMove;
+
+    const auto fromFyle = fyle_FromChar(str[0]);
+    const auto fromRank = rank_FromChar(str[1]);
+    const auto toFyle = fyle_FromChar(str[2]);
+    const auto toRank = rank_FromChar(str[3]);
+    auto from = square_Make(fromFyle, fromRank);
+    auto to = square_Make(toFyle, toRank);
+
+    auto legal = IsLegalMove(from, to, promote);
+    if (!legal && reverse) {
+        std::swap(from, to);
+        legal = IsLegalMove(from, to, promote);
+    }
+    if (!legal)
+        return ERROR_InvalidMove;
+
+    m->from = from;
+    m->to = to;
+    m->promote = promote;
+    m->movingPiece = Board[from];
+    return OK;
 }
 
 static int trimCheck(const char* str, int slen) {
@@ -2738,6 +2813,33 @@ errorT Position::ReadFromFEN(const char* str) {
     return OK;
 }
 
+/// Setup the position from a FEN string or UCI "position".
+/// Accept strings like "position startpos", "position startpos moves e2e4",
+/// "FENSTRING", "FENSTRING moves e2e4", "position fen FENSTRING moves e2e4".
+errorT Position::ReadFromFENorUCI(std::string_view str) {
+    auto trimLeft = std::find_if_not(
+        str.begin(), str.end(),
+        [](char ch) { return isspace(static_cast<unsigned char>(ch)); });
+    str.remove_prefix(trimLeft - str.begin());
+
+    auto fen = str.substr(0, str.find("moves"));
+    str.remove_prefix(fen.size());
+    if (str.substr(0, 5) == "moves") {
+        str.remove_prefix(5);
+    }
+
+    if (fen.substr(0, 17) == "position startpos") {
+        *this = Position::getStdStart();
+    } else {
+        if (fen.substr(0, 12) == "position fen") {
+            fen.remove_prefix(12);
+        }
+        if (auto err = ReadFromFEN(std::string(fen).c_str()))
+            return err;
+    }
+
+    return MakeCoordMoves(str.data(), str.size());
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::PrintFEN():

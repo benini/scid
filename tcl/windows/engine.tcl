@@ -94,6 +94,7 @@ proc ::enginewin::Open { {id ""} } {
     set ::enginewin::engState($id) {}
     ::enginewin::clear $id
     ::enginewin::changeState $id closed
+    ::enginewin::updateName $id
 
     set ::enginewin::startTime_$id [clock milliseconds]
 
@@ -107,7 +108,6 @@ proc ::enginewin::clear {id} {
     set ::enginewin_lastengine($id) ""
     set ::enginewin::engConfig_$id {}
     set ::enginewin::position_$id ""
-    ::enginewin::updateName $id
 }
 
 proc ::enginewin::updateName {id} {
@@ -153,6 +153,7 @@ proc ::enginewin::frameConfig {w id showDisplay} {
         ::enginelist::delete \[$w.header.engine current\]
         ::enginewin::clear $id
         ::enginewin::changeState $id closed
+        ::enginewin::updateName $id
     "
     grid $w.header.go $w.header.engine $w.header.addpipe $w.header.addnetwork \
          $w.header.clone $w.header.delete -sticky news
@@ -222,6 +223,7 @@ proc ::enginewin::connectEngine {id config} {
     upvar ::enginewin::engConfig_$id engConfig_
     ::enginelist::save $engConfig_
     ::enginewin::clear $id
+    ::enginewin::changeState $id closed
 
     lassign $config name cmd args wdir elo time url uci options
     if {[llength $url] != 6} {
@@ -262,7 +264,6 @@ proc ::enginewin::connectEngine {id config} {
     }]} {
         ERROR::MessageBox
         ::enginewin::updateConfig $id {}
-        ::enginewin::changeState $id closed
         .engineWin$id.config.header.delete configure -state normal
         return
     }
@@ -718,7 +719,7 @@ proc ::enginewin::frameDisplay {id w showConfig} {
     set tab [font measure font_Regular "xxxxxxx"]
     autoscrollText both $w.pv $w.pv.lines Treeview
     $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
-    $w.pv.lines tag configure pv -lmargin2 [expr {$tab * 3}]
+    $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
 
     ttk::frame $w.btn
     ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
@@ -810,14 +811,20 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
 
     lassign [lindex [set ::enginewin::engConfig_$id] 6] scoreside notation
+    if {[catch {
+
     if {$notation > 0} {
-        set pv [::uci::formatPv $pv]
+        set pv [sc_pos coordToSAN [set ::enginewin::position_$id] $pv]
     }
     if {$notation == 1 || $notation == -1} {
         set pv [::trans $pv]
     } elseif {$notation == 3 || $notation == -3} {
         # Figurine
         set pv [string map {K "\u2654" Q "\u2655" R "\u2656" B "\u2657" N "\u2658"} $pv]
+    }
+
+    }]} {
+        set pv "illegal_pv! $pv"
     }
 
     if {$score ne ""} {
@@ -855,7 +862,8 @@ proc ::enginewin::updateDisplay {id msgData} {
             lappend extraInfo [format "%.2fK nodes" [expr {$nodes / 1000.0}]]
         }
     }
-    set firstMove [string wordend $pv 0]
+    set pvline ""
+    regexp {^([\d. ]*[\w-]+)(.*)$} $pv -> pv pvline
     if {$multipv == 1} {
         set line $multipv
         $w.pv.lines tag remove header 1.0 1.end
@@ -865,12 +873,13 @@ proc ::enginewin::updateDisplay {id msgData} {
         $w.pv.lines delete $line.0 end
     }
     $w.pv.lines insert $line.0 "\n"
-    $w.pv.lines insert $line.end "$depth"
-    $w.pv.lines insert $line.end "\t$score" header
-    $w.pv.lines insert $line.end "\t[string range $pv 0 $firstMove]" header
-    $w.pv.lines insert $line.end "[string range $pv [incr firstMove] end]" pv
+    $w.pv.lines insert $line.end "$depth\t"
+    $w.pv.lines insert $line.end "$score" header
+    $w.pv.lines insert $line.end "\t"
+    $w.pv.lines insert $line.end "$pv" header
+    $w.pv.lines insert $line.end "$pvline" lmargin
     if {[info exists extraInfo]} {
-        $w.pv.lines insert $line.end "  ([join $extraInfo {  }])" pv
+        $w.pv.lines insert $line.end "  ([join $extraInfo {  }])" lmargin
     }
 
     $w.pv.lines configure -state disabled
