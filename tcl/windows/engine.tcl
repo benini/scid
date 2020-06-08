@@ -185,12 +185,25 @@ proc ::enginewin::changeState {id newState} {
           $w.config.header.delete configure -state disabled
           $w.display.btn.startStop state !pressed
           $w.display.btn.startStop configure -state disabled
+          $w.display.btn.lock state !pressed
+          $w.display.btn.lock configure -state disabled
+          $w.display.btn.multipv configure -state disabled
       }
       "idle" {
           $w.display.btn.startStop state !pressed
+          $w.display.btn.lock state !pressed
+          $w.display.btn.lock configure -state disabled
+          $w.display.btn.multipv configure -state normal
+      }
+      "locked" {
+          $w.display.btn.lock state pressed
+          $w.display.btn.multipv configure -state disabled
       }
       "run" {
           $w.display.btn.startStop state pressed
+          $w.display.btn.lock state !pressed
+          $w.display.btn.lock configure -state enable
+          $w.display.btn.multipv configure -state normal
       }
     }
     set ::enginewin::engState($id) $newState
@@ -724,9 +737,17 @@ proc ::enginewin::frameDisplay {id w showConfig} {
     ttk::frame $w.btn
     ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
         -command "::enginewin::toggleStartStop $id"
+    ttk::button $w.btn.lock -image tb_lockengine -command "
+        if {\$::enginewin::engState($id) eq {locked}} {
+            ::enginewin::changeState $id run
+            ::enginewin::onPosChanged $id
+        } else {
+            ::enginewin::changeState $id locked
+        }
+    "
     ttk::button $w.btn.threats -text "Threats"
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
-    grid $w.btn.startStop $w.btn.threats $w.btn.multipv
+    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv
 
     grid $w.header -sticky news
     grid $w.pv -sticky news
