@@ -161,6 +161,11 @@ public: // CodecNative CRTP
 		idx_->replaceEntry(ie, replaced);
 		return OK;
 	}
+
+protected:
+	bool equalExceptFlags(IndexEntry const& ie, gamenumT gnum) {
+		return idx_->GetEntry(gnum)->equalExceptFlags(ie);
+	}
 };
 
 #endif

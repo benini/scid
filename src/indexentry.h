@@ -80,7 +80,7 @@ class IndexEntry {
 
     uint16_t ECOcode_;
 
-    uint8_t  nNags_          :  4;
+    uint8_t  nNags_;         // :  4;
 
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
@@ -265,6 +265,13 @@ public:
     void SetUnderPromoFlag (bool b) { SetFlag(1 << IDX_FLAG_UPROMO, b); }
     void SetDeleteFlag (bool b)     { SetFlag(1 << IDX_FLAG_DELETE, b); }
     void clearFlags() { return SetFlag(IDX_MASK_ALLFLAGS, false); }
+    bool equalExceptFlags(IndexEntry ie) const {
+        ie.flags_ = flags_;
+        // has_unique_object_representations doesn't work with msvc
+        // static_assert(std::has_unique_object_representations_v<IndexEntry>);
+        static_assert(sizeof(IndexEntry) == 56);
+        return memcmp(this, &ie, sizeof(IndexEntry)) == 0;
+    }
 
     enum {
         // IndexEntry Flag types:

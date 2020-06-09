@@ -128,7 +128,10 @@ private:
 		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
 	}
 
-	errorT saveIndexEntry(const IndexEntry&, gamenumT) final {
+	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) final {
+		if (CodecMemory::equalExceptFlags(ie, replaced))
+			return CodecMemory::saveIndexEntry(ie, replaced);
+
 		return ERROR_CodecUnsupFeat;
 	}
 
