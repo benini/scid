@@ -1526,7 +1526,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                         dbase->treeCache.cacheRestore(pos, *dbase->treeFilter))
                         return UI_Result(ti, OK);
 
-                    if (!SearchPos(&pos).setFilter(
+                    if (!SearchPos(pos).setFilter(
                             *dbase, filter, UI_CreateProgress(ti)))
                         return UI_Result(ti, ERROR_UserCancel);
 
@@ -3614,7 +3614,7 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     HFilter filter = base->getFilter(filtername);
     dateT currentDate = g->GetDate();
     while (g->MoveForward() == OK) {
-        SearchPos(g->GetCurrentPos()).setFilter(*base, filter, Progress());
+        SearchPos(*g->GetCurrentPos()).setFilter(*base, filter, Progress());
         int count = 0;
         for (uint i=0, n = base->numGames(); i < n; i++) {
             if (filter.get(i) == 0) continue;

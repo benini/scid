@@ -73,8 +73,8 @@ class SearchPos {
 	bool isStdStard_;
 
 public:
-	explicit SearchPos(const Position* pos) {
-		std::copy_n(pos->GetBoard(), 64, board_);
+	explicit SearchPos(Position const& pos) {
+		std::copy_n(pos.GetBoard(), 64, board_);
 
 		for (auto piece : board_) {
 			if (piece != EMPTY) {
@@ -83,8 +83,8 @@ public:
 		}
 
 		hpSig_ = hpSig_make(board_);
-		toMove_ = pos->GetToMove();
-		isStdStard_ = pos->IsStdStart();
+		toMove_ = pos.GetToMove();
+		isStdStard_ = pos.IsStdStart();
 
 		if ((board_[E1] == WK || board_[G1] == WK) &&
 		    (board_[E8] == BK || board_[G8] == BK)) {
