@@ -12,18 +12,28 @@ jobs:
     displayName: git config
   - checkout: self
     fetchDepth: 1
-  - script: vcpkg.exe install tcl --triplet x64-windows
-    displayName: vcpkg install dependencies
+  - script: |
+      pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+      for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+      popd
+      call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      mkdir tcltk & cd tcltk
+      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      cd tcl & cd win
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+    displayName: Generate tcl library
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-A x64 -DGTEST=ON -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake ..'
+      cmakeArgs: '-DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include $(Build.SourcesDirectory) -DGTEST=ON'
   - task: MSBuild@1
     inputs:
       solution: 'build/ALL_BUILD.vcxproj'
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Debug'
+    displayName: Generate SCID
   - script: build\gtest\Debug\scid_tests.exe
     displayName: run scid_tests.exe
 
@@ -72,8 +82,9 @@ jobs:
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
       cd stockfish\src
-      cl /DNDEBUG /DUSE_POPCNT /GS- /MT /O2 /Oi /Ot /Oy /GL *.cpp syzygy/*.cpp /link /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
+      cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
+      curl -o $(Build.SourcesDirectory)\install\bin\nn-62ef826d1a6d.nnue https://data.stockfishchess.org/nn/nn-62ef826d1a6d.nnue
     displayName: Generate stockfish
   - script: |
       move bin engines
