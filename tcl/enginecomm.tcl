@@ -569,6 +569,7 @@ proc ::uci::parseline {id line} {
                 break
             }
         }
+        set tokens [list multipv depth seldepth nodes nps hashfull tbhits time score]
         set ::engconn(InfoPV_$id) [list 1 {} {} {} {} {} {} {} {} {} {} $pv]
         set idx -1
         foreach elem [split [string replace $line $beginPV $endPV]] {
@@ -579,7 +580,7 @@ proc ::uci::parseline {id line} {
                     lset ::engconn(InfoPV_$id) $idx end+1 $elem
                 }
             } else {
-                if {$idx == 8 && $elem in {cp mate lowerbound upperbound wdl}} {
+                if {$idx >= 8 && $elem in {cp mate lowerbound upperbound wdl}} {
                     if {$elem eq "wdl"} {
                         set idx 10
                     } else {
