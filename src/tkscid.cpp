@@ -5292,19 +5292,6 @@ sc_pos_analyze (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return UI_Result(ti, OK, res);
 }
 
-// Lambda class used by sc_pos_bestSquare() and sc_pos_isLegal()
-namespace {
-class SelectBySquare {
-	squareT sq_;
-
-public:
-	explicit SelectBySquare(squareT sq) : sq_(sq) {}
-	bool operator()(const simpleMoveT& sm) {
-		return sm.from == sq_ || sm.to == sq_;
-	}
-};
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_bestSquare:
 //    Takes a square and returns the best square that makes a move
@@ -5336,9 +5323,10 @@ sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Restrict the list of legal moves to contain only those that
     // move to or from the specified square:
-    mlist.resize(std::distance(mlist.begin(),
-                 std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq))
-    ));
+    auto end = std::remove_if(mlist.begin(), mlist.end(), [&](auto const& sm) {
+        return sm.from != sq && sm.to != sq;
+    });
+    mlist.resize(std::distance(mlist.begin(), end));
 
     // If no matching legal moves, return -1:
     if (mlist.Size() == 0) {
@@ -5547,21 +5535,18 @@ sc_pos_isLegal (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_pos isLegal <square> <square>");
     }
 
-    Position * pos = db->game->GetCurrentPos();
     int sq1 = strGetInteger (argv[2]);
     int sq2 = strGetInteger (argv[3]);
     if (sq1 < 0  ||  sq1 > 63  ||  sq2 < 0  ||  sq2 > 63) {
         return UI_Result(ti, OK, false);
     }
 
-    // Compute all legal moves, then restrict the list to only
-    // contain moves that include sq1 and sq2 as to/from squares:
-    MoveList mlist;
-    pos->GenerateMoves(&mlist);
-    simpleMoveT* end1 = std::partition(mlist.begin(), mlist.end(), SelectBySquare(sq1));
-    bool found = mlist.begin() !=
-                 std::partition(mlist.begin(), end1, SelectBySquare(sq2));
-    return UI_Result(ti, OK, found);
+    auto pos = db->game->GetCurrentPos();
+    bool legal = pos->IsLegalMove(sq1, sq2, EMPTY) ||
+                 pos->IsLegalMove(sq2, sq1, EMPTY) ||
+                 pos->IsLegalMove(sq1, sq2, QUEEN) ||
+                 pos->IsLegalMove(sq2, sq1, QUEEN);
+    return UI_Result(ti, OK, legal);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
