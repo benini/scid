@@ -39,7 +39,7 @@ const uint ENGINE_PAWN_KB =            1;  // Default pawn table size in KB.
 //
 struct principalVarT {
     uint length;
-    simpleMoveT move [ENGINE_MAX_PLY];
+    ScoredMove move [ENGINE_MAX_PLY];
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,7 +132,7 @@ private:
     repeatT  RepStack [1024];      // Repetition stack.
     bool     InCheck [ENGINE_MAX_PLY];   // In-check at each ply.
     principalVarT PV [ENGINE_MAX_PLY];   // Principal variation at each ply.
-    simpleMoveT KillerMove [ENGINE_MAX_PLY][2];  // Two killer moves per ply.
+    ScoredMove KillerMove [ENGINE_MAX_PLY][2];  // Two killer moves per ply.
     int History[16][64];    // Success history of piece-to-square moves.
     byte     TranTableSequence;    // Transposition table sequence number.
     uint     TranTableSize;        // Number of Transposition table entries.
@@ -149,27 +149,27 @@ private:
     int Quiesce (int alpha, int beta);
     int SEE (squareT from, squareT to);
     void ScoreMoves (MoveList * mlist);
-    inline void DoMove (simpleMoveT * sm);
-    inline void UndoMove (simpleMoveT * sm);
+    inline void DoMove (ScoredMove * sm);
+    inline void UndoMove (ScoredMove * sm);
     inline void SetPVLength (void);
-    inline void UpdatePV (simpleMoveT * sm);
+    inline void UpdatePV (ScoredMove * sm);
     void Output (const char * format, ...);
     void PrintPV (uint depth, int score) { PrintPV (depth, score, ""); }
     void PrintPV (uint depth, int score, const char * annotation);
     inline void PushRepeat (Position * pos);
     inline void PopRepeat (void);
     void StoreHash (int depth, scoreFlagT flag, int score,
-                    simpleMoveT * bestmove, bool isOnlyMove);
-    scoreFlagT ProbeHash (int depth, int * score, simpleMoveT * bestMove, bool * isOnlyMove);
+                    ScoredMove * bestmove, bool isOnlyMove);
+    scoreFlagT ProbeHash (int depth, int * score, ScoredMove * bestMove, bool * isOnlyMove);
 
     inline void ClearKillerMoves (void);
-    inline void AddKillerMove (simpleMoveT * sm);
-    inline bool IsKillerMove (simpleMoveT * sm);
+    inline void AddKillerMove (ScoredMove * sm);
+    inline bool IsKillerMove (ScoredMove * sm);
 
     inline void ClearHistoryValues (void);
     inline void HalveHistoryValues (void);
-    inline void IncHistoryValue (simpleMoveT * sm, int increment);
-    inline int GetHistoryValue (simpleMoveT * sm);
+    inline void IncHistoryValue (ScoredMove * sm, int increment);
+    inline int GetHistoryValue (ScoredMove * sm);
 
     int Score (int alpha, int beta);
     inline int ScoreWhiteMaterial (void);
@@ -281,7 +281,7 @@ Engine::SetPVLength (void)
 //   Updates the principal variation at the current Ply to
 //   include the specified move.
 inline void
-Engine::UpdatePV (simpleMoveT * sm)
+Engine::UpdatePV (ScoredMove * sm)
 {
     if (Ply >= ENGINE_MAX_PLY - 1) { return; }
     if (InNullMove > 0) { return; }
@@ -317,12 +317,12 @@ Engine::ClearKillerMoves (void)
 }
 
 inline void
-Engine::AddKillerMove (simpleMoveT * sm)
+Engine::AddKillerMove (ScoredMove* sm)
 {
     if (sm->capturedPiece != EMPTY  &&  sm->score >= 0) { return; }
     if (sm->promote != EMPTY  &&  sm->score >= 0) { return; }
-    simpleMoveT * killer0 = &(KillerMove[Ply][0]);
-    simpleMoveT * killer1 = &(KillerMove[Ply][1]);
+    auto killer0 = &(KillerMove[Ply][0]);
+    auto killer1 = &(KillerMove[Ply][1]);
     if (killer0->from == sm->from  &&  killer0->to == sm->to
           &&  killer0->movingPiece == sm->movingPiece) {
         return;
@@ -332,14 +332,14 @@ Engine::AddKillerMove (simpleMoveT * sm)
 }
 
 inline bool
-Engine::IsKillerMove (simpleMoveT * sm)
+Engine::IsKillerMove (ScoredMove* sm)
 {
-    simpleMoveT * killer0 = &(KillerMove[Ply][0]);
+    auto killer0 = &(KillerMove[Ply][0]);
     if (killer0->from == sm->from  &&  killer0->to == sm->to
           &&  killer0->movingPiece == sm->movingPiece) {
         return true;        
     }
-    simpleMoveT * killer1 = &(KillerMove[Ply][1]);
+    auto killer1 = &(KillerMove[Ply][1]);
     if (killer1->from == sm->from  &&  killer1->to == sm->to
           &&  killer1->movingPiece == sm->movingPiece) {
         return true;        
@@ -376,7 +376,7 @@ Engine::HalveHistoryValues (void)
 }
 
 inline void
-Engine::IncHistoryValue (simpleMoveT * sm, int increment)
+Engine::IncHistoryValue (ScoredMove * sm, int increment)
 {
     if (sm->capturedPiece != EMPTY  &&  sm->score >= 0) { return; }
     if (sm->promote != EMPTY  &&  sm->score >= 0) { return; }
@@ -392,7 +392,7 @@ Engine::IncHistoryValue (simpleMoveT * sm, int increment)
 }
 
 inline int
-Engine::GetHistoryValue (simpleMoveT * sm)
+Engine::GetHistoryValue (ScoredMove * sm)
 {
     pieceT p = sm->movingPiece;
     squareT to = sm->to;

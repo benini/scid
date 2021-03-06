@@ -924,7 +924,7 @@ Engine::IsGettingMatedScore (int score)
 // Engine::DoMove
 //   Make the specified move in a search.
 inline void
-Engine::DoMove (simpleMoveT * sm) {
+Engine::DoMove (ScoredMove * sm) {
     PushRepeat(&Pos);
     Pos.DoSimpleMove(sm);
     Ply++;
@@ -934,7 +934,7 @@ Engine::DoMove (simpleMoveT * sm) {
 // Engine::UndoMove
 //    Take back the specified move in a search.
 inline void
-Engine::UndoMove (simpleMoveT * sm) {
+Engine::UndoMove (ScoredMove * sm) {
     PopRepeat();
     Pos.UndoSimpleMove(sm);
     Ply--;
@@ -1122,7 +1122,7 @@ inline byte tte_Castling (transTableEntryT * tte)
 inline bool tte_IsOnlyMove (transTableEntryT * tte)
 {  return (((tte->flags >> 2) & 1) == 1); }
 
-inline void tte_SetBestMove (transTableEntryT * tte, simpleMoveT * bestMove)
+inline void tte_SetBestMove (transTableEntryT * tte, ScoredMove * bestMove)
 {
     ASSERT (bestMove->from <= H8  &&  bestMove->to <= H8);
     ushort bm = bestMove->from;
@@ -1131,7 +1131,7 @@ inline void tte_SetBestMove (transTableEntryT * tte, simpleMoveT * bestMove)
     tte->bestMove = bm;
 }
 
-inline void tte_GetBestMove (transTableEntryT * tte, simpleMoveT * bestMove)
+inline void tte_GetBestMove (transTableEntryT * tte, ScoredMove * bestMove)
 {
     ushort bm = tte->bestMove;
     bestMove->promote = bm & 15; bm >>= 4;
@@ -1144,7 +1144,7 @@ inline void tte_GetBestMove (transTableEntryT * tte, simpleMoveT * bestMove)
 //   Store the score for the current position in the transposition table.
 void
 Engine::StoreHash (int depth, scoreFlagT ttFlag, int score,
-                   simpleMoveT * bestMove, bool isOnlyMove)
+                   ScoredMove * bestMove, bool isOnlyMove)
 {
     if (TranTableSize == 0) { return; }
     ASSERT (ttFlag <= SCORE_UPPER);
@@ -1237,7 +1237,7 @@ Engine::StoreHash (int depth, scoreFlagT ttFlag, int score,
 //    Probe the transposition table for the current position.
 //
 scoreFlagT
-Engine::ProbeHash (int depth, int * score, simpleMoveT * bestMove, bool * isOnlyMove)
+Engine::ProbeHash (int depth, int * score, ScoredMove * bestMove, bool * isOnlyMove)
 {
     // Clear the best move:
     if (bestMove != NULL) { bestMove->from = bestMove->to = NULL_SQUARE; }
@@ -1354,7 +1354,7 @@ Engine::Think (MoveList * mlist)
     // Sort the root move list by quiescent evaluation to get a
     // reasonably good initial move order:
     for (uint i=0; i < mlist->Size(); i++) {
-        simpleMoveT * sm = mlist->Get(i);
+        auto sm = mlist->Get(i);
         DoMove(sm);
         sm->score = -Quiesce (-Infinity, Infinity);
         UndoMove(sm);
@@ -1466,7 +1466,7 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
     int bestScore = -Infinity - 1;
 
     for (uint movenum=0; movenum < mlist->Size(); movenum++) {
-        simpleMoveT * sm = mlist->Get(movenum);
+        auto sm = mlist->Get(movenum);
         uint oldNodeCount = NodeCount;
         // Make this move and search it:
         DoMove (sm);
@@ -1561,7 +1561,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
     // Probe the hash table:
     int hashscore = alpha;
-    simpleMoveT hashmove{};
+    auto hashmove = ScoredMove();
     bool isOnlyMove = 0;
     scoreFlagT hashflag = ProbeHash (depth, &hashscore, &hashmove, &isOnlyMove);
 
@@ -1793,7 +1793,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
     } else {
         // Update the transposition table with the best move:
         ASSERT (bestMoveIndex >= 0);
-        simpleMoveT * bestMove = mlist.Get(bestMoveIndex);
+        auto bestMove = mlist.Get(bestMoveIndex);
         IncHistoryValue (bestMove, depth * depth);
         // Should we also add this as a killer move? Possibly not,
         // since it was not good enough to cause a beta cutoff.
@@ -1853,7 +1853,7 @@ Engine::Quiesce (int alpha, int beta)
     MoveList mlist;
     Pos.GenerateMoves (&mlist, GEN_CAPTURES);
     for (uint m=0; m < mlist.Size(); m++) {
-        simpleMoveT * sm = mlist.Get(m);
+        auto sm = mlist.Get(m);
         sm->score = SEE (sm->from, sm->to);
     }
 
@@ -2181,7 +2181,7 @@ void
 Engine::ScoreMoves (MoveList * mlist)
 {
     for (uint i = 0; i < mlist->Size(); i++) {
-        simpleMoveT * sm = mlist->Get(i);
+        auto sm = mlist->Get(i);
         if (sm->capturedPiece != EMPTY  ||  sm->promote != EMPTY) {
             int see = SEE (sm->from, sm->to);
             if (see >= 0) {
@@ -2239,7 +2239,7 @@ Engine::PrintPV (uint depth, int score, const char * note)
 
     // Make and print each PV move:
     for (i = 0; i < pv->length; i++) {
-        simpleMoveT * sm = &(pv->move[i]);
+        auto sm = &(pv->move[i]);
 
         // Check for legality, to protect against hash table
         // false hits and bugs in PV updating:
@@ -2303,7 +2303,7 @@ Engine::PerfTest (uint depth)
     Pos.GenerateMoves (&mlist);
     uint nmoves = 0;
     for (uint i = 0; i < mlist.Size(); i++) {
-        simpleMoveT * sm = mlist.Get(i);
+        auto sm = mlist.Get(i);
         Pos.DoSimpleMove (sm);
         nmoves += PerfTest (depth-1);
         Pos.UndoSimpleMove (sm);

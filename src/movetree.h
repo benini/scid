@@ -60,10 +60,10 @@ enum markerT : byte { NO_MARKER = 0, START_MARKER = 1, END_MARKER = 2 };
 //   to specify a location in the game.
 //
 struct moveT {
-	simpleMoveT moveData; // piece moving, target square etc
 	moveT* prev;
 	moveT* next;
 	moveT* varChild;
+	simpleMoveT moveData; // piece moving, target square etc
 	char san[10];   // SAN representation of move
 	markerT marker; // can be NO_MARKER, START_MARKER or END_MARKER
 	byte numVariations;

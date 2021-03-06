@@ -45,7 +45,6 @@ struct simpleMoveT
     byte     castleFlags;    // pre-move information
     squareT  epSquare;       // pre-move information
     ushort   oldHalfMoveClock;
-    int32_t  score;          // used for alpha/beta ordering.
 
 	bool isNullMove() const {
 		return from == to && from != NULL_SQUARE &&
@@ -85,11 +84,6 @@ struct simpleMoveT
 		}
 		return dest;
 	}
-
-	bool operator<(const simpleMoveT& b) const {
-		// Highest score first
-		return score > b.score;
-	}
 };
 
 struct cmpMove {
@@ -100,13 +94,22 @@ inline bool operator==(const simpleMoveT& a, const cmpMove& b) {
 	return a.from == b.m.from && a.to == b.m.to && a.promote == b.m.promote;
 }
 
+struct ScoredMove : public simpleMoveT {
+	int32_t score; // used for alpha/beta ordering.
+
+	bool operator<(const ScoredMove& b) const {
+		// Highest score first
+		return score > b.score;
+	}
+};
+
 // typedef std::vector<simpleMoveT> MoveList;
 class MoveList {
 	uint ListSize = 0;
-	simpleMoveT Moves[MAX_LEGAL_MOVES];
+	ScoredMove Moves[MAX_LEGAL_MOVES];
 
 public:
-	typedef simpleMoveT* iterator;
+	typedef ScoredMove* iterator;
 	iterator begin() { return Moves; };
 	iterator end() { return Moves + ListSize; }
 	uint Size() { return ListSize; }
@@ -114,7 +117,8 @@ public:
 	void emplace_back(squareT from, squareT to, pieceT promote,
 	                  pieceT movingPiece, pieceT capturedPiece) {
 		ASSERT(ListSize < MAX_LEGAL_MOVES);
-		simpleMoveT& sm = Moves[ListSize++];
+		ScoredMove& sm = Moves[ListSize++];
+		sm = ScoredMove();
 		sm.from = from;
 		sm.to = to;
 		sm.promote = promote;
@@ -125,11 +129,11 @@ public:
 		ASSERT(count <= MAX_LEGAL_MOVES);
 		ListSize = static_cast<uint>(count);
 	}
-	void push_back(const simpleMoveT& sm) {
+	void push_back(const ScoredMove& sm) {
 		ASSERT(ListSize < MAX_LEGAL_MOVES);
 		Moves[ListSize++] = sm;
 	}
-	simpleMoveT* Get(size_t index) {
+	ScoredMove* Get(size_t index) {
 		ASSERT(index < ListSize);
 		return &(Moves[index]);
 	}
