@@ -1660,7 +1660,7 @@ Game::GetPrevSAN (char * str)
 {
     ASSERT (str != NULL);
     moveT * m = CurrentMove->prev;
-    if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
+    if (m->startMarker()  ||  m->endMarker()) {
         str[0] = 0;
         return;
     }
@@ -1700,57 +1700,13 @@ Game::GetNextMoveUCI (char * str)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// commentEmpty:
-//    Called by WriteMoveList to check there is really
-//    something to print given display options.
-//    comment is supposed to be non null
-bool
-Game::CommentEmpty ( const char * comment)
-{
-    char * s = NULL;
-    bool ret = false;
-
-    if (comment == NULL)
-      return true;
-
-    if (comment[0] == '\0')
-      return true;
-
-    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-      s = strDuplicate (comment);
-      strTrimMarkCodes (s);
-      char * tmp = s;
-      bool empty = true;
-      while (tmp[0] != 0) {
-        if (tmp[0] != ' ') {
-          empty = false;
-          break;
-        }
-        tmp++;
-      }
-      ret = empty;
-
-      delete[] s;
-    }
-
-    return ret;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // writeComment:
 //    Called by WriteMoveList to write a single comment.
 void
 Game::WriteComment (TextBuffer * tb, const char * preStr,
               const char * comment, const char * postStr)
 {
-    char* s_duplicate = nullptr;
     const char* s = comment;
-
-    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-		s_duplicate = strDuplicate(comment);
-		strTrimMarkCodes(s_duplicate);
-		s = s_duplicate;
-	}
-
     if (s[0] != '\0') {
 
         if (IsColorFormat()) {
@@ -1775,10 +1731,6 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         }
 
         if (IsColorFormat()) { tb->PrintString ("</c>"); }
-    }
-
-    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-        delete[] s_duplicate;
     }
 }
 
@@ -1844,12 +1796,18 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
         postCommentStr = "";
     }
 
+    std::string strippedComment;
     // If this is a variation and it starts with a comment, print it:
-    if ((VarDepth > 0 || CurrentMove->prev == FirstMove) && 
-            ! CurrentMove->prev->comment.empty()) {
-        if (PgnStyle & PGN_STYLE_COMMENTS) {
-            WriteComment (tb, preCommentStr, CurrentMove->prev->comment.c_str(),
-                          postCommentStr);
+    if ((VarDepth > 0 || CurrentMove->prev == FirstMove) &&
+        (PgnStyle & PGN_STYLE_COMMENTS)) {
+        const char* comment = CurrentMove->prev->comment.c_str();
+        if (*comment && (PgnStyle & PGN_STYLE_STRIP_MARKS)) {
+            strippedComment = m->comment;
+            strTrimMarkCodes(strippedComment.data());
+            comment = strippedComment.data();
+        }
+        if (*comment) {
+            WriteComment(tb, preCommentStr, comment, postCommentStr);
             tb->PrintSpace();
             if (!VarDepth) {
                 tb->ClearTranslation ('\n');
@@ -2061,7 +2019,13 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 printMoveNum = true;
             }
 
-            if (!m->comment.empty() && ! CommentEmpty(m->comment.c_str()) ) {
+            const char* comment = m->comment.c_str();
+            if (*comment && (PgnStyle & PGN_STYLE_STRIP_MARKS)) {
+                strippedComment = m->comment;
+                strTrimMarkCodes(strippedComment.data());
+                comment = strippedComment.data();
+            }
+            if (*comment) {
                 if (!inComment && IsPlainFormat()  &&
                     (PgnStyle & PGN_STYLE_NO_NULL_MOVES)) {
                     // If this move has no variations, but the next move
@@ -2101,7 +2065,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                     }
                 }
 
-                WriteComment (tb, preCommentStr, m->comment.c_str(), postCommentStr);
+                WriteComment(tb, preCommentStr, comment, postCommentStr);
 
                 if ((PgnStyle & PGN_STYLE_INDENT_COMMENTS) && VarDepth == 0) {
                     if (IsColorFormat()) {
@@ -2113,7 +2077,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 } else {
                     tb->PrintSpace();
                 }
-                if (printDiagrams  &&  strIsPrefix ("#", m->comment.c_str())) {
+                if (printDiagrams  &&  strIsPrefix ("#", comment)) {
                     if (IsLatexFormat()) {
                         tb->PrintString ("\n\\begin{diagram}\n");
                     }

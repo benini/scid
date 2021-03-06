@@ -406,7 +406,6 @@ public:
     eloT     GetAverageElo ();
 
     // PGN conversion
-    bool      CommentEmpty ( const char * comment);
     void      WriteComment (TextBuffer * tb, const char * preStr,
                             const char * comment, const char * postStr);
     errorT    WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,

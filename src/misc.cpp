@@ -357,7 +357,7 @@ strTrimMarkCodes (char * str)
             // If we see end-of-string or code-starting '[', there is some
             // error so go back to the start of this code and treat it
             // normally.
-            if (ch == 0  ||  ch == '[') {
+            if (ch == '\0'  ||  ch == '[') {
                 *out++ = *startLocation;
                 inCode = false;
                 in = startLocation;
@@ -368,7 +368,7 @@ strTrimMarkCodes (char * str)
             // For all other characters in a code, just ignore it.
         } else {
             // Stop at end-of-string:
-            if (ch == 0) { break; }
+            if (ch == '\0') { break; }
             // Look for the start of a code that is to be stripped:
             if (ch == '['  &&  in[1] == '%') {
                 inCode = true;
@@ -380,7 +380,11 @@ strTrimMarkCodes (char * str)
         in++;
     }
     // Terminate the modified string:
-    *out = 0;
+    *out = char();
+
+    // If there are only spaces left, remove everything
+    if (in != out && std::count(str, out, ' ') == std::distance(str, out))
+        *str = char();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
