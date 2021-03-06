@@ -141,8 +141,6 @@ private:
     pawnTableEntryT * PawnTable;   // Pawn structure score hash table.
     bool (*CallbackFunction)(Engine *, void *);  // Periodic callback.
     void *   CallbackData;
-    simpleMoveT * GameMoves [1024];
-    uint      NumGameMoves;
 
 private:
     int PieceValue (pieceT piece);
@@ -205,7 +203,6 @@ public:
         SetHashTableKilobytes (ENGINE_HASH_KB);
         SetPawnTableKilobytes (ENGINE_PAWN_KB);
         CallbackFunction = NULL;
-        NumGameMoves = 0;
         RootPos.StdStart();
         Pos.StdStart();
         for (auto& e : PV) { e.length = 0; }
@@ -264,8 +261,6 @@ public:
 
     void SetPosition (Position * pos);
     Position * GetPosition (void) { return &RootPos; }
-    void PlayMove (simpleMoveT * move);
-    void RetractMove (void);
     int Score (void);
     int ScoreMaterial (void);
     principalVarT * GetPV (void) { return &(PV[0]); }

@@ -921,45 +921,6 @@ Engine::IsGettingMatedScore (int score)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::PlayMove
-//   Play the specified move, not in a search.
-void
-Engine::PlayMove (simpleMoveT * sm) {
-    PushRepeat(&RootPos);
-    RootPos.DoSimpleMove(sm);
-    Pos.DoSimpleMove(sm);
-#ifdef WINCE
-    simpleMoveT * newMove = (simpleMoveT *) my_Tcl_Alloc(sizeof(simpleMoveT));
-#else
-    simpleMoveT * newMove = new simpleMoveT;
-#endif
-    *newMove = *sm;
-    GameMoves[NumGameMoves] = newMove;
-    NumGameMoves++;
-    // Change the transposition table sequence number:
-    TranTableSequence++;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::RetractMove
-//    Take back a move played in the game.
-void
-Engine::RetractMove (void)
-{
-    if (NumGameMoves == 0) { return; }
-    PopRepeat();
-    NumGameMoves--;
-    RootPos.UndoSimpleMove(GameMoves[NumGameMoves]);
-    Pos.UndoSimpleMove(GameMoves[NumGameMoves]);
-#ifdef WINCE
-    my_Tcl_Free((char *)GameMoves);
-#else
-    delete GameMoves[NumGameMoves];
-#endif
-    TranTableSequence--;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::DoMove
 //   Make the specified move in a search.
 inline void
@@ -1332,16 +1293,6 @@ static uint nFailHighFirstMove = 0;
 void
 Engine::SetPosition (Position * newpos)
 {
-    // Delete old game moves:
-    for (uint i=0; i < NumGameMoves; i++) {
-#ifdef WINCE
-        my_Tcl_Free((char *) GameMoves[i]);
-#else
-        delete GameMoves[i];
-#endif
-    }
-    NumGameMoves = 0;
-
     // Set the position:
     if (newpos == NULL) {
         RootPos.StdStart();

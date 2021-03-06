@@ -285,11 +285,9 @@ proc ::enginelist::write {} {
 catch { ::enginelist::read }
 if {[llength $engines(list)] == 0} {
     # No engines, so set up a default engine list:
-    set scidlet "scidlet"
     set phalanx "phalanx-scid"
     set togaII "togaII"
     if { $::windowsOS } {
-        set scidlet "scidlet.exe"
         set phalanx "phalanx-scid.exe"
         set togaII "TogaII.exe"
     }
@@ -299,15 +297,14 @@ if {[llength $engines(list)] == 0} {
             [file join $::scidExeDir "engines" "phalanx-scid" ] [file join $::scidExeDir "engines" "togaII1.2.1a" "src" ] ]
     
     # The next four lists should have the same length!
-    set scidEngCmds [list $phalanx $togaII $scidlet ]
-    set scidEngNames [list "Phalanx-Scid" "Toga II" "Scidlet" ]
+    set scidEngCmds [list $phalanx $togaII ]
+    set scidEngNames [list "Phalanx-Scid" "Toga II" ]
     array set parentDirs "
     $phalanx { phalanx-scid Phalanx-XXII }
     $togaII  { togaII1.2.1a toga togaII [ file join togaII1.2.1a src ] }
-    $scidlet { . }
     "
     
-    set isUCI [list 0 1 0 ]
+    set isUCI [list 0 1]
     
     # Let's search the engines:
     foreach cmd $scidEngCmds name $scidEngNames uci $isUCI {

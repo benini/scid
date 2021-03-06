@@ -97,17 +97,6 @@ set_target_properties(phalanx-scid PROPERTIES COMPILE_FLAGS "-w")
 install(TARGETS phalanx-scid DESTINATION bin)
 
 
-# engine scidlet
-file(GLOB SCIDLET_SRC engines/scidlet/*.cpp)
-set(SCIDLET_EXTRA
-  src/engine.cpp
-  src/recog.cpp
-  src/misc.cpp
-  src/position.cpp
-)
-add_executable(scidlet ${SCIDLET_SRC} ${SCIDLET_EXTRA})
-install(TARGETS scidlet DESTINATION bin)
-
 option(GTEST "Build unit tests" OFF)
 if(GTEST)
   add_subdirectory(gtest)
