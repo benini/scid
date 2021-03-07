@@ -68,10 +68,10 @@ namespace eval ttk::theme::dark {
 
         set borders [list disabled $colors(fieldborder) {active pressed} $basecol \
                     {disabled selected} $colors(fieldborder) {pressed selected} $basecol pressed $basecol \
-                    {active selected} $basecol active $basecol selected $basecol) focus $basecol ]
+                    {active selected} $basecol active $basecol selected $basecol focus $basecol ]
         set buttonborder [list disabled $colors(fieldborder) {active pressed} $basecol \
                     {disabled selected} $colors(fieldborder) {pressed selected} $basecol pressed $basecol \
-                    {active selected} $basecol active $basecol selected $basecol) ]
+                    {active selected} $basecol active $basecol selected $basecol ]
         set buttonsbg [list disabled $colors(through) pressed $colors(buttonbgdark) \
                     active $colors(buttonbglight) ]
 
