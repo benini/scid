@@ -274,8 +274,8 @@ proc ::enginewin::connectEngine {id config} {
         if {[info exists oldwdir]} {
             cd $oldwdir
         }
-    }]} {
-        ERROR::MessageBox
+    } errorMsg]} {
+        tk_messageBox -icon warning -type ok -parent . -message $errorMsg
         ::enginewin::updateConfig $id {}
         .engineWin$id.config.header.delete configure -state normal
         return
@@ -556,6 +556,7 @@ proc ::enginewin::updateConfig {id msgData} {
         $w.debug set $debugframe
 
         if {[catch {::engine::pid $id} enginePid]} {
+            $w configure -state disabled
             return
         }
         if {$enginePid != ""} {
