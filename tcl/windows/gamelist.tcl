@@ -1142,6 +1142,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       if { [winfo exists $w.game_menu.merge] } { destroy $w.game_menu.merge }
       if { [winfo exists $w.game_menu.copy] } { destroy $w.game_menu.copy }
       if { [winfo exists $w.game_menu.filter] } { destroy $w.game_menu.filter }
+      if { [winfo exists $w.game_menu.export] } { destroy $w.game_menu.export }
       $w.game_menu delete 0 end
       #LOAD/BROWSE/MERGE GAME
       $w.game_menu add command -label $::tr(LoadGame) \
@@ -1152,28 +1153,13 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "mergeGame $::glistBase($w) $idx"
       menu $w.game_menu.merge
       menu $w.game_menu.copy
-      foreach i [sc_base list] {
-          if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
-          set fname [file tail [sc_base filename $i]]
-          $w.game_menu.merge add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
-          $w.game_menu.copy add command -label "$i $fname" \
-              -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
-      }
       $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
       $w.game_menu add cascade -label $::tr(CopyGameTo) -menu $w.game_menu.copy
+      $w.game_menu add command -label [expr {[sc_base gameflag $::glistBase($w) $idx get del] ? $::tr(UndeleteGame) : $::tr(DeleteGame) }] \
+        -command "glist.delflag_ $w $idx; $w selection set {};"
 
-      #GOTO GAME
-      $w.game_menu add separator
-      $w.game_menu add checkbutton -variable ::glist_FindBar($layout) \
-                   -label $::tr(FindBar) -command "glist.showfindbar_ $w $layout"
-      if {$::glistBase($w) == [sc_base current] && [sc_game number] != 0} {
-        $w.game_menu add command -label $::tr(FindCurrentGame) -command "glist.findcurrentgame_ $w [sc_game number]"
-      } else {
-        $w.game_menu add command -label $::tr(FindCurrentGame) -state disabled
-      }
       $w.game_menu add separator
       menu $w.game_menu.filter
-      $w.game_menu.filter add command -label $::tr(Export) -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label [tr SearchReset] \
         -command "::windows::gamelist::FilterReset [winfo toplevel $w] $::glistBase($w)"
@@ -1192,10 +1178,32 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu.filter add command -label $::tr(GlistUndeleteAllGames) \
         -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w)"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
+      menu $w.game_menu.export
+      $w.game_menu.export add command -label [tr ToolsExpFilter] \
+        -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
+      $w.game_menu.export add separator
+      $w.game_menu add cascade -label [tr CopyGames] -menu $w.game_menu.export
+
+      foreach i [sc_base list] {
+        if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
+        set fname [file tail [sc_base filename $i]]
+        $w.game_menu.merge add command -label "$i $fname" \
+          -command "::game::mergeInBase $::glistBase($w) $i $idx"
+        $w.game_menu.copy add command -label "$i $fname" \
+          -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
+        $w.game_menu.export add command -label "$i $fname" \
+          -command "sc_base copygames $::glistBase($w) $::glistFilter($w) $i; ::notify::DatabaseModified $i"
+      }
+
       $w.game_menu add separator
-      set dellabel $::tr(DeleteGame)
-      if {[sc_base gameflag $::glistBase($w) $idx get del]} { set dellabel $::tr(UndeleteGame) }
-      $w.game_menu add command -label $dellabel -command "glist.delflag_ $w $idx; $w selection set {};"
+      $w.game_menu add checkbutton -variable ::glist_FindBar($layout) \
+                   -label $::tr(FindBar) -command "glist.showfindbar_ $w $layout"
+      if {$::glistBase($w) == [sc_base current] && [sc_game number] != 0} {
+        $w.game_menu add command -label $::tr(FindCurrentGame) -command "glist.findcurrentgame_ $w [sc_game number]"
+      } else {
+        $w.game_menu add command -label $::tr(FindCurrentGame) -state disabled
+      }
+
       tk_popup $w.game_menu $abs_x $abs_y
     }
   } else {
