@@ -340,7 +340,7 @@ proc ::enginewin::callback {id msg} {
         "InfoReady" {
             ::enginewin::changeState $id idle
         }
-        "Disconnected" {
+        "InfoDisconnected" {
             tk_messageBox -message "The connection with the engine terminated unexpectedly."
             ::enginewin::updateConfig $id {}
             ::enginewin::changeState $id closed

@@ -14,15 +14,133 @@
 # Events:
 # connection local or remote    >> InfoConfig
 # net client disconnect         >> InfoConfig
-# engine crash/local disconnect >> Disconnected
-# Messages:
+# engine crash/local disconnect >> InfoDisconnected
+# Messages from clients:
 # SetOptions >> InfoConfig
 # NewGame    >> InfoReady
 # StopGo     >> InfoReady
 # Go         >> InfoGo
 #            >> the engine will repeatedly send InfoPV replies until a new
 #               message is received or one of the Go's limits is reached.
-
+#
+# message InfoConfig {
+#   enum Protocol {
+#     "uci";
+#     "xboard";
+#     "network";
+#   }
+#   Protocol protocol = 1;
+#
+#   repeated string net_clients = 2;
+#
+#   enum OptionType {
+#     "text";
+#     "file";
+#     "path";
+#     "spin";
+#     "slider";
+#     "check";
+#     "combo";
+#     "button";
+#     "save";
+#     "reset";
+#   }
+#   message Option {
+#     string name = 1;
+#     string value = 2;
+#     OptionType type = 3 [default = text];
+#     string default = 4;
+#     int32 min = 5;
+#     int32 max = 6;
+#     repeated string var = 7;
+#     bool internal = 8 [default = false];
+#   }
+#   repeated Option options = 3;
+# }
+#
+# message InfoDisconnected {
+# }
+#
+# message InfoReady {
+# }
+#
+# message InfoGo {
+#   string position = 1;
+# }
+#
+# message InfoPV {
+#   int32 multipv = 1;
+#   int32 depth = 2;
+#   int32 seldepth = 3;
+#   int32 nodes = 4;
+#   int32 nps = 5;
+#   int32 hashfull = 6;
+#   int32 tbhits = 7;
+#   int32 time = 8;
+#   int32 score = 9;
+#   enum ScoreType {
+#     "cp"
+#     "mate"
+#     "lowerbound"
+#     "upperbound"
+#   }
+#   Score score_type = 10;
+#   message ScoreWDL {
+#     "win";
+#     "draw";
+#     "lose";
+#   }
+#   ScoreWDL score_wdl = 11;
+#   string pv = 12;
+# }
+#
+# Sent to the engine to change the value of one or more options.
+# message SetOptions {
+#   message Option {
+#     string name = 1;
+#     string value = 2;
+#   }
+#   repeated Option options = 1;
+# }
+#
+# Sent to the engine to signal a new game or analysis and to specify
+# the desired thinking output.
+# message NewGame {
+#   enum Option {
+#     "analysis";
+#     "chess960";
+#     "post_pv";
+#     "post_wdl";
+#     TODO: "ponder";
+#   }
+#   repeated Option options = 1;
+# }
+#
+# Sent to the engine to ask it to interrupt a previous Go message.
+# message StopGo {
+# }
+#
+# Sent to the engine to ask it to start thinking.
+# message Go {
+#   string position = 1;
+#
+#   enum LimitType {
+#     "wtime"
+#     "btime"
+#     "winc"
+#     "binc"
+#     "movestogo"
+#     "movetime"
+#     "depth"
+#     "nodes"
+#     "mate"
+#   }
+#   message Limit {
+#     LimitType limit = 1;
+#     uint32 value = 2;
+#   }
+#   repeated Limit limits = 2;
+# }
 
 namespace eval engine {}
 
@@ -252,7 +370,7 @@ proc ::engine::onMessages_ {id channel} {
 
     # A disconnected channel creates a readable event with no input
     if {[chan eof $channel]} {
-        ::engine::destroy_ $id [list Disconnected ""]
+        ::engine::destroy_ $id [list InfoDisconnected ""]
         return
     }
     while {[set line [chan gets $channel]] != ""} {
