@@ -14,7 +14,7 @@
  * along with Scid. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fastgame.h"
+#include "gameview.h"
 #include "position.h"
 #include "searchpos.h"
 #include <cstring>

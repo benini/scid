@@ -16,8 +16,7 @@
 * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FASTGAME_H
-#define FASTGAME_H
+#pragma once
 
 #include "bytebuf.h"
 #include "common.h"
@@ -74,9 +73,7 @@ public:
 		return std::equal(a, a + 16, b_ptr);
 	}
 
-	bool operator!=(const MaterialCount& b) const {
-		return !operator==(b);
-	}
+	bool operator!=(const MaterialCount& b) const { return !operator==(b); }
 };
 
 /// Store the type and position of the pieces compatibly with the SCID4 coding.
@@ -215,9 +212,7 @@ public:
 		return true;
 	}
 
-	const MaterialCount& materialCount() const {
-		return mt_;
-	}
+	const MaterialCount& materialCount() const { return mt_; }
 
 	squareT getSquare(colorT color, int idx) const {
 		return pieces_.getSquare(color, idx);
@@ -253,8 +248,7 @@ public:
 		return rook_from;
 	}
 
-	template <colorT color>
-	pieceT move(uint8_t idx, squareT to, pieceT promo) {
+	template <colorT color> pieceT move(uint8_t idx, squareT to, pieceT promo) {
 		if (promo != INVALID_PIECE) {
 			pieces_.promote(color, idx, promo);
 			mt_.incr(color, promo);
@@ -273,7 +267,7 @@ public:
 		if (oldIdx == EMPTY_SQ_)
 			return INVALID_PIECE;
 
-		pieceT removed_pt =  pieces_.getPieceType(color, oldIdx);
+		pieceT removed_pt = pieces_.getPieceType(color, oldIdx);
 		mt_.decr(color, removed_pt);
 		int lastvalid_idx = mt_.count(color);
 		if (oldIdx != lastvalid_idx) {
@@ -427,10 +421,9 @@ public:
 	}
 
 	FullMove getMove(int ply_to_skip) {
-		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
-			auto move = (cToMove_ == WHITE)
-			                ? DecodeNextMove<FullMove, WHITE>()
-			                : DecodeNextMove<FullMove, BLACK>();
+		for (int ply = 0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
+			auto move = (cToMove_ == WHITE) ? DecodeNextMove<FullMove, WHITE>()
+			                                : DecodeNextMove<FullMove, BLACK>();
 			if (!move)
 				break;
 
@@ -445,11 +438,12 @@ public:
 
 	std::string getMoveSAN(int ply_to_skip, int count) {
 		std::stringstream res;
-		const auto ply_num = (cToMove_ == WHITE)? 2 : 3;
-		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
+		const auto ply_num = (cToMove_ == WHITE) ? 2 : 3;
+		for (int ply = 0; ply < ply_to_skip + count;
+		     ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
-				move = DecodeNextMove <FullMove, WHITE>();
+				move = DecodeNextMove<FullMove, WHITE>();
 				if (!move)
 					break;
 				if (ply < ply_to_skip)
@@ -458,7 +452,7 @@ public:
 					res << "  ";
 				res << (ply_num + ply) / 2 << ".";
 			} else {
-				move = DecodeNextMove <FullMove, BLACK>();
+				move = DecodeNextMove<FullMove, BLACK>();
 				if (!move)
 					break;
 				if (ply < ply_to_skip)
@@ -569,6 +563,3 @@ private:
 		return res;
 	}
 };
-
-
-#endif

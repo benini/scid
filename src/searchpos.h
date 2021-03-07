@@ -24,7 +24,6 @@
 #define SEARCHPOS_H
 
 #include "common.h"
-#include "fastgame.h"
 #include "matsig.h"
 #include "position.h"
 #include "scidbase.h"
