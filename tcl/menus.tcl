@@ -51,9 +51,14 @@ $m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
 
 ### Database menu:
 set m .menu.db
-menu $m
+menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Database -menu $m
 $m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
+$m add checkbutton -label LoadatStartup -variable ::autoLoadBases_currdb -command {
+  if {[::file::autoLoadBases.remove $::curr_db] == -1} {
+    ::file::autoLoadBases.add $::curr_db
+  }
+}
 $m add separator
 menu $m.exportfilter
   $m.exportfilter add command -label ToolsExpFilterPGN \
@@ -392,6 +397,9 @@ proc updateMenuStates {{menuname}} {
         $m.file insert [expr $::menuFileRecentIdx + $nrecent] separator
       }
     }
+  {.menu.db} {
+      set ::autoLoadBases_currdb [expr {[::file::autoLoadBases.find $::curr_db] >= 0}]
+    }
   {.menu.play} {
       set n [$m.play index end]
       set st normal
@@ -464,6 +472,7 @@ proc menuUpdateBases {} {
   set notEmpty    [expr {[sc_base numGames $::curr_db] != 0 ? "normal" : "disabled"}]
 
   menuConfig .menu.db FileClose entryconfig -state $notClipbase
+  menuConfig .menu.db LoadatStartup entryconfig -state $notClipbase
   menuConfig .menu.db ToolsExpFilter entryconfig -state $notEmpty
   menuConfig .menu.db FileMaintName entryconfig -state $canChange
   menuConfig .menu.db.utils Cleaner          entryconfig -state $canChange

@@ -307,4 +307,5 @@ proc ::file::autoLoadBases.remove { {baseIdx} } {
   if {$idx != -1} {
     set ::autoLoadBases [lreplace $::autoLoadBases $idx $idx]
   }
+  return $idx
 }
