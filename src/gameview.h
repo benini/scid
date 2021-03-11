@@ -231,9 +231,9 @@ public:
 		                                  : square_Relative(color, C1);
 		const squareT rook_to = king_side ? square_Relative(color, F1)
 		                                  : square_Relative(color, D1);
-		const int king_idx = pieces_.getKingIdx();
+		const auto king_idx = pieces_.getKingIdx();
 		const squareT king_from = pieces_.getSquare(color, king_idx);
-		const int rook_idx = castlingRook_[color][king_side ? 1 : 0];
+		const auto rook_idx = castlingRook_[color][king_side ? 1 : 0];
 		const squareT rook_from = pieces_.getSquare(color, rook_idx);
 
 		if (pieces_.getPieceType(color, rook_idx) != ROOK)
@@ -248,7 +248,7 @@ public:
 		return rook_from;
 	}
 
-	template <colorT color> pieceT move(uint8_t idx, squareT to, pieceT promo) {
+	template <colorT color> pieceT move(int idx, squareT to, pieceT promo) {
 		if (promo != INVALID_PIECE) {
 			pieces_.promote(color, idx, promo);
 			mt_.incr(color, promo);
@@ -260,10 +260,10 @@ public:
 		return remove<1 - color>(to, idx);
 	}
 
-	template <colorT color>
-	pieceT remove(squareT sq, uint8_t newIdx = EMPTY_SQ_) {
-		const uint8_t oldIdx = board_[sq];
-		board_[sq] = newIdx;
+	template <colorT color> pieceT remove(squareT sq, int newIdx = EMPTY_SQ_) {
+		ASSERT(static_cast<uint8_t>(newIdx) == newIdx);
+		const auto oldIdx = board_[sq];
+		board_[sq] = static_cast<uint8_t>(newIdx);
 		if (oldIdx == EMPTY_SQ_)
 			return INVALID_PIECE;
 
@@ -526,13 +526,14 @@ private:
 
 	template <typename TResult, colorT toMove> TResult doPly(byte v) {
 		const auto idx_piece_moving = v >> 4;
-		pieceT moving_piece = board_.getPiece(toMove, idx_piece_moving);
-		squareT from = board_.getSquare(toMove, idx_piece_moving);
+		const auto moving_piece = board_.getPiece(toMove, idx_piece_moving);
+		const auto from = board_.getSquare(toMove, idx_piece_moving);
 
-		auto [to, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, v);
-		if (to < 0 || to > 63)
+		auto [destSq, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, v);
+		if (destSq < 0 || destSq > 63)
 			return {}; // decode error
 
+		const auto to = static_cast<squareT>(destSq);
 		if (to == from) {
 			if (promo == INVALID_PIECE)
 				return {}; // decode error
@@ -541,7 +542,7 @@ private:
 				return TResult(toMove, 0, 0, KING);
 
 			// CASTLE
-			const squareT rook_from = board_.castle<toMove>(promo == KING);
+			const auto rook_from = board_.castle<toMove>(promo == KING);
 			if (rook_from == from)
 				return {}; // decode error
 			return TResult(toMove, from, rook_from);
