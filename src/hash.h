@@ -12,10 +12,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#pragma once
 
-#ifndef SCID_HASH_H
-#define SCID_HASH_H
-
+class HashVal {
+    unsigned hashVal_[16][64] = {};
+public:
+    constexpr HashVal() {
 // goodHashValues
 //   This is a table of 12 (pieces) * 64 (squares) = 768 pre-generated
 //   "good" 32-bit hash values, to be used for Zobrist hashing.
@@ -24,7 +26,7 @@
 //      (b) every value differs from every other value by at least 10
 //          bits and at most 32-10=22 bits.
 //
-const uint
+constexpr unsigned
 goodHashValues [12 * 64] = {
     0x039B11BFu,0x4890D6A4u,0x37539B8Au,0xA7E3A104u,0x8B263019u,0xEB71AE0Bu,
     0x87099341u,0x32EF9CD4u,0x698B8BC1u,0x823FEACEu,0x8E607A5Au,0x7241E921u,
@@ -156,8 +158,45 @@ goodHashValues [12 * 64] = {
     0x8873E4B5u,0x3221744Au,0xEB3B4FBDu,0xB17E5F84u,0xEFD0E469u,0xD08C2EC3u
 };
 
-#endif // SCID_HASH_H
+        // Fill in the hash values for each valid [piece][square] index,
+        // using a table of pre-generated good values:
+        const unsigned int * hash = goodHashValues;
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WK][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WQ][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WR][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WB][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WN][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[WP][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BK][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BQ][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BR][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BB][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BN][sq] = *hash; hash++; }
+        for (auto sq=A1; sq <= H8; sq++) { hashVal_[BP][sq] = *hash; hash++; }
 
-//////////////////////////////////////////////////////////////////////
-//  EOF: hash.h
-//////////////////////////////////////////////////////////////////////
+    }
+
+    constexpr void operator()(unsigned& hash, unsigned char p, unsigned char sq) const {
+        hash ^= hashVal_[p][sq];
+    };
+};
+constexpr inline auto HASH = HashVal();
+inline auto const& UNHASH = HASH;
+
+constexpr inline unsigned stdStartPawnHash = [] {
+    unsigned h = 0;
+    HASH (h,WP,A2);  HASH (h,WP,B2);  HASH (h,WP,C2);  HASH (h,WP,D2);
+    HASH (h,WP,E2);  HASH (h,WP,F2);  HASH (h,WP,G2);  HASH (h,WP,H2);
+    HASH (h,BP,A7);  HASH (h,BP,B7);  HASH (h,BP,C7);  HASH (h,BP,D7);
+    HASH (h,BP,E7);  HASH (h,BP,F7);  HASH (h,BP,G7);  HASH (h,BP,H7);
+    return h;
+}();
+
+constexpr inline unsigned stdStartHash = [] {
+    auto h = stdStartPawnHash;
+    HASH (h,WR,A1);  HASH (h,WN,B1);  HASH (h,WB,C1);  HASH (h,WQ,D1);
+    HASH (h,WK,E1);  HASH (h,WB,F1);  HASH (h,WN,G1);  HASH (h,WR,H1);
+    HASH (h,BR,A8);  HASH (h,BN,B8);  HASH (h,BB,C8);  HASH (h,BQ,D8);
+    HASH (h,BK,E8);  HASH (h,BB,F8);  HASH (h,BN,G8);  HASH (h,BR,H8);
+    return h;
+}();

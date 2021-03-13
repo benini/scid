@@ -22,14 +22,6 @@
 #include "movegen.h"
 #include <algorithm>
 
-static uint hashVal [16][64];
-static uint stdStartHash = 0;
-static uint stdStartPawnHash = 0;
-
-// HASH and UNHASH are identical: XOR the hash value for a (piece,square).
-#define HASH(h,p,sq)    (h) ^= hashVal[(p)][(sq)]
-#define UNHASH(h,p,sq)  (h) ^= hashVal[(p)][(sq)]
-
 inline void
 Position::AddHash (pieceT p, squareT sq)
 {
@@ -73,56 +65,6 @@ Position::RemoveFromBoard (pieceT p, squareT sq)
     NumOnSquareColor[p][square_Color(sq)]--;
     UnHash (p, sq);
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// initHashValues:
-//    Initialises the table of Zobrist hash values.
-static void initHashValues (void)
-{
-    // Ensure we set up the hash values only once:
-    static int firstCall = 1;
-    if (! firstCall) { return; }
-    firstCall = 0;
-
-
-    // First, set all values to 0:
-    uint sq;
-    for (uint p = 0; p < 16; p++) {
-        for (sq = A1; sq <= H8; sq++) { hashVal[p][sq] = 0; }
-    }
-
-    // Fill in the hash values for each valid [piece][square] index,
-    // using a table of pre-generated good values:
-    const unsigned int * hash = goodHashValues;
-    for (sq=A1; sq <= H8; sq++) { hashVal[WK][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[WQ][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[WR][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[WB][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[WN][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[WP][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BK][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BQ][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BR][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BB][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BN][sq] = *hash; hash++; }
-    for (sq=A1; sq <= H8; sq++) { hashVal[BP][sq] = *hash; hash++; }
-
-    // Compute the hash values for the standard starting position:
-    uint h = 0;
-    // First the pawns:
-    HASH (h,WP,A2);  HASH (h,WP,B2);  HASH (h,WP,C2);  HASH (h,WP,D2);
-    HASH (h,WP,E2);  HASH (h,WP,F2);  HASH (h,WP,G2);  HASH (h,WP,H2);
-    HASH (h,BP,A7);  HASH (h,BP,B7);  HASH (h,BP,C7);  HASH (h,BP,D7);
-    HASH (h,BP,E7);  HASH (h,BP,F7);  HASH (h,BP,G7);  HASH (h,BP,H7);
-    stdStartPawnHash = h;
-    // Now the nonpawns:
-    HASH (h,WR,A1);  HASH (h,WN,B1);  HASH (h,WB,C1);  HASH (h,WQ,D1);
-    HASH (h,WK,E1);  HASH (h,WB,F1);  HASH (h,WN,G1);  HASH (h,WR,H1);
-    HASH (h,BR,A8);  HASH (h,BN,B8);  HASH (h,BB,C8);  HASH (h,BQ,D8);
-    HASH (h,BK,E8);  HASH (h,BB,F8);  HASH (h,BN,G8);  HASH (h,BR,H8);
-    stdStartHash = h;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////
 // sqDir[][]: Array listing the direction between any two squares.
@@ -556,10 +498,6 @@ Position::Position() {
     // Setting up a valid board is left to StdStart() or Clear().
     Board [COLOR_SQUARE] = EMPTY;
     Board [NULL_SQUARE] = END_OF_BOARD;
-
-    // Make sure all tables used for move generation, hashing,
-    // square tests, etc have been computed:
-    initHashValues();
 }
 
 
