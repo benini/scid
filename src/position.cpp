@@ -2515,14 +2515,6 @@ Position::CalcSANStrings (sanListT *sanList, sanFlagT flag)
 errorT
 Position::ReadFromLongStr (const char * str)
 {
-    pieceT pieceFromByte [256] = {EMPTY};
-    pieceFromByte [(int) 'K'] = WK;  pieceFromByte [(int) 'k'] = BK;
-    pieceFromByte [(int) 'Q'] = WQ;  pieceFromByte [(int) 'q'] = BQ;
-    pieceFromByte [(int) 'R'] = WR;  pieceFromByte [(int) 'r'] = BR;
-    pieceFromByte [(int) 'B'] = WB;  pieceFromByte [(int) 'b'] = BB;
-    pieceFromByte [(int) 'N'] = WN;  pieceFromByte [(int) 'n'] = BN;
-    pieceFromByte [(int) 'P'] = WP;  pieceFromByte [(int) 'p'] = BP;
-
     Clear();
     for (squareT sq=A1; sq <= H8; sq++) {
         if (str[sq] == '.') { continue; }
@@ -2649,6 +2641,39 @@ Position::PrintCompactStrFlipped (char * cboard)
     cboard[35] = 0;
 }
 
+template <typename AddPiece>
+const char* FEN_parsePieces(const char* str, AddPiece add) {
+    ASSERT(str);
+
+    for (int row = 7; row >= 0; --row) {
+        for (int col = 0; col < 8;) {
+            const auto ch = *str++;
+            if (ch == '/') {
+                // A FEN string does not have to contain '/'s but if one
+                // appears anywhere except the start of a row, it is an error:
+                if (col != 0)
+                    return nullptr;
+
+            } else if (ch > '0' && ch < '9') {
+                col += (ch - '0');
+                if (col > 8)
+                    return nullptr;
+
+            } else {
+                auto piece = pieceFromByte[static_cast<unsigned char>(ch)];
+                if (piece == EMPTY)
+                    return nullptr;
+
+                if (!add(piece, static_cast<squareT>(row * 8 + col)))
+                    return nullptr;
+
+                col++;
+            }
+        }
+    }
+    return str;
+}
+
 /// Setup the position from a FEN string.
 /// Note: the slashes usually found in Fen strings to mark the start
 /// of a new row do not need to be present, but if they are, they must
@@ -2674,55 +2699,15 @@ errorT Position::ReadFromFEN(const char* str) {
         }
     };
 
-    // pieceFromByte[] converts a character to its piece, e.g. 'k' -> BK.
-    static pieceT pieceFromByte [256];
-
-    // Note the first Call to set up the static arrays only once:
-    static int firstCall = 1;
-    if (firstCall) {
-        firstCall = 0;
-
-        // Set up pieceFromByte[]:
-        for (int i=0; i < 256; i++) { pieceFromByte[i] = EMPTY; }
-        pieceFromByte [(int) 'K'] = WK;  pieceFromByte [(int) 'k'] = BK;
-        pieceFromByte [(int) 'Q'] = WQ;  pieceFromByte [(int) 'q'] = BQ;
-        pieceFromByte [(int) 'R'] = WR;  pieceFromByte [(int) 'r'] = BR;
-        pieceFromByte [(int) 'B'] = WB;  pieceFromByte [(int) 'b'] = BB;
-        pieceFromByte [(int) 'N'] = WN;  pieceFromByte [(int) 'n'] = BN;
-        pieceFromByte [(int) 'P'] = WP;  pieceFromByte [(int) 'p'] = BP;
-    }
-
     Clear();
 
     // Piece placement
     skip_spaces();
-    for (int row = 7; row >= 0; --row) {
-        for (int col = 0; col < 8;) {
-            const auto ch = *str++;
-            if (ch == '/') {
-                // A FEN string does not have to contain '/'s but if one
-                // appears anywhere except the start of a row, it is an error:
-                if (col != 0)
-                    return ERROR_InvalidFEN;
-
-            } else if (ch > '0' && ch < '9') {
-                col += (ch - '0');
-                if (col > 8)
-                    return ERROR_InvalidFEN;
-
-            } else {
-                auto piece = pieceFromByte[static_cast<unsigned char>(ch)];
-                if (piece == EMPTY)
-                    return ERROR_InvalidFEN;
-
-                if (AddPiece(piece, static_cast<squareT>(row * 8 + col)) != OK)
-                    return ERROR_InvalidFEN;
-
-                col++;
-            }
-        }
-    }
-    if (Material[WK] != 1  ||  Material[BK] != 1) { return ERROR_InvalidFEN; }
+    str = FEN_parsePieces(str, [&](auto piece, auto sq){
+        return this->AddPiece(piece, sq) == OK;
+    });
+    if (!str)
+        return ERROR_InvalidFEN;
 
     // Now the side to move:
     skip_spaces();
@@ -2737,7 +2722,8 @@ errorT Position::ReadFromFEN(const char* str) {
         return ERROR_InvalidFEN;
     }
 
-    if (! IsLegal()) { return ERROR_InvalidFEN; }
+    if (Material[WK] != 1 || Material[BK] != 1 || !IsLegal())
+        return ERROR_InvalidFEN;
 
     // Now the castling flags:
     skip_spaces();

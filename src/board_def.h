@@ -67,6 +67,32 @@ const char PIECE_CHAR[] = "xKQRBNP.xkqrbnpxMm";
 
 inline char piece_Char(pieceT p) { return PIECE_CHAR[piece_Type(p)]; }
 
+class PieceFromByte {
+    pieceT pieceFromByte_[256] = {};
+
+public:
+    constexpr PieceFromByte() {
+        for (auto& e : pieceFromByte_) {
+            e = EMPTY;
+        }
+        pieceFromByte_[(int)'K'] = WK;
+        pieceFromByte_[(int)'k'] = BK;
+        pieceFromByte_[(int)'Q'] = WQ;
+        pieceFromByte_[(int)'q'] = BQ;
+        pieceFromByte_[(int)'R'] = WR;
+        pieceFromByte_[(int)'r'] = BR;
+        pieceFromByte_[(int)'B'] = WB;
+        pieceFromByte_[(int)'b'] = BB;
+        pieceFromByte_[(int)'N'] = WN;
+        pieceFromByte_[(int)'n'] = BN;
+        pieceFromByte_[(int)'P'] = WP;
+        pieceFromByte_[(int)'p'] = BP;
+    };
+
+    pieceT operator[](unsigned char idx) const { return pieceFromByte_[idx]; }
+};
+constexpr inline auto pieceFromByte = PieceFromByte();
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // SQUARES
 const squareT A1 = 0, B1 = 1, C1 = 2, D1 = 3, E1 = 4, F1 = 5, G1 = 6, H1 = 7,
