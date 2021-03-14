@@ -1192,7 +1192,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         $w.game_menu.copy add command -label "$i $fname" \
           -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
         $w.game_menu.export add command -label "$i $fname" \
-          -command "sc_base copygames $::glistBase($w) $::glistFilter($w) $i; ::notify::DatabaseModified $i"
+          -command "::windows::gamelist::CopyGames [winfo toplevel $w] $::glistBase($w) $i"
       }
 
       $w.game_menu add separator
