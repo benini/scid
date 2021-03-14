@@ -34,6 +34,7 @@ class Index;
 class IndexEntry;
 class NameBase;
 class Progress;
+struct TagRoster;
 
 /**
  * This interface separates the logic of a database from its representation.
@@ -103,11 +104,11 @@ public:
 	/**
 	 * Add a game to the database.
 	 * @param ie:   the header data of the source game.
-	 * @param nb:   the NameBase containing @e ie's names.
+	 * @param tags: contains 5 of the Seven Tag Roster.
 	 * @param data: the data (encoded in native format) of the game.
 	 * @returns OK if successful or an error code.
 	 */
-	virtual errorT addGame(IndexEntry const& ie, NameBase const& nb,
+	virtual errorT addGame(IndexEntry const& ie, TagRoster const& tags,
 	                       ByteBuffer const& data) = 0;
 
 	/**

@@ -2984,7 +2984,7 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     eloT elo = db->game->GetWhiteElo();
     bool eloEstimated = false;
     if (elo == 0) {
-        elo = db->game->GetWhiteEstimateElo();
+        elo = db->peakElo(db->game->GetWhiteStr());
         eloEstimated = true;
     }
     if (elo != 0) {
@@ -3000,7 +3000,7 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     elo = db->game->GetBlackElo();
     eloEstimated = false;
     if (elo == 0) {
-        elo = db->game->GetBlackEstimateElo();
+        elo = db->peakElo(db->game->GetBlackStr());
         eloEstimated = true;
     }
     if (elo != 0) {
@@ -3391,7 +3391,6 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (merge->DecodeMovesOnly(bbuf) != OK) {
         return errorResult (ti, "Error decoding game.");
     }
-    merge->LoadStandardTags (ie, base->getNameBase());
     if (merge->HasNonStandardStart()) {
         return errorResult (ti, "The merge game has a non-standard start position.");
     }
@@ -4299,7 +4298,7 @@ sc_game_tags_reload(ClientData, Tcl_Interp*, int, const char**)
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
     const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
-    db->game->LoadStandardTags (ie, db->getNameBase());
+    db->game->LoadStandardTags(*ie, TagRoster::make(*ie, *db->getNameBase()));
     return TCL_OK;
 }
 

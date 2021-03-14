@@ -188,9 +188,6 @@ class Game {
     ushort      NumHalfMoves; // Total half moves in the main line.
 
     // TODO: The following variables should not be part of this class.
-    eloT        WhiteEstimateElo;
-    eloT        BlackEstimateElo;
-
     uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
     uint        PgnStyle;        // see PGN_STYLE macros above.
     gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
@@ -371,7 +368,7 @@ public:
     const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
     void ClearExtraTags() { extraTags_.clear(); }
 
-    void LoadStandardTags(const IndexEntry* ie, const NameBase* nb);
+    void LoadStandardTags(IndexEntry const& ie, TagRoster const& tags);
 
     void     SetEventStr (const char * str) { EventStr = str; }
     void     SetSiteStr  (const char * str) { SiteStr  = str; }
@@ -398,8 +395,6 @@ public:
     resultT  GetResult ()      const { return Result; }
     eloT     GetWhiteElo ()    const { return WhiteElo; }
     eloT     GetBlackElo ()    const { return BlackElo; }
-    eloT     GetWhiteEstimateElo() const { return WhiteEstimateElo; }
-    eloT     GetBlackEstimateElo() const { return BlackEstimateElo; }
     byte     GetWhiteRatingType () const { return WhiteRatingType; }
     byte     GetBlackRatingType () const { return BlackRatingType; }
     ecoT     GetEco ()         const { return EcoCode; }
@@ -446,10 +441,10 @@ public:
                           gameExactMatchT searchType);
     bool      VarExactMatch (Position * searchPos, gameExactMatchT searchType);
 
-    errorT    Encode(std::vector<byte>& dest, IndexEntry& ie) const;
+    std::pair<IndexEntry, TagRoster> Encode(std::vector<byte>& dest) const;
     errorT    DecodeSkipTags(ByteBuffer* buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT& sm);
-    errorT    Decode(IndexEntry const& ie, NameBase const& nb, ByteBuffer buf);
+    errorT    Decode(IndexEntry const& ie, TagRoster const& tags, ByteBuffer buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
 
     Game* clone();

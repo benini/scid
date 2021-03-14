@@ -471,8 +471,6 @@ Game::Game(const Game& obj) {
 		StartPos = std::make_unique<Position>(*obj.StartPos);
 
 	NumHalfMoves = obj.NumHalfMoves;
-	WhiteEstimateElo = obj.WhiteEstimateElo;
-	BlackEstimateElo = obj.BlackEstimateElo;
 	NumMovesPrinted = obj.NumMovesPrinted;
 	PgnStyle = obj.PgnStyle;
 	PgnFormat = obj.PgnFormat;
@@ -547,7 +545,6 @@ void Game::Clear() {
 	EventDate = ZERO_DATE;
 	EcoCode = 0;
 	WhiteElo = BlackElo = 0;
-	WhiteEstimateElo = BlackEstimateElo = 0;
 	WhiteRatingType = BlackRatingType = RATING_Elo;
 	Result = RESULT_None;
 	ScidFlags[0] = 0;
@@ -2494,36 +2491,28 @@ Game::WriteToPGN(uint lineWidth, bool NewLineAtEnd, bool newLineToSpaces)
 //      index file entry and a namebase that stores the
 //      player/site/event/round names.
 //
-void
-Game::LoadStandardTags (const IndexEntry* ie, const NameBase* nb)
-{
-    ASSERT (ie != NULL  &&  nb != NULL);
-    SetEventStr (ie->GetEventName (nb));
-    SetSiteStr (ie->GetSiteName (nb));
-    SetWhiteStr (ie->GetWhiteName (nb));
-    SetBlackStr (ie->GetBlackName (nb));
-    SetRoundStr (ie->GetRoundName (nb));
-    SetDate (ie->GetDate());
-    SetEventDate (ie->GetEventDate());
-    SetWhiteElo (ie->GetWhiteElo());
-    SetBlackElo (ie->GetBlackElo());
-    WhiteEstimateElo = nb->GetElo (ie->GetWhite());
-    BlackEstimateElo = nb->GetElo (ie->GetBlack());
-    SetWhiteRatingType (ie->GetWhiteRatingType());
-    SetBlackRatingType (ie->GetBlackRatingType());
-    SetResult (ie->GetResult());
-    SetEco (ie->GetEcoCode());
-    ie->GetFlagStr (ScidFlags, NULL);
+void Game::LoadStandardTags(IndexEntry const& ie, TagRoster const& tags) {
+    SetEventStr(tags.event);
+    SetSiteStr(tags.site);
+    SetWhiteStr(tags.white);
+    SetBlackStr(tags.black);
+    SetRoundStr(tags.round);
+    SetDate(ie.GetDate());
+    SetEventDate(ie.GetEventDate());
+    SetWhiteElo(ie.GetWhiteElo());
+    SetBlackElo(ie.GetBlackElo());
+    SetWhiteRatingType(ie.GetWhiteRatingType());
+    SetBlackRatingType(ie.GetBlackRatingType());
+    SetResult(ie.GetResult());
+    SetEco(ie.GetEcoCode());
+    ie.GetFlagStr(ScidFlags, NULL);
 }
 
 eloT
-Game::GetAverageElo ()
-{
-    eloT white = WhiteElo;
-    eloT black = BlackElo;
-    if (white == 0) { white = WhiteEstimateElo; }
-    if (black == 0) { black = BlackEstimateElo; }
-    return (white + black) / 2;
+Game::GetAverageElo () {
+	auto white = WhiteElo;
+	auto black = BlackElo;
+	return (white == 0 || black == 0) ? 0 : (white + black) / 2;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3003,9 +2992,15 @@ std::pair<bool, bool> mainlineInfo(const Position* customStart,
 //       -  finalMatSig: the material signature of the final position.
 //       -  homePawnData: the home pawn change list.
 //
-errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
-    ie.clearFlags();
+std::pair<IndexEntry, TagRoster> Game::Encode(std::vector<byte>& dest) const {
+    auto tags = TagRoster();
+    tags.event = GetEventStr();
+    tags.site = GetSiteStr();
+    tags.white = GetWhiteStr();
+    tags.black = GetBlackStr();
+    tags.round = GetRoundStr();
 
+    auto ie = IndexEntry();
     // Set the fields in the IndexEntry:
     ie.SetDate(Date);
     ie.SetEventDate(EventDate);
@@ -3040,7 +3035,7 @@ errorT Game::Encode(std::vector<byte>& dest, IndexEntry& ie) const {
     ie.SetVariationCount(varCount);
     ie.SetNagCount(nagCount);
 
-    return OK;
+    return {ie, tags};
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3105,9 +3100,9 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 //      Decodes all the information: comments, variations, non-standard
 //      tags, etc.
 //
-errorT Game::Decode(const IndexEntry& ie, const NameBase& nb, ByteBuffer buf) {
+errorT Game::Decode(IndexEntry const& ie, TagRoster const& tags, ByteBuffer buf) {
     Clear();
-    LoadStandardTags(&ie, &nb);
+    LoadStandardTags(ie, tags);
 
     errorT err = buf.decodeTags([&](const auto& tag, const auto& value) {
         accessTagValue(tag.data(), tag.size()).assign(value);

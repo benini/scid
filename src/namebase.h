@@ -248,4 +248,61 @@ public:
 	}
 };
 
+/// The Seven Tag Roster defined in the PGN standard is stored in the
+/// IndexEntry, but 5 are indexes that refer to a NameBase object.
+/// This helper struct stores the referred values.
+struct TagRoster {
+	const char* event;
+	const char* site;
+	const char* round;
+	const char* white;
+	const char* black;
+
+	template <typename TEntry>
+	static TagRoster make(TEntry const& ie, NameBase const& nb) {
+		TagRoster res;
+		res.event = nb.GetName(NAME_EVENT, ie.GetEvent());
+		res.site = nb.GetName(NAME_SITE, ie.GetSite());
+		res.white = nb.GetName(NAME_PLAYER, ie.GetWhite());
+		res.black = nb.GetName(NAME_PLAYER, ie.GetBlack());
+		res.round = nb.GetName(NAME_ROUND, ie.GetRound());
+		return res;
+	}
+
+	template <typename TEntry, typename Fn>
+	auto map(TEntry& dest, Fn getID) const {
+		{
+			auto [err, id] = getID(NAME_EVENT, event);
+			if (err)
+				return err;
+			dest.SetEvent(id);
+		}
+		{
+			auto [err, id] = getID(NAME_SITE, site);
+			if (err)
+				return err;
+			dest.SetSite(id);
+		}
+		{
+			auto [err, id] = getID(NAME_ROUND, round);
+			if (err)
+				return err;
+			dest.SetRound(id);
+		}
+		{
+			auto [err, id] = getID(NAME_PLAYER, white);
+			if (err)
+				return err;
+			dest.SetWhite(id);
+		}
+		{
+			auto [err, id] = getID(NAME_PLAYER, black);
+			if (!err)
+				dest.SetBlack(id);
+
+			return err;
+		}
+	}
+};
+
 #endif // SCID_NAMEBASE_H

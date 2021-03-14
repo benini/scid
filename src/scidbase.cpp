@@ -215,7 +215,8 @@ errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
 	if (!data)
 		return ERROR_FileRead;
 
-	return codec_->addGame(*srcIe, *srcBase->getNameBase(), data);
+	return codec_->addGame(
+	    *srcIe, TagRoster::make(*srcIe, *srcBase->getNameBase()), data);
 }
 
 errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,

@@ -48,16 +48,10 @@ protected:
 	std::vector<byte> bbuf_;
 
 public: // ICodecDatabase interface
-	errorT addGame(IndexEntry const& ie, NameBase const& nb,
+	errorT addGame(IndexEntry const& ie, TagRoster const& tags,
 	               ByteBuffer const& data) override {
 		IndexEntry ie_new = ie;
-		errorT err = addGameHelper(&ie_new, data.data(), data.size(),
-		                           nb.GetName(NAME_PLAYER, ie.GetWhite()),
-		                           nb.GetName(NAME_PLAYER, ie.GetBlack()),
-		                           nb.GetName(NAME_EVENT, ie.GetEvent()),
-		                           nb.GetName(NAME_SITE, ie.GetSite()),
-		                           nb.GetName(NAME_ROUND, ie.GetRound()));
-		if (err != OK)
+		if (auto err = addGameHelper(&ie_new, data.data(), data.size(), tags))
 			return err;
 
 		return derived()->dyn_addIndexEntry(ie_new);
@@ -65,16 +59,9 @@ public: // ICodecDatabase interface
 
 	errorT addGame(Game* game) override {
 		bbuf_.clear();
-		IndexEntry ie;
-		auto err = game->Encode(bbuf_, ie);
-		if (err)
-			return err;
+		auto [ie, tags] = game->Encode(bbuf_);
 
-		err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(),
-		                    game->GetWhiteStr(), game->GetBlackStr(),
-		                    game->GetEventStr(), game->GetSiteStr(),
-		                    game->GetRoundStr());
-		if (err)
+		if (auto err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(), tags))
 			return err;
 
 		return derived()->dyn_addIndexEntry(ie);
@@ -85,52 +72,26 @@ public: // ICodecDatabase interface
 			return ERROR_BadArg;
 
 		bbuf_.clear();
-		IndexEntry ie;
-		auto err = game->Encode(bbuf_, ie);
-		if (err)
-			return err;
+		auto [ie, tags] = game->Encode(bbuf_);
 
-		err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(),
-		                    game->GetWhiteStr(), game->GetBlackStr(),
-		                    game->GetEventStr(), game->GetSiteStr(),
-		                    game->GetRoundStr());
-		if (err)
+		if (auto err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(), tags))
 			return err;
 
 		return derived()->dyn_saveIndexEntry(ie, replaced);
 	}
 
 private:
+	template <typename Tags>
 	errorT addGameHelper(IndexEntry* ie, const byte* srcData, size_t dataLen,
-	                     const char* white, const char* black,
-	                     const char* event, const char* site,
-	                     const char* round) {
-		auto id = derived()->dyn_addName(NAME_PLAYER, white);
-		if (id.first != OK)
-			return id.first;
-		ie->SetWhite(id.second);
-		nb_->AddElo(id.second, ie->GetWhiteElo());
+	                     Tags const& tags) {
+		auto err = tags.map(*ie, [&](auto nt, auto name) {
+			return derived()->dyn_addName(nt, name);
+		});
+		if (err)
+			return err;
 
-		id = derived()->dyn_addName(NAME_PLAYER, black);
-		if (id.first != OK)
-			return id.first;
-		ie->SetBlack(id.second);
-		nb_->AddElo(id.second, ie->GetBlackElo());
-
-		id = derived()->dyn_addName(NAME_EVENT, event);
-		if (id.first != OK)
-			return id.first;
-		ie->SetEvent(id.second);
-
-		id = derived()->dyn_addName(NAME_SITE, site);
-		if (id.first != OK)
-			return id.first;
-		ie->SetSite(id.second);
-
-		id = derived()->dyn_addName(NAME_ROUND, round);
-		if (id.first != OK)
-			return id.first;
-		ie->SetRound(id.second);
+		nb_->AddElo(ie->GetWhite(), ie->GetWhiteElo());
+		nb_->AddElo(ie->GetBlack(), ie->GetBlackElo());
 
 		auto offset = derived()->dyn_addGameData(srcData, dataLen);
 		if (offset.first == OK) {

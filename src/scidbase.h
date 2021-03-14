@@ -118,6 +118,19 @@ struct scidBaseT {
 	const NameBase* getNameBase() const {
 		return nb_;
 	}
+
+	/// Return the highest elo of the player (in the database's games)
+	eloT peakElo(idNumberT playerID) const {
+		return getNameBase()->GetElo(playerID);
+	}
+	eloT peakElo(const char* player) const {
+		idNumberT playerID;
+		if (getNameBase()->FindExactName(NAME_PLAYER, player, &playerID) == OK)
+			return peakElo(playerID);
+
+		return 0;
+	}
+
 	GameView getGame(const IndexEntry* ie) const {
 		auto data = codec_->getGameMoves(*ie);
 		if (data) {
@@ -139,7 +152,8 @@ struct scidBaseT {
 		return codec_->getGameData(ie.GetOffset(), ie.GetLength());
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
-		return dest.Decode(ie, *getNameBase(), getGame(ie));
+		return dest.Decode(ie, TagRoster::make(ie, *getNameBase()),
+		                   getGame(ie));
 	}
 
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,

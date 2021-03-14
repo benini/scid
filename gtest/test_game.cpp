@@ -230,8 +230,7 @@ TEST(Test_Game, empty_tag_name) {
 		game.AddPgnTag("Annotator", "common tag");
 		EXPECT_EQ(game.GetExtraTags().size(), 3);
 
-		IndexEntry ie;
-		game.Encode(encodedGame, ie);
+		game.Encode(encodedGame);
 	}
 
 	ByteBuffer bbuf(encodedGame.data(), encodedGame.size());
@@ -255,8 +254,7 @@ TEST(Test_Game, encodeFEN) {
 	{
 		Game game;
 		game.SetStartFen(kiwipete);
-		IndexEntry ie;
-		game.Encode(encodedGame, ie);
+		game.Encode(encodedGame);
 	}
 	{
 		ByteBuffer bbuf(encodedGame.data(), encodedGame.size());
@@ -356,10 +354,9 @@ namespace {
 /// Replace the move after the first comment with @e movecode
 auto make_invalid(unsigned char movecode, std::string_view pgn) {
 	std::vector<unsigned char> data;
-	IndexEntry ie;
 	Game g;
 	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{g});
-	g.Encode(data, ie);
+	g.Encode(data);
 	auto comment_tag = std::find(data.begin(), data.end(), 12);
 	if (comment_tag != data.end())
 		*++comment_tag = movecode;

@@ -106,8 +106,7 @@ public:
 private:
 	void encodeGames() {
 		for (auto& game : v_) {
-			auto ie = IndexEntry();
-			ASSERT_EQ(OK, game->Encode(encoded_.emplace_back(), ie));
+			game->Encode(encoded_.emplace_back());
 		}
 	}
 
@@ -233,8 +232,9 @@ TEST_P(Test_Codec, addGame_native) {
 			             ie.SetEvent(names[2].second);
 			             ie.SetSite(names[3].second);
 			             ie.SetRound(names[4].second);
-			             ASSERT_EQ(OK, codec->addGame(
-			                               ie, nb, {game.data(), game.size()}));
+			             ASSERT_EQ(OK,
+			                       codec->addGame(ie, ie.GetTagRoster(nb),
+			                                      {game.data(), game.size()}));
 		             }
 	             });
 }
