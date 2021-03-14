@@ -3105,8 +3105,9 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 //      Decodes all the information: comments, variations, non-standard
 //      tags, etc.
 //
-errorT Game::Decode(ByteBuffer& buf) {
+errorT Game::Decode(const IndexEntry& ie, const NameBase& nb, ByteBuffer buf) {
     Clear();
+    LoadStandardTags(&ie, &nb);
 
     errorT err = buf.decodeTags([&](const auto& tag, const auto& value) {
         accessTagValue(tag.data(), tag.size()).assign(value);

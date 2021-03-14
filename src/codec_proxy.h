@@ -113,19 +113,16 @@ private:
 		return CodecMemory::saveGame(game, replaced);
 	}
 
-	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
-	               const byte* srcData, size_t dataLen) final {
-		ByteBuffer buf(srcData, dataLen);
+	errorT addGame(IndexEntry const& ie, NameBase const& nb,
+	               ByteBuffer const& data) final {
 		Game game;
-		if (errorT err = game.Decode(buf))
+		if (errorT err = game.Decode(ie, nb, data))
 			return err;
-
-		game.LoadStandardTags(srcIe, srcNb);
 
 		if (errorT err = getDerived()->gameAdd(&game))
 			return err;
 
-		return CodecMemory::addGame(srcIe, srcNb, srcData, dataLen);
+		return CodecMemory::addGame(ie, nb, data);
 	}
 
 	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) final {

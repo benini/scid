@@ -48,20 +48,19 @@ protected:
 	std::vector<byte> bbuf_;
 
 public: // ICodecDatabase interface
-	errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
-	               const byte* srcData, size_t dataLen) override {
-		IndexEntry ie = *srcIe;
-		errorT err = addGameHelper(
-		    &ie, srcData, dataLen,
-		    srcNb->GetName(NAME_PLAYER, srcIe->GetWhite()),
-		    srcNb->GetName(NAME_PLAYER, srcIe->GetBlack()),
-		    srcNb->GetName(NAME_EVENT, srcIe->GetEvent()),
-		    srcNb->GetName(NAME_SITE, srcIe->GetSite()),
-		    srcNb->GetName(NAME_ROUND, srcIe->GetRound()));
+	errorT addGame(IndexEntry const& ie, NameBase const& nb,
+	               ByteBuffer const& data) override {
+		IndexEntry ie_new = ie;
+		errorT err = addGameHelper(&ie_new, data.data(), data.size(),
+		                           nb.GetName(NAME_PLAYER, ie.GetWhite()),
+		                           nb.GetName(NAME_PLAYER, ie.GetBlack()),
+		                           nb.GetName(NAME_EVENT, ie.GetEvent()),
+		                           nb.GetName(NAME_SITE, ie.GetSite()),
+		                           nb.GetName(NAME_ROUND, ie.GetRound()));
 		if (err != OK)
 			return err;
 
-		return derived()->dyn_addIndexEntry(ie);
+		return derived()->dyn_addIndexEntry(ie_new);
 	}
 
 	errorT addGame(Game* game) override {

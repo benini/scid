@@ -103,18 +103,26 @@ public: // ICodecDatabase interface
 		return OK;
 	}
 
-	const byte* getGameData(uint64_t offset, uint32_t length) final {
+	ByteBuffer getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())
-			return NULL;
+			return {nullptr, 0};
 		if (length >= LIMIT_GAMELEN)
-			return NULL;
+			return {nullptr, 0};
 
 		if (gfile_.pubseekpos(offset) == -1)
-			return NULL;
+			return {nullptr, 0};
 		if (gfile_.sgetn(gamecache_, length) != std::streamsize(length))
-			return NULL;
+			return {nullptr, 0};
 
-		return reinterpret_cast<const byte*>(gamecache_);
+		return {reinterpret_cast<const byte*>(gamecache_), length};
+	}
+
+	ByteBuffer getGameMoves(IndexEntry const& ie) final {
+		auto data = getGameData(ie.GetOffset(), ie.GetLength());
+		if (data && OK == data.decodeTags([](auto, auto) {}))
+			return data;
+
+		return {nullptr, 0};
 	}
 
 	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) final {

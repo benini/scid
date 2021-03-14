@@ -87,27 +87,28 @@ public:
 	virtual errorT setExtraInfo(const char* tagname, const char* new_value) = 0;
 
 	/**
-	 * Fetches the data of a game (excluding index info), encoded in native
-	 * format.
+	 * Fetches the data (encoded in native format) of a game.
+	 * Invoking another function of the codec object invalidates the data.
+	 * @e getGamesMoves() returns only the moves' data, without extra tags and
+	 * comments, and it might be faster with some codecs.
 	 * @param offset: offset of the requested game.
 	 * @param length: length of the game data (in bytes).
 	 * @returns
 	 * - a pointer to the game data.
 	 * - 0 (nullptr) on error.
 	 */
-	virtual const byte* getGameData(uint64_t offset, uint32_t length) = 0;
+	virtual ByteBuffer getGameData(uint64_t offset, uint32_t length) = 0;
+	virtual ByteBuffer getGameMoves(IndexEntry const& ie) = 0;
 
 	/**
 	 * Add a game to the database.
-	 * @param srcIe:   valid pointer to the header data.
-	 * @param srcNb:   valid pointer to the NameBase containing srcIe's names.
-	 * @param srcData: valid pointer to a buffer containing the game data
-	 *                 (encoded in native format).
-	 * @param dataLen: length of the game data (in bytes).
+	 * @param ie:   the header data of the source game.
+	 * @param nb:   the NameBase containing @e ie's names.
+	 * @param data: the data (encoded in native format) of the game.
 	 * @returns OK if successful or an error code.
 	 */
-	virtual errorT addGame(const IndexEntry* srcIe, const NameBase* srcNb,
-	                       const byte* srcData, size_t dataLen) = 0;
+	virtual errorT addGame(IndexEntry const& ie, NameBase const& nb,
+	                       ByteBuffer const& data) = 0;
 
 	/**
 	 * Add a game to the database.

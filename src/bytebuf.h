@@ -132,6 +132,9 @@ public:
 
 	explicit operator bool() const { return data_ != end_; }
 
+	const unsigned char* data() const { return data_; }
+	size_t size() const { return std::distance(data_, end_); }
+
 	/// Decodes the tag pairs not stored into the index.
 	/// @param fn: a function that should accept 2 parameters
 	///            (string_view tag_name, string_view tag_value)

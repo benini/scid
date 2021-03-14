@@ -449,7 +449,7 @@ public:
     errorT    Encode(std::vector<byte>& dest, IndexEntry& ie) const;
     errorT    DecodeSkipTags(ByteBuffer* buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT& sm);
-    errorT    Decode(ByteBuffer& buf);
+    errorT    Decode(IndexEntry const& ie, NameBase const& nb, ByteBuffer buf);
     errorT    DecodeMovesOnly(ByteBuffer& buf);
 
     Game* clone();

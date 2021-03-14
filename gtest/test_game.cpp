@@ -84,7 +84,7 @@ TEST(Test_Game, locationInPGN) {
 		Game game;
 		auto bufGame = dbase.getGame(*dbase.getIndexEntry(0));
 		ASSERT_TRUE(bufGame);
-		ASSERT_EQ(OK, game.Decode(bufGame));
+		ASSERT_EQ(OK, game.DecodeMovesOnly(bufGame));
 
 		unsigned location = 1;
 		game.MoveToStart();
@@ -261,7 +261,7 @@ TEST(Test_Game, encodeFEN) {
 	{
 		ByteBuffer bbuf(encodedGame.data(), encodedGame.size());
 		Game game;
-		game.Decode(bbuf);
+		game.DecodeMovesOnly(bbuf);
 		game.MoveToStart();
 		char str[1024];
 		game.currentPos()->PrintFEN(str, FEN_ALL_FIELDS);
@@ -380,7 +380,7 @@ template <typename DataT> std::string decode_gameview(DataT const& data) {
 template <typename DataT> std::string decode_game(DataT const& data) {
 	auto bbuf = ByteBuffer{data.data(), data.size()};
 	Game game;
-	game.Decode(bbuf);
+	game.DecodeMovesOnly(bbuf);
 	game.MoveToStart();
 	std::string moves;
 	do {

@@ -212,10 +212,10 @@ errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
 	auto srcIe = srcBase->getIndexEntry(gNum);
 	auto dataSz = srcIe->GetLength();
 	auto data = srcBase->codec_->getGameData(srcIe->GetOffset(), dataSz);
-	if (data == nullptr)
+	if (!data)
 		return ERROR_FileRead;
 
-	return codec_->addGame(srcIe, srcBase->getNameBase(), data, dataSz);
+	return codec_->addGame(*srcIe, *srcBase->getNameBase(), data);
 }
 
 errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
