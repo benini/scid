@@ -3459,24 +3459,28 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Finally, add a comment describing the merge-game details:
-    DString * dstr = new DString;
-    dstr->Append (RESULT_LONGSTR[ie->GetResult()]);
+    const auto tags = TagRoster::make(*ie, *base->getNameBase());
+    const auto welo = ie->GetWhiteElo();
+    const auto belo = ie->GetBlackElo();
+    auto dstr = DString();
+    dstr.Append(RESULT_LONGSTR[ie->GetResult()]);
     if (ply < merge->GetNumHalfMoves()) {
-        dstr->Append ("(", (merge->GetNumHalfMoves()+1) / 2, ")");
+        dstr.Append("(", (merge->GetNumHalfMoves() + 1) / 2, ")");
     }
-    dstr->Append (" ", ie->GetWhiteName (base->getNameBase()));
-    eloT elo = ie->GetWhiteElo();
-    if (elo > 0) { dstr->Append (" (", elo, ")"); }
-    dstr->Append (" - ");
-    dstr->Append (ie->GetBlackName (base->getNameBase()));
-    elo = ie->GetBlackElo();
-    if (elo > 0) { dstr->Append (" (", elo, ")"); }
-    dstr->Append (" / ", ie->GetEventName (base->getNameBase()));
-    dstr->Append (" (", ie->GetRoundName (base->getNameBase()), ")");
-    dstr->Append (", ", ie->GetSiteName (base->getNameBase()));
-    dstr->Append (" ", ie->GetYear());
-    db->game->SetMoveComment ((char *) dstr->Data());
-    delete dstr;
+    dstr.Append(" ", tags.white);
+    if (welo > 0) {
+        dstr.Append(" (", welo, ")");
+    }
+    dstr.Append(" - ");
+    dstr.Append(tags.black);
+    if (belo > 0) {
+        dstr.Append(" (", belo, ")");
+    }
+    dstr.Append(" / ", tags.event);
+    dstr.Append(" (", tags.round, ")");
+    dstr.Append(", ", tags.site);
+    dstr.Append(" ", ie->GetYear());
+    db->game->SetMoveComment(dstr.Data());
 
     // And exit the new variation:
     db->game->MoveExitVariation();

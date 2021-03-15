@@ -363,18 +363,19 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		uint ply = filter->get(idx) -1;
 
 		const IndexEntry* ie = dbase->getIndexEntry(idx);
+		const auto tags = TagRoster::make(*ie, *nb);
 
 		ginfo.clear();
 		ginfo.push_back(idx +1);
 		ginfo.push_back(RESULT_STR[ie->GetResult()]);
 		ginfo.push_back((ie->GetNumHalfMoves() + 1) / 2);
-		ginfo.push_back(ie->GetWhiteName(nb));
+		ginfo.push_back(tags.white);
 		std::string eloStr;
 		eloT welo = ie->GetWhiteElo();
 		if (welo != 0) {
 			eloStr = std::to_string(welo);
 		} else {
-			welo = ie->GetWhiteElo(nb);
+			welo = dbase->peakElo(ie->GetWhite());
 			eloStr = std::to_string(welo);
 			if (welo != 0) {
 				eloStr.insert(eloStr.begin(), '(');
@@ -382,12 +383,12 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 			}
 		}
 		ginfo.push_back(eloStr);
-		ginfo.push_back(ie->GetBlackName(nb));
+		ginfo.push_back(tags.black);
 		eloT belo = ie->GetBlackElo();
 		if (belo != 0) {
 			eloStr = std::to_string(belo);
 		} else {
-			belo = ie->GetBlackElo(nb);
+			belo = dbase->peakElo(ie->GetBlack());
 			eloStr = std::to_string(belo);
 			if (belo != 0) {
 				eloStr.insert(eloStr.begin(), '(');
@@ -396,11 +397,11 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		}
 		ginfo.push_back(eloStr);
 		char buf_date[16];
-		date_DecodeToString (ie->GetDate(), buf_date);
+		date_DecodeToString(ie->GetDate(), buf_date);
 		ginfo.push_back(buf_date);
-		ginfo.push_back(ie->GetEventName(nb));
-		ginfo.push_back(ie->GetRoundName(nb));
-		ginfo.push_back(ie->GetSiteName(nb));
+		ginfo.push_back(tags.event);
+		ginfo.push_back(tags.round);
+		ginfo.push_back(tags.site);
 		ginfo.push_back(ie->GetNagCount());
 		ginfo.push_back(ie->GetCommentCount());
 		ginfo.push_back(ie->GetVariationCount());

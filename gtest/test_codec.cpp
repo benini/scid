@@ -233,7 +233,7 @@ TEST_P(Test_Codec, addGame_native) {
 			             ie.SetSite(names[3].second);
 			             ie.SetRound(names[4].second);
 			             ASSERT_EQ(OK,
-			                       codec->addGame(ie, ie.GetTagRoster(nb),
+			                       codec->addGame(ie, TagRoster::make(ie, nb),
 			                                      {game.data(), game.size()}));
 		             }
 	             });
