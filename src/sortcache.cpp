@@ -452,7 +452,7 @@ int SortCache::fullCompare(gamenumT left, gamenumT right) const {
 			break;
 
 		case SORTING_rating:
-			res = (int)ie1->GetRating(nbase_) - (int)ie2->GetRating(nbase_);
+			res = (int)ie1->GetRating() - (int)ie2->GetRating();
 			break;
 
 		case SORTING_number:
@@ -587,7 +587,7 @@ uint32_t SortCache::calcHash(gamenumT gameId) {
 				bitsUsed = 8;
 				break;
 			case SORTING_rating:
-				value = ie->GetRating(nbase_);
+				value = ie->GetRating();
 				bitsUsed = 8;
 				break;
 			case SORTING_number:

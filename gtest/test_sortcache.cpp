@@ -86,7 +86,7 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 		rec[20] = ie->GetResult() == RESULT_White ? 1 : 0;
 		rec[21] = ie->GetResult() == RESULT_Draw ? 1 : 0;
 		rec[22] = ie->GetResult() == RESULT_Black ? 1 : 0;
-		rec[23] = ie->GetRating(nb);
+		rec[23] = ie->GetRating();
 	}
 
 	auto sort_vIndex = [&vIndex, nb, &getFieldIdx](std::string criteria) {

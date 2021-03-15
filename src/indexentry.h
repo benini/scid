@@ -245,7 +245,7 @@ public:
         if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
         return r;
     }
-    byte   GetRating(const NameBase* nb) const;
+    byte   GetRating() const;
 
     bool GetStartFlag () const      { return GetFlag(1 << IDX_FLAG_START); }
     bool GetPromotionsFlag () const { return GetFlag(1 << IDX_FLAG_PROMO); }
@@ -433,17 +433,16 @@ template <class T> errorT IndexEntry::Write(T* file, versionT version) const {
 	           : ERROR_FileWrite;
 }
 
-inline byte IndexEntry::GetRating(const NameBase* nb) const {
+inline byte IndexEntry::GetRating() const {
     eloT welo = GetWhiteElo();
     eloT belo = GetBlackElo();
-    if (welo == 0) { welo = nb->GetElo (GetWhite()); }
-    if (belo == 0) { belo = nb->GetElo (GetBlack()); }
-    int rating = static_cast<int>(welo + belo) / 140;
+    auto rating = (welo != 0 && belo != 0) ? (welo + belo) / 140 : 0;
+    static_assert(std::is_signed_v<decltype(rating)>);
 
     // Bonus for comments or Nags
     if (GetCommentCount() > 2 || GetNagCount() > 2) {
         if (rating < 21) { // Missing elo
-            rating = 40;
+            rating = 38;
         } else {
             rating += 6;
         }

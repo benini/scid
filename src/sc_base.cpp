@@ -424,7 +424,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		ginfo.push_back(buf_eventdate);
 		ginfo.push_back(ie->GetYear());
 		ginfo.push_back((welo + belo)/2);
-		ginfo.push_back(ie->GetRating(nb));
+		ginfo.push_back(ie->GetRating());
 		ginfo.push_back(dbase->getGame(ie).getMoveSAN(ply, 10));
 
 		res.push_back(std::to_string(idx+1) + "_" + std::to_string(ply));

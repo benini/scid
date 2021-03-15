@@ -6722,7 +6722,7 @@ sc_name_match (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         appendUintElement (ti, freq);
         Tcl_AppendElement (ti, str);
         if (nt == NAME_PLAYER  &&  eloMode) {
-            appendUintElement (ti, db->getNameBase()->GetElo (nameID));
+            appendUintElement (ti, db->peakElo(nameID));
         }
     }
     return TCL_OK;
@@ -6754,11 +6754,10 @@ public:
 	}
     bool operator() (idNumberT p1, idNumberT p2)
     {
-        const NameBase* nb = dbase_->getNameBase();
         int compare = 0;
         switch (sort_) {
         case SORT_ELO:
-            compare = nb->GetElo(p2) - nb->GetElo(p1);
+            compare = dbase_->peakElo(p2) - dbase_->peakElo(p1);
             break;
         case SORT_GAMES:
             compare = dbase_->getNameFreq(NAME_PLAYER, p2) - dbase_->getNameFreq(NAME_PLAYER, p1);
@@ -6776,6 +6775,7 @@ public:
         // If equal, resolve by comparing names, first case-insensitive and
         // then case-sensitively if still tied:
         if (compare == 0) {
+            const NameBase* nb = dbase_->getNameBase();
             const char* name1 = nb->GetName (NAME_PLAYER, p1);
             const char* name2 = nb->GetName (NAME_PLAYER, p2);
             compare = strCaseCompare (name1, name2);
@@ -6849,8 +6849,8 @@ sc_name_plist (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     std::vector<idNumberT> plist;
     for (idNumberT id = 0; id < nPlayers; id++) {
         const char * name = nb->GetName (NAME_PLAYER, id);
-        uint nGames = db->getNameFreq (NAME_PLAYER, id);
-        eloT elo = nb->GetElo (id);
+        uint nGames = dbase->getNameFreq(NAME_PLAYER, id);
+        eloT elo = dbase->peakElo(id);
         if (nGames < minGames  ||  nGames > maxGames) { continue; }
         if (elo < minElo  ||  elo > maxElo) { continue; }
         if (! strIsCasePrefix (namePrefix, name)) { continue; }
@@ -6878,7 +6878,7 @@ sc_name_plist (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         info.push_back(dbase->getNameFreq(NAME_PLAYER, id));
         info.push_back(date_GetYear(activity[id].firstDate));
         info.push_back(date_GetYear(activity[id].lastDate));
-        info.push_back(nb->GetElo(id));
+        info.push_back(dbase->peakElo(id));
         info.push_back(nb->GetName(NAME_PLAYER, id));
         res.push_back(info);
     }
