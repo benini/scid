@@ -82,6 +82,7 @@ matrix:
       - clang-format-9 -i src/pgn*
       - clang-format-9 -i src/bytebuf.h
       - clang-format-9 -i src/gameview.h
+      - clang-format-9 -i src/namebase.h
       - |
         if [[ -n $(git diff) ]]; then
           git diff

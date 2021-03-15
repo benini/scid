@@ -31,7 +31,7 @@
  * Assigns a idNumberT (which will be used as reference) to each name.
  */
 class NameBase {
-	std::vector<std::unique_ptr<const char[]> > names_[NUM_NAME_TYPES];
+	std::vector<std::unique_ptr<const char[]>> names_[NUM_NAME_TYPES];
 	std::vector<eloT> eloV_;
 	struct idxCmp {
 		bool operator()(const char* str1, const char* str2) const {
@@ -115,8 +115,7 @@ public:
 	 * @returns references to the NameBase's containers.
 	 * (must be used only to read names from files)
 	 */
-	std::tuple<decltype(idx_) &, decltype(names_) &, decltype(eloV_) &>
-	getData() {
+	std::tuple<decltype(idx_)&, decltype(names_)&, decltype(eloV_)&> getData() {
 		return std::tuple<decltype(idx_)&, decltype(names_)&, decltype(eloV_)&>(
 		    idx_, names_, eloV_);
 	}
@@ -168,7 +167,7 @@ public:
 	 * @returns a reference to a container with all the names and IDs (given as
 	 * std::pair<const char*, idNumberT>).
 	 */
-	const decltype(idx_) & getNames() const { return idx_; }
+	const decltype(idx_)& getNames() const { return idx_; }
 
 	/**
 	 * @param nt: a valid @e nameT type.
