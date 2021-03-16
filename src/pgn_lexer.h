@@ -24,8 +24,8 @@
  * Split input into PGN tokens and dispatch them to a "visiting" parser.
  */
 
-#ifndef _PGN_LEXER_H
-#define _PGN_LEXER_H
+#ifndef PGN_LEXER_H
+#define PGN_LEXER_H
 
 #include <algorithm>
 #include <cassert>
@@ -488,4 +488,4 @@ template <typename TView> std::size_t trim(TView& str) {
 
 } // namespace pgn
 
-#endif // _PGN_LEXER_H
+#endif // PGN_LEXER_H

@@ -50,7 +50,7 @@ public:
 		}
 	}
 
-	void Init_exact (idNumberT n, nameT name_type, std::string pattern) {
+	void Init_exact (idNumberT n, nameT name_type, std::string const& pattern) {
 		const NameBase* nb = base_->getNameBase();
 		for (idNumberT i=0; i < n; i++) {
 			const char* name = nb->GetName (name_type, i);

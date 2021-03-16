@@ -111,8 +111,32 @@ jobs:
   steps:
   - script: |
       sudo apt-get update &&
-      sudo apt-get -y install tcl-dev
+      sudo apt-get -y install tcl-dev clang clang-tidy clang-format cloc
     displayName: download tclk
+  - script: |
+      cloc src --exclude-dir=egtb,mtbgen,polyglot
+      cloc tcl --exclude-dir=lang
+    displayName: count line of code
+  - script: |
+      clang-format -version
+      clang-format -i src/codec*
+      clang-format -i src/movegen*
+      clang-format -i src/pgn*
+      clang-format -i src/bytebuf.h
+      clang-format -i src/gameview.h
+      clang-format -i src/namebase.h
+      if [[ -n $(git diff) ]]; then
+        git diff
+        exit -1
+      fi
+    displayName: clang-format
+  - script: |
+      mkdir build_tidy && cd build_tidy
+      cmake -DCMAKE_CXX_FLAGS="-g -Wall -Wextra -Werror -pedantic" -DSPELLCHKVALIDATE=ON \
+             $(Build.SourcesDirectory)
+      make VERBOSE=1
+      run-clang-tidy -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
+    displayName: clang-tidy
   - script: |
       mkdir build && cd build
       cmake -DCPACK_GENERATOR=DEB \

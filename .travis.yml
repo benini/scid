@@ -58,9 +58,10 @@ matrix:
           - clang-tidy-9
           - libstdc++-9-dev
           - llvm-9-dev
+          - libclang-common-9-dev
     script:
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_DEBUG}
-      - run-clang-tidy-9.py -header-filter=.* -checks=clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src
+      - run-clang-tidy-9.py -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_RELEASE} && size scid
       - cd $TRAVIS_BUILD_DIR && eval ${BUILD_FULL}
       - cd $TRAVIS_BUILD_DIR && ./configure COMPILE="${CXX}" && make && size tkscid

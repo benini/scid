@@ -16,8 +16,8 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SCID_UI__H
-#define SCID_UI__H
+#ifndef SCID_UI_H
+#define SCID_UI_H
 
 #include "misc.h"
 #ifndef CHECKUIDEP
