@@ -8126,50 +8126,6 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// addPattern():
-//    Called by the parameter parsing section of sc_search_material()
-//    to add a pattern to a pattern list.
-//    Returns the new head of the pattern list.
-patternT *
-addPattern (patternT * pattHead, patternT * addPatt)
-{
-    // Create a new pattern structure:
-#ifdef WINCE
-    patternT * newPatt = (patternT *) my_Tcl_Alloc(sizeof(new patternT));
-#else
-    patternT * newPatt = new patternT;
-#endif
-
-    // Initialise it:
-    newPatt->flag = addPatt->flag;
-    newPatt->pieceMatch = addPatt->pieceMatch;
-    newPatt->fyleMatch = addPatt->fyleMatch;
-    newPatt->rankMatch = addPatt->rankMatch;
-
-    // Add to the head of the list of patterns, and return:
-    newPatt->next = pattHead;
-    return newPatt;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// freePatternList():
-//    Frees the memory used by a list of patterns.
-void
-freePatternList (patternT * patt)
-{
-    patternT * nextPatt;
-    while (patt) {
-        nextPatt = patt->next;
-#ifdef WINCE
-        my_Tcl_Free((char*)patt);
-#else
-        delete patt;
-#endif
-        patt = nextPatt;
-    }
-}
-
 void
 flipPattern (patternT * patt)
 {
@@ -8279,8 +8235,8 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     bool sameBishops = true;
     uint hpExcludeMask = HPSIG_Empty;
     uint hpExMaskFlip = HPSIG_Empty;
-    patternT * patt = NULL;
-    patternT * flippedPatt = NULL;
+    std::vector<patternT> patt;
+    std::vector<patternT> flippedPatt;
     patternT tempPatt;
 
     const char * options[] = {
@@ -8372,9 +8328,10 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                 hpExMaskFlip = hpSig_AddPawn (hpExMaskFlip, flipColor, fyle);
             }
             // Add the pattern and its flipped equivalent:
-            patt = addPattern (patt, &tempPatt);
+            // TODO: why not push_back() ?
+            patt.insert(patt.begin(), tempPatt);
             flipPattern (&tempPatt);
-            flippedPatt = addPattern (flippedPatt, &tempPatt);
+            flippedPatt.insert(flippedPatt.begin(), tempPatt);
             break;
 
         default:
@@ -8539,7 +8496,7 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (possibleMatch) {
             auto bbuf_clone = bbuf;
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
-            result = g->MaterialMatch (hasPromo, bbuf_clone, min, max, patt,
+            result = g->MaterialMatch (hasPromo, bbuf_clone, min, max, patt.data(), patt.size(),
                                        minPly, maxPly, matchLength,
                                        oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
@@ -8547,7 +8504,7 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (result == 0  &&  possibleFlippedMatch) {
             bool hasPromo = ie->GetPromotionsFlag() || ie->GetUnderPromoFlag();
             result = g->MaterialMatch (hasPromo, bbuf, minFlipped, maxFlipped,
-                                       flippedPatt, minPly, maxPly,
+                                       flippedPatt.data(), flippedPatt.size(), minPly, maxPly,
                                        matchLength, oppBishops, sameBishops,
                                        matDiff[0], matDiff[1]);
         }
@@ -8564,8 +8521,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    freePatternList (patt);
-    freePatternList (flippedPatt);
     progress.report(1,1);
 
     int centisecs = timer.CentiSecs();

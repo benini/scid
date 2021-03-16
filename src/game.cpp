@@ -1102,9 +1102,9 @@ int calcHomePawnMask (pieceT pawn, const pieceT* board)
 //      Used by Game::MaterialMatch() to test patterns.
 //      Returns 1 if all the patterns in the list match, 0 otherwise.
 //
-int patternsMatch(const Position* pos, patternT* ptn) {
+int patternsMatch(const Position* pos, patternT* ptn, size_t ptn_size) {
     const pieceT* board = pos->GetBoard();
-    while (ptn != NULL) {
+    for (size_t i = 0; i < ptn_size; ++ptn) {
         if (ptn->rankMatch == NO_RANK) {
 
             if (ptn->fyleMatch == NO_FYLE) { // Nothing to test!
@@ -1133,9 +1133,6 @@ int patternsMatch(const Position* pos, patternT* ptn) {
                 if (found != ptn->flag) { return 0; }
             }
         }
-
-        // If we get this far, this pattern matched. Try the next one:
-        ptn = ptn->next;
     }
 
     // If we reach here, all patterns matched:
@@ -1149,12 +1146,11 @@ int patternsMatch(const Position* pos, patternT* ptn) {
 //      counts, to specify the maximum and minimum number of counts
 //      of each type of piece.
 //
-bool
-Game::MaterialMatch (bool PromotionsFlag, ByteBuffer& buf, byte * min, byte * max,
-                     patternT * patterns, int minPly, int maxPly,
-                     int matchLength, bool oppBishops, bool sameBishops,
-                     int minDiff, int maxDiff)
-{
+bool Game::MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
+                         byte* max, patternT* patterns, size_t ptn_size,
+                         int minPly, int maxPly, int matchLength,
+                         bool oppBishops, bool sameBishops, int minDiff,
+                         int maxDiff) {
     ASSERT (matchLength >= 1);
 
     int matchesNeeded = matchLength;
@@ -1242,7 +1238,7 @@ Game::MaterialMatch (bool PromotionsFlag, ByteBuffer& buf, byte * min, byte * ma
         if (matDiff < minDiff  ||  matDiff > maxDiff) { goto Next_Move; }
 
         // At this point, the Material matches; do the patterns match?
-        if (patterns == NULL || patternsMatch(currentPos(), patterns)) {
+        if (ptn_size == 0 || patternsMatch(currentPos(), patterns, ptn_size)) {
             foundMatch = true;
             matchesNeeded--;
             if (matchesNeeded <= 0) { return true; }

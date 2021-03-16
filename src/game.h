@@ -119,7 +119,6 @@ struct patternT
     rankT      rankMatch;   // RANK_1 .. RANK_8 or NO_RANK
     fyleT      fyleMatch;   // A_FYLE .. H_FYLE or NO_FYLE
     byte       flag;        // 0 means this pattern must NOT occur.
-    patternT * next;
 };
 
 enum gameExactMatchT {
@@ -432,11 +431,10 @@ public:
 
     errorT    GetPartialMoveList (DString * str, uint plyCount);
 
-    bool      MaterialMatch (bool PromotionsFlag, ByteBuffer& buf, byte * min, byte * max,
-                             patternT * pattern, int minPly, int maxPly,
-                             int matchLength,
-                             bool oppBishops, bool sameBishops,
-                             int minDiff, int maxDiff);
+    bool MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
+                       byte* max, patternT* ptn, size_t ptn_size, int minPly,
+                       int maxPly, int matchLength, bool oppBishops,
+                       bool sameBishops, int minDiff, int maxDiff);
     bool      ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
                           gameExactMatchT searchType);
     bool      VarExactMatch (Position * searchPos, gameExactMatchT searchType);
