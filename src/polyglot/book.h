@@ -10,10 +10,6 @@
 #include "util.h"
 #include "list.h"
 
-#ifdef WINCE
-#include <tcl.h>
-#endif
-
 // constants
 const int MaxBook = 4;
 

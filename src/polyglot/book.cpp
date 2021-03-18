@@ -29,11 +29,7 @@ struct entry_t {
 };
 
 // variables
-#ifdef WINCE
-static Tcl_Channel BookFile[MaxBook];
-#else
 static FILE * BookFile[MaxBook];
-#endif
 
 static int BookSize[MaxBook];
 
@@ -44,21 +40,11 @@ static int    find_pos      (uint64 key, const int BookNumber);
 static void   read_entry    (entry_t * entry, int n, const int BookNumber);
 static void   write_entry   (const entry_t * entry, int n, const int BookNumber);
 
-#ifdef WINCE
-static void   read_entry_file    (Tcl_Channel file, entry_t * entry);
-static void   write_entry_file   (Tcl_Channel file, const entry_t * entry);
-#else
 static void   read_entry_file    (FILE *f, entry_t * entry);
 static void   write_entry_file   (FILE *f, const entry_t * entry);
-#endif
 
-#ifdef WINCE
-static uint64 read_integer  (Tcl_Channel file, int size);
-static void   write_integer (Tcl_Channel file, int size, uint64 n);
-#else
 static uint64 read_integer  (FILE * file, int size);
 static void   write_integer (FILE * file, int size, uint64 n);
-#endif
 
 // functions
 
@@ -252,11 +238,7 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
 // =================================================================
 int scid_book_close(const int BookNumber) {
 	if (BookFile[BookNumber] != NULL) {
-#ifdef WINCE
-    if (my_Tcl_Close(NULL, BookFile[BookNumber]) != TCL_OK) {
-#else
     if (fclose(BookFile[BookNumber]) == EOF) {
-#endif
       return -1;
    	}
 
@@ -269,42 +251,23 @@ int scid_book_open(const char file_name[], const int BookNumber) {
 
    int ReadOnlyFile = 0;
 
-#ifdef WINCE
-   BookFile[BookNumber] = my_Tcl_OpenFileChannel(NULL, file_name, "r+", 0666);
-#else
    BookFile[BookNumber] = fopen(file_name,"rb+");
-#endif
 
    //--------------------------------------------------
    if (BookFile[BookNumber] == NULL) {
       // the book can not be opened in read/write mode, try read only
-#ifdef WINCE
-      BookFile[BookNumber] = my_Tcl_OpenFileChannel(NULL, file_name, "r", 0666);
-#else
       BookFile[BookNumber] = fopen(file_name,"rb");
-#endif
       ReadOnlyFile = 1;
       if (BookFile[BookNumber] == NULL) return -1;
    }
    //--------------------------------------------------
 
 
-#ifdef WINCE
-   my_Tcl_SetChannelOption(NULL, BookFile[BookNumber], "-encoding", "binary");
-   my_Tcl_SetChannelOption(NULL, BookFile[BookNumber], "-translation", "binary");
-    if (my_Tcl_Seek(BookFile[BookNumber], 0, SEEK_END) == -1) 
-      return -1;
-#else
    if (fseek(BookFile[BookNumber],0,SEEK_END) == -1) {
       return -1;
    }
-#endif
 
-#ifdef WINCE
-    BookSize[BookNumber] = my_Tcl_Tell(BookFile[BookNumber]) / 16;
-#else
     BookSize[BookNumber] = ftell(BookFile[BookNumber]) / 16;
-#endif
    if (BookSize[BookNumber] == 0) return -1;
    return(0+ReadOnlyFile); //success
 }
@@ -419,30 +382,16 @@ void book_open(const char file_name[], const int BookNumber) {
 
    ASSERT(file_name!=NULL);
 
-#ifdef WINCE
-   BookFile[BookNumber] = my_Tcl_OpenFileChannel(NULL, file_name, "r+", 0666);
-   my_Tcl_SetChannelOption(NULL, BookFile[BookNumber], "-encoding", "binary");
-   my_Tcl_SetChannelOption(NULL, BookFile[BookNumber], "-translation", "binary");
-#else
    BookFile[BookNumber] = fopen(file_name,"rb+");
-#endif
 
    if (BookFile[BookNumber] == NULL) my_fatal("book_open(): can't open file \"%s\": %s\n",file_name,strerror(errno));
 
 
-#ifdef WINCE
-    if (my_Tcl_Seek(BookFile[BookNumber], 0, SEEK_END) == -1) {
-#else
    if (fseek(BookFile[BookNumber],0,SEEK_END) == -1) {
-#endif
       my_fatal("book_open(): fseek(): %s\n",strerror(errno));
    }
 
-#ifdef WINCE
-    BookSize[BookNumber] = my_Tcl_Tell(BookFile[BookNumber]) / 16;
-#else
     BookSize[BookNumber] = ftell(BookFile[BookNumber]) / 16;
-#endif
 
    if (BookSize[BookNumber] == 0) my_fatal("book_open(): empty file\n");
 }
@@ -450,11 +399,7 @@ void book_open(const char file_name[], const int BookNumber) {
 // book_close()
 
 void book_close(const int BookNumber) {
-#ifdef WINCE
-    if (my_Tcl_Close(NULL, BookFile[BookNumber]) != TCL_OK) {
-#else
     if (fclose(BookFile[BookNumber]) == EOF) {
-#endif
       my_fatal("book_close(): fclose(): %s\n",strerror(errno));
    }
 }
@@ -605,11 +550,7 @@ void book_learn_move(const board_t * board, int move, int result, const int Book
 // book_flush()
 
 void book_flush(const int BookNumber) {
-#ifdef WINCE
-   if (my_Tcl_Flush(BookFile[BookNumber]) != TCL_OK) {
-#else
    if (fflush(BookFile[BookNumber]) == EOF) {
-#endif
       my_fatal("book_flush(): fflush(): %s\n",strerror(errno));
    }
 }
@@ -649,11 +590,7 @@ static int find_pos(uint64 key, const int BookNumber) {
 }
 
 // read_entry()
-#ifdef WINCE
-static void read_entry_file(Tcl_Channel f, entry_t * entry) {
-#else
 static void read_entry_file(FILE *f, entry_t * entry) {
-#endif
    ASSERT(entry!=NULL);
 
    entry->key   = read_integer(f,8);
@@ -666,15 +603,10 @@ static void read_entry_file(FILE *f, entry_t * entry) {
 
 
 // read_entry()
-
 static void read_entry(entry_t * entry, int n, const int BookNumber) {
    ASSERT(entry!=NULL);
    ASSERT(n>=0&&n<BookSize[BookNumber]);
-#ifdef WINCE
-    if (my_Tcl_Seek(BookFile[BookNumber], n*16,SEEK_SET) == -1) {
-#else
    if (fseek(BookFile[BookNumber],n*16,SEEK_SET) == -1) {
-#endif
       my_fatal("read_entry(): fseek(): %s\n",strerror(errno));
    }
 
@@ -686,11 +618,7 @@ static void read_entry(entry_t * entry, int n, const int BookNumber) {
 }
 
 // write_entry_file
-#ifdef WINCE
-static void write_entry_file(Tcl_Channel f, const entry_t * entry) {
-#else
 static void write_entry_file(FILE * f, const entry_t * entry) {
-#endif
    ASSERT(entry!=NULL);
    write_integer(f,8,entry->key);
    write_integer(f,2,entry->move);
@@ -700,16 +628,11 @@ static void write_entry_file(FILE * f, const entry_t * entry) {
 }   
 
 // write_entry()
-
 static void write_entry(const entry_t * entry, int n, const int BookNumber) {
 
    ASSERT(entry!=NULL);
    ASSERT(n>=0&&n<BookSize[BookNumber]);
-#ifdef WINCE
-   if (my_Tcl_Seek(BookFile[BookNumber],n*16,SEEK_SET) == -1) {
-#else
    if (fseek(BookFile[BookNumber],n*16,SEEK_SET) == -1) {
-#endif
       my_fatal("write_entry(): fseek(): %s\n",strerror(errno));
    }
 
@@ -721,11 +644,7 @@ static void write_entry(const entry_t * entry, int n, const int BookNumber) {
 }
 
 // read_integer()
-#ifdef WINCE
-static uint64 read_integer(Tcl_Channel file, int size) {
-#else
 static uint64 read_integer(FILE * file, int size) {
-#endif
    uint64 n;
    int i;
    int b;
@@ -736,11 +655,6 @@ static uint64 read_integer(FILE * file, int size) {
 
    for (i = 0; i < size; i++) {
 
-#ifdef WINCE
-      unsigned char c;
-      my_Tcl_Read(file, (char *)&c , 1);
-      b = c;
-#else
       b = fgetc(file);
       if (b == EOF) {
          if (feof(file)) {
@@ -749,7 +663,6 @@ static uint64 read_integer(FILE * file, int size) {
             my_fatal("read_integer(): fgetc(): %s\n",strerror(errno));
          }
       }
-#endif
 
       ASSERT(b>=0&&b<256);
       n = (n << 8) | b;
@@ -759,11 +672,7 @@ static uint64 read_integer(FILE * file, int size) {
 }
 
 // write_integer()
-#ifdef WINCE
-static void write_integer(Tcl_Channel file, int size, uint64 n) {
-#else
 static void write_integer(FILE * file, int size, uint64 n) {
-#endif
    int i;
    int b;
    ASSERT(file!=NULL);
@@ -774,13 +683,7 @@ static void write_integer(FILE * file, int size, uint64 n) {
 
       b = (n >> (i*8)) & 0xFF;
       ASSERT(b>=0&&b<256);
-#ifdef WINCE
-      unsigned char c;
-      c = b;
-      if (my_Tcl_Write(file, (char*) &c, 1) != 1) {
-#else
       if (fputc(b,file) == EOF) {
-#endif
          my_fatal("write_integer(): fputc(): %s\n",strerror(errno));
       }
    }
