@@ -51,7 +51,7 @@ namespace eval book {
   proc getMove { book fen slot} {
     set tprob 0
     ::book::scBookOpen $book $slot
-    set bookmoves [sc_book moves $slot]
+    lassign [sc_book moves $slot] bookmoves
     if {[llength $bookmoves] == 0} {
       return ""
     }
@@ -186,16 +186,26 @@ namespace eval book {
         .bookWin.f.text1 tag delete $t
       }
     }
-    set bookMoves [sc_book moves $::book::bookSlot]
+
+    set engine_names [list "Unknown-Engine" "Stockfish 12" "Komodo Dragon" "Houdini 6" \
+                           "Komodo 14" "Lc0" "CCRL elo 3200+ engines" "Strong Engine" \
+                           "TCEC Engine" "CCC Engine" "Stockfish 13"]
+
+    lassign [sc_book moves $::book::bookSlot] bookMoves engine_eval
     .bookWin.f.text configure -state normal
     .bookWin.f.text delete 1.0 end
     for {set i 0} {$i<[llength $bookMoves]} {incr i 2} {
       set line [expr $i /2 +1]
-      set m ""
-      append m [::trans [lindex $bookMoves $i]] "\t" [lindex $bookMoves [expr $i + 1] ] "\n"
-      .bookWin.f.text insert end $m
+      .bookWin.f.text insert end "[::trans [lindex $bookMoves $i]]\t[lindex $bookMoves [expr $i + 1] ]"
       .bookWin.f.text tag add bookMove$line $line.0 $line.end
       .bookWin.f.text tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove [lindex $bookMoves $i]"
+
+      lassign [lindex $engine_eval [expr $i/2]] score depth name
+      if {$depth > 0} {
+        set score [format "%+.2f" [expr {$score / 100.0}]]
+        .bookWin.f.text insert end "\t$score/$depth [lindex $engine_names $name]"
+      }
+      .bookWin.f.text insert end "\n"
     }
     .bookWin.f.text configure -state disabled -height [expr [llength $bookMoves] / 2 ]
     
@@ -356,7 +366,7 @@ namespace eval book {
     #and widgets have no clientdata in tcl/tk
     global ::book::bookTuningMoves
     set ::book::bookTuningMoves {}
-    set moves [sc_book moves $::book::bookTuningSlot]
+    lassign [sc_book moves $::book::bookTuningSlot] moves
     
     set w .bookTuningWin
     # erase previous children
@@ -450,7 +460,7 @@ namespace eval book {
     
     updateBoard -pgn
     
-    set bookMoves [sc_book moves $::book::bookTuningSlot]
+    lassign [sc_book moves $::book::bookTuningSlot] bookMoves
     incr ::book::exportCount
     if {[expr $::book::exportCount % 50] == 0} {
       updateProgressWindow $::book::exportCount $::book::exportMax

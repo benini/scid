@@ -9062,16 +9062,27 @@ sc_book_close (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_book_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-		char moves[200] = "";
-		char boardStr[100];
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_book moves slot");
     }
     uint slot = strGetUnsigned (argv[2]);
-		db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
-		polyglot_moves(moves, (const char *) boardStr, slot);
-    Tcl_AppendResult (ti, moves, NULL);
-    return TCL_OK;
+    char boardStr[100];
+    db->game->GetCurrentPos()->PrintFEN(boardStr, FEN_ALL_FIELDS);
+
+    char moves[1024] = {};
+    auto extra_info = polyglot_moves(moves, boardStr, slot);
+    UI_List extra_list(extra_info.size());
+    for (auto [score, depth, engine_name_idx] : extra_info) {
+        UI_List entry(3);
+        entry.push_back(score);
+        entry.push_back(depth);
+        entry.push_back(engine_name_idx);
+        extra_list.push_back(entry);
+    }
+    UI_List res(2);
+    res.push_back(moves);
+    res.push_back(extra_list);
+    return UI_Result(ti, OK, res);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_positions:

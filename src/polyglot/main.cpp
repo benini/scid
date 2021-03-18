@@ -76,11 +76,11 @@ int polyglot_close(const int BookNumber) {
 }
 /////////////////////////////////////////////////////////////////////
 // fill parameter moves with opening book moves
-int polyglot_moves(char *moves, const char *fen, const int BookNumber) {
-  board_t board[1];
- 	board_from_fen(board, fen);
-  scid_book_disp(board, moves, BookNumber);
-	return 0;
+std::vector<std::tuple<int16_t, uint8_t, uint8_t>>
+polyglot_moves(char *moves, const char *fen, const int BookNumber) {
+  board_t board;
+  board_from_fen(&board, fen);
+  return scid_book_disp(&board, moves, BookNumber);
 }
 /////////////////////////////////////////////////////////////////////
 // find moves to positions in the book

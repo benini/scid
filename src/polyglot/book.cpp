@@ -21,11 +21,12 @@
 // types
 
 struct entry_t {
-	uint64 key;
-	uint16 move;
-	uint16 count;
-	uint16 n;
-	uint16 sum;
+	uint64_t key;
+	uint16_t move;
+	uint16_t count;
+	int16_t engine_score;
+	uint8_t engine_depth;
+	uint8_t engine_name_idx;
 };
 
 // variables
@@ -197,8 +198,9 @@ int scid_book_movesupdate(char* moves, char* probs, const int BookNumber,
 				} else {
 					entry1->count = 1;
 				}
-				entry1->n = 0;
-				entry1->sum = 0;
+				entry1->engine_score = 0;
+				entry1->engine_depth = 0;
+				entry1->engine_name_idx = 0;
 				write_count++;
 				write_entry_file(f, entry1);
 			}
@@ -218,8 +220,9 @@ int scid_book_movesupdate(char* moves, char* probs, const int BookNumber,
 			} else {
 				entry1->count = 1;
 			}
-			entry1->n = 0;
-			entry1->sum = 0;
+			entry1->engine_score = 0;
+			entry1->engine_depth = 0;
+			entry1->engine_name_idx = 0;
 			write_count++;
 			write_entry_file(f, entry1);
 		}
@@ -294,7 +297,8 @@ int gen_book_moves(list_t* list, const board_t* board, const int BookNumber) {
 }
 
 // =================================================================
-int scid_book_disp(const board_t* board, char* s, const int BookNumber) {
+std::vector<std::tuple<int16_t, uint8_t, uint8_t>>
+scid_book_disp(const board_t* board, char* s, const int BookNumber) {
 
 	int first_pos;
 	int sum;
@@ -321,15 +325,17 @@ int scid_book_disp(const board_t* board, char* s, const int BookNumber) {
 	}
 
 	// disp
+	std::vector<std::tuple<int16_t, uint8_t, uint8_t>> extra_info;
 	s[0] = '\0';
 	for (pos = first_pos; pos < BookSize[BookNumber]; pos++) {
-
 		read_entry(entry, pos, BookNumber);
 		if (entry->key != board->key)
 			break;
 
 		move = entry->move;
 		score = entry->count;
+		extra_info.emplace_back(entry->engine_score, entry->engine_depth,
+		                        entry->engine_name_idx);
 
 		if (score > 0 && move != MoveNone && move_is_legal(move, board)) {
 			char tmp[256] = {' '};
@@ -340,7 +346,7 @@ int scid_book_disp(const board_t* board, char* s, const int BookNumber) {
 		}
 	}
 
-	return 0;
+	return extra_info;
 }
 
 // =================================================================
@@ -529,39 +535,6 @@ void book_disp(const board_t* board, const int BookNumber) {
 	printf("\n");
 }
 
-// book_learn_move()
-
-void book_learn_move(const board_t* board, int move, int result,
-                     const int BookNumber) {
-
-	int pos;
-	entry_t entry[1];
-
-	ASSERT(board != NULL);
-	ASSERT(move_is_ok(move));
-	ASSERT(result >= -1 && result <= +1);
-
-	ASSERT(move_is_legal(move, board));
-
-	for (pos = find_pos(board->key, BookNumber); pos < BookSize[BookNumber];
-	     pos++) {
-
-		read_entry(entry, pos, BookNumber);
-		if (entry->key != board->key)
-			break;
-
-		if (entry->move == move) {
-
-			entry->n++;
-			entry->sum += result + 1;
-
-			write_entry(entry, pos, BookNumber);
-
-			break;
-		}
-	}
-}
-
 // book_flush()
 
 void book_flush(const int BookNumber) {
@@ -611,8 +584,11 @@ static void read_entry_file(FILE* f, entry_t* entry) {
 	entry->key = read_integer(f, 8);
 	entry->move = read_integer(f, 2);
 	entry->count = read_integer(f, 2);
-	entry->n = read_integer(f, 2);
-	entry->sum = read_integer(f, 2);
+	entry->engine_score = static_cast<uint8_t>(read_integer(f, 1));
+	auto score_hi = static_cast<int8_t>(read_integer(f, 1));
+	entry->engine_score += score_hi * 256;
+	entry->engine_depth = read_integer(f, 1);
+	entry->engine_name_idx = read_integer(f, 1);
 }
 
 // read_entry()
@@ -623,11 +599,7 @@ static void read_entry(entry_t* entry, int n, const int BookNumber) {
 		my_fatal("read_entry(): fseek(): %s\n", strerror(errno));
 	}
 
-	entry->key = read_integer(BookFile[BookNumber], 8);
-	entry->move = read_integer(BookFile[BookNumber], 2);
-	entry->count = read_integer(BookFile[BookNumber], 2);
-	entry->n = read_integer(BookFile[BookNumber], 2);
-	entry->sum = read_integer(BookFile[BookNumber], 2);
+	read_entry_file(BookFile[BookNumber], entry);
 }
 
 // write_entry_file
@@ -636,8 +608,11 @@ static void write_entry_file(FILE* f, const entry_t* entry) {
 	write_integer(f, 8, entry->key);
 	write_integer(f, 2, entry->move);
 	write_integer(f, 2, entry->count);
-	write_integer(f, 2, entry->n);
-	write_integer(f, 2, entry->sum);
+	const auto score = static_cast<uint16_t>(entry->engine_score);
+	write_integer(f, 1, score & 0xFF);
+	write_integer(f, 1, score >> 8);
+	write_integer(f, 1, entry->engine_depth);
+	write_integer(f, 1, entry->engine_name_idx);
 }
 
 // write_entry()
@@ -649,11 +624,7 @@ static void write_entry(const entry_t* entry, int n, const int BookNumber) {
 		my_fatal("write_entry(): fseek(): %s\n", strerror(errno));
 	}
 
-	write_integer(BookFile[BookNumber], 8, entry->key);
-	write_integer(BookFile[BookNumber], 2, entry->move);
-	write_integer(BookFile[BookNumber], 2, entry->count);
-	write_integer(BookFile[BookNumber], 2, entry->n);
-	write_integer(BookFile[BookNumber], 2, entry->sum);
+	write_entry_file(BookFile[BookNumber], entry);
 }
 
 // read_integer()

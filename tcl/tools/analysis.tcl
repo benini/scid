@@ -1036,12 +1036,12 @@ proc bookAnnotation { {n 1} } {
         set bn [ file join $::scidBooksDir $::useAnalysisBookName ]
         sc_book load $bn $::analysisBookSlot
         
-        set bookmoves [sc_book moves $::analysisBookSlot]
+        lassign [sc_book moves $::analysisBookSlot] bookmoves
         while {[string length $bookmoves] != 0 && ![sc_pos isAt vend]} {
             # we are in book, so move immediately forward
             ::move::Forward
             set prevbookmoves $bookmoves
-            set bookmoves [sc_book moves $::analysisBookSlot]
+            lassign [sc_book moves $::analysisBookSlot] bookmoves
         }
         sc_book close $::analysisBookSlot
         set ::wentOutOfBook 1
