@@ -462,72 +462,47 @@ TEST(Test_PositionReadCoordMoves, ReadCoordMoves) {
 }
 
 TEST(Test_MoveGeneration, GetCastling) {
-	simpleMoveT sm;
-	sm.from = E1;
-	sm.to = G1;
-	sm.promote = EMPTY;
-	sm.movingPiece = WK;
 	{
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/8/5k2/8/4K2R w K -"));
-		sm.to = G1;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		EXPECT_TRUE(pos.IsLegalMove(E1, G1, EMPTY));
 	}
 	{ // Adjacent enemy king
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/8/8/6k1/4K2R w K -"));
-		sm.to = G1;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		EXPECT_FALSE(pos.IsLegalMove(E1, G1, EMPTY));
 	}
 	{ // King in check
 		Position pos;
 		ASSERT_EQ(
 		    OK, pos.ReadFromFEN(
 		            "r3k2r/pppp1ppp/5n1b/4p3/4P3/5N2/PP3PPP/r3KB1R w KQkq -"));
-		sm.to = G1;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
-		sm.to = C1;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		EXPECT_FALSE(pos.IsLegalMove(E1, G1, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E1, C1, EMPTY));
 	}
 	{ // Obstacles
 		Position pos;
 		ASSERT_EQ(OK,
 		          pos.ReadFromFEN(
 		              "rn2k2r/pppp1ppp/5n2/4p3/4P3/5N2/PP3PPP/R3KB1R b KQkq"));
-		sm.movingPiece = BK;
-		sm.from = E8;
-		sm.to = G8;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
-		sm.to = C8;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		EXPECT_TRUE(pos.IsLegalMove(E8, G8, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E8, C8, EMPTY));
 
 		pos.SetToMove(WHITE);
-		sm.movingPiece = WK;
-		sm.from = E1;
-		sm.to = G1;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
-		sm.to = C1;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		EXPECT_FALSE(pos.IsLegalMove(E1, G1, EMPTY));
+		EXPECT_TRUE(pos.IsLegalMove(E1, C1, EMPTY));
 	}
 	{ // Destination in check
 		Position pos;
 		ASSERT_EQ(
 		    OK, pos.ReadFromFEN(
 		            "r3k2r/pppp1ppp/5n1b/4p2r/4P3/5N2/PP3PP1/R3K2R b KQkq -"));
-		sm.movingPiece = BK;
-		sm.from = E8;
-		sm.to = G8;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
-		sm.to = C8;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
+		EXPECT_TRUE(pos.IsLegalMove(E8, G8, EMPTY));
+		EXPECT_TRUE(pos.IsLegalMove(E8, C8, EMPTY));
 
 		pos.SetToMove(WHITE);
-		sm.movingPiece = WK;
-		sm.from = E1;
-		sm.to = G1;
-		EXPECT_TRUE(pos.IsLegalMove(&sm));
-		sm.to = C1;
-		EXPECT_FALSE(pos.IsLegalMove(&sm));
+		EXPECT_TRUE(pos.IsLegalMove(E1, G1, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E1, C1, EMPTY));
 	}
 }
 

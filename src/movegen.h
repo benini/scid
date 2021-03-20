@@ -20,6 +20,8 @@
  * Implements functions for the validation of chess moves.
  */
 
+#pragma once
+
 #include <utility>
 
 // These functions use the following move classification:

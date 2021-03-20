@@ -918,7 +918,7 @@ bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
         (pt != PAWN && promo != EMPTY))    // Only pawn can promote
         return false;
 
-    if (pt == KING || pt == PAWN || IsKingInCheck()) {
+    if (pt == KING || pt == PAWN) {
         simpleMoveT sm;
         sm.from = from;
         sm.to = to;
@@ -930,6 +930,23 @@ bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
     auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
     if (!movegen::pseudo(from, to, ToMove, pt, isOccupied))
         return false;
+
+    const auto enemy = color_Flip(GetToMove());
+    const auto king_sq = GetKingSquare();
+    SquareList sq_list;
+    const auto n_checks = CalcAttacks(enemy, king_sq, &sq_list);
+    if (n_checks > 0) {
+        if (n_checks > 1)
+            return false; // a double ckeck requires a king move
+
+        const auto checker_sq = sq_list.Get(0);
+        const auto checker_pt = piece_Type(GetPiece(checker_sq));
+        if (checker_sq != to &&
+            movegen::attack(
+                checker_sq, king_sq, enemy, checker_pt,
+                [&](auto sq) { return sq == to || GetPiece(sq) != EMPTY; }))
+            return false; // the attacker was not captured or blocked
+    }
 
     const auto pin = movegen::opens_ray(from, to, GetKingSquare(), isOccupied);
     if (pin.first != INVALID_PIECE) {
@@ -2253,12 +2270,6 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 		return ERROR_InvalidMove;
 	auto to = square_Make(toFyle, toRank);
 
-	pieceT captured = Board[to];
-	if (captured != EMPTY && (piece_Color_NotEmpty(captured) == ToMove ||
-	                          piece_Type(captured) == KING)) {
-		return ERROR_InvalidMove;
-	}
-
 	auto frFyle = NO_FYLE;
 	auto frRank = NO_RANK;
 	if (slen > 3) { // There is some ambiguity information in the input string.
@@ -2274,7 +2285,6 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 	int matchCount = 0;
 	auto movingPiece = piece_Make(ToMove, piece);
 	int nPieces = Material[movingPiece];
-	squareT kingSq = GetKingSquare(ToMove);
 	for (unsigned i = 1, n = Count[ToMove]; i < n && nPieces; i++) {
 		auto from = List[ToMove][i];
 		if (Board[from] != movingPiece)
@@ -2285,17 +2295,8 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 		    (frRank != NO_RANK && frRank != square_Rank(from)))
 			continue;
 
-		auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
-		if (!movegen::pseudo(from, to, ToMove, piece, isOccupied))
+		if (!IsLegalMove(from, to, EMPTY))
 			continue;
-
-		const auto pin = movegen::opens_ray(from, to, kingSq, isOccupied);
-		if (pin.first != INVALID_PIECE) {
-			auto p = Board[pin.second];
-			if (piece_Color_NotEmpty(p) != ToMove &&
-			    (piece_Type(p) == QUEEN || piece_Type(p) == pin.first))
-				continue;
-		}
 
 		++matchCount;
 		sm->from = from;
