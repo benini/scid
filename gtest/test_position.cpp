@@ -473,13 +473,13 @@ TEST(Test_MoveGeneration, GetCastling) {
 		sm.to = G1;
 		EXPECT_TRUE(pos.IsLegalMove(&sm));
 	}
-	{	// Adjacent enemy king
+	{ // Adjacent enemy king
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/8/8/6k1/4K2R w K -"));
 		sm.to = G1;
 		EXPECT_FALSE(pos.IsLegalMove(&sm));
 	}
-	{	// King in check
+	{ // King in check
 		Position pos;
 		ASSERT_EQ(
 		    OK, pos.ReadFromFEN(
@@ -489,11 +489,11 @@ TEST(Test_MoveGeneration, GetCastling) {
 		sm.to = C1;
 		EXPECT_FALSE(pos.IsLegalMove(&sm));
 	}
-	{	// Obstacles
+	{ // Obstacles
 		Position pos;
-		ASSERT_EQ(
-		    OK, pos.ReadFromFEN(
-		            "rn2k2r/pppp1ppp/5n2/4p3/4P3/5N2/PP3PPP/R3KB1R b KQkq"));
+		ASSERT_EQ(OK,
+		          pos.ReadFromFEN(
+		              "rn2k2r/pppp1ppp/5n2/4p3/4P3/5N2/PP3PPP/R3KB1R b KQkq"));
 		sm.movingPiece = BK;
 		sm.from = E8;
 		sm.to = G8;
@@ -509,11 +509,11 @@ TEST(Test_MoveGeneration, GetCastling) {
 		sm.to = C1;
 		EXPECT_TRUE(pos.IsLegalMove(&sm));
 	}
-	{	// Destination in check
+	{ // Destination in check
 		Position pos;
-		ASSERT_EQ(OK,
-		          pos.ReadFromFEN(
-		              "r3k2r/pppp1ppp/5n1b/4p2r/4P3/5N2/PP3PP1/R3K2R b KQkq -"));
+		ASSERT_EQ(
+		    OK, pos.ReadFromFEN(
+		            "r3k2r/pppp1ppp/5n1b/4p2r/4P3/5N2/PP3PP1/R3K2R b KQkq -"));
 		sm.movingPiece = BK;
 		sm.from = E8;
 		sm.to = G8;
@@ -623,4 +623,16 @@ TEST(Test_PositionDoSimpleMove, castling_flags_capture) {
 		pos.PrintFEN(buf, FEN_ALL_FIELDS);
 		EXPECT_STREQ(buf, "4k2r/8/8/8/8/8/8/r3K2R w Kk - 0 2");
 	}
+}
+
+TEST(Test_PositionIsLegalMove, king_in_check) {
+	Position pos;
+	ASSERT_EQ(
+	    OK,
+	    pos.ReadFromFEN(
+	        "r1b1kb1r/ppp2ppp/4p3/3pP3/3q4/1BN5/PPPP2PP/R1BQR1K1 w kq - 0 11"));
+	EXPECT_TRUE(pos.IsLegalMove(G1, H1, EMPTY));
+	EXPECT_TRUE(pos.IsLegalMove(E1, E3, EMPTY));
+	EXPECT_FALSE(pos.IsLegalMove(E1, E4, EMPTY));
+	EXPECT_FALSE(pos.IsLegalMove(C3, B5, EMPTY));
 }

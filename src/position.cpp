@@ -918,7 +918,7 @@ bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
         (pt != PAWN && promo != EMPTY))    // Only pawn can promote
         return false;
 
-    if (pt == KING || pt == PAWN) {
+    if (pt == KING || pt == PAWN || IsKingInCheck()) {
         simpleMoveT sm;
         sm.from = from;
         sm.to = to;
