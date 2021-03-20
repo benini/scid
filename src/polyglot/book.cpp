@@ -122,7 +122,7 @@ int scid_book_movesupdate(char* moves, char* probs, const int BookNumber,
 	FILE* f;
 	char *probs_copy, *moves_copy;
 	//	printf("Updating book: moves=%s; probs=%s; tempfile=%s;
-	//key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
+	// key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
 	/* parse probs and fill prob array */
 	char* s;
 	probs_copy = strdup(probs); // strtok modifies its first argument
@@ -334,15 +334,15 @@ scid_book_disp(const board_t* board, char* s, const int BookNumber) {
 
 		move = entry->move;
 		score = entry->count;
-		extra_info.emplace_back(entry->engine_score, entry->engine_depth,
-		                        entry->engine_name_idx);
-
 		if (score > 0 && move != MoveNone && move_is_legal(move, board)) {
 			char tmp[256] = {' '};
 			move_to_san(move, board, tmp + 1, 255);
 			sprintf(tmp + std::strlen(tmp), " %.0f%%",
 			        (double(score) / double(sum)) * 100.0);
 			strcat(s, tmp);
+
+			extra_info.emplace_back(entry->engine_score, entry->engine_depth,
+			                        entry->engine_name_idx);
 		}
 	}
 
@@ -582,13 +582,13 @@ static void read_entry_file(FILE* f, entry_t* entry) {
 	ASSERT(entry != NULL);
 
 	entry->key = read_integer(f, 8);
-	entry->move = read_integer(f, 2);
-	entry->count = read_integer(f, 2);
+	entry->move = static_cast<uint16_t>(read_integer(f, 2));
+	entry->count = static_cast<uint16_t>(read_integer(f, 2));
 	entry->engine_score = static_cast<uint8_t>(read_integer(f, 1));
-	auto score_hi = static_cast<int8_t>(read_integer(f, 1));
-	entry->engine_score += score_hi * 256;
-	entry->engine_depth = read_integer(f, 1);
-	entry->engine_name_idx = read_integer(f, 1);
+	int score_hi = static_cast<int8_t>(read_integer(f, 1)) * 256;
+	entry->engine_score += static_cast<int16_t>(score_hi);
+	entry->engine_depth = static_cast<uint8_t>(read_integer(f, 1));
+	entry->engine_name_idx = static_cast<uint8_t>(read_integer(f, 1));
 }
 
 // read_entry()

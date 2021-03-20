@@ -192,15 +192,22 @@ namespace eval book {
                            "TCEC Engine" "CCC Engine" "Stockfish 13"]
 
     lassign [sc_book moves $::book::bookSlot] bookMoves engine_eval
+    set sortedBookMoves {}
+    foreach {move count} $bookMoves {score} $engine_eval {
+      lappend sortedBookMoves [linsert $score 0 $move $count]
+    }
+    set sortedBookMoves [lsort -integer -index 2 -decreasing $sortedBookMoves]
+
     .bookWin.f.text configure -state normal
     .bookWin.f.text delete 1.0 end
-    for {set i 0} {$i<[llength $bookMoves]} {incr i 2} {
-      set line [expr $i /2 +1]
-      .bookWin.f.text insert end "[::trans [lindex $bookMoves $i]]\t[lindex $bookMoves [expr $i + 1] ]"
+    set line 0
+    foreach bookMove $sortedBookMoves {
+      lassign $bookMove move count score depth name
+      incr line
+      .bookWin.f.text insert end "[::trans $move]\t$count"
       .bookWin.f.text tag add bookMove$line $line.0 $line.end
-      .bookWin.f.text tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove [lindex $bookMoves $i]"
+      .bookWin.f.text tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove $move"
 
-      lassign [lindex $engine_eval [expr $i/2]] score depth name
       if {$depth > 0} {
         set score [format "%+.2f" [expr {$score / 100.0}]]
         .bookWin.f.text insert end "\t$score/$depth [lindex $engine_names $name]"
