@@ -102,7 +102,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: windows x64'
     inputs:
-      artifactName: windows_x64
+      artifactName: scid_windows_x64
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
 - job: ubuntu_latest
@@ -157,7 +157,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: debian x64'
     inputs:
-      artifactName: debian_x64
+      artifactName: scid_ubuntu_latest_x64_deb_package
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
 - job: linux_static
@@ -204,7 +204,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: linux static x64'
     inputs:
-      artifactName: linux_static_x64
+      artifactName: scid_linux_x64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
 - job: macOS_static
@@ -251,7 +251,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: macOS static x64'
     inputs:
-      artifactName: macOS_static_x64
+      artifactName: scid_macOS_latest_64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
 - job: macOS_mojave_static
@@ -298,5 +298,5 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: macOS-10.14 static x64'
     inputs:
-      artifactName: macOS_10_14_static_x64
+      artifactName: scid_macOS_10_14_x64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
