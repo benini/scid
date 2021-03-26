@@ -288,8 +288,6 @@ menuText E OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 menuText E OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText E OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText E OptionsMoves "Moves" 0 {Move entry options}
-menuText E OptionsMovesAsk "Ask Before Replacing Moves" 0 \
-  {Ask before overwriting any existing moves}
 menuText E OptionsMovesAnimate "Animation Time" 1 \
   {Set the amount of time used to animate moves}
 menuText E OptionsMovesDelay "Autoplay Time Delay..." 1 \
@@ -305,13 +303,8 @@ menuText E OptionsMovesKey "Keyboard Completion" 0 \
 menuText E OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText E OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText E OptionsNumbers "Number Format" 0 {Select the number format}
-menuText E OptionsStartup "Startup" 3 {Select windows to open at startup}
 menuText E OptionsTheme "Theme" 0 {Change look of interface}
 menuText E OptionsWindows "Windows" 0 {Window options}
-menuText E OptionsWindowsIconify "Auto-Iconify" 5 \
-  {Iconify all windows when the main window is iconified}
-menuText E OptionsWindowsRaise "Auto-Raise" 5 \
-  {Raise certain windows (e.g. progress bars) whenever they are obscured}
 menuText E OptionsSounds "Sounds" 2 {Configure move announcement sounds}
 menuText E OptionsResources "Resources..." 0 {Choose resource files and folders}
 menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows (needs restart)}
