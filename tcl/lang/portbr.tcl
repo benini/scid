@@ -88,8 +88,7 @@ menuText B EditCopyBoard "Copia posição" 6 \
   {Copia o tabuleiro corrente em notação FEN para a área de transferência} 
 menuText B EditPasteBoard "Colar Posicao" 12 \
   {Configura a posicao inicial a partir da area de transferencia}
-# ====== TODO To be translated ======
-menuText B ConfigureScid "Preferences..." 0 {Configure all options for SCID}
+menuText B ConfigureScid "Preferencias..." 0 {Configurar todas as opcoes para o SCID}
 
 # Game menu:
 menuText B Game "Jogo" 0
@@ -171,7 +170,7 @@ menuText B ToolsTrainTactics "Táticas"  0 {Exercícios de tática}
 menuText B ToolsTrainCalvar "Cálculo de Variantes"  0 {Treinamento de cálculo de variantes}
 menuText B ToolsTrainFindBestMove "Procurar melhor movimento"  0 {Procura o melhor movimento}
 menuText B ToolsTrainFics "Jogar na internet"  0 {Jogar em  freechess.org}
-menuText B ToolsEngineTournament "Torneio de motores de Xadrez"  0 {Inicia um torneio entre motores de Xadrez}
+menuText B ToolsEngineTournament "Torneio de Engines de Xadrez"  0 {Inicia um torneio entre engines de Xadrez}
 menuText B ToolsBookTuning "Sintonizar Livro" 0 {Sintonizar livro de aberturas}
 menuText B ToolsConnectHardware "Conectar Hardware" 0 {Conectar hardware externo}
 menuText B ToolsConnectHardwareConfigure "Configurar..." 0 {Configurar hardware e conexão externa}
@@ -266,8 +265,7 @@ menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para
 menuText B OptionsTheme "Tema" 0 {Muda a aparência da interface}
 menuText B OptionsWindows "Janelas" 0 {Opcoes para Janelas}
 menuText B OptionsSounds "Sons" 2 {Configura sons para anunciar os movimentos} 
-# ====== TODO To be translated ======
-menuText B OptionsResources "Resources..." 0 {Choose resource files and folders}
+menuText B OptionsResources "Recursos..." 0 {Escolher pastas e arquivos de recursos}
 menuText B OptionsWindowsDock "Estacionar janelas" 0 {Estaciona as janelas}
 menuText B OptionsWindowsSaveLayout "Salvar layout" 0 {Salva o layout das janelas}
 menuText B OptionsWindowsRestoreLayout "Restaurar layout" 0 {Restaura layout}
@@ -291,7 +289,7 @@ menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
 
 # Help menu:
 menuText B Help "Ajuda" 0
-menuText B HelpContents "Conteudo" 0 {Show the help contents page}
+menuText B HelpContents "Conteudo" 0 {Mostra a pagina de conteudo da ajuda}
 menuText B HelpIndex "Indice" 0 {Indice da Ajuda}
 menuText B HelpGuide "Consulta Rapida" 0 {Mostra a pagina de consulta rapida}
 menuText B HelpHints "Dicas" 0 {Mostra a pagina de dicas}
@@ -322,7 +320,7 @@ translate B Cancel {Cancelar}
 translate B Continue {Continuar}
 translate B Clear {Limpar}
 translate B Close {Fechar}
-translate B Contents {Conteúdo} 
+translate B Contents {Conteudo} 
 translate B Defaults {Defaults}
 translate B Delete {Deletar}
 translate B Graph {Grafico}
@@ -341,7 +339,7 @@ translate B Stop {Parar}
 translate B Store {Guardar}
 translate B Update {Atualizar}
 translate B ChangeOrient {Muda orientacao da janela}
-translate B ShowIcons {Mostrar Ícones} 
+translate B ShowIcons {Mostrar Icones} 
 translate B None {Nenhum}
 translate B First {Primeiro}
 translate B Current {Atual}
@@ -426,8 +424,7 @@ translate B PInfoMostBlack {Aberturas mais comuns com as Pretas}
 translate B PInfoRating {Historico de Rating}
 translate B PInfoBio {Biografia}
 translate B PInfoEditRatings {Editar Ratings} 
-# ====== TODO To be translated ======
-translate B PInfoEloFile {File}
+translate B PInfoEloFile {Arquivo}
 
 # Tablebase information:
 translate B Draw {Empate}
@@ -614,10 +611,8 @@ menuText B GraphOptionsWhite "Branco" 0
 menuText B GraphOptionsBlack "Preto" 0
 menuText B GraphOptionsBoth "Ambos" 0
 menuText B GraphOptionsPInfo "Informacao do Jogador" 0
-# ====== TODO To be translated ======
-menuText B GraphOptionsEloFile "Elo from rating file" 0
-# ====== TODO To be translated ======
-menuText B GraphOptionsEloDB "Elo from database" 0
+menuText B GraphOptionsEloFile "Elo do arquivo de rating" 0
+menuText B GraphOptionsEloDB "Elo da base de dados" 0
 translate B GraphFilterTitle "Gráfico de filtro: frequencia por 1000 jogos" 
 translate B GraphAbsFilterTitle "Gráfico de filtro: frequencia dos jogos"
 translate B ConfigureFilter {Configurar Eixos X para Ano, Rating e Movimentos}
@@ -1688,8 +1683,7 @@ translate B OptionsBoard "Tabuleiro"
 translate B OptionsMenuColor "Define Cores dos Menus"
 translate B OptionsBoardSize "Tamanho do Tabuleiro"
 translate B OptionsBoardPieces "Estilo de Pecas no Tabuleiro"
-# ====== TODO To be translated ======
-translate B OptionsInternationalization "Internationalization"
+translate B OptionsInternationalization "Internacionalizacao"
 translate B MenuColorForeground "Cor do Texto"
 translate B MenuColorBackground "Cor de Fundo"
 translate B MenuColorSelect "Selecionar"
