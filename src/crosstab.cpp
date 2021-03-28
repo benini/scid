@@ -796,7 +796,7 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
 
     for (player = 0; player < playerLimit; player++) {
         strPad (stemp, PlayerData[SortedIndex[player]]->name, MaxClashes, ' ');
-        if (APAColumnNums) {
+        if (APAColumnNums && MaxClashes > 0) {
             // Print numbers instead of names over columns:
             strPad (stemp, "", MaxClashes, ' ');
             uint pnum = player + 1;
