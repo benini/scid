@@ -1911,6 +1911,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     
     ::board::new $w.bd 25
     $w.bd configure -relief solid -borderwidth 1
+    ::applyThemeColor_background $w
     set analysis(showBoard$n) 0
     set analysis(showEngineInfo$n) 0
     
@@ -1986,23 +1987,17 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     } else {
         $w.text configure -width 60 -height 4 -font font_Fixed -wrap word -setgrid 1
     }
-    ttk::frame $w.hist -relief sunken -borderwidth 1
-    text $w.hist.text -width 60 -height 8 -font font_Fixed \
-            -wrap word -setgrid 1 -yscrollcommand "$w.hist.ybar set"
-    applyThemeStyle Treeview $w.hist.text
-    $w.hist.text configure -font font_Fixed
+    autoscrollText y $w.hist $w.hist.text Treeview
+    $w.hist.text configure -wrap word -state normal -width 60 -height 8 -font font_Fixed -setgrid 1
     $w.hist.text tag configure indent -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
-    ttk::scrollbar $w.hist.ybar -command "$w.hist.text yview" -takefocus 0
     pack $w.text -side top -fill both
     pack $w.hist -side top -expand 1 -fill both
-    pack $w.hist.ybar -side right -fill y
-    pack $w.hist.text -side left -expand 1 -fill both
     
     bind $w.hist.text <ButtonPress-$::MB3> "toggleMovesDisplay $n"
-    $w.text tag configure blue -foreground blue
+    $w.text tag configure blue -foreground DodgerBlue3
     $w.text tag configure bold -font font_Bold
     $w.text tag configure small -font font_Small
-    $w.hist.text tag configure blue -foreground blue -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
+    $w.hist.text tag configure blue -foreground DodgerBlue3 -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
     $w.hist.text tag configure gray -foreground gray
     if {$autostart != 0} {
     $w.text insert end "Please wait a few seconds for engine initialisation (with some engines, you will not see any analysis \

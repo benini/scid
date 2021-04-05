@@ -641,8 +641,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
         -command "::tools::graphs::score::Refresh"
     ttk::checkbutton $w.fbuttons.timesum -text $::tr(AnnotateTime) -variable ::tools::graphs::score::TimeSum \
         -command "::tools::graphs::score::Refresh" -offvalue "1" -onvalue "0"
-    pack $w.fbuttons.score $w.fbuttons.time $w.fbuttons.timesum -side left -padx 6 -pady 0
-    pack $w.fbuttons -side bottom -anchor e
+    pack $w.fbuttons.timesum $w.fbuttons.time $w.fbuttons.score -side right -padx 6 -pady 0
+    pack $w.fbuttons -side bottom -fill both
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Score}
     bind $w <Configure> {

@@ -268,6 +268,7 @@ namespace eval book {
     
     ttk::frame $w.fcombo
     ttk::frame $w.f
+    applyThemeColor_background $w
     # load book names
     set bookPath $::scidBooksDir
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]

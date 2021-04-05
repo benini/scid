@@ -643,10 +643,9 @@ proc updateTwinChecker {} {
       pack $f.title.label $f.title.d $f.title.note -side left
       ttk::label $f.tmt -font font_Small -text "" -anchor w
       pack $f.tmt -side bottom -fill x
-      autoscrollframe $f.t text $f.t.text \
-          -height 16 -width 40 -background white \
-          -takefocus 0 -wrap word
-      $f.t.text tag configure h -background lightSteelBlue
+      autoscrollText y $f.t $f.t.text Treeview
+      $f.t.text configure -height 16 -width 40 -takefocus 0 -wrap word -state normal
+      $f.t.text tag configure h -background DodgerBlue1
       pack $f.t -side top -fill both -expand yes
     }
     $w.f.left.title.note configure -text [concat "(\"1\"" $::tr(TwinCheckUndelete)]

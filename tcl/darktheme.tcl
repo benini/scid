@@ -47,6 +47,7 @@ namespace eval ttk::theme::dark {
             -bordercolor $colors(fieldborder) \
             -selectborderwidth 0 \
             -arrowcolor $basecol \
+            -insertcolor $colors(foreground) \
         ;
 
         ttk::style map "." \
@@ -106,6 +107,12 @@ namespace eval ttk::theme::dark {
             -bordercolor $borders \
             -foreground [list \
                 disabled $colors(disabledfg)] \
+            -background [list \
+                pressed $basecol \
+                {selected active} $basecol \
+                selected $basecol \
+                active $colors(buttonbg) \
+                disabled $colors(buttonbglight) ] \
         ;
 
         ttk::style configure TCombobox \

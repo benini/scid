@@ -152,8 +152,8 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.f.tl configure -wrap none  -setgrid 1 -exportselection 1 -font font_Fixed
   #define default tags
   $w.f.tl tag configure greybg -background gray95
-  $w.f.tl tag configure whitebg -background white
-  $w.f.tl tag configure bluefg -foreground blue
+  $w.f.tl tag configure whitebg ;#use default background from theme
+  $w.f.tl tag configure bluefg -foreground DodgerBlue3
   $w.f.tl tag configure greenfg -foreground SeaGreen
   $w.f.tl tag configure redfg -foreground red
   
@@ -1534,11 +1534,12 @@ proc ::tree::mask::addComment { { move "" } } {
     ::setTitle $w [::tr CommentMove]
   }
   set oldComment [ string trim $oldComment ]
-  autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap word -setgrid 1
+  autoscrollText y $w.f $w.f.e Treeview
+  $w.f.e configure -width 40 -height 5 -wrap word -state normal -setgrid 1
   $w.f.e insert end $oldComment
   ttk::button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
   pack  $w.f  -side top -expand 1 -fill both
-  pack  $w.ok -side bottom
+  pack  $w.ok -side bottom -fill x
   focus $w.f.e
 }
 ################################################################################
@@ -1922,7 +1923,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   toplevel $w
   wm title $w [::tr SearchMask]
   ttk::frame $w.f1
-  ttk::frame $w.f2
+  autoscrollText y $w.f2 $w.f2.text Treeview
   pack $w.f1 -side top -fill both -expand 1 -anchor e
   pack $w.f2 -side top -fill both -expand 1 -anchor e
   
@@ -1982,10 +1983,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   grid $w.f1.search -column 5 -row 2 -sticky e -pady "2 5" -padx "0 5"
   
   # display search result
-  text $w.f2.text -yscrollcommand "$w.f2.ybar set" -height 40
-  ttk::scrollbar $w.f2.ybar -command "$w.f2.text yview"
-  pack $w.f2.text -side left -fill both -expand yes
-  pack $w.f2.ybar -side left -fill y
+  $w.f2.text configure -height 40 -state normal
   
   setWinLocation $w
   setWinSize $w

@@ -21,6 +21,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   pack [ttk::frame $w.b] -side bottom -fill x
   ::board::new $w.bd $::gbrowser::size
   pack $w.bd -side left -padx 4 -pady 4
+  applyThemeColor_background $w
   
   autoscrollText y $w.t $w.t.text Treeview
   $w.t.text configure -wrap word -state normal \
