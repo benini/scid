@@ -1104,7 +1104,7 @@ int calcHomePawnMask (pieceT pawn, const pieceT* board)
 //
 int patternsMatch(const Position* pos, patternT* ptn, size_t ptn_size) {
     const pieceT* board = pos->GetBoard();
-    for (size_t i = 0; i < ptn_size; ++ptn) {
+    for (auto ptn_end = ptn + ptn_size; ptn != ptn_end; ++ptn) {
         if (ptn->rankMatch == NO_RANK) {
 
             if (ptn->fyleMatch == NO_FYLE) { // Nothing to test!
