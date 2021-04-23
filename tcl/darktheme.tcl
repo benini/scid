@@ -108,11 +108,7 @@ namespace eval ttk::theme::dark {
             -foreground [list \
                 disabled $colors(disabledfg)] \
             -background [list \
-                pressed $basecol \
-                {selected active} $basecol \
-                selected $basecol \
-                active $colors(buttonbg) \
-                disabled $colors(buttonbglight) ] \
+                pressed $basecol ] \
         ;
 
         ttk::style configure TCombobox \
