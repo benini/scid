@@ -2214,6 +2214,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
 errorT Game::WritePGN(TextBuffer* tb) {
     char temp[256];
     char dateStr [20];
+    bool SetUpwritten = false;
     const char * newline = "\n";
     tb->NewlinesToSpaces (false);
     if (IsHtmlFormat()) { newline = "<br>\n"; }
@@ -2417,10 +2418,19 @@ errorT Game::WritePGN(TextBuffer* tb) {
                 sprintf(temp, "[%s \"%s\"]%s", e.first.c_str(),
                         e.second.c_str(), newline);
                 tb->PrintString(temp);
+                if (std::strcmp(e.first.c_str(), "SetUp") == 0) {
+                    SetUpwritten = true;
+                }
             }
         }
         // Finally, write the FEN tag if necessary:
         if (StartPos) {
+            if ( ! SetUpwritten ) {
+                // Tag "SetUp" not written yet
+                // Spec 9.7.1 PGN: "SetUp" must appear for a game starting with a set-up position.
+                sprintf (temp, "[SetUp \"1\"]%s", newline);
+                tb->PrintString (temp);
+            }
             StartPos->PrintFEN(std::copy_n("[FEN \"", 6, temp), FEN_ALL_FIELDS);
             auto it_end = std::copy_n("\"]", 2, temp + std::strlen(temp));
             std::strcpy(it_end, newline);
