@@ -119,7 +119,7 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
 
   set i 0
   foreach style { "Regular" "Bold" "Italic" "Bold Italic" } {
-      $fr.list insert {} end -id $i -values $style
+      $fr.list insert {} end -id $i -values [list $style]
       incr i
   }
 
