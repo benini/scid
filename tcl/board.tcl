@@ -1658,15 +1658,14 @@ proc ::board::animate {w oldboard newboard} {
   
   set from -1
   set to -1
+  set from2 -1
+  set to2 -1
   set captured -1
   set capturedPiece "."
   
   if {$diffcount == 4} {
     # Check for making/unmaking a castling move:
-    set castlingList [list [sq e1] [sq g1] [sq h1] [sq f1] \
-        [sq e8] [sq g8] [sq h8] [sq f8] \
-        [sq e1] [sq c1] [sq a1] [sq d1] \
-        [sq e8] [sq c8] [sq a8] [sq d8]]
+    set castlingList [list 4 6 7 5 60 62 63 61 4 2 0 3 60 58 56 59]
     
     foreach {kfrom kto rfrom rto} $castlingList {
       if {[lsort $difflist] == [lsort [list $kfrom $kto $rfrom $rto]]} {
@@ -1676,17 +1675,20 @@ proc ::board::animate {w oldboard newboard} {
           [string tolower [string index $newboard $rto]] == "r"} {
           # A castling move animation.
           # Move the rook back to initial square until animation is complete:
-          # TODO: It may look nicer if the rook was animated as well...
           eval $w.bd coords p$rto [::board::midSquare $w $rfrom]
           set from $kfrom
           set to $kto
+          set from2 $rfrom
+          set to2 $rto
         } elseif {[string tolower [string index $newboard $kfrom]] == "k"  &&
           [string tolower [string index $newboard $rfrom]] == "r"  &&
           [string tolower [string index $oldboard $kto]] == "k"  &&
           [string tolower [string index $oldboard $rto]] == "r"} {
-          # An undo-castling animation. No need to move the rook.
+          eval $w.bd coords p$rfrom [::board::midSquare $w $rto]
           set from $kto
           set to $kfrom
+          set from2 $rto
+          set to2 $rfrom
         }
       }
     }
@@ -1782,6 +1784,8 @@ proc ::board::animate {w oldboard newboard} {
   set ::board::_animate($w,end) [expr {$start + $::animateDelay} ]
   set ::board::_animate($w,from) $from
   set ::board::_animate($w,to) $to
+  set ::board::_animate($w,from2) $from2
+  set ::board::_animate($w,to2) $to2
   ::board::_animate $w
 }
 
@@ -1812,7 +1816,22 @@ proc ::board::_animate {w} {
   set y [expr {$fromY + round(($toY - $fromY) * $ratio)} ]
   $w.bd coords p$to $x $y
   $w.bd raise p$to
-  
+  if { $::board::_animate($w,from2) >= 0 } {
+      # move second piece
+      set from $::board::_animate($w,from2)
+      set to $::board::_animate($w,to2)
+      set fromMid [::board::midSquare $w $from]
+      set toMid [::board::midSquare $w $to]
+      set fromX [lindex $fromMid 0]
+      set fromY [lindex $fromMid 1]
+      set toX [lindex $toMid 0]
+      set toY [lindex $toMid 1]
+      set x [expr {$fromX + round(($toX - $fromX) * $ratio)} ]
+      set y [expr {$fromY + round(($toY - $fromY) * $ratio)} ]
+      $w.bd coords p$to $x $y
+      $w.bd raise p$to
+  }
+
   # Schedule another animation update in a few milliseconds:
   after 5 "::board::_animate $w"
 }
