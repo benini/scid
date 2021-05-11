@@ -46,8 +46,8 @@
  * Some common tags are encoded in one byte, using a tag_length value over 240
  * and a tag name of 0 bytes.
  */
-constexpr size_t MAX_TAG_LEN = 240;
-constexpr std::string_view commonTags[] = {
+inline constexpr size_t MAX_TAG_LEN = 240;
+inline constexpr std::string_view commonTags[] = {
     // 241, 242: Country
     "WhiteCountry", "BlackCountry",
     // 243: Annotator
