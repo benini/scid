@@ -99,16 +99,20 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure Toolbutton \
-            -padding 0 \
+            -padding 2 -relief flat \
         ;
         ttk::style map Toolbutton \
             -relief [list \
+                selected raised \
                 active raised] \
             -bordercolor $borders \
             -foreground [list \
                 disabled $colors(disabledfg)] \
             -background [list \
-                pressed $basecol ] \
+                pressed $basecol \
+                active $colors(darkcolor)] \
+            -lightcolor [list pressed $basecol] \
+            -darkcolor [list pressed $basecol] \
         ;
 
         ttk::style configure TCombobox \
