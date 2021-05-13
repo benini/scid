@@ -76,8 +76,8 @@ public:
 // sqMove
 //   Array indexed by square value and direction, giving the square
 //   obtained by moving from the square in that direction.
-constexpr squareT
-sqMove[66][11] = {
+inline constexpr squareT
+precomputed_sqMove[66][11] = {
                 /* UP DOWN    LEFT UL  DL    RIGHT UR  DR */
    { /* A1 */  NS, A2, NS, NS, NS, NS, NS, NS, B1, B2, NS   },
    { /* B1 */  NS, B2, NS, NS, A1, A2, NS, NS, C1, C2, NS   },
@@ -153,8 +153,8 @@ sqMove[66][11] = {
 //   square reached by moving from the square in that direction.
 //   The last square is the same as the original square if moving
 //   in the specified direction would move off the board.
-constexpr squareT
-sqLast[66][11] = {
+inline constexpr squareT
+precomputed_sqLast[66][11] = {
                 /* UP DOWN    LEFT UL  DL    RIGHT UR  DR */
    { /* A1 */  NS, A8, A1, NS, A1, A1, A1, NS, H1, H8, A1   },
    { /* B1 */  NS, B8, B1, NS, A1, A2, B1, NS, H1, H7, B1   },
@@ -229,7 +229,7 @@ sqLast[66][11] = {
 constexpr squareT
 square_Move(squareT sq, directionT dir)
 {
-    return sqMove[sq][dir];
+    return precomputed_sqMove[sq][dir];
 }
 
 // square_Last():
@@ -242,7 +242,7 @@ square_Move(squareT sq, directionT dir)
 constexpr squareT
 square_Last (squareT sq, directionT dir)
 {
-    return sqLast[sq][dir];
+    return precomputed_sqLast[sq][dir];
 }
 
 #endif
