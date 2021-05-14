@@ -214,9 +214,6 @@ proc setPatterns {pattlist} {
   updatePatternImages
 }
 
-set smDisplayed(Material) 1
-set smDisplayed(Patterns) 0
-
 
 proc set1Bishops { } {
   global pMin pMax oppBishops sameBishops
@@ -234,7 +231,7 @@ proc set1Bishops { } {
 proc ::search::material {{ref_base ""}} {
   global dark pMin pMax ignoreColors minMoveNum maxMoveNum
   global pattPiece pattFyle pattRank pattBool oppBishops sameBishops nPatterns nMaxPatterns
-  global minHalfMoves smDisplayed
+  global minHalfMoves
   
   set w .sm
   if {[winfo exists $w]} {
@@ -246,16 +243,6 @@ proc ::search::material {{ref_base ""}} {
   
   win::createDialog $w
   wm title $w "Scid: $::tr(MaterialSearch)"
-  #  button $w.piecelabel -font font_Bold -textvar ::tr(Material:) -command {
-  #    if {$smDisplayed(Material)} {
-  #      set smDisplayed(Material) 0
-  #      pack forget .sm.q .sm.r .sm.b .sm.n .sm.m .sm.p .sm.b1 .sm.mdiff
-  #    } else {
-  #      set smDisplayed(Material) 1
-  #      pack .sm.q .sm.r .sm.b .sm.n .sm.m .sm.p .sm.b1 .sm.mdiff \
-  #        -after .sm.piecelabel
-  #    }
-  #  }
   
   bind $w <F1> { helpWindow Searches Material }
   bind $w <Escape> "$w.b3.cancel invoke"
@@ -413,9 +400,6 @@ proc ::search::material {{ref_base ""}} {
   pack $f.zero -side left -pady 5 -padx "0 10"
   pack $f.reset $f.current -side left -pady 5 -padx 10
   pack $f.common -side left -padx "10 0" -pady 5
-  #if {! $smDisplayed(Material)} {
-  #  pack forget .sm.q .sm.r .sm.b .sm.n .sm.m .sm.p .sm.b1 .sm.mdiff
-  #}
   
   ttk::frame $w.mp.material.mdiff
   set f $w.mp.material.mdiff
@@ -442,29 +426,23 @@ proc ::search::material {{ref_base ""}} {
   set f $w.mp.patt
   grid $w.mp.patt -row 0 -column 2 -sticky nwe -pady 5
   
-  #dialogbutton $w.pattl -font font_Bold -textvar ::tr(Patterns:) -command {
-  #  if {$smDisplayed(Patterns)} {
-  #    set smDisplayed(Patterns) 0
-  #    pack forget .sm.patt .sm.b2
-  #  } else {
-  #    set smDisplayed(Patterns) 1
-  #    pack .sm.patt .sm.b2 -after .sm.pattl
-  #  }
-  #}
-
   ttk::frame $f.grid
   for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
-    tk_optionMenu $f.grid.f$i pattFyle($i) "?" a b c d e f g h
-    tk_optionMenu $f.grid.r$i pattRank($i) "?" 1 2 3 4 5 6 7 8
-    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
-    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0 -background [ttk::style lookup . -background]
+    ttk::menubutton $f.grid.f$i -menu $f.grid.f$i.menu -style Pad0.Small.TButton -textvar pattFyle($i) -width 1
+    ttk::menubutton $f.grid.r$i -menu $f.grid.r$i.menu -style Pad0.Small.TButton -textvar pattRank($i) -width 1
+    menu $f.grid.f$i.menu -tearoff 0
+    menu $f.grid.r$i.menu -tearoff 0
+    foreach l { "?" a b c d e f g h } {
+        $f.grid.f$i.menu add command -label $l -command "set pattFyle($i) $l"
+    }
+    foreach l { "?" 1 2 3 4 5 6 7 8 } {
+        $f.grid.r$i.menu add command -label $l -command "set pattRank($i) $l"
+    }
     if { $i <= $nPatterns } {
     set column [expr {7 * (($i - 1) / 7)} ]
     set row [expr {($i - 1) % 7} ]
-#    set column 0
-#    set row $i
     grid $f.grid.b$i -row $row -column $column -padx 0 -pady 0 ; incr column
     grid $f.grid.p$i -row $row -column $column -padx 0 -pady 0 ; incr column
     grid $f.grid.f$i -row $row -column $column -padx 0 -pady 0 ; incr column
@@ -563,9 +541,6 @@ proc ::search::material {{ref_base ""}} {
   pack $f.pattAdd -side left -pady "0 5" -padx "0 10" -anchor w
   pack $f.clearPat -side left -anchor w -pady "0 5"
   pack $w.mp.patt.grid -side top -anchor w ;# -fill both -expand 1
-  #if {! $smDisplayed(Patterns)} {
-  #  pack forget $w.patt $w.b2
-  #}
   updatePatternImages
   
   ttk::frame $w.mp.material.bishops
