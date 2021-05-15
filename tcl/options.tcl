@@ -391,7 +391,6 @@ set gameInfo(photos) 1
 set gameInfo(hideNextMove) 0
 set gameInfo(showMaterial) 0
 set gameInfo(showFEN) 0
-set gameInfo(showMarks) 1
 set gameInfo(wrap) 0
 set gameInfo(fullComment) 0
 set gameInfo(showTB) 0
@@ -677,7 +676,7 @@ proc options.write {} {
           email(smtp) email(smproc) email(server) \
           email(from) email(bcc) \
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
-          gameInfo(fullComment) gameInfo(showMarks) \
+          gameInfo(fullComment) ::board::_showMarks(.main.board) \
           gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
