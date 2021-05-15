@@ -1135,7 +1135,7 @@ proc CreateMainBoard { {w} } {
   CreateGameInfo
 
   ::board::new $w.board $::boardSize
-  ::board::showMarks $w.board 1
+  ::board::showMarks $w.board $::gameInfo(showMarks)
   for {set i 0} {$i < $::boardCoords} {incr i} { ::board::coords $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
