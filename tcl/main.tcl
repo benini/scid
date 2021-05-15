@@ -1233,7 +1233,9 @@ proc CreateGameInfo {} {
           -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 
   .main.gameInfo.menu add checkbutton -label GInfoMarks \
-          -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command { ::board::showMarks .main.board $gameInfo(showMarks); updateBoard }
+          -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command {
+              ::board::showMarks .main.board $gameInfo(showMarks)
+              updateBoard }
 
   .main.gameInfo.menu add checkbutton -label GInfoWrap \
           -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
