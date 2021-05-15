@@ -48,15 +48,6 @@ protected:
 	std::vector<byte> bbuf_;
 
 public: // ICodecDatabase interface
-	errorT addGame(IndexEntry const& ie, TagRoster const& tags,
-	               ByteBuffer const& data) override {
-		IndexEntry ie_new = ie;
-		if (auto err = addGameHelper(&ie_new, data.data(), data.size(), tags))
-			return err;
-
-		return derived()->dyn_addIndexEntry(ie_new);
-	}
-
 	errorT addGame(Game* game) override {
 		bbuf_.clear();
 		auto [ie, tags] = game->Encode(bbuf_);
