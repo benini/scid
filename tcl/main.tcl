@@ -1135,6 +1135,7 @@ proc CreateMainBoard { {w} } {
   CreateGameInfo
 
   ::board::new $w.board $::boardSize
+  ::board::showMarks $w.board 1
   for {set i 0} {$i < $::boardCoords} {incr i} { ::board::coords $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
@@ -1232,7 +1233,7 @@ proc CreateGameInfo {} {
           -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 
   .main.gameInfo.menu add checkbutton -label GInfoMarks \
-          -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
+          -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command { ::board::showMarks .main.board $gameInfo(showMarks); updateBoard }
 
   .main.gameInfo.menu add checkbutton -label GInfoWrap \
           -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard

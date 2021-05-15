@@ -326,6 +326,7 @@ proc ::board::new {w {psize 40} } {
   set ::board::_coords($w) 2
   set ::board::_flip($w) 0
   set ::board::_data($w) [sc_pos board]
+  set ::board::_showMarks($w) 0
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
@@ -693,6 +694,13 @@ proc ::board::getSquare {w x y} {
     if {$::board::_flip($w)} { set sq [expr {63 - $sq}] }
   }
   return $sq
+}
+
+# ::board::showMarks
+#   Turns on/off the showing of marks (colored squares).
+#
+proc ::board::showMarks {w value} {
+  set ::board::_showMarks($w) $value
 }
 
 # ::board::colorSquare
@@ -1405,7 +1413,7 @@ proc ::board::update {w {board ""} {animate 0}} {
   }
 
   # Redraw marks and arrows if required:
-  if {$::gameInfo(showMarks)} {
+  if {$::board::_showMarks($w)} {
     foreach mark $::board::_mark($w) {
       set type  [lindex $mark 0]
       if {$type == "full"}    { 
