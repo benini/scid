@@ -58,19 +58,6 @@ public: // ICodecDatabase interface
 		return derived()->dyn_addIndexEntry(ie);
 	}
 
-	errorT saveGame(Game* game, gamenumT replaced) override {
-		if (replaced >= idx_->GetNumGames())
-			return ERROR_BadArg;
-
-		bbuf_.clear();
-		auto [ie, tags] = game->Encode(bbuf_);
-
-		if (auto err = addGameHelper(&ie, bbuf_.data(), bbuf_.size(), tags))
-			return err;
-
-		return derived()->dyn_saveIndexEntry(ie, replaced);
-	}
-
 private:
 	template <typename Tags>
 	errorT addGameHelper(IndexEntry* ie, const byte* srcData, size_t dataLen,

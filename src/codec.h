@@ -120,11 +120,14 @@ public:
 
 	/**
 	 * Replaces a game in the database.
-	 * @param game:     valid pointer to a Game object with the new data.
+	 * @param ie:   the header data of the source game.
+	 * @param tags: contains 5 of the Seven Tag Roster.
+	 * @param data: the data (encoded in native format) of the game.
 	 * @param replaced: valid gamenumT of the game to be replaced
 	 * @returns OK if successful or an error code.
 	 */
-	virtual errorT saveGame(Game* game, gamenumT replaced) = 0;
+	virtual errorT saveGame(IndexEntry const& ie, TagRoster const& tags,
+	                        ByteBuffer const& data, gamenumT replaced) = 0;
 
 	/**
 	 * Replaces a game's IndexEntry (which contains the header data of a game).

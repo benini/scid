@@ -105,12 +105,16 @@ private:
 		return CodecMemory::addGame(game);
 	}
 
-	errorT saveGame(Game* game, gamenumT replaced) final {
-		errorT err = getDerived()->gameSave(game, replaced);
-		if (err != OK)
+	errorT saveGame(IndexEntry const& ie, TagRoster const& tags,
+	                ByteBuffer const& data, gamenumT replaced) final {
+		Game game;
+		if (errorT err = game.Decode(ie, tags, data))
 			return err;
 
-		return CodecMemory::saveGame(game, replaced);
+		if (errorT err = getDerived()->gameSave(&game, replaced))
+			return err;
+
+		return CodecMemory::saveGame(ie, tags, data, replaced);
 	}
 
 	errorT addGame(IndexEntry const& ie, TagRoster const& tags,

@@ -332,6 +332,7 @@ struct scidBaseT {
 		if (auto errModify = beginTransaction())
 			return {errModify, 0};
 
+		std::vector<byte> encodeBuf;
 		Game game;
 		size_t nCorrections = 0;
 		size_t iProg = 0;
@@ -351,7 +352,9 @@ struct scidBaseT {
 			if (!entry_op(game))
 				continue;
 
-			err = codec_->saveGame(&game, gnum);
+			auto [ie_new, tags] = game.Encode(encodeBuf);
+			auto gamedata = ByteBuffer(encodeBuf.data(), encodeBuf.size());
+			err = codec_->saveGame(ie_new, tags, gamedata, gnum);
 			if (err != OK)
 				break;
 

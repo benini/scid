@@ -239,25 +239,6 @@ TEST_P(Test_Codec, addGame_native) {
 	             });
 }
 
-TEST_P(Test_Codec, saveGame_game) {
-	makeDatabase(GetParam(), "saveGame_game",
-	             [](ICodecDatabase* codec, Index&, NameBase&) {
-		             const auto& games = gameGenerator.get();
-		             for (size_t i = 0, n = games.size(); i < n; ++i) {
-			             ASSERT_EQ(OK, codec->addGame(games[0].get()));
-		             }
-		             codec->flush();
-
-		             std::vector<int> randIdx(games.size());
-		             std::iota(randIdx.begin(), randIdx.end(), 0);
-		             std::shuffle(randIdx.begin(), randIdx.end(),
-		                          std::mt19937());
-		             for (auto idx : randIdx) {
-			             ASSERT_EQ(OK, codec->saveGame(games[idx].get(), idx));
-		             }
-	             });
-}
-
 // Try to get a ICodecDatabase pointer for each supported file mode, then test
 // the consistency of getType() and getFilenames().
 TEST_P(Test_Codec, fileModeT) {
