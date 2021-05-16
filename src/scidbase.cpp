@@ -176,9 +176,13 @@ errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
 	if (auto errModify = beginTransaction())
 		return errModify;
 
+	std::vector<byte> buf;
+	auto [ie, tags] = game->Encode(buf);
+	auto gamedata = ByteBuffer(buf.data(), buf.size());
+
 	errorT err = (replacedGameId < numGames())
 	                 ? codec_->saveGame(game, replacedGameId)
-	                 : codec_->addGame(game);
+	                 : codec_->addGame(ie, tags, gamedata);
 	errorT errClear = endTransaction(replacedGameId);
 	return (err != OK) ? err : errClear;
 }
