@@ -125,21 +125,6 @@ public: // ICodecDatabase interface
 		return {nullptr, 0};
 	}
 
-	// Import addGame(Game* game)
-	using CodecNative::addGame;
-
-	errorT addGame(IndexEntry const& ie_src, TagRoster const& tags,
-	               ByteBuffer const& data) final {
-		IndexEntry ie = ie_src;
-		if (auto err = addGameNamesAndData(ie, tags, data.data(), data.size()))
-			return err;
-
-		nb_->AddElo(ie.GetWhite(), ie.GetWhiteElo());
-		nb_->AddElo(ie.GetBlack(), ie.GetBlackElo());
-
-		return dyn_addIndexEntry(ie);
-	}
-
 	errorT saveIndexEntry(const IndexEntry& ie, gamenumT replaced) final {
 		return dyn_saveIndexEntry(ie, replaced);
 	}
@@ -238,23 +223,6 @@ public: // CodecNative interface
 	}
 
 private:
-	/// Add the game's roster tags and gamedata to the database.
-	/// Set the references to the new data in @e ie.
-	errorT addGameNamesAndData(IndexEntry& ie, TagRoster const& tags,
-	                           const byte* srcData, size_t dataLen) {
-		auto errNames = tags.map(
-		    ie, [&](auto nt, auto name) { return dyn_addName(nt, name); });
-		if (errNames)
-			return errNames;
-
-		auto [err, offset] = dyn_addGameData(srcData, dataLen);
-		if (!err) {
-			ie.SetOffset(offset);
-			ie.SetLength(dataLen);
-		}
-		return err;
-	}
-
 	errorT readIndex(const Progress& progress);
 
 	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
