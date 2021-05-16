@@ -748,19 +748,24 @@ UI_res_t sc_base_strip(scidBaseT& dbase, UI_handle_t ti, int argc,
 /// @returns a even-sized list, where each pair of elements is a tag name and
 /// its frequency
 UI_res_t sc_base_taglist(scidBaseT& dbase, UI_handle_t ti) {
-	static_assert(gamenumT() == 0);
-	std::map<std::string, gamenumT> tag_freq;
-	Filter filter_all(dbase.numGames());
+	std::map<std::string, gamenumT, std::less<>> tag_freq;
 	auto progress = UI_CreateProgress(ti);
-	const auto err = dbase.transformGames(
-	    HFilter(&filter_all), progress, [&tag_freq](const Game& game) {
-		    for (const auto& tag : game.GetExtraTags()) {
-			    tag_freq[tag.first] += 1;
-		    }
-		    return false;
-	    });
-	if (err.first != OK)
-		return UI_Result(ti, err.first);
+	for (gamenumT gnum = 0, n = dbase.numGames(); gnum < n; ++gnum) {
+		if ((gnum % 1024 == 0) && !progress.report(gnum, n))
+			return UI_Result(ti, ERROR_UserCancel);
+
+		const auto ie = dbase.getIndexEntry(gnum);
+		const auto err = dbase.getGame(*ie).decodeTags(
+		    [&](auto const& tag, auto const&) {
+			    auto it = tag_freq.find(tag);
+			    if (it == tag_freq.end())
+				    tag_freq.emplace(tag, 1);
+			    else
+				    it->second++;
+		    });
+		if (err)
+			return UI_Result(ti, err);
+	}
 
 	UI_List res(tag_freq.size() * 2);
 	for (const auto& [tag, freq] : tag_freq) {
