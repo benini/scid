@@ -24,7 +24,7 @@ set colorSchemes {
 array set newColors {}
 
 proc SetBoardTextures {} {
-  global boardfile_dark boardfile_lite
+  global boardfile_dark boardfile_lite lite dark
   # handle cases of old configuration files
   image create photo bgl20 -height 20 -width 20
   image create photo bgd20 -height 20 -width 20
@@ -43,6 +43,25 @@ proc SetBoardTextures {} {
     set z [expr int (ceil ($size / $textureSize))]
     bgl$size copy $boardfile_lite -zoom $z
     bgd$size copy $boardfile_dark -zoom $z
+  }
+  # create colors for coords on the board
+  # try to find an average of the color from the picture
+  # use variable lite and dark from colorschemes
+  set li [list lite $boardfile_lite dark $boardfile_dark ]
+  foreach { col file } $li {
+      if { $file == "emptySquare" } { continue }
+      set i 0; set r 0; set g 0; set b 0
+      set textureSize [image height $file]
+      for { set p 2 } { $p < $textureSize } {incr p 4; incr i } {
+          lassign [$file get $p $p] r1 g1 b1
+          incr r $r1
+          incr g $g1
+          incr b $b1
+      }
+      set r [expr int(($r) / $i)]
+      set g [expr int(($g) / $i)]
+      set b [expr int(($b) / $i)]
+      set $col [ format "#%02x%02x%02x" $r $g $b ]
   }
 }
 
@@ -94,6 +113,7 @@ proc chooseBoardTextures {i} {
   set boardfile_dark ${prefix}-d
   set boardfile_lite ${prefix}-l
   SetBoardTextures
+  updateBoard
 }
 
 proc updateBoardColors { w {choice -1}} {
@@ -123,13 +143,13 @@ proc updateBoardColors { w {choice -1}} {
     $w.select.b$i configure -background $newColors($i)
   }
 
+  foreach i {lite dark highcolor bestcolor} {
+    set $i $newColors($i)
+  }
   foreach i {0 1 2 3} {
     set c $w.border.c$i
     $c itemconfigure dark -fill $dark -outline $dark
     $c itemconfigure lite -fill $lite -outline $lite
-  }
-  foreach i {lite dark highcolor bestcolor} {
-    set $i $newColors($i)
   }
   updateBoard
   return
@@ -323,7 +343,7 @@ proc ::board::new {w {psize 40} } {
 
   set ::board::_size($w) $psize
   set ::board::_border($w) $::borderwidth
-  set ::board::_coords($w) 2
+  set ::board::_coords($w) 4
   set ::board::_flip($w) 0
   set ::board::_data($w) [sc_pos board]
   set ::board::_showMarks($w) 0
@@ -1401,7 +1421,8 @@ proc ::board::update {w {board ""} {animate 0}} {
     $w.bd delete p$sq
     $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$sq
   }
-  
+  ::board::innercoords $w
+
   # Update side-to-move icon:
   ::board::sideToMove_ $w [string index $::board::_data($w) 65]
   
@@ -1586,27 +1607,106 @@ proc ::board::toggleMaterial {w} {
 }
 
 ################################################################################
-#
+# draw coordinates on the board
+# sq: square c: character pos: 0=left,bottom  1=right,top
+# use dark and lite from colorscheme as fontcolor:
+#     lite on dark squares and dark on lite squares
 ################################################################################
+proc ::board::drawInnerCoords { w sq c pos } {
+    global dark lite
+
+    set pathName ${w}.bd
+    set box [::board::mark::GetBox $pathName $sq 1.0]
+    set len [expr int([lindex $box 4])]
+    # Use 20% of square for fontsize, but not larger than font_small 
+    set size [expr int($len / 5) ]
+    set fsize [font configure font_Small -size]
+    if { $size > $fsize } { set size $fsize }
+    if { [string is digit $c] } {
+        set x   [expr [lindex $box 0] + $pos * ($len - $size)]
+        set y   [expr [lindex $box 1] + $size ]
+    } else {
+        set x   [expr [lindex $box 2] - $size ]
+        set y   [expr [lindex $box 3] - $size - $pos * ($len - 2 * $size)]
+        # avoid collision a1 and h8 in the upper right square
+        if { $pos && ((! $::board::_flip($w) && $c eq "h") || ($::board::_flip($w) && $c eq "a")) } {
+            set x [expr $x - $size]
+        }
+    }
+    eval $pathName \
+        create text $x $y -fill [expr {($sq + ($sq / 8)) % 2 ? {$dark} : {$lite}}] \
+        {-font [list font_Regular $size ]} \
+        {-text $c}     \
+        {-anchor w} \
+        {-tag  [list mark text coords]}
+}
+
+# ::board::innercoords
+#   Add or remove coordinates on the square on the board.
+#   0 (no coords), 1 (left and bottom beside board ), 2 (all sides beside board),
+#   3 (left and bottom, on board ), 4 (all sides on board)
+proc ::board::innercoords {w} {
+    if {$::board::_coords($w) < 3 } {
+        $w.bd delete coords
+        return
+    }
+    if {$::board::_coords($w) >= 3 } {
+        set c 1
+        set inc 1
+        if {$::board::_flip($w)} { set c 8; set inc -1 }
+        for {set i 0} {$i <= 63} {incr i 8} {
+            set x $i
+            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
+            drawInnerCoords ${w} $x $c 0
+            incr c $inc
+        }
+        set i 0
+        set l [list a b c d e f g h]
+        if {$::board::_flip($w)} { set l [list h g f e d c b a] }
+        foreach c $l {
+            set x $i
+            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
+            drawInnerCoords ${w} $x $c 0
+            incr i
+        }
+    }
+    if {$::board::_coords($w) == 4 } {
+        set c 1
+        set inc 1
+        if {$::board::_flip($w)} { set c 8; set inc -1 }
+        for {set i 7} {$i <= 63} {incr i 8} {
+            set x $i
+            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
+            drawInnerCoords ${w} $x $c 1
+            incr c $inc
+        }
+        set i 56
+        set l [list a b c d e f g h]
+        if {$::board::_flip($w)} { set l [list h g f e d c b a] }
+        foreach c $l {
+            set x $i
+            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
+            drawInnerCoords ${w} $x $c 1
+            incr i
+        }
+    }
+}
 
 # ::board::coords
-#   Add or remove coordinates around the edge of the board.
-# Toggle between 0,1,2.
-proc ::board::coords {w} {
-  set coords [expr {1 + $::board::_coords($w)} ]
-  if { $coords > 2 } { set coords 0 }
-  set ::board::_coords($w) $coords
-  
-  if {$coords == 0 } {
-    for {set i 1} {$i <= 8} {incr i} {
-      grid remove $w.lrank$i
-      grid remove $w.rrank$i
-    }
-    foreach i {a b c d e f g h} {
-      grid remove $w.tfile$i
-      grid remove $w.bfile$i
-    }
-  } elseif {$coords == 1 } {
+#   Configure coordinates around the edge of the board or on the board
+#   Toggle ::board::_coords between 0 (no coords), 1 (left and bottom beside board ),
+#   2 (all sides beside board), 3 (left and bottom, on board ), 4 (all sides on board)
+proc ::board::coords {w {coordstype ""}} {
+  # if coordstype is set then use it, else toggle between options
+  if { $coordstype eq "" } {
+    set coordstype [expr {1 + $::board::_coords($w)} ]
+    if { $coordstype > 4 } { set coordstype 0 }
+  }
+  if { $coordstype >= 0 && $coordstype <= 4 } {
+    set ::board::_coords($w) $coordstype
+  }
+
+  if {$coordstype == 1 } {
     for {set i 1} {$i <= 8} {incr i} {
       grid configure $w.lrank$i
       grid remove $w.rrank$i
@@ -1615,7 +1715,7 @@ proc ::board::coords {w} {
       grid remove $w.tfile$i
       grid configure $w.bfile$i
     }
-  } else { #Klimmek: coords == 2 then show left and bottom
+  } elseif {$coordstype == 2 } {
     for {set i 1} {$i <= 8} {incr i} {
       grid configure $w.lrank$i
       grid configure $w.rrank$i
@@ -1624,9 +1724,19 @@ proc ::board::coords {w} {
       grid configure $w.tfile$i
       grid configure $w.bfile$i
     }
+  } else {
+    for {set i 1} {$i <= 8} {incr i} {
+        grid remove $w.lrank$i
+        grid remove $w.rrank$i
+    }
+    foreach i {a b c d e f g h} {
+        grid remove $w.tfile$i
+        grid remove $w.bfile$i
+    }
   }
+  ::board::innercoords $w
 
-  return $coords
+  return $coordstype
 }
 
 # ::board::animate
