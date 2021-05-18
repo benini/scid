@@ -97,14 +97,6 @@ public:
 	errorT gameSave(Game*, gamenumT) { return ERROR_CodecUnsupFeat; }
 
 private:
-	errorT addGame(Game* game) final {
-		errorT err = getDerived()->gameAdd(game);
-		if (err != OK)
-			return err;
-
-		return CodecMemory::addGame(game);
-	}
-
 	errorT saveGame(IndexEntry const& ie, TagRoster const& tags,
 	                ByteBuffer const& data, gamenumT replaced) final {
 		Game game;
@@ -158,8 +150,11 @@ private:
 		if (err != OK)
 			return err;
 
+		std::vector<byte> buf;
 		return parseGames(progress, *getDerived(), [&](Game& game) {
-			return this->CodecMemory::addGame(&game);
+			buf.clear();
+			auto [ie, tags] = game.Encode(buf);
+			return CodecMemory::addGame(ie, tags, {buf.data(), buf.size()});
 		});
 	}
 

@@ -234,8 +234,12 @@ errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
 	CodecPgn pgn;
 	auto res = pgn.open(filename, FMODE_ReadOnly);
 	if (res == OK) {
-		res = CodecPgn::parseGames(
-		    progress, pgn, [&](Game& game) { return codec_->addGame(&game); });
+		std::vector<byte> buf;
+		res = CodecPgn::parseGames(progress, pgn, [&](Game& game) {
+			buf.clear();
+			auto [ie, tags] = game.Encode(buf);
+			return codec_->addGame(ie, tags, {buf.data(), buf.size()});
+		});
 		errorMsg = pgn.parseErrors();
 	}
 

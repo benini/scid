@@ -25,14 +25,18 @@
 #ifndef CODEC_SCID4_H
 #define CODEC_SCID4_H
 
-#include "codec_native.h"
+#include "codec.h"
 #include "filebuf.h"
+#include "index.h"
+#include "namebase.h"
 #include <limits>
 
 /**
  * This class manages databases encoded in SCID format v4.
  */
-class CodecSCID4 : public CodecNative<CodecSCID4> {
+class CodecSCID4 : public ICodecDatabase {
+	Index* idx_ = nullptr;
+	NameBase* nb_ = nullptr;
 	std::vector<std::string> filenames_;
 	Filebuf idxfile_;
 	FilebufAppend gfile_;
@@ -125,9 +129,6 @@ public: // ICodecDatabase interface
 		return {nullptr, 0};
 	}
 
-	// Import addGame(Game* game)
-	using CodecNative::addGame;
-
 	errorT addGame(IndexEntry const& ie_src, TagRoster const& tags,
 	               ByteBuffer const& data) final {
 		IndexEntry ie = ie_src;
@@ -167,7 +168,7 @@ public: // ICodecDatabase interface
 	errorT dyn_open(fileModeT, const char*, const Progress&, Index*,
 	                NameBase*) final;
 
-public: // CodecNative interface
+private:
 	/**
 	 * Stores the data into the .sg4 file.
 	 * @param src:    valid pointer to a buffer that contains the game data
@@ -251,7 +252,6 @@ public: // CodecNative interface
 		return writeEntry(ie, replaced);
 	}
 
-private:
 	/// Add the game's roster tags and gamedata to the database.
 	/// Set the references to the new data in @e ie.
 	errorT addGameNamesAndData(IndexEntry& ie, TagRoster const& tags,

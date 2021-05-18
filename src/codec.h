@@ -25,11 +25,11 @@
 #ifndef CODEC_H
 #define CODEC_H
 
+#include "bytebuf.h"
 #include "common.h"
 #include <string>
 #include <vector>
 
-class Game;
 class Index;
 class IndexEntry;
 class NameBase;
@@ -110,13 +110,6 @@ public:
 	 */
 	virtual errorT addGame(IndexEntry const& ie, TagRoster const& tags,
 	                       ByteBuffer const& data) = 0;
-
-	/**
-	 * Add a game to the database.
-	 * @param game: valid pointer to a Game object with the data of the game.
-	 * @returns OK if successful or an error code.
-	 */
-	virtual errorT addGame(Game* game) = 0;
 
 	/**
 	 * Replaces a game in the database.

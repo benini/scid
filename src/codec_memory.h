@@ -24,14 +24,18 @@
 #ifndef CODEC_MEMORY_H
 #define CODEC_MEMORY_H
 
-#include "codec_native.h"
+#include "codec.h"
+#include "index.h"
+#include "namebase.h"
 
 /**
  * Manages memory databases that do not have associated files.
  * Every open database should have a native representation in memory: to satisfy
  * this requirement non-native codecs should be derived from this class.
  */
-class CodecMemory : public CodecNative<CodecMemory> {
+class CodecMemory : public ICodecDatabase {
+	Index* idx_ = nullptr;
+	NameBase* nb_ = nullptr;
 	VectorChunked<byte, 24> v_;
 	unsigned baseType_ = 0;
 
@@ -81,9 +85,6 @@ public: // ICodecDatabase interface
 		return {nullptr, 0};
 	}
 
-	// Import addGame(Game* game)
-	using CodecNative::addGame;
-
 	errorT addGame(IndexEntry const& ie_src, TagRoster const& tags,
 	               ByteBuffer const& data) override {
 		IndexEntry ie = ie_src;
@@ -131,7 +132,7 @@ public: // ICodecDatabase interface
 		return OK;
 	}
 
-public: // CodecNative CRTP
+private:
 	/**
 	 * Stores the data of a game into memory.
 	 * @param src:    valid pointer to a buffer that contains the game data

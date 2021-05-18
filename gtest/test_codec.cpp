@@ -203,15 +203,6 @@ void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
 
 class Test_Codec : public ::testing::TestWithParam<ICodecDatabase::Codec> {};
 
-TEST_P(Test_Codec, addGame_game) {
-	makeDatabase(GetParam(), "addGame_game",
-	             [](ICodecDatabase* codec, Index&, NameBase&) {
-		             for (auto& game : gameGenerator.get()) {
-			             ASSERT_EQ(OK, codec->addGame(game.get()));
-		             }
-	             });
-}
-
 TEST_P(Test_Codec, addGame_native) {
 	makeDatabase(GetParam(), "addGame_native",
 	             [](ICodecDatabase* codec, Index&, NameBase& nb) {
