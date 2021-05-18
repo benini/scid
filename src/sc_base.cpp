@@ -730,17 +730,10 @@ UI_res_t sc_base_strip(scidBaseT& dbase, UI_handle_t ti, int argc,
 	if (argc < 4)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
+	std::vector<std::string_view> tags(argv + 3, argv + argc);
 	Filter filter_all(dbase.numGames());
 	auto progress = UI_CreateProgress(ti);
-	const auto res = dbase.transformGames(
-	    HFilter(&filter_all), progress, [&](Game& game) {
-		    bool modified = false;
-		    for (int i = 3; i < argc; i++) {
-			    const bool removed = game.RemoveExtraTag(argv[i]);
-			    modified = modified || removed;
-		    }
-		    return modified;
-	    });
+	const auto res = dbase.stripGames(HFilter(&filter_all), progress, tags);
 	return UI_Result(ti, res.first, res.second);
 }
 

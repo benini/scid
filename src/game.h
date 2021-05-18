@@ -361,7 +361,6 @@ public:
     // Functions that get/set the tag pairs:
     //
     void AddPgnTag(const char* tag, const char* value);
-    bool RemoveExtraTag(const char* tag);
     const char* FindExtraTag(const char* tag) const;
     std::string& accessTagValue(const char* tag, size_t tagLen);
     const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }

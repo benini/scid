@@ -317,23 +317,21 @@ struct scidBaseT {
 	               TMapFunc getID);
 
 	/**
-	 * Transform the games included in @e hfilter.
-	 * The @e entry_op must accept a Game& parameter and return true when
-	 * the object was modified.
+	 * Strip the games included in @e hfilter.
 	 * @param hfilter:  HFilter containing the games to be transformed.
 	 * @param progress: a Progress object used for GUI communications.
 	 * @param entry_op: operator that will be applied to games.
 	 * @returns a std::pair containing OK (or an error code) and the number of
 	 * games modified.
 	 */
-	template <typename TOper>
 	std::pair<errorT, size_t>
-	transformGames(HFilter hfilter, const Progress& progress, TOper entry_op) {
+	stripGames(HFilter hfilter, const Progress& progress,
+	           std::vector<std::string_view> const& removeTags) {
 		if (auto errModify = beginTransaction())
 			return {errModify, 0};
 
+		std::vector<std::pair<std::string_view, std::string_view>> tagsBuf;
 		std::vector<byte> encodeBuf;
-		Game game;
 		size_t nCorrections = 0;
 		size_t iProg = 0;
 		const size_t totProg = hfilter->size();
@@ -344,17 +342,30 @@ struct scidBaseT {
 				break;
 			}
 
-			const IndexEntry* ie = getIndexEntry(gnum);
-			err = getGame(*ie, game);
+			bool changed = false;
+			tagsBuf.clear();
+			IndexEntry const& ie = *getIndexEntry(gnum);
+			auto gamedata = getGame(ie);
+			auto err = gamedata.decodeTags(
+			    [&](auto const& tag, auto const& value) {
+				    if (std::find(removeTags.begin(), removeTags.end(), tag) !=
+				        removeTags.end())
+					    changed = true;
+				    else
+					    tagsBuf.emplace_back(tag, value);
+			    });
 			if (err != OK)
 				break;
 
-			if (!entry_op(game))
+			if (!changed)
 				continue;
 
-			auto [ie_new, tags] = game.Encode(encodeBuf);
-			auto gamedata = ByteBuffer(encodeBuf.data(), encodeBuf.size());
-			err = codec_->saveGame(ie_new, tags, gamedata, gnum);
+			encodeBuf.clear();
+			encodeTags(tagsBuf, encodeBuf);
+			encodeBuf.insert(encodeBuf.end(), gamedata.data(),
+			                 gamedata.data() + gamedata.size());
+			err = codec_->saveGame(ie, TagRoster::make(ie, *nb_),
+			                       {encodeBuf.data(), encodeBuf.size()}, gnum);
 			if (err != OK)
 				break;
 

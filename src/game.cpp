@@ -632,21 +632,6 @@ const char* Game::FindExtraTag(const char* tag) const {
     return NULL;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::RemoveExtraTag():
-//   Remove an extra PGN tag if it exists.
-bool Game::RemoveExtraTag(const char* tag) {
-    auto it = std::remove_if(extraTags_.begin(), extraTags_.end(),
-                             [&](const std::pair<std::string, std::string>& e) {
-                                 return e.first == tag;
-                             });
-    if (it != extraTags_.end()) {
-        extraTags_.erase(it, extraTags_.end());
-        return true;
-    }
-    return false;
-}
-
 std::string& Game::accessTagValue(const char* tag, size_t tagLen) {
 	if (tagLen == 5) {
 		if (std::equal(tag, tag + 5, "Event"))
