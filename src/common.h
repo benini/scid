@@ -16,114 +16,39 @@
 #ifndef SCID_COMMON_H
 #define SCID_COMMON_H
 
-#include <cstddef>
-#if defined(_MSC_VER) && _MSC_VER <= 1600
-typedef unsigned __int8   uint8_t;
-typedef unsigned __int16  uint16_t;
-typedef unsigned __int32  uint32_t;
-typedef unsigned __int64  uint64_t;
-typedef __int32  int32_t;
-#else
-#include <stdint.h>
-#endif // _MSC_VER <= 1600
-
 #include "board_def.h"
 #include "error.h"
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// CONSTANTS:
-
-typedef unsigned short versionT;
-
-// Version: div by 100 for major number, modulo 100 for minor number
-// so 109 = 1.9, 110 = 1.10, etc.
-
-const versionT SCID_VERSION = 400;     // Current file format version = 4.0
-const versionT SCID_OLDEST_VERSION = 300; // Oldest readable file format: 3.0
-
-const char SCID_VERSION_STRING[] = "4.7.1";     // Current Scid version
-const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
-
-const char PGN_SUFFIX[] = ".pgn";
-
-
-//////////////////////////////////////////////////////////////////////
-// ASSERT macro: asserts an expression. Differs from the standard
-//    assert in that it does NOT print the expression (this is a waste,
-//    if an assert fails you can go to the code to see why) and that
-//    it MUST be a statement, not part of a larger expression.
-//    Adapted from the book "Writing Solid Code".
 #include <assert.h>
+#include <cstddef>
+#include <stdint.h>
 #define ASSERT(f) assert(f)
 
 
-// Bit Manipulations
+// Version: div by 100 for major number, modulo 100 for minor number
+// so 109 = 1.9, 110 = 1.10, etc.
+typedef unsigned short versionT;
+const versionT SCID_VERSION = 400;     // Current file format version = 4.0
 
-#define BIT_7(x)            ((x) & 128)
-#define BIT_6(x)            ((x) &  64)
-#define BIT_5(x)            ((x) &  32)
-#define BIT_4(x)            ((x) &  16)
-#define BIT_3(x)            ((x) &   8)
-#define BIT_2(x)            ((x) &   4)
-#define BIT_1(x)            ((x) &   2)
-#define BIT_0(x)            ((x) &   1)
+const char SCID_VERSION_STRING[] = "4.7.1";     // Current Scid version
 
-// Upper or lower 4 bits of a byte, in the range 0..15
-
-#define UPPER_4_BITS(x)     (((x) & 240) >> 4)      // 240 is (15 * 16)
-#define LOWER_4_BITS(x)     ((x) &  15)
-
-//  Upper or lower 12 bits of an integer, in the range 0..4095
-//
-#define UPPER_12_BITS(x)    (((x) & (4096 * 4095)) >> 12)
-#define LOWER_12_BITS(x)    ((x) &  4095)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // TYPE DEFINITIONS
 
 //  General types
-
 typedef unsigned char byte;      //  8 bit unsigned
 typedef uint16_t ushort;         // 16 bit unsigned
 typedef uint32_t uint;           // 32 bit unsigned
 typedef int32_t  sint;           // 32 bit signed
 
-
-//  compareT: comparison type
-
-typedef signed int    compareT;
-const compareT
-    LESS_THAN = -1,   EQUAL_TO = 0,   GREATER_THAN = 1;
-
 //  Chess Types
 typedef byte                    directionT;  // e.g. UP_LEFT
 typedef byte                    leftDiagT;   // Up-left diagonals
 typedef byte                    rightDiagT;  // Up-right diagonals
-
-// boardT: 64 squares plus two extra squares: one for storing the side
-//   to move as a byte and one for the string terminator, so boards can
-//   be compared using regular string functions:
-typedef pieceT                  boardT [66];
-
-typedef byte                    smallBoardT [32];
-                                    // A more densely packed board, 2 squares
-                                    // per byte.
-
 typedef byte                    castleDirT;  // LEFT or RIGHT
 
-//  Other Small Types
-
-typedef ushort                  statusT;
-
-//  Fixed String Types
-
 typedef char    sanStringT [ 10];   // SAN Move Notation
-
-//  File-related Types
-
-typedef char    fileNameT [512];
-typedef uint    fileLengthT;
 
 enum fileModeT {
     FMODE_None = 0,
@@ -134,7 +59,6 @@ enum fileModeT {
 };
 
 //  Date type: see date.h and date.cpp
-
 typedef uint    dateT;
 
 
@@ -216,45 +140,8 @@ const bool PIECE_IS_SLIDER [8] = {
     false,
 };
 
-// PIECE_VALUE: Piece values, K=1000, Q=9, R=5, B=N=3, P=1
-
-const int PIECE_VALUE [MAX_PIECE_TYPES] = {
-    0,
-    100, 9, 5, 3, 3, 1,
-    0, 0,
-    -100, -9, -5, -3, -3, -1,
-    0, 3, -3
-};
-
-//
-// INLINE FUNCTIONS for pieces
-//
-
-
-  inline bool
-piece_IsWhite(pieceT p)  { return (p>=WK && p<=WP); }
-
-  inline bool
-piece_IsBlack(pieceT p)  { return (p>=BK && p<=BP); }
-
   inline bool
 piece_IsKing(pieceT p)  { return (piece_Type(p) == KING); }
-
-  inline bool
-piece_IsQueen(pieceT p)  { return (piece_Type(p) == QUEEN); }
-
-  inline bool
-piece_IsRook(pieceT p)  { return (piece_Type(p) == ROOK); }
-
-  inline bool
-piece_IsBishop(pieceT p)  { return (piece_Type(p) == BISHOP); }
-
-  inline bool
-piece_IsKnight(pieceT p)  { return (piece_Type(p) == KNIGHT); }
-
-  inline bool
-piece_IsPawn(pieceT p)  { return (piece_Type(p) == PAWN); }
-
   inline bool
 piece_IsSlider(pieceT p) { return PIECE_IS_SLIDER[piece_Type(p)]; }
 
@@ -271,9 +158,6 @@ piece_FromChar(int x)
     default:  return EMPTY;
     }
 }
-
-inline int
-piece_Value (pieceT p)  { return PIECE_VALUE[p]; }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -415,21 +299,6 @@ square_RankChar (squareT sq)
     return square_Rank(sq) + '1';
 }
 
-  inline void
-square_Print (squareT sq, char * str)
-{
-    if (sq <= H8) {
-        str[0] = square_FyleChar(sq);
-        str[1] = square_RankChar(sq);
-        str[2] = 0;
-    } else if (sq == NULL_SQUARE) {
-        str[0] = 'N'; str[1] = 'S'; str[2] = 0;
-    } else {
-        str[0] = 'X'; str[1] = 'X'; str[2] = 0;
-    }
-    return;
-}
-
 // Directions:
 // Up = 1, Down = 2, Left = 4, Right = 8, UpLeft = 5, UpRight = 9,
 // DownLeft = 6, DownRight = 10
@@ -515,8 +384,8 @@ direction_Delta (directionT dir)
 
 // The starting Board
 //
-  const boardT
-START_BOARD =
+  const pieceT
+START_BOARD[66] =
 {
     WR, WN, WB, WQ, WK, WB, WN, WR,    // A1--H1
     WP, WP, WP, WP, WP, WP, WP, WP,    // A2--H2
@@ -529,7 +398,6 @@ START_BOARD =
     EMPTY, // COLOR_SQUARE
     END_OF_BOARD  // NULL_SQUARE
 };
-
 
 // Square colors for the standard chess board:
 //
@@ -545,17 +413,6 @@ BOARD_SQUARECOLOR[66] = {
     WHITE, BLACK, WHITE, BLACK, WHITE, BLACK, WHITE, BLACK,  // a8-h8
     NOCOLOR, NOCOLOR  // Color square and Null square
 };
-
-  inline int
-board_Compare (const pieceT * b1, const pieceT * b2)
-{
-    for (uint i=0; i < 64; i++) {
-        if (*b1 < *b2) { return -1; }
-        if (*b1 > *b2) { return 1; }
-        b1++; b2++;
-    }
-    return 0;
-}
 
 // square_Adjacent: returns 1 if the two squares are adjacent. Note that
 //    diagonal adjacency is included: a1 and b2 are adjacent.
