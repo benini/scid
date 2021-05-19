@@ -23,8 +23,24 @@ set colorSchemes {
 }
 array set newColors {}
 
+# calculate an average of the colors from a graphic file
+proc avgImgColor { file } {
+    set i 0; set r 0; set g 0; set b 0
+    set textureSize [image height $file]
+    for { set p 2 } { $p < $textureSize } {incr p 4; incr i } {
+        lassign [$file get $p $p] r1 g1 b1
+        incr r $r1
+        incr g $g1
+        incr b $b1
+    }
+    set r [expr int(($r) / $i)]
+    set g [expr int(($g) / $i)]
+    set b [expr int(($b) / $i)]
+    return [ format "#%02x%02x%02x" $r $g $b ]
+}
+
 proc SetBoardTextures {} {
-  global boardfile_dark boardfile_lite lite dark
+  global boardfile_dark boardfile_lite
   # handle cases of old configuration files
   image create photo bgl20 -height 20 -width 20
   image create photo bgd20 -height 20 -width 20
@@ -43,25 +59,6 @@ proc SetBoardTextures {} {
     set z [expr int (ceil ($size / $textureSize))]
     bgl$size copy $boardfile_lite -zoom $z
     bgd$size copy $boardfile_dark -zoom $z
-  }
-  # create colors for coords on the board
-  # try to find an average of the color from the picture
-  # use variable lite and dark from colorschemes
-  set li [list lite $boardfile_lite dark $boardfile_dark ]
-  foreach { col file } $li {
-      if { $file == "emptySquare" } { continue }
-      set i 0; set r 0; set g 0; set b 0
-      set textureSize [image height $file]
-      for { set p 2 } { $p < $textureSize } {incr p 4; incr i } {
-          lassign [$file get $p $p] r1 g1 b1
-          incr r $r1
-          incr g $g1
-          incr b $b1
-      }
-      set r [expr int(($r) / $i)]
-      set g [expr int(($g) / $i)]
-      set b [expr int(($b) / $i)]
-      set $col [ format "#%02x%02x%02x" $r $g $b ]
   }
 }
 
@@ -113,6 +110,10 @@ proc chooseBoardTextures {i} {
   set boardfile_dark ${prefix}-d
   set boardfile_lite ${prefix}-l
   SetBoardTextures
+  # create colors for coords on the board
+  # use variable lite and dark from colorschemes
+  set ::lite [::avgImgColor $boardfile_lite]
+  set ::dark [::avgImgColor $boardfile_dark]
   updateBoard
 }
 
@@ -1612,33 +1613,27 @@ proc ::board::toggleMaterial {w} {
 # use dark and lite from colorscheme as fontcolor:
 #     lite on dark squares and dark on lite squares
 ################################################################################
-proc ::board::drawInnerCoords { w sq c pos } {
+proc ::board::drawInnerCoords { w sq c pos fontsize color} {
     global dark lite
 
-    set pathName ${w}.bd
-    set box [::board::mark::GetBox $pathName $sq 1.0]
+    set box [::board::mark::GetBox $w.bd $sq 1.0]
     set len [expr int([lindex $box 4])]
-    # Use 20% of square for fontsize, but not larger than font_small 
-    set size [expr int($len / 5) ]
-    set fsize [font configure font_Small -size]
-    if { $size > $fsize } { set size $fsize }
     if { [string is digit $c] } {
-        set x   [expr [lindex $box 0] + $pos * ($len - $size)]
-        set y   [expr [lindex $box 1] + $size ]
+        set x   [expr [lindex $box 0] + $pos * ($len - $fontsize)]
+        set y   [expr [lindex $box 1] + $fontsize ]
     } else {
-        set x   [expr [lindex $box 2] - $size ]
-        set y   [expr [lindex $box 3] - $size - $pos * ($len - 2 * $size)]
+        set x   [expr [lindex $box 2] - $fontsize ]
+        set y   [expr [lindex $box 3] - $fontsize - $pos * ($len - 2 * $fontsize)]
         # avoid collision a1 and h8 in the upper right square
         if { $pos && ((! $::board::_flip($w) && $c eq "h") || ($::board::_flip($w) && $c eq "a")) } {
-            set x [expr $x - $size]
+            set x [expr $x - $fontsize]
         }
     }
-    eval $pathName \
-        create text $x $y -fill [expr {($sq + ($sq / 8)) % 2 ? {$dark} : {$lite}}] \
-        {-font [list font_Regular $size ]} \
-        {-text $c}     \
-        {-anchor w} \
-        {-tag  [list mark text coords]}
+    $w.bd create text $x $y -fill $color \
+        -font [list font_Regular $fontsize ] \
+        -text $c \
+        -anchor w \
+        -tag [list mark text coords]
 }
 
 # ::board::innercoords
@@ -1650,44 +1645,39 @@ proc ::board::innercoords {w} {
         $w.bd delete coords
         return
     }
+    # Use 20% of square for fontsize, but not larger than font_small 
+    set fontSize [expr int($::board::_size($w) / 5) ]
+    set size [font configure font_Small -size]
+    if { $fontSize > $size } { set fontSize $size }
+    if { ! $::board::_flip($w) } {
+        set ch_l [list a c e g 1 3 5 7]
+        set ch_d [list b d f h 2 4 6 8]
+        set sq_bl_l [list 0 2 4 6 0 16 32 48]
+        set sq_tr_d [list 56 58 60 62 7 23 39 55]
+        set sq_bl_d [list 1 3 5 7 8 24 40 56]
+        set sq_tr_l [list 57 59 61 63 15 31 47 63]
+    } else {
+        set ch_d [list 1 3 5 7 a c e g]
+        set ch_l [list h f d b 8 6 4 2]
+        set sq_bl_d [list 7 23 39 55 56 58 60 62]
+        set sq_tr_l [list 0 16 32 48 0 2 4 6]
+        set sq_bl_l [list 63 61 59 57 63 47 31 15]
+        set sq_tr_d [list 7 5 3 1 56 40 24 8]
+    }
     if {$::board::_coords($w) >= 3 } {
-        set c 1
-        set inc 1
-        if {$::board::_flip($w)} { set c 8; set inc -1 }
-        for {set i 0} {$i <= 63} {incr i 8} {
-            set x $i
-            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
-            drawInnerCoords ${w} $x $c 0
-            incr c $inc
+        foreach sq $sq_bl_l ch $ch_l {
+            drawInnerCoords $w $sq $ch 0 $fontSize $::lite
         }
-        set i 0
-        set l [list a b c d e f g h]
-        if {$::board::_flip($w)} { set l [list h g f e d c b a] }
-        foreach c $l {
-            set x $i
-            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
-            drawInnerCoords ${w} $x $c 0
-            incr i
+        foreach sq $sq_bl_d ch  $ch_d {
+            drawInnerCoords $w $sq $ch 0 $fontSize $::dark
         }
     }
     if {$::board::_coords($w) == 4 } {
-        set c 1
-        set inc 1
-        if {$::board::_flip($w)} { set c 8; set inc -1 }
-        for {set i 7} {$i <= 63} {incr i 8} {
-            set x $i
-            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
-            drawInnerCoords ${w} $x $c 1
-            incr c $inc
+        foreach sq $sq_tr_l ch $ch_d {
+            drawInnerCoords $w $sq $ch 1 $fontSize $::lite
         }
-        set i 56
-        set l [list a b c d e f g h]
-        if {$::board::_flip($w)} { set l [list h g f e d c b a] }
-        foreach c $l {
-            set x $i
-            if {$::board::_flip($w)} { set x [expr {63 - $i}] }
-            drawInnerCoords ${w} $x $c 1
-            incr i
+        foreach sq $sq_tr_d ch  $ch_l {
+            drawInnerCoords $w $sq $ch 1 $fontSize $::dark
         }
     }
 }
