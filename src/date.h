@@ -16,9 +16,10 @@
 #ifndef SCID_DATE_H
 #define SCID_DATE_H
 
-#include "common.h"
 #include <algorithm>
+#include <cstddef>
 #include <cstdlib>
+#include <stdint.h>
 
 // DATE STORAGE FORMAT:
 // In memory, dates are stored in a 32-bit (4-byte) uint, of which only
@@ -32,15 +33,17 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  CONSTANTS and MACROS:
 
+typedef uint32_t    dateT;
+
 const dateT ZERO_DATE = 0;
 
-const uint  YEAR_SHIFT  = 9;
-const uint  MONTH_SHIFT = 5;
-const uint  DAY_SHIFT   = 0;
+const uint32_t  YEAR_SHIFT  = 9;
+const uint32_t  MONTH_SHIFT = 5;
+const uint32_t  DAY_SHIFT   = 0;
 
 // DAY (31 days) 5 bits (32) , MONTH (12 months) 4 bits (16)
 
-const uint YEAR_MAX = 2047;  // 2^11 - 1
+const uint32_t YEAR_MAX = 2047;  // 2^11 - 1
 
 #define DATE_MAKE(y,m,d) (((y) << YEAR_SHIFT) | ((m) << MONTH_SHIFT) | (d))
 
@@ -48,37 +51,37 @@ const uint YEAR_MAX = 2047;  // 2^11 - 1
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // date_GetYear():
 //      Get the year from a date.
-inline uint
+inline uint32_t
 date_GetYear (dateT date)
 {
-    return (uint) (date >> YEAR_SHIFT);
+    return (uint32_t) (date >> YEAR_SHIFT);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // date_GetMonth():
 //      Get the month from a date.
-inline uint
+inline uint32_t
 date_GetMonth (dateT date)
 {
-    return (uint) ((date >> MONTH_SHIFT) & 15);
+    return (uint32_t) ((date >> MONTH_SHIFT) & 15);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //### date_GetDay():
 //      Get the day of the month from a date.
-inline uint
+inline uint32_t
 date_GetDay (dateT date)
 {
-    return (uint) (date & 31);
+    return (uint32_t) (date & 31);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //### date_GetMonthDay():
 //      Get the month and day; used to check for year-only dates. S.A
-inline uint
+inline uint32_t
 date_GetMonthDay (dateT date)
 {
-    return (uint) (date & 511);
+    return (uint32_t) (date & 511);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,7 +90,7 @@ inline void
 date_DecodeToString (dateT date, char * str)
 {
     ASSERT(str != NULL);
-    uint year, month, day;
+    uint32_t year, month, day;
 
     year = date_GetYear (date);
     month = date_GetMonth (date);
@@ -130,7 +133,7 @@ date_EncodeFromString (const char * str)
     ASSERT(str != NULL);
 
     dateT date;
-    uint year, month, day;
+    uint32_t year, month, day;
 
     // convert year:
     year = std::strtoul(str, NULL, 10);

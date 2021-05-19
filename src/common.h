@@ -58,9 +58,6 @@ enum fileModeT {
     FMODE_Create
 };
 
-//  Date type: see date.h and date.cpp
-typedef uint    dateT;
-
 
 // There are four name types: PLAYER, EVENT, SITE and ROUND tags.
 // Names are accessed through IDs.
