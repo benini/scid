@@ -105,7 +105,7 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	return obj.second;
 }
 
-errorT scidBaseT::Close () {
+void scidBaseT::Close () {
 	ASSERT(inUse);
 
 	for (auto& sortCache : sortCaches_) {
@@ -113,7 +113,7 @@ errorT scidBaseT::Close () {
 	}
 	sortCaches_.clear();
 
-	errorT errIdx = idx->Close();
+	idx->Close();
 	nb_->Clear();
 	codec_ = nullptr;
 
@@ -128,8 +128,6 @@ errorT scidBaseT::Close () {
 	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
 	filters_.clear();
 	inUse = false;
-
-	return errIdx;
 }
 
 
@@ -635,8 +633,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 	//5) Finalize the new database
 	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
 	errorT err_NbWrite = tmp.endTransaction();
-	errorT err_Close = tmp.Close();
-	if (err_Close == OK) err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
+	tmp.Close();
+	auto err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
 	//6) Error: cleanup and report
 	if (err_Header != OK || err_AddGame != OK || err_UserCancel ||
@@ -669,7 +667,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	//8) Remove the old database
-	if (Close() != OK) return ERROR_FileInUse;
+	Close();
 	for (size_t i = 0, n = filenames.size(); i < n; i++) {
 		if (std::remove(filenames[i].c_str()) != 0) return ERROR_CompactRemove;
 	}

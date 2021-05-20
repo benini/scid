@@ -82,7 +82,7 @@ private:
 public:
     Index()  { Init(); }
 
-    errorT Close() { Init(); return OK; }
+    void Close() { Init(); }
 
     const IndexEntry* GetEntry (gamenumT g) const {
         ASSERT(g < GetNumGames());

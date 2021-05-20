@@ -86,7 +86,7 @@ struct scidBaseT {
 		return openHelper(codec, fMode, filename, progress);
 	}
 
-	errorT Close ();
+	void Close ();
 
 	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }

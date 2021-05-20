@@ -89,7 +89,8 @@ UI_res_t sc_base_close(scidBaseT* dbase, UI_handle_t ti, int, const char**) {
 	if (dbase->getFileName() == "<clipbase>") {
 		return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
 	}
-	return UI_Result(ti, dbase->Close());
+	dbase->Close();
+	return UI_Result(ti, OK);
 }
 
 
