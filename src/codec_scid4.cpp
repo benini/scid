@@ -58,7 +58,6 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	auto nb_data = nb.getData();
 	auto& map = std::get<0>(nb_data);
 	auto& names = std::get<1>(nb_data);
-	auto& eloV = std::get<2>(nb_data);
 
 	Filebuf file;
 	if (file.Open(filename, fmode) != OK)
@@ -89,7 +88,6 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	obsolete_maxFreq[NAME_ROUND] = file.ReadThreeBytes();
 	// ***
 
-	eloV.resize(Header_numNames[NAME_PLAYER], 0);
 	for (nameT nt : {NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND}) {
 		names[nt].resize(Header_numNames[nt]);
 		idNumberT id;
@@ -587,9 +585,6 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 
 		if (!validateNameIDs(&ie))
 			return ERROR_CorruptData;
-
-		nb_->AddElo(ie.GetWhite(), ie.GetWhiteElo());
-		nb_->AddElo(ie.GetBlack(), ie.GetBlackElo());
 	}
 	progress.report(1, 1);
 

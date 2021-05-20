@@ -121,7 +121,22 @@ struct scidBaseT {
 
 	/// Return the highest elo of the player (in the database's games)
 	eloT peakElo(idNumberT playerID) const {
-		return getNameBase()->GetElo(playerID);
+		// TODO: this is slow; cache the results
+		eloT res = 0;
+		for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
+			auto const& ie = *getIndexEntry(gnum);
+			if (ie.GetWhite() == playerID) {
+				auto elo = ie.GetWhiteElo();
+				if (elo > res)
+					res = elo;
+			}
+			if (ie.GetBlack() == playerID) {
+				auto elo = ie.GetBlackElo();
+				if (elo > res)
+					res = elo;
+			}
+		}
+		return res;
 	}
 	eloT peakElo(const char* player) const {
 		idNumberT playerID;

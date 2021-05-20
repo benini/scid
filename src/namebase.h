@@ -32,7 +32,6 @@
  */
 class NameBase {
 	std::vector<std::unique_ptr<const char[]>> names_[NUM_NAME_TYPES];
-	std::vector<eloT> eloV_;
 	struct idxCmp {
 		bool operator()(const char* str1, const char* str2) const {
 			// *** Compatibility ***
@@ -55,18 +54,6 @@ class NameBase {
 	std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
 
 public:
-	/**
-	 * A NameBase stores the max ELO for each player. This functions updates
-	 * the max ELO of a player if it's greater than the previous one.
-	 * @param id:  a valid idNumberT corresponding to a NAME_PLAYER name.
-	 * @param elo: the ELO.
-	 */
-	void AddElo(idNumberT id, eloT elo) {
-		ASSERT(id < GetNumNames(NAME_PLAYER));
-		if (elo > eloV_[id])
-			eloV_[id] = elo;
-	}
-
 	/**
 	 * Add a name (string) to the NameBase.
 	 * If the name already exists the corresponding ID is returned.
@@ -100,9 +87,6 @@ public:
 		names_[nt].emplace_back(buf);
 		idx_[nt].emplace_hint(exists, buf, newID);
 
-		if (nt == NAME_PLAYER)
-			eloV_.push_back(0);
-
 		return std::make_pair(OK, newID);
 	}
 
@@ -115,18 +99,8 @@ public:
 	 * @returns references to the NameBase's containers.
 	 * (must be used only to read names from files)
 	 */
-	std::tuple<decltype(idx_)&, decltype(names_)&, decltype(eloV_)&> getData() {
-		return std::tuple<decltype(idx_)&, decltype(names_)&, decltype(eloV_)&>(
-		    idx_, names_, eloV_);
-	}
-
-	/**
-	 * @param id: a valid idNumberT corresponding to a NAME_PLAYER name.
-	 * @returns the max ELO of a player.
-	 */
-	eloT GetElo(idNumberT id) const {
-		ASSERT(id < GetNumNames(NAME_PLAYER));
-		return eloV_[id];
+	auto getData() {
+		return std::tuple<decltype(idx_)&, decltype(names_)&>(idx_, names_);
 	}
 
 	/**

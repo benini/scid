@@ -235,16 +235,6 @@ public:
     const char* GetRoundName (const NameBase* nb) const {
         return nb->GetName (NAME_ROUND, GetRound());
     }
-    eloT GetWhiteElo (const NameBase* nb)  const {
-        eloT r = GetWhiteElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
-        return r;
-    }
-    eloT GetBlackElo (const NameBase* nb) const {
-        eloT r = GetBlackElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
-        return r;
-    }
     byte   GetRating() const;
 
     bool GetStartFlag () const      { return GetFlag(1 << IDX_FLAG_START); }

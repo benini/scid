@@ -91,9 +91,6 @@ public: // ICodecDatabase interface
 		if (auto err = addGameNamesAndData(ie, tags, data.data(), data.size()))
 			return err;
 
-		nb_->AddElo(ie.GetWhite(), ie.GetWhiteElo());
-		nb_->AddElo(ie.GetBlack(), ie.GetBlackElo());
-
 		return dyn_addIndexEntry(ie);
 	}
 
@@ -102,11 +99,6 @@ public: // ICodecDatabase interface
 		IndexEntry ie = ie_src;
 		if (auto err = addGameNamesAndData(ie, tags, data.data(), data.size()))
 			return err;
-
-		// TODO: it is not enough to add the elo, if it has changed and the
-		// previous value was the maximum, it should be recalculated.
-		nb_->AddElo(ie.GetWhite(), ie.GetWhiteElo());
-		nb_->AddElo(ie.GetBlack(), ie.GetBlackElo());
 
 		return dyn_saveIndexEntry(ie, replaced);
 	}
