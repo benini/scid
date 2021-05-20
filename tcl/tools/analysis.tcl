@@ -366,7 +366,7 @@ proc ::enginelist::sort {{type ""}} {
             set engines(list) [lsort -dictionary -index 0 $engines(list)]
         }
         Elo {
-            set engines(list) [lsort -integer -decreasing -index 4 $engines(list)]
+            set engines(list) [lsort -dictionary -decreasing -index 4 $engines(list)]
         }
         Time {
             set engines(list) [lsort -integer -decreasing -index 5 $engines(list)]
@@ -1351,12 +1351,6 @@ proc addAnnotation { {n 1} } {
         set analysis(prevmoves$n)     $analysis(moves$n)
         set analysis(prevscoremate$n) $analysis(scoremate$n)
         set analysis(prevdepth$n)     $analysis(depth$n)
-        
-        # Add score for this position anyway if this is configured
-        #
-        if { $scoreAllMoves } {
-            sc_pos setComment "[sc_pos getComment] $text"
-        }
 
         updateBoard -pgn
     }
@@ -1408,7 +1402,8 @@ proc addAnnotation { {n 1} } {
                     sc_pos addNag "D"
                 }
             }
-            if { $prevmoves != ""} {
+            if { $prevmoves != "" && ( $annotateMoves == "all" || $annotateMoves == "white"  &&  $tomove == "black" ||
+                                       $annotateMoves == "black"  &&  $tomove == "white" )} {
                 sc_var create
                 # Add the starting move
                 sc_move_add [lrange $prevmoves 0 0] $n
