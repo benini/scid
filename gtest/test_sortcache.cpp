@@ -74,12 +74,12 @@ TEST_F(Test_SortCache, select_sortedPosition) {
 		rec[8] = ie->GetEcoCode();
 		rec[9] = RESULT_SORT[ie->GetResult()];
 		rec[10] = ie->GetNumHalfMoves();
-		rec[11] = ie->GetWhiteElo(nb) + ie->GetBlackElo(nb);
+		rec[11] = ie->GetWhiteElo() + ie->GetBlackElo();
 		rec[12] = ie->GetSite(); // NAME COUNTRY
 		rec[13] = ie->GetDeleteFlag() ? 1 : 0;
 		rec[14] = ie->GetEventDate();
-		rec[15] = ie->GetWhiteElo(nb);
-		rec[16] = ie->GetBlackElo(nb);
+		rec[15] = ie->GetWhiteElo();
+		rec[16] = ie->GetBlackElo();
 		rec[17] = ie->GetCommentCount();
 		rec[18] = ie->GetVariationCount();
 		rec[19] = ie->GetNagCount();

@@ -224,41 +224,39 @@ public:
 
 class SearchRangeElo : public SearchRange<eloT> {
 protected:
-	eloT (IndexEntry::* fElo1_) (const NameBase*) const;
-	eloT (IndexEntry::* fElo2_) (const NameBase*) const;
-	const NameBase* nb_;
+	eloT (IndexEntry::*fElo1_)() const;
+	eloT (IndexEntry::*fElo2_)() const;
 
 public:
-	SearchRangeElo(const scidBaseT* base,
-	               const char* range,
-	               eloT (IndexEntry::* f1) (const NameBase*) const,
-	               eloT (IndexEntry::* f2) (const NameBase*) const = 0)
-	: SearchRange<eloT>(base, range, 0), fElo1_(f1), fElo2_(f2) {
-		nb_ = base_->getNameBase();
-	}
+	SearchRangeElo(const scidBaseT* base, const char* range,
+	               eloT (IndexEntry::*f1)() const,
+	               eloT (IndexEntry::*f2)() const = 0)
+	    : SearchRange<eloT>(base, range, 0), fElo1_(f1), fElo2_(f2) {}
 
-	bool operator() (gamenumT gnum) const {
-		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
+	bool operator()(gamenumT gnum) const {
+		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)();
 		long v2 = min_;
-		if (fElo2_ != 0) v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
-		if (v1 < min_ || v1 > max_ || v2 < min_ || v2 > max_) return false;
+		if (fElo2_ != 0)
+			v2 = (base_->getIndexEntry(gnum)->*fElo2_)();
+		if (v1 < min_ || v1 > max_ || v2 < min_ || v2 > max_)
+			return false;
 		return true;
 	}
 };
 
 class SearchRangeEloDiff : public SearchRangeElo {
 public:
-	SearchRangeEloDiff(const scidBaseT* base,
-	                   const char* range,
-	                   eloT (IndexEntry::* f1) (const NameBase*) const,
-	                   eloT (IndexEntry::* f2) (const NameBase*) const)
-	: SearchRangeElo(base, range, f1, f2) {}
+	SearchRangeEloDiff(const scidBaseT* base, const char* range,
+	                   eloT (IndexEntry::*f1)() const,
+	                   eloT (IndexEntry::*f2)() const)
+	    : SearchRangeElo(base, range, f1, f2) {}
 
-	bool operator() (gamenumT gnum) const {
-		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
-		long v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
+	bool operator()(gamenumT gnum) const {
+		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)();
+		long v2 = (base_->getIndexEntry(gnum)->*fElo2_)();
 		long v = v1 - v2;
-		if (v < min_ || v > max_) return false;
+		if (v < min_ || v > max_)
+			return false;
 		return true;
 	}
 };

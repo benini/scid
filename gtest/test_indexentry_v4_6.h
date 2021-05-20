@@ -209,17 +209,7 @@ public:
     }
     resultT GetResult () const { return (VarCounts >> 12); }
     eloT GetWhiteElo () const { return u16_low_12(WhiteElo); }
-    eloT GetWhiteElo (const NameBase* nb)  const {
-        eloT r = GetWhiteElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
-        return r;
-    }
     eloT GetBlackElo () const { return u16_low_12(BlackElo); }
-    eloT GetBlackElo (const NameBase* nb) const {
-        eloT r = GetBlackElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
-        return r;
-    }
     eloT GetElo(colorT col) const {
         if (col == BLACK) return GetBlackElo();
         return GetWhiteElo();
@@ -594,38 +584,6 @@ IndexEntry::Write (T* file, versionT version) const
     }
 
     return OK;
-}
-
-inline byte IndexEntry::GetRating(const NameBase* nb) const {
-    eloT welo = GetWhiteElo();
-    eloT belo = GetBlackElo();
-    if (welo == 0) { welo = nb->GetElo (GetWhite()); }
-    if (belo == 0) { belo = nb->GetElo (GetBlack()); }
-    int rating = static_cast<int>(welo + belo) / 140;
-
-    // Bonus for comments or Nags
-    if (GetCommentCount() > 2 || GetNagCount() > 2) {
-        if (rating < 21) { // Missing elo
-            rating = 40;
-        } else {
-            rating += 6;
-        }
-    }
-
-    // Early draw penalty
-    if (GetResult() == RESULT_Draw) {
-        uint moves = GetNumHalfMoves();
-        if (moves < 80) {
-            rating -= 3;
-            if (moves < 60) {
-                rating -= 2;
-                if (moves < 40) rating -= 2;
-            }
-        }
-    }
-
-    if (rating < 0) return 0;
-    else return static_cast<byte> (rating);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

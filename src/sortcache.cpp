@@ -405,8 +405,8 @@ int SortCache::fullCompare(gamenumT left, gamenumT right) const {
 
 		case SORTING_avgElo:  // Average Elo rating:
 			{
-				int r1 = ie1->GetWhiteElo(nbase_) + ie1->GetBlackElo(nbase_);
-				int r2 = ie2->GetWhiteElo(nbase_) + ie2->GetBlackElo(nbase_);
+				int r1 = ie1->GetWhiteElo() + ie1->GetBlackElo();
+				int r2 = ie2->GetWhiteElo() + ie2->GetBlackElo();
 				res = r1 - r2;
 			}
 			break;
@@ -432,11 +432,11 @@ int SortCache::fullCompare(gamenumT left, gamenumT right) const {
 			break;
 
 		case SORTING_whiteelo:
-			res = (int)ie1->GetWhiteElo(nbase_) - (int)ie2->GetWhiteElo(nbase_);
+			res = (int)ie1->GetWhiteElo() - (int)ie2->GetWhiteElo();
 			break;
 
 		case SORTING_blackelo:
-			res = (int)ie1->GetBlackElo(nbase_) - (int)ie2->GetBlackElo(nbase_);
+			res = (int)ie1->GetBlackElo() - (int)ie2->GetBlackElo();
 			break;
 
 		case SORTING_commentcount:
@@ -535,15 +535,15 @@ uint32_t SortCache::calcHash(gamenumT gameId) {
 				bitsUsed = 16;
 				break;
 			case SORTING_whiteelo:
-				value = ie->GetWhiteElo(nbase_);
+				value = ie->GetWhiteElo();
 				bitsUsed = 16;
 				break;
 			case SORTING_blackelo:
-				value = ie->GetBlackElo(nbase_);
+				value = ie->GetBlackElo();
 				bitsUsed = 16;
 				break;
 			case SORTING_avgElo:
-				value = ie->GetWhiteElo(nbase_) + ie->GetBlackElo(nbase_);
+				value = ie->GetWhiteElo() + ie->GetBlackElo();
 				bitsUsed = 16;
 				break;
 			case SORTING_result:

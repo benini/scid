@@ -491,7 +491,6 @@ const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) c
 
 std::vector<TreeNode> scidBaseT::getTreeStat(const HFilter& filter) const {
 	std::vector<TreeNode> res;
-	auto nb = getNameBase();
 	for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
 		uint ply = filter.get(gnum);
 		if (ply == 0) continue;
@@ -507,7 +506,7 @@ std::vector<TreeNode> scidBaseT::getTreeStat(const HFilter& filter) const {
 		    [move](auto const& stat) { return stat.move == move; });
 
 		auto& node = (it != res.end()) ? *it : res.emplace_back(move);
-		node.add(ie->GetResult(), ie->GetWhiteElo(nb), ie->GetBlackElo(nb),
+		node.add(ie->GetResult(), ie->GetWhiteElo(), ie->GetBlackElo(),
 		         ie->GetYear());
 	}
 
