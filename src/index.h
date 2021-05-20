@@ -63,7 +63,6 @@ private:
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
     VectorChunked<IndexEntry, 16> entries_; // A two-level array of the entire index.
     int nInvalidNameId_;
-    gamenumT seqWrite_;
 
     struct { // one at the start of the index file.
         versionT    version;     // version number. 2 bytes.
@@ -74,7 +73,6 @@ private:
         char        description [SCID_DESC_LENGTH + 1];
         // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
         char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
-        bool        dirty_;      // If true, Header needs rewriting to disk.
     } Header;
 
     friend class CodecSCID4;
@@ -147,9 +145,7 @@ private:
         Header.autoLoad = 1;
         Header.description[0] = 0;
         std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
-        Header.dirty_ = false;
         nInvalidNameId_ = 0;
-        seqWrite_ = 0;
         entries_.resize(0);
     }
 };

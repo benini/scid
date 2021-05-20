@@ -41,6 +41,8 @@ class CodecSCID4 : public ICodecDatabase {
 	Filebuf idxfile_;
 	FilebufAppend gfile_;
 	char gamecache_[1ULL << 17];
+	gamenumT seqWrite_ = 0;
+	bool header_dirty_ = false;
 
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 32,
@@ -103,7 +105,7 @@ public: // ICodecDatabase interface
 			dest[CUSTOM_FLAG_DESC_LENGTH] = 0;
 		}
 
-		idx_->Header.dirty_ = true;
+		header_dirty_ = true;
 		return OK;
 	}
 
@@ -229,7 +231,7 @@ private:
 			return ERROR_NumGamesLimit;
 
 		idx_->addEntry(ie);
-		idx_->Header.dirty_ = true;
+		header_dirty_ = true;
 		return writeEntry(ie, nGames);
 	}
 
@@ -264,16 +266,16 @@ private:
 	errorT readIndex(const Progress& progress);
 
 	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
-		if (idx_->seqWrite_ == 0 || (gnum != idx_->seqWrite_ + 1)) {
+		if (seqWrite_ == 0 || (gnum != seqWrite_ + 1)) {
 			std::streampos pos = gnum;
 			pos = pos * INDEX_ENTRY_SIZE + INDEX_HEADER_SIZE;
 			if (idxfile_.pubseekpos(pos) != pos) {
-				idx_->seqWrite_ = 0;
+				seqWrite_ = 0;
 				return ERROR_FileWrite;
 			}
 		}
 		errorT res = ie.Write(&idxfile_, idx_->Header.version);
-		idx_->seqWrite_ = (res == OK) ? gnum : 0;
+		seqWrite_ = (res == OK) ? gnum : 0;
 		return res;
 	}
 };

@@ -488,12 +488,12 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 }
 
 errorT CodecSCID4::flush() {
-	idx_->seqWrite_ = 0;
+	seqWrite_ = 0;
 	errorT errHeader = OK;
-	if (idx_->Header.dirty_) {
+	if (header_dirty_) {
 		errHeader = writeIndexHeader(idxfile_, idx_->Header);
 		if (errHeader == OK)
-			idx_->Header.dirty_ = false;
+			header_dirty_ = false;
 	}
 	errorT errSync = (idxfile_.pubsync() != 0) ? ERROR_FileWrite : OK;
 	errorT err = (errHeader == OK) ? errSync : errHeader;
