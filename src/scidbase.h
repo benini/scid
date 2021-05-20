@@ -121,23 +121,24 @@ struct scidBaseT {
 
 	/// Return the highest elo of the player (in the database's games)
 	eloT peakElo(idNumberT playerID) const {
-		// TODO: this is slow; cache the results
-		eloT res = 0;
-		for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
-			auto const& ie = *getIndexEntry(gnum);
-			if (ie.GetWhite() == playerID) {
-				auto elo = ie.GetWhiteElo();
-				if (elo > res)
-					res = elo;
-			}
-			if (ie.GetBlack() == playerID) {
-				auto elo = ie.GetBlackElo();
-				if (elo > res)
-					res = elo;
+		if (peakEloCache_.empty()) {
+			const auto maxPlayerID = nb_->GetNumNames(NAME_PLAYER);
+			peakEloCache_.resize(maxPlayerID, 0);
+			auto updateMax = [&](auto id, auto elo) {
+				if (elo > peakEloCache_[id])
+					peakEloCache_[id] = elo;
+			};
+			for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
+				IndexEntry const& ie = *getIndexEntry(gnum);
+				updateMax(ie.GetWhite(), ie.GetWhiteElo());
+				updateMax(ie.GetBlack(), ie.GetBlackElo());
 			}
 		}
-		return res;
+
+		ASSERT(playerID < peakEloCache_.size());
+		return peakEloCache_[playerID];
 	}
+
 	eloT peakElo(const char* player) const {
 		idNumberT playerID;
 		if (getNameBase()->FindExactName(NAME_PLAYER, player, &playerID) == OK)
@@ -426,6 +427,7 @@ private:
 	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
 	std::unique_ptr<gamenumT[]> duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
 	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
+	mutable std::vector<eloT> peakEloCache_;
 
 private:
 	errorT openHelper(ICodecDatabase::Codec dbtype, fileModeT mode,

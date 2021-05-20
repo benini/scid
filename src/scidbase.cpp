@@ -138,6 +138,7 @@ void scidBaseT::clear() {
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
 		nameFreq_[nt].resize(0);
 	}
+	peakEloCache_.clear();
 }
 
 errorT scidBaseT::beginTransaction() {
