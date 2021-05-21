@@ -55,10 +55,6 @@ const char* NAMEBASE_MAGIC = "Scid.sn";
  * @returns OK if successful or an error code.
  */
 errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
-	auto nb_data = nb.getData();
-	auto& map = std::get<0>(nb_data);
-	auto& names = std::get<1>(nb_data);
-
 	Filebuf file;
 	if (file.Open(filename, fmode) != OK)
 		return ERROR_FileOpen;
@@ -89,7 +85,6 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	// ***
 
 	for (nameT nt : {NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND}) {
-		names[nt].resize(Header_numNames[nt]);
 		idNumberT id;
 		std::string prevName;
 		for (idNumberT i = 0; i < Header_numNames[nt]; i++) {
@@ -118,27 +113,15 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 			if (prefix > length)
 				return ERROR_Corrupt;
 
-			char* name = new char[length + 1];
-			std::copy_n(prevName.c_str(), prefix, name);
-			std::streamsize extra_chars = length - prefix;
-			if (extra_chars != file.sgetn(name + prefix, extra_chars)) {
-				delete[] name;
+			prevName.resize(length);
+			const auto new_chars = length - prefix;
+			if (new_chars != file.sgetn(prevName.data() + prefix, new_chars))
 				return ERROR_FileRead;
-			}
-			name[length] = 0;
-			prevName.assign(name, length);
 
-			if (id < Header_numNames[nt] && names[nt][id] == 0) {
-				names[nt][id].reset(name);
-				map[nt].insert(map[nt].end(), std::make_pair(name, id));
-			} else {
-				delete[] name;
+			if (id >= Header_numNames[nt] ||
+			    !nb.insert(prevName.c_str(), length, nt, id))
 				return ERROR_Corrupt;
-			}
 		}
-
-		if (map[nt].size() != names[nt].size())
-			return ERROR_Corrupt;
 	}
 
 	return OK;

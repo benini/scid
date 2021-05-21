@@ -90,18 +90,30 @@ public:
 		return std::make_pair(OK, newID);
 	}
 
+	/// DEPRECATED
+	/// Add a name (string) and its associated id to the NameBase.
+	/// Return false if the name or the id already exists: the NameBase object
+	/// is then no longer valid and should be destroyed.
+	/// The caller should also ensure that before invoking any other object's
+	/// function none of names_[nt] == nullptr.
+	bool insert(const char* name, size_t nameLen, nameT nt, idNumberT id) {
+		if (id >= names_[nt].size())
+			names_[nt].resize(id + size_t{1});
+
+		if (names_[nt][id]) // A name with the same ID already exists
+			return false;
+
+		char* buf = new char[nameLen + 1];
+		std::copy_n(name, nameLen + 1, buf);
+		names_[nt][id].reset(buf);
+		auto it = idx_[nt].emplace_hint(idx_[nt].end(), buf, id);
+		return it->second == id; // Check that the name doesn't already exists
+	}
+
 	/**
 	 * Frees memory, leaving the object empty.
 	 */
 	void Clear() { *this = NameBase(); }
-
-	/**
-	 * @returns references to the NameBase's containers.
-	 * (must be used only to read names from files)
-	 */
-	auto getData() {
-		return std::tuple<decltype(idx_)&, decltype(names_)&>(idx_, names_);
-	}
 
 	/**
 	 * Get the first few matches of a name prefix.
