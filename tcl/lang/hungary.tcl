@@ -1817,7 +1817,7 @@ translate H LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate H Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate H ShowHideCoords {Show/Hide Coord.}
+translate H ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate H ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

@@ -1910,7 +1910,7 @@ translate N LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate N Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate N ShowHideCoords {Show/Hide Coord.}
+translate N ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate N ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

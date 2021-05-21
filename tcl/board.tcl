@@ -133,15 +133,15 @@ proc updateBoardColors { w {choice -1}} {
   set ndark $newColors(dark)
 
   foreach i {wr bn wb bq wk bp} {
-    $w.bd.$i configure -background $ndark
+    $w.bd.b.$i configure -background $ndark
   }
   foreach i {br wn bb wq bk wp} {
-    $w.bd.$i configure -background $nlite
+    $w.bd.b.$i configure -background $nlite
   }
-  $w.bd.bb configure -background $newColors(highcolor)
-  $w.bd.wk configure -background $newColors(bestcolor)
+  $w.bd.b.bb configure -background $newColors(highcolor)
+  $w.bd.b.wk configure -background $newColors(bestcolor)
   foreach i $colors {
-    $w.select.b$i configure -background $newColors($i)
+    $w.bd.select.b$i configure -background $newColors($i)
   }
 
   foreach i {lite dark highcolor bestcolor} {
@@ -169,7 +169,6 @@ proc chooseBoardColors { w {choice -1}} {
   foreach i $colors { set newColors($i) [set $i] }
   set bd $w.bd
   pack [ttk::frame $bd] -side top -expand 1 -anchor w
-  addHorizontalRule $w
   pack [ttk::frame $w.select] -side top -fill x -padx 5
   addHorizontalRule $w
   pack [ttk::frame $w.preset] -side top -fill x
@@ -182,12 +181,13 @@ proc chooseBoardColors { w {choice -1}} {
   foreach psize $::boardSizes {
     if {$psize >= 40} { break }
   }
+  ttk::frame $bd.b
   set column 0
   foreach j {r n b q k p} {
-    ttk::label $bd.w$j -image w${j}$psize
-    ttk::label $bd.b$j -image b${j}$psize
-    grid $bd.b$j -row 0 -column $column
-    grid $bd.w$j -row 1 -column $column
+    ttk::label $bd.b.w$j -image w${j}$psize
+    ttk::label $bd.b.b$j -image b${j}$psize
+    grid $bd.b.b$j -row 0 -column $column
+    grid $bd.b.w$j -row 1 -column $column
     incr column
   }
   ttk::frame $bd.p
@@ -202,11 +202,26 @@ proc chooseBoardColors { w {choice -1}} {
   pack $bd.p.lb $bd.p.pieces -side left -anchor w -padx 5
   pack $bd.s.lb $bd.s.auto $bd.s.size -side left -anchor w -padx 5
   ttk::label $bd.empty -text "  "
-  grid $bd.empty -row 0 -column 7
-  grid $bd.p -row 0 -column 8
-  grid $bd.s -row 1 -column 8
+  grid $bd.b -row 0 -column 0 -rowspan 2
+  grid $bd.p -row 0 -column 8 -sticky e
+  grid $bd.s -row 1 -column 8 -sticky e
+  #add coords menu
+  ttk::frame $bd.c
+  menu $bd.c.coordsmenu -borderwidth 1
+  ttk::menubutton $bd.c.coords -menu $bd.c.coordsmenu
+  ttk::label $bd.c.lc -text [tr ShowHideCoords]
+  foreach { i icon } { 0 tb_coords_no 1 tb_coords_small 2 tb_coords_all 3 tb_coords_in 4 tb_coords_inall } {
+      if { $i == $::boardCoords } { $bd.c.coords configure -image $icon }
+      $bd.c.coordsmenu add command -image $icon -command "set ::boardCoords $i
+                       ::board::coords .main.board $i
+                       ::board::resize .main.board redraw
+                       $bd.c.coords configure -image $icon"
+  }
+  pack $bd.c.lc $bd.c.coords -side left -anchor w -padx 5
+  grid $bd.c -row 2 -column 8 -sticky ne
 
-  set f $w.select
+  ttk::frame $bd.select
+  set f $bd.select
   foreach row {0 1 0 1} column {0 0 2 2} c {
     lite dark highcolor bestcolor
   } n {
@@ -220,6 +235,7 @@ proc chooseBoardColors { w {choice -1}} {
     grid $f.b$c -row $row -column $column
     grid $f.l$c -row $row -column [expr {$column + 1} ] -sticky w
   }
+  grid $bd.select -row 2 -column 0 -columnspan 8 -sticky w
 
   # Border width option:
   set f $w.border
@@ -245,15 +261,14 @@ proc chooseBoardColors { w {choice -1}} {
     ttk::label $f.bdark -image bp$psize -background [lindex $list 2]
     ttk::label $f.wlite -image wp$psize -background [lindex $list 1]
     ttk::label $f.wdark -image wp$psize -background [lindex $list 2]
-    ttk::button $f.select -text [expr {$count + 1}] -command "updateBoardColors $w $count ; \
+    set fcom "updateBoardColors $w $count ; \
         set ::boardfile_dark emptySquare ; \
         set ::boardfile_lite emptySquare ; \
-        ::SetBoardTextures "
+        ::SetBoardTextures
+        ::board::innercoords .main.board"
+      ttk::button $f.select -text [expr {$count + 1}] -command $fcom
     foreach i {blite bdark wlite wdark} {
-      bind $f.$i <1> "updateBoardColors $w $count ; \
-          set ::boardfile_dark emptySquare ; \
-          set ::boardfile_lite emptySquare ; \
-          ::SetBoardTextures "
+      bind $f.$i <1> $fcom
     }
     grid $f.blite -row 0 -column 0 -sticky e
     grid $f.bdark -row 0 -column 1 -sticky w
@@ -281,8 +296,10 @@ proc chooseBoardColors { w {choice -1}} {
     $f.c create image $psize 0 -image wp$psize -anchor nw
     $f.c create image 0 $psize -image wp$psize -anchor nw
     $f.c create image $psize $psize -image bp$psize -anchor nw
-    ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardTextures $count"
-    bind $f.c <1> "chooseBoardTextures $count"
+    set fcom "chooseBoardTextures $count
+        ::board::innercoords .main.board"
+    ttk::button $f.select -text [expr {$count + 1}] -command $fcom
+    bind $f.c <1> $fcom
     pack $f.c $f.select -side top
 
     incr count
@@ -555,11 +572,9 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set m [menu $w.menu -bg white -font font_Regular]
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
-  $m add command -label "  [tr ShowHideCoords]" -image tb_BD_Coords -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
   $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
-  set ${varname}(tb_BD_Coords) "::board::coords $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
@@ -672,6 +687,7 @@ proc ::board::resize {w psize} {
   # resize the material canvas
   $w.mat configure -height $bsize
   
+  ::board::coords $w $::board::_coords($w)
   ::board::update $w
   
   return $psize
@@ -1422,7 +1438,7 @@ proc ::board::update {w {board ""} {animate 0}} {
     $w.bd delete p$sq
     $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$sq
   }
-  ::board::innercoords $w
+  $w.bd raise coords
 
   # Update side-to-move icon:
   ::board::sideToMove_ $w [string index $::board::_data($w) 65]
@@ -1527,6 +1543,7 @@ proc ::board::flip {w {newstate -1}} {
     }
   }
   ::board::flipNames_ $w $flip
+  ::board::coords $w $::board::_coords($w)
   ::board::update $w
   return $w
 }
@@ -1633,7 +1650,7 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
         -font [list font_Regular $fontsize ] \
         -text $c \
         -anchor w \
-        -tag [list mark text coords]
+        -tag coords
 }
 
 # ::board::innercoords
@@ -1641,10 +1658,8 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
 #   0 (no coords), 1 (left and bottom beside board ), 2 (all sides beside board),
 #   3 (left and bottom, on board ), 4 (all sides on board)
 proc ::board::innercoords {w} {
-    if {$::board::_coords($w) < 3 } {
-        $w.bd delete coords
-        return
-    }
+    $w.bd delete coords
+    if {$::board::_coords($w) < 3 } { return }
     # Use 20% of square for fontsize, but not larger than font_small 
     set fontSize [expr int($::board::_size($w) / 5) ]
     set size [font configure font_Small -size]

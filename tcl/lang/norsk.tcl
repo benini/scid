@@ -2254,7 +2254,7 @@ translate O LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate O Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate O ShowHideCoords {Show/Hide Coord.}
+translate O ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate O ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

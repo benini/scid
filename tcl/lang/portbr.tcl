@@ -1671,7 +1671,7 @@ translate B Random {Aleatorio}
 translate B BackToMainline {Voltar para linha principal}
 translate B LeaveVariant {Deixar variante}
 translate B Autoplay {Jogo automatico}
-translate B ShowHideCoords {Exibir/Ocultar Coord.}
+translate B ShowHideCoords {Coord.}
 translate B ShowHideMaterial {Exibir/Ocultar Material}
 translate B FullScreen {Tela Cheia}
 translate B FilterStatistic {Estatisticas de Filtro}

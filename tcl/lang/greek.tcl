@@ -1822,7 +1822,7 @@ translate G LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate G Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate G ShowHideCoords {Show/Hide Coord.}
+translate G ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate G ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

@@ -1748,7 +1748,7 @@ translate E Random {Random}
 translate E BackToMainline {Go back to mainline}
 translate E LeaveVariant {Leave variant}
 translate E Autoplay {Autoplay}
-translate E ShowHideCoords {Show/Hide Coord.}
+translate E ShowHideCoords {Coord.}
 translate E ShowHideMaterial {Show/Hide Material}
 translate E FullScreen {Full Screen}
 translate E FilterStatistic {Filter Statistics}

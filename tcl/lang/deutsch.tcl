@@ -171,7 +171,7 @@ menuText D ToolsAnalysis "Analyse-Engine..." 0 \
   {Schachanalyse-Programm starten/beenden}
 menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \
   {Schachanalyse-Programm Nr.2 starten/beenden}
-menuText D ToolsCross "Kreuztabelle" 0 {Kreuztabelle für diese Partie anzeigen}
+menuText D ToolsCross "Turniertabelle" 0 {Turniertabelle für diese Partie anzeigen}
 menuText D ToolsEmail "E-Mail-Manager" 7 \
   {E-Mail-Manager öffnen/schließen}
 menuText D ToolsFilterGraph "Rel. Filtergrafik" 0 \
@@ -730,7 +730,7 @@ menuText D CrosstabFile "Datei" 0
 menuText D CrosstabFileText "Ausgabe in Textdatei..." 11
 menuText D CrosstabFileHtml "Ausgabe in HTML-Datei..." 11
 menuText D CrosstabFileLaTeX "Ausgabe in LaTeX-Datei..." 11
-menuText D CrosstabFileClose "Kreuztabelle schließen" 0
+menuText D CrosstabFileClose "Turniertabelle schließen" 0
 menuText D CrosstabEdit "Bearbeiten" 0
 menuText D CrosstabEditEvent "Ereignis" 0
 menuText D CrosstabEditSite "Ort" 0
@@ -757,7 +757,7 @@ menuText D CrosstabColor "Farben" 0
 menuText D CrosstabColorPlain "Text" 0
 menuText D CrosstabColorHyper "Hypertext" 0
 menuText D CrosstabHelp "Hilfe" 0
-menuText D CrosstabHelpCross "Kreuztabelle-Hilfe" 0
+menuText D CrosstabHelpCross "Turniertabelle-Hilfe" 0
 menuText D CrosstabHelpIndex "Index" 0
 translate D SetFilter {Filter setzen}
 translate D AddToFilter {Zum Filter hinzufügen}
@@ -1724,7 +1724,7 @@ translate D Random {Zufällig}
 translate D BackToMainline {Zurück zur Hauptvariante}
 translate D LeaveVariant {Variante verlassen}
 translate D Autoplay {Vorspielen}
-translate D ShowHideCoords {Beschriftung ein/aus}
+translate D ShowHideCoords {Koordinaten}
 translate D ShowHideMaterial {Material ein/aus}
 translate D FullScreen {Vollbild}
 translate D FilterStatistic {Filter Statistik}
@@ -1983,7 +1983,7 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a PTracker><b>Figurenverteilung</b></a></li>
 <li><a Graphs><b>Grafik</b>-Fenster</a></li>
 <li><a Comment><b>Kommentareditor</b></a></li>
-<li><a Crosstable><b>Kreuztabellen</b>-Fenster</a></li>
+<li><a Crosstable><b>Turniertabellen</b>-Fenster</a></li>
 <li><a GameList><b>Partieliste</b>-Fenster</a></li>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
@@ -2113,7 +2113,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a Annotating>Kommentieren</a></li>
 <li><a Compact>Komprimieren (Datenbank)</a></li>
 <li><a Author>Kontaktinformation</a></li>
-<li><a Crosstable>Kreuztabellen</a></li>
+<li><a Crosstable>Turniertabellen</a></li>
 <li><a Guide>Kurzanleitung für Scid</a></li>
 </ul>
 
@@ -2650,8 +2650,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     im <a Analysis>Analysefenster</a> darstellt.</li>
 <li><menu>Analyse-Engine #2</menu>: Startet/beendet eine zweite
     "Schachanlyse-Engine".</li>
-<li><menu>Kreuztabelle</menu>: Erstellt eine
-    Turnier-<a Crosstable>Kreuztabelle</a> für die aktuelle Partie. </li>
+<li><menu>Turniertabelle</menu>: Erstellt eine
+    Turnier-<a Crosstable>Turniertabelle</a> für die aktuelle Partie. </li>
 <li><menu>E-Mail-Manager</menu>: Öffnet/schließt den <a Email>E-Mail-Manager</a>
     für Fernschachpartien.</li>
 <br>
@@ -3420,12 +3420,12 @@ zeichnet einen roten Pfeil von c3 nach d5 und einen blauen von c4 nach d5.
 ###########################
 ### Crosstable window help:
 
-set helpTitle(D,Crosstable) "Kreuztabelle"
-set helpText(D,Crosstable) {<h1>Das Kreuztabellenfenster</h1>
+set helpTitle(D,Crosstable) "Turniertabelle"
+set helpText(D,Crosstable) {<h1>Das Turniertabellen-Fenster</h1>
 <p>
-Das Kreuztabellenfenster zeigt die Turnierkreuztabelle zur aktuellen
+Das Turniertabellen-Fenster zeigt die Turniertabelle zur aktuellen
 Partie. Jedesmal, wenn sie das Fenster aktualisieren (indem Sie den
-"Aktualisieren"-Schalter anklicken, im Kreuztabellenfenster die
+"Aktualisieren"-Schalter anklicken, im Turniertabellen-Fenster die
 [Eingabe]-Taste drücken oder im <a MainWindow>Haupt</a>- oder
 <a GameList>Partielisten</a>-Fenster die Tastenkombination
 <b>[Strg]-[Umschalt]-X</b> betätigen), sucht Scid alle Partien
@@ -3438,13 +3438,13 @@ enthält, wird als Partie dieses Turniers betrachtet.
 </p>
 <p>
 Ein Einfachklick mit der linken Maustaste auf irgendein Ergebnis in der
-Kreuztabelle lädt die entsprechende Partie.
+Turniertabelle lädt die entsprechende Partie.
 Sie können alle Partien des Turniers mit dem Schalter
-<b>Zum Filter addieren</b> des Kreuztabellenfensters zum
+<b>Zum Filter addieren</b> des Turniertabellen-Fensters zum
 <a Searches Filter>Filter</a> hinzufügen.
 </p>
 
-<h4>Menüs des Kreuztabellenfensters</h4>
+<h4>Menüs des Turniertabellen-Fensters</h4>
 <p>
 Im <menu>Datei</menu>-Menü können Sie die aktuelle Tabelle im Text-,
 LaTeX- oder HTML-Format in eine Datei ausgeben.
@@ -3462,7 +3462,7 @@ ist <b>Automatisch</b>, was für jedes Turnier das beste Format auswählt.
 </p>
 <p>
 Beachten Sie, daß Scid den <b>Runden</b>-Eintrag jeder Partie verwendet,
-um eine Kreuztabelle nach Schweizer System zu erstellen, Sie werden daher
+um eine Turniertabelle nach Schweizer System zu erstellen, Sie werden daher
 keine Partien in der Schweizer-System-Tabelle sehen, wenn sie keine
 numerischen Runden-Angaben haben:  1, 2, 3, etc.
 </p>
@@ -3484,15 +3484,15 @@ nach Punkten.
 </p>
 <p>
 Das <menu>Farben</menu>-Menü ermöglicht es Ihnen, Farbausgabe (Hypertext)
-ein- oder auszuschalten. Da es sehr zeitaufwendig ist, große Kreuztabellen
+ein- oder auszuschalten. Da es sehr zeitaufwendig ist, große Turniertabellen
 in HTML zu formatieren und auszugeben, wird Ihnen die Option <b>Text</b>
 bei großen Turnieren eine Menge Zeit einsparen.
 Allerdings können Sie im Text-Modus keine Spieler oder Partien anklicken.
 </p>
 
-<h4>Dubletten in Kreuztabellen</h4>
+<h4>Dubletten in Turniertabellen</h4>
 <p>
-Um sinnvolle Resultate mit der Kreuztabelle zu erzielen, sollten Sie
+Um sinnvolle Resultate mit der Turniertabelle zu erzielen, sollten Sie
 Dubletten zum Löschen markieren, und Ihre Partien sollten eine
 einheitliche Schreibweise für Spieler-, Orts- und Turniernamen haben.
 Zu Hilfen beim Löschen der Dubletten und Editieren (oder Überprüfen
@@ -3500,7 +3500,7 @@ der Schreibweisen) von Spieler-, Turnier-, Ortsnamen siehe die Seite
 <a Maintenance>Datenbank-Wartung</a>.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.1, Dezember 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, Mai 2021)</footer></p>
 }
 
 
@@ -4108,7 +4108,7 @@ set helpText(D,PInfo) {<h1>Die Spieler-Information</h1>
 <p>
 Das Fenster <term>Spieler-Information</term> wird jedesmal aufgebaut
 oder aktualisiert, wenn Sie im Informationsbereich (unterhalb des
-Schachbretts) oder im <a Crosstable>Kreuztabellen</a>-Fenster mit der
+Schachbretts) oder im <a Crosstable>Turniertabellen</a>-Fenster mit der
 linken Maustaste auf einen Spielernamen klicken.
 </p>
 <p>
@@ -4301,10 +4301,10 @@ um das Sortierkriterium zu ändern.
 Um die erste Partie eines der aufgeführten Turniere zu laden, klicken
 Sie einfach mit der linken Maustaste, wenn die entsprechende Zeile
 hervorgehoben ist. Damit wird auch das
-<a Crosstable>Kreuztabellen</a>-Fenster aktualisiert, falls es geöffnet
+<a Crosstable>Turniertabellen</a>-Fenster aktualisiert, falls es geöffnet
 ist.
 Wenn Sie statt dessen die rechte Maustaste drücken, wird die Partie
-geladen und das Kreuztabellenfenster geöffnet, auch wenn es vorher
+geladen und das Turniertabellen-Fenster geöffnet, auch wenn es vorher
 geschlossen war.
 </p>
 <p>
@@ -4972,7 +4972,7 @@ berichtigt.
 <p>
 Die Schreibkorrekturdatei hat einen weiteren Nutzen: wenn sie geladen
 ist, werden ihre Spielerdaten genutzt, um die Fenster
-<a PInfo>Spielerinformation</a> und <a Crosstable>Kreuztabelle</a>
+<a PInfo>Spielerinformation</a> und <a Crosstable>Turniertabelle</a>
 zu erweitern: Sie sehen dann die FIDE-Titel (<b>gm</b> = Internationaler
 Großmeister, <b>im</b> = Internationaler Meister etc.) und
 Länderinformationen zu jedem Spieler, der in der Datei enthalten ist.
@@ -5509,10 +5509,10 @@ werden, und Sie können alle drei individuell anpassen. Sie heißen
 <p>
 Der feste Zeichensatz sollte ein Zeichensatz mit fester Breite
 (nicht-proportional) sein. Er wird für den <a Tree>Zugbaum</a> und die
-<a Crosstable>Kreuztabelle</a> verwendet.
+<a Crosstable>Turniertabelle</a> verwendet.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.6.21, November 2007)</footer></p>
+<p><footer>(Aktualisiert: Scid 4.7, Mai 2021)</footer></p>
 }
 
 

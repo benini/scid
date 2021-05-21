@@ -1718,7 +1718,7 @@ translate I LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate I Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate I ShowHideCoords {Show/Hide Coord.}
+translate I ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate I ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

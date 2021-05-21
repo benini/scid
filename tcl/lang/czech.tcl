@@ -1770,7 +1770,7 @@ translate C LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate C Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate C ShowHideCoords {Show/Hide Coord.}
+translate C ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate C ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

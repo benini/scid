@@ -1715,7 +1715,7 @@ translate R Random {Случайный}
 translate R BackToMainline {Вернуться к основной линии}
 translate R LeaveVariant {Покинуть вариант}
 translate R Autoplay {Автоходы}
-translate R ShowHideCoords {Показать координаты}
+translate R ShowHideCoords {координаты}
 translate R ShowHideMaterial {Показать материал}
 translate R FullScreen {На весь экран}
 translate R FilterStatistic {Статистика фильтра}

@@ -1782,7 +1782,7 @@ translate U LeaveVariant {Leave variant}
 # ====== TODO To be translated ======
 translate U Autoplay {Autoplay}
 # ====== TODO To be translated ======
-translate U ShowHideCoords {Show/Hide Coord.}
+translate U ShowHideCoords {Coord.}
 # ====== TODO To be translated ======
 translate U ShowHideMaterial {Show/Hide Material}
 # ====== TODO To be translated ======

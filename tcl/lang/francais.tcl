@@ -1715,7 +1715,7 @@ translate F Random {Aléatoire}
 translate F BackToMainline {Revenir à la ligne principale}
 translate F LeaveVariant {Quitter la variante}
 translate F Autoplay {Jeu automatique}
-translate F ShowHideCoords {Afficher/Masquer Coord.}
+translate F ShowHideCoords {Coord.}
 translate F ShowHideMaterial {Afficher/Masquer matériel}
 translate F FullScreen {Plein écran}
 # ====== TODO To be translated ======
