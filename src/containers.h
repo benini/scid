@@ -140,6 +140,24 @@ public:
 		return 1 + (~pos & low_mask);
 	}
 
+	template <typename TErrorFn>
+	auto appendContiguous(const T* src, size_t length, TErrorFn offsetError) {
+		const auto capacity = this->capacity();
+		auto offset = size();
+		if (capacity - offset < length) // Doesn't fit in the current chunk
+			offset = capacity;
+
+		auto err = offsetError(offset);
+		if (err) {
+			offset = 0;
+		} else {
+			resize(offset + length);
+			assert(contiguous(offset) >= length);
+			std::copy_n(src, length, &operator[](offset));
+		}
+		return std::make_pair(err, offset);
+	}
+
 	void push_back(const T& e) {
 		size_t idx = size_;
 		resize(size_ + 1);
