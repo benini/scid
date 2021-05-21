@@ -19,6 +19,7 @@
 #ifndef CONTAINERS_H
 #define CONTAINERS_H
 
+#include <algorithm>
 #include <cassert>
 #include <vector>
 
@@ -138,6 +139,38 @@ public:
 	size_t contiguous(size_t pos) const {
 		assert(pos < size());
 		return 1 + (~pos & low_mask);
+	}
+
+	/// Returns the next offset in the container where at least @e nElements
+	/// can be inserted contiguously
+	size_t next_contiguous(size_t nElements) const {
+		const auto offset = size();
+		const auto capacity = this->capacity();
+		return capacity - offset < nElements // Doesn't fit in the current chunk
+		           ? capacity
+		           : offset;
+	}
+
+	/// Append elements to the container
+	/// @param src: an array of T objects
+	/// @param srcSize: the number of elements in the array
+	/// @param offset: a value >= size() where the new elements can be inserted
+	///                contiguously
+	void append(const T* src, size_t srcSize, size_t offset) {
+		assert(offset >= size());
+		resize(offset + srcSize);
+		assert(contiguous(offset) >= srcSize);
+		std::copy_n(src, srcSize, &operator[](offset));
+	}
+
+	/// Append elements to the container
+	/// @param src: an array of T objects
+	/// @param srcSize: the number of elements in the array
+	/// @return: a pointer to the first inserted element
+	const T* append(const T* src, size_t srcSize) {
+		const auto offset = next_contiguous(srcSize);
+		append(src, srcSize, offset);
+		return &operator[](offset);
 	}
 
 	void push_back(const T& e) {

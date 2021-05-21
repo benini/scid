@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017  Fulvio Benini
+ * Copyright (C) 2016-2021  Fulvio Benini
 
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -125,16 +125,14 @@ public: // ICodecDatabase interface
 	}
 
 private:
-	/**
-	 * Stores the data of a game into memory.
-	 * @param src:    valid pointer to a buffer that contains the game data
-	 *                (encoded in native format).
-	 * @param length: the length of the buffer @p src (in bytes).
-	 * @returns
-	 * - on success, a @e std::pair containing OK and the offset of the stored
-	 * data (usable to retrieve the data with getGameData()).
-	 * - on failure, a @e std::pair containing an error code and 0.
-	 */
+	/// Stores the data of a game into memory.
+	/// @param src:    valid pointer to a buffer that contains the game data
+	///                (encoded in native format).
+	/// @param length: the length of the buffer @p src (in bytes).
+	/// @returns
+	/// - on success, a @e std::pair containing OK and the offset of the stored
+	/// data (usable to retrieve the data with getGameData()).
+	/// - on failure, a @e std::pair containing an error code and 0.
 	std::pair<errorT, uint64_t> dyn_addGameData(const byte* src,
 	                                            size_t length) {
 		ASSERT(src != 0);
@@ -142,16 +140,11 @@ private:
 		if (length >= LIMIT_GAMELEN)
 			return std::make_pair(ERROR_GameLengthLimit, 0);
 
-		auto offset = v_.size();
-		auto capacity = v_.capacity();
-		if (capacity - offset < length) // Doesn't fit in the current chunk
-			offset = capacity;
+		const auto offset = v_.next_contiguous(length);
 		if (offset >= LIMIT_GAMEOFFSET)
 			return std::make_pair(ERROR_OffsetLimit, 0);
 
-		v_.resize(offset + length);
-		ASSERT(v_.contiguous(offset) >= length);
-		std::copy_n(src, length, &v_[offset]);
+		v_.append(src, length, offset);
 		return {OK, offset};
 	}
 
