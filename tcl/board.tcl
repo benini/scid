@@ -245,15 +245,14 @@ proc chooseBoardColors { w {choice -1}} {
     ttk::label $f.bdark -image bp$psize -background [lindex $list 2]
     ttk::label $f.wlite -image wp$psize -background [lindex $list 1]
     ttk::label $f.wdark -image wp$psize -background [lindex $list 2]
-    ttk::button $f.select -text [expr {$count + 1}] -command "updateBoardColors $w $count ; \
+    set fcom "updateBoardColors $w $count ; \
         set ::boardfile_dark emptySquare ; \
         set ::boardfile_lite emptySquare ; \
-        ::SetBoardTextures "
+        ::SetBoardTextures
+        ::board::innercoords .main.board"
+    ttk::button $f.select -text [expr {$count + 1}] -command $fcom
     foreach i {blite bdark wlite wdark} {
-      bind $f.$i <1> "updateBoardColors $w $count ; \
-          set ::boardfile_dark emptySquare ; \
-          set ::boardfile_lite emptySquare ; \
-          ::SetBoardTextures "
+      bind $f.$i <1> $fcom
     }
     grid $f.blite -row 0 -column 0 -sticky e
     grid $f.bdark -row 0 -column 1 -sticky w
@@ -281,8 +280,10 @@ proc chooseBoardColors { w {choice -1}} {
     $f.c create image $psize 0 -image wp$psize -anchor nw
     $f.c create image 0 $psize -image wp$psize -anchor nw
     $f.c create image $psize $psize -image bp$psize -anchor nw
-    ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardTextures $count"
-    bind $f.c <1> "chooseBoardTextures $count"
+    set fcom "chooseBoardTextures $count
+        ::board::innercoords .main.board"
+    ttk::button $f.select -text [expr {$count + 1}] -command $fcom
+    bind $f.c <1> $fcom
     pack $f.c $f.select -side top
 
     incr count
