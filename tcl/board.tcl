@@ -672,6 +672,7 @@ proc ::board::resize {w psize} {
   # resize the material canvas
   $w.mat configure -height $bsize
   
+  ::board::coords $w $::board::_coords($w)
   ::board::update $w
   
   return $psize
@@ -1422,7 +1423,7 @@ proc ::board::update {w {board ""} {animate 0}} {
     $w.bd delete p$sq
     $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$sq
   }
-  ::board::innercoords $w
+  $w.bd raise coords
 
   # Update side-to-move icon:
   ::board::sideToMove_ $w [string index $::board::_data($w) 65]
@@ -1527,6 +1528,7 @@ proc ::board::flip {w {newstate -1}} {
     }
   }
   ::board::flipNames_ $w $flip
+  ::board::coords $w $::board::_coords($w)
   ::board::update $w
   return $w
 }
@@ -1633,7 +1635,7 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
         -font [list font_Regular $fontsize ] \
         -text $c \
         -anchor w \
-        -tag [list mark text coords]
+        -tag coords
 }
 
 # ::board::innercoords
@@ -1641,8 +1643,8 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
 #   0 (no coords), 1 (left and bottom beside board ), 2 (all sides beside board),
 #   3 (left and bottom, on board ), 4 (all sides on board)
 proc ::board::innercoords {w} {
+    $w.bd delete coords
     if {$::board::_coords($w) < 3 } {
-        $w.bd delete coords
         return
     }
     # Use 20% of square for fontsize, but not larger than font_small 
