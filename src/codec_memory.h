@@ -142,9 +142,17 @@ private:
 		if (length >= LIMIT_GAMELEN)
 			return std::make_pair(ERROR_GameLengthLimit, 0);
 
-		return v_.appendContiguous(src, length, [](auto offset) {
-			return offset >= LIMIT_GAMEOFFSET ? ERROR_OffsetLimit : OK;
-		});
+		auto offset = v_.size();
+		auto capacity = v_.capacity();
+		if (capacity - offset < length) // Doesn't fit in the current chunk
+			offset = capacity;
+		if (offset >= LIMIT_GAMEOFFSET)
+			return std::make_pair(ERROR_OffsetLimit, 0);
+
+		v_.resize(offset + length);
+		ASSERT(v_.contiguous(offset) >= length);
+		std::copy_n(src, length, &v_[offset]);
+		return {OK, offset};
 	}
 
 	/**
