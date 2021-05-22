@@ -123,7 +123,9 @@ public:
     /**
      * Header getter functions
      */
-    gamenumT    GetNumGames ()    const { return Header.numGames; }
+    gamenumT GetNumGames() const {
+        return static_cast<gamenumT>(entries_.size());
+    }
     versionT    GetVersion ()     const { return Header.version; }
 
     void addEntry(const IndexEntry& ie) {

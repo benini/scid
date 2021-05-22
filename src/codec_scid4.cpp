@@ -285,7 +285,8 @@ errorT readIndexHeader(FileT& indexFile, fileModeT fmode, HeaderT& header) {
 /// @param header:    reference to the object containing the header data.
 /// @returns OK if successful or an error code.
 template <typename FileT, typename HeaderT>
-errorT writeIndexHeader(FileT& indexFile, HeaderT& Header) {
+errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
+                        gamenumT nGames) {
 	if (indexFile.pubseekpos(0) != std::streampos(0))
 		return ERROR_FileWrite;
 
@@ -293,7 +294,7 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT& Header) {
 	n += indexFile.sputn(INDEX_MAGIC, 8);
 	n += indexFile.WriteTwoBytes(Header.version);
 	n += indexFile.WriteFourBytes(Header.baseType);
-	n += indexFile.WriteThreeBytes(Header.numGames);
+	n += indexFile.WriteThreeBytes(nGames);
 	n += indexFile.WriteThreeBytes(Header.autoLoad);
 	n += indexFile.sputn(Header.description, SCID_DESC_LENGTH + 1);
 	for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
@@ -448,7 +449,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			err = idxfile_.Open(indexFilename, FMODE_Create);
 
 		if (err == OK)
-			err = writeIndexHeader(idxfile_, idx_->Header);
+			err = writeIndexHeader(idxfile_, idx_->Header, idx_->GetNumGames());
 
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
@@ -474,7 +475,8 @@ errorT CodecSCID4::flush() {
 	seqWrite_ = 0;
 	errorT errHeader = OK;
 	if (header_dirty_) {
-		errHeader = writeIndexHeader(idxfile_, idx_->Header);
+		errHeader = writeIndexHeader(idxfile_, idx_->Header,
+		                             idx_->GetNumGames());
 		if (errHeader == OK)
 			header_dirty_ = false;
 	}
@@ -546,7 +548,7 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 	};
 
 	auto version = idx_->Header.version;
-	auto nGames = idx_->GetNumGames();
+	auto nGames = idx_->Header.numGames;
 	idx_->entries_.resize(nGames);
 
 	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
@@ -570,9 +572,6 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 			return ERROR_CorruptData;
 	}
 	progress.report(1, 1);
-
-	if (nGames != idx_->GetNumGames())
-		return ERROR_FileRead;
 
 	idx_->nInvalidNameId_ = nUnknowIDs;
 	return (nUnknowIDs == 0) ? OK : ERROR_NameDataLoss;
