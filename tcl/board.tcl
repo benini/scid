@@ -129,6 +129,11 @@ proc updateBoardColors { w {choice -1}} {
     set newColors(dark) [lindex $list 2]
     set newColors(highcolor) [lindex $list 3]
     set newColors(bestcolor) [lindex $list 4]
+
+    # Remove board textures
+    set ::boardfile_dark emptySquare
+    set ::boardfile_lite emptySquare
+    ::SetBoardTextures
   }
   set nlite $newColors(lite)
   set ndark $newColors(dark)
@@ -247,16 +252,12 @@ proc chooseBoardColors { w {choice -1}} {
     ttk::label $f.bdark -image bp$psize -background [lindex $list 2]
     ttk::label $f.wlite -image wp$psize -background [lindex $list 1]
     ttk::label $f.wdark -image wp$psize -background [lindex $list 2]
-    ttk::button $f.select -text [expr {$count + 1}] -command "updateBoardColors $w $count ; \
-        set ::boardfile_dark emptySquare ; \
-        set ::boardfile_lite emptySquare ; \
-        ::SetBoardTextures "
-    foreach i {blite bdark wlite wdark} {
-      bind $f.$i <1> "updateBoardColors $w $count ; \
-          set ::boardfile_dark emptySquare ; \
-          set ::boardfile_lite emptySquare ; \
-          ::SetBoardTextures "
-    }
+    ttk::button $f.select -text [expr {$count + 1}] \
+        -command "updateBoardColors $w $count"
+    bind $f.blite <1> "$f.select invoke"
+    bind $f.bdark <1> "$f.select invoke"
+    bind $f.wlite <1> "$f.select invoke"
+    bind $f.wdark <1> "$f.select invoke"
     grid $f.blite -row 0 -column 0 -sticky e
     grid $f.bdark -row 0 -column 1 -sticky w
     grid $f.wlite -row 1 -column 1 -sticky w
