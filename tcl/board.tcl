@@ -114,6 +114,7 @@ proc chooseBoardTextures {i} {
   # use variable lite and dark from colorschemes
   set ::lite [::avgImgColor $boardfile_lite]
   set ::dark [::avgImgColor $boardfile_dark]
+  ::board::innercoords .main.board
   updateBoard
 }
 
@@ -152,6 +153,7 @@ proc updateBoardColors { w {choice -1}} {
     $c itemconfigure dark -fill $dark -outline $dark
     $c itemconfigure lite -fill $lite -outline $lite
   }
+  ::board::innercoords .main.board
   updateBoard
   return
 }
@@ -248,8 +250,7 @@ proc chooseBoardColors { w {choice -1}} {
     set fcom "updateBoardColors $w $count ; \
         set ::boardfile_dark emptySquare ; \
         set ::boardfile_lite emptySquare ; \
-        ::SetBoardTextures
-        ::board::innercoords .main.board"
+        ::SetBoardTextures"
     ttk::button $f.select -text [expr {$count + 1}] -command $fcom
     foreach i {blite bdark wlite wdark} {
       bind $f.$i <1> $fcom
@@ -280,8 +281,7 @@ proc chooseBoardColors { w {choice -1}} {
     $f.c create image $psize 0 -image wp$psize -anchor nw
     $f.c create image 0 $psize -image wp$psize -anchor nw
     $f.c create image $psize $psize -image bp$psize -anchor nw
-    set fcom "chooseBoardTextures $count
-        ::board::innercoords .main.board"
+    set fcom "chooseBoardTextures $count"
     ttk::button $f.select -text [expr {$count + 1}] -command $fcom
     bind $f.c <1> $fcom
     pack $f.c $f.select -side top
@@ -1424,7 +1424,9 @@ proc ::board::update {w {board ""} {animate 0}} {
     $w.bd delete p$sq
     $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$sq
   }
-  $w.bd raise coords
+  if {$::board::_coords($w) >= 3 } {
+      $w.bd raise innercoords
+  }
 
   # Update side-to-move icon:
   ::board::sideToMove_ $w [string index $::board::_data($w) 65]
@@ -1636,7 +1638,7 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
         -font [list font_Regular $fontsize ] \
         -text $c \
         -anchor w \
-        -tag coords
+        -tag innercoords
 }
 
 # ::board::innercoords
@@ -1644,7 +1646,7 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
 #   0 (no coords), 1 (left and bottom beside board ), 2 (all sides beside board),
 #   3 (left and bottom, on board ), 4 (all sides on board)
 proc ::board::innercoords {w} {
-    $w.bd delete coords
+    $w.bd delete innercoords
     if {$::board::_coords($w) < 3 } {
         return
     }
