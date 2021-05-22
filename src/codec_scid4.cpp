@@ -456,13 +456,12 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			                    idx_->calcNameFreq(*nb_));
 		}
 	} else {
-		err = idxfile_.Open(indexFilename, fMode);
+		if (auto err = namefileRead(filenames_[1].c_str(), fMode, *nb_))
+			return err;
 
+		err = idxfile_.Open(indexFilename, fMode);
 		if (err == OK)
 			err = readIndexHeader(idxfile_, fMode, idx_->Header);
-
-		if (err == OK)
-			err = namefileRead(filenames_[1].c_str(), fMode, *nb_);
 
 		if (err == OK)
 			err = readIndex(progress);
