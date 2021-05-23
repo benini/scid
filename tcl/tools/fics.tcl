@@ -291,8 +291,9 @@ namespace eval fics {
     $w.f add $w.f.bottom -weight 0
 
     ttk::frame $w.f.bottom.left
+    ttk::frame $w.f.bottom.middle
     ttk::frame $w.f.bottom.right
-    grid $w.f.bottom.left $w.f.bottom.right -sticky news
+    grid $w.f.bottom.left $w.f.bottom.middle $w.f.bottom.right -sticky news -padx 5
 
     # graph
     canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
@@ -318,14 +319,12 @@ namespace eval fics {
     bind $w.f.top.fconsole.f2.cmd <Return> { ::fics::cmd }
     bind $w.f.top.fconsole.f2.cmd <Up> { ::fics::cmdHistory up ; break }
     bind $w.f.top.fconsole.f2.cmd <Down> { ::fics::cmdHistory down ; break }
-    bind $w.f.top.fconsole.f2.cmd <Left> " [bind TEntry <Left>] ; break "
-    bind $w.f.top.fconsole.f2.cmd <Right> " [bind TEntry <Right>] ; break "
     grid $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -sticky news
     grid columnconfigure $w.f.top.fconsole.f2 0 -weight 1
 
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
-    ::gameclock::new $w.f.bottom.left 2 100 0
+    ::gameclock::new $w.f.bottom.middle 2 100 0
 
     set row 0
     ttk::checkbutton $w.f.bottom.right.silence -image FICSsilence -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
@@ -376,11 +375,10 @@ namespace eval fics {
 
     grid $w.f.bottom.right.takeback -column 0 -row $row -sticky ew -pady 2
     grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew -pady 2
-    incr row
 
     ttk::button $w.f.bottom.right.cancel -image FICSexit -command { ::fics::close }
     ::utils::tooltip::Set $w.f.bottom.right.cancel [::tr "Close"]
-    grid $w.f.bottom.right.cancel -column 0 -columnspan 3 -row $row -sticky ew  -pady 2
+    grid $w.f.bottom.right.cancel -column 4 -columnspan 1 -row $row -sticky ew
 
     bind $w.f.top <<NotebookTabChanged>> { ::fics::tabchanged ; break }
     bind $w <Destroy> { catch ::fics::close }
@@ -390,7 +388,6 @@ namespace eval fics {
     bind $w.f.top.fconsole.f1.console <Configure> { .fics.f.top.fconsole.f1.console yview moveto 1 }
     bind $w.f.top.fconsole.f1.console <ButtonPress-1> { ::fics::consoleClick %x %y %W }
     ::createToplevelFinalize $w
-
 
     # all widgets must be visible
     update
@@ -1347,12 +1344,12 @@ namespace eval fics {
     }
     set elt [$win get $l.0 $l.end]
 
-    if { $elt ==  "Click or type \[next\] to see next page." } {
+    if { $elt == "Click or type \[next\] to see next page." } {
       writechan "next"
       return
     }
 
-    regsub -all {\s+} $elt " " elt
+    regsub -all {\s+} [string trim $elt] " " elt
     set elt [split $elt " "]
     set found 0
 
