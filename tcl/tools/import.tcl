@@ -150,6 +150,7 @@ proc importPgnFile {{base} {fnames ""}} {
   if {[winfo exists $w]} { destroy $w }
   toplevel $w
   wm title $w "Scid: $::tr(ImportingFiles) [file tail [sc_base filename $base] ]"
+  applyThemeColor_background $w
   canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
@@ -161,12 +162,10 @@ proc importPgnFile {{base} {fnames ""}} {
   pack $w.buttons.close $w.buttons.stop -side right -ipadx 5 -padx 5 -pady 2
     
   pack [ttk::frame $w.tf] -side top -expand yes -fill both
-  text $w.text -height 8 -width 60 -background gray90 \
-      -wrap none -setgrid 1 -yscrollcommand "$w.ybar set"
-  ttk::scrollbar $w.ybar -command "$w.text yview"
-  pack $w.ybar -in $w.tf -side right -fill y
-  pack $w.text -in $w.tf -side left -fill both -expand yes
-  pack $w.buttons $w.progress -side right
+  autoscrollText both $w.t $w.text Treeview
+  $w.text configure -height 8 -width 60 -wrap none -setgrid 1
+  pack $w.t -in $w.tf -side left -fill both -expand yes
+  pack $w.buttons $w.progress -side right -expand yes
 
   catch {grab $w.buttons.stop}
   bind $w <Escape> "$w.buttons.stop invoke"
