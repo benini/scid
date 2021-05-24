@@ -1347,12 +1347,12 @@ namespace eval fics {
     }
     set elt [$win get $l.0 $l.end]
 
-    if { $elt ==  "Click or type \[next\] to see next page." } {
+    if { $elt == "Click or type \[next\] to see next page." } {
       writechan "next"
       return
     }
 
-    regsub -all {\s+} $elt " " elt
+    regsub -all {\s+} [string trim $elt] " " elt
     set elt [split $elt " "]
     set found 0
 
