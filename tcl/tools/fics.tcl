@@ -318,8 +318,6 @@ namespace eval fics {
     bind $w.f.top.fconsole.f2.cmd <Return> { ::fics::cmd }
     bind $w.f.top.fconsole.f2.cmd <Up> { ::fics::cmdHistory up ; break }
     bind $w.f.top.fconsole.f2.cmd <Down> { ::fics::cmdHistory down ; break }
-    bind $w.f.top.fconsole.f2.cmd <Left> " [bind TEntry <Left>] ; break "
-    bind $w.f.top.fconsole.f2.cmd <Right> " [bind TEntry <Right>] ; break "
     grid $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -sticky news
     grid columnconfigure $w.f.top.fconsole.f2 0 -weight 1
 
