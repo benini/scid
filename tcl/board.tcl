@@ -278,12 +278,12 @@ proc chooseBoardColors { w {choice -1}} {
     $c create rectangle $x0 $y1 $x1 $y2 -tag lite
     $c create rectangle $x1 $y0 $x2 $y1 -tag lite
     if { $i > 0 } {
-        foreach { x y co } { 0 30 1 0 10 2 10 36 a 24 36 b } {
-            $c create text $x $y -text $co -fill black -font font_Small -justify left -anchor w
+        foreach { x y co } { 4 30 1 4 10 2 14 36 a 28 36 b } {
+            $c create text $x $y -text $co -fill black -font font_Small
         }
         if { $i == 2 || $i == 4 } {
-            foreach { x y co } { 34 30 1 34 10 2 10 4 a 24 4 b } {
-                $c create text $x $y -text $co -fill black -font font_Small -justify left -anchor w
+            foreach { x y co } { 38 30 1 38 10 2 14 4 a 28 4 b } {
+                $c create text $x $y -text $co -fill black -font font_Small
             }
         }
     }
