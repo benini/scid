@@ -158,6 +158,11 @@ proc updateBoardColors { w {choice -1}} {
     $c itemconfigure dark -fill $dark -outline $dark
     $c itemconfigure lite -fill $lite -outline $lite
   }
+  foreach i {0 1 2 3 4} {
+    set c $w.coords.c$i
+    $c itemconfigure dark -fill $dark -outline $dark
+    $c itemconfigure lite -fill $lite -outline $lite
+  }
   ::board::innercoords .main.board
   updateBoard
   return
@@ -180,11 +185,11 @@ proc chooseBoardColors { w {choice -1}} {
   pack [ttk::frame $w.select] -side top -fill x -padx 5
   addHorizontalRule $w
   pack [ttk::frame $w.preset] -side top -fill x
-  pack [ttk::frame $w.texture] -side top -fill x
+  pack [ttk::frame $w.texture] -side top -fill x -pady 2
   addHorizontalRule $w
-  pack [ttk::frame $w.border] -side top
+  pack [ttk::frame $w.coords] -side top -fill x -pady 4
   addHorizontalRule $w
-  pack [ttk::frame $w.buttons] -side top -fill x
+  pack [ttk::frame $w.border] -side top -anchor w -pady { 4 0 }
 
   foreach psize $::boardSizes {
     if {$psize >= 40} { break }
@@ -242,6 +247,48 @@ proc chooseBoardColors { w {choice -1}} {
     $c create rectangle [expr {20 + $i}] 0 $psize [expr {20 - $i}] -tag lite
     pack $b $c -side left -padx 1
     bind $c <Button-1> "set ::borderwidth $i; ::board::border .main.board $i; updateBoard"
+  }
+
+  # Coords option:
+  set f $w.coords
+  # bl: border left, bt: border top, ssi: squaresize
+  set slist [list 0 0 20 8 0 16 8 8 12 8 0 20 8 0 20]
+  foreach i {0 1 2 3 4} {bl bt ssi} $slist {
+    if {$i != 0} { pack [ttk::frame $f.gap$i -width 20] -side left -padx 1 }
+    set b $f.b$i
+    set fcom "set ::boardCoords $i
+              ::board::coords .main.board $i
+              ::board::resize .main.board redraw"
+    ttk::radiobutton $b -text "$i:" -variable ::boardCoords -value $i -command $fcom
+    set c $f.c$i
+    canvas $c -height $psize -width $psize -background white
+    if { $i >= 3 } {
+        set x0 0
+        set y0 0
+    } else {
+        set x0 [expr $bl]
+        set y0 [expr $bt]
+    }
+    set x1 [expr $x0 + $ssi]
+    set y1 [expr $y0 + $ssi]
+    set x2 [expr $x1 + $ssi]
+    set y2 [expr $y1 + $ssi]
+    $c create rectangle $x0 $y0 $x1 $y1 -tag dark
+    $c create rectangle $x1 $y1 $x2 $y2 -tag dark
+    $c create rectangle $x0 $y1 $x1 $y2 -tag lite
+    $c create rectangle $x1 $y0 $x2 $y1 -tag lite
+    if { $i > 0 } {
+        foreach { x y co } { 0 30 1 0 10 2 10 36 a 24 36 b } {
+            $c create text $x $y -text $co -fill black -font font_Small -justify left -anchor w
+        }
+        if { $i == 2 || $i == 4 } {
+            foreach { x y co } { 34 30 1 34 10 2 10 4 a 24 4 b } {
+                $c create text $x $y -text $co -fill black -font font_Small -justify left -anchor w
+            }
+        }
+    }
+    pack $b $c -side left -padx 1
+    bind $c <Button-1> $fcom
   }
 
   set count 0
@@ -558,11 +605,9 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set m [menu $w.menu -bg white -font font_Regular]
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
-  $m add command -label "  [tr ShowHideCoords]" -image tb_BD_Coords -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
   $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
-  set ${varname}(tb_BD_Coords) "::board::coords $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
