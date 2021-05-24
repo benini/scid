@@ -197,7 +197,7 @@ proc updateStatusBar {} {
     regsub -all {\[%.*\]} $comment {} comment
 
     if {$comment != ""} {
-        ::board::setInfoAlert .main.board "Comment:" "$comment" "green" "::makeCommentWin"
+        ::board::setInfoAlert .main.board "[tr Comment]" "$comment" "green" "::makeCommentWin"
         ::board::addInfo .main.board [sc_game info ECO]
         return
     }
@@ -216,7 +216,7 @@ proc updateStatusBar {} {
         incr number -1
         append number ".."
       }
-      append statusBar "Last move"
+      append statusBar [tr LastMove]
       if {[sc_var level] != 0} { append statusBar " (var)" }
       append statusBar ": $number.$move"
       ::board::setInfo .main.board "$statusBar"
