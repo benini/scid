@@ -445,9 +445,11 @@ if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element n
     ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
 }
 
-#TODO: recalculate the value if font_Small is changed
-set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
-ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
+proc calculateGlistRowHeight { } {
+    set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
+    ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
+}
+calculateGlistRowHeight
 
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame

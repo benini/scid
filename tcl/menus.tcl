@@ -776,6 +776,7 @@ proc chooseFont {fType} {
       set fontsize [font configure font_Small -size]
       font configure font_SmallBold -family $font -size $fontsize
       font configure font_SmallItalic -family $font -size $fontsize
+      calculateGlistRowHeight
     }
   }
 }
