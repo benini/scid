@@ -235,6 +235,16 @@ namespace eval fics {
       if { [sc_pos side] == "white" } {set side 2 }
       ::gameclock::storeTimeComment $side
   }
+  proc arrangeClocks { } {
+      set w .fics.f.bottom.left
+      if { ! [winfo exists $w.clock1] } { return }
+      pack forget $w.clock1 $w.clock2
+      if { [::board::isFlipped .main.board] } {
+          pack $w.clock1 $w.clock2
+      } else {
+          pack $w.clock2 $w.clock1
+      }
+  }
   ################################################################################
   #
   ################################################################################
@@ -324,6 +334,7 @@ namespace eval fics {
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
     ::gameclock::new $w.f.bottom.left 2 100 0
+    arrangeClocks
 
     set row 0
     ttk::checkbutton $w.f.bottom.right.silence -image FICSsilence -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
@@ -690,9 +701,15 @@ namespace eval fics {
       sc_game tags set -extra [list "Timecontrol \"[lindex $line 7]+[lindex $line 8]\""]
 
       if { [::board::isFlipped .main.board] } {
-        if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
+        if { [ string match -nocase $white $::fics::reallogin ] } {
+            ::board::flip .main.board
+            arrangeClocks
+        }
       } else {
-        if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
+        if { [ string match -nocase $black $::fics::reallogin ] } {
+            ::board::flip .main.board
+            arrangeClocks
+        }
       }
       ::notify::GameChanged
       set ::fics::rated [string equal [lindex $line 5] "rated"]
