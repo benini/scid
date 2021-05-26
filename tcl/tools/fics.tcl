@@ -235,6 +235,15 @@ namespace eval fics {
       if { [sc_pos side] == "white" } {set side 2 }
       ::gameclock::storeTimeComment $side
   }
+  proc arrangeClocks { } {
+      set w .fics.f.bottom.left
+      pack forget $w.clock1 $w.clock2
+      if { [::board::isFlipped .main.board] } {
+          pack $w.clock1 $w.clock2
+      } else {
+          pack $w.clock2 $w.clock1
+      }
+  }
   ################################################################################
   #
   ################################################################################
@@ -324,6 +333,7 @@ namespace eval fics {
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
     ::gameclock::new $w.f.bottom.left 2 100 0
+    arrangeClocks
 
     set row 0
     ttk::checkbutton $w.f.bottom.right.silence -image FICSsilence -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
@@ -694,6 +704,7 @@ namespace eval fics {
       } else {
         if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
+      arrangeClocks
       ::notify::GameChanged
       set ::fics::rated [string equal [lindex $line 5] "rated"]
       # display the win / draw / loss score
