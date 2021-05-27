@@ -700,13 +700,9 @@ namespace eval fics {
       sc_game tags set -extra [list "Timecontrol \"[lindex $line 7]+[lindex $line 8]\""]
 
       if { [::board::isFlipped .main.board] } {
-        if { [ string match -nocase $white $::fics::reallogin ] } {
-            ::board::flip .main.board
-        }
+        if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
       } else {
-        if { [ string match -nocase $black $::fics::reallogin ] } {
-            ::board::flip .main.board
-        }
+        if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
       arrangeClocks
       ::notify::GameChanged
