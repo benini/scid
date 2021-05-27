@@ -237,7 +237,6 @@ namespace eval fics {
   }
   proc arrangeClocks { } {
       set w .fics.f.bottom.left
-      if { ! [winfo exists $w.clock1] } { return }
       pack forget $w.clock1 $w.clock2
       if { [::board::isFlipped .main.board] } {
           pack $w.clock1 $w.clock2
@@ -703,14 +702,13 @@ namespace eval fics {
       if { [::board::isFlipped .main.board] } {
         if { [ string match -nocase $white $::fics::reallogin ] } {
             ::board::flip .main.board
-            arrangeClocks
         }
       } else {
         if { [ string match -nocase $black $::fics::reallogin ] } {
             ::board::flip .main.board
-            arrangeClocks
         }
       }
+      arrangeClocks
       ::notify::GameChanged
       set ::fics::rated [string equal [lindex $line 5] "rated"]
       # display the win / draw / loss score
