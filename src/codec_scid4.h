@@ -263,7 +263,7 @@ private:
 		return err;
 	}
 
-	errorT readIndex(const Progress& progress);
+	errorT readIndex(gamenumT nGames, Progress const& progress);
 
 	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
 		if (seqWrite_ == 0 || (gnum != seqWrite_ + 1)) {

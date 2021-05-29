@@ -67,7 +67,6 @@ private:
     struct { // one at the start of the index file.
         versionT    version;     // version number. 2 bytes.
         uint        baseType;    // Type, e.g. tournament, theory, etc.
-        gamenumT    numGames;    // number of games in file.
         gamenumT    autoLoad;    // game number to autoload: 0=none, 1=1st, >numGames=last
         // description is a fixed-length string describing the database.
         char        description [SCID_DESC_LENGTH + 1];
@@ -130,7 +129,6 @@ public:
 
     void addEntry(const IndexEntry& ie) {
         entries_.push_back(ie);
-        Header.numGames++;
     }
 
     void replaceEntry(const IndexEntry& ie, gamenumT replaced) {
@@ -141,7 +139,6 @@ public:
 
 private:
     void Init() {
-        Header.numGames = 0;
         Header.version = SCID_VERSION;
         Header.baseType = 0;
         Header.autoLoad = 1;

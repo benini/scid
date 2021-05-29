@@ -245,17 +245,17 @@ constexpr char INDEX_MAGIC[8] = "Scid.si";
 /// @param header:    reference to the object where the data will be stored.
 /// @returns OK if successful or an error code.
 template <typename FileT, typename HeaderT>
-errorT readIndexHeader(FileT& indexFile, HeaderT& header) {
+std::pair<errorT, gamenumT> readIndexHeader(FileT& indexFile, HeaderT& header) {
 	char magic[8];
 	indexFile.sgetn(magic, 8);
 	if (!std::equal(std::begin(magic), std::end(magic), std::begin(INDEX_MAGIC),
 	                std::end(INDEX_MAGIC))) {
-		return ERROR_BadMagic;
+		return {ERROR_BadMagic, {}};
 	}
 
 	header.version = indexFile.ReadTwoBytes();
 	header.baseType = indexFile.ReadFourBytes();
-	header.numGames = indexFile.ReadThreeBytes();
+	auto numGames = indexFile.ReadThreeBytes();
 	header.autoLoad = indexFile.ReadThreeBytes();
 	indexFile.sgetn(header.description, SCID_DESC_LENGTH + 1);
 	header.description[SCID_DESC_LENGTH] = 0;
@@ -266,7 +266,7 @@ errorT readIndexHeader(FileT& indexFile, HeaderT& header) {
 			header.customFlagDesc[i][CUSTOM_FLAG_DESC_LENGTH] = 0;
 		}
 	}
-	return OK;
+	return {OK, numGames};
 }
 
 /// Write the header section of a SCIDv4 Index file.
@@ -451,9 +451,9 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		if (auto err = idxfile_.Open(indexFilename, fMode))
 			return err;
 
-		err = readIndexHeader(idxfile_, idx_->Header);
-		if (err)
-			return err;
+		auto [errHeader, nGames] = readIndexHeader(idxfile_, idx_->Header);
+		if (errHeader)
+			return errHeader;
 
 		constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
 		if (idx_->Header.version < SCID_OLDEST_VERSION ||
@@ -463,7 +463,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		if (idx_->Header.version != SCID_VERSION && fMode != FMODE_ReadOnly)
 			return ERROR_FileMode; // Old versions must be opened readonly
 
-		err = readIndex(progress);
+		err = readIndex(nGames, progress);
 	}
 
 	return err;
@@ -500,7 +500,7 @@ errorT CodecSCID4::flush() {
  * @param progress: a Progress object used for GUI communications.
  * @returns OK if successful or an error code.
  */
-inline errorT CodecSCID4::readIndex(const Progress& progress) {
+inline errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 	gamenumT nUnknowIDs = 0;
 	idNumberT maxID[NUM_NAME_TYPES];
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
@@ -546,7 +546,6 @@ inline errorT CodecSCID4::readIndex(const Progress& progress) {
 	};
 
 	auto version = idx_->Header.version;
-	auto nGames = idx_->Header.numGames;
 	idx_->entries_.resize(nGames);
 
 	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
