@@ -245,10 +245,7 @@ constexpr char INDEX_MAGIC[8] = "Scid.si";
 /// @param header:    reference to the object where the data will be stored.
 /// @returns OK if successful or an error code.
 template <typename FileT, typename HeaderT>
-errorT readIndexHeader(FileT& indexFile, fileModeT fmode, HeaderT& header) {
-	constexpr versionT SCID_VERSION = 400; // Current file format version = 4.0
-	constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
-
+errorT readIndexHeader(FileT& indexFile, HeaderT& header) {
 	char magic[8];
 	indexFile.sgetn(magic, 8);
 	if (!std::equal(std::begin(magic), std::end(magic), std::begin(INDEX_MAGIC),
@@ -257,14 +254,6 @@ errorT readIndexHeader(FileT& indexFile, fileModeT fmode, HeaderT& header) {
 	}
 
 	header.version = indexFile.ReadTwoBytes();
-	if (header.version < SCID_OLDEST_VERSION || header.version > SCID_VERSION) {
-		return ERROR_FileVersion;
-	}
-	if (header.version != SCID_VERSION && fmode != FMODE_ReadOnly) {
-		// Old versions must be opened readonly
-		return ERROR_FileMode;
-	}
-
 	header.baseType = indexFile.ReadFourBytes();
 	header.numGames = indexFile.ReadThreeBytes();
 	header.autoLoad = indexFile.ReadThreeBytes();
@@ -459,12 +448,22 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		if (auto err = namefileRead(filenames_[1].c_str(), fMode, *nb_))
 			return err;
 
-		err = idxfile_.Open(indexFilename, fMode);
-		if (err == OK)
-			err = readIndexHeader(idxfile_, fMode, idx_->Header);
+		if (auto err = idxfile_.Open(indexFilename, fMode))
+			return err;
 
-		if (err == OK)
-			err = readIndex(progress);
+		err = readIndexHeader(idxfile_, idx_->Header);
+		if (err)
+			return err;
+
+		constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
+		if (idx_->Header.version < SCID_OLDEST_VERSION ||
+		    idx_->Header.version > SCID_VERSION)
+			return ERROR_FileVersion;
+
+		if (idx_->Header.version != SCID_VERSION && fMode != FMODE_ReadOnly)
+			return ERROR_FileMode; // Old versions must be opened readonly
+
+		err = readIndex(progress);
 	}
 
 	return err;
