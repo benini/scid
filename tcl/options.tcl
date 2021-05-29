@@ -163,14 +163,12 @@ set boardSize 40
 # boardStyle: Default board piece set.
 set boardStyle Merida1
 
-# Colors: dark and lite are square colors
+# Colors: squareColor_dark and squareColor_lite are square colors
 #     whitecolor/blackcolor are piece colors
 #     highcolor is the color when something is selected.
 #     bestcolor is used to indicate a suggested move square.
-# set dark        "\#70a070"
-# set lite        "\#e0d070"
-set lite "\#f3f3f3"
-set dark "\#7389b6"
+set squareColor_lite "\#f3f3f3"
+set squareColor_dark "\#7389b6"
 set whitecolor  "\#ffffff"
 set blackcolor  "\#000000"
 set whiteborder "\#000000"
@@ -721,7 +719,7 @@ proc options.write {} {
     puts $optionF "set analysisCommand [list $analysisCommand]"
     puts $optionF "set analysisChoices [list $analysisChoices]"
     puts $optionF ""
-    foreach i {lite dark whitecolor blackcolor highcolor bestcolor \
+    foreach i {squareColor_lite squareColor_dark whitecolor blackcolor highcolor bestcolor \
           whiteborder blackborder borderwidth \
           pgnColor(Header) pgnColor(Main) pgnColor(Var) \
           pgnColor(Nag) pgnColor(Comment) pgnColor(Background) \

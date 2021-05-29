@@ -31,10 +31,10 @@ proc ::ptrack::unselect {} {
   set w .ptracker
   set ::ptrack::select {}
   foreach i {a1 c1 e1 g1 b2 d2 f2 h2 a7 c7 e7 g7 b8 d8 f8 h8} {
-    $w.bd.p$i configure -background $::dark
+    $w.bd.p$i configure -background $::squareColor_dark
   }
   foreach i {b1 d1 f1 h1 a2 c2 e2 g2 b7 d7 f7 h7 a8 c8 e8 g8} {
-    $w.bd.p$i configure -background $::lite
+    $w.bd.p$i configure -background $::squareColor_lite
   }
 }
 
