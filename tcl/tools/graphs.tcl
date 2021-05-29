@@ -1,5 +1,62 @@
 ### graph.tcl: part of Scid.
 
+# TODO: find a better position in this file for this function  
+# search for valid score in comment. Cut to maxY. if no score is found returns an empty string 
+proc getScorefromComment { comment maxY } {
+    set maxY [expr $maxY - 0.01 ]
+    set minY [expr 0.0 - $maxY]
+	set evalExp {.*?\[%eval\s*(.*?)\s*\].*}
+	set eval ""
+	set score ""
+	regexp $evalExp $comment -> eval
+	if { $eval != "" } { # check for [%eval 1.23]
+	    scan $eval "%f" score
+	    if { [scan $eval "%f" score ] == 1 } {
+            if { $score > $maxY } { set score $maxY }
+            if { $score < $minY } { set score $minY }
+	    } else {
+            # Mate found in %eval #N oder #-N
+            if { [string first "#" $eval] != -1 } {
+                set score $maxY
+                if { [string first "-" $eval] > 0 } { set score $minY }
+            }
+	    }
+	}
+	set foundIndex [string first ":M" $comment]
+	# check for Mate :M5 or :M-3
+	if { $foundIndex >= 0 } {
+	    if { [scan [string range $comment [expr $foundIndex+2] end] "%f" score] == 1 } {
+            # change Mate in x to +/$minY
+            if { $score >= 1 } { set score $maxY }
+            if { $score <= -1 } { set score $minY }
+	    }
+	} else {
+	    set f 1
+	    set foundIndex [string first "+M" $comment]
+	    if { $foundIndex < 0 } { set foundIndex [string first "-M" $comment]; set f -1 }
+	    # check for Mate +M5 or -M3 (Annotation from Arena GUI)
+	    if { $foundIndex >= 0 } {
+            if { [scan [string range $comment [expr $foundIndex+2] end] "%f" score] == 1 } {
+                # change Mate in x to +/- maxY
+                set score [expr $f * $score]
+                if { $score >= 1 } { set score $maxY }
+                if { $score <= -1 } { set score $minY }
+            }
+	    } else {
+            # check for scores +1.23 or -1.23, find the first apperance in the comment
+            set foundIndex [string first "+" $comment]
+            if { $foundIndex < 0 } { set foundIndex [string first "-" $comment] }
+            if { $foundIndex >= 0 } {
+                if { [scan [string range $comment $foundIndex end] "%f" score] == 1 } {
+                    if { $score > $maxY } { set score $maxY }
+                    if { $score < $minY } { set score $minY }
+                }
+            }
+	    }
+	}
+    return $score
+}
+
 # ::tools::graphs::Save
 #
 #   Saves a graph (e.g. tree graph, filter graph, rating graph) to a
@@ -417,6 +474,7 @@ set ::tools::graphs::score::Black 0
 set ::tools::graphs::score::Scores 1
 set ::tools::graphs::score::Times 1
 set ::tools::graphs::score::TimeSum 0
+set ::tools::graphs::score::MaxY 6
 
 ###########################
 # Game score and time graph
@@ -505,7 +563,7 @@ proc MoveTimeList {color add} {
     return $movetimes
 }
 
-# MoveScoreList
+# ::tools::graphs::MoveScoreList
 #    Returns a Tcl list of the numeric move scores, as found
 #    in the commment for each move.
 #    A score is a number with the format
@@ -516,7 +574,7 @@ proc MoveTimeList {color add} {
 #    The list returned should be read in pairs of values: the first is the
 #    move (0.0 = start, 0.5 after White's first move, 1.0 after Black's
 #    first move, etc) and the second is the value found.
-proc MoveScoreList { invw invb } {
+proc ::tools::graphs::MoveScoreList { invw invb } {
     set moveScores { }
     set mainline { }
     set base [sc_base current]
@@ -525,75 +583,27 @@ proc MoveScoreList { invw invb } {
     set n [llength $game]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {
-	set RAVd [lindex [lindex $game $i] 0]
-	set RAVn [lindex [lindex $game $i] 1]
-	# only search in the mainline
-	if { $RAVd == 0 && $RAVn == 0} {
-	    lappend mainline [lindex [lindex $game $i] 4]
-	}
+        set RAVd [lindex [lindex $game $i] 0]
+        set RAVn [lindex [lindex $game $i] 1]
+        # only search in the mainline
+        if { $RAVd == 0 && $RAVn == 0} {
+            lappend mainline [lindex [lindex $game $i] 4]
+        }
     }
     set movenr 0.0
     set side 0
     for {set i 1} { $i < $n} { incr i } {
-	set comment [lindex $mainline $i]
-	set evalExp {.*?\[%eval\s*(.*?)\s*\].*}
-	set eval ""
-	#little trick to check for valid score
-	set score -20.0
-	regexp $evalExp $comment -> eval
-	if { $eval != "" } { # check for [%eval 1.23]
-	    scan $eval "%f" score
-	    if { [scan $eval "%f" score ] == 1 } {
-		if { $score > 10 } { set score 9.9 }
-		if { $score < -10 } { set score -9.9 }
-	    } else {
-		# Mate found in %eval #N oder #-N
-		if { [string first "#" $eval] != -1 } {
-		    set score 9.9
-		    if { [string first "-" $eval] > 0 } { set score -9.9 }
-		}
-	    }
-	}
-	set foundIndex [string first ":M" $comment]
-	# check for Mate :M5 or :M-3
-	if { $foundIndex >= 0 } {
-	    if { [scan [string range $comment [expr $foundIndex+2] end] "%f" score] == 1 } {
-		# change Mate in x to +/-9.9
-		if { $score >= 1 } { set score 9.9 }
-		if { $score <= -1 } { set score -9.9 }
-	    }
-	} else {
-	    set f 1
-	    set foundIndex [string first "+M" $comment]
-	    if { $foundIndex < 0 } { set foundIndex [string first "-M" $comment]; set f -1 }
-	    # check for Mate +M5 or -M3 (Annotation from Arena GUI)
-	    if { $foundIndex >= 0 } {
-		if { [scan [string range $comment [expr $foundIndex+2] end] "%f" score] == 1 } {
-		    # change Mate in x to +/-9.9
-		    set score [expr $f * $score]
-		    if { $score >= 1 } { set score 9.9 }
-		    if { $score <= -1 } { set score -9.9 }
-		}
-	    } else {
-		# check for scores +1.23 or -1.23, find the first apperance in the comment
-		set foundIndex [string first "+" $comment]
-		if { $foundIndex < 0 } { set foundIndex [string first "-" $comment] }
-		if { $foundIndex >= 0 } {
-		    if { [scan [string range $comment $foundIndex end] "%f" score] == 1 } {
-			if { $score > 10 } { set score 9.9 }
-			if { $score < -10 } { set score -9.9 }
-		    }
-		}
-	    }
-	}
-	if { $score != -20.0 } {
-	    # we have found something valid, check if the score should be inverted
-	    if { $invw == 1 &&  $side == 1 } { set score [expr 0.0 - $score] }
-	    if { $invb == 1 &&  $side == 0 } { set score [expr 0.0 - $score] }
-	    lappend moveScores $movenr $score
-	}
-	set movenr [expr $movenr + 0.5]
-	if { $side == 0 } { set side 1 } else { set side 0 }
+        set comment [lindex $mainline $i]
+        set score [getScorefromComment $comment $::tools::graphs::score::MaxY]
+
+        if { $score ne "" } {
+            # we have found something valid, check if the score should be inverted
+            if { $invw == 1 &&  $side == 1 } { set score [expr 0.0 - $score] }
+            if { $invb == 1 &&  $side == 0 } { set score [expr 0.0 - $score] }
+            lappend moveScores $movenr $score
+        }
+        set movenr [expr $movenr + 0.5]
+        if { $side == 0 } { set side 1 } else { set side 0 }
     }
     return $moveScores
 }
@@ -641,7 +651,11 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
         -command "::tools::graphs::score::Refresh"
     ttk::checkbutton $w.fbuttons.timesum -text $::tr(AnnotateTime) -variable ::tools::graphs::score::TimeSum \
         -command "::tools::graphs::score::Refresh" -offvalue "1" -onvalue "0"
+    # TODO translate
+    ttk::label $w.fbuttons.labelm -text "Max Score:"
+    ttk::spinbox $w.fbuttons.maxy -textvariable ::tools::graphs::score::MaxY -justify right -from 1 -to 12 -width 2 -command ::tools::graphs::score::Refresh
     pack $w.fbuttons.timesum $w.fbuttons.time $w.fbuttons.score -side right -padx 6 -pady 0
+    pack $w.fbuttons.maxy $w.fbuttons.labelm -side right
     pack $w.fbuttons -side bottom -fill both
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Score}
@@ -709,7 +723,7 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       # draw score bars
       catch {::utils::graph::data score data -color $linecolor -points 0 -lines 0 -bars 2 \
 		 -linewidth $linewidth -radius $psize -outline $linecolor \
-		 -coords [MoveScoreList $::tools::graphs::score::White $::tools::graphs::score::Black]}
+		 -coords [::tools::graphs::MoveScoreList $::tools::graphs::score::White $::tools::graphs::score::Black]}
   }
 
   ::utils::graph::redraw score
