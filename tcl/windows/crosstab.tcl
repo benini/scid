@@ -232,7 +232,6 @@ proc ::crosstab::Open {} {
   autoscrollText both $w.f $w.f.text Treeview
   $w.f.text configure -wrap none -font font_Fixed -state normal
   ::htext::init $w.f.text
-  $w.f.text tag configure bgGray -background gray95
   ttk::button $w.b.stop -textvar ::tr(Stop) -state disabled \
       -command { set ::htext::interrupt 1 }
   ttk::menubutton $w.b.type -text "" -menu $w.b.type.menu
@@ -307,11 +306,6 @@ proc ::crosstab::Refresh {} {
     $w.f.text insert end $result
   } else {
     ::htext::display $w.f.text $result
-  }
-  # Shade every second line to help readability:
-  set lastLineNum [expr {int([$w.f.text index end])}]
-  for {set i 2} {$i <= $lastLineNum} {incr i 2} {
-    $w.f.text tag add bgGray $i.0 "$i.0 lineend +1c"
   }
   unbusyCursor .
   catch {grab release $w.b.stop}
