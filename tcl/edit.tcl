@@ -24,7 +24,7 @@ set setupFen {}
 #   starting board.
 #
 proc setupBoard {} {
-  global boardSizes boardSize lite dark setupBd pastePiece toMove epFile moveNum
+  global boardSizes boardSize setupBd pastePiece toMove epFile moveNum
   global origFen
   global setupStatus castling setupFen highcolor
   if {[winfo exists .setup]} { return }
