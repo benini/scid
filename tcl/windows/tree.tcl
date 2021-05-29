@@ -151,8 +151,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   autoscrollText y $w.f $w.f.tl Treeview
   $w.f.tl configure -wrap none  -setgrid 1 -exportselection 1 -font font_Fixed
   #define default tags
-  $w.f.tl tag configure greybg -background gray95
-  $w.f.tl tag configure whitebg ;#use default background from theme
   $w.f.tl tag configure bluefg -foreground DodgerBlue3
   $w.f.tl tag configure greenfg -foreground SeaGreen
   $w.f.tl tag configure redfg -foreground red
@@ -518,11 +516,7 @@ proc ::tree::displayLines { baseNumber moves } {
     }
     
     # Move and stats
-    if {[expr $i % 2] && $i < [expr $len -3] } {
-      $w.f.tl insert end "$line" [list greybg $tagfg tagtooltip$i]
-    } else  {
-      $w.f.tl insert end "$line" [list whitebg $tagfg tagtooltip$i]
-    }
+    $w.f.tl insert end "$line" [list $tagfg tagtooltip$i]
     if {$colorScore != ""} {
       $w.f.tl tag add $colorScore end-31c end-26c
     }
