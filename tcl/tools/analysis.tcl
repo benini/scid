@@ -427,6 +427,7 @@ proc ::enginelist::choose {} {
     # Set up title frame for sorting the list:
     text $w.title -width 55 -height 1 -font font_Fixed -relief flat \
             -cursor top_left_arrow
+    applyThemeStyle Treeview $w.title
     $w.title insert end "    "
     $w.title insert end $::tr(EngineName) Name
     for {set i [string length $::tr(EngineName)]} {$i < 21} { incr i } {
@@ -441,7 +442,7 @@ proc ::enginelist::choose {} {
     $w.title insert end $::tr(EngineTime) Time
     foreach i {Name Elo Time} {
         $w.title tag bind $i <Any-Enter> \
-                "$w.title tag configure $i -background yellow"
+                "$w.title tag configure $i -background yellow3"
         $w.title tag bind $i <Any-Leave> \
                 "$w.title tag configure $i -background {}"
         $w.title tag bind $i <1> [list ::enginelist::sort $i]
@@ -888,7 +889,7 @@ proc configAnnotation {n} {
     
     trace variable blunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
     
-    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
+    set tempdelay [expr {$autoplayDelay / 1000.0}]
     win::createDialog $w
     ::setTitle $w "Scid: $::tr(Annotate)"
     wm resizable $w 0 0
@@ -897,14 +898,14 @@ proc configAnnotation {n} {
 
     ttk::labelframe $f.analyse -text $::tr(GameReview)
     ttk::label $f.analyse.label -text $::tr(AnnotateTime)
-    ttk::spinbox $f.analyse.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
-        -validate key -validatecommand { return [string is digit %S] }
+    ttk::spinbox $f.analyse.spDelay -width 5 -textvariable tempdelay -from 0.5 -to 999 -increment 0.1 \
+        -validate key -justify right -validatecommand { return [string is digit %S] }
     ttk::radiobutton  $f.analyse.allmoves     -text $::tr(AnnotateAllMoves)     -variable annotateBlunders -value allmoves
     ttk::radiobutton  $f.analyse.blundersonly -text $::tr(AnnotateBlundersOnly) -variable annotateBlunders -value blundersonly
     ttk::frame $f.analyse.blunderbox
     ttk::label $f.analyse.blunderbox.label -text $::tr(BlundersThreshold:)
-    ttk::spinbox $f.analyse.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
-            -from 0.1 -to 3.0 -increment 0.1
+    ttk::spinbox $f.analyse.blunderbox.spBlunder -width 4 -textvariable blunderThreshold \
+            -from 0.1 -to 3.0 -increment 0.1 -justify right
     ttk::checkbutton $f.analyse.cbBook  -text $::tr(UseBook) -variable ::useAnalysisBook
     # choose a book for analysis
     # load book names
@@ -974,10 +975,10 @@ proc configAnnotation {n} {
     set to [sc_base numGames $::curr_db]
     if {$to <1} { set to 1}
     ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
-    ttk::spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
+    ttk::spinbox $f.batch.spBatchEnd -width 8 -textvariable ::batchEnd \
             -from 1 -to $to -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::checkbutton $f.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::isBatchOpening
-    ttk::spinbox $f.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
+    ttk::spinbox $f.batch.spBatchOpening -width 2 -textvariable ::isBatchOpeningMoves \
             -from 10 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $f.batch.lBatchOpening -text $::tr(moves)
     pack $f.batch.cbBatch -side top -anchor w -pady { 0 0 }
@@ -2428,7 +2429,10 @@ proc toggleFinishGame { { n 1 } } {
 
 	ttk::labelframe $w.wh_f -text "$::tr(White)" -padding 5
 	grid $w.wh_f -column 0 -row 0 -columnspan 2 -sticky we -pady 8
-	ttk::label $w.wh_f.p -image wk$::board::_size(.main.board)
+    foreach psize $::boardSizes {
+        if {$psize >= 40} { break }
+    }
+	ttk::label $w.wh_f.p -image wk$psize
 	grid $w.wh_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.wh_f.e1 -text $analysis(name1) -variable ::finishGameEng1 -value 1
 	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
@@ -2439,17 +2443,16 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.wh_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.wh_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	ttk::spinbox $w.wh_f.cv -width 4 -textvariable ::finishGameCmdVal1 -from 1 -to 999
+	ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGameCmdVal1 -from 1 -to 999 -justify right
 	ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGameCmd1 -value "movetime"
 	ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd1 -value "depth"
 	grid $w.wh_f.cv -column 1 -row 2 -sticky w
-	grid $w.wh_f.c1 -column 2 -row 2 -sticky w
+	grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
 	grid $w.wh_f.c2 -column 3 -row 2 -sticky w
-	grid columnconfigure $w.wh_f 2 -weight 1
 
 	ttk::labelframe $w.bk_f -text "$::tr(Black)" -padding 5
 	grid $w.bk_f -column 0 -row 1 -columnspan 2 -sticky we -pady 8
-	ttk::label $w.bk_f.p -image bk$::board::_size(.main.board)
+	ttk::label $w.bk_f.p -image bk$psize
 	grid $w.bk_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.bk_f.e1 -text $analysis(name1) -variable ::finishGameEng2 -value 1
 	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
@@ -2460,13 +2463,12 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.bk_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.bk_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	ttk::spinbox $w.bk_f.cv -width 4 -textvariable ::finishGameCmdVal2 -from 1 -to 999
+	ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGameCmdVal2 -from 1 -to 999 -justify right
 	ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGameCmd2 -value "movetime"
 	ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd2 -value "depth"
 	grid $w.bk_f.cv -column 1 -row 2 -sticky w
-	grid $w.bk_f.c1 -column 2 -row 2 -sticky w
+	grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
 	grid $w.bk_f.c2 -column 3 -row 2 -sticky w
-	grid columnconfigure $w.bk_f 2 -weight 1
 
 	ttk::checkbutton $w.annotate -text $::tr(Annotate) -variable ::finishGameAnnotate
 	grid $w.annotate -column 0 -row 2 -sticky w -padx 5 -pady 8
@@ -2722,7 +2724,6 @@ proc updateAnalysisText {{n 1}} {
         set nps [expr {round($analysis(nodes$n) / $analysis(time$n))} ]
     }
     set score $analysis(score$n)
-    
     set t .analysisWin$n.text
     set h .analysisWin$n.hist.text
     
@@ -3186,7 +3187,8 @@ proc setAutomoveTime {{n 1}} {
     pack $w.f -expand 1
     ttk::label $w.f.label -text "Set the engine thinking time per move in seconds:"
     pack $w.f.label -side top -pady 5 -padx 5
-    ttk::entry $w.f.entry -background white -width 10 -textvariable temptime
+    ttk::spinbox $w.f.entry -width 5 -textvariable temptime -from 0.5 -to 999 -increment 0.1 \
+        -validate key -justify right -validatecommand { return [string is digit %S] }
     pack $w.f.entry -side top -pady 5
     bind $w.f.entry <Escape> { .apdialog.buttons.cancel invoke }
     bind $w.f.entry <Return> { .apdialog.buttons.ok invoke }
@@ -3236,7 +3238,7 @@ proc toggleAutomove {{n 1}} {
             return
         }
         set analysis(automove$n) 1
-	.analysisWin1.b1.automove state pressed
+        .analysisWin1.b1.automove state pressed
         automove $n
     }
 }
