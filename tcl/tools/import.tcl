@@ -148,28 +148,32 @@ proc importPgnFile {{base} {fnames ""}} {
   
   set w .ipgnWin
   if {[winfo exists $w]} { destroy $w }
-  toplevel $w
+  win::createDialog $w
   wm title $w "Scid: $::tr(ImportingFiles) [file tail [sc_base filename $base] ]"
-  applyThemeColor_background $w
-  canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+
+  ttk::frame $w.buttons
+  canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
+  $w.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
   $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
     -fill black -text "0:00 / 0:00"
 
-  ttk::frame $w.buttons
   ttk::button $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel}
-  ttk::button $w.buttons.close -textvar ::tr(Close) -command "focus .; destroy $w"
-  pack $w.buttons.close $w.buttons.stop -side right -ipadx 5 -padx 5 -pady 2
+  ttk::button $w.buttons.close -textvar ::tr(Close) -state disabled -command "
+    focus .
+    destroy $w
+  "
+  grid $w.progress $w.buttons.stop $w.buttons.close -in $w.buttons
+  grid rowconfigure $w.buttons 0 -weight 1
+  grid columnconfigure $w.buttons 0 -weight 1
     
-  pack [ttk::frame $w.tf] -side top -expand yes -fill both
-  autoscrollText both $w.t $w.text Treeview
-  $w.text configure -height 8 -width 60 -wrap none -setgrid 1
-  pack $w.t -in $w.tf -side left -fill both -expand yes
-  pack $w.buttons $w.progress -side right -expand yes
+  autoscrollText both $w.t $w.text TLabel
+  $w.text configure -wrap none
+  grid $w.t -pady {0 10} -sticky news
+  grid $w.buttons -sticky news
+  grid rowconfigure $w 0 -weight 1
+  grid columnconfigure $w 0 -weight 1
 
-  catch {grab $w.buttons.stop}
-  bind $w <Escape> "$w.buttons.stop invoke"
-  $w.buttons.close configure -state disabled
+  grab $w.buttons.stop
 
   busyCursor .
   foreach fname $fnames {
@@ -205,8 +209,7 @@ proc importPgnFile {{base} {fnames ""}} {
   $w.text configure -state disabled
   $w.buttons.close configure -state normal
   $w.buttons.stop configure -state disabled
-  catch {grab release $w.buttons.stop}
-  bind $w <Escape> "$w.buttons.close invoke; break"
+  grab release $w.buttons.stop
 
   after idle "::notify::DatabaseModified $base"
   if { $autoclose } { destroy $w }
