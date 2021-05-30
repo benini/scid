@@ -361,50 +361,34 @@ proc ::enginelist::sort {{type ""}} {
     } else {
         set engines(sort) $type
     }
+    set w .enginelist
     switch $type {
-        Name {
+        "#1" {
             set engines(list) [lsort -dictionary -index 0 $engines(list)]
         }
-        Elo {
+        "#2" {
             set engines(list) [lsort -dictionary -decreasing -index 4 $engines(list)]
         }
-        Time {
+        "#3" {
             set engines(list) [lsort -integer -decreasing -index 5 $engines(list)]
         }
     }
     
     # If the Engine-open dialog is open, update it:
     #
-    set w .enginelist
     if {! [winfo exists $w]} { return }
     set f $w.list.list
-    $f delete 0 end
+    $w.list.list delete [$w.list.list children {}]
     set count 0
     foreach engine $engines(list) {
-        incr count
         set name [lindex $engine 0]
         set elo [lindex $engine 4]
         set time [lindex $engine 5]
-        set uci [lindex $engine 7]
         set date [::enginelist::date $time]
-        set text [format "%2u. %-21s " $count $name]
-        set eloText "    "
-        if {$elo > 0} { set eloText [format "%4u" $elo] }
-        append text $eloText
-        set timeText "  "
-        if {$time > 0} { set timeText "   $date" }
-        append text $timeText
-        $f insert end $text
+        $w.list.list insert {} end -id $count -values [list $name $elo $date]
+        incr count
     }
-    $f selection set 0
-    
-    # Show the sorted column heading in red text:
-    $w.title configure -state normal
-    foreach i {Name Elo Time} {
-        $w.title tag configure $i -foreground {}
-    }
-    $w.title tag configure $engines(sort) -foreground red
-    $w.title configure -state disabled
+    $w.list.list selection set 0
 }
 ################################################################################
 # ::enginelist::choose
@@ -412,6 +396,12 @@ proc ::enginelist::sort {{type ""}} {
 #   Returns an integer index into the engines(list) list variable.
 #   If no engine is selected, returns the empty string.
 ################################################################################
+proc engine.singleclick_ {{w} {x} {y}} {
+  lassign [$w identify $x $y] what
+  if {$what == "heading"} {
+      ::enginelist::sort [$w identify column $x $y]
+  }
+}
 proc ::enginelist::choose {} {
     global engines
     set w .enginelist
@@ -420,59 +410,39 @@ proc ::enginelist::choose {} {
         return }
     win::createDialog $w
     ::setTitle $w "Scid: [tr ToolsAnalysis]"
-    ttk::label $w.flabel -text $::tr(EngineList:) -font font_Bold -anchor center
-    pack $w.flabel -side top -fill x
-    pack [ttk::frame $w.buttons] -side bottom -fill x
-    
-    # Set up title frame for sorting the list:
-    text $w.title -width 55 -height 1 -font font_Fixed -relief flat \
-            -cursor top_left_arrow
-    $w.title insert end "    "
-    $w.title insert end $::tr(EngineName) Name
-    for {set i [string length $::tr(EngineName)]} {$i < 21} { incr i } {
-        $w.title insert end " "
+    ttk::frame $w.buttons
+    ttk::frame $w.list
+    # Set up enginelist
+    ttk::treeview $w.list.list -columns { "Name" "Elo" "Date" } -height 12 \
+        -show headings -selectmode browse -yscrollcommand "$w.list.ybar set"
+    set i 0
+    set wid [font measure font_Regular W]
+    foreach { width name } { 12 Name 4 Elo 12 Date } {
+        $w.list.list column $i -width [expr $width * $wid]
+        $w.list.list heading $i -text [tr $name]
+        incr i
     }
-    $w.title insert end "  "
-    $w.title insert end $::tr(EngineElo) Elo
-    for {set i [string length $::tr(EngineElo)]} {$i < 4} { incr i } {
-        $w.title insert end " "
-    }
-    $w.title insert end "  "
-    $w.title insert end $::tr(EngineTime) Time
-    foreach i {Name Elo Time} {
-        $w.title tag bind $i <Any-Enter> \
-                "$w.title tag configure $i -background yellow"
-        $w.title tag bind $i <Any-Leave> \
-                "$w.title tag configure $i -background {}"
-        $w.title tag bind $i <1> [list ::enginelist::sort $i]
-    }
-    $w.title configure -state disabled
-    pack $w.title -side top -fill x
+    $w.list.list column 1 -anchor e
+    ttk::scrollbar $w.list.ybar -command "$w.list.list yview"
+    pack $w.list.list $w.list.ybar -side left -fill both -expand 1
     
     # The list of choices:
-    set f $w.list
-    pack [ttk::frame $f] -side top -expand yes -fill both
-    listbox $f.list -height 10 -width 55  -selectmode browse \
-            -setgrid 1 -yscrollcommand "$f.ybar set"
-    applyThemeStyle Treeview $f.list
-    $f.list configure -font font_Fixed -exportselection 0
-    bind $f.list <Double-ButtonRelease-1> "$w.buttons.ok invoke; break"
-    ttk::scrollbar $f.ybar -command "$f.list yview"
-    pack $f.ybar -side right -fill y
-    pack $f.list -side top -fill both -expand yes
-    $f.list selection set 0
+    pack $w.list -side top -fill y -expand 1
+    pack $w.buttons -side top -fill x -pady { 5 0 }
+    bind $w.list.list <Double-ButtonRelease-1> "$w.buttons.ok invoke; break"
+    bind $w.list.list <ButtonRelease-1> "engine.singleclick_ %W %x %y"
     
     set f $w.buttons
     dialogbutton $f.add -text $::tr(EngineNew...) -command {::enginelist::edit -1}
     dialogbutton $f.edit -text $::tr(EngineEdit...) -command {
-        ::enginelist::edit [lindex [.enginelist.list.list curselection] 0]
+        ::enginelist::edit [lindex [.enginelist.list.list selection] 0]
     }
     dialogbutton $f.delete -text $::tr(Delete...) -command {
-        ::enginelist::delete [lindex [.enginelist.list.list curselection] 0]
+        ::enginelist::delete [lindex [.enginelist.list.list selection] 0]
     }
     ttk::label $f.sep -text "   "
     dialogbutton $f.ok -text "OK" -command {
-        set engines(selection) [lindex [.enginelist.list.list curselection] 0]
+        set engines(selection) [lindex [.enginelist.list.list selection] 0]
         destroy .enginelist
     }
     dialogbutton $f.cancel -text $::tr(Cancel) -command {
@@ -887,8 +857,9 @@ proc configAnnotation {n} {
     }
     
     trace variable blunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
+    trace variable tempdelay w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
     
-    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
+    set tempdelay [expr {$autoplayDelay / 1000.0}]
     win::createDialog $w
     ::setTitle $w "Scid: $::tr(Annotate)"
     wm resizable $w 0 0
@@ -897,14 +868,14 @@ proc configAnnotation {n} {
 
     ttk::labelframe $f.analyse -text $::tr(GameReview)
     ttk::label $f.analyse.label -text $::tr(AnnotateTime)
-    ttk::spinbox $f.analyse.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
-        -validate key -validatecommand { return [string is digit %S] }
+    ttk::spinbox $f.analyse.spDelay -width 5 -textvariable tempdelay -from 0.1 -to 999 \
+        -validate key -justify right
     ttk::radiobutton  $f.analyse.allmoves     -text $::tr(AnnotateAllMoves)     -variable annotateBlunders -value allmoves
     ttk::radiobutton  $f.analyse.blundersonly -text $::tr(AnnotateBlundersOnly) -variable annotateBlunders -value blundersonly
     ttk::frame $f.analyse.blunderbox
     ttk::label $f.analyse.blunderbox.label -text $::tr(BlundersThreshold:)
-    ttk::spinbox $f.analyse.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
-            -from 0.1 -to 3.0 -increment 0.1
+    ttk::spinbox $f.analyse.blunderbox.spBlunder -width 4 -textvariable blunderThreshold \
+            -from 0.1 -to 3.0 -increment 0.1 -justify right
     ttk::checkbutton $f.analyse.cbBook  -text $::tr(UseBook) -variable ::useAnalysisBook
     # choose a book for analysis
     # load book names
@@ -974,10 +945,10 @@ proc configAnnotation {n} {
     set to [sc_base numGames $::curr_db]
     if {$to <1} { set to 1}
     ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
-    ttk::spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
+    ttk::spinbox $f.batch.spBatchEnd -width 8 -textvariable ::batchEnd \
             -from 1 -to $to -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::checkbutton $f.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::isBatchOpening
-    ttk::spinbox $f.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
+    ttk::spinbox $f.batch.spBatchOpening -width 2 -textvariable ::isBatchOpeningMoves \
             -from 10 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $f.batch.lBatchOpening -text $::tr(moves)
     pack $f.batch.cbBatch -side top -anchor w -pady { 0 0 }
@@ -2428,7 +2399,10 @@ proc toggleFinishGame { { n 1 } } {
 
 	ttk::labelframe $w.wh_f -text "$::tr(White)" -padding 5
 	grid $w.wh_f -column 0 -row 0 -columnspan 2 -sticky we -pady 8
-	ttk::label $w.wh_f.p -image wk$::board::_size(.main.board)
+    foreach psize $::boardSizes {
+        if {$psize >= 40} { break }
+    }
+	ttk::label $w.wh_f.p -image wk$psize
 	grid $w.wh_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.wh_f.e1 -text $analysis(name1) -variable ::finishGameEng1 -value 1
 	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
@@ -2439,17 +2413,16 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.wh_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.wh_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	ttk::spinbox $w.wh_f.cv -width 4 -textvariable ::finishGameCmdVal1 -from 1 -to 999
+	ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGameCmdVal1 -from 1 -to 999 -justify right
 	ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGameCmd1 -value "movetime"
 	ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd1 -value "depth"
 	grid $w.wh_f.cv -column 1 -row 2 -sticky w
-	grid $w.wh_f.c1 -column 2 -row 2 -sticky w
+	grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
 	grid $w.wh_f.c2 -column 3 -row 2 -sticky w
-	grid columnconfigure $w.wh_f 2 -weight 1
 
 	ttk::labelframe $w.bk_f -text "$::tr(Black)" -padding 5
 	grid $w.bk_f -column 0 -row 1 -columnspan 2 -sticky we -pady 8
-	ttk::label $w.bk_f.p -image bk$::board::_size(.main.board)
+	ttk::label $w.bk_f.p -image bk$psize
 	grid $w.bk_f.p -column 0 -row 0 -rowspan 3
 	ttk::radiobutton $w.bk_f.e1 -text $analysis(name1) -variable ::finishGameEng2 -value 1
 	if {[winfo exists .analysisWin2] && $analysis(uci2) } {
@@ -2460,13 +2433,12 @@ proc toggleFinishGame { { n 1 } } {
 	}
 	grid $w.bk_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
 	grid $w.bk_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
-	ttk::spinbox $w.bk_f.cv -width 4 -textvariable ::finishGameCmdVal2 -from 1 -to 999
+	ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGameCmdVal2 -from 1 -to 999 -justify right
 	ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGameCmd2 -value "movetime"
 	ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd2 -value "depth"
 	grid $w.bk_f.cv -column 1 -row 2 -sticky w
-	grid $w.bk_f.c1 -column 2 -row 2 -sticky w
+	grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
 	grid $w.bk_f.c2 -column 3 -row 2 -sticky w
-	grid columnconfigure $w.bk_f 2 -weight 1
 
 	ttk::checkbutton $w.annotate -text $::tr(Annotate) -variable ::finishGameAnnotate
 	grid $w.annotate -column 0 -row 2 -sticky w -padx 5 -pady 8
@@ -2722,7 +2694,6 @@ proc updateAnalysisText {{n 1}} {
         set nps [expr {round($analysis(nodes$n) / $analysis(time$n))} ]
     }
     set score $analysis(score$n)
-    
     set t .analysisWin$n.text
     set h .analysisWin$n.hist.text
     
@@ -3186,7 +3157,8 @@ proc setAutomoveTime {{n 1}} {
     pack $w.f -expand 1
     ttk::label $w.f.label -text "Set the engine thinking time per move in seconds:"
     pack $w.f.label -side top -pady 5 -padx 5
-    ttk::entry $w.f.entry -background white -width 10 -textvariable temptime
+    ttk::spinbox $w.f.entry -width 5 -textvariable temptime -from 1 -to 999 \
+        -validate key -justify right
     pack $w.f.entry -side top -pady 5
     bind $w.f.entry <Escape> { .apdialog.buttons.cancel invoke }
     bind $w.f.entry <Return> { .apdialog.buttons.ok invoke }
@@ -3236,7 +3208,7 @@ proc toggleAutomove {{n 1}} {
             return
         }
         set analysis(automove$n) 1
-	.analysisWin1.b1.automove state pressed
+        .analysisWin1.b1.automove state pressed
         automove $n
     }
 }
