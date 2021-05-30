@@ -816,11 +816,10 @@ namespace eval fics {
     }
 
     if {[string match "Challenge:*" $line]} {
-      set ans [tk_dialog .challenge [::tr "FICSChallenge"] $line "" 0 [::tr "FICSAccept"] [::tr "FICSDecline"]]
-      if {$ans == 0} {
-        writechan "accept"
-      } else {
-        writechan "decline"
+      set ans [tk_messageBox -title [::tr "FICSChallenge"] -icon question -type yesno -message "$line\nDo you accept ?" ]
+      switch -- $ans {
+        yes {writechan "accept"}
+        no  {writechan "decline"}
       }
     }
 
