@@ -83,8 +83,9 @@ public: // ICodecDatabase interface
 			idx_->Header.baseType = strGetUnsigned(new_value);
 
 		} else if (std::strcmp(tagname, "description") == 0) {
-			strncpy(idx_->Header.description, new_value, SCID_DESC_LENGTH);
-			idx_->Header.description[SCID_DESC_LENGTH] = 0;
+			idx_->Header.description = new_value;
+			if (idx_->Header.description.size() > SCID_DESC_LENGTH)
+				idx_->Header.description.resize(SCID_DESC_LENGTH);
 
 		} else if (std::strcmp(tagname, "autoload") == 0) {
 			idx_->Header.autoLoad = strGetUnsigned(new_value);

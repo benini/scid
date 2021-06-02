@@ -40,7 +40,7 @@ class NameBase;
 const char         INDEX_SUFFIX[]     = ".si4";
 
 // Descriptions can be up to 107 bytes long.
-const uint  SCID_DESC_LENGTH = 107;
+inline constexpr size_t SCID_DESC_LENGTH = 107;
 const uint  CUSTOM_FLAG_DESC_LENGTH = 8;
 const uint  CUSTOM_FLAG_MAX = 6;
 
@@ -68,8 +68,7 @@ private:
         versionT    version;     // version number. 2 bytes.
         uint        baseType;    // Type, e.g. tournament, theory, etc.
         gamenumT    autoLoad;    // game number to autoload: 0=none, 1=1st, >numGames=last
-        // description is a fixed-length string describing the database.
-        char        description [SCID_DESC_LENGTH + 1];
+        std::string description; // a string describing the database.
         // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
         char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
     } Header;
@@ -142,7 +141,7 @@ private:
         Header.version = SCID_VERSION;
         Header.baseType = 0;
         Header.autoLoad = 1;
-        Header.description[0] = 0;
+        Header.description.clear();
         std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
         nInvalidNameId_ = 0;
         entries_.resize(0);

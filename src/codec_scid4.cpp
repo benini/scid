@@ -257,8 +257,10 @@ std::pair<errorT, gamenumT> readIndexHeader(FileT& indexFile, HeaderT& header) {
 	header.baseType = indexFile.ReadFourBytes();
 	auto numGames = indexFile.ReadThreeBytes();
 	header.autoLoad = indexFile.ReadThreeBytes();
-	indexFile.sgetn(header.description, SCID_DESC_LENGTH + 1);
-	header.description[SCID_DESC_LENGTH] = 0;
+	char desc[SCID_DESC_LENGTH + 1];
+	indexFile.sgetn(desc, SCID_DESC_LENGTH + 1);
+	header.description.assign(desc,
+	                          std::find(desc, desc + SCID_DESC_LENGTH, '\0'));
 	if (header.version >= 400) {
 		for (uint i = 0; i < CUSTOM_FLAG_MAX; i++) {
 			indexFile.sgetn(header.customFlagDesc[i],
@@ -285,7 +287,10 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	n += indexFile.WriteFourBytes(Header.baseType);
 	n += indexFile.WriteThreeBytes(nGames);
 	n += indexFile.WriteThreeBytes(Header.autoLoad);
-	n += indexFile.sputn(Header.description, SCID_DESC_LENGTH + 1);
+	char desc[SCID_DESC_LENGTH + 1] = {};
+	std::copy_n(Header.description.data(),
+	            std::min(Header.description.size(), SCID_DESC_LENGTH), desc);
+	n += indexFile.sputn(desc, SCID_DESC_LENGTH + 1);
 	for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
 		n += indexFile.sputn(Header.customFlagDesc[i],
 		                     CUSTOM_FLAG_DESC_LENGTH + 1);
