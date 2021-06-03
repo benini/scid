@@ -119,7 +119,7 @@ namespace eval pgn {
     $w.menu.helpmenu add command -label PgnHelpPgn -command {helpWindow PGN}
     $w.menu.helpmenu add command -label PgnHelpIndex -command {helpWindow Index}
     
-    storeMenuLabels .pgnWin.menu
+    translateMenuLabels $w.menu
     
     autoscrollText y $w.frame $w.text Treeview
     $w.text configure -wrap word -background $pgnColor(Background) -state normal \

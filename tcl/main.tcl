@@ -1268,7 +1268,7 @@ proc CreateGameInfo {} {
     tk_popup .main.gameInfo.menu %X %Y
   }
 
-  storeMenuLabels .main.gameInfo.menu
+  translateMenuLabels .main.gameInfo.menu
 }
 
 # Set toolbar help status messages:

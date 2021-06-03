@@ -326,7 +326,7 @@ $m  add command -label HelpAbout -command helpAbout
 ##################################################
 # Store menu labels for translations and help messages
 set ::menuHelpMessage {}
-proc storeMenuLabels {m} {
+proc translateMenuLabels {m} {
     bind $m <<MenuSelect>> {
         set idx [%W index active]
         if {$idx != "none"} {
@@ -360,7 +360,7 @@ proc storeMenuLabels {m} {
             $m entryconfig $i -label [tr $lbl] -underline $under
         }
         if {$type == "cascade"} {
-            storeMenuLabels [$m entrycget $i -menu]
+            translateMenuLabels [$m entrycget $i -menu]
         }
     }
 }
@@ -374,7 +374,7 @@ proc menuConfig {{m} {label} {cmd} args} {
         }
     }
 }
-storeMenuLabels .menu
+translateMenuLabels .menu
 set fileExitHack [.menu.file index end]
 set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
 array unset ::MenuLabels ".menu.file,$fileExitHack"
