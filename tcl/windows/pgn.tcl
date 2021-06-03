@@ -13,32 +13,6 @@ namespace eval pgn {
   ################################################################################
   #
   ################################################################################
-  proc ConfigMenus {{lang ""}} {
-    if {! [winfo exists .pgnWin]} { return }
-    if {$lang == ""} { set lang $::language }
-    set m .pgnWin.menu
-    foreach idx {0 1 2 3} tag {File Opt Color Help} {
-      configMenuText $m $idx Pgn$tag $lang
-    }
-    foreach idx {0 1 3} tag {Copy Print Close} {
-      configMenuText $m.file $idx PgnFile$tag $lang
-    }
-    foreach idx {0 1 2 3 4 5 6 7 8} tag {
-      Color Short Symbols IndentC IndentV Space Column StripMarks BoldMainLine
-    } {
-      configMenuText $m.opt $idx PgnOpt$tag $lang
-    }
-    foreach idx {9} tag {GInfoPhotos} {
-      configMenuText $m.opt $idx $tag $lang
-    }
-    foreach idx {0 1 2 3 4 5} tag {Header Anno Comments Vars Background Current} {
-      configMenuText $m.color $idx PgnColor$tag $lang
-    }
-    foreach idx {0 1} tag {Pgn Index} {
-      configMenuText $m.helpmenu $idx PgnHelp$tag $lang
-    }
-  }
-
   proc PgnClipboardCopy {} {
       setLanguageTemp E
       set pgnStr [sc_game pgn -width 75 -indentComments $::pgn::indentComments \
@@ -145,7 +119,7 @@ namespace eval pgn {
     $w.menu.helpmenu add command -label PgnHelpPgn -command {helpWindow PGN}
     $w.menu.helpmenu add command -label PgnHelpIndex -command {helpWindow Index}
     
-    ::pgn::ConfigMenus
+    storeMenuLabels .pgnWin.menu
     
     autoscrollText y $w.frame $w.text Treeview
     $w.text configure -wrap word -background $pgnColor(Background) -state normal \
