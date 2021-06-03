@@ -1269,6 +1269,9 @@ proc CreateGameInfo {} {
   }
 
   storeMenuLabels .main.gameInfo.menu
+  foreach idx {0 1 2 3 4 5 6 8 9 10 12} tag {HideNext Material FEN Marks Wrap FullComment Photos TBNothing TBResult TBAll Delete } {
+    configMenuText .main.gameInfo.menu $idx GInfo$tag $::language
+  }
 }
 
 # Set toolbar help status messages:
