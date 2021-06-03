@@ -353,7 +353,11 @@ proc storeMenuLabels {m} {
     for {set i 0} {$n != "none" && $i <= $n} {incr i} {
         set type [$m type $i]
         if {$type != "separator" && $type != "tearoff"} {
-            set ::MenuLabels($m,$i) [$m entrycget $i -label]
+            set lbl [$m entrycget $i -label]
+            set ::MenuLabels($m,$i) $lbl
+            set under 0
+            catch { set under $::menuUnder($::language,$lbl) }
+            $m entryconfig $i -label [tr $lbl] -underline $under
         }
         if {$type == "cascade"} {
             storeMenuLabels [$m entrycget $i -menu]
@@ -511,11 +515,11 @@ proc configMenuText {menu entry tag lang} {
 proc setLanguageMenus {} {
   set lang $::language
   foreach {key lbl} [array get ::MenuLabels] {
-    foreach {m idx} [split $key ","] {
+      lassign [split $key ","] m idx
+      if {![winfo exists $m]} { continue }
       set under 0
       catch { set under $::menuUnder($lang,$lbl) }
       $m entryconfig $idx -label [tr $lbl] -underline $under
-    }
   }
 
   ::pgn::ConfigMenus

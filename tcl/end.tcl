@@ -1218,7 +1218,6 @@ keyboardShortcuts .
 
 menuUpdateBases
 menuUpdateThemes
-setLanguageMenus
 
 if {$startup(tip)} { ::tip::show }
 
