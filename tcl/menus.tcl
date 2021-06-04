@@ -522,7 +522,6 @@ proc setLanguageMenus {} {
       $m entryconfig $idx -label [tr $lbl] -underline $under
   }
 
-  ::crosstab::ConfigMenus
   ::optable::ConfigMenus
   ::preport::ConfigMenus
   ::tools::graphs::score::ConfigMenus

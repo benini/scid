@@ -20,34 +20,6 @@ set crosstab(deleted) "-deleted"
 set crosstab(cnumbers) "-numcolumns"
 set crosstab(text) hypertext
 
-proc ::crosstab::ConfigMenus {{lang ""}} {
-  set m $::crosstab::win.menu
-  if {! [winfo exists $m] } { return }
-
-  if {$lang == ""} { set lang $::language }
-  foreach idx {0 1 2 3 4 5} tag {File Edit Opt Sort Color Help} {
-    configMenuText $m $idx Crosstab$tag $lang
-  }
-  foreach idx {0 1 2 4} tag {Text Html LaTeX Close} {
-    configMenuText $m.file $idx CrosstabFile$tag $lang
-  }
-  foreach idx {0 1 2} tag {Event Site Date} {
-    configMenuText $m.edit $idx CrosstabEdit$tag $lang
-  }
-  foreach idx {0 1 2 3 5 6 8 9 10 11 13 14 16} tag {All Swiss Knockout Auto Ages Nats Ratings Titles Breaks Deleted Colors ColumnNumbers Group} {
-    configMenuText $m.opt $idx CrosstabOpt$tag $lang
-  }
-  foreach idx {0 1 2} tag {Name Rating Score} {
-    configMenuText $m.sort $idx CrosstabSort$tag $lang
-  }
-  foreach idx {0 1} tag {Plain Hyper} {
-    configMenuText $m.color $idx CrosstabColor$tag $lang
-  }
-  foreach idx {0 1} tag {Cross Index} {
-    configMenuText $m.helpmenu $idx CrosstabHelp$tag $lang
-  }
-}
-
 proc ::crosstab::OpenClose {} {
   if {[winfo exists $::crosstab::win]} {
     ::win::closeWindow $::crosstab::win
@@ -226,7 +198,7 @@ proc ::crosstab::Open {} {
   $w.menu.helpmenu add command -label CrosstabHelpIndex \
       -command {helpWindow Index}
   
-  ::crosstab::ConfigMenus
+  translateMenuLabels $w.menu
   
   ttk::frame $w.b
   autoscrollText both $w.f $w.f.text Treeview
