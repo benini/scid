@@ -10,37 +10,7 @@ namespace eval ::tree {
   set scoreHighlight_WhiteExpectedScoreBonus 3.8 ; # on average white achieves a score of 53.8
   set scoreHighlight_Margin 3.0 ; # if +/- this value, something special happened
 }
-# ################################################################################
-proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
-  if {! [winfo exists .treeWin$baseNumber]} { return }
-  if {$lang == ""} { set lang $::language }
-  set m .treeWin$baseNumber.menu
-  foreach idx {0 1 2 3 4} tag {File Mask Sort Opt Help} {
-    configMenuText $m $idx Tree$tag $lang
-  }
-  foreach idx {0 1 2 3} tag {SetCacheSize Graph Copy Close} {
-    configMenuText $m.file $idx TreeFile$tag $lang
-  }
-  foreach idx {0 1 2 3 4 5 6 7 8 9} tag {New Open OpenRecent Save Close FillWithGame FillWithBase Search Info Display} {
-    configMenuText $m.mask $idx TreeMask$tag $lang
-  }
-  foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
-    configMenuText $m.sort $idx TreeSort$tag $lang
-  }
-  foreach idx {0 1} tag {Lock Training } {
-    configMenuText $m.opt $idx TreeOpt$tag $lang
-  }
-  foreach idx {0 1} tag {Tree Index} {
-    configMenuText $m.helpmenu $idx TreeHelp$tag $lang
-  }
-}
 
-# ################################################################################
-proc ::tree::ConfigMenus { { lang "" } } {
-  for {set i [sc_info limit bases] } {$i > 0} {incr i -1} {
-    ::tree::doConfigMenus $i $lang
-  }
-}
 ################################################################################
 proc ::tree::menuCopyToSelection { baseNumber } {
   clipboard clear
@@ -146,7 +116,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.menu.helpmenu add command -label TreeHelpTree -accelerator F1 -command {helpWindow Tree}
   $w.menu.helpmenu add command -label TreeHelpIndex -command {helpWindow Index}
   
-  ::tree::doConfigMenus $baseNumber
+  translateMenuLabels $w.menu
   
   autoscrollText y $w.f $w.f.tl Treeview
   $w.f.tl configure -wrap none  -setgrid 1 -exportselection 1 -font font_Fixed
