@@ -1,4 +1,3 @@
-
 ###
 ### fics.tcl: part of Scid.
 ### Copyright (C) 2007  Pascal Georges
@@ -6,7 +5,7 @@
 
 namespace eval fics {
   set server "freechess.org"
-  set sockchan 0
+  set sockchan ""
   set seeklist {}
   set observedGame -1
   set playing 0
@@ -16,6 +15,12 @@ namespace eval fics {
   set silence 1
   set sought 0
   set soughtlist {}
+  set games 0
+  set gameSelection 0
+  set gamesList {}
+  set player 0
+  set playerSelection ""
+  set playerList {}
   set width 300
   set height 300
   set off 20
@@ -41,6 +46,13 @@ namespace eval fics {
   set premoveSq1 -1
   set premoveSq2 -1
 
+  set showRatedGames 1
+  set showUnratedGames 1
+  set showStandardGames 1
+  set showBlitzGames 1
+  set showLightningGames 1
+  set showOnlyRegisteredPlayer 0
+  set showOnlyFreePlayer 0
   ################################################################################
   #
   ################################################################################
@@ -247,6 +259,66 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
+  proc gamespopupmenu {{w} {x} {y} {abs_x} {abs_y} } {
+      lassign [$w identify $x $y] what
+      if {$what == "heading"} { return }
+      set item [.fics.f.top.fgames.glist identify item $x $y]
+      .fics.f.top.fgames.glist selection set $item
+      $w.menu delete 0 end
+      set wplayer [.fics.f.top.fgames.glist set $item 2]
+      set bplayer [.fics.f.top.fgames.glist set $item 4]
+      set game [.fics.f.top.fgames.glist set $item 0]
+      set ::fics::gameSelection $game
+      #TODO translate
+      $w.menu add command -label "Observe" -command "if { $::fics::observedGame != -1 } { \
+        ::fics::writechan \"unobserve\" \"echo\"
+        }
+        ::fics::writechan \"observe $game\""
+      $w.menu add separator
+      $w.menu add checkbutton -label "Rated Games" -variable ::fics::showRatedGames -command ::fics::updateGames
+      $w.menu add checkbutton -label "Unrated Games" -variable ::fics::showUnratedGames -command ::fics::updateGames
+      $w.menu add separator
+      $w.menu add checkbutton -label "Lightning" -variable ::fics::showLightningGames -command ::fics::updateGames
+      $w.menu add checkbutton -label "Blitz" -variable ::fics::showBlitzGames -command ::fics::updateGames
+      $w.menu add checkbutton -label "Standard" -variable ::fics::showStandardGames -command ::fics::updateGames
+      $w.menu add separator
+      $w.menu add command -label "finger $wplayer" -command "::fics::writechan \"finger $wplayer\""
+      $w.menu add command -label "finger $bplayer" -command "::fics::writechan \"finger $bplayer\""
+      tk_popup $w.menu $abs_x $abs_y
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc playerpopupmenu {{w} {x} {y} {abs_x} {abs_y} } {
+      lassign [$w identify $x $y] what
+      if {$what == "heading"} { return }
+      set item [.fics.f.top.fplayer.plist identify item $x $y]
+      .fics.f.top.fplayer.plist selection set $item
+      $w.menu delete 0 end
+      set player [.fics.f.top.fplayer.plist set $item 1]
+      set state [.fics.f.top.fplayer.plist set $item 2]
+      set ::fics::playerSelection $player
+      set matchparameter "$::fics::findopponent(rated) $::fics::findopponent(initTime) \
+         $::fics::findopponent(incTime) $::fics::findopponent(color)"
+      $w.menu add command -label "finger $player" -command "::fics::writechan \"finger $player\""
+      if { [string first "p" $state] >= 0 } {
+          #TODO translate
+          $w.menu add command -label "Observe $player" -command "::fics::writechan \"observe $player\""
+      } elseif {  [string first "X" $state] == -1 } {
+          $w.menu add command -label "[tr FICSChallenge] $player" \
+              -command "::fics::writechan \"match $player $matchparameter\""
+      }
+      $w.menu add separator
+      #TODO translate
+      $w.menu add checkbutton -label "registered player only" -variable ::fics::showOnlyRegisteredPlayer \
+          -command ::fics::updatePlayer
+      $w.menu add checkbutton -label "free player only" -variable ::fics::showOnlyFreePlayer \
+          -command ::fics::updatePlayer
+      tk_popup $w.menu $abs_x $abs_y
+  }
+  ################################################################################
+  #
+  ################################################################################
   proc connect { login passwd } {
     global ::fics::sockchan ::fics::seeklist ::fics::width ::fics::height ::fics::off
     variable isGuestLogin
@@ -287,8 +359,12 @@ namespace eval fics {
     ttk::frame $w.f.top.fconsole.f2
 
     ttk::frame $w.f.top.foffers
+    ttk::frame $w.f.top.fgames
+    ttk::frame $w.f.top.fplayer
     $w.f.top add $w.f.top.fconsole -sticky nsew -text [::tr "FICSConsole"]
     $w.f.top add $w.f.top.foffers -sticky nsew -text [::tr "FICSOffers"]
+    $w.f.top add $w.f.top.fgames -sticky nsw -text [::tr "FICSGames"]
+    $w.f.top add $w.f.top.fplayer -sticky nws -text [::tr "TmtSortPlayers"]
 
     grid $w.f.top.fconsole.f1 -sticky news
     grid $w.f.top.fconsole.f2 -sticky news
@@ -301,7 +377,69 @@ namespace eval fics {
 
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
-    grid $w.f.bottom.left $w.f.bottom.right -sticky news
+    grid $w.f.bottom.left $w.f.bottom.right -sticky news -padx 5
+
+    # games
+    grid rowconfigure $w.f.top.fgames 0 -weight 1
+    grid columnconfigure $w.f.top.fgames 0 -weight 1
+    ttk::treeview $w.f.top.fgames.glist -columns { "Game" "WElo" "White" "BElo" "Black" "Type" "Time" } \
+        -show headings -selectmode browse -yscrollcommand "$w.f.top.fgames.ybar set"
+
+    set i 0
+    set wid [font measure font_Regular W]
+    foreach { width name } { 3 Game 4 GlistWElo 10 White 4 GlistBElo 10 Black 4 FinderSortType 5 Time } {
+        $w.f.top.fgames.glist column $i -width [expr $width * $wid]
+        $w.f.top.fgames.glist heading $i -text [tr $name]
+        incr i
+    }
+    bind $w.f.top.fgames.glist <KeyPress-Return> {
+        set ::fics::gameSelection [.fics.f.top.fgames.glist set [.fics.f.top.fgames.glist selection] 0]
+        ::fics::writechan "observe $::fics::gameSelection"
+    }
+    bind $w.f.top.fgames.glist <<TreeviewSelect>> {
+        set ::fics::gameSelection [.fics.f.top.fgames.glist set [.fics.f.top.fgames.glist selection] 0]
+    }
+    bind $w.f.top.fgames.glist <Double-ButtonRelease-1> {
+        set ::fics::gameSelection [.fics.f.top.fgames.glist set [.fics.f.top.fgames.glist identify row %x %y] 0]
+        ::fics::writechan "observe $::fics::gameSelection"
+    }
+    menu $w.f.top.fgames.glist.menu -borderwidth 1
+    bind $w.f.top.fgames.glist <ButtonPress-$::MB3> "fics::gamespopupmenu %W %x %y %X %Y"
+
+    ttk::scrollbar $w.f.top.fgames.ybar -command "$w.f.top.fgames.glist yview"
+    grid $w.f.top.fgames.glist -column 0 -row 0 -sticky ns
+    grid $w.f.top.fgames.ybar -column 1 -row 0 -sticky news
+
+    # player
+    grid rowconfigure $w.f.top.fplayer 0 -weight 1
+    grid columnconfigure $w.f.top.fplayer 0 -weight 1
+    ttk::treeview $w.f.top.fplayer.plist -columns { "Typ" "Name" "Status" "Blitz" "Lightning" "Standard" "onfor" "idle" } \
+        -show headings -selectmode browse -yscrollcommand "$w.f.top.fplayer.ybar set"
+    set i 0
+    foreach { width name } { 4 Typ 10 Name 3 Status 4 Blitz 4 Lightning 4 Standard 5 OnFor 4 Idle } {
+        $w.f.top.fplayer.plist column $i -width [expr $width * $wid]
+        $w.f.top.fplayer.plist heading $i -text [tr $name]
+        incr i
+    }
+    $w.f.top.fplayer.plist column 6 -anchor e
+    $w.f.top.fplayer.plist column 7 -anchor e
+    bind $w.f.top.fplayer.plist <KeyPress-Return> {
+        set ::fics::playerSelection [.fics.f.top.fplayer.plist set [.fics.f.top.fplayer.plist selection] 1]
+        ::fics::writechan "finger $::fics::playerSelection"
+    }
+    bind $w.f.top.fplayer.plist <<TreeviewSelect>> {
+        set ::fics::playerSelection [.fics.f.top.fplayer.plist set [.fics.f.top.fplayer.plist selection] 1]
+    }
+    bind $w.f.top.fplayer.plist <Double-ButtonRelease-1> {
+        set ::fics::playerSelection [.fics.f.top.fplayer.plist set [.fics.f.top.fplayer.plist identify row %x %y] 1]
+        ::fics::writechan "finger $::fics::playerSelection"
+    }
+    menu $w.f.top.fplayer.plist.menu -borderwidth 1
+    bind $w.f.top.fplayer.plist <ButtonPress-$::MB3> "fics::playerpopupmenu %W %x %y %X %Y"
+
+    ttk::scrollbar $w.f.top.fplayer.ybar -command "$w.f.top.fplayer.plist yview"
+    grid $w.f.top.fplayer.plist -column 0 -row 0 -sticky ns
+    grid $w.f.top.fplayer.ybar -column 1 -row 0 -sticky nwes
 
     # graph
     canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
@@ -398,7 +536,6 @@ namespace eval fics {
     bind $w.f.top.fconsole.f1.console <Configure> { .fics.f.top.fconsole.f1.console yview moveto 1 }
     bind $w.f.top.fconsole.f1.console <ButtonPress-1> { ::fics::consoleClick %x %y %W }
     ::createToplevelFinalize $w
-
 
     # all widgets must be visible
     update
@@ -613,6 +750,69 @@ namespace eval fics {
     return 1
   }
   ################################################################################
+  # Appends an array to gamesList if the parameter is correct
+  # returns 0 if the line is not parsed and so it is still pending for use
+  ################################################################################
+  proc parseGamesLine { l } {
+    # it seems that the first offer starts with a prompt
+    set ret 0
+    if {[string match "fics% *" $l]} {
+      set l [string range $l 6 end]
+    }
+    set anz [scan $l "%d %s %s %s %s \[%s %d %d" nr welo p1 belo p2 type t1 t2]
+    if { $anz == 8 } {
+        if { [string length $type] < 3 } {
+            set type " $type"
+        }
+        lappend ::fics::gamesList $nr $welo $p1 $belo $p2 $type "$t1 $t2"
+        set ret 1
+    }
+    return $ret
+  }
+  ################################################################################
+  # Appends an array to playerList if the parameter is correct
+  # returns 0 if the line is not parsed and so it is still pending for use
+  ################################################################################
+  proc parseWhoLine { l } {
+    # it seems that the first offer starts with a prompt
+    if {[string match "fics% *" $l]} {
+      set l [string range $l 6 end]
+    }
+    if { [string index $l 1] == "+"} {
+        # ignore frame around list
+        return 1
+    }
+    if { [string index $l 1] != "|"} {
+        return 0
+    }
+    #Status: X=not open for playing p=playing U=unregistered o=observing a game
+    set state [string range $l 5 8]
+    set game [string range $l 2 4]
+    set l [string range $l 9 end]
+    if { [scan $l "%s %s %s %s %s %s" name standard blitz lightning onfor idle] != 6} {
+        return 1
+    }
+    if { $name == "User" } {
+        return 1
+    }
+    set typ ""
+    set typ_found [string first "(" $name ]
+    if { $typ_found != -1 } {
+        set typ [string range $name $typ_found end]
+        incr typ_found -1
+        set name [string range $name 0 $typ_found]
+    }
+    if { [string is digit [string index $game 2]] } {
+        #set status player is playing
+        append state "p"
+    }
+    if { [string index $idle 0] == "|" } {
+        set idle ""
+    }
+    lappend ::fics::playerList $typ $name $state $standard $blitz $lightning $onfor $idle
+    return 1
+  }
+  ################################################################################
   #
   ################################################################################
   proc readparse {line} {
@@ -629,6 +829,26 @@ namespace eval fics {
       }
       # lappend ::fics::soughtlist $line
       if { [ parseSoughtLine $line ] } {
+        return
+      }
+    }
+    if { $::fics::games } {
+      if {[string match "* ga* displayed." $line]} {
+        set ::fics::games 0
+        catch { displayGames }
+        return
+      }
+      if { [ parseGamesLine $line ] } {
+        return
+      }
+    }
+    if { $::fics::player } {
+      if {[string first "Players Displayed" $line] > 0 } {
+        set ::fics::player 0
+        catch { displayPlayer }
+        return
+      }
+      if { [ parseWhoLine $line ] } {
         return
       }
     }
@@ -722,9 +942,9 @@ namespace eval fics {
       set res [lindex $line end]
       set comment [lrange [lindex $line 0] 2 end]
       set n [string first {)} $comment]
-	if {$n > -1} {
-	  set comment [string range $comment $n+2 end]
-	}
+      if {$n > -1} {
+          set comment [string range $comment $n+2 end]
+      }
       sc_pos setComment "[sc_pos getComment]$comment"
       if {$num == $::fics::observedGame} {
         if {[string match "1/2*" $res]} {
@@ -801,13 +1021,13 @@ namespace eval fics {
       }
       catch { sc_move addSan $m1 }
       if {$t2 != ""} {
-	  storeEmtComment 0 $t2 $t3
+          storeEmtComment 0 $t2 $t3
       }
       if {$m2 != ""} {
         catch { sc_move addSan $m2 }
       }
       if {$t4 != ""} {
-	  storeEmtComment 0 $t4 $t5
+          storeEmtComment 0 $t4 $t5
       }
 
       if {[sc_pos fen] == $::fics::waitForMoves } {
@@ -896,8 +1116,12 @@ namespace eval fics {
 
     if {$state == "normal" } {
       $w.f.top add $w.f.top.foffers
+      $w.f.top add $w.f.top.fgames
+      $w.f.top add $w.f.top.fplayer
     } else  {
       $w.f.top hide $w.f.top.foffers
+      $w.f.top hide $w.f.top.fgames
+      $w.f.top hide $w.f.top.fplayer
     }
   }
   ################################################################################
@@ -1053,14 +1277,14 @@ namespace eval fics {
         if { [catch { sc_move addSan $moveSan } err ] } {
           puts "error $err"
         } else {
-	    if {  $::fics::playing == 1 } {
-		::fics::storeTime
-	    } else {
-		set t1 ""; set t2 ""
-		if { [scan $moveTime "(%d:%d)" t1 t2] == 2} {
-		    storeEmtComment 0 $t1 $t2
-		}
-	    }
+          if {  $::fics::playing == 1 } {
+              ::fics::storeTime
+          } else {
+              set t1 ""; set t2 ""
+              if { [scan $moveTime "(%d:%d)" t1 t2] == 2} {
+                  storeEmtComment 0 $t1 $t2
+              }
+          }
           if { $::novag::connected } {
             set m $verbose_move
             if { [string index $m 1] == "/" } { set m [string range $m 2 end] }
@@ -1143,6 +1367,35 @@ namespace eval fics {
     writechan "sought"
     vwaitTimed ::fics::sought 5000 "nowarn"
     after 3000 ::fics::updateOffers
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc updateGames { } {
+    if { ![winfo exists .fics] ||
+         [ .fics.f.top select ] != ".fics.f.top.fgames" } { return }
+    set ::fics::games 1
+    set ::fics::gamesList {}
+    ::fics::writechan "games"
+    vwaitTimed ::fics::games 5000 "nowarn"
+    after 20000 ::fics::updateGames
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc updatePlayer { } {
+    if { ![winfo exists .fics] ||
+         [ .fics.f.top select ] != ".fics.f.top.fplayer" } { return }
+    set ::fics::player 1
+    set ::fics::playerList {}
+    if { $::fics::showOnlyRegisteredPlayer } {
+        set command "who Rv"
+    } else {
+        set command "who v"
+    }
+    writechan $command
+    vwaitTimed ::fics::player 5000 "nowarn"
+    after 40000 ::fics::updatePlayer
   }
   ################################################################################
   #
@@ -1231,6 +1484,50 @@ namespace eval fics {
 
   }
   ################################################################################
+  #
+  ################################################################################
+  proc displayGames { } {
+      set w .fics.f.top.fgames
+      set i 1
+      $w.glist delete [$w.glist children {}]
+      foreach { nr welo p1 belo p2 type time} $::fics::gamesList {
+          set show_ru 0
+          set ru [string index $type 2]
+          if { ( $::fics::showRatedGames && $ru == "r") ||
+               ( $::fics::showUnratedGames && $ru == "u" ) } {
+              set show_ru 1
+          }
+          set show_sbl 0
+          set sbl [string index $type 1]
+          if { ( $::fics::showStandardGames && $sbl == "s" ) ||
+               ( $::fics::showBlitzGames && $sbl == "b" ) ||
+               ( $::fics::showLightningGames && $sbl == "l" ) } {
+              set show_sbl 1
+          }
+          if { $show_ru && $show_sbl } {
+              $w.glist insert {} end -id $i -values [list $nr $welo $p1 $belo $p2 $type $time]
+              if { $nr == $::fics::gameSelection } { $w.glist selection set $i }
+              incr i
+          }
+      }
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc displayPlayer { } {
+      set w .fics.f.top.fplayer
+      set i 1
+      $w.plist delete [$w.plist children {}]
+      foreach { typ name state standard blitz lightning onfor idle } $::fics::playerList {
+          if { ! $::fics::showOnlyFreePlayer || ! ([string first "X" $state] >= 0 || [string first "p" $state] >= 0 ) } {
+              $w.plist insert {} end -id $i -values [list  $typ $name $state $standard $blitz $lightning $onfor $idle ]
+              if { $name == $::fics::playerSelection } { $w.plist selection set $i }
+              incr i
+          }
+      }
+      set $::fics::playerList {}
+  }
+  ################################################################################
   # Play the selected game
   ################################################################################
   proc getOffersGame { idx } {
@@ -1280,6 +1577,7 @@ namespace eval fics {
   #
   ################################################################################
   proc writechan {line {echo "noecho"}} {
+    if { $::fics::sockchan == "" } { return }
     after cancel ::fics::stayConnected
     if {[eof $::fics::sockchan]} {
       tk_messageBox -title "FICS" -icon error -type ok -message "Network error writing channel"
@@ -1336,10 +1634,10 @@ namespace eval fics {
 
     if { $::fics::playing == 1 } { return 1 }
 
-    if { $::fics::premoveEnabled && $::fics::playing == -1 } { 
+    if { $::fics::premoveEnabled && $::fics::playing == -1 } {
         .main.board.bd delete mark
         set ::fics::premoveSq1 -1
-        return 1 
+        return 1
     }
     return 0
   }
@@ -1410,15 +1708,24 @@ namespace eval fics {
   # updates the offers view if it is visible
   ################################################################################
   proc tabchanged {} {
-    set nb .fics.f.top
-    set w .fics.f.top.foffers
-
-    if { [ $nb select ] == $w } {
-      updateOffers
-      set ::fics::graphon 1
-    } else  {
-      after cancel ::fics::updateOffers
-      set ::fics::graphon 0
+    after cancel ::fics::updateGames
+    after cancel ::fics::updateOffers
+    after cancel ::fics::updatePlayer
+    set ::fics::graphon 0
+    set ::fics::sought 0
+    set ::fics::games 0
+    set ::fics::player 0
+    switch [ .fics.f.top select ] {
+      .fics.f.top.fgames {
+          updateGames
+      }
+      .fics.f.top.fplayer {
+          updatePlayer
+      }
+      .fics.f.top.foffers {
+          updateOffers
+          set ::fics::graphon 1
+      }
     }
   }
   ################################################################################
@@ -1428,9 +1735,13 @@ namespace eval fics {
     variable logged
     # stop recursive call
     bind .fics <Destroy> {}
+    # avoid error on closing via x-Button
+    .fics.f.top.fconsole.f1.console configure -yscrollcommand ""
 
     set ::fics::sought 0
     after cancel ::fics::updateOffers
+    after cancel ::fics::updateGames
+    after cancel ::fics::updatePlayer
     after cancel ::fics::stayConnected
     set logged 0
 
@@ -1439,8 +1750,13 @@ namespace eval fics {
     }
 
     set ::fics::playing 0
+    set ::fics::games 0
+    set ::fics::player 0
     set ::fics::observedGame -1
-    ::close $::fics::sockchan
+    if { $::fics::sockchan ne "" } {
+        ::close $::fics::sockchan
+        set ::fics::sockchan ""
+    }
     if { ! $::windowsOS } { catch { exec -- kill -s INT [ $::fics::timeseal_pid ] }  }
     ::win::closeWindow .fics
   }
