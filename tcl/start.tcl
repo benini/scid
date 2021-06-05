@@ -286,6 +286,7 @@ proc safeSourceStyle {filename} {
   interp alias $safeInterp package {} ::safePackage $safeInterp
   interp alias $safeInterp image {} ::safeImage $safeInterp [list $vdir $dir]
   interp alias $safeInterp ttk::style {} ::safeStyle $safeInterp
+  interp alias $safeInterp ::styleOption {} ::safeStyleOption $safeInterp
 
   $safeInterp eval [list set vdir $vdir]
   $safeInterp eval "source \$vdir/[file tail $filename]"
@@ -313,6 +314,10 @@ proc safeImage {interp dir_map args} {
 		set args [lreplace $args $filename $filename $real_filename]
 	}
 	return [image {*}$args]
+}
+
+proc safeStyleOption {interp args} {
+    styleOption {*}$args
 }
 
 # Evaluate ttk::style commands invoked inside the restricted script.
