@@ -2694,6 +2694,10 @@ proc updateAnalysisText {{n 1}} {
         set nps [expr {round($analysis(nodes$n) / $analysis(time$n))} ]
     }
     set score $analysis(score$n)
+    # Show score only from one engine. Engine1 has priority
+    if { $n == 1 || ( $n == 2 && (! [winfo exists .analysisWin1 ] || ! $analysis(analyzeMode1) )) } {
+        ::board::updateScoreBar .main.board $::analysis(score$n)
+    }
     set t .analysisWin$n.text
     set h .analysisWin$n.hist.text
     
@@ -2918,7 +2922,7 @@ proc toggleAnalysisBoard {n} {
         set analysis(showBoard$n) 0
         pack forget .analysisWin$n.bd
         setWinSize .analysisWin$n
-	.analysisWin$n.b1.showboard state !pressed
+        .analysisWin$n.b1.showboard state !pressed
     } else {
         bind .analysisWin$n <Configure> ""
         set analysis(showBoard$n) 1
@@ -2931,8 +2935,9 @@ proc toggleAnalysisBoard {n} {
         wm geometry .analysisWin$n ${x}x${y}
         .analysisWin$n.hist.text configure -setgrid 1
         .analysisWin$n.text configure -setgrid 1
-	.analysisWin$n.b1.showboard state pressed
+        .analysisWin$n.b1.showboard state pressed
     }
+    ::board::toggleScorebar .analysisWin$n.bd
 }
 ################################################################################
 # toggleEngineInfo
@@ -2971,6 +2976,9 @@ proc updateAnalysisBoard {n moves} {
     # Make the engine moves and update the board:
     sc_move_add $moves $n
     ::board::update $bd [sc_pos board]
+    if { $::analysis(score$n) ne "" } {
+        ::board::updateScoreBar $bd $::analysis(score$n)
+    }
     
     # Pop the temporary game:
     sc_game pop

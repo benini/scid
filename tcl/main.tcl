@@ -108,6 +108,8 @@ proc updateMainGame {} {
     set gamePlayers(eloB)   [expr {$eloB == 0 ? "" : "($eloB)"}]
     set gamePlayers(clockW) ""
     set gamePlayers(clockB) ""
+    # reset score bar from previous game. TODO: find a better place to do this
+    ::board::updateScoreBar .main.board 0
 }
 
 # updateTitle:
@@ -162,6 +164,8 @@ proc updateStatusBar {} {
     # show [%clk] command (if we are not playing)
     set toMove  [sc_pos side]
     set comment [sc_pos getComment]
+    set score [getScorefromComment $comment 4]
+    if { $score ne "" } { ::board::updateScoreBar .main.board $score }
     if { ![gameclock::isRunning] } {
         set ::gamePlayers(clockW) ""
         set ::gamePlayers(clockB) ""
@@ -328,9 +332,6 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 proc toggleRotateBoard {} {
     ::board::flip .main.board
 }
-
-
-
 
 ############################################################
 ### The board:
@@ -1136,7 +1137,8 @@ proc CreateMainBoard { {w} } {
 
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board $::gameInfo(showMarks)
-  for {set i 0} {$i < $::boardCoords} {incr i} { ::board::coords $w.board }
+  ::board::coords $w.board $::boardCoords
+  if {$::boardScorebar} { ::board::toggleScorebar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers

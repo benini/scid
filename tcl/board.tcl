@@ -401,6 +401,9 @@ proc ::board::new {w {psize 40} } {
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
+  set ::board::_showScorebar($w) 0
+  set ::board::_lastBoardScore($w) 0
+  set ::board::_lastBoardScoreHigh($w) 0
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
@@ -440,9 +443,13 @@ proc ::board::new {w {psize 40} } {
     grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
   
+  canvas $w.score -width 8
+  grid $w.score -row 6 -column 12 -rowspan 8 -sticky ew
+  ::board::updateScoreBar $w
+  grid remove $w.score
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
   ::applyThemeColor_background $w.mat
-  grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5 -padx 5
+  grid $w.mat -row 6 -column 13 -rowspan 8 -pady 0
   grid remove $w.mat
 
   ::board::coords $w
@@ -564,6 +571,46 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
   }
 }
 
+proc ::board::updateScoreBar { w { score "" } } {
+    if { ![winfo viewable $w.score] && $score ne "" } { return }
+    if { $score eq "" } {
+        #force a redraw of the score bar
+        set ::board::_lastBoardScoreHigh($w) 0
+        set score $::board::_lastBoardScore($w)
+    }
+    set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
+    if { $score == $::board::_lastBoardScore($w) && $h == $::board::_lastBoardScoreHigh($w) } { return }
+    set maxscore 4
+    set width 14
+    set c1 grey7
+    set c2 grey94
+    if { $h < 401 } { set width 10 }
+    if { $h != $::board::_lastBoardScoreHigh($w) } {
+        $w.score delete -withtag nl
+        $w.score configure -background grey50 -width [expr $width -2] -height $h -borderwidth 1
+        for { set i [expr 1 - $maxscore] } { $i < $maxscore } { incr i } {
+            set h1 [expr $h - ($i + $maxscore) * $h / 2 / $maxscore]
+            if { $i == 0 } {
+                $w.score create rectangle 0 [expr $h1-1] $width $h1 -fill red -outline red -tag nl
+            } else {
+                $w.score create line 0 $h1 $width $h1 -fill gray40 -tag nl
+            }
+        }
+    }
+    set h1 [expr int($h - ($score + $maxscore) * $h / 2 / $maxscore)]
+    if { $::board::_flip($w) } {
+        set c1 grey94
+        set c2 grey7
+        set h1 [expr $h - $h1]
+    }
+    $w.score create rectangle 0 0 $width $h1 -fill $c1 -outline $c1 -tag bs
+    incr h1
+    $w.score create rectangle 0 $h1 $width $h -fill $c2 -outline $c2 -tag bs
+    $w.score raise nl
+    set ::board::_lastBoardScoreHigh($w) $h
+    set ::board::_lastBoardScore($w) $score
+}
+
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
   global "$varname"
   set i [$menu index end]
@@ -606,9 +653,12 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
+  #TODO translate
+  $m add command -label "  Score bar on/off" -image tb_BD_Scorebar -compound left
   $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
+  set ${varname}(tb_BD_Scorebar) "set ::boardScorebar \[::board::toggleScorebar $w\]"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
   return $m
@@ -722,6 +772,7 @@ proc ::board::resize {w psize} {
   
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
+  ::board::updateScoreBar $w
   
   return $psize
 }
@@ -1580,6 +1631,7 @@ proc ::board::flip {w {newstate -1}} {
   ::board::flipNames_ $w $flip
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
+  ::board::updateScoreBar $w
   return $w
 }
 ################################################################################
@@ -1657,6 +1709,16 @@ proc ::board::toggleMaterial {w} {
   }
   ::board::update $w
   return $::board::_showmat($w)
+}
+proc ::board::toggleScorebar {w} {
+  set ::board::_showScorebar($w) [expr {1 - $::board::_showScorebar($w)}]
+  if {$::board::_showScorebar($w)} {
+    grid $w.score
+  } else {
+    grid remove $w.score
+  }
+  ::board::updateScoreBar $w
+  return $::board::_showScorebar($w)
 }
 
 ################################################################################

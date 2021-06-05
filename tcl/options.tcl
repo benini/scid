@@ -182,8 +182,11 @@ set borderwidth 0
 set ::markColor green
 set ::markType full
 
-# boardCoords: 1 to show board Coordinates, 0 to hide them.
+# boardCoords: 1-4 to show board Coordinates, 0 to hide them.
 set boardCoords 0
+
+# boardSscorebar: 1 to show main board score bar, 0 to hide it.
+set boardScorebar 0
 
 # autoResizeBoard:
 # resize the board to fit the container
@@ -663,7 +666,7 @@ proc options.write {} {
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat \
           tree(order) optionsAutoSave ::tree::mask::recentMask \
           ecoFile suggestMoves showVarPopup showVarArrows \
-          blunderThreshold autoplayDelay animateDelay boardCoords \
+          blunderThreshold autoplayDelay animateDelay boardCoords boardScorebar \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           glossOfDanger locale(numeric) \
