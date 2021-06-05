@@ -185,9 +185,6 @@ set ::markType full
 # boardCoords: 1-4 to show board Coordinates, 0 to hide them.
 set boardCoords 0
 
-# boardSscorebar: 1 to show main board score bar, 0 to hide it.
-set boardScorebar 0
-
 # autoResizeBoard:
 # resize the board to fit the container
 set autoResizeBoard 1
@@ -391,6 +388,7 @@ set startup(tip) 1
 set gameInfo(photos) 1
 set gameInfo(hideNextMove) 0
 set gameInfo(showMaterial) 0
+set gameInfo(showScorebar) 0
 set gameInfo(showFEN) 0
 set gameInfo(showMarks) 1
 set gameInfo(wrap) 0
@@ -666,7 +664,7 @@ proc options.write {} {
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat \
           tree(order) optionsAutoSave ::tree::mask::recentMask \
           ecoFile suggestMoves showVarPopup showVarArrows \
-          blunderThreshold autoplayDelay animateDelay boardCoords boardScorebar \
+          blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           glossOfDanger locale(numeric) \
@@ -678,7 +676,7 @@ proc options.write {} {
           email(smtp) email(smproc) email(server) \
           email(from) email(bcc) \
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
-          gameInfo(fullComment) gameInfo(showMarks) \
+          gameInfo(fullComment) gameInfo(showMarks) gameInfo(showScorebar) \
           gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \

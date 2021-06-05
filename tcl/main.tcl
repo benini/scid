@@ -1138,13 +1138,14 @@ proc CreateMainBoard { {w} } {
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board $::gameInfo(showMarks)
   ::board::coords $w.board $::boardCoords
-  if {$::boardScorebar} { ::board::toggleScorebar $w.board }
+  if {$::gameInfo(showScorebar)} { ::board::toggleScorebar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
+  set ::gameInfoBar(tb_BD_Scorebar) "set ::gameInfo(showScorebar) \[::board::toggleScorebar $w.board\]"
 
   menu .main.menuaddchoice -bg white -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
@@ -1229,6 +1230,9 @@ proc CreateGameInfo {} {
 
   .main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
           -command { toggleShowMaterial }
+  #TODO translate
+  .main.gameInfo.menu add checkbutton -label "Show Score Bar" -variable gameInfo(showScorebar) -offvalue 0 -onvalue 1 \
+          -command { ::board::toggleScorebar .main.board }
 
   .main.gameInfo.menu add checkbutton -label GInfoFEN \
           -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
