@@ -571,6 +571,11 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
   }
 }
 
+proc ::board::resetScoreBar { w } {
+    set ::board::_lastBoardScore($w) 0
+    ::board::updateScoreBar $w
+}
+
 proc ::board::updateScoreBar { w { score "" } } {
     if { ![winfo viewable $w.score] && $score ne "" } { return }
     if { $score eq "" } {
@@ -1714,10 +1719,10 @@ proc ::board::toggleScorebar {w} {
   set ::board::_showScorebar($w) [expr {1 - $::board::_showScorebar($w)}]
   if {$::board::_showScorebar($w)} {
     grid $w.score
+    ::board::updateScoreBar $w
   } else {
     grid remove $w.score
   }
-  ::board::updateScoreBar $w
   return $::board::_showScorebar($w)
 }
 

@@ -109,7 +109,7 @@ proc updateMainGame {} {
     set gamePlayers(clockW) ""
     set gamePlayers(clockB) ""
     # reset score bar from previous game. TODO: find a better place to do this
-    ::board::updateScoreBar .main.board 0
+    ::board::resetScoreBar .main.board
 }
 
 # updateTitle:
