@@ -182,7 +182,7 @@ set borderwidth 0
 set ::markColor green
 set ::markType full
 
-# boardCoords: 1 to show board Coordinates, 0 to hide them.
+# boardCoords: 1-4 to show board Coordinates, 0 to hide them.
 set boardCoords 0
 
 # autoResizeBoard:
