@@ -1137,13 +1137,15 @@ proc CreateMainBoard { {w} } {
 
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board $::gameInfo(showMarks)
-  for {set i 0} {$i < $::boardCoords} {incr i} { ::board::coords $w.board }
+  ::board::coords $w.board $::boardCoords
+  if {$::boardScorebar} { ::board::toggleScorebar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
+  set ::gameInfoBar(tb_BD_Scorebar) "set ::boardScorebar \[::board::toggleScorebar $w.board\]"
 
   menu .main.menuaddchoice -bg white -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
