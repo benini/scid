@@ -401,6 +401,13 @@ proc ::board::new {w {psize 40} } {
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
+  set ::board::_showScorebar($w) 0
+  set ::board::_scoreBarMaxScore($w) 4
+  set ::board::_scoreBarScore($w) 0
+  set ::board::_scoreBarHigh($w) 0
+  set ::board::_scorebarWidth($w) 0
+  set ::board::_scorebarColorUp($w) 0
+  set ::board::_scorebarColorDown($w) 0
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
@@ -440,9 +447,13 @@ proc ::board::new {w {psize 40} } {
     grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
   
+  canvas $w.score -width 8
+  grid $w.score -row 6 -column 12 -rowspan 8 -sticky ew
+  ::board::drawScoreBar $w
+  grid remove $w.score
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
   ::applyThemeColor_background $w.mat
-  grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5 -padx 5
+  grid $w.mat -row 6 -column 13 -rowspan 8 -pady 0
   grid remove $w.mat
 
   ::board::coords $w
@@ -564,6 +575,67 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
   }
 }
 
+proc ::board::toggleScorebar {w} {
+  set ::board::_showScorebar($w) [expr {1 - $::board::_showScorebar($w)}]
+  if {$::board::_showScorebar($w)} {
+      grid $w.score
+      ::board::drawScoreBar $w
+  } else {
+      grid remove $w.score
+  }
+  return $::board::_showScorebar($w)
+}
+
+proc ::board::resetScoreBar { w } {
+    set ::board::_scoreBarScore($w) 0
+    ::board::drawScoreBar $w
+}
+
+proc ::board::drawScoreBar { w  } {
+    set maxscore $::board::_scoreBarMaxScore($w)
+    set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
+    set width 14
+    if { $h < 401 } { set width 10 }
+    $w.score delete -withtag nl
+    $w.score configure -background grey50 -width [expr $width -2] -height $h -borderwidth 1
+    for { set i [expr 1 - $maxscore] } { $i < $maxscore } { incr i } {
+        set h1 [expr $h - ($i + $maxscore) * $h / 2 / $maxscore]
+        if { $i == 0 } {
+            $w.score create rectangle 0 [expr $h1-1] $width $h1 -fill red -outline red -tag nl
+        } else {
+            $w.score create line 0 $h1 $width $h1 -fill gray40 -tag nl
+        }
+    }
+    set ::board::_scorebarColorUp($w) grey7
+    set ::board::_scorebarColorDown($w) grey94
+    if { $::board::_flip($w) } {
+        set ::board::_scorebarColorUp($w) grey94
+        set ::board::_scorebarColorDown($w) grey7
+    }
+    set ::board::_scoreBarHigh($w) $h
+    set ::board::_scoreBarScoreWidth($w) $width
+    ::board::updateScoreBar $w $::board::_scoreBarScore($w)
+}
+
+proc ::board::updateScoreBar { w score } {
+    if { ! $::board::_showScorebar($w) } { return }
+    set maxscore $::board::_scoreBarMaxScore($w)
+    set h $::board::_scoreBarHigh($w)
+    set width $::board::_scoreBarScoreWidth($w)
+
+    set h1 [expr int($h - ($score + $maxscore) * $h / 2 / $maxscore)]
+    if { $::board::_flip($w) } {
+        set h1 [expr $h - $h1]
+    }
+    $w.score create rectangle 0 0 $width $h1 -fill $::board::_scorebarColorUp($w) \
+        -outline $::board::_scorebarColorUp($w) -tag bs
+    incr h1
+    $w.score create rectangle 0 $h1 $width $h -fill $::board::_scorebarColorDown($w) \
+        -outline $::board::_scorebarColorDown($w) -tag bs
+    $w.score raise nl
+    set ::board::_scoreBarScore($w) $score
+}
+
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
   global "$varname"
   set i [$menu index end]
@@ -606,9 +678,12 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
+  #TODO translate
+  $m add command -label "  Show/Hide Score Bar" -image tb_BD_Scorebar -compound left
   $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
+  set ${varname}(tb_BD_Scorebar) "::board::toggleScorebar $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
   return $m
@@ -722,6 +797,7 @@ proc ::board::resize {w psize} {
   
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
+  ::board::drawScoreBar $w
   
   return $psize
 }
@@ -1580,6 +1656,7 @@ proc ::board::flip {w {newstate -1}} {
   ::board::flipNames_ $w $flip
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
+  ::board::drawScoreBar $w
   return $w
 }
 ################################################################################
