@@ -407,8 +407,6 @@ proc ::board::new {w {psize 40} } {
   set ::board::_scorebarScore($w) 0
   set ::board::_scorebarHigh($w) 0
   set ::board::_scorebarWidth($w) 0
-  set ::board::_scorebarColorUp($w) 0
-  set ::board::_scorebarColorDown($w) 0
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
@@ -450,7 +448,6 @@ proc ::board::new {w {psize 40} } {
   
   canvas $w.score -width 8
   grid $w.score -row 6 -column 12 -rowspan 8 -sticky ew
-  ::board::drawScorebar $w
   grid remove $w.score
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
   ::applyThemeColor_background $w.mat
@@ -593,7 +590,20 @@ proc ::board::drawScorebar { w } {
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
     set width 14
     if { $h < 401 } { set width 10 }
-    $w.score delete -withtag nl
+
+    $w.score delete nl barUp barDown
+
+    set colorUp grey7
+    set colorDown grey94
+    if { $::board::_flip($w) } {
+        set colorUp grey94
+        set colorDown grey7
+    }
+    $w.score create rectangle 0 0 0 0 -tag barUp \
+        -fill $colorUp -outline $colorUp
+    $w.score create rectangle 0 0 0 0 -tag barDown \
+        -fill $colorDown -outline $colorDown
+
     $w.score configure -background grey50 -width [expr $width -2] -height $h -borderwidth 1
     for { set i [expr 1 - $maxscore] } { $i < $maxscore } { incr i } {
         set h1 [expr $h - ($i + $maxscore) * $h / 2 / $maxscore]
@@ -602,12 +612,6 @@ proc ::board::drawScorebar { w } {
         } else {
             $w.score create line 0 $h1 $width $h1 -fill gray40 -tag nl
         }
-    }
-    set ::board::_scorebarColorUp($w) grey7
-    set ::board::_scorebarColorDown($w) grey94
-    if { $::board::_flip($w) } {
-        set ::board::_scorebarColorUp($w) grey94
-        set ::board::_scorebarColorDown($w) grey7
     }
     set ::board::_scorebarHigh($w) $h
     set ::board::_scorebarScoreWidth($w) $width
@@ -630,14 +634,9 @@ proc ::board::updateScorebar { w score } {
     if { $::board::_flip($w) } {
         set h1 [expr $h - $h1]
     }
-    $w.score create rectangle 0 0 $::board::_scorebarScoreWidth($w) $h1 \
-        -fill $::board::_scorebarColorUp($w) \
-        -outline $::board::_scorebarColorUp($w) -tag bs
+    $w.score coords barUp 0 0 $::board::_scorebarScoreWidth($w) $h1
     incr h1
-    $w.score create rectangle 0 $h1 $::board::_scorebarScoreWidth($w) $h \
-        -fill $::board::_scorebarColorDown($w) \
-        -outline $::board::_scorebarColorDown($w) -tag bs
-    $w.score raise nl
+    $w.score coords barDown 0 $h1 $::board::_scorebarScoreWidth($w) $h
 }
 
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
