@@ -624,8 +624,11 @@ proc ::board::updateScorebar { w score } {
     set ::board::_scorebarScore($w) $score
     if { ! $::board::_scorebarShow($w) } { return }
 
-    # TODO: provide a different visual feedback for "no score"
-    if { $score eq "" } { set score 0 }
+    if { $score eq "" } {
+        $w.score coords barUp 0 0 0 0
+        $w.score coords barDown 0 0 0 0
+        return
+    }
 
     set maxscore $::board::_scorebarMaxScore($w)
     set h $::board::_scorebarHigh($w)
