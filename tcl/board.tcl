@@ -592,6 +592,7 @@ proc ::board::resetScoreBar { w } {
 }
 
 proc ::board::drawScoreBar { w  } {
+    if { ! $::board::_showScorebar($w) } { return }
     set maxscore $::board::_scoreBarMaxScore($w)
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
     set width 14
@@ -617,23 +618,27 @@ proc ::board::drawScoreBar { w  } {
     ::board::updateScoreBar $w $::board::_scoreBarScore($w)
 }
 
+# Update the score bar (if it is visibile) to reflect the provided score.
+# The score value is from white prospective.
 proc ::board::updateScoreBar { w score } {
+    set ::board::_scoreBarScore($w) $score
     if { ! $::board::_showScorebar($w) } { return }
+
     set maxscore $::board::_scoreBarMaxScore($w)
     set h $::board::_scoreBarHigh($w)
-    set width $::board::_scoreBarScoreWidth($w)
 
     set h1 [expr int($h - ($score + $maxscore) * $h / 2 / $maxscore)]
     if { $::board::_flip($w) } {
         set h1 [expr $h - $h1]
     }
-    $w.score create rectangle 0 0 $width $h1 -fill $::board::_scorebarColorUp($w) \
+    $w.score create rectangle 0 0 $::board::_scoreBarScoreWidth($w) $h1 \
+        -fill $::board::_scorebarColorUp($w) \
         -outline $::board::_scorebarColorUp($w) -tag bs
     incr h1
-    $w.score create rectangle 0 $h1 $width $h -fill $::board::_scorebarColorDown($w) \
+    $w.score create rectangle 0 $h1 $::board::_scoreBarScoreWidth($w) $h \
+        -fill $::board::_scorebarColorDown($w) \
         -outline $::board::_scorebarColorDown($w) -tag bs
     $w.score raise nl
-    set ::board::_scoreBarScore($w) $score
 }
 
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
