@@ -9,19 +9,21 @@ proc getScorefromComment { comment maxY } {
 	set eval ""
 	set score ""
 	regexp $evalExp $comment -> eval
-	if { $eval != "" } { # check for [%eval 1.23]
-	    scan $eval "%f" score
-	    if { [scan $eval "%f" score ] == 1 } {
+    if { $eval != "" } { # check for [%eval 1.23]
+        if { [scan $eval "%f" score ] == 1 } {
             if { $score > $maxY } { set score $maxY }
             if { $score < $minY } { set score $minY }
-	    } else {
-            # Mate found in %eval #N oder #-N
-            if { [string first "#" $eval] != -1 } {
-                set score $maxY
-                if { [string first "-" $eval] > 0 } { set score $minY }
-            }
-	    }
-	}
+            return $score
+        }
+
+        # Mate found in %eval #N oder #-N
+        if { [string first "#" $eval] != -1 } {
+            set score $maxY
+            if { [string first "-" $eval] > 0 } { set score $minY }
+            return $score
+        }
+    }
+
 	set foundIndex [string first ":M" $comment]
 	# check for Mate :M5 or :M-3
 	if { $foundIndex >= 0 } {
