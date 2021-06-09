@@ -1,6 +1,7 @@
 # board.tcl: part of Scid
 # Copyright (C) 2001-2003 Shane Hudson. All rights reserved.
-# Copyright (C) 2014 Fulvio Benini
+# Copyright (C) 2014-2021 Fulvio Benini
+# Copyright (C) 2021 Uwe Klimmek
 
 # letterToPiece
 #    Array that maps piece letters to their two-character value.
