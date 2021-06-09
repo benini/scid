@@ -586,12 +586,7 @@ proc ::board::toggleScorebar {w} {
   return $::board::_showScorebar($w)
 }
 
-proc ::board::resetScoreBar { w } {
-    set ::board::_scoreBarScore($w) 0
-    ::board::drawScoreBar $w
-}
-
-proc ::board::drawScoreBar { w  } {
+proc ::board::drawScoreBar { w } {
     if { ! $::board::_showScorebar($w) } { return }
     set maxscore $::board::_scoreBarMaxScore($w)
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
@@ -619,10 +614,13 @@ proc ::board::drawScoreBar { w  } {
 }
 
 # Update the score bar (if it is visibile) to reflect the provided score.
-# The score value is from white prospective.
+# The score value is from white prospective. An empty "" value means no score.
 proc ::board::updateScoreBar { w score } {
     set ::board::_scoreBarScore($w) $score
     if { ! $::board::_showScorebar($w) } { return }
+
+    # TODO: provide a different visual feedback for "no score"
+    if { $score eq "" } { set score 0 }
 
     set maxscore $::board::_scoreBarMaxScore($w)
     set h $::board::_scoreBarHigh($w)

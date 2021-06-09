@@ -108,8 +108,6 @@ proc updateMainGame {} {
     set gamePlayers(eloB)   [expr {$eloB == 0 ? "" : "($eloB)"}]
     set gamePlayers(clockW) ""
     set gamePlayers(clockB) ""
-    # reset score bar from previous game. TODO: find a better place to do this
-    ::board::resetScoreBar .main.board
 }
 
 # updateTitle:
@@ -164,8 +162,7 @@ proc updateStatusBar {} {
     # show [%clk] command (if we are not playing)
     set toMove  [sc_pos side]
     set comment [sc_pos getComment]
-    set score [getScorefromComment $comment 10]
-    if { $score ne "" } { ::board::updateScoreBar .main.board $score }
+    ::board::updateScoreBar .main.board [getScorefromComment $comment 10]
     if { ![gameclock::isRunning] } {
         set ::gamePlayers(clockW) ""
         set ::gamePlayers(clockB) ""
@@ -332,6 +329,9 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 proc toggleRotateBoard {} {
     ::board::flip .main.board
 }
+
+
+
 
 ############################################################
 ### The board:
