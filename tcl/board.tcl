@@ -401,10 +401,10 @@ proc ::board::new {w {psize 40} } {
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
-  set ::board::_showScorebar($w) 0
-  set ::board::_scoreBarMaxScore($w) 4
-  set ::board::_scoreBarScore($w) 0
-  set ::board::_scoreBarHigh($w) 0
+  set ::board::_scorebarShow($w) 0
+  set ::board::_scorebarMaxScore($w) 4
+  set ::board::_scorebarScore($w) 0
+  set ::board::_scorebarHigh($w) 0
   set ::board::_scorebarWidth($w) 0
   set ::board::_scorebarColorUp($w) 0
   set ::board::_scorebarColorDown($w) 0
@@ -449,7 +449,7 @@ proc ::board::new {w {psize 40} } {
   
   canvas $w.score -width 8
   grid $w.score -row 6 -column 12 -rowspan 8 -sticky ew
-  ::board::drawScoreBar $w
+  ::board::drawScorebar $w
   grid remove $w.score
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
   ::applyThemeColor_background $w.mat
@@ -576,19 +576,19 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
 }
 
 proc ::board::toggleScorebar {w} {
-  set ::board::_showScorebar($w) [expr {1 - $::board::_showScorebar($w)}]
-  if {$::board::_showScorebar($w)} {
+  set ::board::_scorebarShow($w) [expr {1 - $::board::_scorebarShow($w)}]
+  if {$::board::_scorebarShow($w)} {
       grid $w.score
-      ::board::drawScoreBar $w
+      ::board::drawScorebar $w
   } else {
       grid remove $w.score
   }
-  return $::board::_showScorebar($w)
+  return $::board::_scorebarShow($w)
 }
 
-proc ::board::drawScoreBar { w } {
-    if { ! $::board::_showScorebar($w) } { return }
-    set maxscore $::board::_scoreBarMaxScore($w)
+proc ::board::drawScorebar { w } {
+    if { ! $::board::_scorebarShow($w) } { return }
+    set maxscore $::board::_scorebarMaxScore($w)
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 4 ]
     set width 14
     if { $h < 401 } { set width 10 }
@@ -608,32 +608,32 @@ proc ::board::drawScoreBar { w } {
         set ::board::_scorebarColorUp($w) grey94
         set ::board::_scorebarColorDown($w) grey7
     }
-    set ::board::_scoreBarHigh($w) $h
-    set ::board::_scoreBarScoreWidth($w) $width
-    ::board::updateScoreBar $w $::board::_scoreBarScore($w)
+    set ::board::_scorebarHigh($w) $h
+    set ::board::_scorebarScoreWidth($w) $width
+    ::board::updateScorebar $w $::board::_scorebarScore($w)
 }
 
 # Update the score bar (if it is visibile) to reflect the provided score.
 # The score value is from white prospective. An empty "" value means no score.
-proc ::board::updateScoreBar { w score } {
-    set ::board::_scoreBarScore($w) $score
-    if { ! $::board::_showScorebar($w) } { return }
+proc ::board::updateScorebar { w score } {
+    set ::board::_scorebarScore($w) $score
+    if { ! $::board::_scorebarShow($w) } { return }
 
     # TODO: provide a different visual feedback for "no score"
     if { $score eq "" } { set score 0 }
 
-    set maxscore $::board::_scoreBarMaxScore($w)
-    set h $::board::_scoreBarHigh($w)
+    set maxscore $::board::_scorebarMaxScore($w)
+    set h $::board::_scorebarHigh($w)
 
     set h1 [expr int($h - ($score + $maxscore) * $h / 2 / $maxscore)]
     if { $::board::_flip($w) } {
         set h1 [expr $h - $h1]
     }
-    $w.score create rectangle 0 0 $::board::_scoreBarScoreWidth($w) $h1 \
+    $w.score create rectangle 0 0 $::board::_scorebarScoreWidth($w) $h1 \
         -fill $::board::_scorebarColorUp($w) \
         -outline $::board::_scorebarColorUp($w) -tag bs
     incr h1
-    $w.score create rectangle 0 $h1 $::board::_scoreBarScoreWidth($w) $h \
+    $w.score create rectangle 0 $h1 $::board::_scorebarScoreWidth($w) $h \
         -fill $::board::_scorebarColorDown($w) \
         -outline $::board::_scorebarColorDown($w) -tag bs
     $w.score raise nl
@@ -800,7 +800,7 @@ proc ::board::resize {w psize} {
   
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
-  ::board::drawScoreBar $w
+  ::board::drawScorebar $w
   
   return $psize
 }
@@ -1659,7 +1659,7 @@ proc ::board::flip {w {newstate -1}} {
   ::board::flipNames_ $w $flip
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
-  ::board::drawScoreBar $w
+  ::board::drawScorebar $w
   return $w
 }
 ################################################################################

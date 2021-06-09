@@ -162,7 +162,7 @@ proc updateStatusBar {} {
     # show [%clk] command (if we are not playing)
     set toMove  [sc_pos side]
     set comment [sc_pos getComment]
-    ::board::updateScoreBar .main.board [getScorefromComment $comment 10]
+    ::board::updateScorebar .main.board [getScorefromComment $comment 10]
     if { ![gameclock::isRunning] } {
         set ::gamePlayers(clockW) ""
         set ::gamePlayers(clockB) ""

@@ -2697,7 +2697,7 @@ proc updateAnalysisText {{n 1}} {
     set score $analysis(score$n)
     # Show score only from one engine. Engine1 has priority
     if { $n == 1 || ( $n == 2 && (! [winfo exists .analysisWin1 ] || ! $analysis(analyzeMode1) )) } {
-        ::board::updateScoreBar .main.board $::analysis(score$n)
+        ::board::updateScorebar .main.board $::analysis(score$n)
     }
     set t .analysisWin$n.text
     set h .analysisWin$n.hist.text
@@ -2978,7 +2978,7 @@ proc updateAnalysisBoard {n moves} {
     sc_move_add $moves $n
     ::board::update $bd [sc_pos board]
     if { $::analysis(score$n) ne "" } {
-        ::board::updateScoreBar $bd $::analysis(score$n)
+        ::board::updateScorebar $bd $::analysis(score$n)
     }
     
     # Pop the temporary game:
