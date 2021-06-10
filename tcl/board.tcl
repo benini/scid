@@ -405,7 +405,7 @@ proc ::board::new {w {psize 40} } {
   set ::board::_scorebarShow($w) 0
   set ::board::_scorebarMaxScore($w) 4
   set ::board::_scorebarScore($w) 0
-  set ::board::_scorebarHigh($w) 0
+  set ::board::_scorebarHeight($w) 0
   set ::board::_scorebarWidth($w) 0
   
   set border $::board::_border($w)
@@ -613,8 +613,8 @@ proc ::board::drawScorebar { w } {
             $w.score create line 0 $h1 $width $h1 -fill gray40 -tag nl
         }
     }
-    set ::board::_scorebarHigh($w) $h
-    set ::board::_scorebarScoreWidth($w) $width
+    set ::board::_scorebarHeight($w) $h
+    set ::board::_scorebarWidth($w) $width
     ::board::updateScorebar $w $::board::_scorebarScore($w)
 }
 
@@ -631,15 +631,15 @@ proc ::board::updateScorebar { w score } {
     }
 
     set maxscore $::board::_scorebarMaxScore($w)
-    set h $::board::_scorebarHigh($w)
+    set h $::board::_scorebarHeight($w)
 
     set h1 [expr int($h - ($score + $maxscore) * $h / 2 / $maxscore)]
     if { $::board::_flip($w) } {
         set h1 [expr $h - $h1]
     }
-    $w.score coords barUp 0 0 $::board::_scorebarScoreWidth($w) $h1
+    $w.score coords barUp 0 0 $::board::_scorebarWidth($w) $h1
     incr h1
-    $w.score coords barDown 0 $h1 $::board::_scorebarScoreWidth($w) $h
+    $w.score coords barDown 0 $h1 $::board::_scorebarWidth($w) $h
 }
 
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
