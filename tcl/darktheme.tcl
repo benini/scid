@@ -100,7 +100,9 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure Toolbutton \
-            -padding 2 -relief flat \
+            -anchor center \
+            -padding 2 \
+            -relief flat \
         ;
         ttk::style map Toolbutton \
             -relief [list \
@@ -116,12 +118,19 @@ namespace eval ttk::theme::dark {
             -darkcolor [list pressed $basecol] \
         ;
 
+        ttk::style configure TCheckbutton \
+            -padding 2
+        ;
+        ttk::style configure TRadiobutton \
+            -padding 2
+        ;
+
         ttk::style configure TCombobox \
             -anchor center \
-            -padding {5 1} \
+            -padding 1 \
+            -insertwidth 1 \
             -relief raised \
             -borderwidth 1 \
-            -lightcolor $colors(fieldbg) \
         ;
         ttk::style map TCombobox \
             -bordercolor $borders \
@@ -139,8 +148,8 @@ namespace eval ttk::theme::dark {
 
         ttk::style configure TEntry \
             -foreground $colors(selectfg) \
-            -padding {2 0} \
-            -lightcolor $colors(fieldbg) \
+            -padding 1 \
+            -insertwidth 1 \
         ;
         ttk::style map TEntry \
             -bordercolor $borders \
@@ -148,12 +157,14 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure TSpinbox \
-            -lightcolor $colors(fieldbg) \
             -arrowsize 12 \
+            -padding {2 0 10 0} \
         ;
         ttk::style map TSpinbox \
             -bordercolor $borders \
             -background $buttonsbg \
+            -arrowcolor [list \
+                disabled $colors(disabledfg)] \
         ;
 
         ttk::style configure TScale \
@@ -165,20 +176,17 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure TNotebook.Tab \
-            -bordercolor $colors(notebookborder) \
-            -lightcolor $colors(background) \
-            -border {4 2 4 2} \
-            -padding {3 2 3 2} \
+            -padding {6 2 6 2} \
         ;
         ttk::style map TNotebook.Tab \
+            -padding [list \
+                selected {6 4 6 2}] \
             -background [list \
-                active $colors(background) \
                 selected $colors(background) \
-                !selected $colors(buttonbgdark)] \
-            -bordercolor [list \
-                active $basecol] \
+                {} $colors(notebookborder)] \
             -lightcolor [list \
-                active $basecol] \
+                selected $colors(lightcolor) \
+                {} $colors(notebookborder)] \
         ;
 
         ttk::style configure TPanedwindow \
