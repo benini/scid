@@ -493,7 +493,7 @@ proc ::board::addNamesBar {w {varname}} {
 
 proc ::board::addInfoBar {w varname} {
   ttk::frame $w.bar
-  autoscrollText y $w.bar.info $w.bar.info.t TLabel
+  autoscrollText y $w.bar.info $w.bar.info.t Toolbutton
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
   grid propagate $w.bar.info 0

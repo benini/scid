@@ -473,10 +473,12 @@ proc applyThemeColor_background { widget } {
 
 # Apply a ttk style to a tk widget
 proc applyThemeStyle {style widget} {
-  $widget configure -background [ttk::style lookup $style -background "" #d9d9d9]
-  $widget configure -foreground [ttk::style lookup $style -foreground "" black]
-  $widget configure -relief [ttk::style lookup $style -relief "" flat]
-  foreach {option value} [ttk::style configure $style] {
+  set exclude [list "-font"]
+  set options [ttk::style configure .]
+  lappend options {*}[ttk::style configure $style]
+
+  foreach {option value} $options {
+    if {$option in $exclude} { continue }
     catch { $widget configure $option $value }
   }
   bind $widget <<ThemeChanged>> "::applyThemeStyle $style $widget"

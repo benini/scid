@@ -48,6 +48,7 @@ namespace eval ttk::theme::dark {
             -selectborderwidth 0 \
             -arrowcolor $basecol \
             -insertcolor $colors(foreground) \
+            -insertbackground $colors(foreground) \
         ;
 
         ttk::style map "." \
