@@ -590,7 +590,6 @@ proc ::board::drawScorebar { w } {
     set maxscore $::board::_scorebarMaxScore($w)
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 2 ]
     set width 14
-    if { $h < 401 } { set width 10 }
 
     $w.score delete nl barUp barDown
     $w.score configure -background grey50 -width [expr $width -2] -height $h \
