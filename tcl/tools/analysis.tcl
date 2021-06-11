@@ -388,7 +388,8 @@ proc ::enginelist::sort {{type ""}} {
         $w.list.list insert {} end -id $count -values [list $name $elo $date]
         incr count
     }
-    $w.list.list selection set 0
+    lassign [$w.list.list children {}] firstItem
+    $w.list.list selection set $firstItem
 }
 ################################################################################
 # ::enginelist::choose
