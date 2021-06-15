@@ -1994,6 +1994,22 @@ translate P FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
 translate P FICSpremove {Enable premove}
 # ====== TODO To be translated ======
+translate P FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate P FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate P FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate P FICSRated {Rated}
+# ====== TODO To be translated ======
+translate P FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate P FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate P FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate P FICSNetError {Network error\nCan't connect to }
+# ====== TODO To be translated ======
 translate P GameReview {Game review}
 # ====== TODO To be translated ======
 translate P GameReviewTimeExtended {Time extended}

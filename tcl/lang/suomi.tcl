@@ -1595,6 +1595,22 @@ translate U FICSConnect {yhdist‰}
 translate U FICSdefaultuservars {K‰yt‰ oletusmuuttujia}
 translate U FICSObserveconfirm {Haluatko seurata peli‰}
 translate U FICSpremove {Ennakkosiirto p‰‰lle}
+# ====== TODO To be translated ======
+translate U FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate U FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate U FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate U FICSRated {Rated}
+# ====== TODO To be translated ======
+translate U FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate U FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate U FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate U FICSNetError {Network error\nCan't connect to }
 
 # Game review
 translate U GameReview {Pelin arvioiminen}

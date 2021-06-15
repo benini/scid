@@ -1553,6 +1553,22 @@ translate R FICSConnect {Соединение}
 translate R FICSdefaultuservars {Использовать переменные по-умолчанию}
 translate R FICSObserveconfirm {Вы хотите наблюдать за партией?}
 translate R FICSpremove {Разрешить предварительный ход}
+# ====== TODO To be translated ======
+translate R FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate R FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate R FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate R FICSRated {Rated}
+# ====== TODO To be translated ======
+translate R FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate R FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate R FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate R FICSNetError {Network error\nCan't connect to }
 
 # Game review
 translate R GameReview {Обзор партии}

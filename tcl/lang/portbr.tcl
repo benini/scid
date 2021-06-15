@@ -1533,6 +1533,22 @@ translate B FICSConnect {Conectar}
 translate B FICSdefaultuservars {Usar variaveis default}
 translate B FICSObserveconfirm {Voce quer observar o jogo}
 translate B FICSpremove {Habilita Pre-movimento}
+# ====== TODO To be translated ======
+translate B FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate B FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate B FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate B FICSRated {Rated}
+# ====== TODO To be translated ======
+translate B FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate B FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate B FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate B FICSNetError {Network error\nCan't connect to }
 translate B GameReview {Rever jogo}
 translate B GameReviewTimeExtended {Tempo estendido}
 translate B GameReviewMargin {Mergem de erro}
