@@ -597,7 +597,7 @@ proc ::board::drawScorebar { w } {
 
     set colorUp grey7
     set colorDown grey94
-    set ::board::_scorebarScale($w) [expr $h / ($maxscore * -2.0)]
+    set ::board::_scorebarScale($w) [expr ($h + 2) / ($maxscore * -2.0)]
     if { $::board::_flip($w) } {
         set colorUp grey94
         set colorDown grey7
