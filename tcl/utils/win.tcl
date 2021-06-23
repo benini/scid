@@ -471,6 +471,7 @@ proc ::docking::orient_pw_ {tbn anchor} {
 		set old_pw $pw
 		set pw [::docking::generate_unique_path_ $pw.pw]
 		ttk::panedwindow $pw -orient $orient
+		lower $pw
 		# move old notebook
 		$old_pw forget $tbn
 		::docking::insert_notebook_ $pw end $tbn
