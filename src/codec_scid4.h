@@ -78,37 +78,7 @@ public: // ICodecDatabase interface
 		return res;
 	}
 
-	errorT setExtraInfo(const char* tagname, const char* new_value) override {
-		if (std::strcmp(tagname, "type") == 0) {
-			idx_->Header.baseType = strGetUnsigned(new_value);
-
-		} else if (std::strcmp(tagname, "description") == 0) {
-			idx_->Header.description = new_value;
-			if (idx_->Header.description.size() > SCID_DESC_LENGTH)
-				idx_->Header.description.resize(SCID_DESC_LENGTH);
-
-		} else if (std::strcmp(tagname, "autoload") == 0) {
-			idx_->Header.autoLoad = strGetUnsigned(new_value);
-
-		} else {
-			auto len = std::strlen(tagname);
-			if (len != 5 || !std::equal(tagname, tagname + 4, "flag"))
-				return ERROR_CodecUnsupFeat;
-
-			uint flag = IndexEntry::CharToFlag(tagname[4]);
-			if (flag < IndexEntry::IDX_FLAG_CUSTOM1 ||
-			    flag > IndexEntry::IDX_FLAG_CUSTOM6)
-				return ERROR_CodecUnsupFeat;
-
-			const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
-			char* dest = idx_->Header.customFlagDesc[idx];
-			strncpy(dest, new_value, CUSTOM_FLAG_DESC_LENGTH);
-			dest[CUSTOM_FLAG_DESC_LENGTH] = 0;
-		}
-
-		header_dirty_ = true;
-		return OK;
-	}
+	errorT setExtraInfo(const char* tagname, const char* new_value) override;
 
 	ByteBuffer getGameData(uint64_t offset, uint32_t length) final {
 		if (offset >= gfile_.size())
@@ -266,19 +236,7 @@ private:
 
 	errorT readIndex(gamenumT nGames, Progress const& progress);
 
-	errorT writeEntry(const IndexEntry& ie, gamenumT gnum) {
-		if (seqWrite_ == 0 || (gnum != seqWrite_ + 1)) {
-			std::streampos pos = gnum;
-			pos = pos * INDEX_ENTRY_SIZE + INDEX_HEADER_SIZE;
-			if (idxfile_.pubseekpos(pos) != pos) {
-				seqWrite_ = 0;
-				return ERROR_FileWrite;
-			}
-		}
-		errorT res = ie.Write(&idxfile_, idx_->Header.version);
-		seqWrite_ = (res == OK) ? gnum : 0;
-		return res;
-	}
+	errorT writeEntry(const IndexEntry& ie, gamenumT gnum);
 };
 
 #endif

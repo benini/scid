@@ -39,17 +39,9 @@ class NameBase;
 
 const char         INDEX_SUFFIX[]     = ".si4";
 
-// Descriptions can be up to 107 bytes long.
-inline constexpr size_t SCID_DESC_LENGTH = 107;
 const uint  CUSTOM_FLAG_DESC_LENGTH = 8;
 const uint  CUSTOM_FLAG_MAX = 6;
 
-// Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
-// Description length = 111 bytes including trailing '\0'.
-// Custom flag desc length = 9 bytes including trailing '\0'.
-// So total is 128 bytes + 9*6 = 182 bytes for the whole header.
-const uint  INDEX_HEADER_SIZE = 8 + 2 + 3 + 4 + 3 + SCID_DESC_LENGTH + 1 + (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
-const uint  OLD_INDEX_HEADER_SIZE = INDEX_HEADER_SIZE - (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
 
 //////////////////////////////////////////////////////////////////////
 //  Index:  Class Definition

@@ -238,6 +238,14 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
  * - flag6 description (9 bytes): a null-terminated string describing flag6.
  */
 constexpr char INDEX_MAGIC[8] = "Scid.si";
+constexpr size_t SCID_DESC_LENGTH = 107;
+// Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
+// Description length = 111 bytes including trailing '\0'.
+// Custom flag desc length = 9 bytes including trailing '\0'.
+// So total is 128 bytes + 9*6 = 182 bytes for the whole header.
+constexpr size_t INDEX_HEADER_SIZE = 8 + 2 + 3 + 4 + 3 + SCID_DESC_LENGTH + 1 +
+                                     (CUSTOM_FLAG_DESC_LENGTH + 1) *
+                                         CUSTOM_FLAG_MAX;
 
 /// Read the header section of a SCIDv4 Index file into memory.
 /// @param indexFile: file handle positioned at the start of the Index file.
@@ -505,7 +513,7 @@ errorT CodecSCID4::flush() {
  * @param progress: a Progress object used for GUI communications.
  * @returns OK if successful or an error code.
  */
-inline errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
+errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 	gamenumT nUnknowIDs = 0;
 	idNumberT maxID[NUM_NAME_TYPES];
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
@@ -577,4 +585,50 @@ inline errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 
 	idx_->nInvalidNameId_ = nUnknowIDs;
 	return (nUnknowIDs == 0) ? OK : ERROR_NameDataLoss;
+}
+
+errorT CodecSCID4::writeEntry(const IndexEntry& ie, gamenumT gnum) {
+	if (seqWrite_ == 0 || (gnum != seqWrite_ + 1)) {
+		std::streampos pos = gnum;
+		pos = pos * INDEX_ENTRY_SIZE + INDEX_HEADER_SIZE;
+		if (idxfile_.pubseekpos(pos) != pos) {
+			seqWrite_ = 0;
+			return ERROR_FileWrite;
+		}
+	}
+	errorT res = ie.Write(&idxfile_, idx_->Header.version);
+	seqWrite_ = (res == OK) ? gnum : 0;
+	return res;
+}
+
+errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
+	if (std::strcmp(tagname, "type") == 0) {
+		idx_->Header.baseType = strGetUnsigned(new_value);
+
+	} else if (std::strcmp(tagname, "description") == 0) {
+		idx_->Header.description = new_value;
+		if (idx_->Header.description.size() > SCID_DESC_LENGTH)
+			idx_->Header.description.resize(SCID_DESC_LENGTH);
+
+	} else if (std::strcmp(tagname, "autoload") == 0) {
+		idx_->Header.autoLoad = strGetUnsigned(new_value);
+
+	} else {
+		auto len = std::strlen(tagname);
+		if (len != 5 || !std::equal(tagname, tagname + 4, "flag"))
+			return ERROR_CodecUnsupFeat;
+
+		uint flag = IndexEntry::CharToFlag(tagname[4]);
+		if (flag < IndexEntry::IDX_FLAG_CUSTOM1 ||
+		    flag > IndexEntry::IDX_FLAG_CUSTOM6)
+			return ERROR_CodecUnsupFeat;
+
+		const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
+		char* dest = idx_->Header.customFlagDesc[idx];
+		strncpy(dest, new_value, CUSTOM_FLAG_DESC_LENGTH);
+		dest[CUSTOM_FLAG_DESC_LENGTH] = 0;
+	}
+
+	header_dirty_ = true;
+	return OK;
 }
