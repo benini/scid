@@ -1575,7 +1575,7 @@ translate E FICSManualConfirm {confirm manually}
 translate E FICSFilterFormula {Filter with formula}
 translate E FICSIssueSeek {Issue seek}
 translate E FICSChallenge {Challenge}
-translate E FICSAccept {accept}
+translate E FICSAccept {Do you accept ?}
 translate E FICSDecline {decline}
 translate E FICSColour {Colour}
 translate E FICSSend {send}
@@ -1583,6 +1583,14 @@ translate E FICSConnect {Connect}
 translate E FICSdefaultuservars {Use default variables}
 translate E FICSObserveconfirm {Do you want to observe game}
 translate E FICSpremove {Enable premove}
+translate E FICSObserve {Observe}
+translate E FICSRatedGames {Rated Games}
+translate E FICSUnratedGames {Unrated Games}
+translate E FICSRated {Rated}
+translate E FICSUnrated {Unrated}
+translate E FICSRegisteredPlayer {Registered player only}
+translate E FICSFreePlayer {Free player only}
+translate E FICSNetError {Network error\nCan't connect to }
 
 # Game review
 translate E GameReview {Game review}
