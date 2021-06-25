@@ -1743,6 +1743,22 @@ translate N FICSdefaultuservars {Gebruik standaard waarden}
 translate N FICSObserveconfirm {Wil je de partij gadeslaan}
 # ====== TODO To be translated ======
 translate N FICSpremove {Enable premove}
+# ====== TODO To be translated ======
+translate N FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate N FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate N FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate N FICSRated {Rated}
+# ====== TODO To be translated ======
+translate N FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate N FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate N FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate N FICSNetError {Network error\nCan't connect to }
 translate N GameReview {Partij herbekijken}
 translate N GameReviewTimeExtended {Tijd overschreden}
 translate N GameReviewMargin {Fout marge}

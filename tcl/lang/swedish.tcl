@@ -1556,6 +1556,22 @@ translate W FICSdefaultuservars {Använd standardvariabler}
 translate W FICSObserveconfirm {Vill du observera parti} 
 # ====== TODO To be translated ======
 translate W FICSpremove {Enable premove}
+# ====== TODO To be translated ======
+translate W FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate W FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate W FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate W FICSRated {Rated}
+# ====== TODO To be translated ======
+translate W FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate W FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate W FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate W FICSNetError {Network error\nCan't connect to }
 translate W GameReview {Partiöversikt}
 translate W GameReviewTimeExtended {Utökad tid}
 translate W GameReviewMargin {Felmarginal}

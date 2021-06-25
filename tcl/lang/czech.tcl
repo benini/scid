@@ -1598,6 +1598,22 @@ translate C FICSdefaultuservars {Pou¾ít výchozí promìnné}
 translate C FICSObserveconfirm {Chcete sledovat partii}
 # ====== TODO To be translated ======
 translate C FICSpremove {Enable premove}
+# ====== TODO To be translated ======
+translate C FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate C FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate C FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate C FICSRated {Rated}
+# ====== TODO To be translated ======
+translate C FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate C FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate C FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate C FICSNetError {Network error\nCan't connect to }
 translate C GameReview {Prohlí¾ení partie}
 translate C GameReviewTimeExtended {Èas prodlou¾en}
 # ====== TODO To be translated ======

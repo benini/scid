@@ -1643,6 +1643,22 @@ translate S FICSdefaultuservars {Usa valores por defecto}
 translate S FICSObserveconfirm {Quieres observar la partida}
 # ====== TODO To be translated ======
 translate S FICSpremove {Enable premove}
+# ====== TODO To be translated ======
+translate S FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate S FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate S FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate S FICSRated {Rated}
+# ====== TODO To be translated ======
+translate S FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate S FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate S FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate S FICSNetError {Network error\nCan't connect to }
 translate S GameReview {Revisión de partida}
 translate S GameReviewTimeExtended {Tiempo extendido}
 translate S GameReviewMargin {Margen de error}

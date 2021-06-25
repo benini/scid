@@ -1632,6 +1632,22 @@ translate K FICSObserveconfirm {Vols observar la partida}
 # ====== TODO To be translated ======
 translate K FICSpremove {Enable premove}
 # ====== TODO To be translated ======
+translate K FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate K FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate K FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate K FICSRated {Rated}
+# ====== TODO To be translated ======
+translate K FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate K FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate K FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate K FICSNetError {Network error\nCan't connect to }
+# ====== TODO To be translated ======
 translate K GameReview {Game review}
 # ====== TODO To be translated ======
 translate K GameReviewTimeExtended {Time extended}
