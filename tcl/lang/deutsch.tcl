@@ -1575,7 +1575,7 @@ translate D FICSManualConfirm {manuell bestätigen}
 translate D FICSFilterFormula {Filterformel anwenden}
 translate D FICSIssueSeek {Partie anbieten}
 translate D FICSChallenge {Herausfordern}
-translate D FICSAccept {Annehmen}
+translate D FICSAccept {Nehmen Sie an?}
 translate D FICSDecline {Ablehnen}
 translate D FICSColour {Farbe auswählen}
 translate D FICSSend {senden}
@@ -1583,6 +1583,15 @@ translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
 translate D FICSpremove {Premoves aktivieren}
+translate D FICSObserve {Beobachten}
+translate D FICSRatedGames {Bewertete Partien}
+translate D FICSUnratedGames {Unbewertete Partien}
+translate D FICSRated {Bewertet}
+translate D FICSUnrated {Unbewertet}
+translate D FICSRegisteredPlayer {Nur registrierte Spieler}
+translate D FICSFreePlayer {Nur freie Spieler}
+translate D FICSNetError {Netzwerkfehler\nKeine Verbindung zu }
+
 translate D GameReview {Partieanalyse}
 translate D GameReviewTimeExtended {Lange Bedenkzeit}
 translate D GameReviewMargin {Fehlergrenze}

@@ -269,21 +269,20 @@ namespace eval fics {
       set bplayer [.fics.f.top.fgames.glist set $item 4]
       set game [.fics.f.top.fgames.glist set $item 0]
       set ::fics::gameSelection $game
-      #TODO translate
-      $w.menu add command -label "Observe" -command "if { $::fics::observedGame != -1 } { \
+      $w.menu add command -label [tr FICSObserve] -command "if { $::fics::observedGame != -1 } { \
         ::fics::writechan \"unobserve\" \"echo\"
         }
         ::fics::writechan \"observe $game\""
       $w.menu add separator
-      $w.menu add checkbutton -label "Rated Games" -variable ::fics::showRatedGames -command ::fics::updateGames
-      $w.menu add checkbutton -label "Unrated Games" -variable ::fics::showUnratedGames -command ::fics::updateGames
+      $w.menu add checkbutton -label [tr FICSRatedGames] -variable ::fics::showRatedGames -command ::fics::updateGames
+      $w.menu add checkbutton -label [tr FICSUnratedGames] -variable ::fics::showUnratedGames -command ::fics::updateGames
       $w.menu add separator
       $w.menu add checkbutton -label "Lightning" -variable ::fics::showLightningGames -command ::fics::updateGames
       $w.menu add checkbutton -label "Blitz" -variable ::fics::showBlitzGames -command ::fics::updateGames
       $w.menu add checkbutton -label "Standard" -variable ::fics::showStandardGames -command ::fics::updateGames
       $w.menu add separator
-      $w.menu add command -label "finger $wplayer" -command "::fics::writechan \"finger $wplayer\""
-      $w.menu add command -label "finger $bplayer" -command "::fics::writechan \"finger $bplayer\""
+      $w.menu add command -label "Finger $wplayer" -command "::fics::writechan \"finger $wplayer\""
+      $w.menu add command -label "Finger $bplayer" -command "::fics::writechan \"finger $bplayer\""
       tk_popup $w.menu $abs_x $abs_y
   }
   ################################################################################
@@ -300,19 +299,17 @@ namespace eval fics {
       set ::fics::playerSelection $player
       set matchparameter "$::fics::findopponent(rated) $::fics::findopponent(initTime) \
          $::fics::findopponent(incTime) $::fics::findopponent(color)"
-      $w.menu add command -label "finger $player" -command "::fics::writechan \"finger $player\""
+      $w.menu add command -label "Finger $player" -command "::fics::writechan \"finger $player\""
       if { [string first "p" $state] >= 0 } {
-          #TODO translate
-          $w.menu add command -label "Observe $player" -command "::fics::writechan \"observe $player\""
+          $w.menu add command -label "[tr FICSObserve] $player" -command "::fics::writechan \"observe $player\""
       } elseif {  [string first "X" $state] == -1 } {
           $w.menu add command -label "[tr FICSChallenge] $player" \
               -command "::fics::writechan \"match $player $matchparameter\""
       }
       $w.menu add separator
-      #TODO translate
-      $w.menu add checkbutton -label "registered player only" -variable ::fics::showOnlyRegisteredPlayer \
+      $w.menu add checkbutton -label [tr FICSRegisteredPlayer] -variable ::fics::showOnlyRegisteredPlayer \
           -command ::fics::updatePlayer
-      $w.menu add checkbutton -label "free player only" -variable ::fics::showOnlyFreePlayer \
+      $w.menu add checkbutton -label [tr FICSFreePlayer] -variable ::fics::showOnlyFreePlayer \
           -command ::fics::updatePlayer
       tk_popup $w.menu $abs_x $abs_y
   }
@@ -568,7 +565,7 @@ namespace eval fics {
     updateConsole "Socket opening"
 
     if { [catch { set sockchan [socket $server $port] } ] } {
-      tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $server $port" -parent .fics
+        tk_messageBox -title "FICS" -icon error -type ok -message "[tr FICSNetError] $server $port" -parent .fics
       return
     }
 
@@ -1036,7 +1033,7 @@ namespace eval fics {
     }
 
     if {[string match "Challenge:*" $line]} {
-      set ans [tk_messageBox -title [::tr "FICSChallenge"] -icon question -type yesno -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title [::tr "FICSChallenge"] -icon question -type yesno -message "$line\n\n[tr FICSAccept]" ]
       switch -- $ans {
         yes {writechan "accept"}
         no  {writechan "decline"}
@@ -1049,7 +1046,7 @@ namespace eval fics {
     # to avoid "denial of play" attack by the opponent constantly issuing such a request
     # (because  tk_messageBox  "waits for the user to select one of the buttons")
     if {[string match "* would like to abort the game;*" $line] && $::fics::showabortreq} {
-      set ans [tk_messageBox -title [::tr "Abort"] -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title [::tr Abort] -icon question -type yesnocancel -message "$line\n\n[tr FICSAccept]" ]
       switch -- $ans {
         yes {writechan "accept"}
         no  {writechan "decline"}
@@ -1059,7 +1056,7 @@ namespace eval fics {
 
     # takeback
     if {[string match "* would like to take back *" $line] && $::fics::showtakebackreq} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title [tr FICSTakeback] -icon question -type yesnocancel -message "$line\n\n[tr FICSAccept]" ]
       switch -- $ans {
         yes {writechan "accept"}
         no  {writechan "decline"}
@@ -1069,7 +1066,7 @@ namespace eval fics {
 
     # draw
     if {[string match "*offers you a draw*" $line] && $::fics::showdrawreq} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title [tr Draw] -icon question -type yesnocancel -message "$line\n\n[tr FICSAccept]" ]
       switch -- $ans {
         yes {writechan "accept"}
         no  {writechan "decline"}
@@ -1079,7 +1076,7 @@ namespace eval fics {
 
     # adjourn
     if {[string match "*would like to adjourn the game*" $line] && $::fics::showadjournreq} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\n[tr FICSAccept]" ]
       switch -- $ans {
         yes {writechan "accept"}
         no  {writechan "decline"}
