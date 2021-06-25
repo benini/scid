@@ -1631,6 +1631,22 @@ translate G FICSdefaultuservars {Χρήση αρχικών μεταβλητών}
 translate G FICSObserveconfirm {Θέλετε να παρακολουθήσετε την παρτίδα}
 # ====== TODO To be translated ======
 translate G FICSpremove {Enable premove}
+# ====== TODO To be translated ======
+translate G FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate G FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate G FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate G FICSRated {Rated}
+# ====== TODO To be translated ======
+translate G FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate G FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate G FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate G FICSNetError {Network error\nCan't connect to }
 
 # Game review
 translate G GameReview {Επισκόπηση παρτίδας}

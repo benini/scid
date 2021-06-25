@@ -1618,6 +1618,22 @@ translate H FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
 translate H FICSpremove {Enable premove}
 # ====== TODO To be translated ======
+translate H FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate H FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate H FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate H FICSRated {Rated}
+# ====== TODO To be translated ======
+translate H FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate H FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate H FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate H FICSNetError {Network error\nCan't connect to }
+# ====== TODO To be translated ======
 translate H GameReview {Game review}
 # ====== TODO To be translated ======
 translate H GameReviewTimeExtended {Time extended}

@@ -1554,6 +1554,22 @@ translate I FICSConnect {Connetti}
 translate I FICSdefaultuservars {Usa le variabili predefinite}
 translate I FICSObserveconfirm {Vuoi osservare la partita}
 translate I FICSpremove {Abilita premove}
+# ====== TODO To be translated ======
+translate I FICSObserve {Observe}
+# ====== TODO To be translated ======
+translate I FICSRatedGames {Rated Games}
+# ====== TODO To be translated ======
+translate I FICSUnratedGames {Unrated Games}
+# ====== TODO To be translated ======
+translate I FICSRated {Rated}
+# ====== TODO To be translated ======
+translate I FICSUnrated {Unrated}
+# ====== TODO To be translated ======
+translate I FICSRegisteredPlayer {Registered player only}
+# ====== TODO To be translated ======
+translate I FICSFreePlayer {Free player only}
+# ====== TODO To be translated ======
+translate I FICSNetError {Network error\nCan't connect to }
 translate I GameReview {Rivedi partita}
 translate I GameReviewTimeExtended {Tempo esteso}
 translate I GameReviewMargin {Margine di errore}
