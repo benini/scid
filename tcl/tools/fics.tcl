@@ -565,7 +565,7 @@ namespace eval fics {
     updateConsole "Socket opening"
 
     if { [catch { set sockchan [socket $server $port] } ] } {
-        tk_messageBox -title "FICS" -icon error -type ok -message "[tr FICSNetError] $server $port" -parent .fics
+      tk_messageBox -title "FICS" -icon error -type ok -message "[tr FICSNetError] $server $port" -parent .fics
       return
     }
 
