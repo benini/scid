@@ -53,6 +53,10 @@ namespace eval fics {
   set showLightningGames 1
   set showOnlyRegisteredPlayer 0
   set showOnlyFreePlayer 0
+  set sortGamesColumn 0 ;# sort game number
+  set sortGamesOrder "-increasing" ;# sort order
+  set sortPlayersColumn 4 ;# sort blitz rating
+  set sortPlayersOrder "-decreasing" ;# sort blitz rating
   ################################################################################
   #
   ################################################################################
@@ -379,16 +383,22 @@ namespace eval fics {
     # games
     grid rowconfigure $w.f.top.fgames 0 -weight 1
     grid columnconfigure $w.f.top.fgames 0 -weight 1
-    ttk::treeview $w.f.top.fgames.glist -columns { "Game" "WElo" "White" "BElo" "Black" "Type" "Time" } \
+    ttk::treeview $w.f.top.fgames.glist -columns { "Game" "WElo" "White" "BElo" "Black" "Type" "Rated" "Time" } \
         -show headings -selectmode browse -yscrollcommand "$w.f.top.fgames.ybar set"
 
     set i 0
     set wid [font measure font_Regular W]
-    foreach { width name } { 3 Game 4 GlistWElo 10 White 4 GlistBElo 10 Black 4 FinderSortType 5 Time } {
-        $w.f.top.fgames.glist column $i -width [expr $width * $wid]
+    foreach { width name anchor } { 3 Game e 4 GlistWElo e 10 White w 4 GlistBElo e 10 Black w \
+                                        6 FinderSortType w 5 Rated w 5 Time e} {
+        $w.f.top.fgames.glist column $i -width [expr $width * $wid] -anchor $anchor -stretch 1
         $w.f.top.fgames.glist heading $i -text [tr $name]
         incr i
     }
+    set inc "-increasing"
+    set dec "-decreasing"
+    set nosort "nosort"
+    set layout [list $inc $dec $inc $dec $inc $inc $nosort $nosort]
+    bind $w.f.top.fgames.glist <ButtonRelease-1> "::fics::clickGames %W %x %y {$layout}"
     bind $w.f.top.fgames.glist <KeyPress-Return> {
         set ::fics::gameSelection [.fics.f.top.fgames.glist set [.fics.f.top.fgames.glist selection] 0]
         ::fics::writechan "observe $::fics::gameSelection"
@@ -413,11 +423,13 @@ namespace eval fics {
     ttk::treeview $w.f.top.fplayer.plist -columns { "Typ" "Name" "Status" "Blitz" "Lightning" "Standard" "onfor" "idle" } \
         -show headings -selectmode browse -yscrollcommand "$w.f.top.fplayer.ybar set"
     set i 0
-    foreach { width name } { 4 Typ 10 Name 3 Status 4 Blitz 4 Lightning 4 Standard 5 OnFor 4 Idle } {
-        $w.f.top.fplayer.plist column $i -width [expr $width * $wid]
+    foreach { width name anchor } { 4 Typ w 10 Name w 3 Status w 4 Blitz e 4 Lightning e 4 Standard e 5 OnFor e 4 Idle e } {
+        $w.f.top.fplayer.plist column $i -width [expr $width * $wid] -anchor $anchor
         $w.f.top.fplayer.plist heading $i -text [tr $name]
         incr i
     }
+    set layout [list $inc $inc $inc $dec $dec $dec $inc $inc]
+    bind $w.f.top.fplayer.plist <ButtonRelease-1> "::fics::clickPlayers %W %x %y {$layout}"
     $w.f.top.fplayer.plist column 6 -anchor e
     $w.f.top.fplayer.plist column 7 -anchor e
     bind $w.f.top.fplayer.plist <KeyPress-Return> {
@@ -761,7 +773,7 @@ namespace eval fics {
         if { [string length $type] < 3 } {
             set type " $type"
         }
-        lappend ::fics::gamesList $nr $welo $p1 $belo $p2 $type "$t1 $t2"
+        lappend ::fics::gamesList [list $nr $welo $p1 $belo $p2 $type "$t1 $t2"]
         set ret 1
     }
     return $ret
@@ -806,7 +818,7 @@ namespace eval fics {
     if { [string index $idle 0] == "|" } {
         set idle ""
     }
-    lappend ::fics::playerList $typ $name $state $standard $blitz $lightning $onfor $idle
+    lappend ::fics::playerList [list $typ $name $state $standard $blitz $lightning $onfor $idle]
     return 1
   }
   ################################################################################
@@ -832,7 +844,10 @@ namespace eval fics {
     if { $::fics::games } {
       if {[string match "* ga* displayed." $line]} {
         set ::fics::games 0
-        catch { displayGames }
+        catch {
+            sortGames $::fics::sortGamesColumn $::fics::sortGamesOrder
+            displayGames
+        }
         return
       }
       if { [ parseGamesLine $line ] } {
@@ -842,7 +857,10 @@ namespace eval fics {
     if { $::fics::player } {
       if {[string first "Players Displayed" $line] > 0 } {
         set ::fics::player 0
-        catch { displayPlayer }
+        catch {
+            sortPlayers $::fics::sortPlayersColumn $::fics::sortPlayersOrder
+            displayPlayers
+        }
         return
       }
       if { [ parseWhoLine $line ] } {
@@ -1483,11 +1501,32 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
+  proc clickGames {{w} {x} {y} {layout}} {
+      lassign [$w identify $x $y] what
+      if {$what == "heading"} {
+          set col [string index [$w identify column $x $y] 1]
+          incr col -1
+          set sort [lindex $layout $col]
+          if { $sort ne "nosort" } {
+              sortGames $col $sort
+              displayGames
+          }
+      }
+  }
+
+  proc sortGames { column sort } {
+      set ::fics::sortGamesColumn $column
+      set ::fics::sortGamesOrder $sort
+      set ::fics::gamesList [lsort -dictionary $::fics::sortGamesOrder -index $::fics::sortGamesColumn $::fics::gamesList]
+  }
+
   proc displayGames { } {
       set w .fics.f.top.fgames
       set i 1
       $w.glist delete [$w.glist children {}]
-      foreach { nr welo p1 belo p2 type time} $::fics::gamesList {
+      foreach game $::fics::gamesList {
+          set nr [lindex $game 0]
+          set type [lindex $game 5]
           set show_ru 0
           set ru [string index $type 2]
           if { ( $::fics::showRatedGames && $ru == "r") ||
@@ -1502,7 +1541,19 @@ namespace eval fics {
               set show_sbl 1
           }
           if { $show_ru && $show_sbl } {
-              $w.glist insert {} end -id $i -values [list $nr $welo $p1 $belo $p2 $type $time]
+              if { $ru == "r" } {
+                  set rated [tr FICSRated]
+              } else {
+                  set rated [tr FICSUnrated]
+              }
+              switch -- $sbl {
+                  s { set type "Standard"}
+                  b { set type "Blitz"}
+                  l { set type "Lightning"}
+              }
+              lset game 5 $type
+              set game [linsert $game 6 $rated]
+              $w.glist insert {} end -id $i -values $game
               if { $nr == $::fics::gameSelection } { $w.glist selection set $i }
               incr i
           }
@@ -1511,18 +1562,39 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
-  proc displayPlayer { } {
+  proc clickPlayers {{w} {x} {y} {layout}} {
+      lassign [$w identify $x $y] what
+      if {$what == "heading"} {
+          set col [string index [$w identify column $x $y] 1]
+          incr col -1
+          set sort [lindex $layout $col]
+          sortPlayers $col $sort
+          displayPlayers
+      }
+  }
+
+  proc sortPlayers { column sort } {
+      set ::fics::sortPlayersColumn $column
+      set ::fics::sortPlayersOrder $sort
+      set ::fics::playerList [lsort -dictionary $::fics::sortPlayersOrder -index $::fics::sortPlayersColumn $::fics::playerList]
+  }
+
+  proc displayPlayers { } {
       set w .fics.f.top.fplayer
       set i 1
       $w.plist delete [$w.plist children {}]
-      foreach { typ name state standard blitz lightning onfor idle } $::fics::playerList {
+      foreach player $::fics::playerList {
+          set state [lindex $player 2]
           if { ! $::fics::showOnlyFreePlayer || ! ([string first "X" $state] >= 0 || [string first "p" $state] >= 0 ) } {
-              $w.plist insert {} end -id $i -values [list  $typ $name $state $standard $blitz $lightning $onfor $idle ]
+              set typ [lindex $player 0]
+              set name [lindex $player 1]
+              #remove braces around a typ e.g. (C) -> C
+              lset player 0 [string map { ")(" " " "(" "" ")" " "} $typ]
+              $w.plist insert {} end -id $i -values $player
               if { $name == $::fics::playerSelection } { $w.plist selection set $i }
               incr i
           }
       }
-      set $::fics::playerList {}
   }
   ################################################################################
   # Play the selected game
