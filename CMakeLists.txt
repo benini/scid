@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.15)
 project(scid)
 set(CPACK_PACKAGE_VERSION 4.7.1)
 set(
@@ -34,12 +34,13 @@ endif()
 
 if(MSVC)
   add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_SCL_SECURE_NO_WARNINGS)
-  string(APPEND CMAKE_CXX_FLAGS_RELEASE " /MT")
   # To run/debug using Visual Studio set "scid" as startup project and add:
   # Command Arguments: ../tcl/start.tcl
   # Environment:       PATH=C:\tcl\bin
 endif()
 
+find_package(Threads)
+find_package(TCL)
 
 # polyglot
 file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
@@ -54,12 +55,12 @@ else()
   add_executable(scid ${SCID_SRC})
 endif()
 set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
-
+target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
+target_link_libraries(scid PRIVATE polyglot ${TCL_LIBRARY})
 
 option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
 if(SCID_MULTITHREADING)
-  find_package(Threads REQUIRED)
-  target_link_libraries(scid ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(scid PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 else()
   target_compile_definitions(scid PRIVATE -DMULTITHREADING_OFF)
 endif()
@@ -73,10 +74,6 @@ option(SPELLCHKVALIDATE "Verify the integrity of spelling files" OFF)
 if(SPELLCHKVALIDATE)
   target_compile_definitions(scid PRIVATE -DSPELLCHKVALIDATE)
 endif()
-
-find_package(TCL)
-target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
-target_link_libraries(scid polyglot ${TCL_LIBRARY})
 
 install(TARGETS scid DESTINATION scid)
 install(PROGRAMS shell_scid DESTINATION bin RENAME scid)
