@@ -140,7 +140,7 @@ proc keyboardShortcuts {w} {
 
 	#TODO: to be improved
 	bind $w <F2> "::makeAnalysisWin 1 0"
-	bind $w <F3> "::makeAnalysisWin 2 0"
+	bind $w <F3> "::enginewin::toggleStartStop 3"
 	bind $w <F4> { if {[winfo exists .analysisWin1]} { .analysisWin1.b1.bStartStop invoke } }
 	bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
 	bind $w <Control-A> makeAnalysisWin
