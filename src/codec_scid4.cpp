@@ -460,7 +460,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
-			                    idx_->calcNameFreq(*nb_));
+			                    nb->calcNameFreq(*idx_));
 		}
 	} else {
 		if (auto err = namefileRead(filenames_[1].c_str(), fMode, *nb_))
@@ -505,7 +505,7 @@ errorT CodecSCID4::flush() {
 		// keep the compatibility with older Scid versions, forcing a
 		// recalculation.
 		err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
-		                    idx_->calcNameFreq(*nb_));
+		                    nb_->calcNameFreq(*idx_));
 	}
 	errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 

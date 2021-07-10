@@ -223,7 +223,7 @@ struct scidBaseT {
 	std::vector<TreeNode> getTreeStat(const HFilter& filter) const;
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0)
-			nameFreq_ = idx->calcNameFreq(*getNameBase());
+			nameFreq_ = getNameBase()->calcNameFreq(*idx);
 		return nameFreq_[nt][id];
 	}
 

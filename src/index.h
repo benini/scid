@@ -23,16 +23,9 @@
 
 #include "common.h"
 #include "containers.h"
-#include "date.h"
 #include "indexentry.h"
-#include "filebuf.h"
-#include "hfilter.h"
-#include <array>
 #include <string>
 #include <vector>
-#include <cstring>
-
-class NameBase;
 
 //////////////////////////////////////////////////////////////////////
 //  Index:  Constants
@@ -84,28 +77,6 @@ public:
      * This functions returns the number of invalid name handles.
      */
     int GetBadNameIdCount() const { return nInvalidNameId_; }
-
-    /**
-     * Counts how many times every names contained in @e nb is used.
-     * @param nb: the NameBase linked to this Index
-     * @returns an array of std::vectors containing the count of each name.
-     */
-    std::array<std::vector<int>, NUM_NAME_TYPES>
-    calcNameFreq(const NameBase& nb) const {
-        std::array<std::vector<int>, NUM_NAME_TYPES> resVec;
-        for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-            resVec[n].resize(nb.GetNumNames(n), 0);
-        }
-        for (gamenumT i = 0, n = GetNumGames(); i < n; i++) {
-            const IndexEntry* ie = GetEntry(i);
-            resVec[NAME_PLAYER][ie->GetWhite()] += 1;
-            resVec[NAME_PLAYER][ie->GetBlack()] += 1;
-            resVec[NAME_EVENT][ie->GetEvent()] += 1;
-            resVec[NAME_SITE][ie->GetSite()] += 1;
-            resVec[NAME_ROUND][ie->GetRound()] += 1;
-        }
-        return resVec;
-    }
 
     /**
      * Header getter functions

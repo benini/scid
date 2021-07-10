@@ -20,8 +20,11 @@
 #define SCID_NAMEBASE_H
 
 #include "common.h"
+#include "index.h"
+#include "indexentry.h"
 #include "misc.h"
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>
@@ -190,11 +193,31 @@ public:
 	 */
 	std::vector<uint32_t> generateHashMap(nameT nt) const {
 		std::vector<uint32_t> res(names_[nt].size());
-		std::transform(names_[nt].begin(), names_[nt].end(), res.begin(),
-		               [](const std::unique_ptr<const char[]>& name) {
-			               return strStartHash(name.get());
-		               });
+		std::transform(
+		    names_[nt].begin(), names_[nt].end(), res.begin(),
+		    [](auto const& name) { return strStartHash(name.get()); });
 		return res;
+	}
+
+	/**
+	 * Counts how many times each name is used.
+	 * @returns an array of std::vectors containing the count of each name.
+	 */
+	std::array<std::vector<int>, NUM_NAME_TYPES>
+	calcNameFreq(Index const& idx) const {
+		std::array<std::vector<int>, NUM_NAME_TYPES> resVec;
+		for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
+			resVec[n].resize(GetNumNames(n), 0);
+		}
+		for (gamenumT i = 0, n = idx.GetNumGames(); i < n; i++) {
+			const IndexEntry* ie = idx.GetEntry(i);
+			resVec[NAME_PLAYER][ie->GetWhite()] += 1;
+			resVec[NAME_PLAYER][ie->GetBlack()] += 1;
+			resVec[NAME_EVENT][ie->GetEvent()] += 1;
+			resVec[NAME_SITE][ie->GetSite()] += 1;
+			resVec[NAME_ROUND][ie->GetRound()] += 1;
+		}
+		return resVec;
 	}
 
 	/**

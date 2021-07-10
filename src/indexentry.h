@@ -24,6 +24,7 @@
 #include "common.h"
 #include "date.h"
 #include "matsig.h"
+#include <cstring> //memcmp
 
 // HPSIG_SIZE = size of HomePawnData array in an IndexEntry.
 // It is nine bytes: the first byte contains the number of valid entries
