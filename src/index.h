@@ -39,7 +39,6 @@ class NameBase;
 
 const char         INDEX_SUFFIX[]     = ".si4";
 
-const uint  CUSTOM_FLAG_DESC_LENGTH = 8;
 const uint  CUSTOM_FLAG_MAX = 6;
 
 
@@ -62,7 +61,7 @@ private:
         gamenumT    autoLoad;    // game number to autoload: 0=none, 1=1st, >numGames=last
         std::string description; // a string describing the database.
         // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
-        char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
+        std::string customFlagDesc[CUSTOM_FLAG_MAX];
     } Header;
 
     friend class CodecSCID4;
@@ -134,7 +133,9 @@ private:
         Header.baseType = 0;
         Header.autoLoad = 1;
         Header.description.clear();
-        std::memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
+        for (auto& flagDesc : Header.customFlagDesc) {
+            flagDesc.clear();
+        };
         nInvalidNameId_ = 0;
         entries_.resize(0);
     }

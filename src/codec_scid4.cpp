@@ -239,6 +239,7 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
  */
 constexpr char INDEX_MAGIC[8] = "Scid.si";
 constexpr size_t SCID_DESC_LENGTH = 107;
+constexpr size_t CUSTOM_FLAG_DESC_LENGTH = 8;
 // Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
 // Description length = 111 bytes including trailing '\0'.
 // Custom flag desc length = 9 bytes including trailing '\0'.
@@ -271,9 +272,10 @@ std::pair<errorT, gamenumT> readIndexHeader(FileT& indexFile, HeaderT& header) {
 	                          std::find(desc, desc + SCID_DESC_LENGTH, '\0'));
 	if (header.version >= 400) {
 		for (uint i = 0; i < CUSTOM_FLAG_MAX; i++) {
-			indexFile.sgetn(header.customFlagDesc[i],
-			                CUSTOM_FLAG_DESC_LENGTH + 1);
-			header.customFlagDesc[i][CUSTOM_FLAG_DESC_LENGTH] = 0;
+			char buf[CUSTOM_FLAG_DESC_LENGTH + 1];
+			indexFile.sgetn(buf, CUSTOM_FLAG_DESC_LENGTH + 1);
+			header.customFlagDesc[i].assign(
+			    buf, std::find(buf, buf + CUSTOM_FLAG_DESC_LENGTH, '\0'));
 		}
 	}
 	return {OK, numGames};
@@ -299,9 +301,12 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	std::copy_n(Header.description.data(),
 	            std::min(Header.description.size(), SCID_DESC_LENGTH), desc);
 	n += indexFile.sputn(desc, SCID_DESC_LENGTH + 1);
-	for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
-		n += indexFile.sputn(Header.customFlagDesc[i],
-		                     CUSTOM_FLAG_DESC_LENGTH + 1);
+	for (auto const& flagDesc : Header.customFlagDesc) {
+		char buf[CUSTOM_FLAG_DESC_LENGTH + 1] = {};
+		std::copy_n(flagDesc.data(),
+		            std::min(flagDesc.size(), CUSTOM_FLAG_DESC_LENGTH), buf);
+
+		n += indexFile.sputn(buf, CUSTOM_FLAG_DESC_LENGTH + 1);
 	}
 	if (n != INDEX_HEADER_SIZE || indexFile.pubsync() == -1)
 		return ERROR_FileWrite;
@@ -624,9 +629,9 @@ errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
 			return ERROR_CodecUnsupFeat;
 
 		const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
-		char* dest = idx_->Header.customFlagDesc[idx];
-		strncpy(dest, new_value, CUSTOM_FLAG_DESC_LENGTH);
-		dest[CUSTOM_FLAG_DESC_LENGTH] = 0;
+		idx_->Header.customFlagDesc[idx] = new_value;
+		if (idx_->Header.customFlagDesc[idx].size() > CUSTOM_FLAG_DESC_LENGTH)
+			idx_->Header.customFlagDesc[idx].resize(CUSTOM_FLAG_DESC_LENGTH);
 	}
 
 	header_dirty_ = true;
