@@ -19,7 +19,6 @@
 #ifndef SCID_NAMEBASE_H
 #define SCID_NAMEBASE_H
 
-#include "common.h"
 #include "index.h"
 #include "indexentry.h"
 #include "misc.h"
@@ -28,6 +27,16 @@
 #include <map>
 #include <memory>
 #include <vector>
+
+using nameT = unsigned;
+enum {
+	NAME_PLAYER,
+	NAME_EVENT,
+	NAME_SITE,
+	NAME_ROUND,
+	NUM_NAME_TYPES,
+	NAME_INVALID = 99
+};
 
 /**
  * This class stores the database's names (players, events, sites and rounds).
@@ -51,7 +60,7 @@ class NameBase {
 			if (*str1 == *str2)
 				return strCompare(str1, str2) < 0;
 
-			return static_cast<uint>(*str1) < static_cast<uint>(*str2);
+			return static_cast<uint32_t>(*str1) < static_cast<uint32_t>(*str2);
 		}
 	};
 	std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];

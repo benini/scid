@@ -59,17 +59,6 @@ enum fileModeT {
 };
 
 
-// There are four name types: PLAYER, EVENT, SITE and ROUND tags.
-// Names are accessed through IDs.
-typedef uint32_t idNumberT; // Should be idNameT
-typedef unsigned nameT;
-enum {
-    NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND,
-    NUM_NAME_TYPES,
-    NAME_INVALID = 99
-};
-
-
 //  Game Information types
 
 typedef uint            gamenumT;

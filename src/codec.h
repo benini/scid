@@ -27,14 +27,11 @@
 
 #include "bytebuf.h"
 #include "common.h"
+#include "namebase.h"
 #include <string>
 #include <vector>
 
-class Index;
-class IndexEntry;
-class NameBase;
 class Progress;
-struct TagRoster;
 
 /**
  * This interface separates the logic of a database from its representation.
