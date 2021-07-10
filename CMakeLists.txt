@@ -41,6 +41,37 @@ endif()
 
 find_package(Threads)
 find_package(TCL)
+# find_package(RocksDB)
+include(FetchContent)
+FetchContent_Declare(
+  lz4
+  GIT_REPOSITORY https://github.com/lz4/lz4.git
+  GIT_TAG        release
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
+)
+FetchContent_GetProperties(lz4)
+if(NOT lz4_POPULATED)
+  FetchContent_Populate(lz4)
+  add_library(lz4 ${lz4_SOURCE_DIR}/lib/lz4.c ${lz4_SOURCE_DIR}/lib/lz4hc.c)
+  target_include_directories(lz4 INTERFACE ${lz4_SOURCE_DIR}/lib)
+endif()
+FetchContent_Declare(
+  rocksdb
+  GIT_REPOSITORY https://github.com/facebook/rocksdb.git
+  GIT_TAG        v6.20.3
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
+)
+FetchContent_GetProperties(rocksdb)
+if(NOT rocksdb_POPULATED)
+  FetchContent_Populate(rocksdb)
+  add_subdirectory(${rocksdb_SOURCE_DIR} ${rocksdb_BINARY_DIR} EXCLUDE_FROM_ALL)
+  target_include_directories(rocksdb INTERFACE ${rocksdb_SOURCE_DIR}/include)
+  target_compile_definitions(rocksdb PRIVATE -DLZ4)
+  target_link_libraries(rocksdb PRIVATE lz4)
+endif()
+
 
 # polyglot
 file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)
@@ -56,7 +87,7 @@ else()
 endif()
 set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
-target_link_libraries(scid PRIVATE polyglot ${TCL_LIBRARY})
+target_link_libraries(scid PRIVATE polyglot ${TCL_LIBRARY} rocksdb)
 
 option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
 if(SCID_MULTITHREADING)
