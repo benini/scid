@@ -4393,8 +4393,8 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Check if an event name can be updated:
     idNumberT event1 = ie1.GetEvent();
     idNumberT event2 = ie2.GetEvent();
-    const char * eventStr1 = ie1.GetEventName (db->getNameBase());
-    const char * eventStr2 = ie2.GetEventName (db->getNameBase());
+    const char* eventStr1 = db->getNameBase()->GetName(NAME_EVENT, event1);
+    const char* eventStr2 = db->getNameBase()->GetName(NAME_EVENT, event2);
     bool event1empty = strEqual (eventStr1, "")  ||  strEqual (eventStr1, "?");
     bool event2empty = strEqual (eventStr2, "")  ||  strEqual (eventStr2, "?");
     if (event1empty  && !event2empty) {
@@ -4425,8 +4425,8 @@ sc_game_tags_share (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     // Check if a round name can be updated:
     idNumberT round1 = ie1.GetRound();
     idNumberT round2 = ie2.GetRound();
-    const char * roundStr1 = ie1.GetRoundName (db->getNameBase());
-    const char * roundStr2 = ie2.GetRoundName (db->getNameBase());
+    const char* roundStr1 = db->getNameBase()->GetName(NAME_ROUND, round1);
+    const char* roundStr2 = db->getNameBase()->GetName(NAME_ROUND, round2);
     bool round1empty = strEqual (roundStr1, "")  ||  strEqual (roundStr1, "?");
     bool round2empty = strEqual (roundStr2, "")  ||  strEqual (roundStr2, "?");
     if (round1empty  && !round2empty) {

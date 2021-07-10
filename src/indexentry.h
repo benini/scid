@@ -24,7 +24,6 @@
 #include "common.h"
 #include "date.h"
 #include "matsig.h"
-#include "namebase.h"
 
 // HPSIG_SIZE = size of HomePawnData array in an IndexEntry.
 // It is nine bytes: the first byte contains the number of valid entries
@@ -220,21 +219,6 @@ public:
         return (col == BLACK) ? SetBlack(id) : SetWhite(id);
     }
 
-    const char* GetWhiteName (const NameBase* nb) const {
-        return nb->GetName (NAME_PLAYER, GetWhite()); 
-    }
-    const char* GetBlackName (const NameBase* nb) const {
-        return nb->GetName (NAME_PLAYER, GetBlack());
-    }
-    const char* GetEventName (const NameBase* nb) const {
-        return nb->GetName (NAME_EVENT, GetEvent());
-    }
-    const char* GetSiteName (const NameBase* nb) const {
-        return nb->GetName (NAME_SITE, GetSite());
-    }
-    const char* GetRoundName (const NameBase* nb) const {
-        return nb->GetName (NAME_ROUND, GetRound());
-    }
     byte   GetRating() const;
 
     bool GetStartFlag () const      { return GetFlag(1 << IDX_FLAG_START); }

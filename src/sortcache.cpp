@@ -25,6 +25,7 @@
 #include "hfilter.h"
 #include "index.h"
 #include "misc.h"
+#include "namebase.h"
 #include <algorithm>
 #include <climits>
 #include <cstring>
@@ -413,8 +414,8 @@ int SortCache::fullCompare(gamenumT left, gamenumT right) const {
 
 		case SORTING_country:  // Last 3 characters of site field:
 			{
-				const char* sOne = ie1->GetSiteName(nbase_);
-				const char* sTwo = ie2->GetSiteName(nbase_);
+				const char* sOne = nbase_->GetName(NAME_SITE, ie1->GetSite());
+				const char* sTwo = nbase_->GetName(NAME_SITE, ie2->GetSite());
 				size_t slenOne = std::strlen(sOne);
 				size_t slenTwo = std::strlen(sTwo);
 				if (slenOne > 3) { sOne += slenOne - 3; }
@@ -487,33 +488,33 @@ uint32_t SortCache::calcHash(gamenumT gameId) {
 		size_t bitsUsed;
 		switch (*field) {
 			case SORTING_white:
-				value = strStartHash(ie->GetWhiteName(nbase_));
+				value = strStartHash(nbase_->GetName(NAME_PLAYER, ie->GetWhite()));
 				bitsUsed = nHashBits;
 				partialHash_ = true;
 				break;
 			case SORTING_black:
-				value = strStartHash(ie->GetBlackName(nbase_));
+				value = strStartHash(nbase_->GetName(NAME_PLAYER, ie->GetBlack()));
 				bitsUsed = nHashBits;
 				partialHash_ = true;
 				break;
 			case SORTING_site:
-				value = strStartHash(ie->GetSiteName(nbase_));
+				value = strStartHash(nbase_->GetName(NAME_SITE, ie->GetSite()));
 				bitsUsed = nHashBits;
 				partialHash_ = true;
 				break;
 			case SORTING_event:
-				value = strStartHash(ie->GetEventName(nbase_));
+				value = strStartHash(nbase_->GetName(NAME_EVENT, ie->GetEvent()));
 				bitsUsed = nHashBits;
 				partialHash_ = true;
 				break;
 			case SORTING_round:
-				value = strGetUnsigned(ie->GetRoundName(nbase_));
+				value = strGetUnsigned(nbase_->GetName(NAME_ROUND, ie->GetRound()));
 				bitsUsed = nHashBits;
 				partialHash_ = true;
 				break;
 			case SORTING_country:
 			{
-				const char *scountry = ie->GetSiteName (nbase_);
+				const char *scountry = nbase_->GetName(NAME_SITE, ie->GetSite());
 				size_t slen = std::strlen(scountry);
 				if (slen > 3) 
 					scountry += slen - 3;

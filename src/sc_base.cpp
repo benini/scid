@@ -308,10 +308,10 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 		const NameBase* nb = dbase->getNameBase();
 		auto contains = [dbase, nb, text](gamenumT g) {
 			const IndexEntry* ie = dbase->getIndexEntry(g);
-			return strAlphaContains(ie->GetWhiteName(nb), text) ||
-			       strAlphaContains(ie->GetBlackName(nb), text) ||
-			       strAlphaContains(ie->GetEventName(nb), text) ||
-			       strAlphaContains(ie->GetSiteName(nb), text);
+			return strAlphaContains(nb->GetName(NAME_PLAYER, ie->GetWhite()), text) ||
+			       strAlphaContains(nb->GetName(NAME_PLAYER, ie->GetBlack()), text) ||
+			       strAlphaContains(nb->GetName(NAME_EVENT, ie->GetEvent()), text) ||
+			       strAlphaContains(nb->GetName(NAME_SITE, ie->GetSite()), text);
 		};
 		if (strGetBoolean(argv[8])) {
 			std::vector<gamenumT> buf(
