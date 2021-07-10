@@ -160,9 +160,6 @@ proc ::recentFiles::show {menu idx} {
 proc ::recentFiles::menuname {fname} {
   set mname $fname
   set mname [file nativename $mname]
-  if {[file extension $mname] == [sc_info suffix index]} {
-    set mname [file rootname $mname]
-  }
   if {[string length $mname] < 25} { return $mname }
   
   # Generate a menu name " ..../path/filename" for the file:

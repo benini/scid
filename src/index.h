@@ -37,8 +37,6 @@ class NameBase;
 //////////////////////////////////////////////////////////////////////
 //  Index:  Constants
 
-const char         INDEX_SUFFIX[]     = ".si4";
-
 const uint  CUSTOM_FLAG_MAX = 6;
 
 

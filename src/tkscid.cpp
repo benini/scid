@@ -4625,9 +4625,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
-    case INFO_SUFFIX:
-        return sc_info_suffix (cd, ti, argc, argv);
-
     case INFO_TB:
         return sc_info_tb (cd, ti, argc, argv);
 
@@ -4705,33 +4702,6 @@ sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     return UI_Result(ti, OK, result);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_info suffix:
-//    Returns a Scid file suffix for a database file type.
-//    The suffix is returned with the leading dot.
-int
-sc_info_suffix (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = {
-        "index", NULL
-    };
-    enum {
-        SUFFIX_OPT_INDEX
-    };
-    int index = -1;
-
-    if (argc == 3) { index = strUniqueMatch (argv[2], options); }
-
-    const char * suffix = "";
-
-    switch (index) {
-        case SUFFIX_OPT_INDEX: suffix = INDEX_SUFFIX;    break;
-        default: return InvalidCommand (ti, "sc_info suffix", options);
-    }
-
-    return setResult (ti, suffix);
 }
 
 
