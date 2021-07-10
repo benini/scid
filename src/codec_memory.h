@@ -27,6 +27,9 @@
 #include "codec.h"
 #include "index.h"
 #include "namebase.h"
+#include <rocksdb/db.h>
+#include <rocksdb/options.h>
+#include <rocksdb/slice.h>
 
 /**
  * Manages memory databases that do not have associated files.
@@ -34,6 +37,8 @@
  * this requirement non-native codecs should be derived from this class.
  */
 class CodecMemory : public ICodecDatabase {
+	rocksdb::DB* db_ = nullptr;
+	rocksdb::PinnableSlice slice_;
 	Index* idx_ = nullptr;
 	NameBase* nb_ = nullptr;
 	VectorChunked<byte, 24> v_;
@@ -46,6 +51,9 @@ class CodecMemory : public ICodecDatabase {
 		LIMIT_UNIQUENAMES = 1ULL << 28,
 		LIMIT_NAMELEN = 255
 	};
+
+public:
+	~CodecMemory() { delete db_; }
 
 public: // ICodecDatabase interface
 	Codec getType() const override { return ICodecDatabase::MEMORY; }
@@ -70,11 +78,11 @@ public: // ICodecDatabase interface
 	}
 
 	ByteBuffer getGameData(uint64_t offset, uint32_t length) final {
-		ASSERT(offset < v_.size());
-		ASSERT(length <= v_.size() - offset);
-		ASSERT(v_.contiguous(static_cast<size_t>(offset)) >= length);
+		db_->Get(rocksdb::ReadOptions(), db_->DefaultColumnFamily(),
+		         std::to_string(offset), &slice_);
 
-		return {&v_[offset], length};
+		auto res = slice_.ToStringView();
+		return {(unsigned char*)res.data(), res.size()};
 	}
 
 	ByteBuffer getGameMoves(IndexEntry const& ie) final {
@@ -121,6 +129,22 @@ public: // ICodecDatabase interface
 			return ERROR;
 		idx_ = idx;
 		nb_ = nb;
+
+		rocksdb::Options options;
+		// Optimize RocksDB. This is the easiest way to get RocksDB to perform
+		// well
+		options.IncreaseParallelism();
+		options.compression = rocksdb::kLZ4Compression;
+		// options.OptimizeLevelStyleCompaction();
+		// create the DB if it's not already present
+		options.create_if_missing = true;
+
+		static int db_counter = 0;
+		auto db_name = "kDBPath" + std::to_string(db_counter++);
+
+		rocksdb::Status s = rocksdb::DB::Open(options, db_name.c_str(), &db_);
+		assert(s.ok());
+
 		return OK;
 	}
 
@@ -140,11 +164,9 @@ private:
 		if (length >= LIMIT_GAMELEN)
 			return std::make_pair(ERROR_GameLengthLimit, 0);
 
-		const auto offset = v_.next_contiguous(length);
-		if (offset >= LIMIT_GAMEOFFSET)
-			return std::make_pair(ERROR_OffsetLimit, 0);
-
-		v_.append(src, length, offset);
+		const auto offset = idx_->GetNumGames();
+		std::string_view data((const char*)src, length);
+		db_->Put(rocksdb::WriteOptions(), std::to_string(offset), data);
 		return {OK, offset};
 	}
 
