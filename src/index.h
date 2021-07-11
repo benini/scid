@@ -84,7 +84,6 @@ public:
     gamenumT GetNumGames() const {
         return static_cast<gamenumT>(entries_.size());
     }
-    versionT    GetVersion ()     const { return Header.version; }
 
     void addEntry(const IndexEntry& ie) {
         entries_.push_back(ie);

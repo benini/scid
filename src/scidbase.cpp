@@ -555,11 +555,6 @@ errorT scidBaseT::compact(const Progress& progress) {
 	std::vector<std::string> filenames = codec_->getFilenames();
 	if (filenames.empty()) return ERROR_CodecUnsupFeat;
 
-	if (fileMode_ != FMODE_Both) {
-		//Older scid version to be upgraded are opened read only
-		if (idx->GetVersion() == SCID_VERSION) return ERROR_FileMode;
-	}
-
 	//1) Create a new temporary database
 	std::string filename = fileName_;
 	std::string tmpfile = filename + "__COMPACT__";
