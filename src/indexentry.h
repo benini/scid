@@ -37,10 +37,6 @@ const eloT MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
 
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
-// Total on-disk size per index entry: currently 47 bytes.
-const uint  INDEX_ENTRY_SIZE = 47;
-const uint  OLD_INDEX_ENTRY_SIZE = 46;
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Class IndexEntry: one of these per game in the index file.
@@ -87,7 +83,7 @@ class IndexEntry {
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
 public:
-    template <class T> errorT Write (T* file, versionT version) const;
+    void encodeEntry(char* buf_it) const;
 
     // get functions
     uint64_t  GetOffset() const { return offset_; }
@@ -299,12 +295,7 @@ private:
 // IndexEntry::Write():
 //      Writes a single index entry to an open index file.
 //      INDEX_ENTRY_SIZE must be updated
-template <class T> errorT IndexEntry::Write(T* file, versionT version) const {
-	if (version < 400) // Cannot write old-version index files:
-		return ERROR_FileVersion;
-
-	char buf[INDEX_ENTRY_SIZE];
-	char* buf_it = buf;
+inline void IndexEntry::encodeEntry(char* buf_it) const {
 	auto WriteOneByte = [&buf_it](uint8_t v) { *buf_it++ = v; };
 	auto WriteTwoBytes = [&WriteOneByte](uint16_t v) {
 		WriteOneByte(static_cast<uint8_t>(v >> 8));
@@ -404,10 +395,6 @@ template <class T> errorT IndexEntry::Write(T* file, versionT version) const {
 	pawnData0 |= *pb & 0x3F;
 	WriteOneByte(pawnData0);
 	std::copy(pb + 1, pb + HPSIG_SIZE, buf_it);
-
-	return file->sputn(buf, INDEX_ENTRY_SIZE) == INDEX_ENTRY_SIZE
-	           ? OK
-	           : ERROR_FileWrite;
 }
 
 inline byte IndexEntry::GetRating() const {

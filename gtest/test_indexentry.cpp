@@ -42,7 +42,7 @@ public:
 		return std::equal(buf_, buf_ + count, b.buf_);
 	}
 
-	const char* getBuffer() {
+	char* getBuffer() {
 		return buf_;
 	}
 
@@ -207,8 +207,7 @@ TEST(Test_IndexEntry, Limits_SCID4) {
 			std::copy_n(it + 1, 8, hpBuf);
 			ie.SetHomePawnData(*it, hpBuf);
 			chkEntry(ie, v.cbegin(), true);
-			ie.Write(&ie_buf, 400);
-			ie_buf.ToStart();
+			ie.encodeEntry(ie_buf.getBuffer());
 		}
 
 		Buffer ie_buf_v4_6;

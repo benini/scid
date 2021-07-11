@@ -240,6 +240,8 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
 constexpr char INDEX_MAGIC[8] = "Scid.si";
 constexpr size_t SCID_DESC_LENGTH = 107;
 constexpr size_t CUSTOM_FLAG_DESC_LENGTH = 8;
+constexpr int INDEX_ENTRY_SIZE = 47;
+constexpr int OLD_INDEX_ENTRY_SIZE = 46;
 // Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
 // Description length = 111 bytes including trailing '\0'.
 // Custom flag desc length = 9 bytes including trailing '\0'.
@@ -601,7 +603,12 @@ errorT CodecSCID4::writeEntry(const IndexEntry& ie, gamenumT gnum) {
 			return ERROR_FileWrite;
 		}
 	}
-	errorT res = ie.Write(&idxfile_, idx_->Header.version);
+	char buf[INDEX_ENTRY_SIZE];
+	ie.encodeEntry(buf);
+	errorT res = idxfile_.sputn(buf, INDEX_ENTRY_SIZE) == INDEX_ENTRY_SIZE
+	                 ? OK
+	                 : ERROR_FileWrite;
+
 	seqWrite_ = (res == OK) ? gnum : 0;
 	return res;
 }
