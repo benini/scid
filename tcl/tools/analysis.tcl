@@ -826,7 +826,7 @@ proc setAnnotateModeButtonValue { value } {
 proc cancelAutoplay {} {
     set ::autoplayMode 0
     set ::annotateMode 0
-    setAnnotateModeButtonValue 0
+    if { [winfo exists .analysisWin1] } { setAnnotateModeButtonValue 0 }
     after cancel autoplay
     ::notify::PosChanged
 }
