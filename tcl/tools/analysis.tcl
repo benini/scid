@@ -360,21 +360,21 @@ proc ::enginelist::sort {{type ""}} {
     } else {
         set engines(sort) $type
     }
-    set w .enginelist
     switch $type {
-        "#1" {
+        Name {
             set engines(list) [lsort -dictionary -index 0 $engines(list)]
         }
-        "#2" {
+        Elo {
             set engines(list) [lsort -dictionary -decreasing -index 4 $engines(list)]
         }
-        "#3" {
+        Time {
             set engines(list) [lsort -integer -decreasing -index 5 $engines(list)]
         }
     }
     
     # If the Engine-open dialog is open, update it:
     #
+    set w .enginelist
     if {! [winfo exists $w]} { return }
     set f $w.list.list
     $w.list.list delete [$w.list.list children {}]
@@ -397,10 +397,11 @@ proc ::enginelist::sort {{type ""}} {
 #   If no engine is selected, returns the empty string.
 ################################################################################
 proc engine.singleclick_ {{w} {x} {y}} {
-  lassign [$w identify $x $y] what
-  if {$what == "heading"} {
-      ::enginelist::sort [$w identify column $x $y]
-  }
+    lassign [$w identify $x $y] what
+    if {$what == "heading"} {
+        set col [$w identify column $x $y]
+        ::enginelist::sort [$w column $col -id]
+    }
 }
 proc ::enginelist::choose {} {
     global engines
@@ -413,16 +414,15 @@ proc ::enginelist::choose {} {
     ttk::frame $w.buttons
     ttk::frame $w.list
     # Set up enginelist
-    ttk::treeview $w.list.list -columns { "Name" "Elo" "Date" } -height 12 \
+    ttk::treeview $w.list.list -columns { "Name" "Elo" "Time" } -height 12 \
         -show headings -selectmode browse -yscrollcommand "$w.list.ybar set"
-    set i 0
     set wid [font measure font_Regular W]
-    foreach { width name } { 12 Name 4 Elo 12 Date } {
-        $w.list.list column $i -width [expr $width * $wid]
-        $w.list.list heading $i -text [tr $name]
-        incr i
-    }
-    $w.list.list column 1 -anchor e
+    $w.list.list column Name -width [expr 12 * $wid]
+    $w.list.list heading Name -text [tr EngineName]
+    $w.list.list column Elo -anchor e -width [expr 4 * $wid]
+    $w.list.list heading Elo -text [tr EngineElo]
+    $w.list.list column Time -width [expr 12 * $wid]
+    $w.list.list heading Time -text [tr EngineTime]
     ttk::scrollbar $w.list.ybar -command "$w.list.list yview"
     pack $w.list.list $w.list.ybar -side left -fill both -expand 1
     
