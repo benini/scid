@@ -107,7 +107,6 @@ resetEngine 1
 resetEngine 2
 
 set annotateMode 0
-set annotateModeButtonValue 0 ; # feedback of annotate mode
 
 ################################################################################
 # calculateNodes:
@@ -812,28 +811,22 @@ proc startAutoplay { } {
     after 100 autoplay
 }
 
-proc setAnnotateModeButtonValue { value } {
-    if { ! $value } {
-       .analysisWin1.b1.annotate configure -image tb_annotate
-       .analysisWin1.b1.annotate state !pressed
-    } else {
-       .analysisWin1.b1.annotate configure -image tb_annotate_on
-       .analysisWin1.b1.annotate state pressed
-    }
-    set ::annotateModeButtonValue $value
-}
-
 proc cancelAutoplay {} {
     set ::autoplayMode 0
     set ::annotateMode 0
-    setAnnotateModeButtonValue 0
+    #TODO: improve this, do not hardcode the button name
+    if {[winfo exists .analysisWin1.b1.annotate]} {
+        .analysisWin1.b1.annotate state !pressed
+    }
     after cancel autoplay
+
+    #TODO: the position is not changed and the notify should not be necessary
     ::notify::PosChanged
 }
 
 
-proc configAnnotation {n} {
-    global autoplayDelay tempdelay blunderThreshold annotateModeButtonValue
+proc configAnnotation {} {
+    global autoplayDelay tempdelay blunderThreshold
     
     set w .configAnnotation
     # Do not do anything if the window exists
@@ -844,19 +837,13 @@ proc configAnnotation {n} {
         return
     }
     
-    if { ! $annotateModeButtonValue } {
-       setAnnotateModeButtonValue 1
-    } else {
-       setAnnotateModeButtonValue 0
-    }
     # If the annotation button is pressed while annotation is
     # running, stop the annotation
-    #
-    if { ! $annotateModeButtonValue } {
+    if {$::autoplayMode} {
         cancelAutoplay
         return
     }
-    
+
     trace variable blunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
     trace variable tempdelay w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
     
@@ -961,9 +948,6 @@ proc configAnnotation {n} {
     
     ttk::button $f.buttons.cancel -text $::tr(Cancel) -command {
         destroy .configAnnotation
-        setAnnotateModeButtonValue 0
-	.analysisWin1.b1.annotate configure -image tb_annotate
-	.analysisWin1.b1.annotate state !pressed
     }
     ttk::button $f.buttons.ok -text "OK" -command {
         set ::useAnalysisBookName [.configAnnotation.f.analyse.comboBooks get]
@@ -982,9 +966,7 @@ proc configAnnotation {n} {
         if {$tempdelay < 0.1} { set tempdelay 0.1 }
         set autoplayDelay [expr {int($tempdelay * 1000)}]
         destroy .configAnnotation
-        cancelAutoplay
-        setAnnotateModeButtonValue 1
-	.analysisWin1.b1.annotate configure -image tb_annotate_on
+        .analysisWin1.b1.annotate state pressed
         # Tell the analysis mode that we want an initial assessment of the
         # position. So: no comments yet, please!
         set ::initialAnalysis 1
@@ -1777,7 +1759,7 @@ proc logEngineNote {n text} {
 #   then opens an analysis window and starts the engine.
 ################################################################################
 proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
-    global analysisWin$n font_Analysis analysisCommand analysis annotateModeButtonValue
+    global analysisWin$n font_Analysis analysisCommand analysis
 
     set w ".analysisWin$n"
     if {[winfo exists $w]} {
@@ -1807,12 +1789,6 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
             makeAnalysisWin $n -1
         }
         return
-    }
-
-    # Set the button in non-annotation state
-    #
-    if { $n == 1 } {
-        set annotateModeButtonValue 0
     }
 
     set engineData [lindex $::engines(list) $index]
@@ -1920,7 +1896,8 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
     
     if {$n == 1} {
-        ttk::button $w.b1.annotate -image tb_annotate -command "configAnnotation $n"
+        ttk::button $w.b1.annotate -command "configAnnotation" \
+            -image [list tb_annotate pressed tb_annotate_on]
         ::utils::tooltip::Set $w.b1.annotate $::tr(Annotate...)
     }
     ttk::button $w.b1.priority -image tb_cpu_hi -command "setAnalysisPriority $w $n"
@@ -2338,7 +2315,7 @@ set finishGameMode 0
 proc toggleFinishGame { { n 1 } } {
 	global analysis
 	set b ".analysisWin$n.b1.bFinishGame"
-	if { $::annotateModeButtonValue || $::autoplayMode } { return }
+	if { $::autoplayMode } { return }
 	if { ! $analysis(uci$n) } {
 		if { !$analysis(analyzeMode$n) || ! [sc_pos isAt vend] } { return }
 
