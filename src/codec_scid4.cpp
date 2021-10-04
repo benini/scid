@@ -47,13 +47,11 @@ namespace {
  */
 const char* NAMEBASE_MAGIC = "Scid.sn";
 
-/**
- * Read a SCIDv4 NameBase file into memory.
- * @param filename: the full path of the file to open.
- * @param fMode:    a valid file mode.
- * @param nb:       reference to the object where the names will be stored.
- * @returns OK if successful or an error code.
- */
+/// Read a SCIDv4 NameBase file into memory.
+/// @param filename: the full path of the file to open.
+/// @param fMode:    a valid file mode.
+/// @param nb:       reference to the object where the names will be stored.
+/// @returns OK if successful or an error code.
 errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	Filebuf file;
 	if (file.Open(filename, fmode) != OK)
@@ -127,12 +125,10 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	return OK;
 }
 
-/**
- * Write a SCIDv4 NameBase file.
- * @param filename: the full path of the file to open.
- * @param nb:       reference to the object where the names will be stored.
- * @returns OK if successful or an error code.
- */
+/// Write a SCIDv4 NameBase file.
+/// @param filename: the full path of the file to open.
+/// @param nb:       reference to the object where the names will be stored.
+/// @returns OK if successful or an error code.
 template <typename TCont, typename TFreq>
 errorT namefileWrite(const char* filename, const TCont& names_ids,
                      const TFreq& freq) {
@@ -318,14 +314,12 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 
 } // namespace
 
-/**
- * Decode SCID4 (or SCID3) data into an IndexEntry object.
- * @param buf_it:  pointer to the buffer containing the data
- *                 (should contain INDEX_ENTRY_SIZE chars)
- * @param version: 400 for SCID4 or 300 for SCID3.
- * @param ie:      pointer to the IndexEntry object where the data will be
- *                 stored.
- */
+/// Decode SCID4 (or SCID3) data into an IndexEntry object.
+/// @param buf_it:  pointer to the buffer containing the data
+///                 (should contain INDEX_ENTRY_SIZE chars)
+/// @param version: 400 for SCID4 or 300 for SCID3.
+/// @param ie:      pointer to the IndexEntry object where the data will be
+///                 stored.
 void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 	auto ReadOneByte = [&buf_it]() {
 		uint8_t res = *buf_it++;
