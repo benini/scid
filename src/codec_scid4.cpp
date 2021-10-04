@@ -235,6 +235,7 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
  */
 constexpr char INDEX_MAGIC[8] = "Scid.si";
 constexpr size_t SCID_DESC_LENGTH = 107;
+constexpr size_t CUSTOM_FLAG_MAX = 6;
 constexpr size_t CUSTOM_FLAG_DESC_LENGTH = 8;
 constexpr int INDEX_ENTRY_SIZE = 47;
 constexpr int OLD_INDEX_ENTRY_SIZE = 46;
@@ -269,10 +270,10 @@ std::pair<errorT, gamenumT> readIndexHeader(FileT& indexFile, HeaderT& header) {
 	header.description.assign(desc,
 	                          std::find(desc, desc + SCID_DESC_LENGTH, '\0'));
 	if (header.version >= 400) {
-		for (uint i = 0; i < CUSTOM_FLAG_MAX; i++) {
+		for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
 			char buf[CUSTOM_FLAG_DESC_LENGTH + 1];
 			indexFile.sgetn(buf, CUSTOM_FLAG_DESC_LENGTH + 1);
-			header.customFlagDesc[i].assign(
+			header.flagDesc[i].assign(
 			    buf, std::find(buf, buf + CUSTOM_FLAG_DESC_LENGTH, '\0'));
 		}
 	}
@@ -299,7 +300,7 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	std::copy_n(Header.description.data(),
 	            std::min(Header.description.size(), SCID_DESC_LENGTH), desc);
 	n += indexFile.sputn(desc, SCID_DESC_LENGTH + 1);
-	for (auto const& flagDesc : Header.customFlagDesc) {
+	for (auto const& flagDesc : Header.flagDesc) {
 		char buf[CUSTOM_FLAG_DESC_LENGTH + 1] = {};
 		std::copy_n(flagDesc.data(),
 		            std::min(flagDesc.size(), CUSTOM_FLAG_DESC_LENGTH), buf);
@@ -452,7 +453,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			err = idxfile_.Open(indexFilename, FMODE_Create);
 
 		if (err == OK)
-			err = writeIndexHeader(idxfile_, idx_->Header, idx_->GetNumGames());
+			err = writeIndexHeader(idxfile_, header_, idx_->GetNumGames());
 
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
@@ -465,16 +466,16 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		if (auto err = idxfile_.Open(indexFilename, fMode))
 			return err;
 
-		auto [errHeader, nGames] = readIndexHeader(idxfile_, idx_->Header);
+		auto [errHeader, nGames] = readIndexHeader(idxfile_, header_);
 		if (errHeader)
 			return errHeader;
 
 		constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
-		if (idx_->Header.version < SCID_OLDEST_VERSION ||
-		    idx_->Header.version > SCID_VERSION)
+		if (header_.version < SCID_OLDEST_VERSION ||
+		    header_.version > SCID_VERSION)
 			return ERROR_FileVersion;
 
-		if (idx_->Header.version != SCID_VERSION && fMode != FMODE_ReadOnly)
+		if (header_.version != SCID_VERSION && fMode != FMODE_ReadOnly)
 			return ERROR_FileMode; // Old versions must be opened readonly
 
 		err = readIndex(nGames, progress);
@@ -486,11 +487,10 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 errorT CodecSCID4::flush() {
 	seqWrite_ = 0;
 	errorT errHeader = OK;
-	if (header_dirty_) {
-		errHeader = writeIndexHeader(idxfile_, idx_->Header,
-		                             idx_->GetNumGames());
+	if (header_.dirty) {
+		errHeader = writeIndexHeader(idxfile_, header_, idx_->GetNumGames());
 		if (errHeader == OK)
-			header_dirty_ = false;
+			header_.dirty = false;
 	}
 	errorT errSync = (idxfile_.pubsync() != 0) ? ERROR_FileWrite : OK;
 	errorT err = (errHeader == OK) ? errSync : errHeader;
@@ -559,10 +559,9 @@ errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 		return true;
 	};
 
-	auto version = idx_->Header.version;
 	idx_->entries_.resize(nGames);
-
-	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
+	const auto nBytes = (header_.version < 400) ? OLD_INDEX_ENTRY_SIZE
+	                                            : INDEX_ENTRY_SIZE;
 	for (gamenumT gNum = 0; idxfile_.sgetc() != EOF; ++gNum) {
 		if (gNum == nGames)
 			return ERROR_CorruptData;
@@ -577,7 +576,7 @@ errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 			return ERROR_FileRead;
 
 		IndexEntry& ie = idx_->entries_[gNum];
-		decodeIndexEntry(buf, version, &ie);
+		decodeIndexEntry(buf, header_.version, &ie);
 
 		if (!validateNameIDs(&ie))
 			return ERROR_CorruptData;
@@ -609,15 +608,15 @@ errorT CodecSCID4::writeEntry(const IndexEntry& ie, gamenumT gnum) {
 
 errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
 	if (std::strcmp(tagname, "type") == 0) {
-		idx_->Header.baseType = strGetUnsigned(new_value);
+		header_.baseType = strGetUnsigned(new_value);
 
 	} else if (std::strcmp(tagname, "description") == 0) {
-		idx_->Header.description = new_value;
-		if (idx_->Header.description.size() > SCID_DESC_LENGTH)
-			idx_->Header.description.resize(SCID_DESC_LENGTH);
+		header_.description = new_value;
+		if (header_.description.size() > SCID_DESC_LENGTH)
+			header_.description.resize(SCID_DESC_LENGTH);
 
 	} else if (std::strcmp(tagname, "autoload") == 0) {
-		idx_->Header.autoLoad = strGetUnsigned(new_value);
+		header_.autoLoad = strGetUnsigned(new_value);
 
 	} else {
 		auto len = std::strlen(tagname);
@@ -630,11 +629,11 @@ errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
 			return ERROR_CodecUnsupFeat;
 
 		const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
-		idx_->Header.customFlagDesc[idx] = new_value;
-		if (idx_->Header.customFlagDesc[idx].size() > CUSTOM_FLAG_DESC_LENGTH)
-			idx_->Header.customFlagDesc[idx].resize(CUSTOM_FLAG_DESC_LENGTH);
+		header_.flagDesc[idx] = new_value;
+		if (header_.flagDesc[idx].size() > CUSTOM_FLAG_DESC_LENGTH)
+			header_.flagDesc[idx].resize(CUSTOM_FLAG_DESC_LENGTH);
 	}
 
-	header_dirty_ = true;
+	header_.dirty = true;
 	return OK;
 }

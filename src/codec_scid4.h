@@ -42,7 +42,16 @@ class CodecSCID4 : public ICodecDatabase {
 	FilebufAppend gfile_;
 	char gamecache_[1ULL << 17];
 	gamenumT seqWrite_ = 0;
-	bool header_dirty_ = false;
+
+	struct {
+		std::string description; // a string describing the database.
+		std::string flagDesc[6]; // short description (8 chars) for CUSTOM flags
+		gamenumT autoLoad = 1;   // game number to autoload:
+		                         // 0=none, 1=1st, >numGames=last
+		uint32_t baseType = 0;   // Type, e.g. tournament, theory, etc.
+		versionT version = SCID_VERSION; // version number. 2 bytes.
+		bool dirty = false;
+	} header_;
 
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 32,
@@ -64,17 +73,16 @@ public: // ICodecDatabase interface
 	std::vector<std::pair<const char*, std::string>>
 	getExtraInfo() const final {
 		std::vector<std::pair<const char*, std::string>> res;
-		res.emplace_back("type", std::to_string(idx_->Header.baseType));
-		res.emplace_back("description", idx_->Header.description);
-		const auto autoload = std::min(idx_->Header.autoLoad,
-		                               idx_->GetNumGames());
+		res.emplace_back("type", std::to_string(header_.baseType));
+		res.emplace_back("description", header_.description);
+		const auto autoload = std::min(header_.autoLoad, idx_->GetNumGames());
 		res.emplace_back("autoload", std::to_string(autoload));
-		res.emplace_back("flag1", idx_->Header.customFlagDesc[0]);
-		res.emplace_back("flag2", idx_->Header.customFlagDesc[1]);
-		res.emplace_back("flag3", idx_->Header.customFlagDesc[2]);
-		res.emplace_back("flag4", idx_->Header.customFlagDesc[3]);
-		res.emplace_back("flag5", idx_->Header.customFlagDesc[4]);
-		res.emplace_back("flag6", idx_->Header.customFlagDesc[5]);
+		res.emplace_back("flag1", header_.flagDesc[0]);
+		res.emplace_back("flag2", header_.flagDesc[1]);
+		res.emplace_back("flag3", header_.flagDesc[2]);
+		res.emplace_back("flag4", header_.flagDesc[3]);
+		res.emplace_back("flag5", header_.flagDesc[4]);
+		res.emplace_back("flag6", header_.flagDesc[5]);
 		return res;
 	}
 
@@ -202,7 +210,7 @@ private:
 			return ERROR_NumGamesLimit;
 
 		idx_->addEntry(ie);
-		header_dirty_ = true;
+		header_.dirty = true;
 		return writeEntry(ie, nGames);
 	}
 
