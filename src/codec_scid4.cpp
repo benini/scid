@@ -313,8 +313,6 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	return OK;
 }
 
-} // namespace
-
 /// Decode SCID4 (or SCID3) data into an IndexEntry object.
 /// @param buf_it:  pointer to the buffer containing the data
 ///                 (should contain INDEX_ENTRY_SIZE chars)
@@ -523,6 +521,8 @@ void encodeIndexEntry(const IndexEntry* ie, char* buf_it) {
 	WriteOneByte(pawnData0);
 	std::copy(pb + 1, pb + HPSIG_SIZE, buf_it);
 }
+
+} // namespace
 
 errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
                             const Progress& progress, Index* idx,
