@@ -83,9 +83,6 @@ class IndexEntry {
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
 public:
-    friend void encodeIndexEntry(const IndexEntry* ie, char* buf_it);
-
-    // get functions
     uint64_t  GetOffset() const { return offset_; }
     uint32_t  GetLength() const { return gameDataSize_; }
     idNumberT GetWhite() const { return whiteID_; }
@@ -108,6 +105,14 @@ public:
     byte      GetStoredLineCode() const { return storedLineCode_; }
     ecoT      GetEcoCode() const { return ECOcode_; }
     bool      GetFlag(uint32_t mask) const { return (flags_ & mask) == mask; }
+    uint32_t  GetRawFlags() const { return flags_; }
+    uint16_t  GetRaw4bitsCounts() const {
+        uint16_t res = nVariations_ & 0x0F;
+        res |= static_cast<uint16_t>(nComments_ & 0x0F) << 4;
+        res |= static_cast<uint16_t>(nNags_ & 0x0F) << 8;
+        return res;
+    }
+
     const byte* GetHomePawnData() const { return HomePawnData; }
     void SetHomePawnData(byte hpCount, const byte hpVal[8]) {
         HomePawnData[0] = hpCount; // First byte stores the count

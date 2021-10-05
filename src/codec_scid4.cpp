@@ -443,9 +443,9 @@ void encodeIndexEntry(const IndexEntry* ie, char* buf_it) {
 	ASSERT(ie->GetLength() < (1ULL << 17));
 	WriteTwoBytes(static_cast<uint16_t>(ie->GetLength()));
 	uint8_t len_flags = static_cast<uint8_t>(ie->GetLength() >> 9) & 0x80;
-	len_flags |= static_cast<uint8_t>(ie->flags_ >> 16) & 0x3F;
+	len_flags |= static_cast<uint8_t>(ie->GetRawFlags() >> 16) & 0x3F;
 	WriteOneByte(len_flags);
-	WriteTwoBytes(static_cast<uint16_t>(ie->flags_));
+	WriteTwoBytes(static_cast<uint16_t>(ie->GetRawFlags()));
 
 	// WhiteID and BlackID are 20-bit values, EventID and SiteID are
 	// 19-bit values, and RoundID is an 18-bit value.
@@ -476,9 +476,7 @@ void encodeIndexEntry(const IndexEntry* ie, char* buf_it) {
 	WriteTwoBytes(static_cast<uint16_t>(SiteID_Low));
 	WriteTwoBytes(static_cast<uint16_t>(RoundID_Low));
 
-	uint16_t varCounts = ie->nVariations_ & 0x0F;
-	varCounts |= static_cast<uint16_t>(ie->nComments_ & 0x0F) << 4;
-	varCounts |= static_cast<uint16_t>(ie->nNags_ & 0x0F) << 8;
+	uint16_t varCounts = ie->GetRaw4bitsCounts();
 	varCounts |= static_cast<uint16_t>(ie->GetResult() & 0x0F) << 12;
 	WriteTwoBytes(varCounts);
 
