@@ -7938,9 +7938,17 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
 
     if (flip) {
         posFlip = new Position;
-        char cboard [40];
-        pos->PrintCompactStrFlipped (cboard);
-        posFlip->ReadFromCompactStr ((byte *) cboard);
+        posFlip->Clear();
+        for (auto sq = A1; sq <= H8; ++sq) {
+            const auto piece = pos->GetPiece(sq);
+            if (piece != EMPTY) {
+                const auto sq_flip = square_Relative(BLACK, sq);
+                posFlip->AddPiece(PIECE_FLIP[piece], sq_flip);
+            }
+        }
+        posFlip->SetToMove(color_Flip(pos->GetToMove()));
+        posFlip->SetEPTarget(pos->GetEPTarget());
+        //NOTE: the search ignores the castling flags
         hpSigFlip = posFlip->GetHPSig();
         msigFlip = matsig_Make (posFlip->GetMaterial());
     }

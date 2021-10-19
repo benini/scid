@@ -2496,8 +2496,6 @@ Position::MakeLongStr (char * str)
     *s = 0;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ReadFromCompactStr():
 //    Sets the position from the provided Null-terminated 33-byte
 //    compact string.
 //    The first 32 bytes contain the square valued, 4 bits per value,
@@ -2507,34 +2505,6 @@ Position::MakeLongStr (char * str)
 //    To ensure no bytes within the staring are zero-valued (so it
 //    can be used as a regular null-terminated string), the value 1
 //    is added to the color, castling and en passant fields.
-errorT
-Position::ReadFromCompactStr (const byte * str)
-{
-    Clear();
-    for (uint i=0; i < 32; i++) {
-        pieceT p = str[i] >> 4;
-        if (p != EMPTY) {
-            if (AddPiece (p, i * 2) != OK) {
-                return ERROR_Corrupt;
-            }
-        }
-        p = str[i] & 15;
-        if (p != EMPTY) {
-            if (AddPiece (p, i * 2 + 1) != OK) {
-                return ERROR_Corrupt;
-            }
-        }
-    }
-    colorT toMove = str[32] - 1;
-    if (toMove != WHITE  &&  toMove != BLACK) {
-        return ERROR_Corrupt;
-    }
-    ToMove = toMove;
-    Castling = str[33] - 1;
-    EPTarget = str[34] - 1;
-    return OK;
-}
-
 void
 Position::PrintCompactStr (char * cboard)
 {
@@ -2561,22 +2531,6 @@ Position::PrintCompactStr (char * cboard)
 
     }
     cboard[34] = 1 + ep;
-    cboard[35] = 0;
-}
-
-void
-Position::PrintCompactStrFlipped (char * cboard)
-{
-    for (uint i=0; i < 32; i++) {
-        uint i2 = i << 1;
-        // Flip 1st rank to 8th, etc:
-        i2 = ((7 - (i2)/8) * 8 + ((i2) % 8));
-        cboard[i] = (byte)(PIECE_FLIP[Board[i2]] << 4) |
-            (byte)(PIECE_FLIP[Board[i2+1]]);
-    }
-    cboard[32] = 1 + color_Flip(ToMove);
-    cboard[33] = 1 + Castling;
-    cboard[34] = 1 + EPTarget;
     cboard[35] = 0;
 }
 

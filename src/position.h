@@ -292,14 +292,9 @@ public:
     // Board I/O
     void        MakeLongStr (char * str);
     errorT      ReadFromLongStr (const char * str);
-    errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
     errorT      ReadFromFENorUCI (std::string_view str);
     void        PrintCompactStr (char * cboard);
-    void        PrintCompactStrFlipped (char * cboard);
-    byte        CompactStrFirstByte () {
-        return (Board[0] << 4) | Board[1];
-    }
     void        PrintFEN(char* str, uint flags) const;
     void        DumpLatexBoard (DString * dstr, bool flip);
     void        DumpLatexBoard (DString * dstr) {
