@@ -7683,9 +7683,13 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (ecoBook && move) {
             simpleMoveT sm;
             sm.from = move.getFrom();
-            sm.to = move.getTo();
             sm.movingPiece = piece_Make(move.getColor(), move.getPiece());
             sm.promote = move.isPromo() ? move.getPromo() : EMPTY;
+            if (move.isCastle()) {
+                sm.setCastle(move.getTo() > sm.from);
+            } else {
+                sm.to = move.getTo();
+            }
 
             searchPos.DoSimpleMove(&sm);
             eco = ecoBook->findECO(&searchPos);

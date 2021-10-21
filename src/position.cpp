@@ -2316,13 +2316,13 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 		return slen == len && std::equal(str, str + len, const_str);
 	};
 
-	sm->from = square_Relative(ToMove, E1);
+	sm->from = GetKingSquare();
 	sm->promote = EMPTY;
 	sm->movingPiece = piece_Make(ToMove, KING);
 	sm->capturedPiece = EMPTY;
 
 	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
-		sm->to = sm->from + 2;
+		sm->setCastle(true);
 		if (!IsKingInCheck() && validCastling(true, true)) // short castle
 			return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
 
@@ -2330,7 +2330,7 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 		                                  : ERROR_InvalidMove;
 	}
 	if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
-		sm->to = sm->from - 2;
+		sm->setCastle(false);
 		if (!IsKingInCheck() && validCastling(false, true)) // long castle
 			return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
 

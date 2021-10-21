@@ -63,6 +63,16 @@ struct simpleMoveT
 		return 0;
 	}
 
+	/// Sets member @e "to" for castling moves.
+	/// @e from should already have been set to the king's square
+	void setCastle(bool king_side) {
+		assert(square_Fyle(from) == E_FYLE);
+		assert(promote == EMPTY);
+		assert(piece_Type(movingPiece) == KING);
+		to = from;
+		to += king_side ? 2 : -2;
+	}
+
 	/// Converts the move to long algebraic notation.
 	/// @return a pointer one past the last char written.
 	template <typename OutputIt> OutputIt toLongNotation(OutputIt dest) const {

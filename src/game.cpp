@@ -2736,7 +2736,7 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 		if (!pos->validCastling(promo == KING, false))
 			return ERROR_Decode;
 
-		sm->to += (promo == KING) ? 2 : -2;
+		sm->setCastle(promo == KING);
 		return OK; // CASTLE
 	}
 
