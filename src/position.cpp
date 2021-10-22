@@ -274,13 +274,13 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 //    should verify this first.
 //
 void Position::GenCastling(MoveList* mlist) {
-	const squareT from = square_Relative(ToMove, E1);
+	const squareT from = GetKingSquare();
 
 	if (GetCastling(ToMove, KSIDE) && validCastling(true, true))
-		AddLegalMove(mlist, from, from + 2, EMPTY);
+		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, true);
 
 	if (GetCastling(ToMove, QSIDE) && validCastling(false, true))
-		AddLegalMove(mlist, from, from - 2, EMPTY);
+		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, false);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

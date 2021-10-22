@@ -124,8 +124,8 @@ public:
 	iterator end() { return Moves + ListSize; }
 	uint Size() { return ListSize; }
 	void Clear() { ListSize = 0; }
-	void emplace_back(squareT from, squareT to, pieceT promote,
-	                  pieceT movingPiece, pieceT capturedPiece) {
+	ScoredMove& emplace_back(squareT from, squareT to, pieceT promote,
+	                         pieceT movingPiece, pieceT capturedPiece) {
 		ASSERT(ListSize < MAX_LEGAL_MOVES);
 		ScoredMove& sm = Moves[ListSize++];
 		sm = ScoredMove();
@@ -134,6 +134,12 @@ public:
 		sm.promote = promote;
 		sm.movingPiece = movingPiece;
 		sm.capturedPiece = capturedPiece;
+		return sm;
+	}
+	void emplace_back_castle(pieceT movingPiece, squareT kingSquare,
+	                         bool kingSide) {
+		emplace_back(kingSquare, kingSquare, EMPTY, movingPiece, EMPTY)
+		    .setCastle(kingSide);
 	}
 	void resize(size_t count) {
 		ASSERT(count <= MAX_LEGAL_MOVES);
