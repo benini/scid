@@ -3522,13 +3522,7 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (sanFormat) {
             g->GetSAN (s);
         } else {
-            *s++ = square_FyleChar(sm->from);
-            *s++ = square_RankChar(sm->from);
-            *s++ = square_FyleChar(sm->to);
-            *s++ = square_RankChar(sm->to);
-            if (sm->promote != EMPTY) {
-                *s++ = piece_Char (piece_Type (sm->promote));
-            }
+            s = sm->toLongNotation(s);
             *s = 0;
         }
         plyCount++;
@@ -5598,16 +5592,7 @@ sc_pos_matchMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         p->GenerateMoves(&mList);
         for (uint i=0; i < mList.Size(); i++) {
             simpleMoveT * sm = mList.Get(i);
-            str[0] = square_FyleChar (sm->from);
-            str[1] = square_RankChar (sm->from);
-            str[2] = square_FyleChar (sm->to);
-            str[3] = square_RankChar (sm->to);
-            if (sm->promote == EMPTY) {
-                str[4] = 0;
-            } else {
-                str[4] = piece_Char (sm->promote);
-                str[5] = 0;
-            }
+            *sm->toLongNotation(str) = '\0';
             if (strIsPrefix (prefix, str)) {
                 Tcl_AppendElement (ti, str);
             }
