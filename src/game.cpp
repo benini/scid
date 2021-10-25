@@ -2942,9 +2942,16 @@ std::pair<bool, bool> mainlineInfo(const Position* customStart,
 
 			const moveT* gameMove = firstMove;
 			for (; begin != end; ++begin) {
-				if (gameMove->moveData.from != begin->getFrom() ||
-				    gameMove->moveData.to != begin->getTo())
+				if (begin->isCastle()) {
+					const auto side = begin->getTo() > begin->getFrom() ? 1 : 2;
+					if (piece_Type(gameMove->moveData.movingPiece) != KING ||
+					    gameMove->moveData.isCastle() != side)
+						return false;
+
+				} else if (gameMove->moveData.from != begin->getFrom() ||
+				           gameMove->moveData.to != begin->getTo()) {
 					return false;
+				}
 
 				gameMove = gameMove->next;
 			}

@@ -1424,11 +1424,8 @@ Position::IsKingInCheck (simpleMoveT * sm)
     if (sm->promote != EMPTY) { p = piece_Type(sm->promote); }
 
     // No optimization of the last move was castling:
-    if (p == KING  &&  square_Fyle(sm->from) == E_FYLE) {
-        fyleT toFyle = square_Fyle(sm->to);
-        if (toFyle == C_FYLE  ||  toFyle == G_FYLE) {
-            return IsKingInCheck();
-        }
+    if (p == KING && sm->isCastle()) {
+        return IsKingInCheck();
     }
     // No optimization for en passant capture:
     if (p == PAWN  &&  piece_Type(sm->capturedPiece) == PAWN) {
