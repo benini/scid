@@ -145,6 +145,10 @@ private:
     errorT ReadMovePawn(simpleMoveT* sm, const char* str, int slen, fyleT from);
     errorT ReadMoveKing(simpleMoveT* sm, const char* str, int slen);
 
+    template <typename TFunc>
+    bool under_attack(squareT target_sq, squareT captured_sq,
+                      TFunc not_empty) const;
+    bool under_attack(squareT target_sq) const;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -243,8 +247,8 @@ public:
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);
-    bool  IsLegalMove(squareT from, squareT to, pieceT promo);
-
+    bool  IsLegalMove(squareT from, squareT to, pieceT promo) const;
+    bool  isLegalMoveCastle(squareT from, squareT to) const;
 
     /// Check that the minimum requirements for castling are satisfied:
     /// - both the king and the rook exists in the position

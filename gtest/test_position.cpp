@@ -504,6 +504,12 @@ TEST(Test_MoveGeneration, GetCastling) {
 		EXPECT_TRUE(pos.IsLegalMove(E1, G1, EMPTY));
 		EXPECT_FALSE(pos.IsLegalMove(E1, C1, EMPTY));
 	}
+	{ // Wrong rank
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/1k6/8/8/8/8/4K2R w K - 0 1"));
+		EXPECT_TRUE(pos.IsLegalMove(E1, G1, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E1, G2, EMPTY));
+	}
 }
 
 TEST(Test_PositionDoSimpleMove, castling_flags) {
@@ -600,6 +606,17 @@ TEST(Test_PositionDoSimpleMove, castling_flags_capture) {
 	}
 }
 
+TEST(Test_PositionIsLegalMove, normal) {
+	{
+		Position pos = Position::getStdStart();
+		EXPECT_TRUE(pos.IsLegalMove(B1, C3, EMPTY));
+		EXPECT_TRUE(pos.IsLegalMove(E2, E4, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E2, E4, QUEEN));
+		EXPECT_FALSE(pos.IsLegalMove(E3, E4, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(C1, F4, EMPTY));
+	}
+}
+
 TEST(Test_PositionIsLegalMove, king_in_check) {
 	Position pos;
 	ASSERT_EQ(
@@ -610,4 +627,44 @@ TEST(Test_PositionIsLegalMove, king_in_check) {
 	EXPECT_TRUE(pos.IsLegalMove(E1, E3, EMPTY));
 	EXPECT_FALSE(pos.IsLegalMove(E1, E4, EMPTY));
 	EXPECT_FALSE(pos.IsLegalMove(C3, B5, EMPTY));
+
+	{ // Capture the attacker
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/1kR5/8/8/8/8/4K3/8 b - - 0 1"));
+		EXPECT_TRUE(pos.IsLegalMove(B7, C7, EMPTY));
+	}
+	{ // Capture a defended piece
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/1b6/1k6/8/4p3/4K3/8/8 w - - 0 1"));
+		EXPECT_FALSE(pos.IsLegalMove(E3, E4, EMPTY));
+	}
+	{ // Adjacent enemy king
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/3k4/2p5/4K3/8/8 w - - 0 1"));
+		EXPECT_FALSE(pos.IsLegalMove(E1, G1, EMPTY));
+	}
+	{ // Evade check
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/3k4/8/8/8/1r3K2/8 w - - 0 1"));
+		EXPECT_TRUE(pos.IsLegalMove(F2, E3, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(F2, G2, EMPTY));
+	}
+}
+
+TEST(Test_PositionIsLegalMove, en_passant) {
+	{ // En passant capture
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/8/4pP2/8/7k/3K4 b - f3 0 1"));
+		EXPECT_TRUE(pos.IsLegalMove(E4, F3, EMPTY));
+	}
+	{ // En passant capture, the pawn checks the king
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/4pP2/8/8/3K4 b - f3 0 1"));
+		EXPECT_TRUE(pos.IsLegalMove(E4, F3, EMPTY));
+	}
+	{ // Hidden attacker
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/2B5/8/8/4pP2/8/7k/3K4 b - f3 0 1"));
+		EXPECT_FALSE(pos.IsLegalMove(E4, F3, EMPTY));
+	}
 }

@@ -223,6 +223,44 @@ Position::GenKnightMoves (MoveList * mlist, colorT c, squareT fromSq,
     }
 }
 
+template <typename TFunc>
+bool Position::under_attack(squareT target_sq, squareT captured_sq,
+                            TFunc not_empty) const {
+	const auto enemy = color_Flip(GetToMove());
+	const auto lpawn_atk = square_Move(target_sq,
+	                                   enemy == WHITE ? DOWN_LEFT : UP_LEFT);
+	const auto rpawn_atk = square_Move(target_sq,
+	                                   enemy == WHITE ? DOWN_RIGHT : UP_RIGHT);
+	const auto enemy_pieces = GetList(enemy);
+	for (size_t i = 1, n = GetCount(enemy); i < n; ++i) {
+		const auto piece_sq = enemy_pieces[i];
+		if (piece_sq == captured_sq)
+			continue;
+
+		const auto piece_type = piece_Type(GetPiece(piece_sq));
+		if (piece_type == KNIGHT) {
+			if (movegen::valid_knight(piece_sq, target_sq))
+				return true; // Knight check
+
+		} else if (piece_type == PAWN) {
+			if (piece_sq == lpawn_atk || piece_sq == rpawn_atk)
+				return true; // Pawn check
+
+		} else {
+			if (movegen::attack_slider(piece_sq, target_sq, piece_type,
+			                           not_empty))
+				return true; // Slider check
+		}
+	}
+	assert(GetCount(enemy) >= 1);
+	return movegen::valid_king(enemy_pieces[0], target_sq);
+}
+
+bool Position::under_attack(squareT target_sq) const {
+	return under_attack(target_sq, NULL_SQUARE,
+	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
+}
+
 squareT Position::castlingKingSq(colorT color) const {
 	return square_Relative(color, E1);
 }
@@ -261,7 +299,7 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 		if (!check_legal)
 			break;
 
-		if (CalcNumChecks(sq) > 0)
+		if (under_attack(sq))
 			return false;
 	}
 	return true;
@@ -905,57 +943,86 @@ Position::IsLegalMove (simpleMoveT * sm) {
     return (nchecks == 0);
 }
 
-bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
-    if (from > H8 || to > H8)
-        return false;
+/// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
+/// (which is different from @e to for en passant moves).
+static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
+                            pieceT promo) {
+	if (from > H8 || to > H8)
+		return false; // Invalid square
 
-    const auto mover = Board[from];
-    const auto captured = Board[to];
-    const auto pt = piece_Type(mover);
-    if (piece_Color(mover) != ToMove ||    // Wrong side to move
-        piece_Color(captured) == ToMove || // Capturing its own piece
-        piece_Type(captured) == KING ||    // Capturing the king
-        (pt != PAWN && promo != EMPTY))    // Only pawn can promote
-        return false;
+	const auto toMove = pos.GetToMove();
+	const auto mover = pos.GetPiece(from);
+	const auto captured = pos.GetPiece(to);
+	const auto pt = piece_Type(mover);
+	if (piece_Color(mover) != toMove ||    // Wrong side to move
+	    piece_Color(captured) == toMove || // Capturing its own piece
+	    piece_Type(captured) == KING ||    // Capturing the king
+	    (pt != PAWN && promo != EMPTY))    // Only pawn can promote
+		return NULL_SQUARE;
 
-    if (pt == KING || pt == PAWN) {
-        simpleMoveT sm;
-        sm.from = from;
-        sm.to = to;
-        sm.promote = promo;
-        sm.movingPiece = mover;
-        return IsLegalMove(&sm);
-    }
+	if (!movegen::pseudo(from, to, toMove, pt,
+	                     [&](auto sq) { return pos.GetPiece(sq) != EMPTY; }))
+		return NULL_SQUARE; // Invalid move
 
-    auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
-    if (!movegen::pseudo(from, to, ToMove, pt, isOccupied))
-        return false;
+	auto captured_sq = to;
+	if (pt == PAWN) {
+		if (captured == EMPTY && square_Fyle(from) != square_Fyle(to)) {
+			captured_sq = (toMove == WHITE) ? to - 8 : to + 8;
+			const auto enemy = color_Flip(toMove);
+			if (to != pos.GetEPTarget() ||
+			    pos.GetPiece(captured_sq) != piece_Make(enemy, PAWN))
+				return NULL_SQUARE; // Invalid en passant
+		}
+		if (RANK_8 != square_Rank(square_Relative(toMove, to))) {
+			if (promo != EMPTY)
+				return NULL_SQUARE; // Wrong promotion rank
+		} else {
+			if (promo != QUEEN && promo != ROOK && promo != BISHOP &&
+			    promo != KNIGHT)
+				return NULL_SQUARE; // Wrong promotion piece type
+		}
+	}
+	return captured_sq;
+}
 
-    const auto enemy = color_Flip(GetToMove());
-    const auto king_sq = GetKingSquare();
-    SquareList sq_list;
-    const auto n_checks = CalcAttacks(enemy, king_sq, &sq_list);
-    if (n_checks > 0) {
-        if (n_checks > 1)
-            return false; // a double ckeck requires a king move
+bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
+	auto king_sq = GetKingSquare();
+	const auto captured_sq = pseudo_legal(*this, from, to, promo);
+	if (captured_sq == NULL_SQUARE) {
+		if (promo != EMPTY || from != king_sq)
+			return false; // Invalid move
 
-        const auto checker_sq = sq_list.Get(0);
-        const auto checker_pt = piece_Type(GetPiece(checker_sq));
-        if (checker_sq != to &&
-            movegen::attack(
-                checker_sq, king_sq, enemy, checker_pt,
-                [&](auto sq) { return sq == to || GetPiece(sq) != EMPTY; }))
-            return false; // the attacker was not captured or blocked
-    }
+		if (under_attack(king_sq))
+			return false; // King in-check, cannot castle
 
-    const auto pin = movegen::opens_ray(from, to, GetKingSquare(), isOccupied);
-    if (pin.first != INVALID_PIECE) {
-        auto p = Board[pin.second];
-        if (piece_Color_NotEmpty(p) != ToMove &&
-            (piece_Type(p) == QUEEN || piece_Type(p) == pin.first))
-            return false;
-    }
-    return true;
+		return isLegalMoveCastle(from, to);
+	}
+
+	const auto target_sq = (from == king_sq) ? to : king_sq;
+	auto not_empty = [&](auto sq) {
+		return sq == to ||
+		       (sq != from && sq != captured_sq && GetPiece(sq) != EMPTY);
+	};
+	return !under_attack(target_sq, captured_sq, not_empty);
+}
+
+bool Position::isLegalMoveCastle(squareT from, squareT to) const {
+	assert(from == GetKingSquare());
+	assert(CalcNumChecks() == 0); // validCastling doesn't check the from square
+
+	const auto side = to > from ? KSIDE : QSIDE;
+	if (!GetCastling(ToMove, side) || // Invalid flag
+	    !validCastling(side == KSIDE, true))
+		return false;
+
+	const squareT kingTo = side == KSIDE ? square_Relative(ToMove, G1)
+	                                     : square_Relative(ToMove, C1);
+	const squareT rookSq = side == KSIDE ? castlingRookSq<true>(ToMove)
+	                                     : castlingRookSq<false>(ToMove);
+	if (to != kingTo && to != rookSq)
+		return false;
+
+	return true;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
