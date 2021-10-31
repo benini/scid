@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2019  Fulvio Benini
+ * Copyright (C) 2011-2021  Fulvio Benini
  *
  * This file is part of Scid (Shane's Chess Information Database).
  *
@@ -43,7 +43,9 @@
 
 namespace movegen {
 
-const int NSQUARES = 8;
+constexpr int NSQUARES = 8;
+constexpr int kWPHomeRank = 1;
+constexpr int kBPHomeRank = NSQUARES - 2;
 
 inline bool valid_king(squareT sqFrom, squareT sqTo) {
 	unsigned distRank = 1 + (sqTo / NSQUARES) - (sqFrom / NSQUARES);
@@ -148,18 +150,31 @@ bool attack(squareT sqFrom, squareT sqTo, pieceT pieceCol, pieceT pieceType,
 }
 
 template <typename TFunc>
-bool pseudo(squareT sqFrom, squareT sqTo, colorT /*pieceCol*/, pieceT pieceType,
-            TFunc isOccupied) {
-	// TODO: pawn and king moves
-	ASSERT(pieceType != PAWN && pieceType != KING);
+inline bool pseudo_advance_pawn(squareT sqFrom, squareT sqTo, colorT pieceCol,
+                                TFunc isOccupied) {
+	if ((sqTo % NSQUARES) != (sqFrom % NSQUARES) // Different file
+	    || isOccupied(sqTo)) // Pawns can only capture diagonally
+		return false;
 
-	switch (pieceType) {
-	case KNIGHT:
-		return valid_knight(sqFrom, sqTo);
-	default:
-		break;
-	}
-	return attack_slider(sqFrom, sqTo, pieceType, isOccupied);
+	int fromRank = sqFrom / NSQUARES;
+	int distRank = (sqTo / NSQUARES) - fromRank;
+	if (pieceCol == WHITE)
+		return distRank == 1 || (distRank == 2 && fromRank == kWPHomeRank &&
+		                         !isOccupied(sqFrom + NSQUARES));
+
+	return distRank == -1 || (distRank == -2 && fromRank == kBPHomeRank &&
+	                          !isOccupied(sqFrom - NSQUARES));
+}
+
+template <typename TFunc>
+bool pseudo(squareT sqFrom, squareT sqTo, colorT pieceCol, pieceT pieceType,
+            TFunc isOccupied) {
+	// TODO: castle moves
+	if (pieceType == PAWN &&
+	    pseudo_advance_pawn(sqFrom, sqTo, pieceCol, isOccupied))
+		return true;
+
+	return attack(sqFrom, sqTo, pieceCol, pieceType, isOccupied);
 }
 
 /**
@@ -235,6 +250,17 @@ inline std::pair<pieceT, squareT> opens_ray(squareT sqFrom, squareT sqTo,
 			break;
 	}
 	return {INVALID_PIECE, 0};
+}
+
+/// Checks if there is a valid ray from @e sqFrom to @e sqTo and if a piece on
+/// @e sqBlock would block that ray.
+/// @param sqFrom:       start square of the ray.
+/// @param sqTo:         end square of the ray.
+/// @param sqBlock:      the square that may block the ray.
+/// @returns true if a piece on @e sqBlock would block the ray.
+inline bool blocks_ray(squareT sqFrom, squareT sqTo, squareT sqBlock) {
+	return !movegen::attack_slider(sqFrom, sqTo, QUEEN,
+	                               [&](auto sq) { return sq == sqBlock; });
 }
 
 } // end of namespace movegen
