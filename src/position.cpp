@@ -943,6 +943,23 @@ Position::IsLegalMove (simpleMoveT * sm) {
     return (nchecks == 0);
 }
 
+// Return true if moving the piece from square @e from to square @e dest
+// (NULL_SQUARE if the piece is captured) would leave the king in check.
+// It can also be used to check if the last move created a discovered check.
+static bool xray_check(Position const& pos, squareT from, squareT to) {
+	const auto [atk_piece, atk_sq] = movegen::opens_ray(
+	    from, to, pos.GetKingSquare(),
+	    [&](auto sq) { return pos.GetPiece(sq) != EMPTY; });
+
+	if (atk_piece == INVALID_PIECE)
+		return false;
+
+	const auto piece = pos.GetPiece(atk_sq);
+	const auto pt = piece_Type(piece);
+	const auto col = piece_Color_NotEmpty(piece);
+	return col != pos.GetToMove() && (pt == QUEEN || pt == atk_piece);
+}
+
 /// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
 /// (which is different from @e to for en passant moves).
 static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
@@ -983,6 +1000,23 @@ static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
 		}
 	}
 	return captured_sq;
+}
+
+/// Return the captured square (which is different from @e to for en passant
+/// moves) if the move is pseudo legal and the moving piece is not pinned.
+/// Return NULL_SQUARE otherwise.
+/// The move is also legal if the king is not in check or if there is only one
+/// attacker and it is captured or blocked.
+static squareT pseudo_not_pinned(Position const& pos, squareT from, squareT to,
+                                 pieceT promo) {
+	const auto captured_sq = pseudo_legal(pos, from, to, promo);
+	if (captured_sq == NULL_SQUARE)
+		return NULL_SQUARE; // Invalid move
+
+	if (captured_sq != to && xray_check(pos, captured_sq, NULL_SQUARE))
+		return NULL_SQUARE; // Capturing en passant leaves our king in check
+
+	return xray_check(pos, from, to) ? NULL_SQUARE : captured_sq;
 }
 
 bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
