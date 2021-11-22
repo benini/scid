@@ -668,3 +668,68 @@ TEST(Test_PositionIsLegalMove, en_passant) {
 		EXPECT_FALSE(pos.IsLegalMove(E4, F3, EMPTY));
 	}
 }
+
+TEST(Test_PositionIsKingInCheck, last_move_optimization) {
+	auto make_sm = [](auto movingPiece, auto from, auto to) {
+		simpleMoveT sm;
+		sm.from = from;
+		sm.to = to;
+		sm.promote = EMPTY;
+		sm.movingPiece = movingPiece;
+		return sm;
+	};
+
+	{ // No Check
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/5pp1/8/2KR4/2B5 w - -"));
+		auto sm = make_sm(WR, D2, G2);
+		pos.DoSimpleMove(&sm);
+		EXPECT_FALSE(pos.IsKingInCheck(sm));
+	}
+	{ // Direct attack
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/5p2/8/2KR4/2B5 w - -"));
+		auto sm = make_sm(WR, D2, G2);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+	{ // Discovered check
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/6p1/8/2KR4/2B5 w - -"));
+		auto sm = make_sm(WR, D2, G2);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+	{ // Double check
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/8/8/2KR4/2B5 w - -"));
+		auto sm = make_sm(WR, D2, G2);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+	{ // Castling
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("4k2r/6pp/8/8/8/6P1/4P1PP/5K2 b k -"));
+		auto sm = make_sm(BK, E8, H8);
+		sm.setCastle(true);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+	{ // En passant capture, the pawn checks the king
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/4p3/8/5P2/3K4 w - -"));
+		auto sm = make_sm(WP, F2, F4);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+		sm = make_sm(BP, E4, F3);
+		pos.DoSimpleMove(&sm);
+		EXPECT_FALSE(pos.IsKingInCheck(sm));
+	}
+	{ // En passant capture, discovered check
+		Position pos;
+		ASSERT_EQ(OK, pos.ReadFromFEN("8/4r3/8/6k1/4pP2/8/8/4K3 b - f3 0 1"));
+		auto sm = make_sm(BP, E4, F3);
+		pos.DoSimpleMove(&sm);
+		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+}

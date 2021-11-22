@@ -1440,74 +1440,6 @@ Position::CalcAttacks (colorT side, squareT target, SquareList * fromSquares) co
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::IsKingInCheckDir
-//   Returns true if the King of the side to move is attacked
-//   by an enemy sliding piece (Queen/Rook/Bishop) from the
-//   specified direction.
-bool
-Position::IsKingInCheckDir (directionT dir)
-{
-    ASSERT (dir != NULL_DIR);
-    squareT kingSq = GetKingSquare(ToMove);
-    colorT enemy = color_Flip(ToMove);
-    bool isDiagonal = direction_IsDiagonal(dir);
-    pieceT queen = piece_Make (enemy, QUEEN);
-    pieceT slider = piece_Make (enemy, (isDiagonal ? BISHOP : ROOK));
-
-    // First, make sure the enemy has sliding pieces that could give check:
-    uint nSliders = PieceCount(queen) + PieceCount(slider);
-    if (nSliders == 0) { return false; }
-
-    // Now make sure the enemy has a sliding piece on the appropriate
-    // rank, file or diagonal:
-    fyleT fyle = square_Fyle (kingSq);
-    rankT rank = square_Rank (kingSq);
-    leftDiagT ldiag = square_LeftDiag (kingSq);
-    rightDiagT rdiag = square_RightDiag (kingSq);
-
-    switch (dir) {
-    case UP:
-    case DOWN:
-        nSliders = FyleCount(queen,fyle) + FyleCount(slider,fyle);
-        break;
-    case LEFT:
-    case RIGHT:
-        nSliders = RankCount(queen,rank) + RankCount(slider,rank);
-        break;
-    case UP_LEFT:
-    case DOWN_RIGHT:
-        nSliders = LeftDiagCount(queen,ldiag) + LeftDiagCount(slider,ldiag);
-        break;
-    case UP_RIGHT:
-    case DOWN_LEFT:
-        nSliders = RightDiagCount(queen,rdiag) + RightDiagCount(slider,rdiag);
-        break;
-    }
-    if (nSliders == 0) { return false; }
-
-    // Now move along the specified direction looking for a checking piece:
-    squareT dest = kingSq;
-    squareT last = square_Last (kingSq, dir);
-    int delta = direction_Delta (dir);
-
-    while (dest != last) {
-        dest += delta;
-        pieceT p = Board[dest];
-        if (p == EMPTY) {
-             // empty square: keep searching
-        } else if (p == queen  ||  p == slider) {
-            // Found an checking slider piece
-            return true;
-        } else {
-            // Found a piece, but not an enemy queen or rook/bishop
-            break;
-        }
-    }
-
-    return false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsKingInCheck
 //   Returns true if the king of the side to move is in check.
 //   If the specified move is not NULL, it must be the legal move
@@ -1516,57 +1448,30 @@ Position::IsKingInCheckDir (directionT dir)
 //   move could not have left the king in check.
 //
 bool
-Position::IsKingInCheck (simpleMoveT * sm)
+Position::IsKingInCheck (simpleMoveT const& sm)
 {
-    if (sm == NULL) { return IsKingInCheck(); }
-
     squareT kingSq = GetKingSquare(ToMove);
-    pieceT p = piece_Type (sm->movingPiece);
-    if (sm->promote != EMPTY) { p = piece_Type(sm->promote); }
+    pieceT p = (sm.promote == EMPTY) ? piece_Type(sm.movingPiece) : sm.promote;
 
     // No optimization of the last move was castling:
-    if (p == KING && sm->isCastle()) {
+    if (p == KING && sm.isCastle()) {
         return IsKingInCheck();
     }
     // No optimization for en passant capture:
-    if (p == PAWN  &&  piece_Type(sm->capturedPiece) == PAWN) {
-        rankT fromRank = square_Rank(sm->from);
-        rankT capturedRank = square_Rank(sm->capturedSquare);
-        if (fromRank == capturedRank) { return IsKingInCheck(); }
+    if (p == PAWN && piece_Type(sm.capturedPiece) == PAWN) {
+        rankT fromRank = square_Rank(sm.from);
+        rankT capturedRank = square_Rank(sm.capturedSquare);
+        if (fromRank == capturedRank) {
+            return IsKingInCheck();
+        }
     }
 
-    if (p == PAWN) {
-        if (ToMove == WHITE) {
-            if (Material[BP] > 0) {
-                squareT sq = square_Move (kingSq, UP_LEFT);
-                if (Board[sq] == BP)  { return true; }
-                sq = square_Move (kingSq, UP_RIGHT);
-                if (Board[sq] == BP)  { return true; }
-            }
-        } else {
-            if (Material[WP] > 0) {
-                squareT sq = square_Move (kingSq, DOWN_LEFT);
-                if (Board[sq] == WP)  { return true; }
-                sq = square_Move (kingSq, DOWN_RIGHT);
-                if (Board[sq] == WP)  { return true; }
-            }
-        }
-    } else if (p == KNIGHT) {
-        if (square_IsKnightHop (kingSq, sm->to)) { return true; }
-    } else if (p == KING) {
-        // A king cannot directly check its adversary.
-    } else {
-        // A sliding piece:
-        directionT toDir = sqDir[kingSq][sm->to];
-        if (toDir != NULL_DIR  &&  IsKingInCheckDir(toDir)) { return true; }
-    }
+    if (movegen::attack(sm.to, GetKingSquare(), color_Flip(ToMove), p,
+                        [&](auto sq) { return GetPiece(sq) != EMPTY; }))
+        return true;
 
     // Now look for a discovered check from a sliding piece:
-    directionT dir = sqDir[kingSq][sm->from];
-    if (dir != NULL_DIR  &&  IsKingInCheckDir(dir)) { return true; }
-
-    ASSERT (IsKingInCheck() == false);
-    return false;
+    return xray_check(*this, sm.from, sm.to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -271,8 +271,7 @@ public:
 
     uint        Mobility (pieceT p, colorT color, squareT from);
     bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
-    bool        IsKingInCheckDir (directionT dir);
-    bool        IsKingInCheck (simpleMoveT * sm);
+    bool        IsKingInCheck (simpleMoveT const& sm);
     bool        IsKingInMate ();
     bool        IsLegal ();
 

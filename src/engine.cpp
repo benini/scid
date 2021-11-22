@@ -1470,7 +1470,7 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
         uint oldNodeCount = NodeCount;
         // Make this move and search it:
         DoMove (sm);
-        InCheck[Ply] = Pos.IsKingInCheck (sm);
+        InCheck[Ply] = Pos.IsKingInCheck (*sm);
 #define PVS_SEARCH
 #ifdef PVS_SEARCH
         int score = alpha;
@@ -1683,7 +1683,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
         // Make this move and remember if it gives check:
         DoMove (sm);
-        InCheck[Ply] = Pos.IsKingInCheck (sm);
+        InCheck[Ply] = Pos.IsKingInCheck (*sm);
 
         // Simple futility pruning. Note that pruning with depth of two
         // remaining is risky, but seems to work well enough in practise.
