@@ -965,7 +965,7 @@ static bool xray_check(Position const& pos, squareT from, squareT to) {
 static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
                             pieceT promo) {
 	if (from > H8 || to > H8)
-		return false; // Invalid square
+		return NULL_SQUARE; // Invalid square
 
 	const auto toMove = pos.GetToMove();
 	const auto mover = pos.GetPiece(from);
