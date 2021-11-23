@@ -2231,22 +2231,24 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 	sm->movingPiece = piece_Make(ToMove, KING);
 	sm->capturedPiece = EMPTY;
 
+	auto side = KSIDE;
 	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
-		sm->setCastle(true);
-		if (!IsKingInCheck() && validCastling(true, true)) // short castle
-			return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
+		// side = KSIDE;
+	} else if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
+		side = QSIDE;
+	} else
+		return ERROR_InvalidMove;
 
-		return validCastling(true, false) ? ERROR_CastlingAvailability
-		                                  : ERROR_InvalidMove;
+	if (!IsKingInCheck() && validCastling(side == KSIDE, true)) {
+		sm->setCastle(side == KSIDE);
+		return GetCastling(ToMove, side) ? OK : ERROR_CastlingAvailability;
 	}
-	if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
-		sm->setCastle(false);
-		if (!IsKingInCheck() && validCastling(false, true)) // long castle
-			return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
 
-		return validCastling(false, false) ? ERROR_CastlingAvailability
-		                                   : ERROR_InvalidMove;
+	if (validCastling(side == KSIDE, false)) {
+		sm->setCastle(side == KSIDE);
+		return ERROR_CastlingAvailability;
 	}
+
 	return ERROR_InvalidMove;
 }
 
