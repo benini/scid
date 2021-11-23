@@ -2517,6 +2517,10 @@ static byte encodeKing(const simpleMoveT* sm) {
     // Coded values 1-8 are one-square moves; 9 and 10 are Castling.
 
     ASSERT(sm->pieceNum == 0);  // Kings MUST be piece Number zero.
+
+    if (auto castle = sm->isCastle())
+        return 11 - castle;
+
     int diff = (int) sm->to - (int) sm->from;
     static const byte val[] = {
     /* -9 -8 -7 -6 -5 -4 -3 -2 -1  0  1   2  3  4  5  6  7  8  9 */
