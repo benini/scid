@@ -246,7 +246,6 @@ public:
     void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
-    bool  IsLegalMove (simpleMoveT * sm);
     bool  IsLegalMove(squareT from, squareT to, pieceT promo) const;
     bool  isLegalMoveCastle(squareT from, squareT to) const;
 

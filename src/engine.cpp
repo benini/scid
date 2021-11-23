@@ -1515,6 +1515,11 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
     return bestScore;
 }
 
+static bool isLegalMove(Position const& pos, simpleMoveT const& sm) {
+    return pos.IsLegalMove(sm.from, sm.to, sm.promote) &&
+           sm.movingPiece == pos.GetPiece(sm.from);
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::Search
 //   Internal Search routine, used at every depth except
@@ -1640,7 +1645,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
     MoveList mlist;
     bool gotHashMove;
-    if (Pos.IsLegalMove (&hashmove)) {
+    if (isLegalMove(Pos, hashmove)) {
         gotHashMove = true;
         // For now, we only add the hash move to the move list.
         mlist.push_back(hashmove);
@@ -2243,7 +2248,7 @@ Engine::PrintPV (uint depth, int score, const char * note)
 
         // Check for legality, to protect against hash table
         // false hits and bugs in PV updating:
-        if (! Pos.IsLegalMove (sm)) {
+        if (! isLegalMove(Pos, *sm)) {
             Output (" <illegal>");
             break;
         }
