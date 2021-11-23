@@ -1772,7 +1772,12 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
             mlist.Clear();
             Pos.GenerateMoves (&mlist, EMPTY, GEN_ALL_MOVES, InCheck[Ply]);
             ScoreMoves (&mlist);
-            MoveList::iterator hm = std::find(mlist.begin(), mlist.end(), cmpMove(hashmove));
+            MoveList::iterator hm = std::find_if(
+                mlist.begin(), mlist.end(), [&](auto const& move) {
+                    return move.from == hashmove.from &&
+                           move.to == hashmove.to &&
+                           move.promote == hashmove.promote;
+                });
             if (hm != mlist.end()) {
                 std::iter_swap(mlist.begin(), hm);
             } else {

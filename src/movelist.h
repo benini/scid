@@ -96,14 +96,6 @@ struct simpleMoveT
 	}
 };
 
-struct cmpMove {
-	const simpleMoveT& m;
-	explicit cmpMove(const simpleMoveT& sm) : m(sm) {}
-};
-inline bool operator==(const simpleMoveT& a, const cmpMove& b) {
-	return a.from == b.m.from && a.to == b.m.to && a.promote == b.m.promote;
-}
-
 struct ScoredMove : public simpleMoveT {
 	int32_t score; // used for alpha/beta ordering.
 
