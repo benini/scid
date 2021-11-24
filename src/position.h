@@ -104,6 +104,7 @@ private:
                                     // or pawn move.
     ushort          PlyCounter;
     byte            Castling;       // castling flags
+    squareT         castleRookSq_[4];  // start rook squares
 
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
@@ -149,6 +150,10 @@ private:
     bool under_attack(squareT target_sq, squareT captured_sq,
                       TFunc not_empty) const;
     bool under_attack(squareT target_sq) const;
+
+    static constexpr unsigned castlingIdx(colorT color, castleDirT side) {
+        return 2 * color + side;
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -218,18 +223,17 @@ public:
     squareT     GetEnemyKingSquare () const    { return List[1-ToMove][0]; }
 
     // Castling flags
-    inline void SetCastling (colorT c, castleDirT dir, bool flag);
+    void SetCastling(colorT col, castleDirT dir);
+    void ClearCastling(colorT col, castleDirT dir) {
+        Castling &= ~(1u << castlingIdx(col, dir));
+    }
     void ClearCastlingFlags(colorT c) {
         Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
     }
     bool GetCastling(colorT c, castleDirT dir) const {
-        int b = (c == WHITE) ? 1 : 4;
-        if (dir == KSIDE)
-            b += b;
-        // Now b == 1 or 2 (white flags), or 4 or 8 (black flags)
-        return Castling & b;
+        return Castling & (1u << castlingIdx(c, dir));
     }
-    byte        GetCastlingFlags () { return Castling; }
+    byte GetCastlingFlags() const { return Castling; }
 
     // Hashing
     inline uint HashValue (void) { return Hash; }
@@ -315,26 +319,6 @@ public:
     // Set up a random position:
     errorT      Random (const char * material);
 };
-
-
-
-//////////////////////////////////////////////////////////////////////
-//  Position:  Public Inline Functions
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::SetCastling():
-//      Set a castling flag.
-//
-inline void
-Position::SetCastling (colorT c, castleDirT dir, bool flag)
-{
-    byte b = (c==WHITE ? 1 : 4);
-    if (dir == KSIDE) b += b;
-    // Now b = 1 or 2 (white flags), or 4 or 8 (black flags)
-    if (flag) { Castling |= b; } else { Castling &= (255-b); }
-    return;
-}
 
 #endif  // SCID_POSITION_H
 

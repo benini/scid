@@ -557,6 +557,7 @@ Position::Clear (void)
     Count[WHITE] = Count[BLACK] = 0;
     EPTarget = NULL_SQUARE;
     Castling = 0;
+    std::fill_n(castleRookSq_, 4, 0);
     Board [NULL_SQUARE] = END_OF_BOARD;
     PlyCounter = 0;
     HalfMoveClock = 0;
@@ -565,6 +566,30 @@ Position::Clear (void)
     return;
 }
 
+void Position::SetCastling(colorT col, castleDirT dir) {
+	static_assert(1 << castlingIdx(WHITE, QSIDE) == 1);
+	static_assert(1 << castlingIdx(WHITE, KSIDE) == 2);
+	static_assert(1 << castlingIdx(BLACK, QSIDE) == 4);
+	static_assert(1 << castlingIdx(BLACK, KSIDE) == 8);
+
+	const auto idx = castlingIdx(col, dir);
+	const auto ksq = GetKingSquare(col);
+	const auto std_rsq = (dir == QSIDE) ? square_Relative(col, A1)
+	                                    : square_Relative(col, H1);
+	const auto std_rank = square_Rank(std_rsq);
+	auto rsq = std_rsq;
+	if (square_Rank(ksq) == std_rank) {
+		const auto rook = piece_Make(col, ROOK);
+		while (Board[rsq] != rook && rsq != ksq) {
+			if (rsq < ksq)
+				++rsq;
+			else
+				--rsq;
+		}
+	}
+	castleRookSq_[idx] = rsq;
+	Castling |= 1u << idx;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::StdStart():
@@ -610,9 +635,10 @@ const Position& Position::getStdStart()
             p->AddToBoard(BP, A7+i); p->List[BLACK][i+8] = A7+i; p->ListPos[A7+i] = i+8;
         }
 
-        p->Castling = 0;
-        p->SetCastling (WHITE, QSIDE, true);  p->SetCastling (WHITE, KSIDE, true);
-        p->SetCastling (BLACK, QSIDE, true);  p->SetCastling (BLACK, KSIDE, true);
+        p->SetCastling(WHITE, QSIDE);
+        p->SetCastling(WHITE, KSIDE);
+        p->SetCastling(BLACK, QSIDE);
+        p->SetCastling(BLACK, KSIDE);
         p->EPTarget = NULL_SQUARE;
         p->ToMove = WHITE;
         p->PlyCounter = 0;
@@ -1585,13 +1611,13 @@ Position::DoSimpleMove (simpleMoveT * sm)
     if (Castling) {
         // See if a rook moved or was captured:
 		if (from == castlingRookSq<false>(ToMove))
-			SetCastling(ToMove, QSIDE, false);
+			ClearCastling(ToMove, QSIDE);
 		if (from == castlingRookSq<true>(ToMove))
-			SetCastling(ToMove, KSIDE, false);
+			ClearCastling(ToMove, KSIDE);
 		if (to == castlingRookSq<false>(enemy))
-			SetCastling(enemy, QSIDE, false);
+			ClearCastling(enemy, QSIDE);
 		if (to == castlingRookSq<true>(enemy))
-			SetCastling(enemy, KSIDE, false);
+			ClearCastling(enemy, KSIDE);
     }
 
     // Set the EPTarget square, if a pawn advanced two squares and an
@@ -2536,27 +2562,27 @@ errorT Position::ReadFromFEN(const char* str) {
         // castling is possible whenever a king and rook are
         // still on their starting squares:
         if (Board[E1] == WK) {
-            if (Board[A1] == WR) { SetCastling (WHITE, QSIDE, true); }
-            if (Board[H1] == WR) { SetCastling (WHITE, KSIDE, true); }
+            if (Board[A1] == WR) { SetCastling(WHITE, QSIDE); }
+            if (Board[H1] == WR) { SetCastling(WHITE, KSIDE); }
         }
         if (Board[E8] == BK) {
-            if (Board[A8] == BR) { SetCastling (BLACK, QSIDE, true); }
-            if (Board[H8] == BR) { SetCastling (BLACK, KSIDE, true); }
+            if (Board[A8] == BR) { SetCastling(BLACK, QSIDE); }
+            if (Board[H8] == BR) { SetCastling(BLACK, KSIDE); }
         }
     } else {
         while (!is_space(*str)  &&  *str != 0) {
             switch (*str++) {
             case 'Q':
-                SetCastling (WHITE, QSIDE, true);
+                SetCastling(WHITE, QSIDE);
                 break;
             case 'q':
-                SetCastling (BLACK, QSIDE, true);
+                SetCastling(BLACK, QSIDE);
                 break;
             case 'K':
-                SetCastling (WHITE, KSIDE, true);
+                SetCastling(WHITE, KSIDE);
                 break;
             case 'k':
-                SetCastling (BLACK, KSIDE, true);
+                SetCastling(BLACK, KSIDE);
                 break;
             default:
                 return ERROR_InvalidFEN;
