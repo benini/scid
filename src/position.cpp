@@ -261,17 +261,13 @@ bool Position::under_attack(squareT target_sq) const {
 	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
-squareT Position::castlingKingSq(colorT color) const {
-	return square_Relative(color, E1);
-}
-
 template <bool king_side> squareT Position::castlingRookSq(colorT color) const {
 	return king_side ? square_Relative(color, H1)
 	                 : square_Relative(color, A1);
 }
 
 bool Position::validCastling(bool king_side, bool check_legal) const {
-	const squareT kingFrom = castlingKingSq(ToMove);
+	const squareT kingFrom = square_Relative(ToMove, E1);
 	const squareT rookFrom = king_side ? castlingRookSq<true>(ToMove)
 	                                   : castlingRookSq<false>(ToMove);
 	const squareT rookTo = king_side ? square_Relative(ToMove, F1)
@@ -1654,20 +1650,21 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 	// handle Castling:
 	if (piece_Type(p) == KING) {
 		if (auto castleSide = m->isCastle()) {
+			const auto kingSq = GetKingSquare(ToMove);
 			squareT rookfrom, rookto;
 			if (castleSide == 1) {
-				rookfrom = to - 1;
+				rookfrom = kingSq - 1;
 				rookto = castlingRookSq<true>(ToMove);
 			} else {
-				rookfrom = to + 1;
+				rookfrom = kingSq + 1;
 				rookto = castlingRookSq<false>(ToMove);
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
-			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
+			RemoveFromBoard(piece_Make(ToMove, KING), kingSq);
 			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
 			addPiece(rookIdx, ROOK, rookto);
-			addPiece(kingIdx, KING, castlingKingSq(ToMove));
+			addPiece(kingIdx, KING, from);
 			return;
 		}
 	}
