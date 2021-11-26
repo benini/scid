@@ -1512,11 +1512,12 @@ void
 Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
-    // The caller must have set the first 4 members of sm
+    // The caller must have set the first 3 members of sm
     const squareT from = sm->from;
     const squareT to = sm->to;
     const auto promo = sm->promote;
-    const auto ptype = piece_Type(sm->movingPiece);
+    const auto movingPiece = Board[from];
+    const auto ptype = piece_Type(movingPiece);
     const auto pieceNum = ListPos[from];
 
     // update move fields that (maybe) have not yet been set:
@@ -1569,7 +1570,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
 	}
 
     colorT enemy = color_Flip(ToMove);
-    ASSERT(ptype == piece_Type(Board[from]));
 
     // Handle en passant capture:
     if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
@@ -1595,8 +1595,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
     }
 
     // now make the move:
-    ASSERT(sm->movingPiece == Board[from]);
-    const pieceT movingPiece = Board[from];
     RemoveFromBoard(movingPiece, from);
     if (promo != EMPTY) {
         ASSERT(movingPiece == piece_Make(ToMove, PAWN));
@@ -1640,7 +1638,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
     }
 
     ToMove = enemy;
-    return;
 }
 
 

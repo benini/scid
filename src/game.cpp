@@ -2722,11 +2722,11 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 	sm->to = from;
 	sm->promote = EMPTY;
 	sm->movingPiece = pos->GetBoard()[from];
+	const auto ptype = piece_Type(sm->movingPiece);
 
-	const auto [to, promo] =
-	    (toMove == WHITE)
-	        ? buf->decodeMove<WHITE>(piece_Type(sm->movingPiece), from, val)
-	        : buf->decodeMove<BLACK>(piece_Type(sm->movingPiece), from, val);
+	const auto [to, promo] = (toMove == WHITE)
+	                             ? buf->decodeMove<WHITE>(ptype, from, val)
+	                             : buf->decodeMove<BLACK>(ptype, from, val);
 	if (to < 0 || to > 63)
 		return ERROR_Decode;
 
