@@ -1519,6 +1519,8 @@ Position::DoSimpleMove (simpleMoveT * sm)
     const auto movingPiece = Board[from];
     const auto ptype = piece_Type(movingPiece);
     const auto pieceNum = ListPos[from];
+    const auto color = ToMove;
+    const auto enemy = color_Flip(color);
 
     // update move fields that (maybe) have not yet been set:
     sm->pieceNum = pieceNum;
@@ -1533,33 +1535,33 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
 	auto finalUpdate = [&](auto enPassantSq) {
 		EPTarget = enPassantSq;
-		ToMove = color_Flip(ToMove);
+		ToMove = enemy;
 	};
 
 	auto addPiece = [&](auto idx, auto pieceType, squareT destSq) {
-		List[ToMove][idx] = destSq;
+		List[color][idx] = destSq;
 		ListPos[destSq] = idx;
-		AddToBoard(piece_Make(ToMove, pieceType), destSq);
+		AddToBoard(piece_Make(color, pieceType), destSq);
 	};
 
 	if (sm->isNullMove())
 		return finalUpdate(NULL_SQUARE);
 
 	if (ptype == KING) {
-		ClearCastlingFlags(ToMove);
+		ClearCastlingFlags(color);
 		if (auto castleSide = sm->isCastle()) {
 			squareT rookfrom, rookto;
 			if (castleSide == 1) {
-				rookfrom = castlingRookSq<true>(ToMove);
+				rookfrom = castlingRookSq<true>(color);
 				rookto = to - 1;
 			} else {
-				rookfrom = castlingRookSq<false>(ToMove);
+				rookfrom = castlingRookSq<false>(color);
 				rookto = to + 1;
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
-			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
-			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
+			RemoveFromBoard(piece_Make(color, ROOK), rookfrom);
+			RemoveFromBoard(piece_Make(color, KING), GetKingSquare(color));
 			addPiece(kingIdx, KING, to);
 			addPiece(rookIdx, ROOK, rookto);
 
@@ -1569,14 +1571,12 @@ Position::DoSimpleMove (simpleMoveT * sm)
 		}
 	}
 
-    colorT enemy = color_Flip(ToMove);
-
     // Handle en passant capture:
     if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
             && square_Fyle(from) != square_Fyle(to)) {
         // This was an EP capture. We do not need to check it was a capture
         // since if a pawn lands on EPTarget it must capture to get there.
-        sm->capturedSquare = (ToMove == WHITE ? (to - 8) : (to + 8));
+        sm->capturedSquare = (color == WHITE ? (to - 8) : (to + 8));
         ASSERT (Board[sm->capturedSquare] == piece_Make(enemy, PAWN));
         sm->capturedPiece = Board[sm->capturedSquare];
     }
@@ -1597,9 +1597,9 @@ Position::DoSimpleMove (simpleMoveT * sm)
     // now make the move:
     RemoveFromBoard(movingPiece, from);
     if (promo != EMPTY) {
-        ASSERT(movingPiece == piece_Make(ToMove, PAWN));
+        ASSERT(movingPiece == piece_Make(color, PAWN));
         Material[movingPiece]--;
-        Material[piece_Make(ToMove, promo)]++;
+        Material[piece_Make(color, promo)]++;
         addPiece(pieceNum, promo, to);
     } else {
         addPiece(pieceNum, ptype, to);
@@ -1608,10 +1608,10 @@ Position::DoSimpleMove (simpleMoveT * sm)
     // Handle clearing of castling flags:
     if (Castling) {
         // See if a rook moved or was captured:
-		if (from == castlingRookSq<false>(ToMove))
-			ClearCastling(ToMove, QSIDE);
-		if (from == castlingRookSq<true>(ToMove))
-			ClearCastling(ToMove, KSIDE);
+		if (from == castlingRookSq<false>(color))
+			ClearCastling(color, QSIDE);
+		if (from == castlingRookSq<true>(color))
+			ClearCastling(color, KSIDE);
 		if (to == castlingRookSq<false>(enemy))
 			ClearCastling(enemy, QSIDE);
 		if (to == castlingRookSq<true>(enemy))
