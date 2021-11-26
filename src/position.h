@@ -280,8 +280,8 @@ public:
 
     bool        IsPromoMove (squareT from, squareT to);
 
-                // TODO: replace with DoSimpleMove(const simpleMoveT&)
-    void        DoSimpleMove(simpleMoveT sm) { return DoSimpleMove(&sm); }
+    simpleMoveT makeMove(squareT from, squareT to, pieceT promo) const;
+    void        DoSimpleMove(simpleMoveT const& sm);
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
     void        UndoSimpleMove (simpleMoveT const* sm);  // ... and taking back
 

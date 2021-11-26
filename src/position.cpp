@@ -1502,6 +1502,41 @@ Position::IsPromoMove (squareT from, squareT to)
     return 0;
 }
 
+/// Use the current position to retrieve all the information needed to create a
+/// SimpleMove which can also be used in UndoSimpleMove.
+simpleMoveT Position::makeMove(squareT from, squareT to, pieceT promo) const {
+	auto sm = simpleMoveT();
+	sm.from = from;
+	sm.to = to;
+	sm.promote = promo;
+	sm.movingPiece = GetPiece(sm.from);
+	sm.pieceNum = ListPos[from];
+	sm.castleFlags = Castling;
+	sm.epSquare = EPTarget;
+	sm.oldHalfMoveClock = HalfMoveClock;
+	sm.capturedSquare = to;
+	if (sm.isNullMove() ||
+	    (piece_Type(sm.movingPiece) == KING && sm.isCastle())) {
+		sm.capturedPiece = EMPTY;
+	} else {
+		sm.capturedPiece = GetPiece(to);
+	}
+
+	// Handle en passant capture:
+	if (piece_Type(sm.movingPiece) == PAWN && sm.capturedPiece == EMPTY &&
+	    square_Fyle(from) != square_Fyle(to)) {
+		// This was an EP capture. We do not need to check it was a capture
+		// since if a pawn lands on EPTarget it must capture to get there.
+		sm.capturedSquare = WhiteToMove() ? to - 8 : to + 8;
+		sm.capturedPiece = GetPiece(sm.capturedSquare);
+		ASSERT(sm.capturedPiece == piece_Make(color_Flip(GetToMove()), PAWN));
+	}
+
+	if (sm.capturedPiece != EMPTY) {
+		sm.capturedNum = ListPos[sm.capturedSquare];
+	}
+	return sm;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::DoSimpleMove():
@@ -1512,31 +1547,26 @@ void
 Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
+    // update move fields that (maybe) have not yet been set:
+	*sm = makeMove(sm->from, sm->to, sm->promote);
+	DoSimpleMove(*sm);
+}
+
+void Position::DoSimpleMove(simpleMoveT const& sm) {
     // The caller must have set the first 3 members of sm
-    const squareT from = sm->from;
-    const squareT to = sm->to;
-    const auto promo = sm->promote;
-    const auto movingPiece = Board[from];
+    const auto from = sm.from;
+    const auto to = sm.to;
+    const auto promo = sm.promote;
+    const auto movingPiece = GetPiece(from);
     const auto ptype = piece_Type(movingPiece);
     const auto pieceNum = ListPos[from];
     const auto color = ToMove;
     const auto enemy = color_Flip(color);
 
-    // update move fields that (maybe) have not yet been set:
-    sm->pieceNum = pieceNum;
-    sm->capturedPiece = Board[to];
-    sm->capturedSquare = to;
-    sm->castleFlags = Castling;
-    sm->epSquare = EPTarget;
-    sm->oldHalfMoveClock = HalfMoveClock;
-
     HalfMoveClock++;
     PlyCounter++;
-
-	auto finalUpdate = [&](auto enPassantSq) {
-		EPTarget = enPassantSq;
-		ToMove = enemy;
-	};
+    EPTarget = NULL_SQUARE;
+    ToMove = enemy;
 
 	auto addPiece = [&](auto idx, auto pieceType, squareT destSq) {
 		List[color][idx] = destSq;
@@ -1544,12 +1574,12 @@ Position::DoSimpleMove (simpleMoveT * sm)
 		AddToBoard(piece_Make(color, pieceType), destSq);
 	};
 
-	if (sm->isNullMove())
-		return finalUpdate(NULL_SQUARE);
+	if (sm.isNullMove())
+		return;
 
 	if (ptype == KING) {
 		ClearCastlingFlags(color);
-		if (auto castleSide = sm->isCastle()) {
+		if (auto castleSide = sm.isCastle()) {
 			squareT rookfrom, rookto;
 			if (castleSide == 1) {
 				rookfrom = castlingRookSq<true>(color);
@@ -1564,34 +1594,20 @@ Position::DoSimpleMove (simpleMoveT * sm)
 			RemoveFromBoard(piece_Make(color, KING), GetKingSquare(color));
 			addPiece(kingIdx, KING, to);
 			addPiece(rookIdx, ROOK, rookto);
-
-			sm->pieceNum = kingIdx;
-			sm->capturedPiece = EMPTY;
-			return finalUpdate(NULL_SQUARE);
+			return;
 		}
 	}
 
-    // Handle en passant capture:
-    if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
-            && square_Fyle(from) != square_Fyle(to)) {
-        // This was an EP capture. We do not need to check it was a capture
-        // since if a pawn lands on EPTarget it must capture to get there.
-        sm->capturedSquare = (color == WHITE ? (to - 8) : (to + 8));
-        ASSERT (Board[sm->capturedSquare] == piece_Make(enemy, PAWN));
-        sm->capturedPiece = Board[sm->capturedSquare];
-    }
-
     // handle captures:
-    if (sm->capturedPiece != EMPTY) {
-        ASSERT (piece_Type(sm->capturedPiece) != KING);
-        sm->capturedNum = ListPos[sm->capturedSquare];
+    if (sm.capturedPiece != EMPTY) {
+        ASSERT(piece_Type(sm.capturedPiece) != KING);
         // update opponents List of pieces
         Count[enemy]--;
-        ListPos[List[enemy][Count[enemy]]] = sm->capturedNum;
-        List[enemy][sm->capturedNum] = List[enemy][Count[enemy]];
-        Material[sm->capturedPiece]--;
+        ListPos[List[enemy][Count[enemy]]] = sm.capturedNum;
+        List[enemy][sm.capturedNum] = List[enemy][Count[enemy]];
+        Material[sm.capturedPiece]--;
         HalfMoveClock = 0;
-        RemoveFromBoard (sm->capturedPiece, sm->capturedSquare);
+        RemoveFromBoard (sm.capturedPiece, sm.capturedSquare);
     }
 
     // now make the move:
@@ -1620,7 +1636,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
     // Set the EPTarget square, if a pawn advanced two squares and an
     // enemy pawn is on a square where en passant may be possible.
-    EPTarget = NULL_SQUARE;
     if (ptype == PAWN) {
         rankT fromRank = square_Rank(from);
         rankT toRank = square_Rank(to);
@@ -1636,8 +1651,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
         }
         HalfMoveClock = 0; // 50-move clock resets on pawn moves.
     }
-
-    ToMove = enemy;
 }
 
 
