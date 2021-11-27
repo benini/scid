@@ -956,18 +956,23 @@ static squareT pseudo_not_pinned(Position const& pos, squareT from, squareT to,
 	return xray_check(pos, from, to) ? NULL_SQUARE : captured_sq;
 }
 
-bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
+/// Returns:
+///  0 -> invalid move
+///  1 -> valid normal move
+///  2 -> valid castle king side
+/// -2 -> valid castle queen side
+int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 	if (invalid_move(*this, from, to, promo))
-		return false;
+		return 0;
 
 	auto king_sq = GetKingSquare();
 	const auto captured_sq = pseudo_legal(*this, from, to, promo);
 	if (captured_sq == NULL_SQUARE) {
 		if (promo != EMPTY || from != king_sq)
-			return false; // Invalid move
+			return 0; // Invalid move
 
 		if (under_attack(king_sq))
-			return false; // King in-check, cannot castle
+			return 0; // King in-check, cannot castle
 
 		return isLegalMoveCastle(from, to);
 	}
@@ -977,26 +982,30 @@ bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 		return sq == to ||
 		       (sq != from && sq != captured_sq && GetPiece(sq) != EMPTY);
 	};
-	return !under_attack(target_sq, captured_sq, not_empty);
+	return under_attack(target_sq, captured_sq, not_empty) ? 0 : 1;
 }
 
-bool Position::isLegalMoveCastle(squareT from, squareT to) const {
+/// Returns:
+///  0 -> invalid move
+///  2 -> valid castle king side
+/// -2 -> valid castle queen side
+int Position::isLegalMoveCastle(squareT from, squareT to) const {
 	assert(from == GetKingSquare());
 	assert(CalcNumChecks() == 0); // validCastling doesn't check the from square
 
 	const auto side = to > from ? KSIDE : QSIDE;
 	if (!GetCastling(ToMove, side) || // Invalid flag
 	    !validCastling(side == KSIDE, true))
-		return false;
+		return 0;
 
 	const squareT kingTo = side == KSIDE ? square_Relative(ToMove, G1)
 	                                     : square_Relative(ToMove, C1);
 	const squareT rookSq = side == KSIDE ? castlingRookSq<true>(ToMove)
 	                                     : castlingRookSq<false>(ToMove);
 	if (to != kingTo && to != rookSq)
-		return false;
+		return 0;
 
-	return true;
+	return side == KSIDE ? 2 : -2;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2023,6 +2032,9 @@ errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, size_t slen,
     m->to = to;
     m->promote = promote;
     m->movingPiece = Board[from];
+    if (legal != 1)
+        m->setCastle(legal > 0);
+
     return OK;
 }
 
