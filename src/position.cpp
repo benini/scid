@@ -889,23 +889,31 @@ static bool xray_check(Position const& pos, squareT from, squareT to) {
 	return col != pos.GetToMove() && (pt == QUEEN || pt == atk_piece);
 }
 
-/// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
-/// (which is different from @e to for en passant moves).
-static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
-                            pieceT promo) {
+/// Check that the move is contained within the board, that a piece of the wrong
+/// color is not moved, that a king or piece of the same color is not captured,
+/// and that only pawns are promoted.
+static bool invalid_move(Position const& pos, squareT from, squareT to,
+                         pieceT promo) {
 	if (from > H8 || to > H8)
-		return NULL_SQUARE; // Invalid square
+		return true; // Invalid square
 
 	const auto toMove = pos.GetToMove();
 	const auto mover = pos.GetPiece(from);
 	const auto captured = pos.GetPiece(to);
 	const auto pt = piece_Type(mover);
-	if (piece_Color(mover) != toMove ||    // Wrong side to move
-	    piece_Color(captured) == toMove || // Capturing its own piece
-	    piece_Type(captured) == KING ||    // Capturing the king
-	    (pt != PAWN && promo != EMPTY))    // Only pawn can promote
-		return NULL_SQUARE;
+	return piece_Color(mover) != toMove ||    // Wrong side to move
+	       piece_Color(captured) == toMove || // Capturing its own piece
+	       piece_Type(captured) == KING ||    // Capturing the king
+	       (promo != EMPTY && pt != PAWN);    // Only pawn can promote
+}
 
+/// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
+/// (which is different from @e to for en passant moves).
+static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
+                            pieceT promo) {
+	const auto toMove = pos.GetToMove();
+	const auto captured = pos.GetPiece(to);
+	const auto pt = piece_Type(pos.GetPiece(from));
 	if (!movegen::pseudo(from, to, toMove, pt,
 	                     [&](auto sq) { return pos.GetPiece(sq) != EMPTY; }))
 		return NULL_SQUARE; // Invalid move
@@ -949,6 +957,9 @@ static squareT pseudo_not_pinned(Position const& pos, squareT from, squareT to,
 }
 
 bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
+	if (invalid_move(*this, from, to, promo))
+		return false;
+
 	auto king_sq = GetKingSquare();
 	const auto captured_sq = pseudo_legal(*this, from, to, promo);
 	if (captured_sq == NULL_SQUARE) {
