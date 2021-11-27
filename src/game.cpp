@@ -721,7 +721,7 @@ errorT Game::MoveForward(void) {
 	if (CurrentMove->endMarker())
 		return ERROR_EndOfMoveList;
 
-	CurrentPos->DoSimpleMove(&CurrentMove->moveData);
+	CurrentPos->DoSimpleMove(CurrentMove->moveData);
 	CurrentMove = CurrentMove->next;
 
 	// Invariants
@@ -913,10 +913,7 @@ errorT Game::AddMove(const simpleMoveT* sm) {
 
 	CurrentMove->setNext(NewMove(END_MARKER));
 	CurrentMove->marker = NO_MARKER;
-	CurrentMove->moveData.from = sm->from;
-	CurrentMove->moveData.to = sm->to;
-	CurrentMove->moveData.promote = sm->promote;
-	CurrentMove->moveData.movingPiece = sm->movingPiece;
+	CurrentMove->moveData = CurrentPos->makeMove(sm->from, sm->to, sm->promote);
 	if (VarDepth == 0)
 		++NumHalfMoves;
 
@@ -1462,7 +1459,7 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
             simpleMoveT nextMove;
             err = DecodeNextMove(buf, nextMove);
             if (err == OK) {
-                CurrentPos->DoSimpleMove(&nextMove);
+                CurrentPos->DoSimpleMove(nextMove);
             }
             if (err != OK  &&  err != ERROR_EndOfMoveList) {
                 return false;
@@ -2721,7 +2718,7 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 	sm->from = from;
 	sm->to = from;
 	sm->promote = EMPTY;
-	sm->movingPiece = pos->GetBoard()[from];
+	sm->movingPiece = pos->GetPiece(from);
 	const auto ptype = piece_Type(sm->movingPiece);
 
 	const auto [to, promo] = (toMove == WHITE)
