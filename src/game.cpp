@@ -2470,46 +2470,40 @@ makeMoveByte (byte pieceNum, byte value)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKing(): encoding of King moves.
 //
-static byte encodeKing(const simpleMoveT* sm) {
+static byte encodeKing(squareT from, int to) {
     // Valid King difference-from-old-square values are:
     // -9, -8, -7, -1, 1, 7, 8, 9, and -2 and 2 for castling.
     // To convert this to a val in the range [1-10], we add 9 and
     // then look up the val[] table.
     // Coded values 1-8 are one-square moves; 9 and 10 are Castling.
-
-    ASSERT(sm->pieceNum == 0);  // Kings MUST be piece Number zero.
-
-    if (auto castle = sm->isCastle())
-        return 11 - castle;
-
-    int diff = (int) sm->to - (int) sm->from;
     static const byte val[] = {
     /* -9 -8 -7 -6 -5 -4 -3 -2 -1  0  1   2  3  4  5  6  7  8  9 */
         1, 2, 3, 0, 0, 0, 0, 9, 4, 0, 5, 10, 0, 0, 0, 0, 6, 7, 8
     };
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
 
     // If target square is the from square, it is the null move, which
     // is represented as a king move to its own square and is encoded
     // as the byte value zero.
-    if (sm->to == sm->from) {
-        return 0;
-    }
+    ASSERT((to == from && val[diff+9] == 0) || val[diff+9] != 0);
 
     // Verify we have a valid King move:
-    ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
+    ASSERT(diff >= -9 && diff <= 9);
     return val[diff + 9];
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKnight(): encoding Knight moves.
 //
-static byte encodeKnight(const simpleMoveT* sm) {
+static byte encodeKnight(squareT from, squareT to) {
     // Valid Knight difference-from-old-square values are:
     // -17, -15, -10, -6, 6, 10, 15, 17.
     // To convert this to a value in the range [1-8], we add 17 to
     // the difference and then look up the val[] table.
 
-    int diff = (int) sm->to - (int) sm->from;
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
     static const byte val[] = {
     /* -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1  0 */
         1,  0,  2,  0,  0,  0,  0,  3,  0, 0, 0, 4, 0, 0, 0, 0, 0, 0,
@@ -2526,88 +2520,68 @@ static byte encodeKnight(const simpleMoveT* sm) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeRook(): encoding rook moves.
 //
-static byte encodeRook(const simpleMoveT* sm) {
+static byte encodeRook(squareT from, squareT to) {
     // Valid Rook moves are to same rank, OR to same fyle.
     // We encode the 8 squares on the same rank 0-8, and the 8
     // squares on the same fyle 9-15. This means that for any particular
     // rook move, two of the values in the range [0-15] will be
     // meaningless, as they will represent the from-square.
 
-    ASSERT (sm->from <= H8  &&  sm->to <= H8);
-
     // Check if the two squares share the same rank:
-    if (square_Rank(sm->from) == square_Rank(sm->to)) {
-        return square_Fyle(sm->to);
+    if (square_Rank(from) == square_Rank(to)) {
+        return square_Fyle(to);
     }
-    return 8 + square_Rank(sm->to);
+    return 8 + square_Rank(to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeBishop(): encoding Bishop moves.
 //
-static byte encodeBishop(const simpleMoveT* sm) {
+static byte encodeBishop(squareT from, squareT to) {
     // We encode a Bishop move as the Fyle moved to, plus
     // a one-bit flag to indicate if the direction was
     // up-right/down-left or vice versa.
 
-    ASSERT (sm->to <= H8  &&  sm->from <= H8);
-    int rankdiff = (int)square_Rank(sm->to) - (int)square_Rank(sm->from);
-    int fylediff = (int)square_Fyle(sm->to) - (int)square_Fyle(sm->from);
+    auto rankdiff = square_Rank(to) - square_Rank(from);
+    auto fylediff = square_Fyle(to) - square_Fyle(from);
+    static_assert(std::is_same_v<decltype(rankdiff), int>);
+    static_assert(std::is_same_v<decltype(fylediff), int>);
 
     // If (rankdiff * fylediff) is negative, it's up-left/down-right:
     if (rankdiff * fylediff < 0)
-        return square_Fyle(sm->to) + 8;
+        return square_Fyle(to) + 8;
 
-    return square_Fyle(sm->to);
+    return square_Fyle(to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeQueen(): encoding Queen moves.
 //
-template <typename DestT>
-void encodeQueen(DestT* buf, const simpleMoveT* sm) {
+static byte encodeQueen(squareT from, squareT to, byte& multibyte) {
     // We cannot fit all Queen moves in one byte, so Rooklike moves
     // are in one byte (encoded the same way as Rook moves),
     // while diagonal moves are in two bytes.
+    if (square_Rank(from) == square_Rank(to)) // Rook-horizontal move:
+        return square_Fyle(to);
 
-    ASSERT (sm->to <= H8  &&  sm->from <= H8);
-    byte val;
+    if (square_Fyle(from) == square_Fyle(to)) // Rook-vertical move:
+        return 8 + square_Rank(to);
 
-    if (square_Rank(sm->from) == square_Rank(sm->to)) {
-        // Rook-horizontal move:
-
-        val = square_Fyle(sm->to);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-    } else if (square_Fyle(sm->from) == square_Fyle(sm->to)) {
-        // Rook-vertical move:
-
-        val = 8 + square_Rank(sm->to);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-    } else {
-        // Diagonal move:
-        ASSERT(std::abs(sm->to / 8 - sm->from / 8) ==
-               std::abs(sm->to % 8 - sm->from % 8));
-
-        // First, we put a rook-horizontal move to the from square (which
-        // is illegal of course) to indicate it is NOT a rooklike move:
-
-        val = square_Fyle(sm->from);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-        // Now we put the to-square in the next byte. We add a 64 to it
-        // to make sure that it cannot clash with the Special tokens (which
-        // are in the range 0 to 15, since they are special King moves).
-
-        buf->emplace_back(sm->to + 64);
-    }
+    // Diagonal move:
+    ASSERT(std::abs(to / 8 - from / 8) == std::abs(to % 8 - from % 8));
+    // First, we put a rook-horizontal move to the from square (which
+    // is illegal of course) to indicate it is NOT a rooklike move:
+    // Now we put the to-square in the next byte. We add a 64 to it
+    // to make sure that it cannot clash with the Special tokens (which
+    // are in the range 0 to 15, since they are special King moves).
+    multibyte = to + 64;
+    return square_Fyle(from);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodePawn(): encoding Pawn moves.
 //
-static byte encodePawn(const simpleMoveT* sm) {
+static byte encodePawn(squareT from, squareT to, pieceT promo) {
     // Pawn moves require a promotion encoding.
     // The pawn moves are:
     // 0 = capture-left,
@@ -2620,12 +2594,13 @@ static byte encodePawn(const simpleMoveT* sm) {
     // 15 = forward TWO squares.
 
     byte val;
-    int diff = (int)(sm->to) - (int)(sm->from);
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
 
     if (diff < 0) { diff = -diff; }
     if (diff == 16) { // Move forward two squares
         val = 15;
-        ASSERT (sm->promote == EMPTY);
+        ASSERT (promo == EMPTY);
 
     } else {
         if (diff == 7) { val = 0; }
@@ -2634,13 +2609,13 @@ static byte encodePawn(const simpleMoveT* sm) {
             ASSERT (diff == 9);
             val = 2;
         }
-        if (sm->promote != EMPTY) {
+        if (promo != EMPTY) {
             // Handle promotions.
             // sm->promote must be Queen=2,Rook=3, Bishop=4 or Knight=5.
             // We add 3 for Queen, 6 for Rook, 9 for Bishop, 12 for Knight.
 
-            ASSERT (sm->promote >= QUEEN  &&  sm->promote <= KNIGHT);
-            val += 3 * ((sm->promote) - 1);
+            ASSERT (promo >= QUEEN  &&  promo <= KNIGHT);
+            val += 3 * ((promo) - 1);
         }
     }
     return val;
@@ -2717,29 +2692,36 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 
 template <typename DestT>
 void encodeMove(const simpleMoveT& sm, DestT& dest) {
+	byte multibyte = 0;
 	byte val;
 	switch (piece_Type(sm.movingPiece)) {
 	case KING:
-		val = encodeKing(&sm);
+		ASSERT(sm.pieceNum == 0); // Kings MUST be piece Number zero.
+		val = encodeKing(sm.from, sm.isCastle() == 0   ? sm.to
+		                          : sm.isCastle() == 1 ? sm.from + 2
+		                                               : sm.from - 2);
 		break;
 	case QUEEN:
-		return encodeQueen(&dest, &sm);
-
+		val = encodeQueen(sm.from, sm.to, multibyte);
+		break;
 	case ROOK:
-		val = encodeRook(&sm);
+		val = encodeRook(sm.from, sm.to);
 		break;
 	case BISHOP:
-		val = encodeBishop(&sm);
+		val = encodeBishop(sm.from, sm.to);
 		break;
 	case KNIGHT:
-		val = encodeKnight(&sm);
+		val = encodeKnight(sm.from, sm.to);
 		break;
 	default:
 		ASSERT(PAWN == piece_Type(sm.movingPiece));
-		val = encodePawn(&sm);
+		val = encodePawn(sm.from, sm.to, sm.promote);
 	}
 	const auto encoded = makeMoveByte(sm.pieceNum, val);
 	dest.emplace_back(encoded);
+	if (multibyte) { // Diagonal Queen moves are stored using two bytes.
+		dest.emplace_back(multibyte);
+	}
 }
 
 /// Encode the moves, the nags, the comment mark and the variations.
