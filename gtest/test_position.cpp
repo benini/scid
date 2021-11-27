@@ -512,6 +512,21 @@ TEST(Test_MoveGeneration, GetCastling) {
 	}
 }
 
+TEST(Test_MoveGeneration, castle_overflow) {
+	for (auto sq = A1; sq != H8; ++sq) {
+		auto sm = simpleMoveT();
+		sm.promote = EMPTY;
+		sm.movingPiece = WK;
+		sm.from = sq;
+		sm.to = sq;
+		EXPECT_TRUE(sm.isNullMove());
+		sm.setCastle(true);
+		EXPECT_TRUE(sm.isCastle() == +2);
+		sm.setCastle(false);
+		EXPECT_TRUE(sm.isCastle() == -2);
+	}
+}
+
 TEST(Test_PositionDoSimpleMove, castling_flags) {
 	auto makeSMove = [](auto from, auto to, auto movingPiece) {
 		simpleMoveT sm;

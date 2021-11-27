@@ -51,22 +51,21 @@ struct simpleMoveT
 		       piece_Type(movingPiece) == KING;
 	}
 
+	/// We encode a castling move as a king move with an offset of 2 square.
 	int isCastle() const {
 		ASSERT(piece_Type(movingPiece) == KING);
-		if (square_Fyle(from) == E_FYLE) {
-			squareT toFyle = square_Fyle(to);
-			if (toFyle == G_FYLE)
-				return 2;
-			if (toFyle == C_FYLE)
-				return -2;
-		}
+		if (to == static_cast<squareT>(from + 2))
+			return +2;
+
+		if (to == static_cast<squareT>(from - 2))
+			return -2;
+
 		return 0;
 	}
 
 	/// Sets member @e "to" for castling moves.
 	/// @e from should already have been set to the king's square
 	void setCastle(bool king_side) {
-		assert(square_Fyle(from) == E_FYLE);
 		assert(promote == EMPTY);
 		assert(piece_Type(movingPiece) == KING);
 		to = from;
