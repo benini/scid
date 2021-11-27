@@ -141,9 +141,9 @@ TEST(Test_movegen, UCItoSAN) {
 			}
 		} else {
 			if (col == WHITE)
-				fullmove = FullMove(WHITE, E1, (castle == 1) ? H1 : A1);
+				fullmove = FullMove(WHITE, E1, (castle > 0) ? H1 : A1);
 			else
-				fullmove = FullMove(BLACK, E8, (castle == 1) ? H8 : A8);
+				fullmove = FullMove(BLACK, E8, (castle > 0) ? H8 : A8);
 		}
 		FastBoard fastboard(pos);
 		pos.UndoSimpleMove(&sm);

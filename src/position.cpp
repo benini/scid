@@ -1592,7 +1592,7 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
 		ClearCastlingFlags(color);
 		if (auto castleSide = sm.isCastle()) {
 			squareT rookfrom, rookto;
-			if (castleSide == 1) {
+			if (castleSide > 0) {
 				rookfrom = castlingRookSq<true>(color);
 				rookto = to - 1;
 			} else {
@@ -1699,7 +1699,7 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 		if (auto castleSide = m->isCastle()) {
 			const auto kingSq = GetKingSquare(ToMove);
 			squareT rookfrom, rookto;
-			if (castleSide == 1) {
+			if (castleSide > 0) {
 				rookfrom = kingSq - 1;
 				rookto = castlingRookSq<true>(ToMove);
 			} else {
@@ -1871,28 +1871,20 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         if (m->isNullMove()) {
             //*c++ = 'n'; *c++ = 'u'; *c++ = 'l'; *c++ = 'l';
             *c++ = '-'; *c++ = '-';
-        } else {
-            switch (m->isCastle()) {
-            case 0:
-                *c++ = 'K';
-                if (Board[to] != EMPTY)
-                    *c++ = 'x';
-                *c++ = square_FyleChar(to);
-                *c++ = square_RankChar(to);
-                break;
-            case 1:
-                *c++ = 'O';
+        } else if (auto castle = m->isCastle()) {
+            *c++ = 'O';
+            *c++ = '-';
+            *c++ = 'O';
+            if (castle < 0) {
                 *c++ = '-';
                 *c++ = 'O';
-                break;
-            case 2:
-                *c++ = 'O';
-                *c++ = '-';
-                *c++ = 'O';
-                *c++ = '-';
-                *c++ = 'O';
-                break;
             }
+        } else {
+            *c++ = 'K';
+            if (Board[to] != EMPTY)
+                *c++ = 'x';
+            *c++ = square_FyleChar(to);
+            *c++ = square_RankChar(to);
         }
 
     } else {    // Queen/Rook/Bishop/Knight

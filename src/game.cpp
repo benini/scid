@@ -2697,9 +2697,8 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 	switch (piece_Type(sm.movingPiece)) {
 	case KING:
 		ASSERT(sm.pieceNum == 0); // Kings MUST be piece Number zero.
-		val = encodeKing(sm.from, sm.isCastle() == 0   ? sm.to
-		                          : sm.isCastle() == 1 ? sm.from + 2
-		                                               : sm.from - 2);
+		val = encodeKing(sm.from,
+		                 sm.isCastle() ? sm.from + sm.isCastle() : sm.to);
 		break;
 	case QUEEN:
 		val = encodeQueen(sm.from, sm.to, multibyte);
@@ -2890,7 +2889,7 @@ std::pair<bool, bool> mainlineInfo(const Position* customStart,
 			const moveT* gameMove = firstMove;
 			for (; begin != end; ++begin) {
 				if (begin->isCastle()) {
-					const auto side = begin->getTo() > begin->getFrom() ? 1 : 2;
+					auto side = begin->getTo() > begin->getFrom() ? 2 : -2;
 					if (piece_Type(gameMove->moveData.movingPiece) != KING ||
 					    gameMove->moveData.isCastle() != side)
 						return false;

@@ -56,9 +56,9 @@ struct simpleMoveT
 		if (square_Fyle(from) == E_FYLE) {
 			squareT toFyle = square_Fyle(to);
 			if (toFyle == G_FYLE)
-				return 1;
-			if (toFyle == C_FYLE)
 				return 2;
+			if (toFyle == C_FYLE)
+				return -2;
 		}
 		return 0;
 	}
