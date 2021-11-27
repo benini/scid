@@ -1515,11 +1515,10 @@ Position::IsPromoMove (squareT from, squareT to)
 
 /// Use the current position to retrieve all the information needed to create a
 /// SimpleMove which can also be used in UndoSimpleMove.
-simpleMoveT Position::makeMove(squareT from, squareT to, pieceT promo) const {
-	auto sm = simpleMoveT();
-	sm.from = from;
-	sm.to = to;
-	sm.promote = promo;
+void Position::fillMove(simpleMoveT& sm) const {
+	const auto from = sm.from;
+	const auto to = sm.to;
+	const auto promo = sm.promote;
 	sm.movingPiece = GetPiece(sm.from);
 	sm.pieceNum = ListPos[from];
 	sm.castleFlags = Castling;
@@ -1546,7 +1545,6 @@ simpleMoveT Position::makeMove(squareT from, squareT to, pieceT promo) const {
 	if (sm.capturedPiece != EMPTY) {
 		sm.capturedNum = ListPos[sm.capturedSquare];
 	}
-	return sm;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1559,7 +1557,7 @@ Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
     // update move fields that (maybe) have not yet been set:
-	*sm = makeMove(sm->from, sm->to, sm->promote);
+	fillMove(*sm);
 	DoSimpleMove(*sm);
 }
 

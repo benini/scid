@@ -913,7 +913,8 @@ errorT Game::AddMove(const simpleMoveT* sm) {
 
 	CurrentMove->setNext(NewMove(END_MARKER));
 	CurrentMove->marker = NO_MARKER;
-	CurrentMove->moveData = CurrentPos->makeMove(sm->from, sm->to, sm->promote);
+	CurrentMove->moveData = *sm;
+	CurrentPos->fillMove(CurrentMove->moveData);
 	if (VarDepth == 0)
 		++NumHalfMoves;
 
