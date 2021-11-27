@@ -1836,9 +1836,6 @@ void
 Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 {
     ASSERT (m != NULL  &&  s != NULL);
-
-    auto isOccupied = [this](auto square) { return Board[square] != EMPTY; };
-
     ASSERT(m->from == List[ToMove][ListPos[m->from]]);
     const squareT from = m->from;
     const squareT to   = m->to;
@@ -1899,17 +1896,8 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
                 if (sq == from || Board[sq] != piece)
                     continue;
 
-                if (!movegen::pseudo(sq, to, ToMove, p, isOccupied))
+                if (pseudo_not_pinned(*this, sq, to, EMPTY) == NULL_SQUARE)
                     continue; // Skip illegal move
-
-                const auto pin = movegen::opens_ray(sq, to, GetKingSquare(),
-                                                    isOccupied);
-                if (pin.first != INVALID_PIECE &&
-                    piece_Color_NotEmpty(Board[pin.second]) != ToMove) {
-                    pieceT pt = piece_Type(Board[pin.second]);
-                    if (pt == QUEEN || pt == pin.first)
-                        continue; // Skip pinned piece
-                }
 
                 // Ambiguity:
                 // 1 (0001) --> need from-file (preferred) or from-rank
@@ -1936,35 +1924,11 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         *c++ = square_RankChar(to);
     }
 
-    bool check;
-    if (flag != SAN_NO_CHECKTEST) {
-        squareT oldTo = Board[to];
-        Board[to] = Board[from];
-        Board[from] = EMPTY;
-        squareT enemyKingSq = GetEnemyKingSquare();
-        check = (p != KING) &&
-                movegen::attack(to, enemyKingSq, ToMove, p, isOccupied);
-        if (!check) {
-            bool enpassant = (p == PAWN && oldTo == EMPTY &&
-                              square_Fyle(from) != square_Fyle(to));
-            if (!enpassant && (p != KING || !m->isCastle()) &&
-                !movegen::attack_slider(from, enemyKingSq, QUEEN, isOccupied)) {
-                flag = SAN_NO_CHECKTEST;
-            }
-
-        } else if (flag != SAN_MATETEST) {
-            *c++ = '+';
-            flag = SAN_NO_CHECKTEST;
-        }
-        Board[from] = Board[to];
-        Board[to] = oldTo;
-    }
-
     // Now do the check or mate symbol:
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
         DoSimpleMove (m);
-        if (check || CalcNumChecks(GetKingSquare()) > 0) {
+        if (IsKingInCheck(*m)) {
             char ch = '+';
             if (flag == SAN_MATETEST) {
                 MoveList mlist;
