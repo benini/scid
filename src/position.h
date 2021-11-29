@@ -128,8 +128,6 @@ private:
 
     void  AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
     void  GenCastling (MoveList * mlist);
-    squareT castlingKingSq(colorT color) const;
-    template <bool king_side> squareT castlingRookSq(colorT color) const;
     void  GenKingMoves (MoveList * mlist, genMovesT genType, bool castling);
     void  AddPromotions (MoveList * mlist, squareT from, squareT dest);
     bool  IsValidEnPassant (squareT from, squareT to);
@@ -154,6 +152,7 @@ private:
     static constexpr unsigned castlingIdx(colorT color, castleDirT side) {
         return 2 * color + side;
     }
+    template <bool king_side> squareT castleRookSq(colorT color) const;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -165,6 +164,8 @@ public:
     void        StdStart() { *this = getStdStart(); }
     bool        IsStdStart() const;
     errorT      AddPiece (pieceT p, squareT sq);
+
+    bool isChess960() const;
 
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }
