@@ -335,6 +335,8 @@ void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 		return res;
 	};
 
+	ie->setChessStd();
+
 	// Offset of the gamefile record (32 bits).
 	ie->SetOffset(ReadFourBytes());
 

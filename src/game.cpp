@@ -2945,7 +2945,14 @@ std::pair<IndexEntry, TagRoster> Game::Encode(std::vector<byte>& dest) const {
     ie.SetBlackElo(BlackElo);
     ie.SetWhiteRatingType(WhiteRatingType);
     ie.SetBlackRatingType(BlackRatingType);
-    ie.SetStartFlag(HasNonStandardStart());
+    if (HasNonStandardStart()) {
+        ie.SetStartFlag(true);
+        if (StartPos->isChess960()) {
+            ie.setChess960();
+        }
+    } else {
+        ie.SetStartFlag(false);
+    }
     ie.SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
 
     const auto [promo, underPromo] = mainlineInfo(StartPos.get(),

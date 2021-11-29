@@ -78,7 +78,8 @@ class IndexEntry {
 
     uint16_t ECOcode_;
 
-    uint8_t  nNags_;         // :  4;
+    uint8_t  nNags_          :  4;
+    uint8_t  variant_        :  4;
 
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
@@ -112,6 +113,10 @@ public:
         res |= static_cast<uint16_t>(nNags_ & 0x0F) << 8;
         return res;
     }
+
+    void setChessStd() { variant_ = 0; }
+    void setChess960() { variant_ = 1; }
+    bool isChessStd() const { return variant_ == 0; }
 
     const byte* GetHomePawnData() const { return HomePawnData; }
     void SetHomePawnData(byte hpCount, const byte hpVal[8]) {
