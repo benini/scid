@@ -229,6 +229,9 @@ private:
 	/// Set the references to the new data in @e ie.
 	errorT addGameNamesAndData(IndexEntry& ie, TagRoster const& tags,
 	                           const byte* srcData, size_t dataLen) {
+		if (!ie.isChessStd())
+			return ERROR_CodecUnsupFeat;
+
 		auto errNames = tags.map(
 		    ie, [&](auto nt, auto name) { return dyn_addName(nt, name); });
 		if (errNames)
