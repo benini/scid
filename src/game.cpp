@@ -913,8 +913,12 @@ errorT Game::AddMove(const simpleMoveT* sm) {
 
 	CurrentMove->setNext(NewMove(END_MARKER));
 	CurrentMove->marker = NO_MARKER;
-	CurrentMove->moveData = *sm;
+	CurrentMove->moveData.from = sm->from;
+	CurrentMove->moveData.to = sm->to;
+	CurrentMove->moveData.promote = sm->promote;
 	CurrentPos->fillMove(CurrentMove->moveData);
+	ASSERT(piece_Type(CurrentMove->moveData.movingPiece) != KING ||
+	       sm->isCastle() == CurrentMove->moveData.isCastle());
 	if (VarDepth == 0)
 		++NumHalfMoves;
 
