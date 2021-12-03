@@ -152,7 +152,9 @@ private:
     static constexpr unsigned castlingIdx(colorT color, castleDirT side) {
         return 2 * color + side;
     }
-    template <bool king_side> squareT castleRookSq(colorT color) const;
+    squareT castleRookSq(colorT color, bool king_side) const {
+         return square_Relative(color, king_side ? H1 : A1);
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions

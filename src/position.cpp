@@ -261,20 +261,15 @@ bool Position::under_attack(squareT target_sq) const {
 	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
-template <bool king_side> squareT Position::castleRookSq(colorT color) const {
-	return king_side ? square_Relative(color, H1)
-	                 : square_Relative(color, A1);
-}
-
 bool Position::isChess960() const {
 	return (Castling & 0b11 &&
 	        (GetKingSquare(WHITE) != E1 ||
-	         (GetCastling(WHITE, QSIDE) && castleRookSq<false>(WHITE) != A1) ||
-	         (GetCastling(WHITE, KSIDE) && castleRookSq<true>(WHITE) != H1))) ||
+	         (GetCastling(WHITE, QSIDE) && castleRookSq(WHITE, false) != A1) ||
+	         (GetCastling(WHITE, KSIDE) && castleRookSq(WHITE, true) != H1))) ||
 	       (Castling & 0b1100 &&
 	        (GetKingSquare(BLACK) != E8 ||
-	         (GetCastling(BLACK, QSIDE) && castleRookSq<false>(BLACK) != A8) ||
-	         (GetCastling(BLACK, KSIDE) && castleRookSq<true>(BLACK) != H8)));
+	         (GetCastling(BLACK, QSIDE) && castleRookSq(BLACK, false) != A8) ||
+	         (GetCastling(BLACK, KSIDE) && castleRookSq(BLACK, true) != H8)));
 }
 
 template <bool check_legal> bool Position::canCastle(bool king_side) const {
@@ -282,8 +277,7 @@ template <bool check_legal> bool Position::canCastle(bool king_side) const {
 		return false;
 
 	const squareT kingFrom = GetKingSquare();
-	const squareT rookFrom = king_side ? castleRookSq<true>(ToMove)
-	                                   : castleRookSq<false>(ToMove);
+	const squareT rookFrom = castleRookSq(ToMove, king_side);
 	const squareT rookTo = king_side ? square_Relative(ToMove, F1)
 	                                 : square_Relative(ToMove, D1);
 	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
@@ -1011,11 +1005,8 @@ int Position::isLegalMoveCastle(squareT from, squareT to) const {
 	if (!canCastle(king_side))
 		return 0;
 
-	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
-	                                 : square_Relative(ToMove, C1);
-	const squareT rookSq = king_side ? castleRookSq<true>(ToMove)
-	                                 : castleRookSq<false>(ToMove);
-	if (to != kingTo && to != rookSq)
+	const auto kingTo = square_Relative(ToMove, king_side ? G1 : C1);
+	if (to != kingTo && to != castleRookSq(ToMove, king_side))
 		return 0;
 
 	return king_side ? 2 : -2;
@@ -1613,10 +1604,10 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
 		if (auto castleSide = sm.isCastle()) {
 			squareT rookfrom, rookto;
 			if (castleSide > 0) {
-				rookfrom = castleRookSq<true>(color);
+				rookfrom = castleRookSq(color, true);
 				rookto = to - 1;
 			} else {
-				rookfrom = castleRookSq<false>(color);
+				rookfrom = castleRookSq(color, false);
 				rookto = to + 1;
 			}
 			const int kingIdx = 0;
@@ -1655,13 +1646,13 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
     // Handle clearing of castling flags:
     if (Castling) {
         // See if a rook moved or was captured:
-		if (from == castleRookSq<false>(color))
+		if (from == castleRookSq(color, false))
 			ClearCastling(color, QSIDE);
-		if (from == castleRookSq<true>(color))
+		if (from == castleRookSq(color, true))
 			ClearCastling(color, KSIDE);
-		if (to == castleRookSq<false>(enemy))
+		if (to == castleRookSq(enemy, false))
 			ClearCastling(enemy, QSIDE);
-		if (to == castleRookSq<true>(enemy))
+		if (to == castleRookSq(enemy, true))
 			ClearCastling(enemy, KSIDE);
     }
 
@@ -1721,10 +1712,10 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 			squareT rookfrom, rookto;
 			if (castleSide > 0) {
 				rookfrom = kingSq - 1;
-				rookto = castleRookSq<true>(ToMove);
+				rookto = castleRookSq(ToMove, true);
 			} else {
 				rookfrom = kingSq + 1;
-				rookto = castleRookSq<false>(ToMove);
+				rookto = castleRookSq(ToMove, false);
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
