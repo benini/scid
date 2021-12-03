@@ -152,7 +152,7 @@ private:
         return 2 * color + side;
     }
     squareT castleRookSq(colorT color, bool king_side) const {
-         return square_Relative(color, king_side ? H1 : A1);
+        return castleRookSq_[2 * color + (king_side ? 1 : 0)];
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

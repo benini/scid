@@ -900,10 +900,9 @@ static bool invalid_move(Position const& pos, squareT from, squareT to,
 	const auto mover = pos.GetPiece(from);
 	const auto captured = pos.GetPiece(to);
 	const auto pt = piece_Type(mover);
-	return piece_Color(mover) != toMove ||    // Wrong side to move
-	       piece_Color(captured) == toMove || // Capturing its own piece
-	       piece_Type(captured) == KING ||    // Capturing the king
-	       (promo != EMPTY && pt != PAWN);    // Only pawn can promote
+	return piece_Color(mover) != toMove || // Wrong side to move
+	       piece_Type(captured) == KING || // Capturing the king
+	       (promo != EMPTY && pt != PAWN); // Only pawn can promote
 }
 
 /// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
@@ -964,8 +963,10 @@ int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 	if (invalid_move(*this, from, to, promo))
 		return 0;
 
-	auto king_sq = GetKingSquare();
-	const auto captured_sq = pseudo_legal(*this, from, to, promo);
+	const auto king_sq = GetKingSquare();
+	const auto captured_sq = piece_Color(GetPiece(to)) == ToMove
+	                             ? NULL_SQUARE // Capturing its own piece
+	                             : pseudo_legal(*this, from, to, promo);
 	if (captured_sq == NULL_SQUARE) {
 		if (promo != EMPTY || from != king_sq)
 			return 0; // Invalid move
@@ -1491,19 +1492,21 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
 	if (ptype == KING) {
 		ClearCastlingFlags(color);
 		if (auto castleSide = sm.isCastle()) {
-			squareT rookfrom, rookto;
+			squareT rookfrom, rookto, kingTo;
 			if (castleSide > 0) {
+				kingTo = square_Relative(color, G1);
 				rookfrom = castleRookSq(color, true);
-				rookto = to - 1;
+				rookto = kingTo - 1;
 			} else {
+				kingTo = square_Relative(color, C1);
 				rookfrom = castleRookSq(color, false);
-				rookto = to + 1;
+				rookto = kingTo + 1;
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
 			RemoveFromBoard(piece_Make(color, ROOK), rookfrom);
 			RemoveFromBoard(piece_Make(color, KING), GetKingSquare(color));
-			addPiece(kingIdx, KING, to);
+			addPiece(kingIdx, KING, kingTo);
 			addPiece(rookIdx, ROOK, rookto);
 			return;
 		}

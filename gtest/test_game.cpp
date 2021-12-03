@@ -404,7 +404,7 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	    "1.b3 Ng6 2.e4 e5 3.Ng3 Nc6 4.f3 Bg5 5.Be2 a6 6.Nc3 d6 7.Nd5 {_} -- "
 	    "8.Nf5");
 	EXPECT_EQ(decode_game(chess960),
-	          "b3 Ng6 e4 e5 Ng3 Nc6 f3 Bg5 Be2 a6 Nc3 d6 Nd5 ");
+	          "b3 Ng6 e4 e5 Ng3 Nc6 f3 Bg5 Be2 a6 Nc3 d6 Nd5 O-O-O Nf5 ");
 	EXPECT_EQ(decode_gameview(chess960),
 	          "1.b3 Ng6  2.e4 e5  3.Ng3 Nc6  4.f3 Bg5  5.Be2 a6  6.Nc3 d6  "
 	          "7.Nd5 O-O-O  8.Nf5");
