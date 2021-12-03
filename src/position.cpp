@@ -281,15 +281,14 @@ template <bool check_legal> bool Position::canCastle(bool king_side) const {
 	if (check_legal && !GetCastling(ToMove, king_side ? KSIDE : QSIDE))
 		return false;
 
-	const squareT kingFrom = square_Relative(ToMove, E1);
+	const squareT kingFrom = GetKingSquare();
 	const squareT rookFrom = king_side ? castleRookSq<true>(ToMove)
 	                                   : castleRookSq<false>(ToMove);
 	const squareT rookTo = king_side ? square_Relative(ToMove, F1)
 	                                 : square_Relative(ToMove, D1);
 	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
 	                                 : square_Relative(ToMove, C1);
-	if (Board[kingFrom] != piece_Make(ToMove, KING) ||
-	    Board[rookFrom] != piece_Make(ToMove, ROOK))
+	if (Board[rookFrom] != piece_Make(ToMove, ROOK))
 		return false;
 
 	const int stepRook = rookFrom < rookTo ? -1 : 1;
