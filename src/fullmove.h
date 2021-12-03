@@ -69,9 +69,8 @@ public:
 	colorT  getColor()    const { return (m_ >> 27 & 1) ? BLACK : WHITE; }
 	pieceT  getPromo()    const { return ((m_ >> 12) & 0x03) +2; }
 	pieceT  getCaptured() const { return (m_ >> 21) & 0x07; }
-	std::string getSAN(colorT* toMove = 0) const {
+	std::string getSAN() const {
 		std::string res;
-		if (toMove) *toMove = getColor();
 		squareT to = getTo();
 		squareT from = getFrom();
 		if (to == 0 && from == 0) return "--";
