@@ -2678,7 +2678,7 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 		if (promo == PAWN) // NULL MOVE
 			return OK;
 
-		if (!pos->validCastling(promo == KING, false))
+		if (!pos->canCastle<false>(promo == KING))
 			return ERROR_Decode;
 
 		sm->setCastle(promo == KING);

@@ -259,7 +259,7 @@ public:
     /// - the final squares of the king and the rook are empty
     /// @param check_legal: also test for checks or blocking pieces.
     /// Ignore the castling flags and if the king is already in check.
-    bool validCastling(bool king_side, bool check_legal) const;
+    template <bool check_legal = true> bool canCastle(bool king_side) const;
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares) const;
     int         TreeCalcAttacks (colorT toMove, squareT target);

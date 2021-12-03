@@ -51,7 +51,10 @@ struct simpleMoveT
 		       piece_Type(movingPiece) == KING;
 	}
 
-	/// We encode a castling move as a king move with an offset of 2 square.
+	/// Returns:
+	///  +2 for king side castle
+	///  -2 for queen side castle
+	///  0 (false) if it is not a castle moves.
 	int isCastle() const {
 		ASSERT(piece_Type(movingPiece) == KING);
 		if (to == static_cast<squareT>(from + 2))

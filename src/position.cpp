@@ -277,7 +277,10 @@ bool Position::isChess960() const {
 	         (GetCastling(BLACK, KSIDE) && castleRookSq<true>(BLACK) != H8)));
 }
 
-bool Position::validCastling(bool king_side, bool check_legal) const {
+template <bool check_legal> bool Position::canCastle(bool king_side) const {
+	if (check_legal && !GetCastling(ToMove, king_side ? KSIDE : QSIDE))
+		return false;
+
 	const squareT kingFrom = square_Relative(ToMove, E1);
 	const squareT rookFrom = king_side ? castleRookSq<true>(ToMove)
 	                                   : castleRookSq<false>(ToMove);
@@ -311,6 +314,7 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 	}
 	return true;
 }
+template bool Position::canCastle<false>(bool king_side) const;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::GenCastling():
@@ -321,10 +325,10 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 void Position::GenCastling(MoveList* mlist) {
 	const squareT from = GetKingSquare();
 
-	if (GetCastling(ToMove, KSIDE) && validCastling(true, true))
+	if (canCastle(true))
 		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, true);
 
-	if (GetCastling(ToMove, QSIDE) && validCastling(false, true))
+	if (canCastle(false))
 		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, false);
 }
 
@@ -1004,19 +1008,18 @@ int Position::isLegalMoveCastle(squareT from, squareT to) const {
 	assert(from == GetKingSquare());
 	assert(CalcNumChecks() == 0); // validCastling doesn't check the from square
 
-	const auto side = to > from ? KSIDE : QSIDE;
-	if (!GetCastling(ToMove, side) || // Invalid flag
-	    !validCastling(side == KSIDE, true))
+	const bool king_side = to > from;
+	if (!canCastle(king_side))
 		return 0;
 
-	const squareT kingTo = side == KSIDE ? square_Relative(ToMove, G1)
-	                                     : square_Relative(ToMove, C1);
-	const squareT rookSq = side == KSIDE ? castleRookSq<true>(ToMove)
-	                                     : castleRookSq<false>(ToMove);
+	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
+	                                 : square_Relative(ToMove, C1);
+	const squareT rookSq = king_side ? castleRookSq<true>(ToMove)
+	                                 : castleRookSq<false>(ToMove);
 	if (to != kingTo && to != rookSq)
 		return 0;
 
-	return side == KSIDE ? 2 : -2;
+	return king_side ? 2 : -2;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2252,21 +2255,21 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 	sm->movingPiece = piece_Make(ToMove, KING);
 	sm->capturedPiece = EMPTY;
 
-	auto side = KSIDE;
+	bool king_side = true;
 	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
 		// side = KSIDE;
 	} else if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
-		side = QSIDE;
+		king_side = false; // QSIDE
 	} else
 		return ERROR_InvalidMove;
 
-	if (!IsKingInCheck() && validCastling(side == KSIDE, true)) {
-		sm->setCastle(side == KSIDE);
-		return GetCastling(ToMove, side) ? OK : ERROR_CastlingAvailability;
+	if (!IsKingInCheck() && canCastle(king_side)) {
+		sm->setCastle(king_side);
+		return OK;
 	}
 
-	if (validCastling(side == KSIDE, false)) {
-		sm->setCastle(side == KSIDE);
+	if (canCastle<false>(king_side)) {
+		sm->setCastle(king_side);
 		return ERROR_CastlingAvailability;
 	}
 
