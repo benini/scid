@@ -255,7 +255,6 @@ public:
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     int IsLegalMove(squareT from, squareT to, pieceT promo) const;
-    int isLegalMoveCastle(squareT from, squareT to) const;
 
     /// Check that the minimum requirements for castling are satisfied:
     /// - both the king and the rook exists in the position

@@ -971,10 +971,14 @@ int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 		if (promo != EMPTY || from != king_sq)
 			return 0; // Invalid move
 
-		if (under_attack(king_sq))
-			return 0; // King in-check, cannot castle
+		const bool king_side = to > from;
+		const auto castleStd = square_Relative(ToMove, king_side ? G1 : C1);
+		const auto castle960 = castleRookSq(ToMove, king_side);
+		if ((to == castleStd || to == castle960) && canCastle(king_side) &&
+		    !under_attack(king_sq))
+			return king_side ? 2 : -2;
 
-		return isLegalMoveCastle(from, to);
+		return 0; // Invalid move
 	}
 
 	const auto target_sq = (from == king_sq) ? to : king_sq;
@@ -983,25 +987,6 @@ int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 		       (sq != from && sq != captured_sq && GetPiece(sq) != EMPTY);
 	};
 	return under_attack(target_sq, captured_sq, not_empty) ? 0 : 1;
-}
-
-/// Returns:
-///  0 -> invalid move
-///  2 -> valid castle king side
-/// -2 -> valid castle queen side
-int Position::isLegalMoveCastle(squareT from, squareT to) const {
-	assert(from == GetKingSquare());
-	assert(CalcNumChecks() == 0); // validCastling doesn't check the from square
-
-	const bool king_side = to > from;
-	if (!canCastle(king_side))
-		return 0;
-
-	const auto kingTo = square_Relative(ToMove, king_side ? G1 : C1);
-	if (to != kingTo && to != castleRookSq(ToMove, king_side))
-		return 0;
-
-	return king_side ? 2 : -2;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

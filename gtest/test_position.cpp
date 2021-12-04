@@ -656,7 +656,8 @@ TEST(Test_PositionIsLegalMove, king_in_check) {
 	{ // Adjacent enemy king
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/3k4/2p5/4K3/8/8 w - - 0 1"));
-		EXPECT_FALSE(pos.IsLegalMove(E1, G1, EMPTY));
+		EXPECT_FALSE(pos.IsLegalMove(E3, E4, EMPTY));
+		EXPECT_TRUE(pos.IsLegalMove(E3, E2, EMPTY));
 	}
 	{ // Evade check
 		Position pos;
