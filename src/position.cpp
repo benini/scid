@@ -257,7 +257,7 @@ bool Position::under_attack(squareT target_sq, squareT captured_sq,
 }
 
 bool Position::under_attack(squareT target_sq) const {
-	return under_attack(target_sq, NULL_SQUARE,
+	return under_attack(target_sq, target_sq,
 	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
@@ -2098,7 +2098,8 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
 	return OK;
 }
 
-errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
+errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,
+                              int slen) const {
 	ASSERT(sm != NULL && str != NULL);
 
 	slen = trimCheck(str, slen);
@@ -2110,42 +2111,24 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
 	if (toRank == NO_RANK || toFyle == NO_FYLE)
 		return ERROR_InvalidMove;
 
-	auto target = square_Make(toFyle, toRank);
-	squareT kingSq = GetKingSquare(ToMove);
-	if (!movegen::valid_king(kingSq, target))
+	const auto from = GetKingSquare(ToMove);
+	const auto to = square_Make(toFyle, toRank);
+	const auto captured = GetPiece(to);
+	if (!movegen::valid_king(from, to) || piece_Color(captured) == ToMove ||
+	    piece_Type(captured) == KING)
 		return ERROR_InvalidMove;
 
-	pieceT captured = Board[target];
-	if (captured != EMPTY && (piece_Color_NotEmpty(captured) == ToMove ||
-	                          piece_Type(captured) == KING)) {
-		return ERROR_InvalidMove;
-	}
-
-	// XXX We should also check for adjacency to enemy King!!
-	if (movegen::valid_king(GetKingSquare(color_Flip(ToMove)), target))
-		return ERROR_InvalidMove;
-
-	// Now make the move on the Board and Material lists, and see if it
 	// leaves the King in check:
-	auto movingPiece = piece_Make(ToMove, KING);
-	Board[target] = movingPiece;
-	Board[kingSq] = EMPTY;
-	if (captured != EMPTY) {
-		Material[captured]--;
-	}
-	auto nChecks = CalcNumChecks(target);
-	if (captured != EMPTY) {
-		Material[captured]++;
-	}
-	Board[target] = captured;
-	Board[kingSq] = movingPiece;
-	if (nChecks)
+	auto not_empty = [&](auto sq) {
+		return sq != from && GetPiece(sq) != EMPTY;
+	};
+	if (under_attack(to, to, not_empty))
 		return ERROR_InvalidMove;
 
-	sm->from = kingSq;
-	sm->to = target;
+	sm->from = from;
+	sm->to = to;
 	sm->promote = EMPTY;
-	sm->movingPiece = movingPiece;
+	sm->movingPiece = piece_Make(ToMove, KING);
 	return OK;
 }
 
@@ -2156,7 +2139,7 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
 //      Returns: OK or ERROR_InvalidMove.
 //
 errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
-                          pieceT piece) {
+                          pieceT piece) const {
 	ASSERT(sm != NULL && str != NULL);
 	ASSERT(piece == QUEEN || piece == ROOK || piece == BISHOP ||
 	       piece == KNIGHT);
@@ -2210,7 +2193,8 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 	                                              // (ambiguous) moves match.
 }
 
-errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
+errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str,
+                                int slen) const {
 	slen = trimCheck(str, slen);
 
 	auto str_equal = [&](const char* const_str, const int len) {
@@ -2230,7 +2214,7 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
 	} else
 		return ERROR_InvalidMove;
 
-	if (!IsKingInCheck() && canCastle(king_side)) {
+	if (!under_attack(sm->from) && canCastle(king_side)) {
 		sm->setCastle(king_side);
 		return OK;
 	}
