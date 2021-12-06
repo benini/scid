@@ -1380,7 +1380,6 @@ Position::CalcAttacks (colorT side, squareT target, SquareList * fromSquares) co
 bool
 Position::IsKingInCheck (simpleMoveT const& sm)
 {
-    squareT kingSq = GetKingSquare(ToMove);
     pieceT p = (sm.promote == EMPTY) ? piece_Type(sm.movingPiece) : sm.promote;
 
     // No optimization of the last move was castling:
@@ -1508,7 +1507,6 @@ Position::IsPromoMove (squareT from, squareT to)
 void Position::fillMove(simpleMoveT& sm) const {
 	const auto from = sm.from;
 	const auto to = sm.to;
-	const auto promo = sm.promote;
 	sm.movingPiece = GetPiece(sm.from);
 	sm.pieceNum = ListPos[from];
 	sm.castleFlags = Castling;
