@@ -153,7 +153,6 @@ class FastBoard {
 	enum { EMPTY_SQ_ = 0xFF };
 
 public:
-	FastBoard() = default;
 	explicit FastBoard(const Position& pos) { Init(pos); }
 
 	static FastBoard stdStart() {
@@ -405,10 +404,8 @@ public:
 	explicit GameView(const ByteBuffer& bbuf)
 	    : board_(FastBoard::stdStart()), bbuf_(bbuf), cToMove_(WHITE) {}
 
-	GameView(const ByteBuffer& bbuf, const Position& startPos) : bbuf_(bbuf) {
-		board_.Init(startPos);
-		cToMove_ = startPos.GetToMove();
-	}
+	GameView(const ByteBuffer& bbuf, const Position& startPos)
+	    : board_(startPos), bbuf_(bbuf), cToMove_(startPos.GetToMove()) {}
 
 	template <typename FuncT> void mainLine(FuncT fn) {
 		while (const auto move = (cToMove_ == WHITE)
