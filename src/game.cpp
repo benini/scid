@@ -2665,9 +2665,7 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 	sm->movingPiece = pos->GetPiece(from);
 	const auto ptype = piece_Type(sm->movingPiece);
 
-	const auto [to, promo] = (toMove == WHITE)
-	                             ? buf->decodeMove<WHITE>(ptype, from, val)
-	                             : buf->decodeMove<BLACK>(ptype, from, val);
+	const auto [to, promo] = buf->decodeMove(toMove, ptype, from, val);
 	if (to < 0 || to > 63)
 		return ERROR_Decode;
 

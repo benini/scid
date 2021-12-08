@@ -526,7 +526,7 @@ private:
 		const auto moving_piece = board_.getPiece(toMove, idx_piece_moving);
 		const auto from = board_.getSquare(toMove, idx_piece_moving);
 
-		auto [destSq, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, v);
+		auto [destSq, promo] = bbuf_.decodeMove(toMove, moving_piece, from, v);
 		if (destSq < 0 || destSq > 63)
 			return {}; // decode error
 
@@ -540,9 +540,8 @@ private:
 
 			// CASTLE
 			const auto rook_from = board_.castle<toMove>(promo == KING);
-			if (rook_from == from)
-				return {}; // decode error
-			return TResult(toMove, from, rook_from);
+			return (rook_from == from) ? TResult() // decode error
+			                           : TResult(toMove, from, rook_from);
 		}
 
 		bool enPassant = moving_piece == PAWN &&
