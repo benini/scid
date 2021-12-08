@@ -58,11 +58,22 @@ public:
 		m_ = to | (from << 6) | (pt << 24) | (c << 27);
 	}
 
-	explicit operator bool() const { return m_ != 0; }
 	bool operator==(FullMove const& f) const { return m_ == f.m_; }
+
+	// Special moves:
+	// NONE: encoded as 0 (from 0 to 0);
+	// NULL: encoded as 65 (from 1 to 1);
+	// PROMO: encoded setting the special move flag to 1
+	// ENPASSANT: encoded setting the special move flag to 2
+	// CASTLING: encoded setting the special move flag to 3, from is the square
+	//           of the king and to is the square of the rook.
+	//           If from < to it is castling king side.
+	explicit operator bool() const { return m_ != 0; }
+	bool    isNull()      const { return m_ == 0b01000001; }
 	bool    isPromo()     const { return (m_ & (3 << 14)) == (1 << 14); }
 	bool    isEnpassant() const { return (m_ & (3 << 14)) == (2 << 14); }
 	bool    isCastle()    const { return (m_ & (3 << 14)) == (3 << 14); }
+
 	squareT getTo()       const { return m_ & 0x3F; }
 	squareT getFrom()     const { return (m_ >> 6) & 0x3F; }
 	pieceT  getPiece()    const { return (m_ >> 24) & 0x07; }
@@ -71,8 +82,8 @@ public:
 	pieceT  getCaptured() const { return (m_ >> 21) & 0x07; }
 	std::string getSAN() const {
 		std::string res;
-		squareT to = getTo();
-		squareT from = getFrom();
+		const auto to = getTo();
+		const auto from = getFrom();
 		if (to == 0 && from == 0) return "--";
 		if (isCastle()) {
 			res = (to > from) ? "O-O" : "O-O-O";

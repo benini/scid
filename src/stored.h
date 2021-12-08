@@ -50,8 +50,8 @@ public:
 		return static_cast<byte>(res);
 	}
 
-	static FullMove getMove (byte code, uint ply = 0) {
-		if ((code < STORED_LINES) && (Moves_[code] + ply) < Moves_[code +1]) {
+	static FullMove getMove(byte code, uint ply = 0) {
+		if ((code < STORED_LINES) && (Moves_[code] + ply) < Moves_[code + 1]) {
 			return Moves_[code][ply];
 		}
 		return FullMove();
