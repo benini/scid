@@ -7667,16 +7667,14 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT eco = ECO_None;
         if (ecoBook && move) {
             simpleMoveT sm;
-            sm.from = move.getFrom();
-            sm.movingPiece = piece_Make(move.getColor(), move.getPiece());
-            sm.promote = move.isPromo() ? move.getPromo() : EMPTY;
             if (move.isCastle()) {
-                sm.setCastle(move.getTo() > sm.from);
+                auto side = move.getTo() > move.getFrom() ? KING : QUEEN;
+                searchPos.makeMove(move.getFrom(), move.getFrom(), side, sm);
             } else {
-                sm.to = move.getTo();
+                auto promo = move.isPromo() ? move.getPromo() : INVALID_PIECE;
+                searchPos.makeMove(move.getFrom(), move.getTo(), promo, sm);
             }
-
-            searchPos.DoSimpleMove(&sm);
+            searchPos.DoSimpleMove(sm);
             eco = ecoBook->findECO(&searchPos);
             searchPos.UndoSimpleMove(&sm);
         }
