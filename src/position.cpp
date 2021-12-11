@@ -1461,7 +1461,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
 }
 
 void Position::DoSimpleMove(simpleMoveT const& sm) {
-    // The caller must have set the first 3 members of sm
     const auto from = sm.from;
     const auto to = sm.to;
     const auto promo = sm.promote;

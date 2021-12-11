@@ -904,21 +904,14 @@ std::string Game::currentPosUCI() const {
 // Game::AddMove():
 //      Add a move at current position and do it.
 //
-errorT Game::AddMove(const simpleMoveT* sm) {
-	ASSERT(sm != NULL);
-
+errorT Game::AddMove(simpleMoveT const& sm) {
 	// We must be at the end of a game/variation to add a move:
 	if (!CurrentMove->endMarker())
 		Truncate();
 
 	CurrentMove->setNext(NewMove(END_MARKER));
 	CurrentMove->marker = NO_MARKER;
-	CurrentMove->moveData.from = sm->from;
-	CurrentMove->moveData.to = sm->to;
-	CurrentMove->moveData.promote = sm->promote;
-	CurrentPos->fillMove(CurrentMove->moveData);
-	ASSERT(piece_Type(CurrentMove->moveData.movingPiece) != KING ||
-	       sm->isCastle() == CurrentMove->moveData.isCastle());
+	CurrentMove->moveData = sm;
 	if (VarDepth == 0)
 		++NumHalfMoves;
 
@@ -2774,7 +2767,7 @@ errorT Game::DecodeVariation(ByteBuffer& buf) {
 
 		auto errMove = decodeMove(&buf, &sm, val, currentPos());
 		if (!errMove)
-			errMove = AddMove(&sm);
+			errMove = AddMove(sm);
 		if (errMove)
 			return errMove;
 	}

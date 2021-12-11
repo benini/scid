@@ -3446,7 +3446,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     db->gameAltered = true;
     if (sm) {
         // We need to replicate the last move of the current game.
-        db->game->AddMove(sm);
+        db->game->AddMove(*sm);
     }
     merge->MoveToPly (mergePly);
     ply = mergePly;
@@ -3454,7 +3454,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         simpleMoveT * mergeMove = merge->GetCurrentMove();
         if (merge->MoveForward() != OK) { break; }
         if (mergeMove == NULL) { break; }
-        if (db->game->AddMove(mergeMove) != OK) { break; }
+        if (db->game->AddMove(*mergeMove) != OK) { break; }
         ply++;
     }
 
@@ -4848,7 +4848,7 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Position * pos = db->game->GetCurrentPos();
     errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
     if (err == OK) {
-        err = db->game->AddMove(&sm);
+        err = db->game->AddMove(sm);
         if (err == OK) {
             db->gameAltered = true;
             return TCL_OK;
@@ -4905,7 +4905,7 @@ sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
       Position * pos = db->game->GetCurrentPos();
       errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
       if (err == OK) {
-        err = db->game->AddMove(&sm);
+        err = db->game->AddMove(sm);
         if (err == OK) {
             db->gameAltered = true;
             db->game->GetPrevSAN (tmp);

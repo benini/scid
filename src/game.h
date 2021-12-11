@@ -239,7 +239,7 @@ public:
     //////////////////////////////////////////////////////////////
     // Functions to add or delete moves:
     //
-    errorT AddMove(const simpleMoveT* sm);
+    errorT AddMove(simpleMoveT const& sm);
     errorT AddVariation();
     errorT DeleteVariation();
     errorT FirstVariation();

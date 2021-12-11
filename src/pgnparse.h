@@ -151,7 +151,7 @@ public:
 				return logFatalErr("Failed to parse the move: ", tok);
 			}
 		}
-		return (game.AddMove(&sm) == OK)
+		return (game.AddMove(sm) == OK)
 		           ? true
 		           : logFatalErr("Failed to add the move: ", tok);
 	}
