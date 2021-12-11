@@ -309,10 +309,10 @@ void Position::GenCastling(MoveList* mlist) {
 	const squareT from = GetKingSquare();
 
 	if (canCastle(true))
-		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, true);
+		makeMove(from, from, KING, mlist->emplace_back());
 
 	if (canCastle(false))
-		mlist->emplace_back_castle(piece_Make(ToMove, KING), from, false);
+		makeMove(from, from, QUEEN, mlist->emplace_back());
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
