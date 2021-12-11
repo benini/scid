@@ -1242,7 +1242,7 @@ bool Game::MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
             simpleMoveT sm;
             err = DecodeNextMove(&buf, sm);
             if (err == OK) {
-                CurrentPos->DoSimpleMove(&sm);
+                CurrentPos->DoSimpleMove(sm);
             }
         }
         plyCount++;
@@ -2659,12 +2659,8 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 	const squareT from = pos->GetList(toMove)[val >> 4];
 	if (from > H8)
 		return ERROR_Decode;
-	sm->from = from;
-	sm->to = from;
-	sm->promote = EMPTY;
-	sm->movingPiece = pos->GetPiece(from);
-	const auto ptype = piece_Type(sm->movingPiece);
 
+	const auto ptype = piece_Type(pos->GetPiece(from));
 	const auto [to, promo] = buf->decodeMove(toMove, ptype, from, val);
 	if (to < 0 || to > 63)
 		return ERROR_Decode;
@@ -2673,23 +2669,13 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 		if (promo == INVALID_PIECE)
 			return ERROR_Decode;
 
-		if (promo == PAWN) // NULL MOVE
-			return OK;
-
-		if (!pos->canCastle<false>(promo == KING))
+		if (promo != PAWN && !pos->canCastle<false>(promo == KING))
 			return ERROR_Decode;
-
-		sm->setCastle(promo == KING);
-		return OK; // CASTLE
+	} else {
+		if (to == pos->GetKingSquare(WHITE) || to == pos->GetKingSquare(BLACK))
+			return ERROR_Decode;
 	}
-
-	if (to == pos->GetKingSquare(WHITE) || to == pos->GetKingSquare(BLACK))
-		return ERROR_Decode;
-
-	if (promo != INVALID_PIECE)
-		sm->promote = promo;
-
-	sm->to = static_cast<squareT>(to);
+	pos->makeMove(from, to, promo, *sm);
 	return OK;
 }
 

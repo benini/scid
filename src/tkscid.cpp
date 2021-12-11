@@ -1184,7 +1184,7 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->DecodeNextMove(&bbuf, sm) != OK)
                 break;
 
-            g->GetCurrentPos()->DoSimpleMove(&sm);
+            g->GetCurrentPos()->DoSimpleMove(sm);
         }
 
         if (!extendedCodes) {
