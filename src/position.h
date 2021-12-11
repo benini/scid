@@ -104,6 +104,7 @@ private:
                                     // or pawn move.
     ushort          PlyCounter;
     byte            Castling;       // castling flags
+    byte            variant_;       // 0 -> normal; 1 -> chess960
     squareT         castleRookSq_[4];  // start rook squares
 
     uint            Hash;           // Hash value.
@@ -167,7 +168,7 @@ public:
     bool        IsStdStart() const;
     errorT      AddPiece (pieceT p, squareT sq);
 
-    bool isChess960() const;
+    bool isChess960() const { return variant_ == 1; }
 
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }

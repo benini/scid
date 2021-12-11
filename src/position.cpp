@@ -261,17 +261,6 @@ bool Position::under_attack(squareT target_sq) const {
 	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
-bool Position::isChess960() const {
-	return (Castling & 0b11 &&
-	        (GetKingSquare(WHITE) != E1 ||
-	         (GetCastling(WHITE, QSIDE) && castleRookSq(WHITE, false) != A1) ||
-	         (GetCastling(WHITE, KSIDE) && castleRookSq(WHITE, true) != H1))) ||
-	       (Castling & 0b1100 &&
-	        (GetKingSquare(BLACK) != E8 ||
-	         (GetCastling(BLACK, QSIDE) && castleRookSq(BLACK, false) != A8) ||
-	         (GetCastling(BLACK, KSIDE) && castleRookSq(BLACK, true) != H8)));
-}
-
 template <bool check_legal> bool Position::canCastle(bool king_side) const {
 	if (check_legal && !GetCastling(ToMove, king_side ? KSIDE : QSIDE))
 		return false;
@@ -565,6 +554,7 @@ Position::Clear (void)
     Count[WHITE] = Count[BLACK] = 0;
     EPTarget = NULL_SQUARE;
     Castling = 0;
+    variant_ = 0;
     std::fill_n(castleRookSq_, 4, 0);
     Board [NULL_SQUARE] = END_OF_BOARD;
     PlyCounter = 0;
@@ -597,6 +587,8 @@ void Position::SetCastling(colorT col, castleDirT dir) {
 	}
 	castleRookSq_[idx] = rsq;
 	Castling |= 1u << idx;
+	if (ksq != square_Relative(col, E1) || rsq != std_rsq)
+		variant_ = 1;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
