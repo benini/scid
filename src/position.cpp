@@ -1395,7 +1395,7 @@ Position::IsPromoMove (squareT from, squareT to)
 void Position::makeMove(squareT from, squareT to, pieceT promo,
                         simpleMoveT& res) const {
 	res.castling = 0;
-	if (promo == INVALID_PIECE) { // NORMAL MOVE
+	if (promo == EMPTY || promo == INVALID_PIECE) { // NORMAL MOVE
 		res.from = from;
 		res.to = to;
 		res.promote = EMPTY;
@@ -1924,7 +1924,7 @@ errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, size_t slen,
         return ERROR_InvalidMove;
 
     if (legal == 1) {
-        makeMove(from, to, promote == EMPTY ? INVALID_PIECE : promote, *m);
+        makeMove(from, to, promote, *m);
     } else {
         makeMove(from, from, legal == 2 ? KING : QUEEN, *m);
     }
@@ -1990,13 +1990,13 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen,
 		const auto to = square_Make(toFyle, toRank);
 		const auto pawn = piece_Make(ToMove, PAWN);
 		if (GetPiece(from) == pawn && IsLegalMove(from, to, promo)) {
-			makeMove(from, to, promo != EMPTY ? promo : INVALID_PIECE, *sm);
+			makeMove(from, to, promo, *sm);
 			return true;
 		}
-		if (frFyle == toFyle && promo == EMPTY) {
+		if (frFyle == toFyle) {
 			from += (ToMove == WHITE) ? -8 : +8;
-			if (GetPiece(from) == pawn && IsLegalMove(from, to, EMPTY)) {
-				makeMove(from, to, INVALID_PIECE, *sm);
+			if (GetPiece(from) == pawn && IsLegalMove(from, to, promo)) {
+				makeMove(from, to, promo, *sm);
 				return true;
 			}
 		}
