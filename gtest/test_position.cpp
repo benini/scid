@@ -512,21 +512,6 @@ TEST(Test_MoveGeneration, GetCastling) {
 	}
 }
 
-TEST(Test_MoveGeneration, castle_overflow) {
-	for (auto sq = A1; sq != H8; ++sq) {
-		auto sm = simpleMoveT();
-		sm.promote = EMPTY;
-		sm.movingPiece = WK;
-		sm.from = sq;
-		sm.to = sq;
-		EXPECT_TRUE(sm.isNullMove());
-		sm.setCastle(true);
-		EXPECT_TRUE(sm.isCastle() == +2);
-		sm.setCastle(false);
-		EXPECT_TRUE(sm.isCastle() == -2);
-	}
-}
-
 TEST(Test_PositionDoSimpleMove, castling_flags) {
 	std::vector<simpleMoveT> sm;
 	char buf[1024];
@@ -705,7 +690,6 @@ TEST(Test_PositionIsKingInCheck, last_move_optimization) {
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("4k2r/6pp/8/8/8/6P1/4P1PP/5K2 b k -"));
 		pos.ParseMove(&sm, "e8h8");
-		sm.setCastle(true);
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}

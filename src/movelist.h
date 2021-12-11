@@ -58,19 +58,9 @@ struct simpleMoveT
 	///  0 (false) if it is not a castle moves.
 	int isCastle() const {
 		if (castling)
-			return to == static_cast<squareT>(from + 2) ? 2 : -2;
+			return to > from ? 2 : -2;
 
 		return 0;
-	}
-
-	/// Sets member @e "to" for castling moves.
-	/// @e from should already have been set to the king's square
-	void setCastle(bool king_side) {
-		assert(promote == EMPTY);
-		assert(piece_Type(movingPiece) == KING);
-		to = from;
-		to += king_side ? 2 : -2;
-		castling = 1;
 	}
 
 	/// Converts the move to long algebraic notation.

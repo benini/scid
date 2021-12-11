@@ -1395,21 +1395,29 @@ Position::IsPromoMove (squareT from, squareT to)
 void Position::makeMove(squareT from, squareT to, pieceT promo,
                         simpleMoveT& res) const {
 	res.castling = 0;
-	res.from = from;
 	if (promo == INVALID_PIECE) { // NORMAL MOVE
+		res.from = from;
 		res.to = to;
 		res.promote = EMPTY;
 	} else if (promo == PAWN) { // NULL MOVE
-		res.to = from;
+		res.from = GetKingSquare(ToMove);
+		res.to = res.from;
 		res.promote = EMPTY;
 		res.movingPiece = KING;
 	} else if (from != to) { // PROMOTION
+		res.from = from;
 		res.to = to;
 		res.promote = promo;
 	} else { // CASTLING
+		res.from = GetKingSquare(ToMove);
+		if (isChess960()) {
+			res.to = castleRookSq(ToMove, promo == KING);
+		} else {
+			res.to = res.from;
+			res.to += promo == KING ? 2 : -2;
+		}
 		res.promote = EMPTY;
-		res.movingPiece = KING;
-		res.setCastle(promo == KING);
+		res.castling = 1;
 	}
 	fillMove(res);
 }
