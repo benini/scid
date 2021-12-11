@@ -140,10 +140,10 @@ private:
     errorT MatchPawnMove(MoveList* mlist, fyleT fromFyle, squareT to,
                          pieceT promote);
 
-    errorT ReadMove(simpleMoveT* sm, const char* str, int slen, pieceT p) const;
-    errorT ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) const;
-    errorT ReadMovePawn(simpleMoveT* sm, const char* str, int slen, fyleT from);
-    errorT ReadMoveKing(simpleMoveT* sm, const char* str, int slen) const;
+    errorT ReadMove(simpleMoveT* sm, const char* str, size_t slen, pieceT p) const;
+    errorT ReadMoveCastle(simpleMoveT* sm, std::string_view str) const;
+    errorT ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen, fyleT from);
+    errorT ReadMoveKing(simpleMoveT* sm, const char* str, size_t slen) const;
 
     template <typename TFunc>
     bool under_attack(squareT target_sq, squareT captured_sq,

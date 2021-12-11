@@ -12,15 +12,16 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "common.h"
 #include "position.h"
 #include "attacks.h"
-#include "misc.h"
-#include "hash.h"
-#include "sqmove.h"
+#include "common.h"
 #include "dstring.h"
+#include "hash.h"
+#include "misc.h"
 #include "movegen.h"
+#include "sqmove.h"
 #include <algorithm>
+#include <array>
 
 inline void
 Position::AddHash (pieceT p, squareT sq)
@@ -1995,7 +1996,7 @@ errorT Position::MakeCoordMoves(const char* moves, size_t moveslen,
                 toSAN->push_back(' ');
         }
 
-        DoSimpleMove(&sm);
+        DoSimpleMove(sm);
     }
     return OK;
 }
@@ -2034,17 +2035,15 @@ errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, size_t slen,
     if (!legal)
         return ERROR_InvalidMove;
 
-    m->from = from;
-    m->to = to;
-    m->promote = promote;
-    m->movingPiece = Board[from];
-    if (legal != 1)
-        m->setCastle(legal > 0);
-
+    if (legal == 1) {
+        makeMove(from, to, promote == EMPTY ? INVALID_PIECE : promote, *m);
+    } else {
+        makeMove(from, from, legal == 2 ? KING : QUEEN, *m);
+    }
     return OK;
 }
 
-static int trimCheck(const char* str, int slen) {
+static size_t trimCheck(const char* str, size_t slen) {
 	while (slen > 0) { // trim mate '#' or check '+'
 		--slen;
 		if (str[slen] != '#' && str[slen] != '+') {
@@ -2055,11 +2054,10 @@ static int trimCheck(const char* str, int slen) {
 	return slen;
 }
 
-errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
+errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen,
                               fyleT frFyle) {
 	ASSERT(sm != NULL && str != NULL && frFyle <= H_FYLE);
 
-	slen = trimCheck(str, slen);
 	if (slen < 2)
 		return ERROR_InvalidMove;
 
@@ -2120,14 +2118,14 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
 		return ERROR_InvalidMove;
 
 	*sm = *(mlist.Get(0));
+	fillMove(*sm);
 	return OK;
 }
 
 errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,
-                              int slen) const {
+                              size_t slen) const {
 	ASSERT(sm != NULL && str != NULL);
 
-	slen = trimCheck(str, slen);
 	if (slen < 3 || slen > 6)
 		return ERROR_InvalidMove;
 
@@ -2150,10 +2148,7 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,
 	if (under_attack(to, to, not_empty))
 		return ERROR_InvalidMove;
 
-	sm->from = from;
-	sm->to = to;
-	sm->promote = EMPTY;
-	sm->movingPiece = piece_Make(ToMove, KING);
+	makeMove(from, to, INVALID_PIECE, *sm);
 	return OK;
 }
 
@@ -2163,13 +2158,12 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,
 //      generates the legal move it corresponds to.
 //      Returns: OK or ERROR_InvalidMove.
 //
-errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
+errorT Position::ReadMove(simpleMoveT* sm, const char* str, size_t slen,
                           pieceT piece) const {
 	ASSERT(sm != NULL && str != NULL);
 	ASSERT(piece == QUEEN || piece == ROOK || piece == BISHOP ||
 	       piece == KNIGHT);
 
-	slen = trimCheck(str, slen);
 	if (slen < 3 || slen > 6)
 		return ERROR_InvalidMove;
 
@@ -2208,48 +2202,29 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 			continue;
 
 		++matchCount;
-		sm->from = from;
-		sm->to = to;
-		sm->promote = EMPTY;
-		sm->movingPiece = movingPiece;
+		makeMove(from, to, INVALID_PIECE, *sm);
 	}
 	return (matchCount == 1) ? OK                 // ok.
 	                         : ERROR_InvalidMove; // No match, or too many
 	                                              // (ambiguous) moves match.
 }
 
-errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str,
-                                int slen) const {
-	slen = trimCheck(str, slen);
-
-	auto str_equal = [&](const char* const_str, const int len) {
-		return slen == len && std::equal(str, str + len, const_str);
-	};
-
-	sm->from = GetKingSquare();
-	sm->promote = EMPTY;
-	sm->movingPiece = piece_Make(ToMove, KING);
-	sm->capturedPiece = EMPTY;
-
+errorT Position::ReadMoveCastle(simpleMoveT* sm, std::string_view str) const {
 	bool king_side = true;
-	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
+	if (str == "O-O" || str == "OO") {
 		// side = KSIDE;
-	} else if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
+	} else if (str == "O-O-O" || str == "OOO") {
 		king_side = false; // QSIDE
 	} else
 		return ERROR_InvalidMove;
 
-	if (!under_attack(sm->from) && canCastle(king_side)) {
-		sm->setCastle(king_side);
+	const auto king_sq = GetKingSquare();
+	makeMove(king_sq, king_sq, king_side ? KING : QUEEN, *sm);
+	if (!under_attack(king_sq) && canCastle(king_side))
 		return OK;
-	}
 
-	if (canCastle<false>(king_side)) {
-		sm->setCastle(king_side);
-		return ERROR_CastlingAvailability;
-	}
-
-	return ERROR_InvalidMove;
+	return canCastle<false>(king_side) ? ERROR_CastlingAvailability
+	                                   : ERROR_InvalidMove;
 }
 
 errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
@@ -2271,80 +2246,53 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str,
                            const char* strEnd) {
 	ASSERT(str != NULL);
 
-	int length = static_cast<int>(std::distance(str, strEnd));
+	const auto length = trimCheck(str, std::distance(str, strEnd));
 	if (length < 2 || length > 9)
 		return ERROR_InvalidMove;
 
-	switch (str[0]) {
-	case 'a':
-		return ReadMovePawn(sm, str, length, A_FYLE);
-	case 'b':
-		return ReadMovePawn(sm, str, length, B_FYLE);
-	case 'c':
-		return ReadMovePawn(sm, str, length, C_FYLE);
-	case 'd':
-		return ReadMovePawn(sm, str, length, D_FYLE);
-	case 'e':
-		return ReadMovePawn(sm, str, length, E_FYLE);
-	case 'f':
-		return ReadMovePawn(sm, str, length, F_FYLE);
-	case 'g':
-		return ReadMovePawn(sm, str, length, G_FYLE);
-	case 'h':
-		return ReadMovePawn(sm, str, length, H_FYLE);
-	case 'K':
+	static const auto piece_map = [] {
+		auto res = std::array<uint8_t, 256>();
+		std::fill(res.begin(), res.end(), INVALID_PIECE);
+		res['a'] = res['A'] = PAWN | (A_FYLE << 4);
+		res['b'] = PAWN | (B_FYLE << 4);
+		res['c'] = res['C'] = PAWN | (C_FYLE << 4);
+		res['d'] = res['D'] = PAWN | (D_FYLE << 4);
+		res['e'] = res['E'] = PAWN | (E_FYLE << 4);
+		res['f'] = res['F'] = PAWN | (F_FYLE << 4);
+		res['g'] = res['G'] = PAWN | (G_FYLE << 4);
+		res['h'] = res['H'] = PAWN | (H_FYLE << 4);
+		res['k'] = res['K'] = KING;
+		res['q'] = res['Q'] = QUEEN;
+		res['r'] = res['R'] = ROOK;
+		res['B'] = BISHOP;
+		res['N'] = KNIGHT;
+		res['o'] = res['O'] = 7; // CASTLE
+		res['P'] = 8;            // explicit PAWN move
+		return res;
+	}();
+	const auto ptype = piece_map[static_cast<unsigned char>(*str)];
+	switch (ptype & 0x0F) {
+	case INVALID_PIECE:
+		// Check for a null move:
+		if ((length == 2 && std::equal(str, str + 2, "--")) ||
+		    (length == 2 && std::equal(str, str + 2, "Z0")) ||
+		    (length == 4 && std::equal(str, str + 4, "null"))) {
+			const auto king_sq = GetKingSquare(ToMove);
+			makeMove(king_sq, king_sq, PAWN, *sm);
+			return OK;
+		}
+		return ERROR_InvalidMove;
+	case PAWN:
+		return ReadMovePawn(sm, str, length, ptype >> 4);
+	case KING:
 		return ReadMoveKing(sm, str, length);
-	case 'Q':
-		return ReadMove(sm, str, length, QUEEN);
-	case 'R':
-		return ReadMove(sm, str, length, ROOK);
-	case 'B':
-		return ReadMove(sm, str, length, BISHOP);
-	case 'N':
-		return ReadMove(sm, str, length, KNIGHT);
-	case 'O':
-		return ReadMoveCastle(sm, str, length);
-	}
-
-	// Check for a null move:
-	if ((length == 2 && std::equal(str, str + 2, "--")) ||
-	    (length == 2 && std::equal(str, str + 2, "Z0")) ||
-	    (length == 4 && std::equal(str, str + 4, "null"))) {
-		sm->from = GetKingSquare(ToMove);
-		sm->to = sm->from;
-		sm->movingPiece = Board[sm->from];
-		sm->promote = EMPTY;
-		return OK;
-	}
-
-	// Invalid move, check for a misspelled first char:
-	switch (str[0]) {
-	case 'A':
-		return ReadMovePawn(sm, str, length, A_FYLE);
-	case 'C':
-		return ReadMovePawn(sm, str, length, C_FYLE);
-	case 'D':
-		return ReadMovePawn(sm, str, length, D_FYLE);
-	case 'E':
-		return ReadMovePawn(sm, str, length, E_FYLE);
-	case 'F':
-		return ReadMovePawn(sm, str, length, F_FYLE);
-	case 'G':
-		return ReadMovePawn(sm, str, length, G_FYLE);
-	case 'H':
-		return ReadMovePawn(sm, str, length, H_FYLE);
-	case 'P':
+	case 7:
+		return ReadMoveCastle(sm, {str, length});
+	case 8:
 		return ParseMove(sm, str + 1, strEnd);
-	case 'k':
-		return ReadMoveKing(sm, str, length);
-	case 'q':
-		return ReadMove(sm, str, length, QUEEN);
-	case 'r':
-		return ReadMove(sm, str, length, ROOK);
-	case 'n':
-		return ReadMove(sm, str, length, KNIGHT);
-	}
-	return ERROR_InvalidMove;
+	default:
+		return ReadMove(sm, str, length, ptype);
+	};
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

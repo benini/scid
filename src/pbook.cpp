@@ -67,7 +67,7 @@ errorT ReadLine(Position& pos, const char* s) {
 		if (err != OK)
 			return err;
 
-		pos.DoSimpleMove(&sm);
+		pos.DoSimpleMove(sm);
 	}
 }
 
