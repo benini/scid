@@ -2314,7 +2314,7 @@ Engine::PerfTest (uint depth)
     uint nmoves = 0;
     for (uint i = 0; i < mlist.Size(); i++) {
         auto sm = mlist.Get(i);
-        Pos.DoSimpleMove (sm);
+        Pos.DoSimpleMove (*sm);
         nmoves += PerfTest (depth-1);
         Pos.UndoSimpleMove (sm);
     }

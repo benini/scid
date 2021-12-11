@@ -160,10 +160,8 @@ inline void
 Position::AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo)
 {
     ASSERT (mlist != NULL);
-    // We do NOT set the pre-move castling/ep flags, or the captured
-    // piece info, here since that is ONLY needed if the move is
-    // going to be executed with DoSimpleMove() and then undone.
-    mlist->emplace_back(from, to, promo, Board[from], Board[to]);
+    auto& sm = mlist->emplace_back();
+    makeMove(from, to, promo, sm);
 }
 
 
@@ -1086,7 +1084,7 @@ Position::TreeCalcAttacks(colorT side, squareT target)
     if (smPtr->to == target) {
       if (piece_IsKing(Board[target])) return -1;
       moveCount++;
-      DoSimpleMove(smPtr);
+      DoSimpleMove(*smPtr);
       int score = TreeCalcAttacks(color_Flip(side), target);
       UndoSimpleMove(smPtr);
       if (!score && ++zeroCount > 1) return -2;

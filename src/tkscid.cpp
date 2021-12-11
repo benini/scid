@@ -2560,7 +2560,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 
         for (uint i=0; i < moveList.Size(); i++) {
             simpleMoveT * smPtr = moveList.Get(i);
-            scratchPos.DoSimpleMove (smPtr);
+            scratchPos.DoSimpleMove(*smPtr);
             moveFound[i] = false;
             movePrinted[i] = false;
             int newScore = 0;
@@ -5312,7 +5312,7 @@ sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT secondBestEco = ECO_None;
         if (ecoBook != NULL) {
             for (uint i=0; i < mlist.Size(); i++) {
-                pos->DoSimpleMove (mlist.Get(i));
+                pos->DoSimpleMove(*mlist.Get(i));
                 ecoT eco = ecoBook->findECO(pos);
                 pos->UndoSimpleMove (mlist.Get(i));
                 if (eco >= bestEco) {

@@ -112,16 +112,6 @@ public:
 		sm = ScoredMove();
 		return sm;
 	}
-	ScoredMove& emplace_back(squareT from, squareT to, pieceT promote,
-	                         pieceT movingPiece, pieceT capturedPiece) {
-		auto& sm = emplace_back();
-		sm.from = from;
-		sm.to = to;
-		sm.promote = promote;
-		sm.movingPiece = movingPiece;
-		sm.capturedPiece = capturedPiece;
-		return sm;
-	}
 	void resize(size_t count) {
 		ASSERT(count <= MAX_LEGAL_MOVES);
 		ListSize = static_cast<uint>(count);
