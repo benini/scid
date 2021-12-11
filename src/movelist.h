@@ -36,7 +36,8 @@ struct simpleMoveT
     squareT  from;
     squareT  to;
     pieceT   promote; // EMPTY if not a promotion, type (no color) otherwise
-    pieceT   movingPiece;
+    pieceT   movingPiece : 7;
+    pieceT   castling : 1;
     byte     pieceNum;
     byte     capturedNum;
     pieceT   capturedPiece;
@@ -56,12 +57,8 @@ struct simpleMoveT
 	///  -2 for queen side castle
 	///  0 (false) if it is not a castle moves.
 	int isCastle() const {
-		ASSERT(piece_Type(movingPiece) == KING);
-		if (to == static_cast<squareT>(from + 2))
-			return +2;
-
-		if (to == static_cast<squareT>(from - 2))
-			return -2;
+		if (castling)
+			return to == static_cast<squareT>(from + 2) ? 2 : -2;
 
 		return 0;
 	}
@@ -73,6 +70,7 @@ struct simpleMoveT
 		assert(piece_Type(movingPiece) == KING);
 		to = from;
 		to += king_side ? 2 : -2;
+		castling = 1;
 	}
 
 	/// Converts the move to long algebraic notation.

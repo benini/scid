@@ -2872,8 +2872,7 @@ std::pair<bool, bool> mainlineInfo(const Position* customStart,
 			for (; begin != end; ++begin) {
 				if (begin->isCastle()) {
 					auto side = begin->getTo() > begin->getFrom() ? 2 : -2;
-					if (piece_Type(gameMove->moveData.movingPiece) != KING ||
-					    gameMove->moveData.isCastle() != side)
+					if (gameMove->moveData.isCastle() != side)
 						return false;
 
 				} else if (gameMove->moveData.from != begin->getFrom() ||

@@ -1267,7 +1267,7 @@ Position::IsKingInCheck (simpleMoveT const& sm)
     pieceT p = (sm.promote == EMPTY) ? piece_Type(sm.movingPiece) : sm.promote;
 
     // No optimization of the last move was castling:
-    if (p == KING && sm.isCastle()) {
+    if (sm.isCastle()) {
         return IsKingInCheck();
     }
     // No optimization for en passant capture:
@@ -1394,6 +1394,7 @@ Position::IsPromoMove (squareT from, squareT to)
 /// from == to && PAWN != KING -> castle queenside
 void Position::makeMove(squareT from, squareT to, pieceT promo,
                         simpleMoveT& res) const {
+	res.castling = 0;
 	res.from = from;
 	if (promo == INVALID_PIECE) { // NORMAL MOVE
 		res.to = to;
@@ -1424,8 +1425,7 @@ void Position::fillMove(simpleMoveT& sm) const {
 	sm.epSquare = EPTarget;
 	sm.oldHalfMoveClock = HalfMoveClock;
 	sm.capturedSquare = to;
-	if (sm.isNullMove() ||
-	    (piece_Type(sm.movingPiece) == KING && sm.isCastle())) {
+	if (sm.isNullMove() || sm.isCastle()) {
 		sm.capturedPiece = EMPTY;
 	} else {
 		sm.capturedPiece = GetPiece(to);
@@ -1591,7 +1591,6 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 	};
 
 	// handle Castling:
-	if (piece_Type(p) == KING) {
 		if (auto castleSide = m->isCastle()) {
 			const auto kingSq = GetKingSquare(ToMove);
 			squareT rookfrom, rookto;
@@ -1610,7 +1609,6 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 			addPiece(kingIdx, KING, from);
 			return;
 		}
-	}
 
     // Handle a capture: insert piece back into piecelist.
     // This works for EP captures too, since the square of the captured
