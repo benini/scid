@@ -991,123 +991,6 @@ int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::MatchPawnMove():
-//      Sets the LegalMoves list to contain the matching pawn move,
-//      if there is one.
-//
-errorT
-Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote)
-{
-    ASSERT(mlist != NULL);
-
-    mlist->Clear();
-
-    sint diff = (int)square_Fyle(to) - (int)fromFyle;
-    if (diff < -1  ||  diff > 1) { return ERROR_InvalidMove; }
-    pieceT pawn;
-    rankT toRank = square_Rank(to);
-    fyleT toFyle = square_Fyle(to);
-    rankT promoteRank = (ToMove == WHITE ? RANK_8 : RANK_1);
-
-    // from is the from square; backup is the alternative from square
-    // for a pawn move two squares forward.
-
-    squareT from, backup = NS;
-
-    if (ToMove == WHITE) {
-        pawn = WP;
-        if (toRank < RANK_3) { return ERROR_InvalidMove; }
-        from = square_Make(fromFyle, toRank - 1);
-        if (toRank == RANK_4  &&  fromFyle == toFyle) { backup = to - 16; }
-    } else {
-        pawn = BP;
-        if (toRank > RANK_6) { return ERROR_InvalidMove; }
-        from = square_Make(fromFyle, toRank + 1);
-        if (toRank == RANK_5  &&  fromFyle == toFyle) { backup = to + 16; }
-    }
-
-    // See if the promotion piece is valid:
-
-    if (toRank == promoteRank) {
-        // if (promote == EMPTY)  { return ERROR_InvalidMove; }
-        if (promote == EMPTY)  {
-          // autopromote to queen
-          promote = QUEEN;
-        }
-    } else {
-        if (promote != EMPTY)  { return ERROR_InvalidMove; }
-    }
-
-    if (Board[from] != pawn) {
-        // No match; but it could be a foward-two-squares move:
-        if (backup == NS || Board[from] != EMPTY || Board[backup] != pawn) {
-            // A forward-two-squares move is impossible.
-            return ERROR_InvalidMove;
-        }
-        from = backup;
-    }
-
-    // OK, now 'from' is the only possible from-square. Is the move legal?
-    // We make the move on the board and see if the King is in check.
-
-    uint legal = 0;
-    if (fromFyle == toFyle) {
-        // Not a capture:
-
-        if (Board[to] != EMPTY) { return ERROR_InvalidMove; }
-        Board[to] = pawn;  Board[from] = EMPTY;
-        if (CalcNumChecks (GetKingSquare()) == 0) {
-            legal = 1;
-        }
-       Board[to] = EMPTY; Board[from] = pawn;
-
-    } else {
-        // It is a capture -- is it legal?
-
-        pieceT captured = Board[to];
-        if (captured == EMPTY) {
-            // Must be an en passant or illegal move.
-            if (to != EPTarget) { return ERROR_InvalidMove; }
-            squareT epSquare = square_Make(toFyle, square_Rank(from));
-
-            pieceT enemyPawn = piece_Make (color_Flip(ToMove), PAWN);
-            // If following assert fails, eptarget was corrupt
-            ASSERT (Board[epSquare] == enemyPawn);
-
-            Board[to] = pawn; Board[from] = EMPTY;
-            Board[epSquare] = EMPTY;
-            Material[enemyPawn] --;
-            if (CalcNumChecks (GetKingSquare()) == 0) { legal = 1; }
-            Board[epSquare] = enemyPawn;
-            Board[to] = EMPTY;
-            Board[from] = pawn;
-            Material[enemyPawn]++;
-
-        } else {
-            if (piece_Color(captured) == ToMove) {
-                // Capturing a friendly!
-                return ERROR_InvalidMove;
-            } else {
-                // A regular capture. See if it leaves King in check:
-                Board[to] = pawn;  Board[from] = EMPTY;
-                Material[captured]--;
-                if (CalcNumChecks (GetKingSquare()) == 0) {
-                    legal = 1;
-                }
-                Material[captured]++;
-                Board[to] = captured; Board[from] = pawn;
-            }
-        }
-    }
-
-    if (legal == 1) {
-        AddLegalMove (mlist, from, to, promote);
-        return OK;
-    }
-    return ERROR_InvalidMove;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::GenCheckEvasions():
 //      Generate legal moves for the side to move when the
 //      King is in check.
@@ -2092,34 +1975,44 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen,
 	if (slen < 2)
 		return ERROR_InvalidMove;
 
+	auto isLegal = [&](fyleT toFyle, rankT toRank) {
+		static_assert(NO_RANK > 8 && (NO_RANK - 1) > 8 && (NO_RANK + 1) > 8);
+		const auto fromRank = (ToMove == WHITE) ? toRank - 1 : toRank + 1;
+		if (toFyle > 8 || fromRank <= 0 || fromRank >= 8)
+			return false;
+
+		auto from = square_Make(frFyle, fromRank);
+		const auto to = square_Make(toFyle, toRank);
+		const auto pawn = piece_Make(ToMove, PAWN);
+		if (GetPiece(from) == pawn && IsLegalMove(from, to, promo)) {
+			makeMove(from, to, promo != EMPTY ? promo : INVALID_PIECE, *sm);
+			return true;
+		}
+		if (frFyle == toFyle && promo == EMPTY) {
+			from += (ToMove == WHITE) ? -8 : +8;
+			if (GetPiece(from) == pawn && IsLegalMove(from, to, EMPTY)) {
+				makeMove(from, to, INVALID_PIECE, *sm);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	const auto toFile = fyle_FromChar(str[slen - 2]);
+	const auto toRank = rank_FromChar(str[slen - 1]);
+	if (isLegal(toFile, toRank))
+		return OK;
+
 	// Check for the compact form of capture with no rank,
 	// e.g. "ed" or "de=Q":
 	if (slen == 2 && (str[1] >= 'a' && str[1] <= 'h')) {
-		auto toFyle = fyle_FromChar(str[1]);
-		// Check each rank in turn, looking for the capture:
+		const auto compact_toFyle = fyle_FromChar(str[1]);
 		for (rankT r = RANK_1; r <= RANK_8; r++) {
-			auto to = square_Make(toFyle, r);
-			if (MatchPawnMove(&mlist, frFyle, to, promo) == OK) {
-				*sm = *(mlist.Get(0));
+			if (isLegal(compact_toFyle, r))
 				return OK;
-			}
 		}
-		// It is NOT a valid capture with no rank:
-		return ERROR_InvalidMove;
 	}
-
-	auto toFyle = fyle_FromChar(str[slen - 2]);
-	auto toRank = rank_FromChar(str[slen - 1]);
-	if (toRank == NO_RANK || toFyle == NO_FYLE)
-		return ERROR_InvalidMove;
-
-	auto to = square_Make(toFyle, toRank);
-	if (MatchPawnMove(&mlist, frFyle, to, promo) != OK)
-		return ERROR_InvalidMove;
-
-	*sm = *(mlist.Get(0));
-	fillMove(*sm);
-	return OK;
+	return ERROR_InvalidMove;
 }
 
 errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,

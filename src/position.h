@@ -137,8 +137,6 @@ private:
 
     void GenCheckEvasions(MoveList* mlist, pieceT mask, genMovesT genType,
                           SquareList* checkSquares);
-    errorT MatchPawnMove(MoveList* mlist, fyleT fromFyle, squareT to,
-                         pieceT promote);
 
     errorT ReadMove(simpleMoveT* sm, const char* str, size_t slen, pieceT p) const;
     errorT ReadMoveCastle(simpleMoveT* sm, std::string_view str) const;
