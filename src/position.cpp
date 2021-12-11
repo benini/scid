@@ -1502,6 +1502,33 @@ Position::IsPromoMove (squareT from, squareT to)
     return 0;
 }
 
+/// Make a simpleMoveT.
+/// If @e promo != INVALID_PIECE it is a special move:
+/// promo == PAWN -> null move
+/// from != to -> promotion
+/// from == to && PAWN == KING -> castle kingside
+/// from == to && PAWN != KING -> castle queenside
+void Position::makeMove(squareT from, squareT to, pieceT promo,
+                        simpleMoveT& res) const {
+	res.from = from;
+	if (promo == INVALID_PIECE) { // NORMAL MOVE
+		res.to = to;
+		res.promote = EMPTY;
+	} else if (promo == PAWN) { // NULL MOVE
+		res.to = from;
+		res.promote = EMPTY;
+		res.movingPiece = KING;
+	} else if (from != to) { // PROMOTION
+		res.to = to;
+		res.promote = promo;
+	} else { // CASTLING
+		res.promote = EMPTY;
+		res.movingPiece = KING;
+		res.setCastle(promo == KING);
+	}
+	fillMove(res);
+}
+
 /// Use the current position to retrieve all the information needed to create a
 /// SimpleMove which can also be used in UndoSimpleMove.
 void Position::fillMove(simpleMoveT& sm) const {
