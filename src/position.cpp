@@ -319,7 +319,7 @@ void Position::GenCastling(MoveList* mlist) {
 //      the specified flag is true.
 //
 void
-Position::GenKingMoves (MoveList * mlist, genMovesT genType, bool castling)
+Position::GenKingMoves (MoveList * mlist, genMovesT genType)
 {
     squareT kingSq = GetKingSquare();
     squareT enemyKingSq = GetEnemyKingSquare();
@@ -360,8 +360,6 @@ Position::GenKingMoves (MoveList * mlist, genMovesT genType, bool castling)
         if (addThisMove) { AddLegalMove (mlist, kingSq, destSq, EMPTY); }
         destPtr++;
     }
-    // Now generate castling moves, if possible:
-    if (genNonCaptures  &&  castling) { GenCastling (mlist); }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -866,8 +864,10 @@ Position::GenerateMoves (MoveList* mlist, pieceT pieceType,
 
     // Lastly, king moves...
     if (mask & (1 << KING)) {
-        bool castling = !numChecks;
-        GenKingMoves (mlist, genType, castling);
+        GenKingMoves (mlist, genType);
+        if (!numChecks && genNonCaptures) {
+            GenCastling(mlist);
+        }
     }
 }
 
@@ -1063,9 +1063,7 @@ Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
     }
 
     // Now king moves -- just compute them normally:
-    if (mask == EMPTY  ||  mask == KING) { GenKingMoves(mlist, genType, false); }
-
-    return;
+    if (mask == EMPTY  ||  mask == KING) { GenKingMoves(mlist, genType); }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

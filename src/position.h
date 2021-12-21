@@ -129,7 +129,7 @@ private:
 
     void  AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
     void  GenCastling (MoveList * mlist);
-    void  GenKingMoves (MoveList * mlist, genMovesT genType, bool castling);
+    void  GenKingMoves (MoveList * mlist, genMovesT genType);
     void  AddPromotions (MoveList * mlist, squareT from, squareT dest);
     bool  IsValidEnPassant (squareT from, squareT to);
     void  GenPawnMoves (MoveList * mlist, squareT from, directionT dir,
