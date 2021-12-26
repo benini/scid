@@ -153,8 +153,6 @@ enum gameFormatT {
 void  game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format);
 byte game_parseNag(std::pair<const char*, const char*> strview);
 
-uint strGetRatingType (const char * name);
-
 //////////////////////////////////////////////////////////////////////
 //  Game:  Class Definition
 
@@ -378,8 +376,8 @@ public:
     void     SetResult (resultT res) { Result = res; }
     void     SetWhiteElo (eloT elo)  { WhiteElo = elo; }
     void     SetBlackElo (eloT elo)  { BlackElo = elo; }
-    void     SetWhiteRatingType (byte b) { WhiteRatingType = b; }
-    void     SetBlackRatingType (byte b) { BlackRatingType = b; }
+    void     SetWhiteRatingType (byte b) { WhiteRatingType = b > 7 ? 0 : b; }
+    void     SetBlackRatingType (byte b) { BlackRatingType = b > 7 ? 0 : b; }
     int setRating(colorT col, const char* ratingType, size_t ratingTypeLen,
                   std::pair<const char*, const char*> rating);
     void     SetEco (ecoT eco)       { EcoCode = eco; }

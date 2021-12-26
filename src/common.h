@@ -78,7 +78,7 @@ const byte RATING_USCF = 4;
 const byte RATING_DWZ = 5;
 const byte RATING_BCF = 6;
 
-extern const char * ratingTypeNames [17];   // Defined in game.cpp
+extern const char * ratingTypeNames [8];   // Defined in game.cpp
 
 
 

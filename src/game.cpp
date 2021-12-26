@@ -68,23 +68,11 @@ char transPiecesChar(char c) {
   return ret;
 }
 
-const char * ratingTypeNames [17] = {
+const char * ratingTypeNames [8] = {
     "Elo", "Rating", "Rapid", "ICCF", "USCF", "DWZ", "ECF",
-    // Reserved for future use:
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     // End of array marker:
     NULL
 };
-
-uint
-strGetRatingType (const char * name) {
-    uint i = 0;
-    while (ratingTypeNames[i] != NULL) {
-        if (strEqual (name, ratingTypeNames[i])) { return i; }
-        i++;
-    }
-    return 0;
-}
 
 typedef Game * GamePtr;
 

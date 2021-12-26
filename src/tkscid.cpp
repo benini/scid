@@ -4193,6 +4193,15 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
+static uint strGetRatingType (const char * name) {
+    uint i = 0;
+    while (ratingTypeNames[i] != NULL) {
+        if (strEqual (name, ratingTypeNames[i])) { return i; }
+        i++;
+    }
+    return 0;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_tags_set:
 //    Set the standard tags for this game.
