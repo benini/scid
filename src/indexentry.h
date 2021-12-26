@@ -50,18 +50,19 @@ class IndexEntry {
     uint64_t offset_         : 46; // Start of gamefile record for this game.
     uint64_t gameDataSize_   : 18; // Length of gamefile record for this game.
 
-    uint64_t storedLineCode_ :  8;
-    uint64_t whiteID_        : 28;
-    uint64_t blackID_        : 28;
+    uint32_t nComments_      :  4;
+    uint32_t whiteID_        : 28;
 
+    uint32_t nVariations_    :  4;
+    uint32_t blackID_        : 28;
+
+    uint32_t nNags_          :  4;
     uint32_t eventID_        : 28;
-    uint32_t whiteEloType_   :  4;
 
-    uint32_t siteID_         : 28;
-    uint32_t blackEloType_   :  4;
+    uint32_t siteID_;
 
+    uint32_t variant_        :  4;
     uint32_t roundID_        : 28;
-    uint32_t result_         :  4;
 
     uint32_t whiteElo_       : 12;
     uint32_t date_           : 20;
@@ -72,14 +73,14 @@ class IndexEntry {
     uint32_t numHalfMoves_   : 10;
     uint32_t flags_          : 22;
 
+    uint32_t result_         :  2;
+    uint32_t whiteEloType_   :  3;
+    uint32_t blackEloType_   :  3;
     uint32_t finalMatSig_    : 24; // material of the final position in the game
-    uint32_t nVariations_    :  4;
-    uint32_t nComments_      :  4;
 
     uint16_t ECOcode_;
 
-    uint8_t  nNags_          :  4;
-    uint8_t  variant_        :  4;
+    uint8_t  storedLineCode_;
 
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
@@ -250,9 +251,7 @@ public:
     void clearFlags() { return SetFlag(IDX_MASK_ALLFLAGS, false); }
     bool equalExceptFlags(IndexEntry ie) const {
         ie.flags_ = flags_;
-        // has_unique_object_representations doesn't work with msvc
-        // static_assert(std::has_unique_object_representations_v<IndexEntry>);
-        static_assert(sizeof(IndexEntry) == 56);
+        static_assert(std::has_unique_object_representations_v<IndexEntry>);
         return memcmp(this, &ie, sizeof(IndexEntry)) == 0;
     }
 
