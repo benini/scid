@@ -637,6 +637,31 @@ proc ::board::updateScorebar { w score } {
     }
 }
 
+proc ::board::clearAnalysisMove { id w } {
+    if { ! [info exist ::board::_analysisMove($w,$id)] } {
+        return
+    }
+    set sq_start [ ::board::sq [ string range $::board::_analysisMove($w,$id) 0 1 ] ]
+    set sq_end [ ::board::sq [ string range $::board::_analysisMove($w,$id) 2 3 ] ]
+    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end nocolor
+    set ::board::_analysisMove($w,$id) ""
+}
+
+proc ::board::showAnalysisMove { id w move } {
+    if { ! [info exist ::board::_analysisMove($w,$id)] } {
+        set ::board::_analysisMove($w,$id) ""
+    }
+    set moves [string range $move 0 3]
+    if { $moves == $::board::_analysisMove($w,$id) } return
+    set sq_start [ ::board::sq [ string range $::board::_analysisMove($w,$id) 0 1 ] ]
+    set sq_end [ ::board::sq [ string range $::board::_analysisMove($w,$id) 2 3 ] ]
+    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end nocolor
+    set sq_start [ ::board::sq [ string range $moves 0 1 ] ]
+    set sq_end [ ::board::sq [ string range $moves 2 3 ] ]
+    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end red
+    set ::board::_analysisMove($w,$id) $moves
+}
+
 proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
   global "$varname"
   set i [$menu index end]

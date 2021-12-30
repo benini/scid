@@ -32,6 +32,7 @@ proc ::enginewin::toggleStartStop {id} {
         return
     }
     if {$::enginewin::engState($id) eq "idle"} {
+        ::board::clearAnalysisMove $id .main.board
         ::enginewin::changeState $id run
         ::enginewin::onPosChanged $id
     } else {
@@ -832,6 +833,7 @@ proc ::enginewin::updateDisplay {id msgData} {
         return
     }
 
+    set engine_pv $pv
     lassign [lindex [set ::enginewin::engConfig_$id] 6] scoreside notation
     if {[catch {
 
@@ -887,6 +889,10 @@ proc ::enginewin::updateDisplay {id msgData} {
     set pvline ""
     regexp {^([\d. ]*[\w-]+)(.*)$} $pv -> pv pvline
     if {$multipv == 1} {
+        if { $time > 100 && $::enginewin::engState($id) ne {locked} } {
+            ::board::showAnalysisMove $id .main.board $engine_pv
+            ::board::updateScorebar .main.board $score
+        }
         set line $multipv
         $w.pv.lines tag remove header 1.0 1.end
     } else {

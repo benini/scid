@@ -491,7 +491,7 @@ proc ::enginelist::delete {index} {
     append msg "Command: [lindex $e 1]\n\n"
     append msg "Do you really want to remove this engine from the list?"
     set answer [tk_messageBox -title Scid -icon question -type yesno \
-            -message $msg]
+            -message $msg -parent .enginelist ]
     if {$answer == "yes"} {
         set engines(list) [lreplace $engines(list) $index $index]
         ::enginelist::sort
@@ -638,7 +638,7 @@ proc ::enginelist::edit {index} {
         if {[string trim $engines(newName)] == ""  ||
             [string trim $engines(newCmd)] == ""  ||
             [string trim $engines(newDir)] == ""} {
-            tk_messageBox -title Scid -icon info \
+            tk_messageBox -title Scid -icon info -parent .engineedit\
                     -message "The Name, Command and Directory fields must not be empty."
         } else {
             set newEntry [list $engines(newName) $engines(newCmd) \
@@ -2596,6 +2596,8 @@ proc startAnalyzeMode {{n 1} {force 0}} {
     # Check that the engine has not already had analyze mode started:
     if {$analysis(analyzeMode$n) && ! $force } { return }
     set analysis(analyzeMode$n) 1
+    ::board::clearAnalysisMove a$n .main.board
+    ::board::updateScorebar .main.board ""
     if { $analysis(uci$n) } {
         updateAnalysis $n
     } else  {
@@ -2673,8 +2675,11 @@ proc updateAnalysisText {{n 1}} {
     }
     set score $analysis(score$n)
     # Show score only from one engine. Engine1 has priority
-    if { $n == 1 || ( $n == 2 && (! [winfo exists .analysisWin1 ] || ! $analysis(analyzeMode1) )) } {
-        ::board::updateScorebar .main.board $::analysis(score$n)
+    if { $analysis(analyzeMode1) || ( $analysis(analyzeMode2) && (! [winfo exists .analysisWin1 ] || ! $analysis(analyzeMode1) )) } {
+        if { !$analysis(lockEngine$n) && $::analysis(time$n) > 0.2 } {
+            ::board::updateScorebar .main.board $::analysis(score$n)
+            ::board::showAnalysisMove a$n .main.board $::analysis(moves$n)
+        }
     }
     set t .analysisWin$n.text
     set h .analysisWin$n.hist.text
