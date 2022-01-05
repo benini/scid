@@ -1257,7 +1257,7 @@ bool Game::MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
 //      true if the game could never match even with extra moves.
 //
 bool
-Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
+Game::ExactMatch (Position * searchPos, ByteBuffer * buf,
                   gameExactMatchT searchType)
 {
     // If buf is NULL, the game is in memory. Otherwise, Decode only
@@ -1270,11 +1270,8 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         err = DecodeSkipTags(buf);
     }
 
-    uint plyCount = 0;
-    //uint skip = 0;    // Just for statistics on number of moves skipped.
     uint search_whiteHPawns = 0;
     uint search_blackHPawns = 0;
-    uint current_whiteHPawns, current_blackHPawns;
     bool check_pawnMaskWhite, check_pawnMaskBlack;
     bool doHomePawnChecks = false;
 
@@ -1307,7 +1304,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         const pieceT* board = searchPos->GetBoard();
         const pieceT* b1 = currentBoard;
         const pieceT* b2 = board;
-        bool found = true;
 
         // If NO_SPEEDUPS is defined, a slower search is done without
         // optimisations that detect insufficient material.
@@ -1330,24 +1326,24 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         // not equal to search_xxHPawns.
         // We do not do this optimisation for a pawn files search,
         // because the exact pawn squares are not important there.
-
-        if (searchType != GAME_EXACT_MATCH_Fyles) {
             if (check_pawnMaskWhite) {
-                current_whiteHPawns = calcHomePawnMask (WP, currentBoard);
+                auto current_whiteHPawns = calcHomePawnMask (WP, currentBoard);
                 if ((current_whiteHPawns & search_whiteHPawns)
                         != search_whiteHPawns) {
                     return false;
                 }
+                check_pawnMaskWhite = false;
             }
             if (check_pawnMaskBlack) {
-                current_blackHPawns = calcHomePawnMask (BP, currentBoard);
+                auto current_blackHPawns = calcHomePawnMask (BP, currentBoard);
                 if ((current_blackHPawns & search_blackHPawns)
                         != search_blackHPawns) {
                     return false;
                 }
+                check_pawnMaskBlack = false;
             }
-        }
 #endif  // #ifndef NO_SPEEDUPS
+        bool found = true;
 
         // Not correct color: skip to next move
         if (searchPos->GetToMove() != CurrentPos->GetToMove()) {
@@ -1409,63 +1405,31 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         }
 
         if (found) {
-            // Found a match! Set the returned next-move:
-            if (sm) {  // We need to decode the next move.
-                if (buf == NULL) {
-                    MoveForward();
-                    if (CurrentMove->marker == END_MARKER) {
-                        // Position matched at last move in the game.
-                        sm->from = sm->to = NULL_SQUARE;
-                        sm->promote = EMPTY;
-                    } else {
-                        *sm = CurrentMove->prev->moveData;
-                        MoveBackup();
-                    }
-                } else {
-                    err = DecodeNextMove(buf, *sm);
-                    if (err != OK) {
-                        // Position matched at last move in the game.
-                        sm->from = sm->to = NULL_SQUARE;
-                        sm->promote = EMPTY;
-                    }
-                }
-            }
             return true;
         }
 
     Move_Forward:
-#ifndef NO_SPEEDUPS
-        if (doHomePawnChecks) {
-            check_pawnMaskWhite = false;
-            check_pawnMaskBlack = false;
-            rankT rTo = square_Rank (CurrentMove->moveData.to);
-            rankT rFrom = square_Rank (CurrentMove->moveData.from);
-            // We only re-check the home pawn masks when something moves
-            // to or from the 2nd/7th rank:
-            if (rTo == RANK_2  ||  rFrom == RANK_2) {
-                check_pawnMaskWhite = true;
-            }
-            if (rTo == RANK_7  ||  rFrom == RANK_7) {
-                check_pawnMaskBlack = true;
-            }
-        }
-#endif
         if (buf == NULL) {
-            MoveForward ();
-            if (CurrentMove->marker == END_MARKER) {
-                err = ERROR_EndOfMoveList;
-            }
+            err = MoveForward();
         } else {
             simpleMoveT nextMove;
             err = DecodeNextMove(buf, nextMove);
             if (err == OK) {
                 CurrentPos->DoSimpleMove(nextMove);
-            }
-            if (err != OK  &&  err != ERROR_EndOfMoveList) {
-                return false;
+                if (doHomePawnChecks) {
+                    rankT rTo = square_Rank (nextMove.to);
+                    rankT rFrom = square_Rank (nextMove.from);
+                    // We only re-check the home pawn masks when something moves
+                    // to or from the 2nd/7th rank:
+                    if (rTo == RANK_2  ||  rFrom == RANK_2) {
+                        check_pawnMaskWhite = true;
+                    }
+                    if (rTo == RANK_7  ||  rFrom == RANK_7) {
+                        check_pawnMaskBlack = true;
+                    }
+                }
             }
         }
-        plyCount++;
     }
     return false;
 }

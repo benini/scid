@@ -434,7 +434,7 @@ public:
                        byte* max, patternT* ptn, size_t ptn_size, int minPly,
                        int maxPly, int matchLength, bool oppBishops,
                        bool sameBishops, int minDiff, int maxDiff);
-    bool      ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
+    bool      ExactMatch (Position * pos, ByteBuffer * buf,
                           gameExactMatchT searchType);
     bool      VarExactMatch (Position * searchPos, gameExactMatchT searchType);
 

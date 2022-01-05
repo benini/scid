@@ -8036,12 +8036,12 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
             g->DecodeMovesOnly(bbuf);
             // Try matching the game without variations first:
             if (ply == 0  &&  possibleMatch) {
-                if (g->ExactMatch (pos, NULL, NULL, searchType)) {
+                if (g->ExactMatch (pos, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                if (g->ExactMatch (posFlip, NULL, NULL, searchType)) {
+                if (g->ExactMatch (posFlip, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
@@ -8061,13 +8061,13 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
             // No searching in variations:
             if (possibleMatch) {
                 auto bbuf_clone = bbuf;
-                if (g->ExactMatch(pos, &bbuf_clone, NULL, searchType)) {
+                if (g->ExactMatch(pos, &bbuf_clone, searchType)) {
                     // Set its auto-load move number to the matching move:
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                if (g->ExactMatch (posFlip, &bbuf, NULL, searchType)) {
+                if (g->ExactMatch (posFlip, &bbuf, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
