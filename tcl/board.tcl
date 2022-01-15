@@ -637,13 +637,31 @@ proc ::board::updateScorebar { w score } {
     }
 }
 
+#do not use a color with 0 or 1 (e.q. #ff0000) in the string, this breaks the logic in ::board::mark::add
+set ::board::analysisMoveColor "#f22"
+
 proc ::board::clearAnalysisMove { id w } {
     if { ! [info exist ::board::_analysisMove($w,$id)] } {
         return
     }
     set sq_start [ ::board::sq [ string range $::board::_analysisMove($w,$id) 0 1 ] ]
     set sq_end [ ::board::sq [ string range $::board::_analysisMove($w,$id) 2 3 ] ]
-    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end nocolor
+    ::board::mark::remove .main.board $sq_start $sq_end
+    set i 0
+    set fo 0
+    foreach mark $::board::_mark($w) {
+        if { [lindex $mark 0] == "arrow" && [lindex $mark 1] == $sq_start && [lindex $mark 2] == $sq_end } {
+            if { !$fo && [lindex $mark 3] == $::board::analysisMoveColor } {
+                #delete analysis move from mark list
+                set ::board::_mark($w) [lreplace $::board::_mark($w) $i $i]  
+                set fo 1
+            } elseif { [lindex $mark 3] ne "nocolor" }  {
+                #if other arrow exists then redraw it
+                ::board::mark::add .main.board arrow $sq_start $sq_end [lindex $mark 3] false
+            }
+        }
+        incr i
+    }
     set ::board::_analysisMove($w,$id) ""
 }
 
@@ -653,12 +671,10 @@ proc ::board::showAnalysisMove { id w move } {
     }
     set moves [string range $move 0 3]
     if { $moves == $::board::_analysisMove($w,$id) } return
-    set sq_start [ ::board::sq [ string range $::board::_analysisMove($w,$id) 0 1 ] ]
-    set sq_end [ ::board::sq [ string range $::board::_analysisMove($w,$id) 2 3 ] ]
-    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end nocolor
     set sq_start [ ::board::sq [ string range $moves 0 1 ] ]
     set sq_end [ ::board::sq [ string range $moves 2 3 ] ]
-    ::board::mark::add ".main.board" "arrow" $sq_start $sq_end red
+    clearAnalysisMove $id $w
+    ::board::mark::add .main.board arrow $sq_start $sq_end $::board::analysisMoveColor
     set ::board::_analysisMove($w,$id) $moves
 }
 
