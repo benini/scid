@@ -30,8 +30,6 @@
 #include <climits>
 #include <cstring>
 #include <numeric>
-
-#ifndef MULTITHREADING_OFF
 #include <thread>
 
 /**
@@ -96,11 +94,6 @@ void SortCache::th_sort() {
 
 	this->valid_fullMap_ = true;
 }
-
-#else
-void SortCache::th_join() {}
-void SortCache::th_sort() {}
-#endif
 
 
 SortCache::SortCache(const Index* idx, const NameBase* nbase)
@@ -292,11 +285,9 @@ void SortCache::generateHashCache() {
 void SortCache::sortAsynchronously() {
 	ASSERT(th_ == nullptr);
 
-#ifndef MULTITHREADING_OFF
 	delete[] fullMap_;
 	fullMap_ = new gamenumT[nGames_];
 	th_ = new std::thread(&SortCache::th_sort, this);
-#endif
 }
 
 /*
