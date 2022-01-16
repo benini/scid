@@ -116,7 +116,8 @@ public:
 			return false;
 
 		char* buf = new char[nameLen + 1];
-		std::copy_n(name, nameLen + 1, buf);
+		std::copy_n(name, nameLen, buf);
+		buf[nameLen] = '\0';
 		names_[nt][id].reset(buf);
 		auto it = idx_[nt].emplace_hint(idx_[nt].end(), buf, id);
 		return it->second == id; // Check that the name doesn't already exists
