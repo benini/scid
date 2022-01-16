@@ -172,7 +172,7 @@ public:
 		Game game[4];
 		std::atomic<size_t> workDone{};
 		std::atomic<int8_t> sync[4] = {};
-		enum {sy_free, sy_used, sy_stop};
+		enum { sy_free, sy_used, sy_stop };
 
 		std::thread producer([&]() {
 			uint64_t slot;
