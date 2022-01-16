@@ -18,7 +18,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -47,7 +47,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -58,7 +58,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -166,14 +166,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads
       make && make install
@@ -213,14 +213,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
@@ -260,14 +260,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
