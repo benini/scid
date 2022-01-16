@@ -84,7 +84,7 @@ jobs:
       cd stockfish\src
       cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
-      curl -o $(Build.SourcesDirectory)\install\bin\nn-62ef826d1a6d.nnue https://data.stockfishchess.org/nn/nn-62ef826d1a6d.nnue
+      curl -o $(Build.SourcesDirectory)\install\bin\nn-ac07bd334b62.nnue https://data.stockfishchess.org/nn/nn-nn-6877cd24400e.nnue
     displayName: Generate stockfish
   - script: |
       move bin engines
