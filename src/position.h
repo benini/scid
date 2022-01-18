@@ -225,13 +225,6 @@ public:
     squareT     GetEnemyKingSquare () const    { return List[1-ToMove][0]; }
 
     // Castling flags
-    void SetCastling(colorT col, castleDirT dir);
-    void ClearCastling(colorT col, castleDirT dir) {
-        Castling &= ~(1u << castlingIdx(col, dir));
-    }
-    void ClearCastlingFlags(colorT c) {
-        Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
-    }
     bool GetCastling(colorT c, castleDirT dir) const {
         return Castling & (1u << castlingIdx(c, dir));
     }
@@ -320,6 +313,15 @@ public:
 
     // Set up a random position:
     errorT      Random (const char * material);
+
+private:
+    void SetCastling(colorT col, castleDirT dir);
+    void ClearCastling(colorT col, castleDirT dir) {
+        Castling &= ~(1u << castlingIdx(col, dir));
+    }
+    void ClearCastlingFlags(colorT c) {
+        Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
+    }
 };
 
 #endif  // SCID_POSITION_H
