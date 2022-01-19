@@ -2695,11 +2695,12 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 
 /// Encode the moves, the nags, the comment mark and the variations.
 template <typename MoveT, typename DestT>
-std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
+std::pair<unsigned, unsigned> encodeMovelist(bool mark_comments, const MoveT* m,
+                                             DestT& dest) {
 	ASSERT(m && m->startMarker());
 
 	// Check if there is a pre-game comment
-	if (!m->comment.empty())
+	if (mark_comments && !m->comment.empty())
 		dest.emplace_back(ENCODE_COMMENT);
 
 	unsigned n_vars = 0;
@@ -2708,7 +2709,7 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 		if (m->startMarker()) {
 			++n_vars;
 			dest.emplace_back(ENCODE_START_MARKER);
-			if (!m->comment.empty())
+			if (mark_comments && !m->comment.empty())
 				dest.emplace_back(ENCODE_COMMENT);
 
 		} else if (m->endMarker()) {
@@ -2723,7 +2724,7 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 				dest.emplace_back(m->nags[i]);
 				++n_nags;
 			}
-			if (!m->comment.empty())
+			if (mark_comments && !m->comment.empty())
 				dest.emplace_back(ENCODE_COMMENT);
 		}
 	}
@@ -2762,6 +2763,23 @@ errorT Game::DecodeVariation(ByteBuffer& buf,
 	}
 }
 
+// Return the number of comments and true if comment marks are useful
+template <typename MoveT> auto countComments(const MoveT* m) {
+	unsigned n_comments = 0;
+	unsigned n_empty = 0;
+	for (; m; m = m->nextMoveInPGN()) {
+		if (m->endMarker())
+			continue;
+
+		if (m->comment.empty()) {
+			++n_empty;
+		} else {
+			++n_comments;
+		}
+	}
+	return std::make_pair(n_comments, n_comments < n_empty);
+}
+
 /**
  * The Comments section is composed by null-terminated strings. The comments are
  * stored in the order in which they will appear in the PGN notation:
@@ -2769,20 +2787,19 @@ errorT Game::DecodeVariation(ByteBuffer& buf,
  * ({C7} 1.g4 {C8}) 1...d5 {C9}
  */
 template <typename MoveT, typename DestT>
-auto encodeComments(const MoveT* m, DestT& dest) {
-	ASSERT(m);
+void encodeComments(bool mark_comments, const MoveT* m, DestT& dest) {
+	for (; m; m = m->nextMoveInPGN()) {
+		if (m->endMarker())
+			continue;
 
-	unsigned n_comments = 0;
-	do {
-		if (!m->comment.empty()) {
+		if (!m->comment.empty() || !mark_comments) {
 			const auto len = m->comment.size() + 1; // Include the null char
 			const auto data = m->comment.c_str();
 			dest.insert(dest.end(), data, data + len);
-			++n_comments;
 		}
-	} while ((m = m->nextMoveInPGN()));
-	return n_comments;
+	}
 }
+
 
 // Decodes the comments from @e buf and stores them into the marked moves.
 // If the number of comments is greater than the number of marked moves, they
@@ -2941,11 +2958,16 @@ std::pair<IndexEntry, TagRoster> Game::Encode(std::vector<byte>& dest) const {
     encodeStartBoard(promo, underPromo,
                      HasNonStandardStart(FEN) ? FEN : nullptr, dest);
 
+    auto [commentCount, markComments] = countComments(FirstMove);
+
+    // Compatibility: SCID4 requires the markers
+    markComments = true;
+
     // Now the movelist:
-    auto [varCount, nagCount] = encodeMovelist(FirstMove, dest);
+    auto [varCount, nagCount] = encodeMovelist(markComments, FirstMove, dest);
 
     // Now do the comments
-    const auto commentCount = encodeComments(FirstMove, dest);
+    encodeComments(markComments, FirstMove, dest);
 
     ie.SetCommentCount(commentCount);
     ie.SetVariationCount(varCount);
