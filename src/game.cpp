@@ -2732,14 +2732,15 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 }
 
 /// Decodes the game moves
-errorT Game::DecodeVariation(ByteBuffer& buf) {
+errorT Game::DecodeVariation(ByteBuffer& buf,
+                             std::vector<moveT*>& comment_marks) {
 	simpleMoveT sm;
 	for (;;) {
 		auto [err, val] = buf.nextMove(
 		    this->VarDepth, [&](auto) { return true; },
 		    [&] {
 			    // Mark this comment as needing to be read
-			    this->CurrentMove->prev->comment = '*';
+			    comment_marks.push_back(this->CurrentMove->prev);
 		    },
 		    [&](auto newVariation) {
 			    if (newVariation)
@@ -2783,28 +2784,33 @@ auto encodeComments(const MoveT* m, DestT& dest) {
 	return n_comments;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeComments():
-//      Decodes the comments of the game. When decoding the moves, the
-//      comment field of each move that has a comment is marked (made
-//      not empty), so this function recurses the movelist and subvariations
-//      and allocates each comment to its move.
-//
+// Decodes the comments from @e buf and stores them into the marked moves.
+// If the number of comments is greater than the number of marked moves, they
+// are added sequentially after the last move that has a comment.
+// This way it is possible to not add encode marks for games that are almost
+// fully commented.
 template <typename SourceT, typename MoveT>
-static errorT decodeComments(SourceT& buf, MoveT* m) {
-	ASSERT(m);
+static errorT decodeComments(SourceT& buf, MoveT* first_move,
+                             std::vector<MoveT*>& comment_marks) {
+    if (!comment_marks.empty()) {
+        for (auto m : comment_marks) {
+            if (auto str = buf.GetTerminatedString())
+                m->comment = str;
+            else
+                return ERROR_Decode;
+        }
+        first_move = comment_marks.back()->nextMoveInPGN();
+    }
+    while (auto str = buf.GetTerminatedString()) {
+        if (!first_move)
+            return ERROR_Decode;
 
-	do {
-		if (!m->comment.empty()) {
-			ASSERT(m->comment == "*");
-			auto str = buf.GetTerminatedString();
-			if (!str)
-				return ERROR_BufferRead;
-			m->comment = str;
-		}
-	} while ((m = m->nextMoveInPGN()));
-	return OK;
+        first_move->comment = str;
+        first_move = first_move->nextMoveInPGN();
+    }
+    return OK;
 }
+
 
 /// Calculate the game's main line information:
 /// - home pawn delta information
@@ -3001,7 +3007,8 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 	if (errorT err = DecodeSkipTags(&buf))
 		return err;
 
-	return DecodeVariation(buf);
+	std::vector<moveT*> comment_marks;
+	return DecodeVariation(buf, comment_marks);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3027,11 +3034,12 @@ errorT Game::Decode(IndexEntry const& ie, TagRoster const& tags, ByteBuffer buf)
     if (fen)
         err = SetStartFen(fen);
 
+    std::vector<moveT*> comment_marks;
     if (err == OK)
-        err = DecodeVariation(buf);
+        err = DecodeVariation(buf, comment_marks);
 
     if (err == OK)
-        err = decodeComments(buf, FirstMove);
+        err = decodeComments(buf, FirstMove, comment_marks);
 
     return err;
 }

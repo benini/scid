@@ -195,7 +195,7 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    errorT DecodeVariation(ByteBuffer& buf);
+    errorT DecodeVariation(ByteBuffer& buf, std::vector<moveT*>& comment_marks);
     errorT WritePGN(TextBuffer* tb);
 
     /**
