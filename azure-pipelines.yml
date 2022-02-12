@@ -254,9 +254,9 @@ jobs:
       artifactName: scid_macOS_latest_64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
-- job: macOS_mojave_static
+- job: macOS_catalina_static
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - script: |
       mkdir tcltk && cd tcltk
