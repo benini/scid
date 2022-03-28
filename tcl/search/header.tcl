@@ -18,6 +18,9 @@ set sHeaderCustomFlagList {  CustomFlag1 CustomFlag2 CustomFlag3 CustomFlag4 Cus
 
 set sHeaderFlagChars {S X _ _ _ D W B M E N P T K Q ! ? U 1 2 3 4 5 6}
 
+set sVariantStd 1
+set sVariant960 1
+
 set sPgntext(1) ""
 set sPgntext(2) ""
 set sPgntext(3) ""
@@ -279,7 +282,7 @@ proc search::headerCreateFrame { w } {
   pack $w.ano.aname $w.ano.a2 -side right -padx "5 0"
 
   addHorizontalRule $w
-  
+
   ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
   ttk::label $w.eco.l2 -text "-"
   ttk::label $w.eco.l3 -text " "
@@ -324,6 +327,13 @@ proc search::headerCreateFrame { w } {
   }
   pack $f.l3 $f.all $f.first $f.last -side left -padx 2
   
+  pack [ttk::frame $w.variant] -side top -fill x
+  ttk::label $w.variant.label -text "Variant:"
+  ttk::checkbutton $w.variant.std -text "standard" -variable sVariantStd -offvalue 0 -onvalue 1
+  ttk::checkbutton $w.variant.960 -text "960" -variable sVariant960 -offvalue 0 -onvalue 1
+  pack $w.variant.label -side left -pady "0 5" -padx "0 5"
+  pack $w.variant.std $w.variant.960 -side left -pady "0 5" -padx 5
+
   set f [ttk::frame $w.pgntext]
   pack $f -side top -fill x
   ttk::label $f.l1 -textvar ::tr(PgnContains:)
@@ -493,6 +503,9 @@ proc ::search::getSearchOptions {dest_list} {
 	if {$::sAnnotated} { lappend search "-annotated" $::sAnnotated }
 
 	if {$::sAnnotator ne ""} { lappend search "-annotator" $::sAnnotator }
+
+    if {! $::sVariantStd} { lappend search "-variant!" "std"}
+    if {! $::sVariant960} { lappend search "-variant!" "960"}
 
     global sHeaderFlags
     global sResWin sResLoss sResDraw sResOther sPgntext
