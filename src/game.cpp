@@ -2444,16 +2444,6 @@ Game::GetAverageElo () {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// makeMoveByte(): inline routine used for encoding most moves.
-//
-static inline byte
-makeMoveByte (byte pieceNum, byte value)
-{
-    ASSERT (pieceNum <= 15  &&  value <= 15);
-    return (byte)((pieceNum & 15) << 4)  |  (byte)(value & 15);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKing(): encoding of King moves.
 //
 static byte encodeKing(squareT from, int to) {
@@ -2686,7 +2676,8 @@ void encodeMove(const simpleMoveT& sm, DestT& dest) {
 		ASSERT(PAWN == piece_Type(sm.movingPiece));
 		val = encodePawn(sm.from, sm.to, sm.promote);
 	}
-	const auto encoded = makeMoveByte(sm.pieceNum, val);
+	ASSERT(sm.pieceNum <= 15 && val <= 15);
+	const auto encoded = static_cast<byte>(val | (sm.pieceNum << 4));
 	dest.emplace_back(encoded);
 	if (multibyte) { // Diagonal Queen moves are stored using two bytes.
 		dest.emplace_back(multibyte);
