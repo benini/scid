@@ -28,7 +28,7 @@ proc ::preferences::updateScrollBar { w } {
 proc ::preferences::Open { {toggle ""} } {
   set w .preferences
   if {! [::win::createWindow $w "$::menuLabel($::language,ConfigureScid)"]} {
-    if {$toggle eq "toggle"} { ::win::closeWindow $w }
+    ::win::makeVisible $w
     return
   }
 
