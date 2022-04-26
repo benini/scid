@@ -80,8 +80,9 @@ proc ::file::New {} {
   set ::curr_db $baseId
   set ::initialDir(base) [file dirname $fName]
   ::recentFiles::add $fName
-  ::notify::GameChanged
+  ::windows::gamelist::Open $::curr_db
   ::notify::DatabaseChanged
+  ::notify::GameChanged
   return $baseId
 }
 
