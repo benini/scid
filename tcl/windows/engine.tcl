@@ -13,9 +13,10 @@ array set ::enginewin::engState {} ; # closed idle run locked
 
 # Inform the engine that there is a new game
 proc ::enginewin::onNewGame { {ids ""} } {
+    set variant [sc_game variant]
     foreach {id state} [array get ::enginewin::engState] {
         if {$ids ne "" && $id ni $ids} { continue }
-        ::engine::send $id NewGame [list analysis post_pv post_wdl]
+        ::engine::send $id NewGame [list analysis post_pv post_wdl $variant]
     }
 }
 
