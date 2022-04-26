@@ -300,6 +300,7 @@ namespace eval ::notify {
   # To be called when the current game change or the Header infos (player names, site, result, etc) are modified
   proc GameChanged {} {
     updateMainGame
+    ::enginewin::onNewGame
     ::notify::PosChanged -pgn
     ::windows::gamelist::Refresh 0
     ::maint::Refresh

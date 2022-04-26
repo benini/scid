@@ -11,6 +11,14 @@
 namespace eval enginewin {}
 array set ::enginewin::engState {} ; # closed idle run locked
 
+# Inform the engine that there is a new game
+proc ::enginewin::onNewGame { {ids ""} } {
+    foreach {id state} [array get ::enginewin::engState] {
+        if {$ids ne "" && $id ni $ids} { continue }
+        ::engine::send $id NewGame [list analysis post_pv post_wdl]
+    }
+}
+
 # Sends the updated position to the active engines
 proc ::enginewin::onPosChanged { {ids ""} } {
     set position ""
@@ -294,7 +302,7 @@ proc ::enginewin::connectEngine {id config} {
     if {[llength $options]} {
         ::engine::send $id SetOptions $options
     }
-    ::engine::send $id NewGame [list analysis post_pv post_wdl]
+    ::enginewin::onNewGame $id
 }
 
 # Checks whether the specified connection parameter has been changed, and
