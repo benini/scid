@@ -293,10 +293,10 @@ jobs:
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8.6 lib/
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tk8.6 lib/
       cd ..
-      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.14.tar.gz' scid_macos
+      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.15.tar.gz' scid_macos
     displayName: Add the tcl/tk library to the package
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: macOS-10.14 static x64'
+    displayName: 'Publish Artifact: macOS-10.15 static x64'
     inputs:
-      artifactName: scid_macOS_10_14_x64_static_tcl
+      artifactName: scid_macOS_10_15_x64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
