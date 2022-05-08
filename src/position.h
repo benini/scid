@@ -104,6 +104,8 @@ private:
                                     // or pawn move.
     ushort          PlyCounter;
     byte            Castling;       // castling flags
+    byte            variant_;       // 0 -> normal; 1 -> chess960
+    squareT         castleRookSq_[4];  // start rook squares
 
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
@@ -127,9 +129,7 @@ private:
 
     void  AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
     void  GenCastling (MoveList * mlist);
-    squareT castlingKingSq(colorT color) const;
-    template <bool king_side> squareT castlingRookSq(colorT color) const;
-    void  GenKingMoves (MoveList * mlist, genMovesT genType, bool castling);
+    void  GenKingMoves (MoveList * mlist, genMovesT genType);
     void  AddPromotions (MoveList * mlist, squareT from, squareT dest);
     bool  IsValidEnPassant (squareT from, squareT to);
     void  GenPawnMoves (MoveList * mlist, squareT from, directionT dir,
@@ -137,14 +137,23 @@ private:
 
     void GenCheckEvasions(MoveList* mlist, pieceT mask, genMovesT genType,
                           SquareList* checkSquares);
-    errorT MatchPawnMove(MoveList* mlist, fyleT fromFyle, squareT to,
-                         pieceT promote);
 
-    errorT ReadMove(simpleMoveT* sm, const char* str, int slen, pieceT p);
-    errorT ReadMoveCastle(simpleMoveT* sm, const char* str, int slen);
-    errorT ReadMovePawn(simpleMoveT* sm, const char* str, int slen, fyleT from);
-    errorT ReadMoveKing(simpleMoveT* sm, const char* str, int slen);
+    errorT ReadMove(simpleMoveT* sm, const char* str, size_t slen, pieceT p) const;
+    errorT ReadMoveCastle(simpleMoveT* sm, std::string_view str) const;
+    errorT ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen, fyleT from);
+    errorT ReadMoveKing(simpleMoveT* sm, const char* str, size_t slen) const;
 
+    template <typename TFunc>
+    bool under_attack(squareT target_sq, squareT captured_sq,
+                      TFunc not_empty) const;
+    bool under_attack(squareT target_sq) const;
+
+    static constexpr unsigned castlingIdx(colorT color, castleDirT side) {
+        return 2 * color + side;
+    }
+    squareT castleRookSq(colorT color, bool king_side) const {
+        return castleRookSq_[2 * color + (king_side ? 1 : 0)];
+    }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -156,6 +165,8 @@ public:
     void        StdStart() { *this = getStdStart(); }
     bool        IsStdStart() const;
     errorT      AddPiece (pieceT p, squareT sq);
+
+    bool isChess960() const { return variant_ == 1; }
 
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }
@@ -214,18 +225,10 @@ public:
     squareT     GetEnemyKingSquare () const    { return List[1-ToMove][0]; }
 
     // Castling flags
-    inline void SetCastling (colorT c, castleDirT dir, bool flag);
-    void ClearCastlingFlags(colorT c) {
-        Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
-    }
     bool GetCastling(colorT c, castleDirT dir) const {
-        int b = (c == WHITE) ? 1 : 4;
-        if (dir == KSIDE)
-            b += b;
-        // Now b == 1 or 2 (white flags), or 4 or 8 (black flags)
-        return Castling & b;
+        return Castling & (1u << castlingIdx(c, dir));
     }
-    byte        GetCastlingFlags () { return Castling; }
+    byte GetCastlingFlags() const { return Castling; }
 
     // Hashing
     inline uint HashValue (void) { return Hash; }
@@ -242,16 +245,14 @@ public:
     void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
     void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
-    bool  IsLegalMove (simpleMoveT * sm);
-    bool  IsLegalMove(squareT from, squareT to, pieceT promo);
-
+    int IsLegalMove(squareT from, squareT to, pieceT promo) const;
 
     /// Check that the minimum requirements for castling are satisfied:
     /// - both the king and the rook exists in the position
     /// - the final squares of the king and the rook are empty
     /// @param check_legal: also test for checks or blocking pieces.
     /// Ignore the castling flags and if the king is already in check.
-    bool validCastling(bool king_side, bool check_legal) const;
+    template <bool check_legal = true> bool canCastle(bool king_side) const;
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares) const;
     int         TreeCalcAttacks (colorT toMove, squareT target);
@@ -267,15 +268,15 @@ public:
 
     uint        Mobility (pieceT p, colorT color, squareT from);
     bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
-    bool        IsKingInCheckDir (directionT dir);
-    bool        IsKingInCheck (simpleMoveT * sm);
+    bool        IsKingInCheck (simpleMoveT const& sm);
     bool        IsKingInMate ();
     bool        IsLegal ();
 
     bool        IsPromoMove (squareT from, squareT to);
 
-                // TODO: replace with DoSimpleMove(const simpleMoveT&)
-    void        DoSimpleMove(simpleMoveT sm) { return DoSimpleMove(&sm); }
+    void        makeMove(squareT from, squareT to, pieceT promo, simpleMoveT& res) const;
+    void        fillMove(simpleMoveT& sm) const;
+    void        DoSimpleMove(simpleMoveT const& sm);
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
     void        UndoSimpleMove (simpleMoveT const* sm);  // ... and taking back
 
@@ -292,14 +293,9 @@ public:
     // Board I/O
     void        MakeLongStr (char * str);
     errorT      ReadFromLongStr (const char * str);
-    errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
     errorT      ReadFromFENorUCI (std::string_view str);
     void        PrintCompactStr (char * cboard);
-    void        PrintCompactStrFlipped (char * cboard);
-    byte        CompactStrFirstByte () {
-        return (Board[0] << 4) | Board[1];
-    }
     void        PrintFEN(char* str, uint flags) const;
     void        DumpLatexBoard (DString * dstr, bool flip);
     void        DumpLatexBoard (DString * dstr) {
@@ -317,27 +313,16 @@ public:
 
     // Set up a random position:
     errorT      Random (const char * material);
+
+private:
+    void SetCastling(colorT col, castleDirT dir);
+    void ClearCastling(colorT col, castleDirT dir) {
+        Castling &= ~(1u << castlingIdx(col, dir));
+    }
+    void ClearCastlingFlags(colorT c) {
+        Castling &= (c == WHITE) ? 0b11111100 : 0b11110011;
+    }
 };
-
-
-
-//////////////////////////////////////////////////////////////////////
-//  Position:  Public Inline Functions
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::SetCastling():
-//      Set a castling flag.
-//
-inline void
-Position::SetCastling (colorT c, castleDirT dir, bool flag)
-{
-    byte b = (c==WHITE ? 1 : 4);
-    if (dir == KSIDE) b += b;
-    // Now b = 1 or 2 (white flags), or 4 or 8 (black flags)
-    if (flag) { Castling |= b; } else { Castling &= (255-b); }
-    return;
-}
 
 #endif  // SCID_POSITION_H
 

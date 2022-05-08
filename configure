@@ -280,7 +280,6 @@ proc usage {} {
     puts {  TCL_LIBRARY  Compiler directives for linking Tcl.}
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}
     puts {  THREADS      Flags for c++11 threads. Default: "-pthread".}
-    puts {               Use THREADS="-DMULTITHREADING_OFF" to disable multi-threading.}
     puts {  WARNINGS     C++ compiler warnings. Default: "-Wall".}
     puts {  MAKEFILE     Makefile configuration file. Default: "Makefile.conf".}
     puts {}

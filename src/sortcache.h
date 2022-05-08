@@ -26,12 +26,8 @@
 
 #include "common.h"
 
-#ifndef MULTITHREADING_OFF
 #include <atomic>
 using std::atomic_bool;
-#else
-typedef bool atomic_bool;
-#endif
 
 class HFilter;
 class Index;

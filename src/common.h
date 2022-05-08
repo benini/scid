@@ -29,7 +29,7 @@
 typedef unsigned short versionT;
 const versionT SCID_VERSION = 400;     // Current file format version = 4.0
 
-const char SCID_VERSION_STRING[] = "4.7.1";     // Current Scid version
+const char SCID_VERSION_STRING[] = "4.7.2";     // Current Scid version
 
 
 
@@ -78,7 +78,7 @@ const byte RATING_USCF = 4;
 const byte RATING_DWZ = 5;
 const byte RATING_BCF = 6;
 
-extern const char * ratingTypeNames [17];   // Defined in game.cpp
+extern const char * ratingTypeNames [8];   // Defined in game.cpp
 
 
 

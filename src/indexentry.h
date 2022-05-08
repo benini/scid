@@ -50,18 +50,19 @@ class IndexEntry {
     uint64_t offset_         : 46; // Start of gamefile record for this game.
     uint64_t gameDataSize_   : 18; // Length of gamefile record for this game.
 
-    uint64_t storedLineCode_ :  8;
-    uint64_t whiteID_        : 28;
-    uint64_t blackID_        : 28;
+    uint32_t nComments_      :  4;
+    uint32_t whiteID_        : 28;
 
+    uint32_t nVariations_    :  4;
+    uint32_t blackID_        : 28;
+
+    uint32_t nNags_          :  4;
     uint32_t eventID_        : 28;
-    uint32_t whiteEloType_   :  4;
 
-    uint32_t siteID_         : 28;
-    uint32_t blackEloType_   :  4;
+    uint32_t siteID_;
 
+    uint32_t variant_        :  4;
     uint32_t roundID_        : 28;
-    uint32_t result_         :  4;
 
     uint32_t whiteElo_       : 12;
     uint32_t date_           : 20;
@@ -72,20 +73,18 @@ class IndexEntry {
     uint32_t numHalfMoves_   : 10;
     uint32_t flags_          : 22;
 
+    uint32_t result_         :  2;
+    uint32_t whiteEloType_   :  3;
+    uint32_t blackEloType_   :  3;
     uint32_t finalMatSig_    : 24; // material of the final position in the game
-    uint32_t nVariations_    :  4;
-    uint32_t nComments_      :  4;
 
     uint16_t ECOcode_;
 
-    uint8_t  nNags_;         // :  4;
+    uint8_t  storedLineCode_;
 
     byte     HomePawnData [HPSIG_SIZE];  // homePawnSig data.
 
 public:
-    void encodeEntry(char* buf_it) const;
-
-    // get functions
     uint64_t  GetOffset() const { return offset_; }
     uint32_t  GetLength() const { return gameDataSize_; }
     idNumberT GetWhite() const { return whiteID_; }
@@ -108,6 +107,18 @@ public:
     byte      GetStoredLineCode() const { return storedLineCode_; }
     ecoT      GetEcoCode() const { return ECOcode_; }
     bool      GetFlag(uint32_t mask) const { return (flags_ & mask) == mask; }
+    uint32_t  GetRawFlags() const { return flags_; }
+    uint16_t  GetRaw4bitsCounts() const {
+        uint16_t res = nVariations_ & 0x0F;
+        res |= static_cast<uint16_t>(nComments_ & 0x0F) << 4;
+        res |= static_cast<uint16_t>(nNags_ & 0x0F) << 8;
+        return res;
+    }
+
+    void setChessStd() { variant_ = 0; }
+    void setChess960() { variant_ = 1; }
+    bool isChessStd() const { return variant_ == 0; }
+
     const byte* GetHomePawnData() const { return HomePawnData; }
     void SetHomePawnData(byte hpCount, const byte hpVal[8]) {
         HomePawnData[0] = hpCount; // First byte stores the count
@@ -240,9 +251,7 @@ public:
     void clearFlags() { return SetFlag(IDX_MASK_ALLFLAGS, false); }
     bool equalExceptFlags(IndexEntry ie) const {
         ie.flags_ = flags_;
-        // has_unique_object_representations doesn't work with msvc
-        // static_assert(std::has_unique_object_representations_v<IndexEntry>);
-        static_assert(sizeof(IndexEntry) == 56);
+        static_assert(std::has_unique_object_representations_v<IndexEntry>);
         return memcmp(this, &ie, sizeof(IndexEntry)) == 0;
     }
 
@@ -290,112 +299,6 @@ private:
     }
 };
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::Write():
-//      Writes a single index entry to an open index file.
-//      INDEX_ENTRY_SIZE must be updated
-inline void IndexEntry::encodeEntry(char* buf_it) const {
-	auto WriteOneByte = [&buf_it](uint8_t v) { *buf_it++ = v; };
-	auto WriteTwoBytes = [&WriteOneByte](uint16_t v) {
-		WriteOneByte(static_cast<uint8_t>(v >> 8));
-		WriteOneByte(static_cast<uint8_t>(v));
-	};
-	auto WriteFourBytes = [&WriteTwoBytes](uint32_t v) {
-		WriteTwoBytes(static_cast<uint16_t>(v >> 16));
-		WriteTwoBytes(static_cast<uint16_t>(v));
-	};
-
-	const IndexEntry* ie = this;
-
-	ASSERT(ie->GetOffset() < (1ULL << 32));
-	WriteFourBytes(static_cast<uint32_t>(ie->GetOffset()));
-
-	ASSERT(ie->GetLength() < (1ULL << 17));
-	WriteTwoBytes(static_cast<uint16_t>(ie->GetLength()));
-	uint8_t len_flags = static_cast<uint8_t>(ie->GetLength() >> 9) & 0x80;
-	len_flags |= static_cast<uint8_t>(ie->flags_ >> 16) & 0x3F;
-	WriteOneByte(len_flags);
-	WriteTwoBytes(static_cast<uint16_t>(ie->flags_));
-
-	// WhiteID and BlackID are 20-bit values, EventID and SiteID are
-	// 19-bit values, and RoundID is an 18-bit value.
-	// WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
-	// BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
-	// EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
-	// SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
-	// RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
-	ASSERT(std::max(ie->GetWhite(), ie->GetBlack()) < (1ULL << 20));
-	uint32_t WhiteID_Low = ie->GetWhite();
-	uint32_t BlackID_Low = ie->GetBlack();
-	uint32_t WhiteBlack_High = (WhiteID_Low & 0x0F0000) >> 12;
-	WhiteBlack_High |= (BlackID_Low & 0x0F0000) >> 16;
-	WriteOneByte(static_cast<uint8_t>(WhiteBlack_High));
-	WriteTwoBytes(static_cast<uint16_t>(WhiteID_Low));
-	WriteTwoBytes(static_cast<uint16_t>(BlackID_Low));
-
-	ASSERT(std::max(ie->GetEvent(), ie->GetSite()) < (1ULL << 19));
-	ASSERT(ie->GetRound() < (1ULL << 18));
-	uint32_t EventID_Low = ie->GetEvent();
-	uint32_t SiteID_Low = ie->GetSite();
-	uint32_t RoundID_Low = ie->GetRound();
-	uint32_t EventSiteRnd_High = (EventID_Low & 0x070000) >> 11;
-	EventSiteRnd_High |= (SiteID_Low & 0x070000) >> 14;
-	EventSiteRnd_High |= (RoundID_Low & 0x030000) >> 16;
-	WriteOneByte(static_cast<uint8_t>(EventSiteRnd_High));
-	WriteTwoBytes(static_cast<uint16_t>(EventID_Low));
-	WriteTwoBytes(static_cast<uint16_t>(SiteID_Low));
-	WriteTwoBytes(static_cast<uint16_t>(RoundID_Low));
-
-	uint16_t varCounts = ie->nVariations_ & 0x0F;
-	varCounts |= static_cast<uint16_t>(ie->nComments_ & 0x0F) << 4;
-	varCounts |= static_cast<uint16_t>(ie->nNags_ & 0x0F) << 8;
-	varCounts |= static_cast<uint16_t>(ie->GetResult() & 0x0F) << 12;
-	WriteTwoBytes(varCounts);
-
-	WriteTwoBytes(ie->GetEcoCode());
-
-	// Due to a compact encoding format, the EventDate
-	// must be within a few years of the Date.
-	uint32_t date = ie->GetDate() & 0xFFFFF;
-	uint32_t edate = ie->GetEventDate();
-	uint32_t eyear = date_GetYear(edate);
-	uint32_t dyear = date_GetYear(date);
-	if ((eyear + 3) < dyear || eyear > (dyear + 3)) {
-		edate = ZERO_DATE;
-	} else {
-		eyear = (eyear + 4 - dyear) & 7;
-		edate = (eyear << 9) | (date_GetMonth(edate) << 5) | date_GetDay(edate);
-	}
-	WriteFourBytes((edate << 20) | date);
-
-	// Elo ratings and rating types: 2 bytes each.
-	uint16_t wElo = std::min(MAX_ELO, ie->GetWhiteElo());
-	wElo |= static_cast<uint16_t>(ie->GetWhiteRatingType()) << 12;
-	uint16_t bElo = std::min(MAX_ELO, ie->GetBlackElo());
-	bElo |= static_cast<uint16_t>(ie->GetBlackRatingType()) << 12;
-	WriteTwoBytes(wElo);
-	WriteTwoBytes(bElo);
-
-	ASSERT(ie->GetFinalMatSig() < (1ULL << 24));
-	ASSERT(ie->GetStoredLineCode() < (1ULL << 8));
-	uint32_t FinalMatSig = ie->GetFinalMatSig();
-	FinalMatSig |= static_cast<uint32_t>(ie->GetStoredLineCode()) << 24;
-	WriteFourBytes(FinalMatSig);
-
-	// The first byte of HomePawnData has high bits of the NumHalfMoves
-	// counter in its top two bits:
-	uint16_t nMoves = ie->GetNumHalfMoves();
-	ASSERT(nMoves < (1ULL << 10));
-	WriteOneByte(static_cast<uint8_t>(nMoves));
-	uint8_t pawnData0 = static_cast<uint8_t>(nMoves >> 8) << 6;
-
-	// Write the 9-byte homePawnData array:
-	const byte* pb = ie->GetHomePawnData();
-	pawnData0 |= *pb & 0x3F;
-	WriteOneByte(pawnData0);
-	std::copy(pb + 1, pb + HPSIG_SIZE, buf_it);
-}
 
 inline byte IndexEntry::GetRating() const {
     eloT welo = GetWhiteElo();

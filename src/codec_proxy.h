@@ -29,10 +29,8 @@
 #include "codec_memory.h"
 #include "game.h"
 
-#ifndef MULTITHREADING_OFF
 #include <atomic>
 #include <thread>
-#endif
 
 /**
  * Base class for non-native databases.
@@ -166,13 +164,12 @@ public:
 	template <typename TProgress, typename TSource, typename TDestFn>
 	static errorT parseGames(const TProgress& progress, TSource& src,
 	                         TDestFn destFn) {
-#ifndef MULTITHREADING_OFF
 		auto workTotal = src.parseProgress().second;
 
 		Game game[4];
 		std::atomic<size_t> workDone{};
 		std::atomic<int8_t> sync[4] = {};
-		enum {sy_free, sy_used, sy_stop};
+		enum { sy_free, sy_used, sy_stop };
 
 		std::thread producer([&]() {
 			uint64_t slot;
@@ -239,27 +236,6 @@ public:
 		producer.join();
 		progress(1, 1, src.parseErrors());
 		return err;
-
-#else
-		Game g;
-		errorT err = OK;
-		uint64_t nImported = 0;
-		while (src.parseNext(g) != ERROR_NotFound) {
-			err = destFn(g);
-			if (err != OK)
-				break;
-
-			if (++nImported % 1024 == 0) {
-				std::pair<size_t, size_t> count = src.parseProgress();
-				if (!progress.report(count.first, count.second)) {
-					err = ERROR_UserCancel;
-					break;
-				}
-			}
-		}
-		progress(1, 1, src.parseErrors());
-		return err;
-#endif
 	}
 };
 

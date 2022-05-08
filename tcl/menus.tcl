@@ -298,6 +298,8 @@ menu $m.export
   $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
 $m add cascade -label OptionsExport -menu $m.export
 $m add separator
+$m add checkbutton -label FullScreen -variable optionFullScreen \
+  -command { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen]] }
 $m add checkbutton -label OptionsWindowsDock -variable windowsDock
 $m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
 $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
@@ -445,6 +447,9 @@ proc updateMenuStates {{menuname}} {
       set state disabled
     }
     $m.game entryconfig [tr GameReplace] -state $state
+  }
+  {.menu.options} {
+    set ::optionsFullScreen [wm attributes . -fullscreen]
   }
   }
 }

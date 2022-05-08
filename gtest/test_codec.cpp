@@ -119,7 +119,10 @@ private:
 			                                    true);
 			if (mlist.Size() == 0)
 				break;
-			res->AddMove(mlist.Get(rand(0, mlist.Size() - 1)));
+
+			auto move = *mlist.Get(rand(0, mlist.Size() - 1));
+			res->GetCurrentPos()->fillMove(move);
+			res->AddMove(move);
 
 			if (rand(0, 6) == 0)
 				res->SetMoveComment(rand_comment().c_str());

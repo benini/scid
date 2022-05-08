@@ -21,6 +21,7 @@
 #include "scidbase.h"
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace {
@@ -141,6 +142,19 @@ public:
 	bool operator() (gamenumT gnum) const {
 		resultT r = base_->getIndexEntry(gnum)->GetResult();
 		return result_[r];
+	}
+};
+
+class SearchVariant {
+	const scidBaseT* base_;
+	bool std_;
+
+public:
+	SearchVariant(const scidBaseT* base, std::string_view variant)
+	    : base_(base), std_(variant == "std") {}
+
+	bool operator()(gamenumT gnum) const {
+		return base_->getIndexEntry(gnum)->isChessStd() == std_;
 	}
 };
 
@@ -449,6 +463,9 @@ I doSearch(I itB, I itR, I itE, const scidBaseT* base, SearchParam& param) {
 	if (param == "result") return std::stable_partition(itB, itE,
 		SearchResult(base, param.getValue())
 	);
+	if (param == "variant")
+		return std::stable_partition(itB, itE,
+		                             SearchVariant(base, param.getValue()));
 
 	param.invalidate();
 	return itR;

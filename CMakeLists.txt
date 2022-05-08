@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 project(scid)
-set(CPACK_PACKAGE_VERSION 4.7.1)
+set(CPACK_PACKAGE_VERSION 4.7.2)
 set(
   CPACK_PACKAGE_DESCRIPTION_SUMMARY
   "chess database application with play and training functionality"
@@ -56,14 +56,7 @@ else()
 endif()
 set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
-target_link_libraries(scid PRIVATE polyglot ${TCL_LIBRARY})
-
-option(SCID_MULTITHREADING "Enable/disable multihreading" ON)
-if(SCID_MULTITHREADING)
-  target_link_libraries(scid PRIVATE ${CMAKE_THREAD_LIBS_INIT})
-else()
-  target_compile_definitions(scid PRIVATE -DMULTITHREADING_OFF)
-endif()
+target_link_libraries(scid PRIVATE polyglot ${CMAKE_THREAD_LIBS_INIT} ${TCL_LIBRARY})
 
 option(SCID_USE_TB "Enable Nalimov tablebases" OFF)
 if(SCID_USE_TB)

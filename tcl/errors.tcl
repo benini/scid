@@ -74,6 +74,7 @@ namespace eval ERROR {
   set BufferFull       601
   set BufferRead       602
   set CodecUnsupFeat   701
+  set CodecChess960    702
 
 }
 
@@ -130,4 +131,6 @@ after idle {
 
   set ::ERROR::msg($::ERROR::CodecUnsupFeat) \
     "The requested function is not supported by this type of database."
+  set ::ERROR::msg($::ERROR::CodecChess960) \
+    "Chess960 games can only be saved in PGN or SCID5 databases."
 }

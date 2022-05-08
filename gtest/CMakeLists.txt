@@ -34,12 +34,8 @@ set(SCID_BASE
 )
 add_library(scid_base ${SCID_BASE})
 target_include_directories(scid_base PUBLIC ../src)
-if(SCID_MULTITHREADING)
-  find_package(Threads REQUIRED)
-  target_link_libraries(scid_base PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-else()
-  target_compile_definitions(scid_base PUBLIC -DMULTITHREADING_OFF)
-endif()
+find_package(Threads REQUIRED)
+target_link_libraries(scid_base PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 # scid_tests
 file(GLOB GTEST_SRC *.cpp)

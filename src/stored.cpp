@@ -17,7 +17,8 @@
 */
 
 #include "stored.h"
-#include <cstring>
+#include <algorithm>
+#include <cassert>
 
 // Stored line codes: used to speed up tree searches.
 
@@ -40,24 +41,30 @@ class Board {
 	pieceT b_[64];
 
 public:
-	Board(const pieceT* b) {
-		for (int i=0; i < 64; i++) b_[i] = b[i];
+	explicit Board(const pieceT* b) {
+		std::copy_n(b, 64, b_);
 	}
 	void doMove(FullMove m) {
 		//No promo, no null moves, no queenside castle
 		if (! m.isCastle()) {
+			assert(m && !m.isNull() && !m.isPromo() && !m.isEnpassant());
+			b_[m.getTo()] = b_[m.getFrom()];
 			b_[m.getFrom()] = EMPTY;
-			b_[m.getTo()] = piece_Make(m.getColor(), m.getPiece());
 		} else {
+			const auto king = b_[m.getFrom()];
+			const auto rook = b_[m.getTo()];
 			b_[m.getFrom()] = EMPTY;
 			b_[m.getTo()] = EMPTY;
+			assert(king == piece_Make(m.getColor(), KING));
+			assert(rook == piece_Make(m.getColor(), ROOK));
+			assert(m.getFrom() < m.getTo());
 			int black = (m.getColor() == BLACK) ? 56 : 0;
-			b_[black + G1] = piece_Make(m.getColor(), KING);
-			b_[black + F1] = piece_Make(m.getColor(), ROOK);
+			b_[black + G1] = king;
+			b_[black + F1] = rook;
 		}
 	}
 	bool operator==(const Board& b) const {
-		return (std::memcmp(b_, b.b_, sizeof b_) == 0);
+		return std::equal(b_, b_ + 64, b.b_);
 	}
 	bool neverMatch(const Board& m) const {
 		// Pawns allows to exclude some games:

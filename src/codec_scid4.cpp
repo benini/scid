@@ -47,13 +47,11 @@ namespace {
  */
 const char* NAMEBASE_MAGIC = "Scid.sn";
 
-/**
- * Read a SCIDv4 NameBase file into memory.
- * @param filename: the full path of the file to open.
- * @param fMode:    a valid file mode.
- * @param nb:       reference to the object where the names will be stored.
- * @returns OK if successful or an error code.
- */
+/// Read a SCIDv4 NameBase file into memory.
+/// @param filename: the full path of the file to open.
+/// @param fMode:    a valid file mode.
+/// @param nb:       reference to the object where the names will be stored.
+/// @returns OK if successful or an error code.
 errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	Filebuf file;
 	if (file.Open(filename, fmode) != OK)
@@ -127,12 +125,10 @@ errorT namefileRead(const char* filename, fileModeT fmode, NameBase& nb) {
 	return OK;
 }
 
-/**
- * Write a SCIDv4 NameBase file.
- * @param filename: the full path of the file to open.
- * @param nb:       reference to the object where the names will be stored.
- * @returns OK if successful or an error code.
- */
+/// Write a SCIDv4 NameBase file.
+/// @param filename: the full path of the file to open.
+/// @param nb:       reference to the object where the names will be stored.
+/// @returns OK if successful or an error code.
 template <typename TCont, typename TFreq>
 errorT namefileWrite(const char* filename, const TCont& names_ids,
                      const TFreq& freq) {
@@ -239,6 +235,7 @@ errorT namefileWrite(const char* filename, const TCont& names_ids,
  */
 constexpr char INDEX_MAGIC[8] = "Scid.si";
 constexpr size_t SCID_DESC_LENGTH = 107;
+constexpr size_t CUSTOM_FLAG_MAX = 6;
 constexpr size_t CUSTOM_FLAG_DESC_LENGTH = 8;
 constexpr int INDEX_ENTRY_SIZE = 47;
 constexpr int OLD_INDEX_ENTRY_SIZE = 46;
@@ -273,10 +270,10 @@ std::pair<errorT, gamenumT> readIndexHeader(FileT& indexFile, HeaderT& header) {
 	header.description.assign(desc,
 	                          std::find(desc, desc + SCID_DESC_LENGTH, '\0'));
 	if (header.version >= 400) {
-		for (uint i = 0; i < CUSTOM_FLAG_MAX; i++) {
+		for (size_t i = 0; i < CUSTOM_FLAG_MAX; i++) {
 			char buf[CUSTOM_FLAG_DESC_LENGTH + 1];
 			indexFile.sgetn(buf, CUSTOM_FLAG_DESC_LENGTH + 1);
-			header.customFlagDesc[i].assign(
+			header.flagDesc[i].assign(
 			    buf, std::find(buf, buf + CUSTOM_FLAG_DESC_LENGTH, '\0'));
 		}
 	}
@@ -303,7 +300,7 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	std::copy_n(Header.description.data(),
 	            std::min(Header.description.size(), SCID_DESC_LENGTH), desc);
 	n += indexFile.sputn(desc, SCID_DESC_LENGTH + 1);
-	for (auto const& flagDesc : Header.customFlagDesc) {
+	for (auto const& flagDesc : Header.flagDesc) {
 		char buf[CUSTOM_FLAG_DESC_LENGTH + 1] = {};
 		std::copy_n(flagDesc.data(),
 		            std::min(flagDesc.size(), CUSTOM_FLAG_DESC_LENGTH), buf);
@@ -316,16 +313,12 @@ errorT writeIndexHeader(FileT& indexFile, HeaderT const& Header,
 	return OK;
 }
 
-} // namespace
-
-/**
- * Decode SCID4 (or SCID3) data into an IndexEntry object.
- * @param buf_it:  pointer to the buffer containing the data
- *                 (should contain INDEX_ENTRY_SIZE chars)
- * @param version: 400 for SCID4 or 300 for SCID3.
- * @param ie:      pointer to the IndexEntry object where the data will be
- *                 stored.
- */
+/// Decode SCID4 (or SCID3) data into an IndexEntry object.
+/// @param buf_it:  pointer to the buffer containing the data
+///                 (should contain INDEX_ENTRY_SIZE chars)
+/// @param version: 400 for SCID4 or 300 for SCID3.
+/// @param ie:      pointer to the IndexEntry object where the data will be
+///                 stored.
 void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 	auto ReadOneByte = [&buf_it]() {
 		uint8_t res = *buf_it++;
@@ -341,6 +334,8 @@ void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 		uint32_t res = (high << 16) | ReadTwoBytes();
 		return res;
 	};
+
+	ie->setChessStd();
 
 	// Offset of the gamefile record (32 bits).
 	ie->SetOffset(ReadFourBytes());
@@ -428,6 +423,109 @@ void decodeIndexEntry(const char* buf_it, versionT version, IndexEntry* ie) {
 	                    reinterpret_cast<const unsigned char*>(buf_it));
 }
 
+/// Enccode an IndexEntry to SCID4 format.
+/// @param buf_it:  pointer to the buffer where the data would be stored
+///                 (should be able to contain at least INDEX_ENTRY_SIZE chars)
+void encodeIndexEntry(const IndexEntry* ie, char* buf_it) {
+	auto WriteOneByte = [&buf_it](uint8_t v) { *buf_it++ = v; };
+	auto WriteTwoBytes = [&WriteOneByte](uint16_t v) {
+		WriteOneByte(static_cast<uint8_t>(v >> 8));
+		WriteOneByte(static_cast<uint8_t>(v));
+	};
+	auto WriteFourBytes = [&WriteTwoBytes](uint32_t v) {
+		WriteTwoBytes(static_cast<uint16_t>(v >> 16));
+		WriteTwoBytes(static_cast<uint16_t>(v));
+	};
+
+	ASSERT(ie->GetOffset() < (1ULL << 32));
+	WriteFourBytes(static_cast<uint32_t>(ie->GetOffset()));
+
+	ASSERT(ie->GetLength() < (1ULL << 17));
+	WriteTwoBytes(static_cast<uint16_t>(ie->GetLength()));
+	uint8_t len_flags = static_cast<uint8_t>(ie->GetLength() >> 9) & 0x80;
+	len_flags |= static_cast<uint8_t>(ie->GetRawFlags() >> 16) & 0x3F;
+	WriteOneByte(len_flags);
+	WriteTwoBytes(static_cast<uint16_t>(ie->GetRawFlags()));
+
+	// WhiteID and BlackID are 20-bit values, EventID and SiteID are
+	// 19-bit values, and RoundID is an 18-bit value.
+	// WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
+	// BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
+	// EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
+	// SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
+	// RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
+	ASSERT(std::max(ie->GetWhite(), ie->GetBlack()) < (1ULL << 20));
+	uint32_t WhiteID_Low = ie->GetWhite();
+	uint32_t BlackID_Low = ie->GetBlack();
+	uint32_t WhiteBlack_High = (WhiteID_Low & 0x0F0000) >> 12;
+	WhiteBlack_High |= (BlackID_Low & 0x0F0000) >> 16;
+	WriteOneByte(static_cast<uint8_t>(WhiteBlack_High));
+	WriteTwoBytes(static_cast<uint16_t>(WhiteID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(BlackID_Low));
+
+	ASSERT(std::max(ie->GetEvent(), ie->GetSite()) < (1ULL << 19));
+	ASSERT(ie->GetRound() < (1ULL << 18));
+	uint32_t EventID_Low = ie->GetEvent();
+	uint32_t SiteID_Low = ie->GetSite();
+	uint32_t RoundID_Low = ie->GetRound();
+	uint32_t EventSiteRnd_High = (EventID_Low & 0x070000) >> 11;
+	EventSiteRnd_High |= (SiteID_Low & 0x070000) >> 14;
+	EventSiteRnd_High |= (RoundID_Low & 0x030000) >> 16;
+	WriteOneByte(static_cast<uint8_t>(EventSiteRnd_High));
+	WriteTwoBytes(static_cast<uint16_t>(EventID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(SiteID_Low));
+	WriteTwoBytes(static_cast<uint16_t>(RoundID_Low));
+
+	uint16_t varCounts = ie->GetRaw4bitsCounts();
+	varCounts |= static_cast<uint16_t>(ie->GetResult() & 0x0F) << 12;
+	WriteTwoBytes(varCounts);
+
+	WriteTwoBytes(ie->GetEcoCode());
+
+	// Due to a compact encoding format, the EventDate
+	// must be within a few years of the Date.
+	uint32_t date = ie->GetDate() & 0xFFFFF;
+	uint32_t edate = ie->GetEventDate();
+	uint32_t eyear = date_GetYear(edate);
+	uint32_t dyear = date_GetYear(date);
+	if ((eyear + 3) < dyear || eyear > (dyear + 3)) {
+		edate = ZERO_DATE;
+	} else {
+		eyear = (eyear + 4 - dyear) & 7;
+		edate = (eyear << 9) | (date_GetMonth(edate) << 5) | date_GetDay(edate);
+	}
+	WriteFourBytes((edate << 20) | date);
+
+	// Elo ratings and rating types: 2 bytes each.
+	uint16_t wElo = std::min(MAX_ELO, ie->GetWhiteElo());
+	wElo |= static_cast<uint16_t>(ie->GetWhiteRatingType()) << 12;
+	uint16_t bElo = std::min(MAX_ELO, ie->GetBlackElo());
+	bElo |= static_cast<uint16_t>(ie->GetBlackRatingType()) << 12;
+	WriteTwoBytes(wElo);
+	WriteTwoBytes(bElo);
+
+	ASSERT(ie->GetFinalMatSig() < (1ULL << 24));
+	ASSERT(ie->GetStoredLineCode() < (1ULL << 8));
+	uint32_t FinalMatSig = ie->GetFinalMatSig();
+	FinalMatSig |= static_cast<uint32_t>(ie->GetStoredLineCode()) << 24;
+	WriteFourBytes(FinalMatSig);
+
+	// The first byte of HomePawnData has high bits of the NumHalfMoves
+	// counter in its top two bits:
+	uint16_t nMoves = ie->GetNumHalfMoves();
+	ASSERT(nMoves < (1ULL << 10));
+	WriteOneByte(static_cast<uint8_t>(nMoves));
+	uint8_t pawnData0 = static_cast<uint8_t>(nMoves >> 8) << 6;
+
+	// Write the 9-byte homePawnData array:
+	const byte* pb = ie->GetHomePawnData();
+	pawnData0 |= *pb & 0x3F;
+	WriteOneByte(pawnData0);
+	std::copy(pb + 1, pb + HPSIG_SIZE, buf_it);
+}
+
+} // namespace
+
 errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
                             const Progress& progress, Index* idx,
                             NameBase* nb) {
@@ -458,7 +556,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 			err = idxfile_.Open(indexFilename, FMODE_Create);
 
 		if (err == OK)
-			err = writeIndexHeader(idxfile_, idx_->Header, idx_->GetNumGames());
+			err = writeIndexHeader(idxfile_, header_, idx_->GetNumGames());
 
 		if (err == OK) {
 			err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
@@ -471,16 +569,16 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 		if (auto err = idxfile_.Open(indexFilename, fMode))
 			return err;
 
-		auto [errHeader, nGames] = readIndexHeader(idxfile_, idx_->Header);
+		auto [errHeader, nGames] = readIndexHeader(idxfile_, header_);
 		if (errHeader)
 			return errHeader;
 
 		constexpr versionT SCID_OLDEST_VERSION = 300; // Oldest readable version
-		if (idx_->Header.version < SCID_OLDEST_VERSION ||
-		    idx_->Header.version > SCID_VERSION)
+		if (header_.version < SCID_OLDEST_VERSION ||
+		    header_.version > SCID_VERSION)
 			return ERROR_FileVersion;
 
-		if (idx_->Header.version != SCID_VERSION && fMode != FMODE_ReadOnly)
+		if (header_.version != SCID_VERSION && fMode != FMODE_ReadOnly)
 			return ERROR_FileMode; // Old versions must be opened readonly
 
 		err = readIndex(nGames, progress);
@@ -492,11 +590,10 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 errorT CodecSCID4::flush() {
 	seqWrite_ = 0;
 	errorT errHeader = OK;
-	if (header_dirty_) {
-		errHeader = writeIndexHeader(idxfile_, idx_->Header,
-		                             idx_->GetNumGames());
+	if (header_.dirty) {
+		errHeader = writeIndexHeader(idxfile_, header_, idx_->GetNumGames());
 		if (errHeader == OK)
-			header_dirty_ = false;
+			header_.dirty = false;
 	}
 	errorT errSync = (idxfile_.pubsync() != 0) ? ERROR_FileWrite : OK;
 	errorT err = (errHeader == OK) ? errSync : errHeader;
@@ -565,10 +662,9 @@ errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 		return true;
 	};
 
-	auto version = idx_->Header.version;
 	idx_->entries_.resize(nGames);
-
-	auto nBytes = (version < 400) ? OLD_INDEX_ENTRY_SIZE : INDEX_ENTRY_SIZE;
+	const auto nBytes = (header_.version < 400) ? OLD_INDEX_ENTRY_SIZE
+	                                            : INDEX_ENTRY_SIZE;
 	for (gamenumT gNum = 0; idxfile_.sgetc() != EOF; ++gNum) {
 		if (gNum == nGames)
 			return ERROR_CorruptData;
@@ -583,7 +679,7 @@ errorT CodecSCID4::readIndex(gamenumT nGames, Progress const& progress) {
 			return ERROR_FileRead;
 
 		IndexEntry& ie = idx_->entries_[gNum];
-		decodeIndexEntry(buf, version, &ie);
+		decodeIndexEntry(buf, header_.version, &ie);
 
 		if (!validateNameIDs(&ie))
 			return ERROR_CorruptData;
@@ -604,7 +700,7 @@ errorT CodecSCID4::writeEntry(const IndexEntry& ie, gamenumT gnum) {
 		}
 	}
 	char buf[INDEX_ENTRY_SIZE];
-	ie.encodeEntry(buf);
+	encodeIndexEntry(&ie, buf);
 	errorT res = idxfile_.sputn(buf, INDEX_ENTRY_SIZE) == INDEX_ENTRY_SIZE
 	                 ? OK
 	                 : ERROR_FileWrite;
@@ -615,15 +711,15 @@ errorT CodecSCID4::writeEntry(const IndexEntry& ie, gamenumT gnum) {
 
 errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
 	if (std::strcmp(tagname, "type") == 0) {
-		idx_->Header.baseType = strGetUnsigned(new_value);
+		header_.baseType = strGetUnsigned(new_value);
 
 	} else if (std::strcmp(tagname, "description") == 0) {
-		idx_->Header.description = new_value;
-		if (idx_->Header.description.size() > SCID_DESC_LENGTH)
-			idx_->Header.description.resize(SCID_DESC_LENGTH);
+		header_.description = new_value;
+		if (header_.description.size() > SCID_DESC_LENGTH)
+			header_.description.resize(SCID_DESC_LENGTH);
 
 	} else if (std::strcmp(tagname, "autoload") == 0) {
-		idx_->Header.autoLoad = strGetUnsigned(new_value);
+		header_.autoLoad = strGetUnsigned(new_value);
 
 	} else {
 		auto len = std::strlen(tagname);
@@ -636,11 +732,11 @@ errorT CodecSCID4::setExtraInfo(const char* tagname, const char* new_value) {
 			return ERROR_CodecUnsupFeat;
 
 		const auto idx = flag - IndexEntry::IDX_FLAG_CUSTOM1;
-		idx_->Header.customFlagDesc[idx] = new_value;
-		if (idx_->Header.customFlagDesc[idx].size() > CUSTOM_FLAG_DESC_LENGTH)
-			idx_->Header.customFlagDesc[idx].resize(CUSTOM_FLAG_DESC_LENGTH);
+		header_.flagDesc[idx] = new_value;
+		if (header_.flagDesc[idx].size() > CUSTOM_FLAG_DESC_LENGTH)
+			header_.flagDesc[idx].resize(CUSTOM_FLAG_DESC_LENGTH);
 	}
 
-	header_dirty_ = true;
+	header_.dirty = true;
 	return OK;
 }

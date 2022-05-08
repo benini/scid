@@ -68,23 +68,11 @@ char transPiecesChar(char c) {
   return ret;
 }
 
-const char * ratingTypeNames [17] = {
+const char * ratingTypeNames [8] = {
     "Elo", "Rating", "Rapid", "ICCF", "USCF", "DWZ", "ECF",
-    // Reserved for future use:
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     // End of array marker:
     NULL
 };
-
-uint
-strGetRatingType (const char * name) {
-    uint i = 0;
-    while (ratingTypeNames[i] != NULL) {
-        if (strEqual (name, ratingTypeNames[i])) { return i; }
-        i++;
-    }
-    return 0;
-}
 
 typedef Game * GamePtr;
 
@@ -721,7 +709,7 @@ errorT Game::MoveForward(void) {
 	if (CurrentMove->endMarker())
 		return ERROR_EndOfMoveList;
 
-	CurrentPos->DoSimpleMove(&CurrentMove->moveData);
+	CurrentPos->DoSimpleMove(CurrentMove->moveData);
 	CurrentMove = CurrentMove->next;
 
 	// Invariants
@@ -904,19 +892,14 @@ std::string Game::currentPosUCI() const {
 // Game::AddMove():
 //      Add a move at current position and do it.
 //
-errorT Game::AddMove(const simpleMoveT* sm) {
-	ASSERT(sm != NULL);
-
+errorT Game::AddMove(simpleMoveT const& sm) {
 	// We must be at the end of a game/variation to add a move:
 	if (!CurrentMove->endMarker())
 		Truncate();
 
 	CurrentMove->setNext(NewMove(END_MARKER));
 	CurrentMove->marker = NO_MARKER;
-	CurrentMove->moveData.from = sm->from;
-	CurrentMove->moveData.to = sm->to;
-	CurrentMove->moveData.promote = sm->promote;
-	CurrentMove->moveData.movingPiece = sm->movingPiece;
+	CurrentMove->moveData = sm;
 	if (VarDepth == 0)
 		++NumHalfMoves;
 
@@ -1240,7 +1223,7 @@ bool Game::MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
             simpleMoveT sm;
             err = DecodeNextMove(&buf, sm);
             if (err == OK) {
-                CurrentPos->DoSimpleMove(&sm);
+                CurrentPos->DoSimpleMove(sm);
             }
         }
         plyCount++;
@@ -1260,7 +1243,7 @@ bool Game::MaterialMatch(bool PromotionsFlag, ByteBuffer& buf, byte* min,
 //      true if the game could never match even with extra moves.
 //
 bool
-Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
+Game::ExactMatch (Position * searchPos, ByteBuffer * buf,
                   gameExactMatchT searchType)
 {
     // If buf is NULL, the game is in memory. Otherwise, Decode only
@@ -1273,11 +1256,8 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         err = DecodeSkipTags(buf);
     }
 
-    uint plyCount = 0;
-    //uint skip = 0;    // Just for statistics on number of moves skipped.
     uint search_whiteHPawns = 0;
     uint search_blackHPawns = 0;
-    uint current_whiteHPawns, current_blackHPawns;
     bool check_pawnMaskWhite, check_pawnMaskBlack;
     bool doHomePawnChecks = false;
 
@@ -1310,7 +1290,6 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         const pieceT* board = searchPos->GetBoard();
         const pieceT* b1 = currentBoard;
         const pieceT* b2 = board;
-        bool found = true;
 
         // If NO_SPEEDUPS is defined, a slower search is done without
         // optimisations that detect insufficient material.
@@ -1333,24 +1312,24 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         // not equal to search_xxHPawns.
         // We do not do this optimisation for a pawn files search,
         // because the exact pawn squares are not important there.
-
-        if (searchType != GAME_EXACT_MATCH_Fyles) {
             if (check_pawnMaskWhite) {
-                current_whiteHPawns = calcHomePawnMask (WP, currentBoard);
+                auto current_whiteHPawns = calcHomePawnMask (WP, currentBoard);
                 if ((current_whiteHPawns & search_whiteHPawns)
                         != search_whiteHPawns) {
                     return false;
                 }
+                check_pawnMaskWhite = false;
             }
             if (check_pawnMaskBlack) {
-                current_blackHPawns = calcHomePawnMask (BP, currentBoard);
+                auto current_blackHPawns = calcHomePawnMask (BP, currentBoard);
                 if ((current_blackHPawns & search_blackHPawns)
                         != search_blackHPawns) {
                     return false;
                 }
+                check_pawnMaskBlack = false;
             }
-        }
 #endif  // #ifndef NO_SPEEDUPS
+        bool found = true;
 
         // Not correct color: skip to next move
         if (searchPos->GetToMove() != CurrentPos->GetToMove()) {
@@ -1412,63 +1391,31 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
         }
 
         if (found) {
-            // Found a match! Set the returned next-move:
-            if (sm) {  // We need to decode the next move.
-                if (buf == NULL) {
-                    MoveForward();
-                    if (CurrentMove->marker == END_MARKER) {
-                        // Position matched at last move in the game.
-                        sm->from = sm->to = NULL_SQUARE;
-                        sm->promote = EMPTY;
-                    } else {
-                        *sm = CurrentMove->prev->moveData;
-                        MoveBackup();
-                    }
-                } else {
-                    err = DecodeNextMove(buf, *sm);
-                    if (err != OK) {
-                        // Position matched at last move in the game.
-                        sm->from = sm->to = NULL_SQUARE;
-                        sm->promote = EMPTY;
-                    }
-                }
-            }
             return true;
         }
 
     Move_Forward:
-#ifndef NO_SPEEDUPS
-        if (doHomePawnChecks) {
-            check_pawnMaskWhite = false;
-            check_pawnMaskBlack = false;
-            rankT rTo = square_Rank (CurrentMove->moveData.to);
-            rankT rFrom = square_Rank (CurrentMove->moveData.from);
-            // We only re-check the home pawn masks when something moves
-            // to or from the 2nd/7th rank:
-            if (rTo == RANK_2  ||  rFrom == RANK_2) {
-                check_pawnMaskWhite = true;
-            }
-            if (rTo == RANK_7  ||  rFrom == RANK_7) {
-                check_pawnMaskBlack = true;
-            }
-        }
-#endif
         if (buf == NULL) {
-            MoveForward ();
-            if (CurrentMove->marker == END_MARKER) {
-                err = ERROR_EndOfMoveList;
-            }
+            err = MoveForward();
         } else {
             simpleMoveT nextMove;
             err = DecodeNextMove(buf, nextMove);
             if (err == OK) {
-                CurrentPos->DoSimpleMove(&nextMove);
-            }
-            if (err != OK  &&  err != ERROR_EndOfMoveList) {
-                return false;
+                CurrentPos->DoSimpleMove(nextMove);
+                if (doHomePawnChecks) {
+                    rankT rTo = square_Rank (nextMove.to);
+                    rankT rFrom = square_Rank (nextMove.from);
+                    // We only re-check the home pawn masks when something moves
+                    // to or from the 2nd/7th rank:
+                    if (rTo == RANK_2  ||  rFrom == RANK_2) {
+                        check_pawnMaskWhite = true;
+                    }
+                    if (rTo == RANK_7  ||  rFrom == RANK_7) {
+                        check_pawnMaskBlack = true;
+                    }
+                }
             }
         }
-        plyCount++;
     }
     return false;
 }
@@ -2497,54 +2444,42 @@ Game::GetAverageElo () {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// makeMoveByte(): inline routine used for encoding most moves.
-//
-static inline byte
-makeMoveByte (byte pieceNum, byte value)
-{
-    ASSERT (pieceNum <= 15  &&  value <= 15);
-    return (byte)((pieceNum & 15) << 4)  |  (byte)(value & 15);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKing(): encoding of King moves.
 //
-static byte encodeKing(const simpleMoveT* sm) {
+static byte encodeKing(squareT from, int to) {
     // Valid King difference-from-old-square values are:
     // -9, -8, -7, -1, 1, 7, 8, 9, and -2 and 2 for castling.
     // To convert this to a val in the range [1-10], we add 9 and
     // then look up the val[] table.
     // Coded values 1-8 are one-square moves; 9 and 10 are Castling.
-
-    ASSERT(sm->pieceNum == 0);  // Kings MUST be piece Number zero.
-    int diff = (int) sm->to - (int) sm->from;
     static const byte val[] = {
     /* -9 -8 -7 -6 -5 -4 -3 -2 -1  0  1   2  3  4  5  6  7  8  9 */
         1, 2, 3, 0, 0, 0, 0, 9, 4, 0, 5, 10, 0, 0, 0, 0, 6, 7, 8
     };
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
 
     // If target square is the from square, it is the null move, which
     // is represented as a king move to its own square and is encoded
     // as the byte value zero.
-    if (sm->to == sm->from) {
-        return 0;
-    }
+    ASSERT((to == from && val[diff+9] == 0) || val[diff+9] != 0);
 
     // Verify we have a valid King move:
-    ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
+    ASSERT(diff >= -9 && diff <= 9);
     return val[diff + 9];
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeKnight(): encoding Knight moves.
 //
-static byte encodeKnight(const simpleMoveT* sm) {
+static byte encodeKnight(squareT from, squareT to) {
     // Valid Knight difference-from-old-square values are:
     // -17, -15, -10, -6, 6, 10, 15, 17.
     // To convert this to a value in the range [1-8], we add 17 to
     // the difference and then look up the val[] table.
 
-    int diff = (int) sm->to - (int) sm->from;
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
     static const byte val[] = {
     /* -17 -16 -15 -14 -13 -12 -11 -10 -9 -8 -7 -6 -5 -4 -3 -2 -1  0 */
         1,  0,  2,  0,  0,  0,  0,  3,  0, 0, 0, 4, 0, 0, 0, 0, 0, 0,
@@ -2561,88 +2496,68 @@ static byte encodeKnight(const simpleMoveT* sm) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeRook(): encoding rook moves.
 //
-static byte encodeRook(const simpleMoveT* sm) {
+static byte encodeRook(squareT from, squareT to) {
     // Valid Rook moves are to same rank, OR to same fyle.
     // We encode the 8 squares on the same rank 0-8, and the 8
     // squares on the same fyle 9-15. This means that for any particular
     // rook move, two of the values in the range [0-15] will be
     // meaningless, as they will represent the from-square.
 
-    ASSERT (sm->from <= H8  &&  sm->to <= H8);
-
     // Check if the two squares share the same rank:
-    if (square_Rank(sm->from) == square_Rank(sm->to)) {
-        return square_Fyle(sm->to);
+    if (square_Rank(from) == square_Rank(to)) {
+        return square_Fyle(to);
     }
-    return 8 + square_Rank(sm->to);
+    return 8 + square_Rank(to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeBishop(): encoding Bishop moves.
 //
-static byte encodeBishop(const simpleMoveT* sm) {
+static byte encodeBishop(squareT from, squareT to) {
     // We encode a Bishop move as the Fyle moved to, plus
     // a one-bit flag to indicate if the direction was
     // up-right/down-left or vice versa.
 
-    ASSERT (sm->to <= H8  &&  sm->from <= H8);
-    int rankdiff = (int)square_Rank(sm->to) - (int)square_Rank(sm->from);
-    int fylediff = (int)square_Fyle(sm->to) - (int)square_Fyle(sm->from);
+    auto rankdiff = square_Rank(to) - square_Rank(from);
+    auto fylediff = square_Fyle(to) - square_Fyle(from);
+    static_assert(std::is_same_v<decltype(rankdiff), int>);
+    static_assert(std::is_same_v<decltype(fylediff), int>);
 
     // If (rankdiff * fylediff) is negative, it's up-left/down-right:
     if (rankdiff * fylediff < 0)
-        return square_Fyle(sm->to) + 8;
+        return square_Fyle(to) + 8;
 
-    return square_Fyle(sm->to);
+    return square_Fyle(to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodeQueen(): encoding Queen moves.
 //
-template <typename DestT>
-void encodeQueen(DestT* buf, const simpleMoveT* sm) {
+static byte encodeQueen(squareT from, squareT to, byte& multibyte) {
     // We cannot fit all Queen moves in one byte, so Rooklike moves
     // are in one byte (encoded the same way as Rook moves),
     // while diagonal moves are in two bytes.
+    if (square_Rank(from) == square_Rank(to)) // Rook-horizontal move:
+        return square_Fyle(to);
 
-    ASSERT (sm->to <= H8  &&  sm->from <= H8);
-    byte val;
+    if (square_Fyle(from) == square_Fyle(to)) // Rook-vertical move:
+        return 8 + square_Rank(to);
 
-    if (square_Rank(sm->from) == square_Rank(sm->to)) {
-        // Rook-horizontal move:
-
-        val = square_Fyle(sm->to);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-    } else if (square_Fyle(sm->from) == square_Fyle(sm->to)) {
-        // Rook-vertical move:
-
-        val = 8 + square_Rank(sm->to);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-    } else {
-        // Diagonal move:
-        ASSERT(std::abs(sm->to / 8 - sm->from / 8) ==
-               std::abs(sm->to % 8 - sm->from % 8));
-
-        // First, we put a rook-horizontal move to the from square (which
-        // is illegal of course) to indicate it is NOT a rooklike move:
-
-        val = square_Fyle(sm->from);
-        buf->emplace_back(makeMoveByte (sm->pieceNum, val));
-
-        // Now we put the to-square in the next byte. We add a 64 to it
-        // to make sure that it cannot clash with the Special tokens (which
-        // are in the range 0 to 15, since they are special King moves).
-
-        buf->emplace_back(sm->to + 64);
-    }
+    // Diagonal move:
+    ASSERT(std::abs(to / 8 - from / 8) == std::abs(to % 8 - from % 8));
+    // First, we put a rook-horizontal move to the from square (which
+    // is illegal of course) to indicate it is NOT a rooklike move:
+    // Now we put the to-square in the next byte. We add a 64 to it
+    // to make sure that it cannot clash with the Special tokens (which
+    // are in the range 0 to 15, since they are special King moves).
+    multibyte = to + 64;
+    return square_Fyle(from);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // encodePawn(): encoding Pawn moves.
 //
-static byte encodePawn(const simpleMoveT* sm) {
+static byte encodePawn(squareT from, squareT to, pieceT promo) {
     // Pawn moves require a promotion encoding.
     // The pawn moves are:
     // 0 = capture-left,
@@ -2655,12 +2570,13 @@ static byte encodePawn(const simpleMoveT* sm) {
     // 15 = forward TWO squares.
 
     byte val;
-    int diff = (int)(sm->to) - (int)(sm->from);
+    auto diff = to - from;
+    static_assert(std::is_same_v<decltype(diff), int>);
 
     if (diff < 0) { diff = -diff; }
     if (diff == 16) { // Move forward two squares
         val = 15;
-        ASSERT (sm->promote == EMPTY);
+        ASSERT (promo == EMPTY);
 
     } else {
         if (diff == 7) { val = 0; }
@@ -2669,13 +2585,13 @@ static byte encodePawn(const simpleMoveT* sm) {
             ASSERT (diff == 9);
             val = 2;
         }
-        if (sm->promote != EMPTY) {
+        if (promo != EMPTY) {
             // Handle promotions.
             // sm->promote must be Queen=2,Rook=3, Bishop=4 or Knight=5.
             // We add 3 for Queen, 6 for Rook, 9 for Bishop, 12 for Knight.
 
-            ASSERT (sm->promote >= QUEEN  &&  sm->promote <= KNIGHT);
-            val += 3 * ((sm->promote) - 1);
+            ASSERT (promo >= QUEEN  &&  promo <= KNIGHT);
+            val += 3 * ((promo) - 1);
         }
     }
     return val;
@@ -2714,15 +2630,9 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 	const squareT from = pos->GetList(toMove)[val >> 4];
 	if (from > H8)
 		return ERROR_Decode;
-	sm->from = from;
-	sm->to = from;
-	sm->promote = EMPTY;
-	sm->movingPiece = pos->GetBoard()[from];
 
-	const auto [to, promo] =
-	    (toMove == WHITE)
-	        ? buf->decodeMove<WHITE>(piece_Type(sm->movingPiece), from, val)
-	        : buf->decodeMove<BLACK>(piece_Type(sm->movingPiece), from, val);
+	const auto ptype = piece_Type(pos->GetPiece(from));
+	const auto [to, promo] = buf->decodeMove(toMove, ptype, from, val);
 	if (to < 0 || to > 63)
 		return ERROR_Decode;
 
@@ -2730,60 +2640,58 @@ static errorT decodeMove(ByteBuffer* buf, simpleMoveT* sm, byte val,
 		if (promo == INVALID_PIECE)
 			return ERROR_Decode;
 
-		if (promo == PAWN) // NULL MOVE
-			return OK;
-
-		if (!pos->validCastling(promo == KING, false))
+		if (promo != PAWN && !pos->canCastle<false>(promo == KING))
 			return ERROR_Decode;
-
-		sm->to += (promo == KING) ? 2 : -2;
-		return OK; // CASTLE
+	} else {
+		if (to == pos->GetKingSquare(WHITE) || to == pos->GetKingSquare(BLACK))
+			return ERROR_Decode;
 	}
-
-	if (to == pos->GetKingSquare(WHITE) || to == pos->GetKingSquare(BLACK))
-		return ERROR_Decode;
-
-	if (promo != INVALID_PIECE)
-		sm->promote = promo;
-
-	sm->to = static_cast<squareT>(to);
+	pos->makeMove(from, to, promo, *sm);
 	return OK;
 }
 
 template <typename DestT>
 void encodeMove(const simpleMoveT& sm, DestT& dest) {
+	byte multibyte = 0;
 	byte val;
 	switch (piece_Type(sm.movingPiece)) {
 	case KING:
-		val = encodeKing(&sm);
+		ASSERT(sm.pieceNum == 0); // Kings MUST be piece Number zero.
+		val = encodeKing(sm.from,
+		                 sm.isCastle() ? sm.from + sm.isCastle() : sm.to);
 		break;
 	case QUEEN:
-		return encodeQueen(&dest, &sm);
-
+		val = encodeQueen(sm.from, sm.to, multibyte);
+		break;
 	case ROOK:
-		val = encodeRook(&sm);
+		val = encodeRook(sm.from, sm.to);
 		break;
 	case BISHOP:
-		val = encodeBishop(&sm);
+		val = encodeBishop(sm.from, sm.to);
 		break;
 	case KNIGHT:
-		val = encodeKnight(&sm);
+		val = encodeKnight(sm.from, sm.to);
 		break;
 	default:
 		ASSERT(PAWN == piece_Type(sm.movingPiece));
-		val = encodePawn(&sm);
+		val = encodePawn(sm.from, sm.to, sm.promote);
 	}
-	const auto encoded = makeMoveByte(sm.pieceNum, val);
+	ASSERT(sm.pieceNum <= 15 && val <= 15);
+	const auto encoded = static_cast<byte>(val | (sm.pieceNum << 4));
 	dest.emplace_back(encoded);
+	if (multibyte) { // Diagonal Queen moves are stored using two bytes.
+		dest.emplace_back(multibyte);
+	}
 }
 
 /// Encode the moves, the nags, the comment mark and the variations.
 template <typename MoveT, typename DestT>
-std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
+std::pair<unsigned, unsigned> encodeMovelist(bool mark_comments, const MoveT* m,
+                                             DestT& dest) {
 	ASSERT(m && m->startMarker());
 
 	// Check if there is a pre-game comment
-	if (!m->comment.empty())
+	if (mark_comments && !m->comment.empty())
 		dest.emplace_back(ENCODE_COMMENT);
 
 	unsigned n_vars = 0;
@@ -2792,7 +2700,7 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 		if (m->startMarker()) {
 			++n_vars;
 			dest.emplace_back(ENCODE_START_MARKER);
-			if (!m->comment.empty())
+			if (mark_comments && !m->comment.empty())
 				dest.emplace_back(ENCODE_COMMENT);
 
 		} else if (m->endMarker()) {
@@ -2807,7 +2715,7 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 				dest.emplace_back(m->nags[i]);
 				++n_nags;
 			}
-			if (!m->comment.empty())
+			if (mark_comments && !m->comment.empty())
 				dest.emplace_back(ENCODE_COMMENT);
 		}
 	}
@@ -2816,14 +2724,15 @@ std::pair<unsigned, unsigned> encodeMovelist(const MoveT* m, DestT& dest) {
 }
 
 /// Decodes the game moves
-errorT Game::DecodeVariation(ByteBuffer& buf) {
+errorT Game::DecodeVariation(ByteBuffer& buf,
+                             std::vector<moveT*>& comment_marks) {
 	simpleMoveT sm;
 	for (;;) {
 		auto [err, val] = buf.nextMove(
 		    this->VarDepth, [&](auto) { return true; },
 		    [&] {
 			    // Mark this comment as needing to be read
-			    this->CurrentMove->prev->comment = '*';
+			    comment_marks.push_back(this->CurrentMove->prev);
 		    },
 		    [&](auto newVariation) {
 			    if (newVariation)
@@ -2839,10 +2748,27 @@ errorT Game::DecodeVariation(ByteBuffer& buf) {
 
 		auto errMove = decodeMove(&buf, &sm, val, currentPos());
 		if (!errMove)
-			errMove = AddMove(&sm);
+			errMove = AddMove(sm);
 		if (errMove)
 			return errMove;
 	}
+}
+
+// Return the number of comments and true if comment marks are useful
+template <typename MoveT> auto countComments(const MoveT* m) {
+	unsigned n_comments = 0;
+	unsigned n_empty = 0;
+	for (; m; m = m->nextMoveInPGN()) {
+		if (m->endMarker())
+			continue;
+
+		if (m->comment.empty()) {
+			++n_empty;
+		} else {
+			++n_comments;
+		}
+	}
+	return std::make_pair(n_comments, n_comments < n_empty);
 }
 
 /**
@@ -2852,43 +2778,47 @@ errorT Game::DecodeVariation(ByteBuffer& buf) {
  * ({C7} 1.g4 {C8}) 1...d5 {C9}
  */
 template <typename MoveT, typename DestT>
-auto encodeComments(const MoveT* m, DestT& dest) {
-	ASSERT(m);
+void encodeComments(bool mark_comments, const MoveT* m, DestT& dest) {
+	for (; m; m = m->nextMoveInPGN()) {
+		if (m->endMarker())
+			continue;
 
-	unsigned n_comments = 0;
-	do {
-		if (!m->comment.empty()) {
+		if (!m->comment.empty() || !mark_comments) {
 			const auto len = m->comment.size() + 1; // Include the null char
 			const auto data = m->comment.c_str();
 			dest.insert(dest.end(), data, data + len);
-			++n_comments;
 		}
-	} while ((m = m->nextMoveInPGN()));
-	return n_comments;
+	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// decodeComments():
-//      Decodes the comments of the game. When decoding the moves, the
-//      comment field of each move that has a comment is marked (made
-//      not empty), so this function recurses the movelist and subvariations
-//      and allocates each comment to its move.
-//
+
+// Decodes the comments from @e buf and stores them into the marked moves.
+// If the number of comments is greater than the number of marked moves, they
+// are added sequentially after the last move that has a comment.
+// This way it is possible to not add encode marks for games that are almost
+// fully commented.
 template <typename SourceT, typename MoveT>
-static errorT decodeComments(SourceT& buf, MoveT* m) {
-	ASSERT(m);
+static errorT decodeComments(SourceT& buf, MoveT* first_move,
+                             std::vector<MoveT*>& comment_marks) {
+    if (!comment_marks.empty()) {
+        for (auto m : comment_marks) {
+            if (auto str = buf.GetTerminatedString())
+                m->comment = str;
+            else
+                return ERROR_Decode;
+        }
+        first_move = comment_marks.back()->nextMoveInPGN();
+    }
+    while (auto str = buf.GetTerminatedString()) {
+        if (!first_move)
+            return ERROR_Decode;
 
-	do {
-		if (!m->comment.empty()) {
-			ASSERT(m->comment == "*");
-			auto str = buf.GetTerminatedString();
-			if (!str)
-				return ERROR_BufferRead;
-			m->comment = str;
-		}
-	} while ((m = m->nextMoveInPGN()));
-	return OK;
+        first_move->comment = str;
+        first_move = first_move->nextMoveInPGN();
+    }
+    return OK;
 }
+
 
 /// Calculate the game's main line information:
 /// - home pawn delta information
@@ -2942,9 +2872,15 @@ std::pair<bool, bool> mainlineInfo(const Position* customStart,
 
 			const moveT* gameMove = firstMove;
 			for (; begin != end; ++begin) {
-				if (gameMove->moveData.from != begin->getFrom() ||
-				    gameMove->moveData.to != begin->getTo())
+				if (begin->isCastle()) {
+					auto side = begin->getTo() > begin->getFrom() ? 2 : -2;
+					if (gameMove->moveData.isCastle() != side)
+						return false;
+
+				} else if (gameMove->moveData.from != begin->getFrom() ||
+				           gameMove->moveData.to != begin->getTo()) {
 					return false;
+				}
 
 				gameMove = gameMove->next;
 			}
@@ -2991,7 +2927,14 @@ std::pair<IndexEntry, TagRoster> Game::Encode(std::vector<byte>& dest) const {
     ie.SetBlackElo(BlackElo);
     ie.SetWhiteRatingType(WhiteRatingType);
     ie.SetBlackRatingType(BlackRatingType);
-    ie.SetStartFlag(HasNonStandardStart());
+    if (HasNonStandardStart()) {
+        ie.SetStartFlag(true);
+        if (StartPos->isChess960()) {
+            ie.setChess960();
+        }
+    } else {
+        ie.SetStartFlag(false);
+    }
     ie.SetFlag(IndexEntry::StrToFlagMask(ScidFlags), true);
 
     const auto [promo, underPromo] = mainlineInfo(StartPos.get(),
@@ -3006,11 +2949,16 @@ std::pair<IndexEntry, TagRoster> Game::Encode(std::vector<byte>& dest) const {
     encodeStartBoard(promo, underPromo,
                      HasNonStandardStart(FEN) ? FEN : nullptr, dest);
 
+    auto [commentCount, markComments] = countComments(FirstMove);
+
+    // Compatibility: SCID4 requires the markers
+    markComments = true;
+
     // Now the movelist:
-    auto [varCount, nagCount] = encodeMovelist(FirstMove, dest);
+    auto [varCount, nagCount] = encodeMovelist(markComments, FirstMove, dest);
 
     // Now do the comments
-    const auto commentCount = encodeComments(FirstMove, dest);
+    encodeComments(markComments, FirstMove, dest);
 
     ie.SetCommentCount(commentCount);
     ie.SetVariationCount(varCount);
@@ -3072,7 +3020,8 @@ errorT Game::DecodeMovesOnly(ByteBuffer& buf) {
 	if (errorT err = DecodeSkipTags(&buf))
 		return err;
 
-	return DecodeVariation(buf);
+	std::vector<moveT*> comment_marks;
+	return DecodeVariation(buf, comment_marks);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3098,11 +3047,12 @@ errorT Game::Decode(IndexEntry const& ie, TagRoster const& tags, ByteBuffer buf)
     if (fen)
         err = SetStartFen(fen);
 
+    std::vector<moveT*> comment_marks;
     if (err == OK)
-        err = DecodeVariation(buf);
+        err = DecodeVariation(buf, comment_marks);
 
     if (err == OK)
-        err = decodeComments(buf, FirstMove);
+        err = decodeComments(buf, FirstMove, comment_marks);
 
     return err;
 }

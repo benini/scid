@@ -153,8 +153,6 @@ enum gameFormatT {
 void  game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format);
 byte game_parseNag(std::pair<const char*, const char*> strview);
 
-uint strGetRatingType (const char * name);
-
 //////////////////////////////////////////////////////////////////////
 //  Game:  Class Definition
 
@@ -197,7 +195,7 @@ private:
     moveT* allocMove();
     moveT* NewMove(markerT marker);
     void ClearMoves();
-    errorT DecodeVariation(ByteBuffer& buf);
+    errorT DecodeVariation(ByteBuffer& buf, std::vector<moveT*>& comment_marks);
     errorT WritePGN(TextBuffer* tb);
 
     /**
@@ -239,7 +237,7 @@ public:
     //////////////////////////////////////////////////////////////
     // Functions to add or delete moves:
     //
-    errorT AddMove(const simpleMoveT* sm);
+    errorT AddMove(simpleMoveT const& sm);
     errorT AddVariation();
     errorT DeleteVariation();
     errorT FirstVariation();
@@ -378,8 +376,8 @@ public:
     void     SetResult (resultT res) { Result = res; }
     void     SetWhiteElo (eloT elo)  { WhiteElo = elo; }
     void     SetBlackElo (eloT elo)  { BlackElo = elo; }
-    void     SetWhiteRatingType (byte b) { WhiteRatingType = b; }
-    void     SetBlackRatingType (byte b) { BlackRatingType = b; }
+    void     SetWhiteRatingType (byte b) { WhiteRatingType = b > 7 ? 0 : b; }
+    void     SetBlackRatingType (byte b) { BlackRatingType = b > 7 ? 0 : b; }
     int setRating(colorT col, const char* ratingType, size_t ratingTypeLen,
                   std::pair<const char*, const char*> rating);
     void     SetEco (ecoT eco)       { EcoCode = eco; }
@@ -434,7 +432,7 @@ public:
                        byte* max, patternT* ptn, size_t ptn_size, int minPly,
                        int maxPly, int matchLength, bool oppBishops,
                        bool sameBishops, int minDiff, int maxDiff);
-    bool      ExactMatch (Position * pos, ByteBuffer * buf, simpleMoveT * sm,
+    bool      ExactMatch (Position * pos, ByteBuffer * buf,
                           gameExactMatchT searchType);
     bool      VarExactMatch (Position * searchPos, gameExactMatchT searchType);
 

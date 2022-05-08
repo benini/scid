@@ -1184,7 +1184,7 @@ sc_eco_base (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->DecodeNextMove(&bbuf, sm) != OK)
                 break;
 
-            g->GetCurrentPos()->DoSimpleMove(&sm);
+            g->GetCurrentPos()->DoSimpleMove(sm);
         }
 
         if (!extendedCodes) {
@@ -1905,7 +1905,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
         "startBoard", "strip",
-        "tags",       "truncate",   "UCI_currentPos",
+        "tags",       "truncate",   "variant", "UCI_currentPos",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
     enum {
@@ -1915,7 +1915,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
         GAME_STARTBOARD, GAME_STRIP,
-        GAME_TAGS,       GAME_TRUNCATE,   GAME_UCI_CURRENTPOS,
+        GAME_TAGS,       GAME_TRUNCATE,   GAME_VARIANT, GAME_UCI_CURRENTPOS,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
@@ -2019,6 +2019,11 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->gameAltered = true;
         language = old_language;
         break;
+
+    case GAME_VARIANT:
+        return UI_Result(ti, OK,
+                         db->game->currentPos()->isChess960() ? "chess960"
+                                                              : "standard");
 
     case GAME_UCI_CURRENTPOS:
         return UI_Result(ti, OK, db->game->currentPosUCI());
@@ -2560,7 +2565,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 
         for (uint i=0; i < moveList.Size(); i++) {
             simpleMoveT * smPtr = moveList.Get(i);
-            scratchPos.DoSimpleMove (smPtr);
+            scratchPos.DoSimpleMove(*smPtr);
             moveFound[i] = false;
             movePrinted[i] = false;
             int newScore = 0;
@@ -3446,7 +3451,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     db->gameAltered = true;
     if (sm) {
         // We need to replicate the last move of the current game.
-        db->game->AddMove(sm);
+        db->game->AddMove(*sm);
     }
     merge->MoveToPly (mergePly);
     ply = mergePly;
@@ -3454,7 +3459,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         simpleMoveT * mergeMove = merge->GetCurrentMove();
         if (merge->MoveForward() != OK) { break; }
         if (mergeMove == NULL) { break; }
-        if (db->game->AddMove(mergeMove) != OK) { break; }
+        if (db->game->AddMove(*mergeMove) != OK) { break; }
         ply++;
     }
 
@@ -3522,13 +3527,7 @@ sc_game_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (sanFormat) {
             g->GetSAN (s);
         } else {
-            *s++ = square_FyleChar(sm->from);
-            *s++ = square_RankChar(sm->from);
-            *s++ = square_FyleChar(sm->to);
-            *s++ = square_RankChar(sm->to);
-            if (sm->promote != EMPTY) {
-                *s++ = piece_Char (piece_Type (sm->promote));
-            }
+            s = sm->toLongNotation(s);
             *s = 0;
         }
         plyCount++;
@@ -4199,6 +4198,15 @@ sc_game_tags_get (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
+static uint strGetRatingType (const char * name) {
+    uint i = 0;
+    while (ratingTypeNames[i] != NULL) {
+        if (strEqual (name, ratingTypeNames[i])) { return i; }
+        i++;
+    }
+    return 0;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_tags_set:
 //    Set the standard tags for this game.
@@ -4854,7 +4862,7 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     Position * pos = db->game->GetCurrentPos();
     errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
     if (err == OK) {
-        err = db->game->AddMove(&sm);
+        err = db->game->AddMove(sm);
         if (err == OK) {
             db->gameAltered = true;
             return TCL_OK;
@@ -4911,7 +4919,7 @@ sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
       Position * pos = db->game->GetCurrentPos();
       errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
       if (err == OK) {
-        err = db->game->AddMove(&sm);
+        err = db->game->AddMove(sm);
         if (err == OK) {
             db->gameAltered = true;
             db->game->GetPrevSAN (tmp);
@@ -5318,7 +5326,7 @@ sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT secondBestEco = ECO_None;
         if (ecoBook != NULL) {
             for (uint i=0; i < mlist.Size(); i++) {
-                pos->DoSimpleMove (mlist.Get(i));
+                pos->DoSimpleMove(*mlist.Get(i));
                 ecoT eco = ecoBook->findECO(pos);
                 pos->UndoSimpleMove (mlist.Get(i));
                 if (eco >= bestEco) {
@@ -5598,16 +5606,7 @@ sc_pos_matchMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         p->GenerateMoves(&mList);
         for (uint i=0; i < mList.Size(); i++) {
             simpleMoveT * sm = mList.Get(i);
-            str[0] = square_FyleChar (sm->from);
-            str[1] = square_RankChar (sm->from);
-            str[2] = square_FyleChar (sm->to);
-            str[3] = square_RankChar (sm->to);
-            if (sm->promote == EMPTY) {
-                str[4] = 0;
-            } else {
-                str[4] = piece_Char (sm->promote);
-                str[5] = 0;
-            }
+            *sm->toLongNotation(str) = '\0';
             if (strIsPrefix (prefix, str)) {
                 Tcl_AppendElement (ti, str);
             }
@@ -7682,12 +7681,14 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT eco = ECO_None;
         if (ecoBook && move) {
             simpleMoveT sm;
-            sm.from = move.getFrom();
-            sm.to = move.getTo();
-            sm.movingPiece = piece_Make(move.getColor(), move.getPiece());
-            sm.promote = move.isPromo() ? move.getPromo() : EMPTY;
-
-            searchPos.DoSimpleMove(&sm);
+            if (move.isCastle()) {
+                auto side = move.getTo() > move.getFrom() ? KING : QUEEN;
+                searchPos.makeMove(move.getFrom(), move.getFrom(), side, sm);
+            } else {
+                auto promo = move.isPromo() ? move.getPromo() : INVALID_PIECE;
+                searchPos.makeMove(move.getFrom(), move.getTo(), promo, sm);
+            }
+            searchPos.DoSimpleMove(sm);
             eco = ecoBook->findECO(&searchPos);
             searchPos.UndoSimpleMove(&sm);
         }
@@ -7938,9 +7939,17 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
 
     if (flip) {
         posFlip = new Position;
-        char cboard [40];
-        pos->PrintCompactStrFlipped (cboard);
-        posFlip->ReadFromCompactStr ((byte *) cboard);
+        posFlip->Clear();
+        for (auto sq = A1; sq <= H8; ++sq) {
+            const auto piece = pos->GetPiece(sq);
+            if (piece != EMPTY) {
+                const auto sq_flip = square_Relative(BLACK, sq);
+                posFlip->AddPiece(PIECE_FLIP[piece], sq_flip);
+            }
+        }
+        posFlip->SetToMove(color_Flip(pos->GetToMove()));
+        posFlip->SetEPTarget(pos->GetEPTarget());
+        //NOTE: the search ignores the castling flags
         hpSigFlip = posFlip->GetHPSig();
         msigFlip = matsig_Make (posFlip->GetMaterial());
     }
@@ -8039,12 +8048,12 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
             g->DecodeMovesOnly(bbuf);
             // Try matching the game without variations first:
             if (ply == 0  &&  possibleMatch) {
-                if (g->ExactMatch (pos, NULL, NULL, searchType)) {
+                if (g->ExactMatch (pos, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                if (g->ExactMatch (posFlip, NULL, NULL, searchType)) {
+                if (g->ExactMatch (posFlip, NULL, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }
@@ -8064,13 +8073,13 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
             // No searching in variations:
             if (possibleMatch) {
                 auto bbuf_clone = bbuf;
-                if (g->ExactMatch(pos, &bbuf_clone, NULL, searchType)) {
+                if (g->ExactMatch(pos, &bbuf_clone, searchType)) {
                     // Set its auto-load move number to the matching move:
                     ply = g->GetCurrentPly() + 1;
                 }
             }
             if (ply == 0  &&  possibleFlippedMatch) {
-                if (g->ExactMatch (posFlip, &bbuf, NULL, searchType)) {
+                if (g->ExactMatch (posFlip, &bbuf, searchType)) {
                     ply = g->GetCurrentPly() + 1;
                 }
             }

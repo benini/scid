@@ -18,7 +18,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -47,7 +47,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -58,7 +58,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -66,7 +66,7 @@ jobs:
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/install -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include $(Build.SourcesDirectory) -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded'
+      cmakeArgs: '-DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/install -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include $(Build.SourcesDirectory) -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DWITH_MD_LIBRARY=OFF'
   - task: MSBuild@1
     inputs:
       solution: 'build/INSTALL.vcxproj'
@@ -84,7 +84,7 @@ jobs:
       cd stockfish\src
       cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
-      curl -o $(Build.SourcesDirectory)\install\bin\nn-62ef826d1a6d.nnue https://data.stockfishchess.org/nn/nn-62ef826d1a6d.nnue
+      curl -o $(Build.SourcesDirectory)\install\bin\nn-d0b74ce1e5eb.nnue https://data.stockfishchess.org/nn/nn-d0b74ce1e5eb.nnue
     displayName: Generate stockfish
   - script: |
       move bin engines
@@ -166,14 +166,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads
       make && make install
@@ -213,14 +213,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
@@ -254,20 +254,20 @@ jobs:
       artifactName: scid_macOS_latest_64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
-- job: macOS_mojave_static
+- job: macOS_catalina_static
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-10 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
@@ -293,10 +293,10 @@ jobs:
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8.6 lib/
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tk8.6 lib/
       cd ..
-      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.14.tar.gz' scid_macos
+      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.15.tar.gz' scid_macos
     displayName: Add the tcl/tk library to the package
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: macOS-10.14 static x64'
+    displayName: 'Publish Artifact: macOS-10.15 static x64'
     inputs:
-      artifactName: scid_macOS_10_14_x64_static_tcl
+      artifactName: scid_macOS_10_15_x64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'

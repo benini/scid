@@ -722,11 +722,12 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
   #TODO translate
   $m add command -label "  Show/Hide Score Bar" -image tb_BD_Scorebar -compound left
-  $m add command -label "  [tr FullScreen]" -image tb_BD_Fullscreen -compound left
+  $m add command -label "  [tr ConfigureScid]" -image tb_BD_Layout -compound left
+
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Scorebar) "::board::toggleScorebar $w"
-  set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
+  set ${varname}(tb_BD_Layout) {::preferences::Open toggle}
 
   return $m
 }

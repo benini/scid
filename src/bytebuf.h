@@ -312,9 +312,8 @@ public:
 	///          - castle queenside: {from, QUEEN}
 	///          - null move: {from, PAWN}
 	/// On error returns an invalid square (<0 or >63) or {from, INVALID_PIECE}.
-	template <colorT toMove>
-	std::pair<int, pieceT> decodeMove(pieceT movingPiece, squareT from,
-	                                  unsigned char moveCode) {
+	std::pair<int, pieceT> decodeMove(colorT toMove, pieceT movingPiece,
+	                                  squareT from, unsigned char moveCode) {
 		moveCode &= 0x0F;
 		switch (movingPiece) {
 		case PAWN: {
@@ -345,7 +344,7 @@ public:
 				int to = (data_ != end_) ? *data_++ : 0;
 				return {to - 64, INVALID_PIECE};
 			}
-			/* FALLTHRU */
+			[[fallthrough]];
 		case ROOK: {
 			int to = (moveCode >= 8) // a vertical move
 			             ? square_Make(square_Fyle(from), (moveCode - 8))

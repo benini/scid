@@ -12,15 +12,16 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "common.h"
 #include "position.h"
 #include "attacks.h"
-#include "misc.h"
-#include "hash.h"
-#include "sqmove.h"
+#include "common.h"
 #include "dstring.h"
+#include "hash.h"
+#include "misc.h"
 #include "movegen.h"
+#include "sqmove.h"
 #include <algorithm>
+#include <array>
 
 inline void
 Position::AddHash (pieceT p, squareT sq)
@@ -159,10 +160,8 @@ inline void
 Position::AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo)
 {
     ASSERT (mlist != NULL);
-    // We do NOT set the pre-move castling/ep flags, or the captured
-    // piece info, here since that is ONLY needed if the move is
-    // going to be executed with DoSimpleMove() and then undone.
-    mlist->emplace_back(from, to, promo, Board[from], Board[to]);
+    auto& sm = mlist->emplace_back();
+    makeMove(from, to, promo, sm);
 }
 
 
@@ -223,25 +222,55 @@ Position::GenKnightMoves (MoveList * mlist, colorT c, squareT fromSq,
     }
 }
 
-squareT Position::castlingKingSq(colorT color) const {
-	return square_Relative(color, E1);
+template <typename TFunc>
+bool Position::under_attack(squareT target_sq, squareT captured_sq,
+                            TFunc not_empty) const {
+	const auto enemy = color_Flip(GetToMove());
+	const auto lpawn_atk = square_Move(target_sq,
+	                                   enemy == WHITE ? DOWN_LEFT : UP_LEFT);
+	const auto rpawn_atk = square_Move(target_sq,
+	                                   enemy == WHITE ? DOWN_RIGHT : UP_RIGHT);
+	const auto enemy_pieces = GetList(enemy);
+	for (size_t i = 1, n = GetCount(enemy); i < n; ++i) {
+		const auto piece_sq = enemy_pieces[i];
+		if (piece_sq == captured_sq)
+			continue;
+
+		const auto piece_type = piece_Type(GetPiece(piece_sq));
+		if (piece_type == KNIGHT) {
+			if (movegen::valid_knight(piece_sq, target_sq))
+				return true; // Knight check
+
+		} else if (piece_type == PAWN) {
+			if (piece_sq == lpawn_atk || piece_sq == rpawn_atk)
+				return true; // Pawn check
+
+		} else {
+			if (movegen::attack_slider(piece_sq, target_sq, piece_type,
+			                           not_empty))
+				return true; // Slider check
+		}
+	}
+	assert(GetCount(enemy) >= 1);
+	return movegen::valid_king(enemy_pieces[0], target_sq);
 }
 
-template <bool king_side> squareT Position::castlingRookSq(colorT color) const {
-	return king_side ? square_Relative(color, H1)
-	                 : square_Relative(color, A1);
+bool Position::under_attack(squareT target_sq) const {
+	return under_attack(target_sq, target_sq,
+	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
-bool Position::validCastling(bool king_side, bool check_legal) const {
-	const squareT kingFrom = castlingKingSq(ToMove);
-	const squareT rookFrom = king_side ? castlingRookSq<true>(ToMove)
-	                                   : castlingRookSq<false>(ToMove);
+template <bool check_legal> bool Position::canCastle(bool king_side) const {
+	if (check_legal && !GetCastling(ToMove, king_side ? KSIDE : QSIDE))
+		return false;
+
+	const squareT kingFrom = GetKingSquare();
+	const squareT rookFrom = castleRookSq(ToMove, king_side);
 	const squareT rookTo = king_side ? square_Relative(ToMove, F1)
 	                                 : square_Relative(ToMove, D1);
 	const squareT kingTo = king_side ? square_Relative(ToMove, G1)
 	                                 : square_Relative(ToMove, C1);
-	if (Board[kingFrom] != piece_Make(ToMove, KING) ||
-	    Board[rookFrom] != piece_Make(ToMove, ROOK))
+	if (Board[rookFrom] != piece_Make(ToMove, ROOK))
 		return false;
 
 	const int stepRook = rookFrom < rookTo ? -1 : 1;
@@ -261,11 +290,12 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 		if (!check_legal)
 			break;
 
-		if (CalcNumChecks(sq) > 0)
+		if (under_attack(sq))
 			return false;
 	}
 	return true;
 }
+template bool Position::canCastle<false>(bool king_side) const;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::GenCastling():
@@ -274,13 +304,13 @@ bool Position::validCastling(bool king_side, bool check_legal) const {
 //    should verify this first.
 //
 void Position::GenCastling(MoveList* mlist) {
-	const squareT from = square_Relative(ToMove, E1);
+	const squareT from = GetKingSquare();
 
-	if (GetCastling(ToMove, KSIDE) && validCastling(true, true))
-		AddLegalMove(mlist, from, from + 2, EMPTY);
+	if (canCastle(true))
+		makeMove(from, from, KING, mlist->emplace_back());
 
-	if (GetCastling(ToMove, QSIDE) && validCastling(false, true))
-		AddLegalMove(mlist, from, from - 2, EMPTY);
+	if (canCastle(false))
+		makeMove(from, from, QUEEN, mlist->emplace_back());
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -289,7 +319,7 @@ void Position::GenCastling(MoveList* mlist) {
 //      the specified flag is true.
 //
 void
-Position::GenKingMoves (MoveList * mlist, genMovesT genType, bool castling)
+Position::GenKingMoves (MoveList * mlist, genMovesT genType)
 {
     squareT kingSq = GetKingSquare();
     squareT enemyKingSq = GetEnemyKingSquare();
@@ -330,8 +360,6 @@ Position::GenKingMoves (MoveList * mlist, genMovesT genType, bool castling)
         if (addThisMove) { AddLegalMove (mlist, kingSq, destSq, EMPTY); }
         destPtr++;
     }
-    // Now generate castling moves, if possible:
-    if (genNonCaptures  &&  castling) { GenCastling (mlist); }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -523,6 +551,8 @@ Position::Clear (void)
     Count[WHITE] = Count[BLACK] = 0;
     EPTarget = NULL_SQUARE;
     Castling = 0;
+    variant_ = 0;
+    std::fill_n(castleRookSq_, 4, 0);
     Board [NULL_SQUARE] = END_OF_BOARD;
     PlyCounter = 0;
     HalfMoveClock = 0;
@@ -531,6 +561,32 @@ Position::Clear (void)
     return;
 }
 
+void Position::SetCastling(colorT col, castleDirT dir) {
+	static_assert(1 << castlingIdx(WHITE, QSIDE) == 1);
+	static_assert(1 << castlingIdx(WHITE, KSIDE) == 2);
+	static_assert(1 << castlingIdx(BLACK, QSIDE) == 4);
+	static_assert(1 << castlingIdx(BLACK, KSIDE) == 8);
+
+	const auto idx = castlingIdx(col, dir);
+	const auto ksq = GetKingSquare(col);
+	const auto std_rsq = (dir == QSIDE) ? square_Relative(col, A1)
+	                                    : square_Relative(col, H1);
+	const auto std_rank = square_Rank(std_rsq);
+	auto rsq = std_rsq;
+	if (square_Rank(ksq) == std_rank) {
+		const auto rook = piece_Make(col, ROOK);
+		while (Board[rsq] != rook && rsq != ksq) {
+			if (rsq < ksq)
+				++rsq;
+			else
+				--rsq;
+		}
+	}
+	castleRookSq_[idx] = rsq;
+	Castling |= 1u << idx;
+	if (ksq != square_Relative(col, E1) || rsq != std_rsq)
+		variant_ = 1;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::StdStart():
@@ -576,9 +632,10 @@ const Position& Position::getStdStart()
             p->AddToBoard(BP, A7+i); p->List[BLACK][i+8] = A7+i; p->ListPos[A7+i] = i+8;
         }
 
-        p->Castling = 0;
-        p->SetCastling (WHITE, QSIDE, true);  p->SetCastling (WHITE, KSIDE, true);
-        p->SetCastling (BLACK, QSIDE, true);  p->SetCastling (BLACK, KSIDE, true);
+        p->SetCastling(WHITE, QSIDE);
+        p->SetCastling(WHITE, KSIDE);
+        p->SetCastling(BLACK, QSIDE);
+        p->SetCastling(BLACK, KSIDE);
         p->EPTarget = NULL_SQUARE;
         p->ToMove = WHITE;
         p->PlyCounter = 0;
@@ -807,272 +864,129 @@ Position::GenerateMoves (MoveList* mlist, pieceT pieceType,
 
     // Lastly, king moves...
     if (mask & (1 << KING)) {
-        bool castling = !numChecks;
-        GenKingMoves (mlist, genType, castling);
+        GenKingMoves (mlist, genType);
+        if (!numChecks && genNonCaptures) {
+            GenCastling(mlist);
+        }
     }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::IsLegalMove
-//   Determines whether the specified move is legal in this position,
-//   without requiring move generation (except for castling moves).
-bool
-Position::IsLegalMove (simpleMoveT * sm) {
-    // TODO:
-    // return IsLegalMove(sm->from, sm->to, sm->promote) &&
-    //        sm->movingPiece == Board[sm->from]
+// Return true if moving the piece from square @e from to square @e dest
+// (NULL_SQUARE if the piece is captured) would leave the king in check.
+// It can also be used to check if the last move created a discovered check.
+static bool xray_check(Position const& pos, squareT from, squareT to) {
+	const auto [atk_piece, atk_sq] = movegen::opens_ray(
+	    from, to, pos.GetKingSquare(),
+	    [&](auto sq) { return pos.GetPiece(sq) != EMPTY; });
 
-    squareT from = sm->from;
-    squareT to = sm->to;
-    if (from > H8  ||  to > H8) { return false; }
-    if (from == to) { return false; }
-    pieceT mover = Board[from];
-    pieceT captured = Board[to];
-    if (piece_Color(mover) != ToMove) { return false; }
-    if (piece_Color(captured) == ToMove) { return false; }
-    if (sm->movingPiece != mover) { return false; }
-    mover = piece_Type (mover);
-    if (sm->promote != EMPTY  &&  mover != PAWN) { return false; }
+	if (atk_piece == INVALID_PIECE)
+		return false;
 
-    if (mover == PAWN) {
-        rankT rfrom = square_Rank(from);
-        rankT rto = square_Rank(to);
-        if (ToMove == BLACK) { rfrom = RANK_8 - rfrom; rto = RANK_8 - rto; }
-        int rdiff = (int)rto - (int)rfrom;
-        int fdiff = (int)square_Fyle(to) - (int)square_Fyle(from);
-        if (rdiff < 1  ||  rdiff > 2) { return false; }
-        if (fdiff < -1  ||  fdiff > 1) { return false; }
-        if (fdiff == 0) {  // Pawn push:
-            if (captured != EMPTY) { return false; }
-            if (rdiff == 2) {  // Two-square push:
-                if (rfrom != RANK_2) { return false; }
-                // Make sure the square in between is empty:
-                squareT midsquare = from + ((to - from) / 2);
-                if (Board[midsquare] != EMPTY) { return false; }
-            }
-        } else {  // Pawn capture:
-            if (rdiff != 1) { return false; }
-            if (captured == EMPTY) {
-                // It must be en passant, or illegal
-                if (to != EPTarget) { return false; }
-            }
-        }
-        // Check the promotion piece:
-        if (rto == RANK_8) {
-            pieceT p = sm->promote;
-            if (p != QUEEN  &&  p != ROOK  &&  p != BISHOP  &&  p != KNIGHT) {
-                return false;
-            }
-        } else {
-            if (sm->promote != EMPTY) { return false; }
-        }
-
-    } else if (piece_IsSlider(mover)) {
-        // Make sure the direction is valid:
-        directionT dir = sqDir[from][to];
-        if (dir == NULL_DIR) { return false; }
-        if (mover == ROOK  &&  direction_IsDiagonal(dir)) { return false; }
-        if (mover == BISHOP  &&  !direction_IsDiagonal(dir)) { return false; }
-        int delta = direction_Delta (dir);
-        // Make sure all the in-between squares are empty:
-        squareT dest = from + delta;
-        while (dest != to) {
-            if (Board[dest] != EMPTY) { return false; }
-            dest += delta;
-        }
-
-    } else if (mover == KNIGHT) {
-        if (! square_IsKnightHop (from, to)) { return false; }
-
-    } else /* (mover == KING) */ {
-        colorT enemy = color_Flip(ToMove);
-        if (! square_Adjacent (from, to)) {
-            // The move must be castling, or illegal.
-            if (IsKingInCheck()) { return false; }
-            MoveList mlist;
-            GenCastling (&mlist);
-            return std::find(mlist.begin(), mlist.end(), cmpMove(*sm)) != mlist.end();
-        }
-        if (square_Adjacent (to, GetKingSquare(enemy))) { return false; }
-    }
-
-    // The move looks good, but does it leave the king in check?
-    squareT kingSq = (mover == KING) ? to : GetKingSquare(ToMove);
-    colorT enemy = color_Flip(ToMove);
-    DoSimpleMove (sm);
-    uint nchecks = CalcAttacks (enemy, kingSq, NULL);
-    UndoSimpleMove (sm);
-    return (nchecks == 0);
+	const auto piece = pos.GetPiece(atk_sq);
+	const auto pt = piece_Type(piece);
+	const auto col = piece_Color_NotEmpty(piece);
+	return col != pos.GetToMove() && (pt == QUEEN || pt == atk_piece);
 }
 
-bool Position::IsLegalMove(squareT from, squareT to, pieceT promo) {
-    if (from > H8 || to > H8)
-        return false;
+/// Check that the move is contained within the board, that a piece of the wrong
+/// color is not moved, that a king or piece of the same color is not captured,
+/// and that only pawns are promoted.
+static bool invalid_move(Position const& pos, squareT from, squareT to,
+                         pieceT promo) {
+	if (from > H8 || to > H8)
+		return true; // Invalid square
 
-    const auto mover = Board[from];
-    const auto captured = Board[to];
-    const auto pt = piece_Type(mover);
-    if (piece_Color(mover) != ToMove ||    // Wrong side to move
-        piece_Color(captured) == ToMove || // Capturing its own piece
-        piece_Type(captured) == KING ||    // Capturing the king
-        (pt != PAWN && promo != EMPTY))    // Only pawn can promote
-        return false;
-
-    if (pt == KING || pt == PAWN) {
-        simpleMoveT sm;
-        sm.from = from;
-        sm.to = to;
-        sm.promote = promo;
-        sm.movingPiece = mover;
-        return IsLegalMove(&sm);
-    }
-
-    auto isOccupied = [this](auto sq) { return Board[sq] != EMPTY; };
-    if (!movegen::pseudo(from, to, ToMove, pt, isOccupied))
-        return false;
-
-    const auto enemy = color_Flip(GetToMove());
-    const auto king_sq = GetKingSquare();
-    SquareList sq_list;
-    const auto n_checks = CalcAttacks(enemy, king_sq, &sq_list);
-    if (n_checks > 0) {
-        if (n_checks > 1)
-            return false; // a double ckeck requires a king move
-
-        const auto checker_sq = sq_list.Get(0);
-        const auto checker_pt = piece_Type(GetPiece(checker_sq));
-        if (checker_sq != to &&
-            movegen::attack(
-                checker_sq, king_sq, enemy, checker_pt,
-                [&](auto sq) { return sq == to || GetPiece(sq) != EMPTY; }))
-            return false; // the attacker was not captured or blocked
-    }
-
-    const auto pin = movegen::opens_ray(from, to, GetKingSquare(), isOccupied);
-    if (pin.first != INVALID_PIECE) {
-        auto p = Board[pin.second];
-        if (piece_Color_NotEmpty(p) != ToMove &&
-            (piece_Type(p) == QUEEN || piece_Type(p) == pin.first))
-            return false;
-    }
-    return true;
+	const auto toMove = pos.GetToMove();
+	const auto mover = pos.GetPiece(from);
+	const auto captured = pos.GetPiece(to);
+	const auto pt = piece_Type(mover);
+	return piece_Color(mover) != toMove || // Wrong side to move
+	       piece_Type(captured) == KING || // Capturing the king
+	       (promo != EMPTY && pt != PAWN); // Only pawn can promote
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::MatchPawnMove():
-//      Sets the LegalMoves list to contain the matching pawn move,
-//      if there is one.
-//
-errorT
-Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote)
-{
-    ASSERT(mlist != NULL);
+/// Return NULL_SQUARE (if the move is not pseudo legal) or the captured square
+/// (which is different from @e to for en passant moves).
+static squareT pseudo_legal(Position const& pos, squareT from, squareT to,
+                            pieceT promo) {
+	const auto toMove = pos.GetToMove();
+	const auto captured = pos.GetPiece(to);
+	const auto pt = piece_Type(pos.GetPiece(from));
+	if (!movegen::pseudo(from, to, toMove, pt,
+	                     [&](auto sq) { return pos.GetPiece(sq) != EMPTY; }))
+		return NULL_SQUARE; // Invalid move
 
-    mlist->Clear();
+	auto captured_sq = to;
+	if (pt == PAWN) {
+		if (captured == EMPTY && square_Fyle(from) != square_Fyle(to)) {
+			captured_sq = (toMove == WHITE) ? to - 8 : to + 8;
+			const auto enemy = color_Flip(toMove);
+			if (to != pos.GetEPTarget() ||
+			    pos.GetPiece(captured_sq) != piece_Make(enemy, PAWN))
+				return NULL_SQUARE; // Invalid en passant
+		}
+		if (RANK_8 != square_Rank(square_Relative(toMove, to))) {
+			if (promo != EMPTY)
+				return NULL_SQUARE; // Wrong promotion rank
+		} else {
+			if (promo != QUEEN && promo != ROOK && promo != BISHOP &&
+			    promo != KNIGHT)
+				return NULL_SQUARE; // Wrong promotion piece type
+		}
+	}
+	return captured_sq;
+}
 
-    sint diff = (int)square_Fyle(to) - (int)fromFyle;
-    if (diff < -1  ||  diff > 1) { return ERROR_InvalidMove; }
-    pieceT pawn;
-    rankT toRank = square_Rank(to);
-    fyleT toFyle = square_Fyle(to);
-    rankT promoteRank = (ToMove == WHITE ? RANK_8 : RANK_1);
+/// Return the captured square (which is different from @e to for en passant
+/// moves) if the move is pseudo legal and the moving piece is not pinned.
+/// Return NULL_SQUARE otherwise.
+/// The move is also legal if the king is not in check or if there is only one
+/// attacker and it is captured or blocked.
+static squareT pseudo_not_pinned(Position const& pos, squareT from, squareT to,
+                                 pieceT promo) {
+	const auto captured_sq = pseudo_legal(pos, from, to, promo);
+	if (captured_sq == NULL_SQUARE)
+		return NULL_SQUARE; // Invalid move
 
-    // from is the from square; backup is the alternative from square
-    // for a pawn move two squares forward.
+	if (captured_sq != to && xray_check(pos, captured_sq, NULL_SQUARE))
+		return NULL_SQUARE; // Capturing en passant leaves our king in check
 
-    squareT from, backup = NS;
+	return xray_check(pos, from, to) ? NULL_SQUARE : captured_sq;
+}
 
-    if (ToMove == WHITE) {
-        pawn = WP;
-        if (toRank < RANK_3) { return ERROR_InvalidMove; }
-        from = square_Make(fromFyle, toRank - 1);
-        if (toRank == RANK_4  &&  fromFyle == toFyle) { backup = to - 16; }
-    } else {
-        pawn = BP;
-        if (toRank > RANK_6) { return ERROR_InvalidMove; }
-        from = square_Make(fromFyle, toRank + 1);
-        if (toRank == RANK_5  &&  fromFyle == toFyle) { backup = to + 16; }
-    }
+/// Returns:
+///  0 -> invalid move
+///  1 -> valid normal move
+///  2 -> valid castle king side
+/// -2 -> valid castle queen side
+int Position::IsLegalMove(squareT from, squareT to, pieceT promo) const {
+	if (invalid_move(*this, from, to, promo))
+		return 0;
 
-    // See if the promotion piece is valid:
+	const auto king_sq = GetKingSquare();
+	const auto captured_sq = piece_Color(GetPiece(to)) == ToMove
+	                             ? NULL_SQUARE // Capturing its own piece
+	                             : pseudo_legal(*this, from, to, promo);
+	if (captured_sq == NULL_SQUARE) {
+		if (promo != EMPTY || from != king_sq)
+			return 0; // Invalid move
 
-    if (toRank == promoteRank) {
-        // if (promote == EMPTY)  { return ERROR_InvalidMove; }
-        if (promote == EMPTY)  {
-          // autopromote to queen
-          promote = QUEEN;
-        }
-    } else {
-        if (promote != EMPTY)  { return ERROR_InvalidMove; }
-    }
+		const bool king_side = to > from;
+		const auto castleStd = square_Relative(ToMove, king_side ? G1 : C1);
+		const auto castle960 = castleRookSq(ToMove, king_side);
+		if ((to == castleStd || to == castle960) && canCastle(king_side) &&
+		    !under_attack(king_sq))
+			return king_side ? 2 : -2;
 
-    if (Board[from] != pawn) {
-        // No match; but it could be a foward-two-squares move:
-        if (backup == NS || Board[from] != EMPTY || Board[backup] != pawn) {
-            // A forward-two-squares move is impossible.
-            return ERROR_InvalidMove;
-        }
-        from = backup;
-    }
+		return 0; // Invalid move
+	}
 
-    // OK, now 'from' is the only possible from-square. Is the move legal?
-    // We make the move on the board and see if the King is in check.
-
-    uint legal = 0;
-    if (fromFyle == toFyle) {
-        // Not a capture:
-
-        if (Board[to] != EMPTY) { return ERROR_InvalidMove; }
-        Board[to] = pawn;  Board[from] = EMPTY;
-        if (CalcNumChecks (GetKingSquare()) == 0) {
-            legal = 1;
-        }
-       Board[to] = EMPTY; Board[from] = pawn;
-
-    } else {
-        // It is a capture -- is it legal?
-
-        pieceT captured = Board[to];
-        if (captured == EMPTY) {
-            // Must be an en passant or illegal move.
-            if (to != EPTarget) { return ERROR_InvalidMove; }
-            squareT epSquare = square_Make(toFyle, square_Rank(from));
-
-            pieceT enemyPawn = piece_Make (color_Flip(ToMove), PAWN);
-            // If following assert fails, eptarget was corrupt
-            ASSERT (Board[epSquare] == enemyPawn);
-
-            Board[to] = pawn; Board[from] = EMPTY;
-            Board[epSquare] = EMPTY;
-            Material[enemyPawn] --;
-            if (CalcNumChecks (GetKingSquare()) == 0) { legal = 1; }
-            Board[epSquare] = enemyPawn;
-            Board[to] = EMPTY;
-            Board[from] = pawn;
-            Material[enemyPawn]++;
-
-        } else {
-            if (piece_Color(captured) == ToMove) {
-                // Capturing a friendly!
-                return ERROR_InvalidMove;
-            } else {
-                // A regular capture. See if it leaves King in check:
-                Board[to] = pawn;  Board[from] = EMPTY;
-                Material[captured]--;
-                if (CalcNumChecks (GetKingSquare()) == 0) {
-                    legal = 1;
-                }
-                Material[captured]++;
-                Board[to] = captured; Board[from] = pawn;
-            }
-        }
-    }
-
-    if (legal == 1) {
-        AddLegalMove (mlist, from, to, promote);
-        return OK;
-    }
-    return ERROR_InvalidMove;
+	const auto target_sq = (from == king_sq) ? to : king_sq;
+	auto not_empty = [&](auto sq) {
+		return sq == to ||
+		       (sq != from && sq != captured_sq && GetPiece(sq) != EMPTY);
+	};
+	return under_attack(target_sq, captured_sq, not_empty) ? 0 : 1;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1150,9 +1064,7 @@ Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
     }
 
     // Now king moves -- just compute them normally:
-    if (mask == EMPTY  ||  mask == KING) { GenKingMoves(mlist, genType, false); }
-
-    return;
+    if (mask == EMPTY  ||  mask == KING) { GenKingMoves(mlist, genType); }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1171,7 +1083,7 @@ Position::TreeCalcAttacks(colorT side, squareT target)
     if (smPtr->to == target) {
       if (piece_IsKing(Board[target])) return -1;
       moveCount++;
-      DoSimpleMove(smPtr);
+      DoSimpleMove(*smPtr);
       int score = TreeCalcAttacks(color_Flip(side), target);
       UndoSimpleMove(smPtr);
       if (!score && ++zeroCount > 1) return -2;
@@ -1339,74 +1251,6 @@ Position::CalcAttacks (colorT side, squareT target, SquareList * fromSquares) co
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::IsKingInCheckDir
-//   Returns true if the King of the side to move is attacked
-//   by an enemy sliding piece (Queen/Rook/Bishop) from the
-//   specified direction.
-bool
-Position::IsKingInCheckDir (directionT dir)
-{
-    ASSERT (dir != NULL_DIR);
-    squareT kingSq = GetKingSquare(ToMove);
-    colorT enemy = color_Flip(ToMove);
-    bool isDiagonal = direction_IsDiagonal(dir);
-    pieceT queen = piece_Make (enemy, QUEEN);
-    pieceT slider = piece_Make (enemy, (isDiagonal ? BISHOP : ROOK));
-
-    // First, make sure the enemy has sliding pieces that could give check:
-    uint nSliders = PieceCount(queen) + PieceCount(slider);
-    if (nSliders == 0) { return false; }
-
-    // Now make sure the enemy has a sliding piece on the appropriate
-    // rank, file or diagonal:
-    fyleT fyle = square_Fyle (kingSq);
-    rankT rank = square_Rank (kingSq);
-    leftDiagT ldiag = square_LeftDiag (kingSq);
-    rightDiagT rdiag = square_RightDiag (kingSq);
-
-    switch (dir) {
-    case UP:
-    case DOWN:
-        nSliders = FyleCount(queen,fyle) + FyleCount(slider,fyle);
-        break;
-    case LEFT:
-    case RIGHT:
-        nSliders = RankCount(queen,rank) + RankCount(slider,rank);
-        break;
-    case UP_LEFT:
-    case DOWN_RIGHT:
-        nSliders = LeftDiagCount(queen,ldiag) + LeftDiagCount(slider,ldiag);
-        break;
-    case UP_RIGHT:
-    case DOWN_LEFT:
-        nSliders = RightDiagCount(queen,rdiag) + RightDiagCount(slider,rdiag);
-        break;
-    }
-    if (nSliders == 0) { return false; }
-
-    // Now move along the specified direction looking for a checking piece:
-    squareT dest = kingSq;
-    squareT last = square_Last (kingSq, dir);
-    int delta = direction_Delta (dir);
-
-    while (dest != last) {
-        dest += delta;
-        pieceT p = Board[dest];
-        if (p == EMPTY) {
-             // empty square: keep searching
-        } else if (p == queen  ||  p == slider) {
-            // Found an checking slider piece
-            return true;
-        } else {
-            // Found a piece, but not an enemy queen or rook/bishop
-            break;
-        }
-    }
-
-    return false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsKingInCheck
 //   Returns true if the king of the side to move is in check.
 //   If the specified move is not NULL, it must be the legal move
@@ -1415,60 +1259,29 @@ Position::IsKingInCheckDir (directionT dir)
 //   move could not have left the king in check.
 //
 bool
-Position::IsKingInCheck (simpleMoveT * sm)
+Position::IsKingInCheck (simpleMoveT const& sm)
 {
-    if (sm == NULL) { return IsKingInCheck(); }
-
-    squareT kingSq = GetKingSquare(ToMove);
-    pieceT p = piece_Type (sm->movingPiece);
-    if (sm->promote != EMPTY) { p = piece_Type(sm->promote); }
+    pieceT p = (sm.promote == EMPTY) ? piece_Type(sm.movingPiece) : sm.promote;
 
     // No optimization of the last move was castling:
-    if (p == KING  &&  square_Fyle(sm->from) == E_FYLE) {
-        fyleT toFyle = square_Fyle(sm->to);
-        if (toFyle == C_FYLE  ||  toFyle == G_FYLE) {
+    if (sm.isCastle()) {
+        return IsKingInCheck();
+    }
+    // No optimization for en passant capture:
+    if (p == PAWN && piece_Type(sm.capturedPiece) == PAWN) {
+        rankT fromRank = square_Rank(sm.from);
+        rankT capturedRank = square_Rank(sm.capturedSquare);
+        if (fromRank == capturedRank) {
             return IsKingInCheck();
         }
     }
-    // No optimization for en passant capture:
-    if (p == PAWN  &&  piece_Type(sm->capturedPiece) == PAWN) {
-        rankT fromRank = square_Rank(sm->from);
-        rankT capturedRank = square_Rank(sm->capturedSquare);
-        if (fromRank == capturedRank) { return IsKingInCheck(); }
-    }
 
-    if (p == PAWN) {
-        if (ToMove == WHITE) {
-            if (Material[BP] > 0) {
-                squareT sq = square_Move (kingSq, UP_LEFT);
-                if (Board[sq] == BP)  { return true; }
-                sq = square_Move (kingSq, UP_RIGHT);
-                if (Board[sq] == BP)  { return true; }
-            }
-        } else {
-            if (Material[WP] > 0) {
-                squareT sq = square_Move (kingSq, DOWN_LEFT);
-                if (Board[sq] == WP)  { return true; }
-                sq = square_Move (kingSq, DOWN_RIGHT);
-                if (Board[sq] == WP)  { return true; }
-            }
-        }
-    } else if (p == KNIGHT) {
-        if (square_IsKnightHop (kingSq, sm->to)) { return true; }
-    } else if (p == KING) {
-        // A king cannot directly check its adversary.
-    } else {
-        // A sliding piece:
-        directionT toDir = sqDir[kingSq][sm->to];
-        if (toDir != NULL_DIR  &&  IsKingInCheckDir(toDir)) { return true; }
-    }
+    if (movegen::attack(sm.to, GetKingSquare(), color_Flip(ToMove), p,
+                        [&](auto sq) { return GetPiece(sq) != EMPTY; }))
+        return true;
 
     // Now look for a discovered check from a sliding piece:
-    directionT dir = sqDir[kingSq][sm->from];
-    if (dir != NULL_DIR  &&  IsKingInCheckDir(dir)) { return true; }
-
-    ASSERT (IsKingInCheck() == false);
-    return false;
+    return xray_check(*this, sm.from, sm.to);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1570,6 +1383,73 @@ Position::IsPromoMove (squareT from, squareT to)
     return 0;
 }
 
+/// Make a simpleMoveT.
+/// If @e promo != INVALID_PIECE it is a special move:
+/// promo == PAWN -> null move
+/// from != to -> promotion
+/// from == to && PAWN == KING -> castle kingside
+/// from == to && PAWN != KING -> castle queenside
+void Position::makeMove(squareT from, squareT to, pieceT promo,
+                        simpleMoveT& res) const {
+	res.castling = 0;
+	if (promo == EMPTY || promo == INVALID_PIECE) { // NORMAL MOVE
+		res.from = from;
+		res.to = to;
+		res.promote = EMPTY;
+	} else if (promo == PAWN) { // NULL MOVE
+		res.from = GetKingSquare(ToMove);
+		res.to = res.from;
+		res.promote = EMPTY;
+		res.movingPiece = KING;
+	} else if (from != to) { // PROMOTION
+		res.from = from;
+		res.to = to;
+		res.promote = promo;
+	} else { // CASTLING
+		res.from = GetKingSquare(ToMove);
+		if (isChess960()) {
+			res.to = castleRookSq(ToMove, promo == KING);
+		} else {
+			res.to = res.from;
+			res.to += promo == KING ? 2 : -2;
+		}
+		res.promote = EMPTY;
+		res.castling = 1;
+	}
+	fillMove(res);
+}
+
+/// Use the current position to retrieve all the information needed to create a
+/// SimpleMove which can also be used in UndoSimpleMove.
+void Position::fillMove(simpleMoveT& sm) const {
+	const auto from = sm.from;
+	const auto to = sm.to;
+	sm.movingPiece = GetPiece(sm.from);
+	sm.pieceNum = ListPos[from];
+	sm.castleFlags = Castling;
+	sm.epSquare = EPTarget;
+	sm.oldHalfMoveClock = HalfMoveClock;
+	sm.capturedSquare = to;
+	if (sm.isNullMove() || sm.isCastle()) {
+		sm.capturedPiece = EMPTY;
+	} else {
+		sm.capturedPiece = GetPiece(to);
+	}
+
+	// Handle en passant capture:
+	if (piece_Type(sm.movingPiece) == PAWN && sm.capturedPiece == EMPTY &&
+	    square_Fyle(from) != square_Fyle(to)) {
+		// This was an EP capture. We do not need to check it was a capture
+		// since if a pawn lands on EPTarget it must capture to get there.
+		sm.capturedSquare = WhiteToMove() ? to - 8 : to + 8;
+		sm.capturedPiece = GetPiece(sm.capturedSquare);
+		ASSERT(sm.capturedPiece == piece_Make(color_Flip(GetToMove()), PAWN));
+	}
+
+	if (sm.capturedPiece != EMPTY) {
+		sm.capturedNum = ListPos[sm.capturedSquare];
+	}
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::DoSimpleMove():
@@ -1580,96 +1460,76 @@ void
 Position::DoSimpleMove (simpleMoveT * sm)
 {
     ASSERT (sm != NULL);
-    // The caller must have set the first 4 members of sm
-    const squareT from = sm->from;
-    const squareT to = sm->to;
-    const auto promo = sm->promote;
-    const auto ptype = piece_Type(sm->movingPiece);
-    const auto pieceNum = ListPos[from];
-
     // update move fields that (maybe) have not yet been set:
-    sm->pieceNum = pieceNum;
-    sm->capturedPiece = Board[to];
-    sm->capturedSquare = to;
-    sm->castleFlags = Castling;
-    sm->epSquare = EPTarget;
-    sm->oldHalfMoveClock = HalfMoveClock;
+	fillMove(*sm);
+	DoSimpleMove(*sm);
+}
+
+void Position::DoSimpleMove(simpleMoveT const& sm) {
+    const auto from = sm.from;
+    const auto to = sm.to;
+    const auto promo = sm.promote;
+    const auto movingPiece = GetPiece(from);
+    const auto ptype = piece_Type(movingPiece);
+    const auto pieceNum = ListPos[from];
+    const auto color = ToMove;
+    const auto enemy = color_Flip(color);
 
     HalfMoveClock++;
     PlyCounter++;
-
-	auto finalUpdate = [&](auto enPassantSq) {
-		EPTarget = enPassantSq;
-		ToMove = color_Flip(ToMove);
-	};
+    EPTarget = NULL_SQUARE;
+    ToMove = enemy;
 
 	auto addPiece = [&](auto idx, auto pieceType, squareT destSq) {
-		List[ToMove][idx] = destSq;
+		List[color][idx] = destSq;
 		ListPos[destSq] = idx;
-		AddToBoard(piece_Make(ToMove, pieceType), destSq);
+		AddToBoard(piece_Make(color, pieceType), destSq);
 	};
 
-	if (sm->isNullMove())
-		return finalUpdate(NULL_SQUARE);
+	if (sm.isNullMove())
+		return;
 
 	if (ptype == KING) {
-		ClearCastlingFlags(ToMove);
-		if (auto castleSide = sm->isCastle()) {
-			squareT rookfrom, rookto;
-			if (castleSide == 1) {
-				rookfrom = castlingRookSq<true>(ToMove);
-				rookto = to - 1;
+		ClearCastlingFlags(color);
+		if (auto castleSide = sm.isCastle()) {
+			squareT rookfrom, rookto, kingTo;
+			if (castleSide > 0) {
+				kingTo = square_Relative(color, G1);
+				rookfrom = castleRookSq(color, true);
+				rookto = kingTo - 1;
 			} else {
-				rookfrom = castlingRookSq<false>(ToMove);
-				rookto = to + 1;
+				kingTo = square_Relative(color, C1);
+				rookfrom = castleRookSq(color, false);
+				rookto = kingTo + 1;
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
-			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
-			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
-			addPiece(kingIdx, KING, to);
+			RemoveFromBoard(piece_Make(color, ROOK), rookfrom);
+			RemoveFromBoard(piece_Make(color, KING), GetKingSquare(color));
+			addPiece(kingIdx, KING, kingTo);
 			addPiece(rookIdx, ROOK, rookto);
-
-			sm->pieceNum = kingIdx;
-			sm->capturedPiece = EMPTY;
-			return finalUpdate(NULL_SQUARE);
+			return;
 		}
 	}
 
-    colorT enemy = color_Flip(ToMove);
-    ASSERT(ptype == piece_Type(Board[from]));
-
-    // Handle en passant capture:
-    if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
-            && square_Fyle(from) != square_Fyle(to)) {
-        // This was an EP capture. We do not need to check it was a capture
-        // since if a pawn lands on EPTarget it must capture to get there.
-        sm->capturedSquare = (ToMove == WHITE ? (to - 8) : (to + 8));
-        ASSERT (Board[sm->capturedSquare] == piece_Make(enemy, PAWN));
-        sm->capturedPiece = Board[sm->capturedSquare];
-    }
-
     // handle captures:
-    if (sm->capturedPiece != EMPTY) {
-        ASSERT (piece_Type(sm->capturedPiece) != KING);
-        sm->capturedNum = ListPos[sm->capturedSquare];
+    if (sm.capturedPiece != EMPTY) {
+        ASSERT(piece_Type(sm.capturedPiece) != KING);
         // update opponents List of pieces
         Count[enemy]--;
-        ListPos[List[enemy][Count[enemy]]] = sm->capturedNum;
-        List[enemy][sm->capturedNum] = List[enemy][Count[enemy]];
-        Material[sm->capturedPiece]--;
+        ListPos[List[enemy][Count[enemy]]] = sm.capturedNum;
+        List[enemy][sm.capturedNum] = List[enemy][Count[enemy]];
+        Material[sm.capturedPiece]--;
         HalfMoveClock = 0;
-        RemoveFromBoard (sm->capturedPiece, sm->capturedSquare);
+        RemoveFromBoard (sm.capturedPiece, sm.capturedSquare);
     }
 
     // now make the move:
-    ASSERT(sm->movingPiece == Board[from]);
-    const pieceT movingPiece = Board[from];
     RemoveFromBoard(movingPiece, from);
     if (promo != EMPTY) {
-        ASSERT(movingPiece == piece_Make(ToMove, PAWN));
+        ASSERT(movingPiece == piece_Make(color, PAWN));
         Material[movingPiece]--;
-        Material[piece_Make(ToMove, promo)]++;
+        Material[piece_Make(color, promo)]++;
         addPiece(pieceNum, promo, to);
     } else {
         addPiece(pieceNum, ptype, to);
@@ -1678,19 +1538,18 @@ Position::DoSimpleMove (simpleMoveT * sm)
     // Handle clearing of castling flags:
     if (Castling) {
         // See if a rook moved or was captured:
-		if (from == castlingRookSq<false>(ToMove))
-			SetCastling(ToMove, QSIDE, false);
-		if (from == castlingRookSq<true>(ToMove))
-			SetCastling(ToMove, KSIDE, false);
-		if (to == castlingRookSq<false>(enemy))
-			SetCastling(enemy, QSIDE, false);
-		if (to == castlingRookSq<true>(enemy))
-			SetCastling(enemy, KSIDE, false);
+		if (from == castleRookSq(color, false))
+			ClearCastling(color, QSIDE);
+		if (from == castleRookSq(color, true))
+			ClearCastling(color, KSIDE);
+		if (to == castleRookSq(enemy, false))
+			ClearCastling(enemy, QSIDE);
+		if (to == castleRookSq(enemy, true))
+			ClearCastling(enemy, KSIDE);
     }
 
     // Set the EPTarget square, if a pawn advanced two squares and an
     // enemy pawn is on a square where en passant may be possible.
-    EPTarget = NULL_SQUARE;
     if (ptype == PAWN) {
         rankT fromRank = square_Rank(from);
         rankT toRank = square_Rank(to);
@@ -1706,9 +1565,6 @@ Position::DoSimpleMove (simpleMoveT * sm)
         }
         HalfMoveClock = 0; // 50-move clock resets on pawn moves.
     }
-
-    ToMove = enemy;
-    return;
 }
 
 
@@ -1742,25 +1598,24 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 	};
 
 	// handle Castling:
-	if (piece_Type(p) == KING) {
 		if (auto castleSide = m->isCastle()) {
+			const auto kingSq = GetKingSquare(ToMove);
 			squareT rookfrom, rookto;
-			if (castleSide == 1) {
-				rookfrom = to - 1;
-				rookto = castlingRookSq<true>(ToMove);
+			if (castleSide > 0) {
+				rookfrom = kingSq - 1;
+				rookto = castleRookSq(ToMove, true);
 			} else {
-				rookfrom = to + 1;
-				rookto = castlingRookSq<false>(ToMove);
+				rookfrom = kingSq + 1;
+				rookto = castleRookSq(ToMove, false);
 			}
 			const int kingIdx = 0;
 			const int rookIdx = ListPos[rookfrom];
-			RemoveFromBoard(piece_Make(ToMove, KING), GetKingSquare(ToMove));
+			RemoveFromBoard(piece_Make(ToMove, KING), kingSq);
 			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
 			addPiece(rookIdx, ROOK, rookto);
-			addPiece(kingIdx, KING, castlingKingSq(ToMove));
+			addPiece(kingIdx, KING, from);
 			return;
 		}
-	}
 
     // Handle a capture: insert piece back into piecelist.
     // This works for EP captures too, since the square of the captured
@@ -1893,9 +1748,6 @@ void
 Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
 {
     ASSERT (m != NULL  &&  s != NULL);
-
-    auto isOccupied = [this](auto square) { return Board[square] != EMPTY; };
-
     ASSERT(m->from == List[ToMove][ListPos[m->from]]);
     const squareT from = m->from;
     const squareT to   = m->to;
@@ -1920,28 +1772,20 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         if (m->isNullMove()) {
             //*c++ = 'n'; *c++ = 'u'; *c++ = 'l'; *c++ = 'l';
             *c++ = '-'; *c++ = '-';
-        } else {
-            switch (m->isCastle()) {
-            case 0:
-                *c++ = 'K';
-                if (Board[to] != EMPTY)
-                    *c++ = 'x';
-                *c++ = square_FyleChar(to);
-                *c++ = square_RankChar(to);
-                break;
-            case 1:
-                *c++ = 'O';
+        } else if (auto castle = m->isCastle()) {
+            *c++ = 'O';
+            *c++ = '-';
+            *c++ = 'O';
+            if (castle < 0) {
                 *c++ = '-';
                 *c++ = 'O';
-                break;
-            case 2:
-                *c++ = 'O';
-                *c++ = '-';
-                *c++ = 'O';
-                *c++ = '-';
-                *c++ = 'O';
-                break;
             }
+        } else {
+            *c++ = 'K';
+            if (Board[to] != EMPTY)
+                *c++ = 'x';
+            *c++ = square_FyleChar(to);
+            *c++ = square_RankChar(to);
         }
 
     } else {    // Queen/Rook/Bishop/Knight
@@ -1956,17 +1800,8 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
                 if (sq == from || Board[sq] != piece)
                     continue;
 
-                if (!movegen::pseudo(sq, to, ToMove, p, isOccupied))
+                if (pseudo_not_pinned(*this, sq, to, EMPTY) == NULL_SQUARE)
                     continue; // Skip illegal move
-
-                const auto pin = movegen::opens_ray(sq, to, GetKingSquare(),
-                                                    isOccupied);
-                if (pin.first != INVALID_PIECE &&
-                    piece_Color_NotEmpty(Board[pin.second]) != ToMove) {
-                    pieceT pt = piece_Type(Board[pin.second]);
-                    if (pt == QUEEN || pt == pin.first)
-                        continue; // Skip pinned piece
-                }
 
                 // Ambiguity:
                 // 1 (0001) --> need from-file (preferred) or from-rank
@@ -1993,35 +1828,11 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         *c++ = square_RankChar(to);
     }
 
-    bool check;
-    if (flag != SAN_NO_CHECKTEST) {
-        squareT oldTo = Board[to];
-        Board[to] = Board[from];
-        Board[from] = EMPTY;
-        squareT enemyKingSq = GetEnemyKingSquare();
-        check = (p != KING) &&
-                movegen::attack(to, enemyKingSq, ToMove, p, isOccupied);
-        if (!check) {
-            bool enpassant = (p == PAWN && oldTo == EMPTY &&
-                              square_Fyle(from) != square_Fyle(to));
-            if (!enpassant && (p != KING || !m->isCastle()) &&
-                !movegen::attack_slider(from, enemyKingSq, QUEEN, isOccupied)) {
-                flag = SAN_NO_CHECKTEST;
-            }
-
-        } else if (flag != SAN_MATETEST) {
-            *c++ = '+';
-            flag = SAN_NO_CHECKTEST;
-        }
-        Board[from] = Board[to];
-        Board[to] = oldTo;
-    }
-
     // Now do the check or mate symbol:
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
         DoSimpleMove (m);
-        if (check || CalcNumChecks(GetKingSquare()) > 0) {
+        if (IsKingInCheck(*m)) {
             char ch = '+';
             if (flag == SAN_MATETEST) {
                 MoveList mlist;
@@ -2072,7 +1883,7 @@ errorT Position::MakeCoordMoves(const char* moves, size_t moveslen,
                 toSAN->push_back(' ');
         }
 
-        DoSimpleMove(&sm);
+        DoSimpleMove(sm);
     }
     return OK;
 }
@@ -2111,14 +1922,15 @@ errorT Position::ReadCoordMove(simpleMoveT* m, const char* str, size_t slen,
     if (!legal)
         return ERROR_InvalidMove;
 
-    m->from = from;
-    m->to = to;
-    m->promote = promote;
-    m->movingPiece = Board[from];
+    if (legal == 1) {
+        makeMove(from, to, promote, *m);
+    } else {
+        makeMove(from, from, legal == 2 ? KING : QUEEN, *m);
+    }
     return OK;
 }
 
-static int trimCheck(const char* str, int slen) {
+static size_t trimCheck(const char* str, size_t slen) {
 	while (slen > 0) { // trim mate '#' or check '+'
 		--slen;
 		if (str[slen] != '#' && str[slen] != '+') {
@@ -2129,11 +1941,10 @@ static int trimCheck(const char* str, int slen) {
 	return slen;
 }
 
-errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
+errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen,
                               fyleT frFyle) {
 	ASSERT(sm != NULL && str != NULL && frFyle <= H_FYLE);
 
-	slen = trimCheck(str, slen);
 	if (slen < 2)
 		return ERROR_InvalidMove;
 
@@ -2168,39 +1979,50 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, int slen,
 	if (slen < 2)
 		return ERROR_InvalidMove;
 
+	auto isLegal = [&](fyleT toFyle, rankT toRank) {
+		static_assert(NO_RANK > 8 && (NO_RANK - 1) > 8 && (NO_RANK + 1) > 8);
+		const auto fromRank = (ToMove == WHITE) ? toRank - 1 : toRank + 1;
+		if (toFyle > 8 || fromRank <= 0 || fromRank >= 8)
+			return false;
+
+		auto from = square_Make(frFyle, fromRank);
+		const auto to = square_Make(toFyle, toRank);
+		const auto pawn = piece_Make(ToMove, PAWN);
+		if (GetPiece(from) == pawn && IsLegalMove(from, to, promo)) {
+			makeMove(from, to, promo, *sm);
+			return true;
+		}
+		if (frFyle == toFyle) {
+			from += (ToMove == WHITE) ? -8 : +8;
+			if (GetPiece(from) == pawn && IsLegalMove(from, to, promo)) {
+				makeMove(from, to, promo, *sm);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	const auto toFile = fyle_FromChar(str[slen - 2]);
+	const auto toRank = rank_FromChar(str[slen - 1]);
+	if (isLegal(toFile, toRank))
+		return OK;
+
 	// Check for the compact form of capture with no rank,
 	// e.g. "ed" or "de=Q":
 	if (slen == 2 && (str[1] >= 'a' && str[1] <= 'h')) {
-		auto toFyle = fyle_FromChar(str[1]);
-		// Check each rank in turn, looking for the capture:
+		const auto compact_toFyle = fyle_FromChar(str[1]);
 		for (rankT r = RANK_1; r <= RANK_8; r++) {
-			auto to = square_Make(toFyle, r);
-			if (MatchPawnMove(&mlist, frFyle, to, promo) == OK) {
-				*sm = *(mlist.Get(0));
+			if (isLegal(compact_toFyle, r))
 				return OK;
-			}
 		}
-		// It is NOT a valid capture with no rank:
-		return ERROR_InvalidMove;
 	}
-
-	auto toFyle = fyle_FromChar(str[slen - 2]);
-	auto toRank = rank_FromChar(str[slen - 1]);
-	if (toRank == NO_RANK || toFyle == NO_FYLE)
-		return ERROR_InvalidMove;
-
-	auto to = square_Make(toFyle, toRank);
-	if (MatchPawnMove(&mlist, frFyle, to, promo) != OK)
-		return ERROR_InvalidMove;
-
-	*sm = *(mlist.Get(0));
-	return OK;
+	return ERROR_InvalidMove;
 }
 
-errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
+errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str,
+                              size_t slen) const {
 	ASSERT(sm != NULL && str != NULL);
 
-	slen = trimCheck(str, slen);
 	if (slen < 3 || slen > 6)
 		return ERROR_InvalidMove;
 
@@ -2209,42 +2031,21 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
 	if (toRank == NO_RANK || toFyle == NO_FYLE)
 		return ERROR_InvalidMove;
 
-	auto target = square_Make(toFyle, toRank);
-	squareT kingSq = GetKingSquare(ToMove);
-	if (!movegen::valid_king(kingSq, target))
+	const auto from = GetKingSquare(ToMove);
+	const auto to = square_Make(toFyle, toRank);
+	const auto captured = GetPiece(to);
+	if (!movegen::valid_king(from, to) || piece_Color(captured) == ToMove ||
+	    piece_Type(captured) == KING)
 		return ERROR_InvalidMove;
 
-	pieceT captured = Board[target];
-	if (captured != EMPTY && (piece_Color_NotEmpty(captured) == ToMove ||
-	                          piece_Type(captured) == KING)) {
-		return ERROR_InvalidMove;
-	}
-
-	// XXX We should also check for adjacency to enemy King!!
-	if (movegen::valid_king(GetKingSquare(color_Flip(ToMove)), target))
-		return ERROR_InvalidMove;
-
-	// Now make the move on the Board and Material lists, and see if it
 	// leaves the King in check:
-	auto movingPiece = piece_Make(ToMove, KING);
-	Board[target] = movingPiece;
-	Board[kingSq] = EMPTY;
-	if (captured != EMPTY) {
-		Material[captured]--;
-	}
-	auto nChecks = CalcNumChecks(target);
-	if (captured != EMPTY) {
-		Material[captured]++;
-	}
-	Board[target] = captured;
-	Board[kingSq] = movingPiece;
-	if (nChecks)
+	auto not_empty = [&](auto sq) {
+		return sq != from && GetPiece(sq) != EMPTY;
+	};
+	if (under_attack(to, to, not_empty))
 		return ERROR_InvalidMove;
 
-	sm->from = kingSq;
-	sm->to = target;
-	sm->promote = EMPTY;
-	sm->movingPiece = movingPiece;
+	makeMove(from, to, INVALID_PIECE, *sm);
 	return OK;
 }
 
@@ -2254,13 +2055,12 @@ errorT Position::ReadMoveKing(simpleMoveT* sm, const char* str, int slen) {
 //      generates the legal move it corresponds to.
 //      Returns: OK or ERROR_InvalidMove.
 //
-errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
-                          pieceT piece) {
+errorT Position::ReadMove(simpleMoveT* sm, const char* str, size_t slen,
+                          pieceT piece) const {
 	ASSERT(sm != NULL && str != NULL);
 	ASSERT(piece == QUEEN || piece == ROOK || piece == BISHOP ||
 	       piece == KNIGHT);
 
-	slen = trimCheck(str, slen);
 	if (slen < 3 || slen > 6)
 		return ERROR_InvalidMove;
 
@@ -2299,45 +2099,29 @@ errorT Position::ReadMove(simpleMoveT* sm, const char* str, int slen,
 			continue;
 
 		++matchCount;
-		sm->from = from;
-		sm->to = to;
-		sm->promote = EMPTY;
-		sm->movingPiece = movingPiece;
+		makeMove(from, to, INVALID_PIECE, *sm);
 	}
 	return (matchCount == 1) ? OK                 // ok.
 	                         : ERROR_InvalidMove; // No match, or too many
 	                                              // (ambiguous) moves match.
 }
 
-errorT Position::ReadMoveCastle(simpleMoveT* sm, const char* str, int slen) {
-	slen = trimCheck(str, slen);
+errorT Position::ReadMoveCastle(simpleMoveT* sm, std::string_view str) const {
+	bool king_side = true;
+	if (str == "O-O" || str == "OO") {
+		// side = KSIDE;
+	} else if (str == "O-O-O" || str == "OOO") {
+		king_side = false; // QSIDE
+	} else
+		return ERROR_InvalidMove;
 
-	auto str_equal = [&](const char* const_str, const int len) {
-		return slen == len && std::equal(str, str + len, const_str);
-	};
+	const auto king_sq = GetKingSquare();
+	makeMove(king_sq, king_sq, king_side ? KING : QUEEN, *sm);
+	if (!under_attack(king_sq) && canCastle(king_side))
+		return OK;
 
-	sm->from = square_Relative(ToMove, E1);
-	sm->promote = EMPTY;
-	sm->movingPiece = piece_Make(ToMove, KING);
-	sm->capturedPiece = EMPTY;
-
-	if (str_equal("O-O", 3) || str_equal("OO", 2)) {
-		sm->to = sm->from + 2;
-		if (!IsKingInCheck() && validCastling(true, true)) // short castle
-			return GetCastling(ToMove, KSIDE) ? OK : ERROR_CastlingAvailability;
-
-		return validCastling(true, false) ? ERROR_CastlingAvailability
-		                                  : ERROR_InvalidMove;
-	}
-	if (str_equal("O-O-O", 5) || str_equal("OOO", 3)) {
-		sm->to = sm->from - 2;
-		if (!IsKingInCheck() && validCastling(false, true)) // long castle
-			return GetCastling(ToMove, QSIDE) ? OK : ERROR_CastlingAvailability;
-
-		return validCastling(false, false) ? ERROR_CastlingAvailability
-		                                   : ERROR_InvalidMove;
-	}
-	return ERROR_InvalidMove;
+	return canCastle<false>(king_side) ? ERROR_CastlingAvailability
+	                                   : ERROR_InvalidMove;
 }
 
 errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
@@ -2359,80 +2143,53 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str,
                            const char* strEnd) {
 	ASSERT(str != NULL);
 
-	int length = static_cast<int>(std::distance(str, strEnd));
+	const auto length = trimCheck(str, std::distance(str, strEnd));
 	if (length < 2 || length > 9)
 		return ERROR_InvalidMove;
 
-	switch (str[0]) {
-	case 'a':
-		return ReadMovePawn(sm, str, length, A_FYLE);
-	case 'b':
-		return ReadMovePawn(sm, str, length, B_FYLE);
-	case 'c':
-		return ReadMovePawn(sm, str, length, C_FYLE);
-	case 'd':
-		return ReadMovePawn(sm, str, length, D_FYLE);
-	case 'e':
-		return ReadMovePawn(sm, str, length, E_FYLE);
-	case 'f':
-		return ReadMovePawn(sm, str, length, F_FYLE);
-	case 'g':
-		return ReadMovePawn(sm, str, length, G_FYLE);
-	case 'h':
-		return ReadMovePawn(sm, str, length, H_FYLE);
-	case 'K':
+	static const auto piece_map = [] {
+		auto res = std::array<uint8_t, 256>();
+		std::fill(res.begin(), res.end(), INVALID_PIECE);
+		res['a'] = res['A'] = PAWN | (A_FYLE << 4);
+		res['b'] = PAWN | (B_FYLE << 4);
+		res['c'] = res['C'] = PAWN | (C_FYLE << 4);
+		res['d'] = res['D'] = PAWN | (D_FYLE << 4);
+		res['e'] = res['E'] = PAWN | (E_FYLE << 4);
+		res['f'] = res['F'] = PAWN | (F_FYLE << 4);
+		res['g'] = res['G'] = PAWN | (G_FYLE << 4);
+		res['h'] = res['H'] = PAWN | (H_FYLE << 4);
+		res['k'] = res['K'] = KING;
+		res['q'] = res['Q'] = QUEEN;
+		res['r'] = res['R'] = ROOK;
+		res['B'] = BISHOP;
+		res['N'] = KNIGHT;
+		res['o'] = res['O'] = 7; // CASTLE
+		res['P'] = 8;            // explicit PAWN move
+		return res;
+	}();
+	const auto ptype = piece_map[static_cast<unsigned char>(*str)];
+	switch (ptype & 0x0F) {
+	case INVALID_PIECE:
+		// Check for a null move:
+		if ((length == 2 && std::equal(str, str + 2, "--")) ||
+		    (length == 2 && std::equal(str, str + 2, "Z0")) ||
+		    (length == 4 && std::equal(str, str + 4, "null"))) {
+			const auto king_sq = GetKingSquare(ToMove);
+			makeMove(king_sq, king_sq, PAWN, *sm);
+			return OK;
+		}
+		return ERROR_InvalidMove;
+	case PAWN:
+		return ReadMovePawn(sm, str, length, ptype >> 4);
+	case KING:
 		return ReadMoveKing(sm, str, length);
-	case 'Q':
-		return ReadMove(sm, str, length, QUEEN);
-	case 'R':
-		return ReadMove(sm, str, length, ROOK);
-	case 'B':
-		return ReadMove(sm, str, length, BISHOP);
-	case 'N':
-		return ReadMove(sm, str, length, KNIGHT);
-	case 'O':
-		return ReadMoveCastle(sm, str, length);
-	}
-
-	// Check for a null move:
-	if ((length == 2 && std::equal(str, str + 2, "--")) ||
-	    (length == 2 && std::equal(str, str + 2, "Z0")) ||
-	    (length == 4 && std::equal(str, str + 4, "null"))) {
-		sm->from = GetKingSquare(ToMove);
-		sm->to = sm->from;
-		sm->movingPiece = Board[sm->from];
-		sm->promote = EMPTY;
-		return OK;
-	}
-
-	// Invalid move, check for a misspelled first char:
-	switch (str[0]) {
-	case 'A':
-		return ReadMovePawn(sm, str, length, A_FYLE);
-	case 'C':
-		return ReadMovePawn(sm, str, length, C_FYLE);
-	case 'D':
-		return ReadMovePawn(sm, str, length, D_FYLE);
-	case 'E':
-		return ReadMovePawn(sm, str, length, E_FYLE);
-	case 'F':
-		return ReadMovePawn(sm, str, length, F_FYLE);
-	case 'G':
-		return ReadMovePawn(sm, str, length, G_FYLE);
-	case 'H':
-		return ReadMovePawn(sm, str, length, H_FYLE);
-	case 'P':
+	case 7:
+		return ReadMoveCastle(sm, {str, length});
+	case 8:
 		return ParseMove(sm, str + 1, strEnd);
-	case 'k':
-		return ReadMoveKing(sm, str, length);
-	case 'q':
-		return ReadMove(sm, str, length, QUEEN);
-	case 'r':
-		return ReadMove(sm, str, length, ROOK);
-	case 'n':
-		return ReadMove(sm, str, length, KNIGHT);
-	}
-	return ERROR_InvalidMove;
+	default:
+		return ReadMove(sm, str, length, ptype);
+	};
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2496,8 +2253,6 @@ Position::MakeLongStr (char * str)
     *s = 0;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ReadFromCompactStr():
 //    Sets the position from the provided Null-terminated 33-byte
 //    compact string.
 //    The first 32 bytes contain the square valued, 4 bits per value,
@@ -2507,34 +2262,6 @@ Position::MakeLongStr (char * str)
 //    To ensure no bytes within the staring are zero-valued (so it
 //    can be used as a regular null-terminated string), the value 1
 //    is added to the color, castling and en passant fields.
-errorT
-Position::ReadFromCompactStr (const byte * str)
-{
-    Clear();
-    for (uint i=0; i < 32; i++) {
-        pieceT p = str[i] >> 4;
-        if (p != EMPTY) {
-            if (AddPiece (p, i * 2) != OK) {
-                return ERROR_Corrupt;
-            }
-        }
-        p = str[i] & 15;
-        if (p != EMPTY) {
-            if (AddPiece (p, i * 2 + 1) != OK) {
-                return ERROR_Corrupt;
-            }
-        }
-    }
-    colorT toMove = str[32] - 1;
-    if (toMove != WHITE  &&  toMove != BLACK) {
-        return ERROR_Corrupt;
-    }
-    ToMove = toMove;
-    Castling = str[33] - 1;
-    EPTarget = str[34] - 1;
-    return OK;
-}
-
 void
 Position::PrintCompactStr (char * cboard)
 {
@@ -2561,22 +2288,6 @@ Position::PrintCompactStr (char * cboard)
 
     }
     cboard[34] = 1 + ep;
-    cboard[35] = 0;
-}
-
-void
-Position::PrintCompactStrFlipped (char * cboard)
-{
-    for (uint i=0; i < 32; i++) {
-        uint i2 = i << 1;
-        // Flip 1st rank to 8th, etc:
-        i2 = ((7 - (i2)/8) * 8 + ((i2) % 8));
-        cboard[i] = (byte)(PIECE_FLIP[Board[i2]] << 4) |
-            (byte)(PIECE_FLIP[Board[i2+1]]);
-    }
-    cboard[32] = 1 + color_Flip(ToMove);
-    cboard[33] = 1 + Castling;
-    cboard[34] = 1 + EPTarget;
     cboard[35] = 0;
 }
 
@@ -2673,27 +2384,27 @@ errorT Position::ReadFromFEN(const char* str) {
         // castling is possible whenever a king and rook are
         // still on their starting squares:
         if (Board[E1] == WK) {
-            if (Board[A1] == WR) { SetCastling (WHITE, QSIDE, true); }
-            if (Board[H1] == WR) { SetCastling (WHITE, KSIDE, true); }
+            if (Board[A1] == WR) { SetCastling(WHITE, QSIDE); }
+            if (Board[H1] == WR) { SetCastling(WHITE, KSIDE); }
         }
         if (Board[E8] == BK) {
-            if (Board[A8] == BR) { SetCastling (BLACK, QSIDE, true); }
-            if (Board[H8] == BR) { SetCastling (BLACK, KSIDE, true); }
+            if (Board[A8] == BR) { SetCastling(BLACK, QSIDE); }
+            if (Board[H8] == BR) { SetCastling(BLACK, KSIDE); }
         }
     } else {
         while (!is_space(*str)  &&  *str != 0) {
             switch (*str++) {
             case 'Q':
-                SetCastling (WHITE, QSIDE, true);
+                SetCastling(WHITE, QSIDE);
                 break;
             case 'q':
-                SetCastling (BLACK, QSIDE, true);
+                SetCastling(BLACK, QSIDE);
                 break;
             case 'K':
-                SetCastling (WHITE, KSIDE, true);
+                SetCastling(WHITE, KSIDE);
                 break;
             case 'k':
-                SetCastling (BLACK, KSIDE, true);
+                SetCastling(BLACK, KSIDE);
                 break;
             default:
                 return ERROR_InvalidFEN;

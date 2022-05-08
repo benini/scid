@@ -36,7 +36,8 @@ struct simpleMoveT
     squareT  from;
     squareT  to;
     pieceT   promote; // EMPTY if not a promotion, type (no color) otherwise
-    pieceT   movingPiece;
+    pieceT   movingPiece : 7;
+    pieceT   castling : 1;
     byte     pieceNum;
     byte     capturedNum;
     pieceT   capturedPiece;
@@ -51,15 +52,14 @@ struct simpleMoveT
 		       piece_Type(movingPiece) == KING;
 	}
 
+	/// Returns:
+	///  +2 for king side castle
+	///  -2 for queen side castle
+	///  0 (false) if it is not a castle moves.
 	int isCastle() const {
-		ASSERT(piece_Type(movingPiece) == KING);
-		if (square_Fyle(from) == E_FYLE) {
-			squareT toFyle = square_Fyle(to);
-			if (toFyle == G_FYLE)
-				return 1;
-			if (toFyle == C_FYLE)
-				return 2;
-		}
+		if (castling)
+			return to > from ? 2 : -2;
+
 		return 0;
 	}
 
@@ -86,14 +86,6 @@ struct simpleMoveT
 	}
 };
 
-struct cmpMove {
-	const simpleMoveT& m;
-	explicit cmpMove(const simpleMoveT& sm) : m(sm) {}
-};
-inline bool operator==(const simpleMoveT& a, const cmpMove& b) {
-	return a.from == b.m.from && a.to == b.m.to && a.promote == b.m.promote;
-}
-
 struct ScoredMove : public simpleMoveT {
 	int32_t score; // used for alpha/beta ordering.
 
@@ -114,16 +106,11 @@ public:
 	iterator end() { return Moves + ListSize; }
 	uint Size() { return ListSize; }
 	void Clear() { ListSize = 0; }
-	void emplace_back(squareT from, squareT to, pieceT promote,
-	                  pieceT movingPiece, pieceT capturedPiece) {
+	ScoredMove& emplace_back() {
 		ASSERT(ListSize < MAX_LEGAL_MOVES);
 		ScoredMove& sm = Moves[ListSize++];
 		sm = ScoredMove();
-		sm.from = from;
-		sm.to = to;
-		sm.promote = promote;
-		sm.movingPiece = movingPiece;
-		sm.capturedPiece = capturedPiece;
+		return sm;
 	}
 	void resize(size_t count) {
 		ASSERT(count <= MAX_LEGAL_MOVES);

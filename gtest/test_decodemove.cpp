@@ -31,7 +31,7 @@ TEST(Test_decodeMove, pawn_white) {
 	};
 	ByteBuffer bbuf(nullptr, 0);
 	for (auto [moveCode, expTo, expPromo] : data) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(PAWN, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, PAWN, from, moveCode);
 		EXPECT_EQ(to, expTo);
 		EXPECT_EQ(promo, expPromo);
 	}
@@ -51,7 +51,7 @@ TEST(Test_decodeMove, pawn_black) {
 	};
 	ByteBuffer bbuf(nullptr, 0);
 	for (auto [moveCode, expTo, expPromo] : data) {
-		auto [to, promo] = bbuf.decodeMove<BLACK>(PAWN, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(BLACK, PAWN, from, moveCode);
 		EXPECT_EQ(to, expTo);
 		EXPECT_EQ(promo, expPromo);
 	}
@@ -61,7 +61,7 @@ TEST(Test_decodeMove, bishop) {
 	const squareT from = G7;
 	ByteBuffer bbuf(nullptr, 0);
 	for (unsigned char moveCode = 0; moveCode < 16; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(BISHOP, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, BISHOP, from, moveCode);
 		EXPECT_EQ(promo, INVALID_PIECE);
 		EXPECT_EQ(square_Fyle(to), square_Fyle(moveCode));
 		int distRank = (to + 64) / 8 - (from + 64) / 8;
@@ -81,12 +81,12 @@ TEST(Test_decodeMove, knight) {
 	};
 	ByteBuffer bbuf(nullptr, 0);
 	for (auto [moveCode, expTo] : data) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KNIGHT, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KNIGHT, from, moveCode);
 		EXPECT_EQ(to, expTo);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}
 	for (auto moveCode : {0, 9, 10, 11, 12, 13, 14, 15}) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KNIGHT, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KNIGHT, from, moveCode);
 		EXPECT_EQ(to, from);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}
@@ -96,13 +96,13 @@ TEST(Test_decodeMove, rook) {
 	const squareT from = B3;
 	ByteBuffer bbuf(nullptr, 0);
 	for (unsigned char moveCode = 0; moveCode < 8; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(ROOK, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, ROOK, from, moveCode);
 		EXPECT_EQ(square_Rank(to), square_Rank(from));
 		EXPECT_EQ(square_Fyle(to), moveCode);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}
 	for (unsigned char moveCode = 8; moveCode < 16; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(ROOK, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, ROOK, from, moveCode);
 		EXPECT_EQ(square_Fyle(to), square_Fyle(from));
 		EXPECT_EQ(square_Rank(to), moveCode - 8);
 		EXPECT_EQ(promo, INVALID_PIECE);
@@ -115,19 +115,19 @@ TEST(Test_decodeMove, queen) {
 	ByteBuffer bbuf(data, sizeof data);
 	{
 		ASSERT_TRUE(bbuf);
-		auto [to, promo] = bbuf.decodeMove<WHITE>(QUEEN, from, 0);
+		auto [to, promo] = bbuf.decodeMove(WHITE, QUEEN, from, 0);
 		EXPECT_EQ(to, C3);
 		EXPECT_EQ(promo, INVALID_PIECE);
 		EXPECT_FALSE(bbuf);
 	}
 	for (unsigned char moveCode = 1; moveCode < 8; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(QUEEN, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, QUEEN, from, moveCode);
 		EXPECT_EQ(square_Rank(to), square_Rank(from));
 		EXPECT_EQ(square_Fyle(to), moveCode);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}
 	for (unsigned char moveCode = 8; moveCode < 16; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(QUEEN, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, QUEEN, from, moveCode);
 		EXPECT_EQ(square_Fyle(to), square_Fyle(from));
 		EXPECT_EQ(square_Rank(to), moveCode - 8);
 		EXPECT_EQ(promo, INVALID_PIECE);
@@ -138,7 +138,7 @@ TEST(Test_decodeMove, king) {
 	const squareT from = B3;
 	ByteBuffer bbuf(nullptr, 0);
 	{
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KING, from, 0);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KING, from, 0);
 		EXPECT_EQ(to, from);
 		EXPECT_EQ(promo, PAWN);
 	}
@@ -147,22 +147,22 @@ TEST(Test_decodeMove, king) {
 	    {5, from + 1}, {6, from + 7}, {7, from + 8}, {8, from + 9},
 	};
 	for (auto [moveCode, expTo] : data) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KING, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KING, from, moveCode);
 		EXPECT_EQ(to, expTo);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}
 	{
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KING, from, 9);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KING, from, 9);
 		EXPECT_EQ(to, from);
 		EXPECT_EQ(promo, QUEEN);
 	}
 	{
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KING, from, 10);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KING, from, 10);
 		EXPECT_EQ(to, from);
 		EXPECT_EQ(promo, KING);
 	}
 	for (unsigned char moveCode = 11; moveCode < 16; ++moveCode) {
-		auto [to, promo] = bbuf.decodeMove<WHITE>(KING, from, moveCode);
+		auto [to, promo] = bbuf.decodeMove(WHITE, KING, from, moveCode);
 		EXPECT_EQ(to, from);
 		EXPECT_EQ(promo, INVALID_PIECE);
 	}

@@ -27,11 +27,6 @@
 #include <string>
 #include <vector>
 
-//////////////////////////////////////////////////////////////////////
-//  Index:  Constants
-
-const uint  CUSTOM_FLAG_MAX = 6;
-
 
 //////////////////////////////////////////////////////////////////////
 //  Index:  Class Definition
@@ -45,15 +40,6 @@ private:
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
     VectorChunked<IndexEntry, 16> entries_; // A two-level array of the entire index.
     int nInvalidNameId_;
-
-    struct { // one at the start of the index file.
-        versionT    version;     // version number. 2 bytes.
-        uint        baseType;    // Type, e.g. tournament, theory, etc.
-        gamenumT    autoLoad;    // game number to autoload: 0=none, 1=1st, >numGames=last
-        std::string description; // a string describing the database.
-        // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
-        std::string customFlagDesc[CUSTOM_FLAG_MAX];
-    } Header;
 
     friend class CodecSCID4;
 
@@ -97,13 +83,6 @@ public:
 
 private:
     void Init() {
-        Header.version = SCID_VERSION;
-        Header.baseType = 0;
-        Header.autoLoad = 1;
-        Header.description.clear();
-        for (auto& flagDesc : Header.customFlagDesc) {
-            flagDesc.clear();
-        };
         nInvalidNameId_ = 0;
         entries_.resize(0);
     }

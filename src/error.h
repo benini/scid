@@ -79,7 +79,8 @@ const errorT
     ERROR_BufferRead = 602,
 
     // Codec errors
-    ERROR_CodecUnsupFeat = 701;
+    ERROR_CodecUnsupFeat = 701,
+    ERROR_CodecChess960 = 702;
 
 
 static_assert(OK == false);

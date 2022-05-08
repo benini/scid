@@ -233,13 +233,24 @@ errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
 	CodecPgn pgn;
 	auto res = pgn.open(filename, FMODE_ReadOnly);
 	if (res == OK) {
+		uint64_t nChess960Errors = 0;
 		std::vector<byte> buf;
 		res = CodecPgn::parseGames(progress, pgn, [&](Game& game) {
 			buf.clear();
 			auto [ie, tags] = game.Encode(buf);
-			return codec_->addGame(ie, tags, {buf.data(), buf.size()});
+			auto err = codec_->addGame(ie, tags, {buf.data(), buf.size()});
+			if (err == ERROR_CodecChess960) {
+				++nChess960Errors;
+				err = OK;
+			}
+			return err;
 		});
 		errorMsg = pgn.parseErrors();
+		if (nChess960Errors) {
+			errorMsg.append("Ignored ");
+			errorMsg.append(std::to_string(nChess960Errors));
+			errorMsg.append(" chess960 game(s).\n");
+		}
 	}
 
 	auto res_endTrans = endTransaction();

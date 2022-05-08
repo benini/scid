@@ -153,7 +153,6 @@ class FastBoard {
 	enum { EMPTY_SQ_ = 0xFF };
 
 public:
-	FastBoard() = default;
 	explicit FastBoard(const Position& pos) { Init(pos); }
 
 	static FastBoard stdStart() {
@@ -405,10 +404,8 @@ public:
 	explicit GameView(const ByteBuffer& bbuf)
 	    : board_(FastBoard::stdStart()), bbuf_(bbuf), cToMove_(WHITE) {}
 
-	GameView(const ByteBuffer& bbuf, const Position& startPos) : bbuf_(bbuf) {
-		board_.Init(startPos);
-		cToMove_ = startPos.GetToMove();
-	}
+	GameView(const ByteBuffer& bbuf, const Position& startPos)
+	    : board_(startPos), bbuf_(bbuf), cToMove_(startPos.GetToMove()) {}
 
 	template <typename FuncT> void mainLine(FuncT fn) {
 		while (const auto move = (cToMove_ == WHITE)
@@ -529,7 +526,7 @@ private:
 		const auto moving_piece = board_.getPiece(toMove, idx_piece_moving);
 		const auto from = board_.getSquare(toMove, idx_piece_moving);
 
-		auto [destSq, promo] = bbuf_.decodeMove<toMove>(moving_piece, from, v);
+		auto [destSq, promo] = bbuf_.decodeMove(toMove, moving_piece, from, v);
 		if (destSq < 0 || destSq > 63)
 			return {}; // decode error
 
@@ -543,9 +540,8 @@ private:
 
 			// CASTLE
 			const auto rook_from = board_.castle<toMove>(promo == KING);
-			if (rook_from == from)
-				return {}; // decode error
-			return TResult(toMove, from, rook_from);
+			return (rook_from == from) ? TResult() // decode error
+			                           : TResult(toMove, from, rook_from);
 		}
 
 		bool enPassant = moving_piece == PAWN &&

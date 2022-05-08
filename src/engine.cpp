@@ -1470,7 +1470,7 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
         uint oldNodeCount = NodeCount;
         // Make this move and search it:
         DoMove (sm);
-        InCheck[Ply] = Pos.IsKingInCheck (sm);
+        InCheck[Ply] = Pos.IsKingInCheck (*sm);
 #define PVS_SEARCH
 #ifdef PVS_SEARCH
         int score = alpha;
@@ -1513,6 +1513,11 @@ Engine::SearchRoot (int depth, int alpha, int beta, MoveList * mlist)
         }
     }
     return bestScore;
+}
+
+static bool isLegalMove(Position const& pos, simpleMoveT const& sm) {
+    return pos.IsLegalMove(sm.from, sm.to, sm.promote) &&
+           sm.movingPiece == pos.GetPiece(sm.from);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1640,7 +1645,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
     MoveList mlist;
     bool gotHashMove;
-    if (Pos.IsLegalMove (&hashmove)) {
+    if (isLegalMove(Pos, hashmove)) {
         gotHashMove = true;
         // For now, we only add the hash move to the move list.
         mlist.push_back(hashmove);
@@ -1683,7 +1688,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 
         // Make this move and remember if it gives check:
         DoMove (sm);
-        InCheck[Ply] = Pos.IsKingInCheck (sm);
+        InCheck[Ply] = Pos.IsKingInCheck (*sm);
 
         // Simple futility pruning. Note that pruning with depth of two
         // remaining is risky, but seems to work well enough in practise.
@@ -1767,7 +1772,12 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
             mlist.Clear();
             Pos.GenerateMoves (&mlist, EMPTY, GEN_ALL_MOVES, InCheck[Ply]);
             ScoreMoves (&mlist);
-            MoveList::iterator hm = std::find(mlist.begin(), mlist.end(), cmpMove(hashmove));
+            MoveList::iterator hm = std::find_if(
+                mlist.begin(), mlist.end(), [&](auto const& move) {
+                    return move.from == hashmove.from &&
+                           move.to == hashmove.to &&
+                           move.promote == hashmove.promote;
+                });
             if (hm != mlist.end()) {
                 std::iter_swap(mlist.begin(), hm);
             } else {
@@ -2243,7 +2253,7 @@ Engine::PrintPV (uint depth, int score, const char * note)
 
         // Check for legality, to protect against hash table
         // false hits and bugs in PV updating:
-        if (! Pos.IsLegalMove (sm)) {
+        if (! isLegalMove(Pos, *sm)) {
             Output (" <illegal>");
             break;
         }
@@ -2304,7 +2314,7 @@ Engine::PerfTest (uint depth)
     uint nmoves = 0;
     for (uint i = 0; i < mlist.Size(); i++) {
         auto sm = mlist.Get(i);
-        Pos.DoSimpleMove (sm);
+        Pos.DoSimpleMove (*sm);
         nmoves += PerfTest (depth-1);
         Pos.UndoSimpleMove (sm);
     }
