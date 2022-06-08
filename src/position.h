@@ -315,7 +315,7 @@ public:
     errorT      Random (const char * material);
 
 private:
-    void SetCastling(colorT col, castleDirT dir);
+    void setCastling(colorT col, squareT rsq);
     void ClearCastling(colorT col, castleDirT dir) {
         Castling &= ~(1u << castlingIdx(col, dir));
     }

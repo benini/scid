@@ -561,19 +561,14 @@ Position::Clear (void)
     return;
 }
 
-void Position::SetCastling(colorT col, castleDirT dir) {
+void Position::setCastling(colorT col, squareT rsq) {
 	static_assert(1 << castlingIdx(WHITE, QSIDE) == 1);
 	static_assert(1 << castlingIdx(WHITE, KSIDE) == 2);
 	static_assert(1 << castlingIdx(BLACK, QSIDE) == 4);
 	static_assert(1 << castlingIdx(BLACK, KSIDE) == 8);
 
-	const auto idx = castlingIdx(col, dir);
 	const auto ksq = GetKingSquare(col);
-	const auto std_rsq = (dir == QSIDE) ? square_Relative(col, A1)
-	                                    : square_Relative(col, H1);
-	const auto std_rank = square_Rank(std_rsq);
-	auto rsq = std_rsq;
-	if (square_Rank(ksq) == std_rank) {
+	if (square_Rank(ksq) == square_Rank(rsq)) {
 		const auto rook = piece_Make(col, ROOK);
 		while (Board[rsq] != rook && rsq != ksq) {
 			if (rsq < ksq)
@@ -582,8 +577,13 @@ void Position::SetCastling(colorT col, castleDirT dir) {
 				--rsq;
 		}
 	}
+
+	const auto dir = square_Fyle(ksq) < square_Fyle(rsq) ? KSIDE : QSIDE;
+	const auto idx = castlingIdx(col, dir);
 	castleRookSq_[idx] = rsq;
 	Castling |= 1u << idx;
+	const auto std_rsq = (dir == QSIDE) ? square_Relative(col, A1)
+	                                    : square_Relative(col, H1);
 	if (ksq != square_Relative(col, E1) || rsq != std_rsq)
 		variant_ = 1;
 }
@@ -632,10 +632,10 @@ const Position& Position::getStdStart()
             p->AddToBoard(BP, A7+i); p->List[BLACK][i+8] = A7+i; p->ListPos[A7+i] = i+8;
         }
 
-        p->SetCastling(WHITE, QSIDE);
-        p->SetCastling(WHITE, KSIDE);
-        p->SetCastling(BLACK, QSIDE);
-        p->SetCastling(BLACK, KSIDE);
+        p->setCastling(WHITE, A1);
+        p->setCastling(WHITE, H1);
+        p->setCastling(BLACK, A8);
+        p->setCastling(BLACK, H8);
         p->EPTarget = NULL_SQUARE;
         p->ToMove = WHITE;
         p->PlyCounter = 0;
@@ -2384,27 +2384,27 @@ errorT Position::ReadFromFEN(const char* str) {
         // castling is possible whenever a king and rook are
         // still on their starting squares:
         if (Board[E1] == WK) {
-            if (Board[A1] == WR) { SetCastling(WHITE, QSIDE); }
-            if (Board[H1] == WR) { SetCastling(WHITE, KSIDE); }
+            if (Board[A1] == WR) { setCastling(WHITE, A1); }
+            if (Board[H1] == WR) { setCastling(WHITE, H1); }
         }
         if (Board[E8] == BK) {
-            if (Board[A8] == BR) { SetCastling(BLACK, QSIDE); }
-            if (Board[H8] == BR) { SetCastling(BLACK, KSIDE); }
+            if (Board[A8] == BR) { setCastling(BLACK, A8); }
+            if (Board[H8] == BR) { setCastling(BLACK, H8); }
         }
     } else {
         while (!is_space(*str)  &&  *str != 0) {
             switch (*str++) {
             case 'Q':
-                SetCastling(WHITE, QSIDE);
+                setCastling(WHITE, A1);
                 break;
             case 'q':
-                SetCastling(BLACK, QSIDE);
+                setCastling(BLACK, A8);
                 break;
             case 'K':
-                SetCastling(WHITE, KSIDE);
+                setCastling(WHITE, H1);
                 break;
             case 'k':
-                SetCastling(BLACK, KSIDE);
+                setCastling(BLACK, H8);
                 break;
             default:
                 return ERROR_InvalidFEN;
