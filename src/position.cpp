@@ -2406,6 +2406,48 @@ errorT Position::ReadFromFEN(const char* str) {
             case 'k':
                 setCastling(BLACK, H8);
                 break;
+            case 'A':
+                setCastling(WHITE, A1);
+                break;
+            case 'B':
+                setCastling(WHITE, B1);
+                break;
+            case 'C':
+                setCastling(WHITE, C1);
+                break;
+            case 'D':
+                setCastling(WHITE, D1);
+                break;
+            case 'E':
+                setCastling(WHITE, E1);
+                break;
+            case 'F':
+                setCastling(WHITE, F1);
+                break;
+            case 'H':
+                setCastling(WHITE, H1);
+                break;
+            case 'a':
+                setCastling(BLACK, A8);
+                break;
+            case 'b':
+                setCastling(BLACK, B8);
+                break;
+            case 'c':
+                setCastling(BLACK, C8);
+                break;
+            case 'd':
+                setCastling(BLACK, D8);
+                break;
+            case 'e':
+                setCastling(BLACK, E8);
+                break;
+            case 'f':
+                setCastling(BLACK, F8);
+                break;
+            case 'h':
+                setCastling(BLACK, H8);
+                break;
             default:
                 return ERROR_InvalidFEN;
             }
