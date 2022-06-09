@@ -2424,6 +2424,9 @@ errorT Position::ReadFromFEN(const char* str) {
             case 'F':
                 setCastling(WHITE, F1);
                 break;
+            case 'G':
+                setCastling(WHITE, G1);
+                break;
             case 'H':
                 setCastling(WHITE, H1);
                 break;
@@ -2444,6 +2447,9 @@ errorT Position::ReadFromFEN(const char* str) {
                 break;
             case 'f':
                 setCastling(BLACK, F8);
+                break;
+            case 'g':
+                setCastling(BLACK, G8);
                 break;
             case 'h':
                 setCastling(BLACK, H8);
