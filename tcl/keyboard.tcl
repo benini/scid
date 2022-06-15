@@ -73,6 +73,9 @@ proc keyboardShortcuts {w} {
 	# New game
 	bind $w <Control-n> { ::game::Clear }
 
+	# New game 960
+	bind $w <Control-F> { ::game::Clear960 }
+
 	# Save current game
 	bind $w <Control-s> { ::gameReplace }
 

@@ -111,6 +111,7 @@ menuText D ConfigureScid "Einstellungen..." 0 {Alle Optionen für SCID einstellen
 # Game menu:
 menuText D Game "Partie" 0
 menuText D GameNew "Neue Partie" 5 {Neue Partie beginnen}
+menuText D GameNew960 "Neue Partie 960" 5 {Neue Schach960 Partie beginnen}
 menuText D GameFirst "Erste Partie laden" 0 {Erste Partie im Filter laden}
 menuText D GamePrev "Vorherige Partie laden" 0 \
   {Vorherige Partie im Filter laden}

@@ -129,6 +129,7 @@ menuText E ConfigureScid "Preferences..." 0 {Configure all options for SCID}
 # Game menu:
 menuText E Game "Game" 0
 menuText E GameNew "New Game" 0 {Reset to an empty game}
+menuText E GameNew960 "New Game 960" 0 {Reset to an empty fisherrandom}
 menuText E GameFirst "Load First Game" 5 {Load the first filtered game}
 menuText E GamePrev "Load Previous Game" 5 {Load the previous filtered game}
 menuText E GameReload "Re-Load Current Game" 3 \

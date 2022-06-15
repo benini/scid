@@ -130,6 +130,7 @@ set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Game -menu $m
 $m add command -label GameNew -accelerator "Ctrl+N" -command ::game::Clear
+$m add command -label GameNew960 -accelerator "Ctrl+Shift+F" -command ::game::Clear960
 $m add command -label GameReload -command ::game::Reload
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
