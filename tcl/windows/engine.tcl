@@ -9,7 +9,7 @@
 ### Window for chess engine configuration and position analysis
 
 namespace eval enginewin {}
-array set ::enginewin::engState {} ; # closed idle run locked
+array set ::enginewin::engState {} ; # closed disconnected idle run locked
 
 # Inform the engine that there is a new game
 proc ::enginewin::onNewGame { {ids ""} } {
@@ -181,12 +181,6 @@ proc ::enginewin::changeState {id newState} {
     if {$::enginewin::engState($id) eq $newState} { return }
 
     set w .engineWin$id
-    if {$::enginewin::engState($id) eq "closed"} {
-        $w.config.header.go configure -state normal
-        $w.config.header.clone configure -state normal
-        $w.config.header.delete configure -state normal
-        $w.display.btn.startStop configure -state normal
-    }
     switch $newState {
       "closed" {
           $w.config.header.go configure -state disabled
@@ -198,17 +192,39 @@ proc ::enginewin::changeState {id newState} {
           $w.display.btn.lock configure -state disabled
           $w.display.btn.multipv configure -state disabled
       }
+      "disconnected" {
+          $w.config.header.go configure -state disabled
+          $w.config.header.clone configure -state disabled
+          $w.config.header.delete configure -state normal
+          $w.display.btn.startStop state !pressed
+          $w.display.btn.startStop configure -state disabled
+          $w.display.btn.lock state !pressed
+          $w.display.btn.lock configure -state disabled
+          $w.display.btn.multipv configure -state disabled
+      }
       "idle" {
+          $w.config.header.go configure -state normal
+          $w.config.header.clone configure -state normal
+          $w.config.header.delete configure -state normal
+          $w.display.btn.startStop configure -state normal
           $w.display.btn.startStop state !pressed
           $w.display.btn.lock state !pressed
           $w.display.btn.lock configure -state disabled
           $w.display.btn.multipv configure -state normal
       }
       "locked" {
+          $w.config.header.go configure -state normal
+          $w.config.header.clone configure -state normal
+          $w.config.header.delete configure -state normal
+          $w.display.btn.startStop configure -state normal
           $w.display.btn.lock state pressed
           $w.display.btn.multipv configure -state disabled
       }
       "run" {
+          $w.config.header.go configure -state normal
+          $w.config.header.clone configure -state normal
+          $w.config.header.delete configure -state normal
+          $w.display.btn.startStop configure -state normal
           $w.display.btn.startStop state pressed
           $w.display.btn.lock state !pressed
           $w.display.btn.lock configure -state enable
@@ -352,8 +368,7 @@ proc ::enginewin::callback {id msg} {
         "InfoDisconnected" {
             tk_messageBox -message "The connection with the engine terminated unexpectedly."
             ::enginewin::updateConfig $id {}
-            ::enginewin::changeState $id closed
-            .engineWin$id.config.header.delete configure -state normal
+            ::enginewin::changeState $id disconnected
         }
     }
 }
