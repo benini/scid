@@ -552,9 +552,9 @@ namespace eval sergame {
       ::sergame::sendToEngine $n "isready"
       vwait ::analysis(waitForReadyOk$n)
       ::sergame::sendToEngine $n "position fen [sc_pos fen]"
-      set wtime [expr [::gameclock::getSec 1] * 1000 ]
-      set btime [expr [::gameclock::getSec 2] * 1000 ]
       if {$timeMode == "timebonus"} {
+        set wtime [expr [::gameclock::getSec 1] * 1000 ]
+        set btime [expr [::gameclock::getSec 2] * 1000 ]
         ::sergame::sendToEngine $n "go wtime $wtime btime $btime winc $::uci::uciInfo(winc$n) binc $::uci::uciInfo(binc$n)"
       } elseif {$timeMode == "depth"} {
         ::sergame::sendToEngine $n "go depth $::uci::uciInfo(fixeddepth$n)"
