@@ -366,6 +366,8 @@ proc ::enginewin::addNetwork {id} {
 proc ::enginewin::createConfigWidgets {id options} {
     set w .engineWin$id.config.options.text
 
+    $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
+
     $w insert end "Engine name:\t"
     ttk::entry $w.name
     $w window create end -window $w.name
@@ -481,7 +483,6 @@ proc ::enginewin::createConfigWidgets {id options} {
             $w insert end " (Range: $min ... $max)"
         }
     }
-    $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
 }
 
 proc ::enginewin::updateConfig {id msgData} {
