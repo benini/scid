@@ -16,7 +16,7 @@ proc ::enginewin::onNewGame { {ids ""} } {
     set variant [sc_game variant]
     foreach {id state} [array get ::enginewin::engState] {
         if {$ids ne "" && $id ni $ids} { continue }
-        ::engine::send $id NewGame [list analysis post_pv post_wdl $variant]
+        set ::enginewin::newgame_$id true
     }
 }
 
@@ -30,6 +30,10 @@ proc ::enginewin::onPosChanged { {ids ""} } {
             set position [sc_game UCI_currentPos]
         }
         ::enginewin::updateDisplay $id ""
+        if {[set ::enginewin::newgame_$id]} {
+            set ::enginewin::newgame_$id false
+            ::engine::send $id NewGame [list analysis post_pv post_wdl [sc_game variant]]
+        }
         ::engine::send $id Go [list $position]
     }
 }
@@ -94,12 +98,14 @@ proc ::enginewin::Open { {id ""} } {
         ::enginelist::save \[ set ::enginewin::engConfig_$id \]
         unset ::enginewin::engConfig_$id
         unset ::enginewin::position_$id
+        unset ::enginewin::newgame_$id
         unset ::enginewin::startTime_$id
     "
 
     set ::enginewin::engState($id) {}
     set ::enginewin::engConfig_$id {}
     set ::enginewin::position_$id ""
+    set ::enginewin::newgame_$id true
     set ::enginewin::startTime_$id [clock milliseconds]
 
     options.persistent ::enginewin_lastengine($id) ""
