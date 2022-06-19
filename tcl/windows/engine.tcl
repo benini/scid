@@ -97,26 +97,14 @@ proc ::enginewin::Open { {id ""} } {
         unset ::enginewin::startTime_$id
     "
 
-    options.persistent ::enginewin_lastengine($id) ""
-    set lastEngine [lsearch -exact -inline -index 0 $::engines(list) $::enginewin_lastengine($id)]
-
     set ::enginewin::engState($id) {}
-    ::enginewin::clear $id
-    ::enginewin::changeState $id closed
-    ::enginewin::updateName $id
-
-    set ::enginewin::startTime_$id [clock milliseconds]
-
-    if {$lastEngine ne ""} {
-        catch { ::enginewin::connectEngine $id $lastEngine }
-    }
-}
-
-proc ::enginewin::clear {id} {
-    ::engine::close $id
-    set ::enginewin_lastengine($id) ""
     set ::enginewin::engConfig_$id {}
     set ::enginewin::position_$id ""
+    set ::enginewin::startTime_$id [clock milliseconds]
+
+    options.persistent ::enginewin_lastengine($id) ""
+    set lastEngine [lsearch -exact -inline -index 0 $::engines(list) $::enginewin_lastengine($id)]
+    catch { ::enginewin::connectEngine $id $lastEngine }
 }
 
 proc ::enginewin::updateName {id} {
@@ -160,9 +148,7 @@ proc ::enginewin::frameConfig {w id showDisplay} {
     ttk::button $w.header.delete -text "delete" -command "
         $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
         ::enginelist::delete \[$w.header.engine current\]
-        ::enginewin::clear $id
-        ::enginewin::changeState $id closed
-        ::enginewin::updateName $id
+        ::enginewin::connectEngine $id {}
     "
     grid $w.header.go $w.header.engine $w.header.addpipe $w.header.addnetwork \
          $w.header.clone $w.header.delete -sticky news
@@ -257,10 +243,13 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
     $widget see end
 }
 
+# If any, closes the connection with the current engine.
+# If "config" is not "" opens a connection with a new engine.
 proc ::enginewin::connectEngine {id config} {
     upvar ::enginewin::engConfig_$id engConfig_
     ::enginelist::save $engConfig_
-    ::enginewin::clear $id
+
+    ::engine::close $id
     ::enginewin::changeState $id closed
 
     lassign $config name cmd args wdir elo time url uci options
@@ -272,6 +261,11 @@ proc ::enginewin::connectEngine {id config} {
 
     ::enginewin::updateName $id
     ::enginewin::updateDisplay $id ""
+
+    if {$config eq ""} {
+        return
+    }
+
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
