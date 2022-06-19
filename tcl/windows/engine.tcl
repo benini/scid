@@ -169,59 +169,36 @@ proc ::enginewin::frameConfig {w id showDisplay} {
     grid $w.options -sticky news
 }
 
+# Sets the current state of the engine and updates the relevant buttons.
+# The states are:
+# closed -> No engine is open.
+# disconnected -> The engine was open but the connection was terminated.
+# idle -> The engine is open and ready.
+# run -> The engine is analyzing the current position.
+# locked -> The engine is analyzing a fixed position.
 proc ::enginewin::changeState {id newState} {
     if {$::enginewin::engState($id) eq $newState} { return }
 
+    lappend btnDisabledStates [list config.header.go [list closed disconnected]]
+    lappend btnDisabledStates [list config.header.clone closed]
+    lappend btnDisabledStates [list config.header.delete closed]
+    lappend btnDisabledStates [list display.btn.multipv [list closed disconnected locked]]
+    lappend btnDisabledStates [list display.btn.startStop [list closed disconnected] [list locked run]]
+    lappend btnDisabledStates [list display.btn.lock [list closed disconnected idle] locked]
+
     set w .engineWin$id
-    switch $newState {
-      "closed" {
-          $w.config.header.go configure -state disabled
-          $w.config.header.clone configure -state disabled
-          $w.config.header.delete configure -state disabled
-          $w.display.btn.startStop state !pressed
-          $w.display.btn.startStop configure -state disabled
-          $w.display.btn.lock state !pressed
-          $w.display.btn.lock configure -state disabled
-          $w.display.btn.multipv configure -state disabled
-      }
-      "disconnected" {
-          $w.config.header.go configure -state disabled
-          $w.config.header.clone configure -state disabled
-          $w.config.header.delete configure -state normal
-          $w.display.btn.startStop state !pressed
-          $w.display.btn.startStop configure -state disabled
-          $w.display.btn.lock state !pressed
-          $w.display.btn.lock configure -state disabled
-          $w.display.btn.multipv configure -state disabled
-      }
-      "idle" {
-          $w.config.header.go configure -state normal
-          $w.config.header.clone configure -state normal
-          $w.config.header.delete configure -state normal
-          $w.display.btn.startStop configure -state normal
-          $w.display.btn.startStop state !pressed
-          $w.display.btn.lock state !pressed
-          $w.display.btn.lock configure -state disabled
-          $w.display.btn.multipv configure -state normal
-      }
-      "locked" {
-          $w.config.header.go configure -state normal
-          $w.config.header.clone configure -state normal
-          $w.config.header.delete configure -state normal
-          $w.display.btn.startStop configure -state normal
-          $w.display.btn.lock state pressed
-          $w.display.btn.multipv configure -state disabled
-      }
-      "run" {
-          $w.config.header.go configure -state normal
-          $w.config.header.clone configure -state normal
-          $w.config.header.delete configure -state normal
-          $w.display.btn.startStop configure -state normal
-          $w.display.btn.startStop state pressed
-          $w.display.btn.lock state !pressed
-          $w.display.btn.lock configure -state enable
-          $w.display.btn.multipv configure -state normal
-      }
+    foreach {elem} $btnDisabledStates {
+        lassign $elem btn states pressed
+        if {$newState in $states} {
+            $w.$btn configure -state disabled
+        } else {
+            $w.$btn configure -state normal
+        }
+        if {$newState in $pressed} {
+            $w.$btn state pressed
+        } else {
+            $w.$btn state !pressed
+        }
     }
     set ::enginewin::engState($id) $newState
 }
