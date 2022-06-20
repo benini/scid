@@ -184,6 +184,12 @@ proc ::enginelist::read {} {
     catch {source [scidConfigFile engines]}
 }
 
+# Return the engine's config.
+# If there is no config for the requested engine's name, returns "".
+proc ::enginelist::get {name} {
+    return [lsearch -exact -inline -index 0 $::engines(list) $name]
+}
+
 # Change the name of an engine and write the "Engine list" file.
 # Returns the new name on success or the old name on error.
 proc ::enginelist::rename {oldname newname} {

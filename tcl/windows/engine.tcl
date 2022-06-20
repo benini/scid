@@ -121,8 +121,8 @@ proc ::enginewin::Open { {id ""} } {
     set ::enginewin::startTime_$id [clock milliseconds]
 
     options.persistent ::enginewin_lastengine($id) ""
-    set lastEngine [lsearch -exact -inline -index 0 $::engines(list) $::enginewin_lastengine($id)]
-    catch { ::enginewin::connectEngine $id $lastEngine }
+    set lastEngineConfig [::enginelist::get $::enginewin_lastengine($id)]
+    catch { ::enginewin::connectEngine $id $lastEngineConfig }
 }
 
 proc ::enginewin::updateName {id} {
@@ -149,7 +149,7 @@ proc ::enginewin::frameConfig {id w} {
         $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
     "
     bind $w.header.engine <<ComboboxSelected>> "
-        ::enginewin::connectEngine $id \[lindex \$::engines(list) \[$w.header.engine current\]\]
+        ::enginewin::connectEngine $id \[::enginelist::get \[$w.header.engine get\]\]
     "
     ttk::button $w.header.addpipe -text "add local" -command [list apply {{id} {
         if {[set fName [tk_getOpenFile]] != ""} {
