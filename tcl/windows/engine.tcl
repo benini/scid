@@ -146,7 +146,7 @@ proc ::enginewin::updateName {id} {
 proc ::enginewin::frameConfig {id w} {
     ttk::frame $w.header
     ttk::combobox $w.header.engine -state readonly -postcommand "
-        $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
+        $w.header.engine configure -values \[::enginelist::names \]
     "
     bind $w.header.engine <<ComboboxSelected>> "
         ::enginewin::connectEngine $id \[::enginelist::get \[$w.header.engine get\]\]

@@ -184,6 +184,11 @@ proc ::enginelist::read {} {
     catch {source [scidConfigFile engines]}
 }
 
+# Return a list containing the engine's names.
+proc ::enginelist::names {} {
+    return [lmap elem $::engines(list) { lindex $elem 0 }]
+}
+
 # Return the engine's config.
 # If there is no config for the requested engine's name, returns "".
 proc ::enginelist::get {name} {
