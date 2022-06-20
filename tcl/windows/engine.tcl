@@ -40,13 +40,13 @@ proc ::enginewin::onPosChanged { {ids ""} } {
 proc ::enginewin::toggleStartStop {id} {
     if {![winfo exists .engineWin$id]} {
         ::enginewin::Open $id
-        after 300 ".engineWin$id.config.header.go invoke"
+        after 300 "::enginewin::toggleStartStop $id"
         return
     }
     if {$::enginewin::engState($id) eq "idle"} {
         ::enginewin::changeState $id run
         ::enginewin::onPosChanged $id
-    } else {
+    } elseif {$::enginewin::engState($id) in "run locked"} {
         ::enginewin::changeState $id idle
         ::engine::send $id StopGo
     }
@@ -74,17 +74,9 @@ proc ::enginewin::Open { {id ""} } {
     $w.pane add $w.main -weight 1
 
     ttk::frame $w.config
-    ::enginewin::frameConfig $w.config $id "
-        grid forget $w.config
-        grid $w.display -in $w.main -sticky news
-        ::enginewin::changeState $id run
-        ::enginewin::onPosChanged $id
-    "
+    ::enginewin::frameConfig $id $w.config
     ttk::frame $w.display
-    ::enginewin::frameDisplay $id $w.display "
-        grid forget $w.display
-        grid $w.config -in $w.main -sticky news
-    "
+    ::enginewin::frameDisplay $id $w.display
     autoscrollText y $w.debug $w.debug.lines Treeview
     $w.debug.lines configure -state normal
 
@@ -103,7 +95,11 @@ proc ::enginewin::Open { {id ""} } {
     "
     ttk::button $w.btn.threats -text "Threats"
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
-    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv
+    ttk::button $w.btn.config -image tb_tabmenu \
+        -command "::enginewin::changeState $id toggleConfig"
+    $w.btn.config state pressed
+    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv x $w.btn.config -sticky ew
+    grid columnconfigure $w.btn 4 -weight 1
 
     grid $w.btn -sticky news
 
@@ -147,9 +143,8 @@ proc ::enginewin::updateName {id} {
     }
 }
 
-proc ::enginewin::frameConfig {w id showDisplay} {
+proc ::enginewin::frameConfig {id w} {
     ttk::frame $w.header
-    ttk::button $w.header.go -text go -command $showDisplay
     ttk::combobox $w.header.engine -state readonly -postcommand "
         $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
     "
@@ -172,9 +167,8 @@ proc ::enginewin::frameConfig {w id showDisplay} {
         ::enginelist::delete \[$w.header.engine current\]
         ::enginewin::connectEngine $id {}
     "
-    grid $w.header.go $w.header.engine $w.header.addpipe $w.header.addnetwork \
-         $w.header.clone $w.header.delete -sticky news
-    grid columnconfigure $w.header 1 -weight 1
+    grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
+         $w.header.clone $w.header.delete -sticky nws
 
     autoscrollText both $w.options $w.options.text Treeview
     $w.options.text configure -wrap none
@@ -193,16 +187,27 @@ proc ::enginewin::frameConfig {w id showDisplay} {
 # run -> The engine is analyzing the current position.
 # locked -> The engine is analyzing a fixed position.
 proc ::enginewin::changeState {id newState} {
+    set w .engineWin$id
+    if {$newState in "run toggleConfig"} {
+        if {[grid info $w.config] ne ""} {
+            $w.btn.config state !pressed
+            grid forget $w.config
+            grid $w.display -in $w.main -sticky news
+        } elseif {$newState eq "toggleConfig"} {
+            $w.btn.config state pressed
+            grid forget $w.display
+            grid $w.config -in $w.main -sticky news
+        }
+        if {$newState eq "toggleConfig"} { return }
+    }
+
     if {$::enginewin::engState($id) eq $newState} { return }
 
-    lappend btnDisabledStates [list config.header.go [list closed disconnected]]
     lappend btnDisabledStates [list config.header.clone closed]
     lappend btnDisabledStates [list config.header.delete closed]
     lappend btnDisabledStates [list btn.multipv [list closed disconnected locked]]
     lappend btnDisabledStates [list btn.startStop [list closed disconnected] [list locked run]]
     lappend btnDisabledStates [list btn.lock [list closed disconnected idle] locked]
-
-    set w .engineWin$id
     foreach {elem} $btnDisabledStates {
         lassign $elem btn states pressed
         if {$newState in $states} {
@@ -739,14 +744,11 @@ proc ::enginewin::updateConfigNetd {id w} {
     }
 }
 
-proc ::enginewin::frameDisplay {id w showConfig} {
+proc ::enginewin::frameDisplay {id w} {
     ttk::frame $w.header
     autoscrollText y $w.header.info $w.header.info.text TLabel
     $w.header.info.text configure -wrap word -height 1
-    ttk::button $w.header.config -style Toolbutton -image tb_tabmenu \
-        -command $showConfig
-    grid $w.header.config $w.header.info -sticky news
-    grid columnconfigure $w.header 1 -weight 1
+    grid $w.header.info -sticky news
 
     set tab [font measure font_Regular "xxxxxxx"]
     autoscrollText both $w.pv $w.pv.lines Treeview
