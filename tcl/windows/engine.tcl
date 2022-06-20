@@ -85,6 +85,8 @@ proc ::enginewin::Open { {id ""} } {
     ttk::frame $w.btn
     ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] -style Toolbutton \
         -command "::enginewin::toggleStartStop $id"
+    #TODO: change the tooltip to "Start/stop engine"
+    ::utils::tooltip::Set $w.btn.startStop [tr StartEngine]
     ttk::button $w.btn.lock -image tb_eng_lock -style Toolbutton -command "
         if {\$::enginewin::engState($id) eq {locked}} {
             ::enginewin::changeState $id run
@@ -93,8 +95,10 @@ proc ::enginewin::Open { {id ""} } {
             ::enginewin::changeState $id locked
         }
     "
+    ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
     ttk::button $w.btn.threats -text "Threats"
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
+    ::utils::tooltip::Set $w.btn.multipv [tr Lines]
     ttk::button $w.btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
     $w.btn.config state pressed
