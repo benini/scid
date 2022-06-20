@@ -162,12 +162,12 @@ proc ::enginewin::frameConfig {id w} {
     ttk::button $w.header.clone -text "clone" -command "
         ::enginewin::connectEngine $id \[::enginelist::add \$::enginewin::engConfig_$id \]
     "
-    ttk::button $w.header.delete -text "delete" -command "
-        $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
-        if {\[::enginelist::delete \[$w.header.engine current\]\]} {
+    ttk::button $w.header.delete -text "delete" -command [list apply {{id widget} {
+        $widget configure -values [::enginelist::names]
+        if {[::enginelist::delete [$widget current]]} {
             ::enginewin::connectEngine $id {}
         }
-    "
+    }} $id $w.header.engine]
     grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
          $w.header.clone $w.header.delete -sticky nws
 
