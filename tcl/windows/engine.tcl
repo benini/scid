@@ -164,8 +164,9 @@ proc ::enginewin::frameConfig {id w} {
     "
     ttk::button $w.header.delete -text "delete" -command "
         $w.header.engine configure -values \[lmap elem \$::engines(list) { lindex \$elem 0 } \]
-        ::enginelist::delete \[$w.header.engine current\]
-        ::enginewin::connectEngine $id {}
+        if {\[::enginelist::delete \[$w.header.engine current\]\]} {
+            ::enginewin::connectEngine $id {}
+        }
     "
     grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
          $w.header.clone $w.header.delete -sticky nws

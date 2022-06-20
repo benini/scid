@@ -496,7 +496,9 @@ proc ::enginelist::delete {index} {
         set engines(list) [lreplace $engines(list) $index $index]
         ::enginelist::sort
         ::enginelist::write
+	return true
     }
+    return false
 }
 
 # ::enginelist::edit
