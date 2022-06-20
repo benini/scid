@@ -382,14 +382,14 @@ proc ::enginewin::createConfigFrame {id w} {
         }
     }} $id $w.header.engine]
     grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
-         $w.header.clone $w.header.delete -sticky nws
+         $w.header.clone $w.header.delete -sticky news
 
     autoscrollText both $w.options $w.options.text Treeview
     $w.options.text configure -wrap none
 
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 1
-    grid $w.header -sticky news
+    grid $w.header
     grid $w.options -sticky news
 }
 
@@ -758,6 +758,7 @@ proc ::enginewin::frameDisplay {id w} {
     autoscrollText y $w.header.info $w.header.info.text TLabel
     $w.header.info.text configure -wrap word -height 1
     grid $w.header.info -sticky news
+    grid columnconfigure $w.header 0 -weight 1
 
     set tab [font measure font_Regular "xxxxxxx"]
     autoscrollText both $w.pv $w.pv.lines Treeview
