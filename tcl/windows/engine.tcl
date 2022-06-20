@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (C) 2020 Fulvio Benini
+# Copyright (C) 2020-2022 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 # Scid is free software: you can redistribute it and/or modify
@@ -13,7 +13,6 @@ array set ::enginewin::engState {} ; # closed disconnected idle run locked
 
 # Inform the engine that there is a new game
 proc ::enginewin::onNewGame { {ids ""} } {
-    set variant [sc_game variant]
     foreach {id state} [array get ::enginewin::engState] {
         if {$ids ne "" && $id ni $ids} { continue }
         set ::enginewin::newgame_$id true
@@ -90,6 +89,23 @@ proc ::enginewin::Open { {id ""} } {
     $w.debug.lines configure -state normal
 
     grid $w.config -in $w.main -sticky news
+
+    ttk::frame $w.btn
+    ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
+        -command "::enginewin::toggleStartStop $id"
+    ttk::button $w.btn.lock -image tb_lockengine -command "
+        if {\$::enginewin::engState($id) eq {locked}} {
+            ::enginewin::changeState $id run
+            ::enginewin::onPosChanged $id
+        } else {
+            ::enginewin::changeState $id locked
+        }
+    "
+    ttk::button $w.btn.threats -text "Threats"
+    ttk::spinbox $w.btn.multipv -increment 1 -width 4
+    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv
+
+    grid $w.btn -sticky news
 
     # The engine should be closed before the debug .text is destroyed
     bind $w.config <Destroy> "
@@ -182,9 +198,9 @@ proc ::enginewin::changeState {id newState} {
     lappend btnDisabledStates [list config.header.go [list closed disconnected]]
     lappend btnDisabledStates [list config.header.clone closed]
     lappend btnDisabledStates [list config.header.delete closed]
-    lappend btnDisabledStates [list display.btn.multipv [list closed disconnected locked]]
-    lappend btnDisabledStates [list display.btn.startStop [list closed disconnected] [list locked run]]
-    lappend btnDisabledStates [list display.btn.lock [list closed disconnected idle] locked]
+    lappend btnDisabledStates [list btn.multipv [list closed disconnected locked]]
+    lappend btnDisabledStates [list btn.startStop [list closed disconnected] [list locked run]]
+    lappend btnDisabledStates [list btn.lock [list closed disconnected idle] locked]
 
     set w .engineWin$id
     foreach {elem} $btnDisabledStates {
@@ -737,24 +753,8 @@ proc ::enginewin::frameDisplay {id w showConfig} {
     $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
 
-    ttk::frame $w.btn
-    ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
-        -command "::enginewin::toggleStartStop $id"
-    ttk::button $w.btn.lock -image tb_lockengine -command "
-        if {\$::enginewin::engState($id) eq {locked}} {
-            ::enginewin::changeState $id run
-            ::enginewin::onPosChanged $id
-        } else {
-            ::enginewin::changeState $id locked
-        }
-    "
-    ttk::button $w.btn.threats -text "Threats"
-    ttk::spinbox $w.btn.multipv -increment 1 -width 4
-    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv
-
     grid $w.header -sticky news
     grid $w.pv -sticky news
-    grid $w.btn -sticky news
 
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 1
@@ -762,7 +762,7 @@ proc ::enginewin::frameDisplay {id w showConfig} {
 
 proc ::enginewin::changeDisplayLayout {id param value} {
     upvar ::enginewin::engConfig_$id engConfig_
-    set w .engineWin$id.display
+    set w .engineWin$id
     switch $param {
         "scoreside" {
             set idx 0
@@ -782,7 +782,7 @@ proc ::enginewin::changeDisplayLayout {id param value} {
         }
         "wrap" {
             set idx 2
-            $w.pv.lines configure -wrap $value
+            $w.display.pv.lines configure -wrap $value
         }
         "multipv" {
             if {$value eq ""} {
