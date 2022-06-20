@@ -199,7 +199,7 @@ proc ::enginelist::get {name} {
 # Returns the new name on success or the old name on error.
 proc ::enginelist::rename {oldname newname} {
     set idx [lsearch -exact -index 0 $::engines(list) $oldname]
-    if {$idx < 0} {
+    if {$idx < 0 || $newname eq $oldname || $newname eq ""} {
         return $oldname
     }
     set newname [::enginelist::uniquename $newname]
