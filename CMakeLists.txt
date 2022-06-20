@@ -49,7 +49,7 @@ add_library(polyglot ${POLYGLOT_SRC})
 # scid
 file(GLOB SCID_SRC src/*.h src/*.cpp)
 if(MSVC)
-  add_executable(scid WIN32 ${SCID_SRC})
+  add_executable(scid WIN32 ${SCID_SRC} resources/win/scid.rc resources/win/scid.manifest)
   target_link_options(scid PRIVATE /ENTRY:mainCRTStartup)
 else()
   add_executable(scid ${SCID_SRC})
