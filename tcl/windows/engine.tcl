@@ -74,7 +74,7 @@ proc ::enginewin::Open { {id ""} } {
     $w.pane add $w.main -weight 1
 
     ttk::frame $w.config
-    ::enginewin::frameConfig $id $w.config
+    ::enginewin::createConfigFrame $id $w.config
     ttk::frame $w.display
     ::enginewin::frameDisplay $id $w.display
     autoscrollText y $w.debug $w.debug.lines Treeview
@@ -141,43 +141,6 @@ proc ::enginewin::updateName {id} {
         ::setTitle .engineWin$id "[tr Engine]: $name"
         $w.config.header.engine set "$name"
     }
-}
-
-proc ::enginewin::frameConfig {id w} {
-    ttk::frame $w.header
-    ttk::combobox $w.header.engine -state readonly -postcommand "
-        $w.header.engine configure -values \[::enginelist::names \]
-    "
-    bind $w.header.engine <<ComboboxSelected>> "
-        ::enginewin::connectEngine $id \[::enginelist::get \[$w.header.engine get\]\]
-    "
-    ttk::button $w.header.addpipe -text "add local" -command [list apply {{id} {
-        if {[set fName [tk_getOpenFile]] != ""} {
-            ::enginewin::connectEngine $id \
-                [::enginelist::add [list $fName $fName {} {} {} 0 {} {} {}]]
-        }
-    }} $id]
-    ttk::button $w.header.addnetwork -text "add remote" \
-        -command "::enginewin::addNetwork $id"
-    ttk::button $w.header.clone -text "clone" -command "
-        ::enginewin::connectEngine $id \[::enginelist::add \$::enginewin::engConfig_$id \]
-    "
-    ttk::button $w.header.delete -text "delete" -command [list apply {{id widget} {
-        $widget configure -values [::enginelist::names]
-        if {[::enginelist::delete [$widget current]]} {
-            ::enginewin::connectEngine $id {}
-        }
-    }} $id $w.header.engine]
-    grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
-         $w.header.clone $w.header.delete -sticky nws
-
-    autoscrollText both $w.options $w.options.text Treeview
-    $w.options.text configure -wrap none
-
-    grid columnconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 1
-    grid $w.header -sticky news
-    grid $w.options -sticky news
 }
 
 # Sets the current state of the engine and updates the relevant buttons.
@@ -383,6 +346,47 @@ proc ::enginewin::addNetwork {id} {
         ::enginewin::connectEngine $id \[list \$host \$host {} {} {} {} {} 2 \]
     "
     grid $w.cancel $w.ok
+}
+
+# Creates the frame with the widgets necessary to select the desired engine and
+# change its configuration.
+# It also creates the buttons used to manage the configured engines:
+# add a new local or remote engine; clone or delete an existing engine.
+proc ::enginewin::createConfigFrame {id w} {
+    ttk::frame $w.header
+    ttk::combobox $w.header.engine -state readonly -postcommand "
+        $w.header.engine configure -values \[::enginelist::names \]
+    "
+    bind $w.header.engine <<ComboboxSelected>> "
+        ::enginewin::connectEngine $id \[::enginelist::get \[$w.header.engine get\]\]
+    "
+    ttk::button $w.header.addpipe -text "add local" -command [list apply {{id} {
+        if {[set fName [tk_getOpenFile]] != ""} {
+            ::enginewin::connectEngine $id \
+                [::enginelist::add [list $fName $fName {} {} {} 0 {} {} {}]]
+        }
+    }} $id]
+    ttk::button $w.header.addnetwork -text "add remote" \
+        -command "::enginewin::addNetwork $id"
+    ttk::button $w.header.clone -text "clone" -command "
+        ::enginewin::connectEngine $id \[::enginelist::add \$::enginewin::engConfig_$id \]
+    "
+    ttk::button $w.header.delete -text "delete" -command [list apply {{id widget} {
+        $widget configure -values [::enginelist::names]
+        if {[::enginelist::delete [$widget current]]} {
+            ::enginewin::connectEngine $id {}
+        }
+    }} $id $w.header.engine]
+    grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
+         $w.header.clone $w.header.delete -sticky nws
+
+    autoscrollText both $w.options $w.options.text Treeview
+    $w.options.text configure -wrap none
+
+    grid columnconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 1
+    grid $w.header -sticky news
+    grid $w.options -sticky news
 }
 
 proc ::enginewin::createConfigWidgets {id options} {
