@@ -83,9 +83,9 @@ proc ::enginewin::Open { {id ""} } {
     grid $w.config -in $w.main -sticky news
 
     ttk::frame $w.btn
-    ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] \
+    ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] -style Toolbutton \
         -command "::enginewin::toggleStartStop $id"
-    ttk::button $w.btn.lock -image tb_lockengine -command "
+    ttk::button $w.btn.lock -image tb_eng_lock -style Toolbutton -command "
         if {\$::enginewin::engState($id) eq {locked}} {
             ::enginewin::changeState $id run
             ::enginewin::onPosChanged $id
@@ -95,7 +95,7 @@ proc ::enginewin::Open { {id ""} } {
     "
     ttk::button $w.btn.threats -text "Threats"
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
-    ttk::button $w.btn.config -image tb_tabmenu \
+    ttk::button $w.btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
     $w.btn.config state pressed
     grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv x $w.btn.config -sticky ew
@@ -360,18 +360,18 @@ proc ::enginewin::createConfigFrame {id w} {
     bind $w.header.engine <<ComboboxSelected>> "
         ::enginewin::connectEngine $id \[::enginelist::get \[$w.header.engine get\]\]
     "
-    ttk::button $w.header.addpipe -text "add local" -command [list apply {{id} {
+    ttk::button $w.header.addpipe -image tb_eng_add -command [list apply {{id} {
         if {[set fName [tk_getOpenFile]] != ""} {
             ::enginewin::connectEngine $id \
                 [::enginelist::add [list $fName $fName {} {} {} 0 {} {} {}]]
         }
     }} $id]
-    ttk::button $w.header.addnetwork -text "add remote" \
+    ttk::button $w.header.addnetwork -image tb_eng_network \
         -command "::enginewin::addNetwork $id"
-    ttk::button $w.header.clone -text "clone" -command "
+    ttk::button $w.header.clone -image tb_eng_clone -command "
         ::enginewin::connectEngine $id \[::enginelist::add \$::enginewin::engConfig_$id \]
     "
-    ttk::button $w.header.delete -text "delete" -command [list apply {{id widget} {
+    ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id widget} {
         $widget configure -values [::enginelist::names]
         if {[::enginelist::delete [$widget current]]} {
             ::enginewin::connectEngine $id {}
