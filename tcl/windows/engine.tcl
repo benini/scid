@@ -301,7 +301,7 @@ proc ::enginewin::connectEngine {id config} {
     } errorMsg]} {
         tk_messageBox -icon warning -type ok -parent . -message $errorMsg
         ::enginewin::updateConfig $id {}
-        .engineWin$id.config.header.delete configure -state normal
+        ::enginewin::changeState $id disconnected
         return
     }
 
