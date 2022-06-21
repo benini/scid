@@ -11,6 +11,18 @@
 namespace eval enginewin {}
 array set ::enginewin::engState {} ; # closed disconnected idle run locked
 
+# Return a list containing the ID and name of the active engines.
+# Example: foreach {id name} [::enginewin::listEngines] { ... }
+proc ::enginewin::listEngines {} {
+    set result {}
+    foreach {id state} [array get ::enginewin::engState] {
+        if {$state in {closed disconnected}} { continue }
+        lassign [set ::enginewin::engConfig_$id] name
+        lappend result [list $id $name]
+    }
+    return $result
+}
+
 # Inform the engine that there is a new game
 proc ::enginewin::onNewGame { {ids ""} } {
     foreach {id state} [array get ::enginewin::engState] {
