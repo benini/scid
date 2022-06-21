@@ -204,7 +204,7 @@ proc ::enginewin::changeState {id newState} {
     }
     set ::enginewin::engState($id) $newState
 
-    if {$newState in {closed disconnected}} {
+    if {$newState in {closed disconnected locked}} {
         ::notify::EngineBestMove $id "" ""
     }
 }
@@ -945,7 +945,7 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
 
     $w.pv.lines configure -state disabled
-    if {$line == 1} {
+    if {$line == 1 && $::enginewin::engState($id) ne "locked"} {
         if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
             set score [expr { - $score }]
         }
