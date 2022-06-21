@@ -255,11 +255,13 @@ proc updateMainToolbar {} {
     catch { unset ::gameInfoBar(tb_BD_VarPromote) }
     catch { unset ::gameInfoBar(tb_BD_VarLeave) }
     catch { unset ::gameInfoBar(tb_BD_BackToMainline) }
+    ::board::setButtonImg .main.board leavevar tb_BD_BackStart
   } else {
     set ::gameInfoBar(tb_BD_VarDelete) { ::pgn::deleteVar }
     set ::gameInfoBar(tb_BD_VarPromote) { ::pgn::mainVar }
     set ::gameInfoBar(tb_BD_VarLeave) { ::move::ExitVar }
     set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
+    ::board::setButtonImg .main.board leavevar tb_BD_exitvar
   }
 
   set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"

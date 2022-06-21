@@ -574,6 +574,10 @@ proc ::board::setButtonCmd {{w} {button} {cmd}} {
   }
 }
 
+proc ::board::setButtonImg {{w} {button} {img}} {
+  $w.bar.$button configure -image $img
+}
+
 proc ::board::toggleScorebar {w} {
   set ::board::_scorebarShow($w) [expr {1 - $::board::_scorebarShow($w)}]
   if {$::board::_scorebarShow($w)} {
