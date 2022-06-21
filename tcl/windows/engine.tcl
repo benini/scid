@@ -76,7 +76,7 @@ proc ::enginewin::Open { {id ""} } {
     ttk::frame $w.config
     ::enginewin::createConfigFrame $id $w.config
     ttk::frame $w.display
-    ::enginewin::frameDisplay $id $w.display
+    ::enginewin::createDisplayFrame $id $w.display
     autoscrollText y $w.debug $w.debug.lines Treeview
     $w.debug.lines configure -state normal
 
@@ -757,7 +757,7 @@ proc ::enginewin::updateConfigNetd {id w} {
     }
 }
 
-proc ::enginewin::frameDisplay {id w} {
+proc ::enginewin::createDisplayFrame {id w} {
     ttk::frame $w.header
     autoscrollText y $w.header.info $w.header.info.text TLabel
     $w.header.info.text configure -wrap word -height 1
@@ -766,8 +766,14 @@ proc ::enginewin::frameDisplay {id w} {
 
     set tab [font measure font_Regular "xxxxxxx"]
     autoscrollText both $w.pv $w.pv.lines Treeview
+    $w.pv.lines configure -exportselection true
     $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
+    $w.pv.lines tag bind moves <ButtonRelease-1> {
+        if {[%W tag ranges sel] eq ""} {
+            ::enginewin::playMoves %W @%x,%y
+        }
+    }
 
     grid $w.header -sticky news
     grid $w.pv -sticky news
@@ -916,11 +922,37 @@ proc ::enginewin::updateDisplay {id msgData} {
     $w.pv.lines insert $line.end "$depth\t"
     $w.pv.lines insert $line.end "$score" header
     $w.pv.lines insert $line.end "\t"
-    $w.pv.lines insert $line.end "$pv" header
-    $w.pv.lines insert $line.end "$pvline" lmargin
+    $w.pv.lines insert $line.end "$pv" [list header moves]
+    $w.pv.lines insert $line.end "$pvline" [list lmargin moves]
     if {[info exists extraInfo]} {
         $w.pv.lines insert $line.end "  ([join $extraInfo {  }])" lmargin
     }
 
     $w.pv.lines configure -state disabled
+}
+
+# Retrieve the moves at the line specified by index.
+# An index linenumber.0 can be used to retrive just the first move.
+# An index linenumber.end can be used to retrive all the moves.
+# If index is not valid an exception is raised.
+proc ::enginewin::getMoves {w index} {
+    lassign [$w tag nextrange moves "$index linestart"] begin end
+    if {[regexp {^\d+\.0$} $index]} {
+        set end [$w search " " $begin]
+    } elseif {![regexp {^\d+\.end$} $index]} {
+        set end [$w search " " $index]
+    }
+    set moves [::untrans [$w get $begin $end]]
+    return [string map {"\u2654" K "\u2655" Q "\u2656" R "\u2657" B "\u2658" N} $moves]
+}
+
+# Add the moves to the current game
+# An index linenumber.0 can be used to add just the first move.
+# An index linenumber.end can be used to add all the moves.
+# If index is not valid an exception is raised.
+proc ::enginewin::playMoves {w index} {
+    set line [::enginewin::getMoves $w $index]
+    ::undoFeature save
+    sc_game import $line
+    ::notify::GameChanged
 }
