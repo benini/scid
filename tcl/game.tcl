@@ -394,7 +394,7 @@ namespace eval ::notify {
 
   # To be called when the engine evaluation for the current position changes.
   # If both bestmove and score are eq "" the engine was closed, disconnected or locked.
-  proc EngineBestMove {engineID bestmove score} {
-    ::updateMainScorebar $engineID $score
+  proc EngineBestMove {engineID bestmove evaluation} {
+    ::updateMainScorebar $engineID $bestmove $evaluation
   }
 }
