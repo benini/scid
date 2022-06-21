@@ -205,7 +205,7 @@ proc ::enginewin::changeState {id newState} {
     set ::enginewin::engState($id) $newState
 
     if {$newState in {closed disconnected}} {
-        ::notify::engineBestMove $id "" ""
+        ::notify::EngineBestMove $id "" ""
     }
 }
 
@@ -949,7 +949,7 @@ proc ::enginewin::updateDisplay {id msgData} {
         if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
             set score [expr { - $score }]
         }
-        ::notify::engineBestMove $id $pv $score
+        ::notify::EngineBestMove $id $pv $score
     }
 }
 
