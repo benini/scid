@@ -317,6 +317,7 @@ public:
     bool AtVarEnd() const { return CurrentMove->endMarker(); }
     bool AtStart() const { return (VarDepth == 0 && AtVarStart()); }
     bool AtEnd() const { return (VarDepth == 0 && AtVarEnd()); }
+    bool AtEmptyVar() const { return VarDepth != 0 && AtVarStart() && AtVarEnd(); }
 
     //////////////////////////////////////////////////////////////
     // Functions that get/set information about the last/next move.

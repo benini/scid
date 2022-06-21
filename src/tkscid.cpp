@@ -2492,12 +2492,19 @@ int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 	if (argc != 3)
 		return errorResult(ti, "Usage: sc_game import <pgn-text>");
 
-	db->game->Clear();
 	db->gameAltered = true;
+	if (!db->game->AtVarEnd() && !db->game->AtVarStart()) {
+		db->game->MoveForward();
+		db->game->AddVariation();
+	}
 
 	PgnParseLog pgn;
-	if (!pgnParseGame(argv[2], std::strlen(argv[2]), *db->game, pgn) &&
-	    pgn.log.empty())
+	auto ok = pgnParseGame(argv[2], std::strlen(argv[2]), *db->game, pgn);
+	if (!ok && db->game->AtEmptyVar()) {
+		db->game->DeleteVariation();
+	}
+
+	if (!ok && pgn.log.empty())
 		return UI_Result(ti, OK, "No PGN text found.");
 
 	if (pgn.log.empty())

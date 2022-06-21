@@ -54,6 +54,7 @@ proc importPgnGame {} {
     .importWin.pane.err.text configure -state disabled
   }
   ttk::button $w.b.ok -text "$::tr(Import) (Alt-I)" -command {
+    if {[::game::Clear] eq "cancel"} { return }
     set err [catch {sc_game import \
           [.importWin.pane.edit.text get 1.0 end]} result]
     .importWin.pane.err.text configure -state normal
