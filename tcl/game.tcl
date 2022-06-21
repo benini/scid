@@ -391,4 +391,10 @@ namespace eval ::notify {
     ::tools::graphs::absfilter::Refresh
     if {[winfo exists .ecograph]} { ::windows::eco::update }
   }
+
+  # To be called when the engine evaluation change.
+  # If both bestmove and score are eq "" the engine was closed or disconnected.
+  proc engineBestMove {engineID bestmove score} {
+    ::updateMainScorebar $engineID $score
+  }
 }

@@ -328,6 +328,16 @@ proc ::cancelUpdateTreeFilter {progressbar} {
     }
 }
 
+proc ::updateMainScorebar {engineID score} {
+    #TODO: when the user click on the scorebar, show a popup menu that allow
+    #      to select witch engine is associated with the scorebar.
+    #      (::enginewin::listEngines to get the list of engines)
+    set scorebarEngineID 1
+    if {$engineID == $scorebarEngineID} {
+        ::board::updateScorebar .main.board $score
+    }
+}
+
 proc toggleRotateBoard {} {
     ::board::flip .main.board
 }

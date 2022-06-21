@@ -203,6 +203,10 @@ proc ::enginewin::changeState {id newState} {
         }
     }
     set ::enginewin::engState($id) $newState
+
+    if {$newState in {closed disconnected}} {
+        ::notify::engineBestMove $id "" ""
+    }
 }
 
 proc ::enginewin::logEngine {id on} {
@@ -941,6 +945,12 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
 
     $w.pv.lines configure -state disabled
+    if {$line == 1} {
+        if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
+            set score [expr { - $score }]
+        }
+        ::notify::engineBestMove $id $pv $score
+    }
 }
 
 # Retrieve the moves at the line specified by index.
