@@ -108,14 +108,23 @@ proc ::enginewin::Open { {id ""} } {
         }
     "
     ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
-    ttk::button $w.btn.threats -text "Threats"
+    ttk::button $w.btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
+        -command "::enginewin::playMoves $w.display.pv.lines 1.0"
+    ::utils::tooltip::Set $w.btn.addbestmove [tr AddMove]
+    ttk::button $w.btn.addbestline -image tb_eng_addbestline -style Toolbutton \
+        -command "::enginewin::playMoves $w.display.pv.lines 1.end"
+    ::utils::tooltip::Set $w.btn.addbestline [tr AddVariation]
+    ttk::button $w.btn.addlines -image tb_eng_addlines -style Toolbutton
+        #TODO -command ...
+    ::utils::tooltip::Set $w.btn.addlines [tr AddAllVariations]
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
     ::utils::tooltip::Set $w.btn.multipv [tr Lines]
     ttk::button $w.btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
     $w.btn.config state pressed
-    grid $w.btn.startStop $w.btn.lock $w.btn.threats $w.btn.multipv x $w.btn.config -sticky ew
-    grid columnconfigure $w.btn 4 -weight 1
+    grid $w.btn.startStop $w.btn.lock $w.btn.addbestmove $w.btn.addbestline \
+         $w.btn.addlines $w.btn.multipv x $w.btn.config -sticky ew
+    grid columnconfigure $w.btn 6 -weight 1
 
     grid $w.btn -sticky news
 
@@ -186,6 +195,12 @@ proc ::enginewin::changeState {id newState} {
     lappend btnDisabledStates [list config.header.reload closed]
     lappend btnDisabledStates [list config.header.clone closed]
     lappend btnDisabledStates [list config.header.delete closed]
+    # Buttons that add moves are not disabled when the engine is locked.
+    # This allow the user to later add the lines. And if the board position
+    # will be different, only the valid moves will be added to the game.
+    lappend btnDisabledStates [list btn.addbestmove [list closed disconnected]]
+    lappend btnDisabledStates [list btn.addbestline [list closed disconnected]]
+    lappend btnDisabledStates [list btn.addlines [list closed disconnected]]
     lappend btnDisabledStates [list btn.multipv [list closed disconnected locked]]
     lappend btnDisabledStates [list btn.startStop [list closed disconnected] [list locked run]]
     lappend btnDisabledStates [list btn.lock [list closed disconnected idle] locked]
@@ -971,10 +986,13 @@ proc ::enginewin::getMoves {w index} {
 # Add the moves to the current game
 # An index linenumber.0 can be used to add just the first move.
 # An index linenumber.end can be used to add all the moves.
-# If index is not valid an exception is raised.
+# Return false if index is not valid.
 proc ::enginewin::playMoves {w index} {
-    set line [::enginewin::getMoves $w $index]
+    if {[catch {::enginewin::getMoves $w $index} line]} {
+        return false
+    }
     ::undoFeature save
     sc_game import $line
     ::notify::GameChanged
+    return true
 }
