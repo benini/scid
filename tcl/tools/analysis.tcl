@@ -184,68 +184,6 @@ proc ::enginelist::read {} {
     catch {source [scidConfigFile engines]}
 }
 
-# Return a list containing the engine's names.
-proc ::enginelist::names {} {
-    return [lmap elem $::engines(list) { lindex $elem 0 }]
-}
-
-# Return the engine's config.
-# If there is no config for the requested engine's name, returns "".
-proc ::enginelist::get {name} {
-    return [lsearch -exact -inline -index 0 $::engines(list) $name]
-}
-
-# Change the name of an engine and write the "Engine list" file.
-# Returns the new name on success or the old name on error.
-proc ::enginelist::rename {oldname newname} {
-    set idx [lsearch -exact -index 0 $::engines(list) $oldname]
-    if {$idx < 0 || $newname eq $oldname || $newname eq ""} {
-        return $oldname
-    }
-    set newname [::enginelist::uniquename $newname]
-    lset ::engines(list) $idx 0 $newname
-    ::enginelist::write
-    return $newname
-}
-
-proc ::enginelist::uniquename {name} {
-    set copyn 0
-    while {[lsearch -exact -index 0 $::engines(list) $name] >= 0} {
-        regexp {^(.*?)\s*(\(\d+\))*$} $name -> name
-        set name "$name ([incr copyn])"
-    }
-    return $name
-}
-
-# Add an engine, possibly changing the name to make it unique,
-# and save the "Engine list" file.
-proc ::enginelist::add {enginecfg} {
-    lset enginecfg 0 [::enginelist::uniquename [lindex $enginecfg 0]]
-    lappend ::engines(list) $enginecfg
-    ::enginelist::save $enginecfg
-    return [lindex $::engines(list) end]
-}
-
-# Search a previous configuration with the same name and replace it.
-# If necessary write the "Engine list" file.
-proc ::enginelist::save {enginecfg} {
-    lassign $enginecfg name
-    set idx [lsearch -exact -index 0 $::engines(list) $name]
-    if {$idx < 0} {
-        return ""
-    }
-    lset enginecfg 8 [lmap elem [lindex $enginecfg 8] {
-        lassign $elem name value type default min max var_list internal
-        if {$internal || $value eq $default} { continue }
-        list $name $value
-    }]
-    if {[lindex $::engines(list) $idx] ne $enginecfg} {
-        lset ::engines(list) $idx $enginecfg
-        ::enginelist::write
-    }
-    return $enginecfg
-}
-
 # ::enginelist::write:
 #   Writes the user Engine list file.
 #

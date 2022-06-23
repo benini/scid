@@ -134,7 +134,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     bind $w.config <Destroy> "
         unset ::enginewin::engState($id)
         ::engine::close $id
-        ::enginelist::save \[ set ::enginewin::engConfig_$id \]
+        ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
         unset ::enginewin::engConfig_$id
         unset ::enginewin::position_$id
         unset ::enginewin::newgame_$id
@@ -151,7 +151,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     if {$enginename eq ""} {
         set enginename $::enginewin_lastengine($id)
     }
-    set engineConfig [::enginelist::get $enginename]
+    set engineConfig [::enginecfg::get $enginename]
     catch { ::enginewin::connectEngine $id $engineConfig }
     return $id
 }
@@ -257,7 +257,7 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
 # If "config" is not "" opens a connection with a new engine.
 proc ::enginewin::connectEngine {id config} {
     upvar ::enginewin::engConfig_$id engConfig_
-    ::enginelist::save $engConfig_
+    ::enginecfg::save $engConfig_
 
     ::engine::close $id
     ::enginewin::changeState $id closed
@@ -349,7 +349,7 @@ proc ::enginewin::reconnect {id connectParam newValue {opendlg 0}} {
     }
     if {$newValue ne $oldValue} {
         lset engConfig_ $configIdx $newValue
-        ::enginewin::connectEngine $id [::enginelist::save $engConfig_]
+        ::enginewin::connectEngine $id [::enginecfg::save $engConfig_]
     }
 }
 
@@ -523,7 +523,7 @@ proc ::enginewin::updateConfig {id msgData} {
     lset engConfig_ 8 $options
     if {$uci == ""} {
         if {[set idx [lsearch -index 0 $options "myname"]] >=0} {
-            set name [::enginelist::rename $name [lindex $options $idx 1]]
+            set name [::enginecfg::rename $name [lindex $options $idx 1]]
             lset engConfig_ 0 $name
         }
         lset engConfig_ 7 [expr { $protocol eq "uci" }]
@@ -549,7 +549,7 @@ proc ::enginewin::updateConfig {id msgData} {
         bind $w.name <FocusOut> [list apply {{id} {
             set old [lindex [set ::enginewin::engConfig_$id] 0]
             if {$old ne [set name [%W get]]} {
-                set name [::enginelist::rename $old $name]
+                set name [::enginecfg::rename $old $name]
                 %W delete 0 end
                 %W insert 0 $name
                 lset ::enginewin::engConfig_$id 0 $name

@@ -10,6 +10,67 @@
 
 namespace eval enginecfg {}
 
+# Return a list containing the engine's names.
+proc ::enginecfg::names {} {
+    return [lmap elem $::engines(list) { lindex $elem 0 }]
+}
+
+# Return the engine's config.
+# If there is no config for the requested engine's name, returns "".
+proc ::enginecfg::get {name} {
+    return [lsearch -exact -inline -index 0 $::engines(list) $name]
+}
+
+# Change the name of an engine and write the "Engine list" file.
+# Returns the new name on success or the old name on error.
+proc ::enginecfg::rename {oldname newname} {
+    set idx [lsearch -exact -index 0 $::engines(list) $oldname]
+    if {$idx < 0 || $newname eq $oldname || $newname eq ""} {
+        return $oldname
+    }
+    set newname [::enginecfg::uniquename $newname]
+    lset ::engines(list) $idx 0 $newname
+    ::enginelist::write
+    return $newname
+}
+
+proc ::enginecfg::uniquename {name} {
+    set copyn 0
+    while {[lsearch -exact -index 0 $::engines(list) $name] >= 0} {
+        regexp {^(.*?)\s*(\(\d+\))*$} $name -> name
+        set name "$name ([incr copyn])"
+    }
+    return $name
+}
+
+# Add an engine, possibly changing the name to make it unique,
+# and save the "Engine list" file.
+proc ::enginecfg::add {enginecfg} {
+    lset enginecfg 0 [::enginecfg::uniquename [lindex $enginecfg 0]]
+    lappend ::engines(list) $enginecfg
+    ::enginecfg::save $enginecfg
+    return [lindex $::engines(list) end]
+}
+
+# Search a previous configuration with the same name and replace it.
+# If necessary write the "Engine list" file.
+proc ::enginecfg::save {enginecfg} {
+    lassign $enginecfg name
+    set idx [lsearch -exact -index 0 $::engines(list) $name]
+    if {$idx < 0} {
+        return ""
+    }
+    lset enginecfg 8 [lmap elem [lindex $enginecfg 8] {
+        lassign $elem name value type default min max var_list internal
+        if {$internal || $value eq $default} { continue }
+        list $name $value
+    }]
+    if {[lindex $::engines(list) $idx] ne $enginecfg} {
+        lset ::engines(list) $idx $enginecfg
+        ::enginelist::write
+    }
+    return $enginecfg
+}
 
 # Creates the frame with the widgets necessary to select the desired engine and
 # change its configuration.
@@ -18,16 +79,16 @@ namespace eval enginecfg {}
 proc ::enginecfg::createConfigFrame {id w} {
     ttk::frame $w.header
     ttk::combobox $w.header.engine -state readonly -postcommand "
-        $w.header.engine configure -values \[::enginelist::names \]
+        $w.header.engine configure -values \[::enginecfg::names \]
     "
     bind $w.header.engine <<ComboboxSelected>> [list apply {{id} {
-        ::enginelist::save [set ::enginewin::engConfig_$id]
-        ::enginewin::connectEngine $id [::enginelist::get [%W get]]
+        ::enginecfg::save [set ::enginewin::engConfig_$id]
+        ::enginewin::connectEngine $id [::enginecfg::get [%W get]]
     }} $id]
     ttk::button $w.header.addpipe -image tb_eng_add -command [list apply {{id} {
         if {[set fName [tk_getOpenFile]] != ""} {
             ::enginewin::connectEngine $id \
-                [::enginelist::add [list $fName $fName {} {} {} 0 {} {} {}]]
+                [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
         }
     }} $id]
     ttk::button $w.header.addnetwork -image tb_eng_network \
@@ -35,10 +96,10 @@ proc ::enginecfg::createConfigFrame {id w} {
     ttk::button $w.header.reload -image tb_eng_reload \
         -command "event generate $w.header.engine <<ComboboxSelected>>"
     ttk::button $w.header.clone -image tb_eng_clone -command "
-        ::enginewin::connectEngine $id \[::enginelist::add \$::enginewin::engConfig_$id \]
+        ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
     "
     ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id widget} {
-        $widget configure -values [::enginelist::names]
+        $widget configure -values [::enginecfg::names]
         if {[::enginelist::delete [$widget current]]} {
             ::enginewin::connectEngine $id {}
         }
