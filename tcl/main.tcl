@@ -328,20 +328,20 @@ proc ::cancelUpdateTreeFilter {progressbar} {
     }
 }
 
-# Update the main scorebar to reflect the engine's evaluation.
-# TODO: currently the scorebar is associated with the first engine that send its
+# Update the main eval bar to reflect the engine's evaluation.
+# TODO: currently the eval bar is associated with the first engine that send its
 #       evaluation. When multiple engine are present it would be necessary to
-#       provide a mechanism to select witch engine the scorebar represent.
-#       For example when the user click on the scorebar, showing a popup menu
+#       provide a mechanism to select witch engine the eval bar represent.
+#       For example when the user click on the eval bar, showing a popup menu
 #       with the available engines (using ::enginewin::listEngines).
-proc ::updateMainScorebar {engineID bestmove evaluation} {
-    if {![info exists ::mainScorebarEngineID_]} {
-        set ::mainScorebarEngineID_ $engineID
+proc ::updateMainEvalBar {engineID bestmove evaluation} {
+    if {![info exists ::mainEvalBarEngineID_]} {
+        set ::mainEvalBarEngineID_ $engineID
     }
-    if {$engineID == $::mainScorebarEngineID_} {
+    if {$engineID == $::mainEvalBarEngineID_} {
         ::board::updateScorebar .main.board $evaluation
         if {$bestmove eq "" && $evaluation eq ""} {
-            unset ::mainScorebarEngineID_
+            unset ::mainEvalBarEngineID_
         }
     }
 }

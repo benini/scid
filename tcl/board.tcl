@@ -402,12 +402,12 @@ proc ::board::new {w {psize 40} } {
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
-  set ::board::_scorebarShow($w) 0
-  set ::board::_scorebarMaxScore($w) 4
-  set ::board::_scorebarScore($w) 0
-  set ::board::_scorebarHeight($w) 0
-  set ::board::_scorebarWidth($w) 0
-  set ::board::_scorebarScale($w) 1
+  set ::board::_evalbarShow($w) 0
+  set ::board::_evalbarMaxScore($w) 4
+  set ::board::_evalbarScore($w) 0
+  set ::board::_evalbarHeight($w) 0
+  set ::board::_evalbarWidth($w) 0
+  set ::board::_evalbarScale($w) 1
   
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
@@ -579,19 +579,19 @@ proc ::board::setButtonImg {{w} {button} {img}} {
 }
 
 proc ::board::toggleScorebar {w} {
-  set ::board::_scorebarShow($w) [expr {1 - $::board::_scorebarShow($w)}]
-  if {$::board::_scorebarShow($w)} {
+  set ::board::_evalbarShow($w) [expr {1 - $::board::_evalbarShow($w)}]
+  if {$::board::_evalbarShow($w)} {
       grid $w.score
-      ::board::drawScorebar $w
+      ::board::drawEvalBar_ $w
   } else {
       grid remove $w.score
   }
-  return $::board::_scorebarShow($w)
+  return $::board::_evalbarShow($w)
 }
 
-proc ::board::drawScorebar { w } {
-    if { ! $::board::_scorebarShow($w) } { return }
-    set maxscore $::board::_scorebarMaxScore($w)
+proc ::board::drawEvalBar_ { w } {
+    if { ! $::board::_evalbarShow($w) } { return }
+    set maxscore $::board::_evalbarMaxScore($w)
     set h [expr $::board::_size($w) * 8 + $::board::_border($w) * 6 - 2 ]
     set width 14
 
@@ -601,41 +601,41 @@ proc ::board::drawScorebar { w } {
 
     set colorUp grey7
     set colorDown grey94
-    set ::board::_scorebarScale($w) [expr ($h + 2) / ($maxscore * -2.0)]
+    set ::board::_evalbarScale($w) [expr ($h + 2) / ($maxscore * -2.0)]
     if { $::board::_flip($w) } {
         set colorUp grey94
         set colorDown grey7
-        set ::board::_scorebarScale($w) [expr $::board::_scorebarScale($w) * -1]
+        set ::board::_evalbarScale($w) [expr $::board::_evalbarScale($w) * -1]
     }
     $w.score create rectangle 0 0 0 0 -tag barUp -width 0 -fill $colorUp
     $w.score create rectangle 0 0 0 0 -tag barDown -width 0 -fill $colorDown
 
     for { set i [expr 1 - $maxscore] } { $i < $maxscore } { incr i } {
-        set h1 [expr $h / 2 + $i * $::board::_scorebarScale($w)]
+        set h1 [expr $h / 2 + $i * $::board::_evalbarScale($w)]
         if { $i == 0 } {
             $w.score create rectangle 0 $h1 $width [expr $h1 + 2] -fill red -width 0 -tag nl
         } else {
             $w.score create line 0 $h1 $width $h1 -fill gray40 -tag nl
         }
     }
-    set ::board::_scorebarHeight($w) $h
-    set ::board::_scorebarWidth($w) $width
-    ::board::updateScorebar $w $::board::_scorebarScore($w)
+    set ::board::_evalbarHeight($w) $h
+    set ::board::_evalbarWidth($w) $width
+    ::board::updateScorebar $w $::board::_evalbarScore($w)
 }
 
 # Update the score bar (if it is visibile) to reflect the provided score.
 # The score value is from white prospective. An empty "" value means no score.
 proc ::board::updateScorebar { w score } {
-    set ::board::_scorebarScore($w) $score
-    if { ! $::board::_scorebarShow($w) } { return }
+    set ::board::_evalbarScore($w) $score
+    if { ! $::board::_evalbarShow($w) } { return }
 
     if { $score eq "" } {
         $w.score coords barUp 0 0 0 0
         $w.score coords barDown 0 0 0 0
     } else {
-        set width $::board::_scorebarWidth($w)
-        set h $::board::_scorebarHeight($w)
-        set midY [expr $h / 2 + $score * $::board::_scorebarScale($w)]
+        set width $::board::_evalbarWidth($w)
+        set h $::board::_evalbarHeight($w)
+        set midY [expr $h / 2 + $score * $::board::_evalbarScale($w)]
         $w.score coords barUp 0 0 $width $midY
         $w.score coords barDown 0 $midY $width [expr $h + 1]
     }
@@ -684,7 +684,7 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
   #TODO translate
-  $m add command -label "  Show/Hide Score Bar" -image tb_BD_Scorebar -compound left
+  $m add command -label "  Show/Hide Evaluation Bar" -image tb_BD_Scorebar -compound left
   $m add command -label "  [tr ConfigureScid]" -image tb_BD_Layout -compound left
 
   set ${varname}(tb_BD_Flip) "::board::flip $w"
@@ -803,7 +803,7 @@ proc ::board::resize {w psize} {
   
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
-  ::board::drawScorebar $w
+  ::board::drawEvalBar_ $w
   
   return $psize
 }
@@ -1662,7 +1662,7 @@ proc ::board::flip {w {newstate -1}} {
   ::board::flipNames_ $w $flip
   ::board::coords $w $::board::_coords($w)
   ::board::update $w
-  ::board::drawScorebar $w
+  ::board::drawEvalBar_ $w
   return $w
 }
 ################################################################################
