@@ -162,7 +162,7 @@ proc updateStatusBar {} {
     # show [%clk] command (if we are not playing)
     set toMove  [sc_pos side]
     set comment [sc_pos getComment]
-    ::board::updateScorebar .main.board [getScorefromComment $comment 10]
+    ::board::updateEvalBar .main.board [getScorefromComment $comment 10]
     if { ![gameclock::isRunning] } {
         set ::gamePlayers(clockW) ""
         set ::gamePlayers(clockB) ""
@@ -339,7 +339,7 @@ proc ::updateMainEvalBar {engineID bestmove evaluation} {
         set ::mainEvalBarEngineID_ $engineID
     }
     if {$engineID == $::mainEvalBarEngineID_} {
-        ::board::updateScorebar .main.board $evaluation
+        ::board::updateEvalBar .main.board $evaluation
         if {$bestmove eq "" && $evaluation eq ""} {
             unset ::mainEvalBarEngineID_
         }

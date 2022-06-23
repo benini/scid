@@ -620,12 +620,12 @@ proc ::board::drawEvalBar_ { w } {
     }
     set ::board::_evalbarHeight($w) $h
     set ::board::_evalbarWidth($w) $width
-    ::board::updateScorebar $w $::board::_evalbarScore($w)
+    ::board::updateEvalBar $w $::board::_evalbarScore($w)
 }
 
 # Update the score bar (if it is visibile) to reflect the provided score.
 # The score value is from white prospective. An empty "" value means no score.
-proc ::board::updateScorebar { w score } {
+proc ::board::updateEvalBar { w score } {
     set ::board::_evalbarScore($w) $score
     if { ! $::board::_evalbarShow($w) } { return }
 
