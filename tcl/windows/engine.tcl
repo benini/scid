@@ -40,26 +40,28 @@ proc ::enginewin::onPosChanged { {ids ""} } {
         if {$position eq ""} {
             set position [sc_game UCI_currentPos]
         }
-        ::enginewin::updateDisplay $id ""
-        if {[set ::enginewin::newgame_$id]} {
-            set ::enginewin::newgame_$id false
-            ::engine::send $id NewGame [list analysis post_pv post_wdl [sc_game variant]]
-        }
-        ::engine::send $id Go [list $position]
+        ::enginewin::sendPosition $id $position
     }
 }
 
-proc ::enginewin::toggleStartStop {id} {
-    if {![winfo exists .engineWin$id]} {
-        ::enginewin::Open $id
-        after 300 "::enginewin::toggleStartStop $id"
-        return
+# Sends a position to an engine.
+# When the engine replies with an InfoGo message the state will change to "run".
+proc ::enginewin::sendPosition {id position} {
+    ::enginewin::updateDisplay $id ""
+    if {[set ::enginewin::newgame_$id]} {
+        set ::enginewin::newgame_$id false
+        ::engine::send $id NewGame [list analysis post_pv post_wdl [sc_game variant]]
+    }
+    ::engine::send $id Go [list $position]
+}
+
+proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
+    if {$id eq "" || ![winfo exists .engineWin$id]} {
+        set id [::enginewin::Open $id $enginename]
     }
     if {$::enginewin::engState($id) eq "idle"} {
-        ::enginewin::changeState $id run
-        ::enginewin::onPosChanged $id
+        ::enginewin::sendPosition $id [sc_game UCI_currentPos]
     } elseif {$::enginewin::engState($id) in "run locked"} {
-        ::enginewin::changeState $id idle
         ::engine::send $id StopGo
     }
 }
@@ -321,6 +323,7 @@ proc ::enginewin::connectEngine {id config} {
     if {[llength $options]} {
         ::engine::send $id SetOptions $options
     }
+    ::enginewin::changeState $id idle
     ::enginewin::onNewGame $id
 }
 
