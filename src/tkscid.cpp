@@ -2493,14 +2493,14 @@ int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 		return errorResult(ti, "Usage: sc_game import <pgn-text>");
 
 	db->gameAltered = true;
-	if (!db->game->AtVarEnd() && !db->game->AtVarStart()) {
-		db->game->MoveForward();
-		db->game->AddVariation();
+	bool new_variation = false;
+	if (db->game->MoveForward() == OK) {
+		new_variation = (db->game->AddVariation() == OK);
 	}
 
 	PgnParseLog pgn;
 	auto ok = pgnParseGame(argv[2], std::strlen(argv[2]), *db->game, pgn);
-	if (!ok && db->game->AtEmptyVar()) {
+	if (!ok && new_variation && db->game->AtEmptyVar()) {
 		db->game->DeleteVariation();
 	}
 
@@ -4992,14 +4992,17 @@ sc_move_forward (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_move_pgn:
-//    Set the current board to the position closest to
+//    Get or set the current board to the position closest to
 //    the specified place in the PGN output (given as a byte count
 //    from the start of the output).
 int
 sc_move_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    if (argc == 2)
+        return UI_Result(ti, OK, db->game->GetLocationInPGN());
+
     if (argc != 3) {
-        return errorResult (ti, "Usage: sc_move pgn <offset>");
+        return errorResult (ti, "Usage: sc_move pgn [offset]");
     }
 
     uint offset = strGetUnsigned (argv[2]);

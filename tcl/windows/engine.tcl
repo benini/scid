@@ -109,13 +109,13 @@ proc ::enginewin::Open { {id ""} } {
     "
     ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
     ttk::button $w.btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
-        -command "::enginewin::playMoves $w.display.pv.lines 1.0"
+        -command "::enginewin::exportMoves $w.display.pv.lines 1.0"
     ::utils::tooltip::Set $w.btn.addbestmove [tr AddMove]
     ttk::button $w.btn.addbestline -image tb_eng_addbestline -style Toolbutton \
-        -command "::enginewin::playMoves $w.display.pv.lines 1.end"
+        -command "::enginewin::exportMoves $w.display.pv.lines 1.end"
     ::utils::tooltip::Set $w.btn.addbestline [tr AddVariation]
-    ttk::button $w.btn.addlines -image tb_eng_addlines -style Toolbutton
-        #TODO -command ...
+    ttk::button $w.btn.addlines -image tb_eng_addlines -style Toolbutton \
+        -command "::enginewin::exportLines $w.display.pv.lines"
     ::utils::tooltip::Set $w.btn.addlines [tr AddAllVariations]
     ttk::spinbox $w.btn.multipv -increment 1 -width 4
     ::utils::tooltip::Set $w.btn.multipv [tr Lines]
@@ -802,7 +802,7 @@ proc ::enginewin::createDisplayFrame {id w} {
     $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
     $w.pv.lines tag bind moves <ButtonRelease-1> {
         if {[%W tag ranges sel] eq ""} {
-            ::enginewin::playMoves %W @%x,%y
+            ::enginewin::exportMoves %W @%x,%y
         }
     }
 
@@ -944,6 +944,7 @@ proc ::enginewin::updateDisplay {id msgData} {
     if {$multipv == 1} {
         set line $multipv
         $w.pv.lines tag remove header 1.0 1.end
+        $w.pv.lines tag remove moves 1.0 1.end
     } else {
         #TODO: this assumes that the lines are sent in order
         set line $multipv
@@ -987,7 +988,7 @@ proc ::enginewin::getMoves {w index} {
 # An index linenumber.0 can be used to add just the first move.
 # An index linenumber.end can be used to add all the moves.
 # Return false if index is not valid.
-proc ::enginewin::playMoves {w index} {
+proc ::enginewin::exportMoves {w index} {
     if {[catch {::enginewin::getMoves $w $index} line]} {
         return false
     }
@@ -995,4 +996,17 @@ proc ::enginewin::playMoves {w index} {
     sc_game import $line
     ::notify::GameChanged
     return true
+}
+
+# Add all the move lines to the current game.
+proc ::enginewin::exportLines {w} {
+    set i_line 1
+    set location [sc_move pgn]
+    while {![catch {::enginewin::getMoves $w $i_line.end} line]} {
+        if {$i_line == 1} { ::undoFeature save }
+        sc_game import $line
+        sc_move pgn $location
+        incr i_line
+    }
+    ::notify::GameChanged
 }
