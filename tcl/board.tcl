@@ -578,7 +578,7 @@ proc ::board::setButtonImg {{w} {button} {img}} {
   $w.bar.$button configure -image $img
 }
 
-proc ::board::toggleScorebar {w} {
+proc ::board::toggleEvalBar {w} {
   set ::board::_evalbarShow($w) [expr {1 - $::board::_evalbarShow($w)}]
   if {$::board::_evalbarShow($w)} {
       grid $w.score
@@ -689,7 +689,7 @@ proc ::board::newToolBar_ {{w} {varname}} {
 
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
-  set ${varname}(tb_BD_Scorebar) "::board::toggleScorebar $w"
+  set ${varname}(tb_BD_Scorebar) "::board::toggleEvalBar $w"
   set ${varname}(tb_BD_Layout) {::preferences::Open toggle}
 
   return $m

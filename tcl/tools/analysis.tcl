@@ -2866,7 +2866,7 @@ proc toggleAnalysisBoard {n} {
         .analysisWin$n.text configure -setgrid 1
         .analysisWin$n.b1.showboard state pressed
     }
-    ::board::toggleScorebar .analysisWin$n.bd
+    ::board::toggleEvalBar .analysisWin$n.bd
 }
 ################################################################################
 # toggleEngineInfo

@@ -1159,14 +1159,14 @@ proc CreateMainBoard { {w} } {
   ::board::showMarks $w.board $::gameInfo(showMarks)
   ::board::coords $w.board $::boardCoords
   options.persistent ::showEvalBar($w) 0
-  if {$::showEvalBar($w)} { ::board::toggleScorebar $w.board }
+  if {$::showEvalBar($w)} { ::board::toggleEvalBar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
-  set ::gameInfoBar(tb_BD_Scorebar) "set ::showEvalBar($w) \[::board::toggleScorebar $w.board\]"
+  set ::gameInfoBar(tb_BD_Scorebar) "set ::showEvalBar($w) \[::board::toggleEvalBar $w.board\]"
 
   menu .main.menuaddchoice -bg white -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
