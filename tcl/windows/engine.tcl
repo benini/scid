@@ -64,7 +64,7 @@ proc ::enginewin::toggleStartStop {id} {
     }
 }
 
-proc ::enginewin::Open { {id ""} } {
+proc ::enginewin::Open { {id ""} {enginename ""} } {
     if {$id == ""} {
         set id 1
         while {[winfo exists .engineWin$id]} {
@@ -139,15 +139,19 @@ proc ::enginewin::Open { {id ""} } {
         unset ::enginewin::startTime_$id
     "
 
+    options.persistent ::enginewin_lastengine($id) ""
     set ::enginewin::engState($id) {}
     set ::enginewin::engConfig_$id {}
     set ::enginewin::position_$id ""
     set ::enginewin::newgame_$id true
     set ::enginewin::startTime_$id [clock milliseconds]
 
-    options.persistent ::enginewin_lastengine($id) ""
-    set lastEngineConfig [::enginelist::get $::enginewin_lastengine($id)]
-    catch { ::enginewin::connectEngine $id $lastEngineConfig }
+    if {$enginename eq ""} {
+        set enginename $::enginewin_lastengine($id)
+    }
+    set engineConfig [::enginelist::get $enginename]
+    catch { ::enginewin::connectEngine $id $engineConfig }
+    return $id
 }
 
 proc ::enginewin::updateName {id} {
