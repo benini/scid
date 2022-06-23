@@ -582,6 +582,7 @@ utils/string.tcl
 utils/tooltip.tcl
 utils/validate.tcl
 utils/win.tcl
+enginecfg.tcl
 enginecomm.tcl
 misc.tcl
 htext.tcl
