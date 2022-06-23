@@ -15,6 +15,10 @@ Makefile.bak
 .\#*
 *.patch
 
+.cache
+.vs
+.vscode
+
 engines/phalanx-scid/phalanx-scid
 engines/togaII1.2.1a/src/.depend
 engines/togaII1.2.1a/src/togaII
@@ -36,6 +40,7 @@ spf2spi
 spliteco
 tcscid
 tkscid
+build/
 Debug
 Release
 Testing
