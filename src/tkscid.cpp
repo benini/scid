@@ -2500,7 +2500,8 @@ int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 
 	PgnParseLog pgn;
 	auto ok = pgnParseGame(argv[2], std::strlen(argv[2]), *db->game, pgn);
-	if (!ok && new_variation && db->game->AtEmptyVar()) {
+
+	if (new_variation && db->game->AtEmptyVar()) {
 		db->game->DeleteVariation();
 	}
 
