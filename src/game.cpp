@@ -1039,8 +1039,11 @@ void Game::TruncateStart() {
     FirstMove->setNext(CurrentMove);
 
     // Do all the moves to update moveData.pieceNum to the new StartPos
-    while (MoveForwardInPGN() == OK) {
-    }
+    do {
+        if (!CurrentMove->startMarker() && !CurrentMove->endMarker()) {
+            CurrentPos->fillMove(CurrentMove->moveData);
+        }
+    } while (MoveForwardInPGN() == OK);
     MoveToStart();
 }
 
