@@ -329,10 +329,9 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 }
 
 # Update the main eval bar to reflect the engine's evaluation.
-# The eval bar is associated with the first engine that send its evaluation.
-# TODO: the behavior is still weird. Maybe try:
-# - if there is only one running engine, always show its evaluation in the bar
-# - it there are multiple engine running, show the first one that sends it evaluation.
+# If there is only one engine running, il will show that evaluation in the bar.
+# If there are multiple engines running, the eval bar will remain associated
+# with the first engine that send its evaluation until it stops running.
 proc ::updateMainEvalBar {engineID bestmove evaluation} {
     if {![info exists ::mainEvalBarEngineID_]} {
         set ::mainEvalBarEngineID_ $engineID
@@ -353,7 +352,7 @@ proc ::updateMainEvalBar {engineID bestmove evaluation} {
 # - a command to show/hide the best move arrow
 # - the command to hide the evaluation bar
 # Behavior:
-# - if the currently associated engine is selected, start/stop it
+# - if the currently associated engine is selected, stop it
 # - if a different engine is selected, stop the current engine and start the new one.
 # Returns the name of the created menu.
 proc ::createMainEvalBarMenu {w} {
@@ -372,7 +371,8 @@ proc ::createMainEvalBarMenu {w} {
             set currEng [lindex $enginewins $curr 1]
             set enginewins [lreplace $enginewins $curr $curr]
             $w.evalbar_menu add command -label $currEng -command {
-                ::enginewin::toggleStartStop $::mainEvalBarEngineID_
+                ::enginewin::stop $::mainEvalBarEngineID_
+                unset ::mainEvalBarEngineID_
             }
             $w.evalbar_menu add separator
             lappend processed $currEng
@@ -385,6 +385,7 @@ proc ::createMainEvalBarMenu {w} {
         lassign $elem engid engname
         $w.evalbar_menu add command -label $engname -command [list apply {{engid} {
             if {[info exists ::mainEvalBarEngineID_]} {
+                #TODO: do not stop the current engine if the new one is also running?
                 ::enginewin::stop $::mainEvalBarEngineID_
             }
             set ::mainEvalBarEngineID_ [::enginewin::start $engid]

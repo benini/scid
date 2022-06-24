@@ -246,7 +246,7 @@ proc ::enginewin::changeState {id newState} {
     }
     set ::enginewin::engState($id) $newState
 
-    if {$newState in {closed disconnected locked}} {
+    if {$newState in {closed disconnected idle locked}} {
         ::notify::EngineBestMove $id "" ""
     }
 }
