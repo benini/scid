@@ -928,7 +928,6 @@ proc ::enginewin::updateDisplay {id msgData} {
     if {$multipv == 1} {
         set line $multipv
         $w.pv.lines tag remove header 1.0 1.end
-        $w.pv.lines tag remove moves 1.0 1.end
     } else {
         #TODO: this assumes that the lines are sent in order
         set line $multipv
@@ -987,6 +986,9 @@ proc ::enginewin::exportLines {w} {
     set i_line 1
     set location [sc_move pgn]
     while {![catch {::enginewin::getMoves $w $i_line.end} line]} {
+        # When multipv is 1, the old lines are also shown, but do not export them
+        lassign [$w tag nextrange header "$i_line.end linestart"] is_latest
+        if {$is_latest eq ""} { break }
         if {$i_line == 1} { ::undoFeature save }
         sc_game import $line
         sc_move pgn $location
