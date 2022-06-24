@@ -578,6 +578,11 @@ proc ::board::setButtonImg {{w} {button} {img}} {
   $w.bar.$button configure -image $img
 }
 
+# Associates fn with the specified evaluation bar's event.
+proc ::board::bindEvalBar {w event fn} {
+  ::bind $w.score $event $fn
+}
+
 proc ::board::toggleEvalBar {w} {
   set ::board::_evalbarShow($w) [expr {1 - $::board::_evalbarShow($w)}]
   if {$::board::_evalbarShow($w)} {

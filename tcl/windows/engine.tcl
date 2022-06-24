@@ -55,15 +55,35 @@ proc ::enginewin::sendPosition {id position} {
     ::engine::send $id Go [list $position]
 }
 
-proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
+# Start an engine (if necessary it will opens a new enginewin window).
+# Return the engine's id.
+proc ::enginewin::start { {id ""} {enginename ""} } {
     if {$id eq "" || ![winfo exists .engineWin$id]} {
         set id [::enginewin::Open $id $enginename]
     }
     if {$::enginewin::engState($id) eq "idle"} {
         ::enginewin::sendPosition $id [sc_game UCI_currentPos]
-    } elseif {$::enginewin::engState($id) in "run locked"} {
-        ::engine::send $id StopGo
     }
+    return $id
+}
+
+# Stop the engine.
+# Return true if a StopGo message was sent to the engine.
+proc ::enginewin::stop {id} {
+    if {[winfo exists .engineWin$id] && $::enginewin::engState($id) in "run locked"} {
+        ::engine::send $id StopGo
+        return true
+    }
+    return false
+}
+
+# If the engine is running, stop it. Otherwise invoke ::enginewin::start
+# Return the engine's id.
+proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
+    if {[::enginewin::stop $id]} {
+        return $id
+    }
+    return [::enginewin::start $id $enginename]
 }
 
 proc ::enginewin::Open { {id ""} {enginename ""} } {
@@ -139,6 +159,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
         unset ::enginewin::position_$id
         unset ::enginewin::newgame_$id
         unset ::enginewin::startTime_$id
+        ::notify::EngineBestMove $id {} {}
     "
 
     options.persistent ::enginewin_lastengine($id) ""

@@ -464,6 +464,13 @@ proc autoscrollText {bars frame widget style} {
   autoscrollBars $bars $frame $widget
 }
 
+# Create a menu and apply to it the ttk style.
+# TODO: checkbutton and radiobutton indicators are not effected.
+proc ttk_menu {pathName args} {
+  menu $pathName {*}$args
+  ::applyThemeStyle Treeview $pathName
+}
+
 # Apply the theme's background color to a widget
 proc applyThemeColor_background { widget } {
   set bgcolor [ttk::style lookup . -background "" #d9d9d9]

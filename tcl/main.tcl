@@ -329,11 +329,10 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 }
 
 # Update the main eval bar to reflect the engine's evaluation.
-# TODO: currently the eval bar is associated with the first engine that send its
-#       evaluation. When multiple engine are present it would be necessary to
-#       provide a mechanism to select witch engine the eval bar represent.
-#       For example when the user click on the eval bar, showing a popup menu
-#       with the available engines (using ::enginewin::listEngines).
+# The eval bar is associated with the first engine that send its evaluation.
+# TODO: the behavior is still weird. Maybe try:
+# - if there is only one running engine, always show its evaluation in the bar
+# - it there are multiple engine running, show the first one that sends it evaluation.
 proc ::updateMainEvalBar {engineID bestmove evaluation} {
     if {![info exists ::mainEvalBarEngineID_]} {
         set ::mainEvalBarEngineID_ $engineID
@@ -344,6 +343,75 @@ proc ::updateMainEvalBar {engineID bestmove evaluation} {
             unset ::mainEvalBarEngineID_
         }
     }
+}
+
+# Create a menu containing:
+# - the engine currently associated with the evaluation bar
+# - engines open in enginewin windows
+# - the configured engines that can be started
+# - a command to add a new local engine
+# - a command to show/hide the best move arrow
+# - the command to hide the evaluation bar
+# Behavior:
+# - if the currently associated engine is selected, start/stop it
+# - if a different engine is selected, stop the current engine and start the new one.
+# Returns the name of the created menu.
+proc ::createMainEvalBarMenu {w} {
+    if {[winfo exists $w.evalbar_menu]} {
+        $w.evalbar_menu delete 0 end
+    } else {
+        ttk_menu $w.evalbar_menu
+    }
+
+    set processed {}
+    set enginewins [enginewin::listEngines]
+    # Add a command for the currently associated engine.
+    if {[info exists ::mainEvalBarEngineID_]} {
+        set curr [lsearch -exact -index 0 $enginewins $::mainEvalBarEngineID_]
+        if {$curr != -1} {
+            set currEng [lindex $enginewins $curr 1]
+            set enginewins [lreplace $enginewins $curr $curr]
+            $w.evalbar_menu add command -label $currEng -command {
+                ::enginewin::toggleStartStop $::mainEvalBarEngineID_
+            }
+            $w.evalbar_menu add separator
+            lappend processed $currEng
+        } else {
+            unset ::mainEvalBarEngineID_
+        }
+    }
+    # Add commands to associate the bar with an open engine window.
+    foreach {elem} $enginewins {
+        lassign $elem engid engname
+        $w.evalbar_menu add command -label $engname -command [list apply {{engid} {
+            if {[info exists ::mainEvalBarEngineID_]} {
+                ::enginewin::stop $::mainEvalBarEngineID_
+            }
+            set ::mainEvalBarEngineID_ [::enginewin::start $engid]
+        }} $engid]
+        lappend processed $engname
+    }
+    # Add commands to open a new engine window and associate the bar with it.
+    foreach {name} [enginecfg::names] {
+        if {$name in $processed} { continue }
+        $w.evalbar_menu add command -label $name -command [list apply {{name} {
+            if {[info exists ::mainEvalBarEngineID_]} {
+                ::enginewin::stop $::mainEvalBarEngineID_
+            }
+            set ::mainEvalBarEngineID_ [::enginewin::start "" $name]
+        }} $name]
+    }
+    #TODO: implent -command
+    $w.evalbar_menu add command -label "New engine ..." -state disabled
+    $w.evalbar_menu add separator
+    #TODO: implent -command
+    $w.evalbar_menu add command -label "Show best move arrow" -state disabled
+    $w.evalbar_menu add separator
+    #TODO: translate label
+    $w.evalbar_menu add command -label "Hide" \
+         -command "::board::toggleEvalBar $w"
+
+    return $w.evalbar_menu
 }
 
 proc toggleRotateBoard {} {
@@ -1158,6 +1226,9 @@ proc CreateMainBoard { {w} } {
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board $::gameInfo(showMarks)
   ::board::coords $w.board $::boardCoords
+  ::board::bindEvalBar $w.board <ButtonRelease-1> "
+    tk_popup \[::createMainEvalBarMenu $w.board \] %X %Y
+  "
   options.persistent ::showEvalBar($w) 0
   if {$::showEvalBar($w)} { ::board::toggleEvalBar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
