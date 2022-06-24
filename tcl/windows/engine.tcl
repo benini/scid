@@ -129,6 +129,14 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
             ::enginewin::changeState $id locked
         }
     "
+    bind $w.btn.lock <Any-Enter> [list apply {{id} {
+        if {"pressed" in [%W state]} {
+            ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] ""] %X %Y above
+        }
+    }} $id]
+    bind $w.btn.lock <Any-Leave> {
+        if {[winfo exists .enginewinBoard]} { wm withdraw .enginewinBoard }
+    }
     ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
     ttk::button $w.btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
         -command "::enginewin::exportMoves $w.display.pv.lines 1.0"

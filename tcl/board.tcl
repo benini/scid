@@ -382,6 +382,43 @@ proc ::board::san {sqno} {
   
 }
 
+# Show a pop-up board.
+# xc and yc are the coordinates of the top-left corner, or the bottom-left
+# corner if above is not "".
+proc ::board::popup {w positionLongStr xc yc {above ""}} {
+    set psize 30
+    if {$psize > $::boardSize} { set psize $::boardSize }
+
+    if {! [winfo exists $w]} {
+        toplevel $w
+        wm overrideredirect $w 1
+        ::board::new $w.bd $psize
+        grid $w.bd
+    }
+
+    ::board::update $w.bd $positionLongStr
+
+    # Make sure the popup window can fit on the screen:
+    incr xc 5
+    incr yc 5
+    ::update idletasks
+    set dx [winfo width $w]
+    set dy [winfo height $w]
+    if {$above ne ""} {
+        incr yc -$dy
+        if {$yc < 0} { set yc 0 }
+    }
+    if {($xc+$dx) > [winfo screenwidth $w]} {
+        set xc [expr {[winfo screenwidth $w] - $dx}]
+    }
+    if {($yc+$dy) > [winfo screenheight $w]} {
+        set yc [expr {[winfo screenheight $w] - $dy}]
+    }
+    wm geometry $w "+$xc+$yc"
+    wm deiconify $w
+    raiseWin $w
+}
+
 # ::board::new
 #   Creates a new board in the specified frame.
 #
