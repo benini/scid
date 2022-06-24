@@ -238,36 +238,7 @@ namespace eval pgn {
     if {[::board::isFlipped .main.board]} {set bd [string reverse [lindex $bd 0]]}
     sc_move pgn $offSet
 
-    set w .pgnPopup
-    set psize 30
-    if {$psize > $::boardSize} { set psize $::boardSize }
-    
-    if {! [winfo exists $w]} {
-      toplevel $w -relief solid -borderwidth 2
-      wm withdraw $w
-      wm overrideredirect $w 1
-      ::board::new $w.bd $psize
-      pack $w.bd -side top -padx 2 -pady 2
-      wm withdraw $w
-    }
-    
-    ::board::update $w.bd $bd
-    
-    # Make sure the popup window can fit on the screen:
-    incr xc 5
-    incr yc 5
-    update idletasks
-    set dx [winfo width $w]
-    set dy [winfo height $w]
-    if {($xc+$dx) > [winfo screenwidth $w]} {
-      set xc [expr {[winfo screenwidth $w] - $dx}]
-    }
-    if {($yc+$dy) > [winfo screenheight $w]} {
-      set yc [expr {[winfo screenheight $w] - $dy}]
-    }
-    wm geometry $w "+$xc+$yc"
-    wm deiconify $w
-    raiseWin $w
+    ::board::popup .pgnPopup $bd $xc $yc
   }
   
   ################################################################################
