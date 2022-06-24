@@ -183,7 +183,7 @@ namespace eval ttk::theme::dark {
                 selected {6 4 6 2}] \
             -background [list \
                 selected $colors(background) \
-                {} $colors(notebookborder)] \
+                {} $colors(fieldbg)] \
             -lightcolor [list \
                 selected $colors(lightcolor) \
                 {} $colors(notebookborder)] \
@@ -204,7 +204,7 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure TScrollbar \
-            -troughcolor $colors(through) \
+            -troughcolor $colors(fieldbg) \
             -bordercolor $colors(buttonbg) \
             -background $colors(through) \
             -arrowcolor $colors(lightcolor) \
