@@ -580,20 +580,6 @@ Game::SetPgnFormatFromString (const char * str)
     return PgnFormatFromString (str, &PgnFormat);
 }
 
-errorT
-Game::SetStartFen (const char * fenStr)
-{
-    auto pos = std::make_unique<Position>();
-    errorT err = pos->ReadFromFEN (fenStr);
-    if (err != OK)
-        return err;
-
-    ClearMoves();
-    StartPos = std::move(pos);
-    *CurrentPos = *StartPos;
-    return OK;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::AddPgnTag(): Add a PGN Tag.
 //

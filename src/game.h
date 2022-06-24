@@ -223,7 +223,24 @@ public:
 
     /// Setup the start position from a FEN string and remove all the moves.
     /// If the FEN is invalid the game is not changed.
-    errorT SetStartFen(const char* fenStr);
+    errorT SetStartFen(const char* fenStr) {
+        auto pos = std::make_unique<Position>();
+        if (auto err = pos->ReadFromFEN(fenStr))
+            return err;
+
+        SetStartPos(std::move(pos));
+        return OK;
+    }
+
+    /// Set a new start position and remove all the moves.
+    void SetStartPos(Position const& pos) {
+        return SetStartPos(std::make_unique<Position>(pos));
+    }
+    void SetStartPos(std::unique_ptr<Position> pos) {
+        ClearMoves();
+        StartPos = std::move(pos);
+        *CurrentPos = *StartPos;
+    }
 
     void SetScidFlags(const char* s, size_t len) {
         constexpr size_t size = sizeof(ScidFlags) / sizeof(*ScidFlags);

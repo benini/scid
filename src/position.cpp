@@ -2240,17 +2240,15 @@ Position::ReadFromLongStr (const char * str)
 //      indicating the side to move. Example for the starting position:
 //      "RNBQKBNRPPPPPPPP................................pppppppprbnqkbnr w"
 //
-void
-Position::MakeLongStr (char * str)
-{
-    ASSERT (str != NULL);
-    char * s = str;
-    for (squareT sq = A1; sq <= H8; sq++) {
-        *s++ = PIECE_CHAR[Board[sq]];
-    }
-    *s++ = ' ';
-    *s++ = (ToMove == WHITE ? 'w' : 'b');
-    *s = 0;
+void Position::MakeLongStr(char* str) const {
+	ASSERT(str != NULL);
+	char* s = str;
+	for (squareT sq = A1; sq <= H8; sq++) {
+		*s++ = PIECE_CHAR[Board[sq]];
+	}
+	*s++ = ' ';
+	*s++ = (ToMove == WHITE ? 'w' : 'b');
+	*s = 0;
 }
 
 //    Sets the position from the provided Null-terminated 33-byte

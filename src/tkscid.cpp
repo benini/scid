@@ -5051,9 +5051,28 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_pos_bestSquare (cd, ti, argc, argv);
 
     case POS_BOARD:
-        db->game->GetCurrentPos()->MakeLongStr (boardStr);
-        Tcl_AppendResult (ti, boardStr, NULL);
-        break;
+        if (argc == 2) {
+            db->game->currentPos()->MakeLongStr(boardStr);
+            return UI_Result(ti, OK, boardStr);
+        }
+        if (argc == 4) {
+            Position pos;
+            if (auto err = pos.ReadFromFENorUCI(argv[2]))
+                return UI_Result(ti, err);
+
+            auto game = Game();
+            game.SetStartPos(pos);
+            if (const auto len = std::strlen(argv[3])) {
+                PgnParseLog pgn;
+                if (!pgnParseGame(argv[3], len, game, pgn))
+                    return UI_Result(ti, ERROR_InvalidMove);
+            }
+
+            game.MoveToEnd();
+            game.currentPos()->MakeLongStr(boardStr);
+            return UI_Result(ti, OK, boardStr);
+        }
+        return UI_Result(ti, ERROR_BadArg, "sc_pos board [startpos moves]");
 
     case POS_CLEARNAGS:
         db->game->ClearNags();

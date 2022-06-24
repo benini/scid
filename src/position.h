@@ -291,7 +291,7 @@ public:
     errorT      ParseMove(simpleMoveT* sm, const char* begin, const char* end);
 
     // Board I/O
-    void        MakeLongStr (char * str);
+    void        MakeLongStr (char* str) const;
     errorT      ReadFromLongStr (const char * str);
     errorT      ReadFromFEN (const char * s);
     errorT      ReadFromFENorUCI (std::string_view str);
