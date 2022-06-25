@@ -468,7 +468,7 @@ proc autoscrollText {bars frame widget style} {
 # TODO: checkbutton and radiobutton indicators are not effected.
 proc ttk_menu {pathName args} {
   menu $pathName {*}$args
-  ::applyThemeStyle Treeview $pathName
+  ::applyThemeStyle . $pathName
 }
 
 # Apply the theme's background color to a widget
