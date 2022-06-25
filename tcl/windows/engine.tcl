@@ -945,12 +945,16 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
     set pvline ""
     regexp {^([\d. ]*[\w-]+)(.*)$} $pv -> pv pvline
+
+    set line $multipv
     if {$multipv == 1} {
-        set line $multipv
+        # Previous line nr. 1 is now obsolete
         $w.pv.lines tag remove header 1.0 1.end
-    } else {
-        #TODO: this assumes that the lines are sent in order
-        set line $multipv
+    }
+    # If the engine has repeatedly sent multipv 1, do not delete the obsolete lines
+    catch { $w.pv.lines tag nextrange header 2.0 } multilines
+    if {$line > 1 || $multilines ne ""} {
+        # Multipv lines >= than the current one are now obsolete and deleted.
         $w.pv.lines delete $line.0 end
     }
     $w.pv.lines insert $line.0 "\n"
