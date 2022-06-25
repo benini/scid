@@ -135,7 +135,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
         }
     }} $id]
     bind $w.btn.lock <Any-Leave> {
-        if {[winfo exists .enginewinBoard]} { wm withdraw .enginewinBoard }
+        catch { wm withdraw .enginewinBoard }
     }
     ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
     ttk::button $w.btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
@@ -798,12 +798,16 @@ proc ::enginewin::createDisplayFrame {id w} {
         }
     }
     $w.pv.lines tag bind moves <Motion> [list apply {{id} {
-        if {[%W tag ranges sel] eq ""} {
-            ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] ] %X %Y
+        if {[%W tag ranges sel] eq "" && ![catch {
+            # An exception will be thrown if the engine sent an illegal pv
+            sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
+            ::board::popup .enginewinBoard $pos %X %Y
+        } else {
+            catch { wm withdraw .enginewinBoard }
         }
     }} $id]
     $w.pv.lines tag bind moves <Any-Leave> {
-        if {[winfo exists .enginewinBoard]} { wm withdraw .enginewinBoard }
+        catch { wm withdraw .enginewinBoard }
     }
 
     grid $w.header -sticky news
