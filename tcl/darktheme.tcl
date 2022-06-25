@@ -42,11 +42,11 @@ namespace eval ttk::theme::dark {
             -activebackground $basecol \
             -activeforeground $colors(selectfg) \
             -indicatorbackground $colors(fieldbg) \
-            -indicatorforeground $basecol \
+            -indicatorforeground $colors(foreground) \
             -fieldbackground $colors(fieldbg) \
             -bordercolor $colors(fieldborder) \
             -selectborderwidth 0 \
-            -arrowcolor $basecol \
+            -arrowcolor $colors(foreground) \
             -insertcolor $colors(foreground) \
             -insertbackground $colors(foreground) \
         ;
