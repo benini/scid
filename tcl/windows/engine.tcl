@@ -800,7 +800,6 @@ proc ::enginewin::createDisplayFrame {id w} {
     $w.pv.lines tag bind moves <Motion> [list apply {{id} {
         if {[%W tag ranges sel] eq ""} {
             ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] ] %X %Y
-            #TODO: highlight the last move
         }
     }} $id]
     $w.pv.lines tag bind moves <Any-Leave> {

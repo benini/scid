@@ -396,7 +396,12 @@ proc ::board::popup {w positionLongStr xc yc {above ""}} {
         grid $w.bd
     }
 
-    ::board::update $w.bd $positionLongStr
+    lassign $positionLongStr pos lastmove
+    ::board::update $w.bd $pos
+
+    if {$lastmove ne ""} {
+      ::board::lastMoveHighlight $w.bd $lastmove
+    }
 
     # Make sure the popup window can fit on the screen:
     incr xc 5
@@ -1537,10 +1542,9 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
 }
 
 # Highlight last move played by drawing a red rectangle around the two squares
-proc  ::board::lastMoveHighlight {w} {
+proc  ::board::lastMoveHighlight {w moveuci} {
   $w.bd delete highlightLastMove
   if { ! $::highlightLastMove } {return}
-  set moveuci [ sc_game info previousMoveUCI ]
   if {[string length $moveuci] >= 4} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
@@ -1627,7 +1631,7 @@ proc ::board::update {w {board ""} {animate 0}} {
   
   # Redraw last move highlight if mainboard
   if { $w == ".main.board"} {
-    ::board::lastMoveHighlight $w
+    ::board::lastMoveHighlight $w [sc_game info previousMoveUCI]
   }
   
   # Redraw material values

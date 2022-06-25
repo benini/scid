@@ -5070,7 +5070,12 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
             game.MoveToEnd();
             game.currentPos()->MakeLongStr(boardStr);
-            return UI_Result(ti, OK, boardStr);
+            char lastmove[8] = {};
+            game.GetPrevMoveUCI(lastmove);
+            UI_List result(2);
+            result.push_back(boardStr);
+            result.push_back(lastmove);
+            return UI_Result(ti, OK, result);
         }
         return UI_Result(ti, ERROR_BadArg, "sc_pos board [startpos moves]");
 
