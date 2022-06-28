@@ -1801,11 +1801,11 @@ proc ::board::drawInnerCoords { w sq c pos fontsize color} {
         set x   [expr [lindex $box 0] + $pos * ($len - $fontsize)]
         set y   [expr [lindex $box 1] + $fontsize ]
     } else {
-        set x   [expr [lindex $box 2] - $fontsize ]
+        set x   [expr [lindex $box 0] ]
         set y   [expr [lindex $box 3] - $fontsize - $pos * ($len - 2 * $fontsize)]
         # avoid collision a1 and h8 in the upper right square
-        if { $pos && ((! $::board::_flip($w) && $c eq "h") || ($::board::_flip($w) && $c eq "a")) } {
-            set x [expr $x - $fontsize]
+        if { $pos && (($::board::_flip($w) && $c eq "h") || (!$::board::_flip($w) && $c eq "a")) } {
+            set x [expr $x + $fontsize]
         }
     }
     $w.bd create text $x $y -fill $color \
