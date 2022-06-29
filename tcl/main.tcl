@@ -370,7 +370,8 @@ proc ::createMainEvalBarMenu {w} {
         if {$curr != -1} {
             set currEng [lindex $enginewins $curr 1]
             set enginewins [lreplace $enginewins $curr $curr]
-            $w.evalbar_menu add command -label $currEng -command {
+            set ::mainEvalBarcheckbutton 1
+            $w.evalbar_menu add checkbutton -variable ::mainEvalBarcheckbutton -label $currEng -command {
                 ::enginewin::stop $::mainEvalBarEngineID_
                 unset ::mainEvalBarEngineID_
             }
