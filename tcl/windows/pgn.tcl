@@ -112,8 +112,6 @@ namespace eval pgn {
         -command {::pgn::ChooseColor Comment comment}
     $w.menu.color add command -label PgnColorVars \
         -command {::pgn::ChooseColor Var variation}
-    $w.menu.color add command -label PgnColorBackground \
-        -command {::pgn::ChooseColor Background background}
     $w.menu.color add command -label PgnColorCurrent -command {::pgn::ChooseColor Current current}
 
     $w.menu.helpmenu add command -label PgnHelpPgn -command {helpWindow PGN}
@@ -122,8 +120,7 @@ namespace eval pgn {
     translateMenuLabels $w.menu
     
     autoscrollText y $w.frame $w.text Treeview
-    $w.text configure -wrap word -background $pgnColor(Background) -state normal \
-        -tabs {1c right 2c 4c}
+    $w.text configure -wrap word -state normal -tabs {1c right 2c 4c}
     if { $::pgn::boldMainLine } {
         $w.text configure -font font_Bold
     }
@@ -260,7 +257,6 @@ namespace eval pgn {
   proc ResetColors {} {
     global pgnColor
     if {![winfo exists .pgnWin]} { return }
-    .pgnWin.text configure -background $pgnColor(Background)
     .pgnWin.text tag configure Current -background $pgnColor(Current)
     ::htext::init .pgnWin.text
     ::htext::updateRate .pgnWin.text 0

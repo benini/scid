@@ -290,7 +290,6 @@ set pgnColor(Var) "\#0000ee"
 set pgnColor(Nag) "\#ee0000"
 set pgnColor(Comment) "\#008b00"
 set pgnColor(Current) lightSteelBlue
-set pgnColor(Background) "\#ffffff"
 
 # Defaults for FICS
 set ::fics::use_timeseal 0
@@ -722,7 +721,7 @@ proc options.write {} {
     foreach i {squareColor_lite squareColor_dark whitecolor blackcolor highcolor bestcolor \
           whiteborder blackborder borderwidth \
           pgnColor(Header) pgnColor(Main) pgnColor(Var) \
-          pgnColor(Nag) pgnColor(Comment) pgnColor(Background) \
+          pgnColor(Nag) pgnColor(Comment) \
           pgnColor(Current) } {
       puts $optionF "set $i [list [set $i]]"
     }
