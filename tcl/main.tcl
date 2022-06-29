@@ -362,47 +362,41 @@ proc ::createMainEvalBarMenu {w} {
         ttk_menu $w.evalbar_menu
     }
 
-    set processed {}
+    set engines {}
     set enginewins [enginewin::listEngines]
-    # Add a command for the currently associated engine.
-    if {[info exists ::mainEvalBarEngineID_]} {
-        set curr [lsearch -exact -index 0 $enginewins $::mainEvalBarEngineID_]
-        if {$curr != -1} {
-            set currEng [lindex $enginewins $curr 1]
-            set enginewins [lreplace $enginewins $curr $curr]
-            set ::mainEvalBarcheckbutton 1
-            $w.evalbar_menu add checkbutton -variable ::mainEvalBarcheckbutton -label $currEng -command {
+    foreach {elem} $enginewins {
+        lassign $elem engID engName running
+        if {!$running} {
+            lappend engines [list $engID $engName]
+            continue
+        }
+        if {[info exists ::mainEvalBarEngineID_] && $engID == $::mainEvalBarEngineID_} {
+            set ::mainEvalBarCheckbutton 1
+            $w.evalbar_menu add checkbutton -variable ::mainEvalBarCheckbutton -label $engName -command {
                 ::enginewin::stop $::mainEvalBarEngineID_
                 unset ::mainEvalBarEngineID_
             }
-            $w.evalbar_menu add separator
-            lappend processed $currEng
         } else {
-            unset ::mainEvalBarEngineID_
+            $w.evalbar_menu add command -label $engName \
+                -command "set ::mainEvalBarEngineID_ \[::enginewin::start $engID\]"
         }
     }
-    # Add commands to associate the bar with an open engine window.
-    foreach {elem} $enginewins {
-        lassign $elem engid engname
-        $w.evalbar_menu add command -label $engname -command [list apply {{engid} {
-            if {[info exists ::mainEvalBarEngineID_]} {
-                #TODO: do not stop the current engine if the new one is also running?
-                ::enginewin::stop $::mainEvalBarEngineID_
-            }
-            set ::mainEvalBarEngineID_ [::enginewin::start $engid]
-        }} $engid]
-        lappend processed $engname
+    foreach {engName} [enginecfg::names] {
+        if {[lsearch -exact -index 1 $enginewins $engName] == -1} {
+            lappend engines [list "" $engName]
+        }
     }
-    # Add commands to open a new engine window and associate the bar with it.
-    foreach {name} [enginecfg::names] {
-        if {$name in $processed} { continue }
-        $w.evalbar_menu add command -label $name -command [list apply {{name} {
+    $w.evalbar_menu add separator
+    foreach {elem} $engines {
+        lassign $elem engID engName
+        $w.evalbar_menu add command -label $engName -command [list apply {{engID engName} {
             if {[info exists ::mainEvalBarEngineID_]} {
                 ::enginewin::stop $::mainEvalBarEngineID_
             }
-            set ::mainEvalBarEngineID_ [::enginewin::start "" $name]
-        }} $name]
+            set ::mainEvalBarEngineID_ [::enginewin::start $engID $engName]
+        }} $engID $engName]
     }
+
     #TODO: improve and translate label
     $w.evalbar_menu add command -label "+ new engine ..." -command {
         lassign [::enginecfg::dlgNewLocal] newEngName
