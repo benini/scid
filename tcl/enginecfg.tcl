@@ -72,6 +72,15 @@ proc ::enginecfg::save {enginecfg} {
     return $enginecfg
 }
 
+# Pop up a dialog box for the user to select the cmd file referring to a local engine
+# and adds the engine to the list of the available ones.
+# Return the new configuration entry in the engine's list.
+proc ::enginecfg::dlgNewLocal {} {
+    set fName [tk_getOpenFile]
+    if {$fName eq ""} { return "" }
+    return [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
+}
+
 # Creates the frame with the widgets necessary to select the desired engine and
 # change its configuration.
 # It also creates the buttons used to manage the configured engines:
@@ -86,9 +95,8 @@ proc ::enginecfg::createConfigFrame {id w} {
         ::enginewin::connectEngine $id [::enginecfg::get [%W get]]
     }} $id]
     ttk::button $w.header.addpipe -image tb_eng_add -command [list apply {{id} {
-        if {[set fName [tk_getOpenFile]] != ""} {
-            ::enginewin::connectEngine $id \
-                [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
+        if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
+            ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
     ttk::button $w.header.addnetwork -image tb_eng_network \
