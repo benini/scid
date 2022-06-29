@@ -394,6 +394,7 @@ proc ::board::popup {w positionLongStr xc yc {above ""}} {
         wm overrideredirect $w 1
         ::board::new $w.bd $psize
         grid $w.bd
+        ::update idletasks
     }
 
     lassign $positionLongStr pos lastmove
@@ -404,20 +405,22 @@ proc ::board::popup {w positionLongStr xc yc {above ""}} {
     }
 
     # Make sure the popup window can fit on the screen:
-    incr xc 5
-    incr yc 5
-    ::update idletasks
+    set screenwidth [winfo screenwidth $w]
+    set screenheight [winfo screenheight $w]
     set dx [winfo width $w]
     set dy [winfo height $w]
+    incr xc 8
+    if {($xc+$dx) > $screenwidth} {
+        set xc [expr {$screenwidth - $dx}]
+    }
+    if {($yc+$dy) > ($screenheight -8)} {
+            set above 1
+    }
     if {$above ne ""} {
-        incr yc -$dy
+        set yc [expr { $yc -$dy -8 }]
         if {$yc < 0} { set yc 0 }
-    }
-    if {($xc+$dx) > [winfo screenwidth $w]} {
-        set xc [expr {[winfo screenwidth $w] - $dx}]
-    }
-    if {($yc+$dy) > [winfo screenheight $w]} {
-        set yc [expr {[winfo screenheight $w] - $dy}]
+    } else {
+        incr yc 8
     }
     wm geometry $w "+$xc+$yc"
     wm deiconify $w
