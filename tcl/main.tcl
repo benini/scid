@@ -403,8 +403,13 @@ proc ::createMainEvalBarMenu {w} {
             set ::mainEvalBarEngineID_ [::enginewin::start "" $name]
         }} $name]
     }
-    #TODO: implent -command
-    $w.evalbar_menu add command -label "New engine ..." -state disabled
+    #TODO: improve and translate label
+    $w.evalbar_menu add command -label "+ new engine ..." -command {
+        lassign [::enginecfg::dlgNewLocal] newEngName
+        if {$newEngName ne ""} {
+            ::enginewin::start "" $newEngName
+        }
+    }
     $w.evalbar_menu add separator
     #TODO: implent -command
     $w.evalbar_menu add command -label "Show best move arrow" -state disabled
