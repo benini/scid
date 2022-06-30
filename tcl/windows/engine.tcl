@@ -792,21 +792,28 @@ proc ::enginewin::createDisplayFrame {id w} {
     $w.pv.lines configure -exportselection true
     $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
+    $w.pv.lines tag configure markmove -underline 1
     $w.pv.lines tag bind moves <ButtonRelease-1> {
         if {[%W tag ranges sel] eq ""} {
             ::enginewin::exportMoves %W @%x,%y
         }
     }
     $w.pv.lines tag bind moves <Motion> [list apply {{id} {
+        %W tag remove markmove 1.0 end
         if {[%W tag ranges sel] eq "" && ![catch {
+            #TODO: the +-. chars are considered wordstart
+            set index [%W index "@%x,%y wordstart"]
+            %W tag add markmove $index [%W search " " $index]
             # An exception will be thrown if the engine sent an illegal pv
             sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
             ::board::popup .enginewinBoard $pos %X %Y
+
         } else {
             catch { wm withdraw .enginewinBoard }
         }
     }} $id]
     $w.pv.lines tag bind moves <Any-Leave> {
+        %W tag remove markmove 1.0 end
         catch { wm withdraw .enginewinBoard }
     }
 
