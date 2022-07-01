@@ -109,9 +109,9 @@
 #   enum Option {
 #     "analysis";
 #     "chess960";
+#     "ponder";
 #     "post_pv";
 #     "post_wdl";
-#     TODO: "ponder";
 #   }
 #   repeated Option options = 1;
 # }
@@ -514,6 +514,10 @@ proc ::uci::sendNewGame {id msgData} {
         set wdl [expr {"post_wdl" in $msgData ? "true" :"false"}]
         ::engine::rawsend $id "setoption name UCI_ShowWDL value $wdl"
     }
+    if {[lsearch -index 0 $::engconn(options_$id) "Ponder"] != -1} {
+        set ponder [expr {"ponder" in $msgData ? "true" :"false"}]
+        ::engine::rawsend $id "setoption name Ponder value $ponder"
+    }
     ::engine::rawsend $id "ucinewgame"
     ::engine::rawsend $id "isready"
 }
@@ -713,6 +717,12 @@ proc ::uci::parseline {id line} {
     }
 
     if {[string match "bestmove*" $line]} {
+        #TODO:
+        # lassign [lsearch -inline -index 0 $::engconn(options_$id) "Ponder"] -> ponder
+        # if {$ponder eq "true"}
+        #   set ::engconn(waitReply_$id) "Go?"
+        #   ::engine::rawsend $id position ...
+        #   ::engine::rawsend $id go ponder ...
         return 1
     }
 
@@ -742,7 +752,7 @@ proc ::uci::parseline {id line} {
                 lappend $currToken $word
             }
         }
-        set internal [expr {$name in {UCI_AnalyseMode UCI_Chess960 UCI_ShowWDL}}]
+        set internal [expr {$name in {Ponder UCI_AnalyseMode UCI_Chess960 UCI_ShowWDL}}]
         if {$type eq "string"} {
             if {[string match -nocase "*file*" $name]} {
                 set type "file"
