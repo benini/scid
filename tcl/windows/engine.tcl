@@ -407,19 +407,6 @@ proc ::enginewin::callback {id msg} {
     }
 }
 
-proc ::enginewin::addNetwork {id} {
-    set w .enginewinAddNetwork
-    win::createDialog $w
-    grid [ttk::label $w.option_name -text "<hostname>:<port>"] [ttk::entry $w.new_value]
-    dialogbutton $w.cancel -text "cancel" -command "destroy $w"
-    dialogbutton $w.ok -text "OK" -command "
-        set host \[$w.new_value get\]
-        destroy $w
-        ::enginewin::connectEngine $id \[list \$host \$host {} {} {} {} {} 2 \]
-    "
-    grid $w.cancel $w.ok
-}
-
 proc ::enginewin::createConfigWidgets {id options} {
     set w .engineWin$id.config.options.text
 

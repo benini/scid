@@ -81,6 +81,27 @@ proc ::enginecfg::dlgNewLocal {} {
     return [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
 }
 
+# Pop up a dialog box for the user to enter the url of a remote engine
+# and adds the engine to the list of the available ones.
+# Return the new configuration entry in the engine's list.
+proc ::enginecfg::dlgNewRemote {} {
+    set ::enginecfg_dlgresult ""
+    set w .engineDlgNewRemote
+    win::createDialog $w
+    pack [ttk::label $w.msg -text "Remote engine (hostname:port):"] -fill x
+    pack [ttk::entry $w.value] -fill x
+    dialogbutton $w.cancel -text [tr Cancel] -command "destroy $w"
+    dialogbutton $w.ok -text "OK" -command "
+        set ::enginecfg_dlgresult \[$w.value get\]
+        destroy $w
+    "
+    ::packdlgbuttons $w.cancel $w.ok
+    grab $w
+    tkwait window $w
+    if {$::enginecfg_dlgresult eq ""} { return "" }
+    return [::enginecfg::add [list $::enginecfg_dlgresult $::enginecfg_dlgresult {} {} {} 0 {} 2]]
+}
+
 # Creates the frame with the widgets necessary to select the desired engine and
 # change its configuration.
 # It also creates the buttons used to manage the configured engines:
@@ -99,8 +120,11 @@ proc ::enginecfg::createConfigFrame {id w} {
             ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
-    ttk::button $w.header.addnetwork -image tb_eng_network \
-        -command "::enginewin::addNetwork $id"
+    ttk::button $w.header.addremote -image tb_eng_network -command [list apply {{id} {
+        if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
+            ::enginewin::connectEngine $id $newEngine
+        }
+    }} $id]
     ttk::button $w.header.reload -image tb_eng_reload \
         -command "event generate $w.header.engine <<ComboboxSelected>>"
     ttk::button $w.header.clone -image tb_eng_clone -command "
@@ -112,7 +136,7 @@ proc ::enginecfg::createConfigFrame {id w} {
             ::enginewin::connectEngine $id {}
         }
     }} $id $w.header.engine]
-    grid $w.header.engine $w.header.addpipe $w.header.addnetwork \
+    grid $w.header.engine $w.header.addpipe $w.header.addremote \
          $w.header.reload $w.header.clone $w.header.delete -sticky news
 
     autoscrollText both $w.options $w.options.text Treeview
