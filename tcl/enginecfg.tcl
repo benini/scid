@@ -10,9 +10,11 @@
 
 namespace eval enginecfg {}
 
-# Return a list containing the engine's names.
+# Return a list containing the engine's names sorted by last use.
 proc ::enginecfg::names {} {
-    return [lmap elem $::engines(list) { lindex $elem 0 }]
+    return [lmap elem [lsort -integer -decreasing -index 5 $::engines(list)] {
+        lindex $elem 0
+    }]
 }
 
 # Return the engine's config.

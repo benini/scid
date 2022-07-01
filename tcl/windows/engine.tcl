@@ -305,6 +305,9 @@ proc ::enginewin::connectEngine {id config} {
         return
     }
 
+    # Update engine's last used time.
+    lset ::enginewin::engConfig_$id 5 [clock seconds]
+
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
