@@ -78,7 +78,11 @@ proc ::enginecfg::save {enginecfg} {
 # and adds the engine to the list of the available ones.
 # Return the new configuration entry in the engine's list.
 proc ::enginecfg::dlgNewLocal {} {
-    set fName [tk_getOpenFile]
+    if {$::windowsOS} {
+        lappend ftype [list "Executable" [list ".exe" ".bat"]]
+    }
+    lappend ftype [list "All files" *]
+    set fName [tk_getOpenFile -filetypes $ftype]
     if {$fName eq ""} { return "" }
     return [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
 }
