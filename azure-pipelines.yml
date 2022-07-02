@@ -18,7 +18,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -47,7 +47,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir tcltk & cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -58,7 +58,7 @@ jobs:
       popd
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
       cd tk & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
@@ -84,8 +84,12 @@ jobs:
       cd stockfish\src
       cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
-      curl -o $(Build.SourcesDirectory)\install\bin\nn-d0b74ce1e5eb.nnue https://data.stockfishchess.org/nn/nn-d0b74ce1e5eb.nnue
     displayName: Generate stockfish
+  - bash: |
+      nnue=$(egrep -o "nn-[a-z0-9]+.nnue" stockfish/src/evaluate.h)
+      echo "https://data.stockfishchess.org/nn/$nnue ==> install/bin/$nnue"
+      curl -o install/bin/$nnue https://data.stockfishchess.org/nn/$nnue
+    displayName: Download stockfish nnue
   - script: |
       move bin engines
       move scid bin
@@ -166,14 +170,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads
       make && make install
@@ -213,14 +217,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
@@ -260,14 +264,14 @@ jobs:
   steps:
   - script: |
       mkdir tcltk && cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tcl.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
       make && make install
     displayName: Generate tcl library
   - script: |
       cd tcltk
-      git clone --depth=1 --branch core-8-6-12 https://github.com/tcltk/tk.git
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
       cd tk && cd unix
       ./configure --prefix=$(Build.SourcesDirectory)/tcltk --enable-threads --enable-aqua
       make && make install
