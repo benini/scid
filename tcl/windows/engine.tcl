@@ -968,6 +968,8 @@ proc ::enginewin::updateDisplay {id msgData} {
     }
 
     $w.pv.lines configure -state disabled
+    #change  +M2 to +12 or -M3 to -13, to avoid error in evalbar
+    set score [string map { M 1 } $score]
     if {$line == 1 && $::enginewin::engState($id) ne "locked"} {
         if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
             set score [expr { - $score }]
