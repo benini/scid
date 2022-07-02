@@ -791,13 +791,16 @@ proc ::enginewin::createDisplayFrame {id w} {
     $w.pv.lines tag bind moves <Motion> [list apply {{id} {
         %W tag remove markmove 1.0 end
         if {[%W tag ranges sel] eq "" && ![catch {
-            #TODO: the +-. chars are considered wordstart
-            set index [%W index "@%x,%y wordstart"]
-            %W tag add markmove $index [%W search " " $index]
-            # An exception will be thrown if the engine sent an illegal pv
-            sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
+                # An exception will be thrown if the engine sent an illegal pv
+                sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
+            # TODO:
+            # Using wordstart and wordend would be a lot more efficient.
+            # However they do not consider the [+.-] chars as part of the word.
+            # set movestart [%W index "@%x,%y wordstart"]
+            # %W tag add markmove $movestart "$movestart wordend"
+            set movestart "[%W search -backwards -regexp {\s} "@%x,%y"] +1chars"
+            %W tag add markmove $movestart [%W search " " $movestart]
             ::board::popup .enginewinBoard $pos %X %Y
-
         } else {
             catch { wm withdraw .enginewinBoard }
         }
