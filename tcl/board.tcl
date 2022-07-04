@@ -685,7 +685,18 @@ proc ::board::updateEvalBar { w score } {
     } else {
         set width $::board::_evalbarWidth($w)
         set h $::board::_evalbarHeight($w)
-        set midY [expr $h / 2 + $score * $::board::_evalbarScale($w)]
+        # Handle mate notation like +M12 or -M5
+        if {[string index $score 1] eq "M" \
+            && [string is integer [string range $score 2 end]] \
+            && [set sign [string index $score 0]] in {- +}} {
+            if {$sign eq "+"} {
+                set midY 0
+            } else {
+                set midY [expr $h + 1]
+            }
+        } else {
+            set midY [expr $h / 2 + $score * $::board::_evalbarScale($w)]
+        }
         $w.score coords barUp 0 0 $width $midY
         $w.score coords barDown 0 $midY $width [expr $h + 1]
     }
