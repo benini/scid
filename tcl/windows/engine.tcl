@@ -972,7 +972,12 @@ proc ::enginewin::updateDisplay {id msgData} {
         if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
             set score [expr { - $score }]
         }
-        ::notify::EngineBestMove $id $pv $score
+        if {$notation == 2 || $notation == -2} {
+            set best_move [::trans $pv]
+        } else {
+            set best_move $pv
+        }
+        ::notify::EngineBestMove $id $best_move $score
     }
 }
 

@@ -1303,6 +1303,21 @@ proc ::board::mark::DrawArrow {pathName from to color} {
       {-tag [list mark arrows "mark${from}:${to}"]}
 }
 
+# Draw an arrow to indicate the best move.
+# It also eliminate any existing best move arrow.
+# So, if moveUCI == "", it just deletes any existing best move arrow.
+# TODO: draw a better arrow that has the alpha channel.
+proc ::board::mark::DrawBestMove {pathName moveUCI} {
+  {*}$pathName.bd delete bestmove
+  if {$moveUCI eq ""} { return }
+
+  set from [ ::board::sq [ string range $moveUCI 0 1 ] ]
+  set to [ ::board::sq [ string range $moveUCI 2 3 ] ]
+  set coord [GetArrowCoords $pathName.bd $from $to 0.2]
+  {*}$pathName.bd create line $coord -fill #FF5E0E -arrow last -width 5 \
+    -tag [list mark arrows bestmove]
+}
+
 # ::board::mark::DrawRectangle --
 # Draws a rectangle surrounding the square
 proc ::board::mark::DrawRectangle { pathName square color pattern } {

@@ -333,11 +333,18 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 # If there are multiple engines running, the eval bar will remain associated
 # with the first engine that send its evaluation until it stops running.
 proc ::updateMainEvalBar {engineID bestmove evaluation} {
+    if {! $::showEvalBar(.main) } { return }
+
     if {![info exists ::mainEvalBarEngineID_]} {
         set ::mainEvalBarEngineID_ $engineID
     }
     if {$engineID == $::mainEvalBarEngineID_} {
         ::board::updateEvalBar .main.board $evaluation
+        if {$::showMainEvalBarArrow} {
+            set bestmove [string map {"\u2654" K "\u2655" Q "\u2656" R "\u2657" B "\u2658" N} [::untrans $bestmove]]
+            catch { sc_game SANtoUCI $bestmove } moveUCI
+            ::board::mark::DrawBestMove .main.board $moveUCI
+        }
         if {$bestmove eq "" && $evaluation eq ""} {
             unset ::mainEvalBarEngineID_
         }
@@ -405,12 +412,13 @@ proc ::createMainEvalBarMenu {w} {
         }
     }
     $w.evalbar_menu add separator
-    #TODO: implent -command
-    $w.evalbar_menu add command -label "Show best move arrow" -state disabled
+    $w.evalbar_menu add checkbutton -variable ::showMainEvalBarArrow -label "Show best move arrow" -command {
+        ::board::mark::DrawBestMove ".main.board" ""
+    }
     $w.evalbar_menu add separator
     #TODO: translate label
     $w.evalbar_menu add command -label "Hide" \
-         -command "::board::toggleEvalBar $w"
+        -command { {*}$::gameInfoBar(tb_BD_Scorebar) }
 
     return $w.evalbar_menu
 }
@@ -1231,6 +1239,7 @@ proc CreateMainBoard { {w} } {
     tk_popup \[::createMainEvalBarMenu $w.board \] %X %Y
   "
   options.persistent ::showEvalBar($w) 1
+  options.persistent ::showMainEvalBarArrow 1
   if {$::showEvalBar($w)} { ::board::toggleEvalBar $w.board }
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
@@ -1238,7 +1247,12 @@ proc CreateMainBoard { {w} } {
   ::board::addInfoBar $w.board gameInfoBar
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
-  set ::gameInfoBar(tb_BD_Scorebar) "set ::showEvalBar($w) \[::board::toggleEvalBar $w.board\]"
+  set ::gameInfoBar(tb_BD_Scorebar) [list apply {{w} {
+    set ::showEvalBar($w) [::board::toggleEvalBar $w.board]
+    unset -nocomplain ::mainEvalBarEngineID_
+    ::board::updateEvalBar .main.board ""
+    ::board::mark::DrawBestMove $w.board ""
+  }} $w]
 
   menu .main.menuaddchoice -bg white -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
