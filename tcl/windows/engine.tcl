@@ -944,7 +944,8 @@ proc ::enginewin::updateDisplay {id msgData} {
         }
     }
     set pvline ""
-    regexp {^([\d. ]*[\w-]+)(.*)$} $pv -> pv pvline
+    # End of the first move: first space after the first alpha char
+    regexp {^(.*?[A-Za-z].*?)(\s.*)$} $pv -> pv pvline
 
     set line $multipv
     if {$multipv == 1} {
