@@ -970,8 +970,9 @@ proc ::enginewin::updateDisplay {id msgData} {
 
     $w.pv.lines configure -state disabled
     if {$line == 1 && $::enginewin::engState($id) ne "locked"} {
-        if {$scoreside eq "engine" && [sc_pos side] eq "black"} {
-            set score [expr { - $score }]
+        if {$scoreside eq "engine" && [sc_pos side] eq "black" && $score ne ""} {
+            set sign_reversed [expr { [string index $score 0] eq "+" ? "-" : "+" }]
+            set score "$sign_reversed[string range $score 1 end]"
         }
         if {$notation == 2 || $notation == -2} {
             set best_move [::trans $pv]
