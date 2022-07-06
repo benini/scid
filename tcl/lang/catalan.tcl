@@ -358,6 +358,8 @@ translate K Defaults {Per defecte}
 translate K Delete {Esborrar}
 translate K Graph {Gràfic}
 translate K Help {Ajut}
+# ====== TODO To be translated ======
+translate K Hide {Hide}
 translate K Import {Importar}
 translate K Index {Ïndex}
 translate K LoadGame {Cargar partida}
@@ -1879,5 +1881,9 @@ translate K MenuColorBackground "Background"
 translate K MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate K OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate K BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate K NewLocalEngine "+ New engine ..."
 }
 # end of catalan.tcl

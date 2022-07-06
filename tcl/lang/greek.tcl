@@ -364,6 +364,8 @@ translate G Defaults {Αρχικό}
 translate G Delete {Διαγραφή}
 translate G Graph {Γράφημα}
 translate G Help {Βοήθεια}
+# ====== TODO To be translated ======
+translate G Hide {Hide}
 translate G Import {Εισαγωγή}
 translate G Index {Κατάλογος}
 translate G LoadGame {Φώρτωση παρτίδας}
@@ -1868,5 +1870,9 @@ translate G MenuColorBackground "Background"
 translate G MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate G OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate G BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate G NewLocalEngine "+ New engine ..."
 }
 # end of greek.tcl

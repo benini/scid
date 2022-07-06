@@ -395,6 +395,8 @@ translate Y Defaults {Podrazumevano}
 translate Y Delete {Obri¹i}
 translate Y Graph {Grafikon}
 translate Y Help {Pomoæ}
+# ====== TODO To be translated ======
+translate Y Hide {Hide}
 translate Y Import {Uvoz}
 translate Y Index {Indeks}
 translate Y LoadGame {Uèitaj partiju}
@@ -2306,5 +2308,9 @@ translate Y MenuColorBackground "Background"
 translate Y MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate Y OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate Y BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate Y NewLocalEngine "+ New engine ..."
 }
 # end of serbian.tcl

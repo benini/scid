@@ -331,6 +331,7 @@ translate I Defaults {Default}
 translate I Delete {Cancella}
 translate I Graph {Grafico}
 translate I Help {Aiuto}
+translate I Hide {Nascondi}
 translate I Import {Importa}
 translate I Index {Indice}
 translate I LoadGame {Carica partita}
@@ -1765,6 +1766,8 @@ translate I MenuColorBackground "Background"
 translate I MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate I OptionsTablebaseDir "Select up to 4 table base folders:"
+translate I BestMoveArrow "Indica mossa migliore"
+translate I NewLocalEngine "+ Nuovo motore ..."
 }
 
 ############################################################

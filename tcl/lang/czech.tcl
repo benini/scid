@@ -327,6 +327,8 @@ translate C Defaults {Pøedvolené}
 translate C Delete {Vymazat}
 translate C Graph {Graf}
 translate C Help {Nápovìda}
+# ====== TODO To be translated ======
+translate C Hide {Hide}
 translate C Import {Import}
 translate C Index {Index}
 translate C LoadGame {Natáhnout partii}
@@ -1815,6 +1817,10 @@ translate C MenuColorBackground "Background"
 translate C MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate C OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate C BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate C NewLocalEngine "+ New engine ..."
 }
 
 

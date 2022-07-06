@@ -368,6 +368,8 @@ translate U Defaults {Oletukset}
 translate U Delete {Poista}
 translate U Graph {Graafi}
 translate U Help {Ohje}
+# ====== TODO To be translated ======
+translate U Hide {Hide}
 translate U Import {Tuo}
 translate U Index {Hakemisto}
 translate U LoadGame {Lataa peli}
@@ -1827,5 +1829,9 @@ translate U MenuColorBackground "Background"
 translate U MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate U OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate U BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate U NewLocalEngine "+ New engine ..."
 }
 # end of suomi.tcl

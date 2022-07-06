@@ -405,19 +405,18 @@ proc ::createMainEvalBarMenu {w} {
     }
 
     #TODO: improve and translate label
-    $w.evalbar_menu add command -label "+ new engine ..." -command {
+    $w.evalbar_menu add command -label [tr NewLocalEngine] -command {
         lassign [::enginecfg::dlgNewLocal] newEngName
         if {$newEngName ne ""} {
             ::enginewin::start "" $newEngName
         }
     }
     $w.evalbar_menu add separator
-    $w.evalbar_menu add checkbutton -variable ::showMainEvalBarArrow -label "Show best move arrow" -command {
+    $w.evalbar_menu add checkbutton -variable ::showMainEvalBarArrow -label [tr BestMoveArrow] -command {
         ::board::mark::DrawBestMove ".main.board" ""
     }
     $w.evalbar_menu add separator
-    #TODO: translate label
-    $w.evalbar_menu add command -label "Hide" \
+    $w.evalbar_menu add command -label [tr Hide] \
         -command { {*}$::gameInfoBar(tb_BD_Scorebar) }
 
     return $w.evalbar_menu

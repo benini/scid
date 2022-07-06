@@ -325,6 +325,8 @@ translate B Defaults {Defaults}
 translate B Delete {Deletar}
 translate B Graph {Grafico}
 translate B Help {Ajuda}
+# ====== TODO To be translated ======
+translate B Hide {Hide}
 translate B Import {Importar}
 translate B Index {Indice}
 translate B LoadGame {Carrega jogo}
@@ -1704,6 +1706,10 @@ translate B MenuColorForeground "Cor do Texto"
 translate B MenuColorBackground "Cor de Fundo"
 translate B MenuColorSelect "Selecionar"
 translate B OptionsTablebaseDir "Selecione até 4 pastas tabela base de finais:"
+# ====== TODO To be translated ======
+translate B BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate B NewLocalEngine "+ New engine ..."
 }
 
 # end of portbr.tcl

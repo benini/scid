@@ -397,6 +397,8 @@ translate O Defaults {Standard}
 translate O Delete {Slett}
 translate O Graph {Graf}
 translate O Help {Hjelp}
+# ====== TODO To be translated ======
+translate O Hide {Hide}
 translate O Import {Importer}
 translate O Index {Innhold}
 translate O LoadGame {Hent parti}
@@ -2299,6 +2301,10 @@ translate O MenuColorBackground "Background"
 translate O MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate O OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate O BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate O NewLocalEngine "+ New engine ..."
 }
 
 # norsk.tcl

@@ -401,6 +401,8 @@ translate P Defaults {Domy¶lne}
 translate P Delete {Usuñ}
 translate P Graph {Wykres}
 translate P Help {Pomoc}
+# ====== TODO To be translated ======
+translate P Hide {Hide}
 translate P Import {Pobierz}
 translate P Index {Indeks}
 translate P LoadGame {Wczytaj partiê}
@@ -2311,6 +2313,10 @@ translate P MenuColorBackground "Background"
 translate P MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate P OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate P BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate P NewLocalEngine "+ New engine ..."
 }
 
 ### Tips of the day in Polish:

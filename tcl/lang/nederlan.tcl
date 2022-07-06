@@ -356,6 +356,8 @@ translate N Defaults {Standaard}
 translate N Delete {Wis}
 translate N Graph {Grafiek}
 translate N Help {Help}
+# ====== TODO To be translated ======
+translate N Hide {Hide}
 translate N Import {Importeren}
 translate N Index {Index}
 translate N LoadGame {Partij laden}
@@ -1955,5 +1957,9 @@ translate N MenuColorBackground "Background"
 # ====== TODO To be translated ======
 translate N MenuColorSelect "Select"
 translate N OptionsTablebaseDir "Selecteer tot 4 tabelbasismappen:"
+# ====== TODO To be translated ======
+translate N BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate N NewLocalEngine "+ New engine ..."
 }
 # End of nederlan.tcl

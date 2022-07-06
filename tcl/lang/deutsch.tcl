@@ -351,6 +351,8 @@ translate D Defaults {Standard}
 translate D Delete {Lösche}
 translate D Graph {Grafik}
 translate D Help {Hilfe}
+# ====== TODO To be translated ======
+translate D Hide {Hide}
 translate D Import {Importieren}
 translate D Index {Index}
 translate D LoadGame {Partie laden}
@@ -1752,6 +1754,10 @@ translate D MenuColorForeground "Text"
 translate D MenuColorBackground "Hintergrund"
 translate D MenuColorSelect "Auswahl"
 translate D OptionsTablebaseDir "Bis zu 4 Verzeichnisse der Endspieltabellen auswählen:"
+# ====== TODO To be translated ======
+translate D BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate D NewLocalEngine "+ New engine ..."
 
 ##########
 #

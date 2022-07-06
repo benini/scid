@@ -341,6 +341,8 @@ translate F Defaults {Par défaut}
 translate F Delete {Éliminer}
 translate F Graph {Graphique}
 translate F Help {Aide}
+# ====== TODO To be translated ======
+translate F Hide {Hide}
 translate F Import {Importer}
 translate F Index {Index}
 translate F LoadGame {Charger cette partie}
@@ -1746,6 +1748,10 @@ translate F MenuColorForeground "Texte"
 translate F MenuColorBackground "Fond"
 translate F MenuColorSelect "Sélection"
 translate F OptionsTablebaseDir "Sélectionnez jusqu'à 4 dossiers de tables de finales:"
+# ====== TODO To be translated ======
+translate F BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate F NewLocalEngine "+ New engine ..."
 
 ##########
 #

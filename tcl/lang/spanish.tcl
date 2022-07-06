@@ -376,6 +376,8 @@ translate S Defaults {Por defecto}
 translate S Delete {Borrar}
 translate S Graph {Gráfico}
 translate S Help {Ayuda}
+# ====== TODO To be translated ======
+translate S Hide {Hide}
 translate S Import {Importar}
 translate S Index {Índice}
 translate S LoadGame {Cargar partida}
@@ -1852,5 +1854,9 @@ translate S MenuColorBackground "Background"
 # ====== TODO To be translated ======
 translate S MenuColorSelect "Select"
 translate S OptionsTablebaseDir "Seleccione hasta 4 carpetas de la tablas de finales:"
+# ====== TODO To be translated ======
+translate S BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate S NewLocalEngine "+ New engine ..."
 }
 # end of spanish.tcl

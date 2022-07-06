@@ -334,6 +334,8 @@ translate W Defaults {Standard}
 translate W Delete {Radera}
 translate W Graph {Diagram}
 translate W Help {Hjälp}
+# ====== TODO To be translated ======
+translate W Hide {Hide}
 translate W Import {Importera}
 translate W Index {Index}
 translate W LoadGame {Ladda parti}
@@ -1767,6 +1769,10 @@ translate W MenuColorBackground "Background"
 translate W MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate W OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate W BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate W NewLocalEngine "+ New engine ..."
 }
 
 ############################################################

@@ -331,6 +331,8 @@ translate R Defaults {По-умолчанию}
 translate R Delete {Удалить}
 translate R Graph {График}
 translate R Help {Помощь}
+# ====== TODO To be translated ======
+translate R Hide {Hide}
 translate R Import {Импорт}
 translate R Index {Индекс}
 translate R LoadGame {Загрузка партии}
@@ -1748,5 +1750,9 @@ translate R MenuColorForeground "Цвет текста"
 translate R MenuColorBackground "Фон"
 translate R MenuColorSelect "Выбрать"
 translate R OptionsTablebaseDir "Выберите до 4 директорий с базами таблиц:"
+# ====== TODO To be translated ======
+translate R BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate R NewLocalEngine "+ New engine ..."
 }
 # end of russian.tcl

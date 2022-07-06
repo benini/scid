@@ -364,6 +364,7 @@ translate E Defaults {Defaults}
 translate E Delete {Delete}
 translate E Graph {Graph}
 translate E Help {Help}
+translate E Hide {Hide}
 translate E Import {Import}
 translate E Index {Index}
 translate E LoadGame {Load Game}
@@ -1775,5 +1776,9 @@ translate E MenuColorForeground "Textcolor"
 translate E MenuColorBackground "Background"
 translate E MenuColorSelect "Select"
 translate E OptionsTablebaseDir "Select up to 4 table base folders:"
+
+# Evaluation bar
+translate E BestMoveArrow "Best move arrow"
+translate E NewLocalEngine "+ New engine ..."
 }
 # end of english.tcl

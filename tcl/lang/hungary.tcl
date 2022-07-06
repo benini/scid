@@ -342,6 +342,8 @@ translate H Defaults {Alapértékek}
 translate H Delete {Töröl}
 translate H Graph {Grafikon}
 translate H Help {Segítség}
+# ====== TODO To be translated ======
+translate H Hide {Hide}
 translate H Import {Import}
 translate H Index {Tárgymutató}
 translate H LoadGame {Játszma betöltése}
@@ -1863,6 +1865,10 @@ translate H MenuColorBackground "Background"
 translate H MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate H OptionsTablebaseDir "Select up to 4 table base folders:"
+# ====== TODO To be translated ======
+translate H BestMoveArrow "Best move arrow"
+# ====== TODO To be translated ======
+translate H NewLocalEngine "+ New engine ..."
 }
 
 # Tips of the day in Hungarian
