@@ -495,6 +495,13 @@ proc ::xboard::sendOptions {id msgData} {
         } elseif {$value eq ""} {
             ::engine::rawsend $id "option $name"
         } else {
+            if {$type eq "check"} {
+                if {$value eq "true"} {
+                    set value 1
+                } else {
+                    set value 0
+                }
+            }
             ::engine::rawsend $id "option $name=$value"
         }
     }
@@ -604,7 +611,9 @@ proc ::xboard::parseline {id line} {
                 set internal 0
                 # everything before " -" is considered the name
                 lassign [regexp -inline {^(.*?)\s+-(\w+)\s*(.*)$} $default] -> name type extra
-                if {$type eq "check" || $type eq "spin" || $type eq "slider"} {
+                if {$type eq "check"} {
+                    set default [expr {$extra ? "true" : "false"}]
+                } elseif {$type eq "spin" || $type eq "slider"} {
                     lassign [split $extra] default min max
                 } elseif {$type eq "string" || $type eq "file" || $type eq "path"} {
                     set default $extra
@@ -617,7 +626,7 @@ proc ::xboard::parseline {id line} {
                     } else {
                         set default [lindex $var 0]
                     }
-                } elseif {$type eq "button" || type eq "save"} {
+                } elseif {$type eq "button" || $type eq "save"} {
                     set default ""
                 } else {
                     # Unknown type: ignore
