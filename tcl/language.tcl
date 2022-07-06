@@ -212,7 +212,7 @@ proc setLanguageTemp { lang } {
   }
 }
 
-addLanguage E English 0 iso8859-1 english.tcl
+addLanguage E English 0 utf-8 english.tcl
 addLanguage K Català 2 iso8859-1 catalan.tcl
 addLanguage C Czech 0 iso8859-2 czech.tcl
 addLanguage D Deutsch 0 iso8859-1 deutsch.tcl
