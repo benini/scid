@@ -514,19 +514,23 @@ proc ::windows::gamelist::createGList_ {{w}} {
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games "ly$w"
 	grid $w.games -row 0 -column 2 -sticky news
+	# TODO: always show the find bar instead of toggling between show/hide
+	bind [winfo toplevel $w] <Control-f> "
+		event generate $w.buttons.filter <<Invoke>>
+	"
 }
 
 proc ::windows::gamelist::menu_ {{w} {button}} {
 	if {$::gamelistMenu($w) != ""} {
 		$w.buttons.$::gamelistMenu($w) state !pressed
 		grid forget $w.$::gamelistMenu($w)
-		if {$button == "filter"} { event generate $w.games.find.hide <ButtonPress-1> }
+		if {$button == "filter"} { event generate $w.games <<FindBarHide>> }
 	}
 	if {$::gamelistMenu($w) != $button} {
 		$w.buttons.$button state pressed
 		set ::gamelistMenu($w) $button
 		grid $w.$button -row 0 -column 1 -sticky news
-		if {$button == "filter"} { event generate $w <Control-f> }
+		if {$button == "filter"} { event generate $w.games <<FindBarShow>> }
 	} else {
 		set ::gamelistMenu($w) ""
 	}
@@ -873,8 +877,6 @@ proc glist.create {{w} {layout}} {
 
   # Find widget
   ttk::frame $w.find
-  ttk::label $w.find.hide -image "tb_close hover tb_close_hover"
-  bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
   ttk::frame $w.find.t
   ttk::label $w.find.t_text -text $::tr(Search)
   ttk::entry $w.find.text -width 20
@@ -883,7 +885,7 @@ proc glist.create {{w} {layout}} {
     "after cancel glist.findgame_ $w 1; after idle glist.findgame_ $w 1"
   ttk::button $w.find.b2_text -image tb_up -command \
     "after cancel glist.findgame_ $w 0; after idle glist.findgame_ $w 0"
-  bind $w.find.text <Escape> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
+  bind $w.find.text <Escape> "glist.showfindbar_ $w.glist $layout 0"
   bind $w.find.text <Return> "$w.find.filter invoke"
   bind $w.find.text <KeyPress-Down> "$w.find.b1_text invoke; break"
   bind $w.find.text <KeyPress-Up> "$w.find.b2_text invoke; break"
@@ -891,13 +893,13 @@ proc glist.create {{w} {layout}} {
   #TODO: set scale position when normal ybar is used
   ttk::scale $w.find.scale -command "glist.ybar_ $w.glist moveto"
   grid $w.find.t_text $w.find.text $w.find.filter $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
-  grid $w.find.hide
   grid $w.find.t -row 0 -column 1 -padx 6
   grid $w.find.scale -row 0 -column 3 -sticky ew
   grid columnconfigure $w.find 3 -weight 1
   set ::glistFindBar($w.glist) $w.find
   glist.showfindbar_ $w.glist $layout
-  bind [winfo toplevel $w] <Control-f> "set ::glist_FindBar($layout) 1; glist.showfindbar_ $w.glist $layout"
+  bind $w <<FindBarHide>> "glist.showfindbar_ $w.glist $layout 0"
+  bind $w <<FindBarShow>> "glist.showfindbar_ $w.glist $layout 1"
 
   # On exit save layout in options.dat
   options.save ::glist_ColOrder
@@ -1006,7 +1008,10 @@ proc glist.loadvalues_ {{w}} {
   glist.ybarupdate_ $w
 }
 
-proc glist.showfindbar_ {{w} {layout}} {
+proc glist.showfindbar_ {{w} {layout} {show ""}} {
+  if {$show ne ""} {
+    set ::glist_FindBar($layout) $show
+  }
   if {$::glist_FindBar($layout) == 0} {
     grid forget $::glistFindBar($w)
     focus $w
