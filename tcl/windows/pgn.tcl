@@ -7,7 +7,11 @@ namespace eval pgn {
   ################################################################################
   proc ChooseColor {type name} {
     global pgnColor
-    set x [tk_chooseColor -initialcolor $pgnColor($type) -title "PGN $name color"]
+    set initial_color {}
+    if {$::pgnColor($type) ne ""} {
+      lappend initial_color "-initialcolor" $::pgnColor($type)
+    }
+    set x [tk_chooseColor {*}$initial_color -title "PGN $name color"]
     if {$x != ""} { set pgnColor($type) $x; ::pgn::ResetColors }
   }
   ################################################################################
