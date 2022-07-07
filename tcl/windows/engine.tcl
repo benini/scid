@@ -772,9 +772,9 @@ proc ::enginewin::updateConfigNetd {id w} {
 
 proc ::enginewin::createDisplayFrame {id w} {
     ttk::frame $w.header
-    autoscrollText y $w.header.info $w.header.info.text TLabel
+    autoscrollText y $w.header.info $w.header.info.text Toolbutton
     $w.header.info.text configure -wrap word -height 1
-    grid $w.header.info -sticky news
+    grid $w.header.info -sticky news -pady 2
     grid columnconfigure $w.header 0 -weight 1
 
     set tab [font measure font_Regular "xxxxxxx"]
