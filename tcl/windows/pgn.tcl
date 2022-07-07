@@ -104,8 +104,6 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
     
-    $w.menu.color add command -label PgnColorHeader \
-        -command {::pgn::ChooseColor Header "header text"}
     $w.menu.color add command -label PgnColorAnno \
         -command {::pgn::ChooseColor Nag annotation}
     $w.menu.color add command -label PgnColorComments \

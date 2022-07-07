@@ -212,7 +212,6 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
-  $w tag configure tag -foreground $::pgnColor(Header)
   if { $::pgn::boldMainLine } {
     $w tag configure nag -foreground $::pgnColor(Nag) -font font_Regular
     $w tag configure var -foreground $::pgnColor(Var) -font font_Regular

@@ -284,8 +284,6 @@ set ::pgn::boldMainLine 1
 set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
 set ::pgn::showPhoto 1
-set pgnColor(Header) "\#00008b"
-set pgnColor(Main) "\#000000"
 set pgnColor(Var) "\#0000ee"
 set pgnColor(Nag) "\#ee0000"
 set pgnColor(Comment) "\#008b00"
@@ -720,7 +718,7 @@ proc options.write {} {
     puts $optionF ""
     foreach i {squareColor_lite squareColor_dark whitecolor blackcolor highcolor bestcolor \
           whiteborder blackborder borderwidth \
-          pgnColor(Header) pgnColor(Main) pgnColor(Var) \
+          pgnColor(Var) \
           pgnColor(Nag) pgnColor(Comment) \
           pgnColor(Current) } {
       puts $optionF "set $i [list [set $i]]"
