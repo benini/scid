@@ -1315,7 +1315,7 @@ proc ::board::mark::DrawBestMove {pathName moveUCI} {
   set to [ ::board::sq [ string range $moveUCI 2 3 ] ]
   set coord [GetArrowCoords $pathName.bd $from $to 0.2]
   {*}$pathName.bd create line $coord -fill #FF5E0E -arrow last -width 5 \
-    -tag [list mark arrows bestmove]
+    -arrowshape {18 24 10} -tag [list mark arrows bestmove]
 }
 
 # ::board::mark::DrawRectangle --
