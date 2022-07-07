@@ -803,7 +803,7 @@ proc glist.create {{w} {layout}} {
   }
 
   ttk::treeview $w.glist -style Gamelist.Treeview -columns $::glist_Headers -show headings -selectmode browse
-  $w.glist tag configure current -background lightSteelBlue
+  $w.glist tag configure current -background steelBlue
   $w.glist tag configure fsmall -font font_Small
   $w.glist tag configure deleted -foreground #a5a2ac
   menu $w.glist.header_menu
