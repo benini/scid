@@ -506,7 +506,7 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.stats.b -sticky news
 	grid rowconfigure $w.stats 0 -weight 1
 	grid columnconfigure $w.stats 0 -weight 1
-	autoscrollframe -bars y $w.stats.b canvas $w.stats.b.c -highlightthickness 0 -background white
+	autoscrollframe -bars y $w.stats.b ttk_canvas $w.stats.b.c -highlightthickness 0
 }
 
 proc ::windows::gamelist::createGList_ {{w}} {
@@ -653,11 +653,11 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 			}
 		"
 		if { $toMove == "B" } { set moveSAN "..$moveSAN" }
-		$w.stats.b.c create text [expr int($rectW*1.5)] $line -anchor sw \
-		    -text $moveSAN -fill black -font font_Regular -tag add$i_add
+		ttk_create $w.stats.b.c text [expr int($rectW*1.5)] $line -anchor sw \
+		    -text $moveSAN -font font_Regular -tag add$i_add
 
 		incr i_add
-		$w.stats.b.c create text $moveW $line -anchor se \
+		ttk_create $w.stats.b.c text $moveW $line -anchor se \
 		    -text $n_totgames -fill #707070 -font font_Italic
 		set barh1 [expr { $line - 2*$rectB }]
 		set barh2 [expr { $line - $rectB }]
@@ -685,12 +685,12 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 
 			$w.stats.b.c create rectangle $barW $barh1 $loss $barh2
 
-			$w.stats.b.c create text [expr { $barW + $percW * 3 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_white"
-			$w.stats.b.c create text [expr { $barW + $percW * 6 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_draw"
-			$w.stats.b.c create text [expr { $barW + $percW * 9 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_black"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 3 }] $barh1 \
+				-font font_Small -anchor se -text "$t_white"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 6 }] $barh1 \
+				-font font_Small -anchor se -text "$t_draw"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 9 }] $barh1 \
+				-font font_Small -anchor se -text "$t_black"
 		}
 
 		incr line $lineH

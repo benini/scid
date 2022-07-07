@@ -464,8 +464,23 @@ proc autoscrollText {bars frame widget style} {
   autoscrollBars $bars $frame $widget
 }
 
+# Create a canvas and apply to it the current ttk style.
+proc ttk_canvas {pathName args} {
+  canvas $pathName {*}$args
+  ::applyThemeStyle Treeview $pathName
+}
+
+# Create an item into a widget (i.e. a canvas) and apply to it the current ttk style.
+# TODO: find a better way to do this and re-apply when <<ThemeChanged>>
+proc ttk_create {pathName type x y args} {
+  if {"-fill" ni $args} {
+    lappend args "-fill"
+    lappend args [ttk::style lookup Treeview -foreground "" black]
+  }
+  $pathName create $type $x $y {*}$args
+}
+
 # Create a menu and apply to it the ttk style.
-# TODO: checkbutton and radiobutton indicators are not effected.
 proc ttk_menu {pathName args} {
   menu $pathName {*}$args
   ::applyThemeStyle . $pathName
