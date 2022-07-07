@@ -86,7 +86,7 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label PgnOptColor \
         -variable ::pgn::showColor -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptShort \
-        -variable ::pgn::shortHeader -command {updateBoard -pgn}
+        -variable ::pgn::shortHeader -command {::pgn::Refresh 1}
     $w.menu.opt add checkbutton -label PgnOptSymbols \
         -variable ::pgn::symbolicNags -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptIndentC \
@@ -135,6 +135,15 @@ namespace eval pgn {
     
     # Bind right button to popup a contextual menu:
     bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"
+
+    # Clicking on the header toggle between short-3-lines/full header
+    $w.text tag bind tag <ButtonRelease-1> {
+      if {[%W tag ranges sel] eq ""} {
+        set ::pgn::shortHeader [expr {!$::pgn::shortHeader}]
+        ::pgn::Refresh 1
+        %W yview moveto 0
+      }
+    }
 
     # Workaround for Text widget bug (Tk 8.6.6+)
     # The new "asynchronous update of line heights" does not work if
