@@ -1,130 +1,19 @@
-Benchmark using the first 3 million games (without the tag Site) of 2021-11 lichess database (https://database.lichess.org/standard/lichess_db_standard_rated_2021-11.pgn.bz2)
+Benchmark using the 88+ million games of 2021-11 lichess database (https://database.lichess.org/standard/lichess_db_standard_rated_2021-11.pgn.bz2)
 
-0) SCID5 (3.95GB - 7z 567MB)
-Load (322 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
-Imported (17366 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID5)
-Open (488 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID5)
-Search pos (709 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (94 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (60 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (661 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (34 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (246 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (34 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (115 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (3102 ms): C:\Users\user\Downloads\test_rocks (SCID5)
-BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (91953 ms): 3000000 games - White
+lichess_db_standard_rated_2021-11.pgn.bz2 - 22.1 GB
+lichess_db_standard_rated_2021-11.pgn - 187 GB
+Windows 10 - Ryzen 3600 - 16GB RAM - SSD Samsung 970 EVO Plus
 
-
-1) ROCKSDB (1.05GB - 7z 770MB)
-Load (327 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
-Imported (24047 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
-Open (1251 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
-Search pos (918 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (74 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
+Load (319 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
+Imported (24079 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
+Open (236 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
+Search pos (913 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
+Search pos (73 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
 Search pos (52 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (504 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
+Search pos (508 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
 Search pos (34 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (152 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (33 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (72 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (17545 ms): C:\Users\user\Downloads\test_rocks (ROCKSDB)
+Search pos (154 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
+Search pos (32 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
+Search pos (73 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
+Collect tags (17778 ms): C:\Users\user\Downloads\test_rocks (ROCKSDB)
 BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (107817 ms): 3000000 games - White
-
-
-2) ROCKSB sorted by storedline (4GB - 7z 565MB)
-Load (344 ms) 3000000 games: C:\Users\user\Downloads\test_stored (SCID4)
-Imported (38459 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
-Open (1264 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
-Search pos (727 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (116 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (57 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (616 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (25 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (137 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (24 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (82 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (9193 ms): C:\Users\user\Downloads\test_rocks (ROCKSDB)
-BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (93059 ms): 3000000 games - White
-
-
-3) SCID4 (3.92GB - 7z 574MB)
-Load (314 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
-Imported (16337 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID4)
-Open (307 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID4)
-Search pos (704 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (95 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (59 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (656 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (35 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (245 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (34 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (114 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (3155 ms): C:\Users\user\Downloads\test_rocks (SCID4)
-BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (91762 ms): 3000000 games - White
-
-
-4) SCID4 sorted by storedline (3.92GB - 7z 554MB)
-Open (316 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID4)
-Search pos (252 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (77 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (44 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (287 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (22 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (75 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (21 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (41 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (3153 ms): C:\Users\user\Downloads\test_rocks (SCID4)
-BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (90487 ms): 3000000 games - White
-
-
-5) SCID4 without comments and extra tags (350MB - 7z 230MB)
-Open (317 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID4)
-Search pos (201 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (65 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (50 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (236 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (34 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (119 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (33 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (72 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (186 ms): C:\Users\user\Downloads\test_rocks (SCID4)
-
-Search pgn (55191 ms): 3000000 games - White
-
-
-6) SCID4 without comments and extra tags and sorted by storedline (350MB - 7z 213MB)
-Open (320 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (SCID4)
-Search pos (79 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (49 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (36 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (115 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (21 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (33 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (20 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (23 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (180 ms): C:\Users\user\Downloads\test_rocks (SCID4)
-
-Search pgn (54517 ms): 3000000 games - White
-
-
-7) PGN (5.87GB - 7z 912MB)
-Load (379 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
-Imported (124764 ms) 3000000 games: C:\Users\user\Downloads\test_rocks.pgn (PGN)
-Open (65329 ms) 3000000 games: C:\Users\user\Downloads\test_rocks.pgn (PGN)
-Search pos (110 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
-Search pos (37 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
-Search pos (38 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
-Search pos (142 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
-Search pos (31 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
-Search pos (46 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
-Search pos (31 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
-Search pos (34 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
-Collect tags (997 ms): C:\Users\user\Downloads\test_rocks.pgn (PGN)
-BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
-Search pgn (89089 ms): 3000000 games - White
