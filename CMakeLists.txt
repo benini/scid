@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 project(scid)
-set(CPACK_PACKAGE_VERSION 4.7.2)
+set(CPACK_PACKAGE_VERSION 4.7.4)
 set(
   CPACK_PACKAGE_DESCRIPTION_SUMMARY
   "chess database application with play and training functionality"
