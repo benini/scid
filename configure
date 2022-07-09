@@ -18,7 +18,7 @@ set var(COMPILE) g++
 set var(DEBUG) {-DNDEBUG}
 set var(OBJS) {$(SCIDOBJS)}
 set var(THREADS) {-pthread}
-set var(OPTIMIZE) {-std=c++17 -O3 -march=native -fno-rtti -fno-exceptions}
+set var(OPTIMIZE) {-std=c++20 -O3 -march=native -fno-rtti -fno-exceptions}
 set var(PROFILE) {}
 set var(SCIDFLAGS) {}
 set var(SHAREDIR) /usr/local/share/scid

@@ -256,7 +256,7 @@ PROFILE		= $(PROFILE) -DWIN32 -DWIN32_LEAN_AND_MEAN
 #	-c	:Compile Without linking
 #
 CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) \
-			$(SCID_INCLUDES) -c -nologo -std:c++17
+			$(SCID_INCLUDES) -c -nologo -std:c++20
 !message *** CFLAGS: $(CFLAGS)
 
 
