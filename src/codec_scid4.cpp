@@ -24,6 +24,7 @@
 
 #include "codec_scid4.h"
 #include <algorithm>
+#include <string_view>
 
 namespace {
 
@@ -531,16 +532,22 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
                             NameBase* nb) {
 	if (fMode == FMODE_WriteOnly || !filename || !idx || !nb)
 		return ERROR;
-	if (*filename == '\0')
+
+	auto dbname = std::string_view(filename);
+	if (dbname.ends_with(".si4"))
+		dbname.remove_suffix(4);
+
+	if (dbname.empty())
 		return ERROR_FileOpen;
 
 	idx_ = idx;
 	idx_->Init();
 	nb_ = nb;
+
 	filenames_.resize(3);
-	filenames_[0] = std::string(filename) + ".si4";
-	filenames_[1] = std::string(filename) + ".sn4";
-	filenames_[2] = std::string(filename) + ".sg4";
+	filenames_[0].assign(dbname).append(".si4");
+	filenames_[1].assign(dbname).append(".sn4");
+	filenames_[2].assign(dbname).append(".sg4");
 
 	errorT err = gfile_.open(filenames_[2], fMode);
 	if (err != OK)
