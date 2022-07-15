@@ -587,7 +587,7 @@ proc updateGameInfo {} {
     ::htext::display .main.gameInfo.text [sc_game info -hide $gameInfo(hideNextMove) \
             -material $gameInfo(showMaterial) \
             -cfull $gameInfo(fullComment) \
-            -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
+            -fen $gameInfo(showFEN)]
     if {$gameInfo(wrap)} {
         .main.gameInfo.text configure -wrap word
         .main.gameInfo.text tag configure wrap -lmargin2 10
@@ -1349,17 +1349,6 @@ proc CreateGameInfo {} {
   .main.gameInfo.menu add checkbutton -label GInfoPhotos \
           -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
           -command {togglePhotosSize 0}
-
-  .main.gameInfo.menu add separator
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBNothing \
-          -variable gameInfo(showTB) -value 0 -command updateBoard
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBResult \
-          -variable gameInfo(showTB) -value 1 -command updateBoard
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBAll \
-          -variable gameInfo(showTB) -value 2 -command updateBoard
 
   .main.gameInfo.menu add separator
 

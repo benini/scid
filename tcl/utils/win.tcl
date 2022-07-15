@@ -722,7 +722,6 @@ proc ::docking::create_window {wnd} {
       "\.(fdock)?baseWin"             { ::windows::switcher::Open }
       "\.(fdock)?bookWin"             { ::book::open }
       "\.(fdock)?ecograph"            { ::windows::eco::OpenClose }
-      "\.(fdock)?tbWin"               { ::tb::Open }
       "\.(fdock)?commentWin"          { ::makeCommentWin }
       "\.(fdock)?oprepWin"            { ::optable::makeReportWin }
       "\.(fdock)?plist"               { ::plist::Open }

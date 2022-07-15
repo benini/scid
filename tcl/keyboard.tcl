@@ -123,7 +123,6 @@ proc keyboardShortcuts {w} {
 
 	#TODO: to be checked
 	bind $w <F6>	::book::open
-	bind $w <Control-equal> ::tb::Open
 	bind $w <Control-d> ::windows::switcher::Open
 	bind $w <Control-e> "::makeCommentWin toggle"
 	bind $w <Control-i> ::windows::stats::Open

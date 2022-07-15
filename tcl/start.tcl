@@ -345,12 +345,6 @@ proc safeStyle {interp args} {
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
 
-
-# Check for old (single-directory) tablebase option:
-if {[info exists initialDir(tablebase)]} {
-  set initialDir(tablebase1) $initialDir(tablebase)
-}
-
 proc createFonts {} {
   foreach name {Regular Menu Small Tiny Fixed} {
     set opts $::fontOptions($name)
@@ -638,7 +632,6 @@ tools/pinfo.tcl
 tools/analysis.tcl
 tools/wbdetect.tcl
 tools/graphs.tcl
-tools/tablebase.tcl
 tools/ptracker.tcl
 help/help.tcl
 help/tips.tcl

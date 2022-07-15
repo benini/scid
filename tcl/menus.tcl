@@ -202,7 +202,6 @@ $m add command -label ToolsCross -accelerator "Ctrl+Shift+X" -command ::crosstab
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 $m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
-$m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open -accelerator "Ctrl+="
 $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F6"
 
 
@@ -571,50 +570,6 @@ proc configInformant { w } {
   pack $w.spinF
 }
 
-proc openTableBaseDirs {nr widget} {
-  set dirname [$widget get]
-  if {$dirname ne "" && ![file isdirectory $dirname]} {
-    $widget configure -style Error.TEntry
-    return
-  }
-  $widget configure -style TEntry
-  if {$dirname eq $::initialDir(tablebase$nr)} {
-    return
-  }
-  set ::initialDir(tablebase$nr) $dirname
-
-  set tableBaseDirs ""
-  foreach i {1 2 3 4} {
-    set tbDir [string trim $::initialDir(tablebase$i)]
-    if {$tbDir != ""} {
-      if {$tableBaseDirs != ""} { append tableBaseDirs ";" }
-      append tableBaseDirs [file nativename $tbDir]
-    }
-  }
-
-  set npieces [sc_info tb $tableBaseDirs]
-  if {$npieces == 0} {
-    set msg "No tablebases were found."
-  } else {
-    set msg "Tablebases with up to $npieces pieces were found.\n\n"
-    append msg "If you want these tablebases be used whenever\n"
-    append msg "you start Scid, select \"Save Options\" from the\n"
-    append msg "Options menu before you exit Scid."
-  }
-  tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
-      -message $msg -parent [winfo toplevel $widget]
-
-  grab [winfo toplevel $widget]
-}
-
-proc chooseTableBaseDir {widget} {
-  set fullname [tk_chooseDirectory -initialdir [$widget get] -mustexist 1 \
-      -title "Scid: Select a Tablebase directory" -parent [winfo toplevel $widget] ]
-  if {$fullname ne ""} {
-    $widget delete 0 end
-    $widget insert end [file nativename $fullname]
-  }
-}
 ################################################################################
 
 proc getBooksDir { widget } {

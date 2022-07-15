@@ -58,11 +58,6 @@ set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
 target_link_libraries(scid PRIVATE polyglot ${CMAKE_THREAD_LIBS_INIT} ${TCL_LIBRARY})
 
-option(SCID_USE_TB "Enable Nalimov tablebases" OFF)
-if(SCID_USE_TB)
-  target_compile_definitions(scid PRIVATE -DSCID_USE_TB PRIVATE -DT41_INCLUDE)
-endif()
-
 option(SPELLCHKVALIDATE "Verify the integrity of spelling files" OFF)
 if(SPELLCHKVALIDATE)
   target_compile_definitions(scid PRIVATE -DSPELLCHKVALIDATE)

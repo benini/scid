@@ -14,7 +14,6 @@
 
 #include "attacks.h"
 #include "engine.h"
-#include "recog.h"
 #include "sqmove.h"
 #include <algorithm>
 
@@ -284,10 +283,6 @@ isOutpost (const pieceT * board, squareT sq, colorT color)
 int
 Engine::Score (void)
 {
-    // Look for a recognized ending with an exact score:
-    int recog = Recognizer::Recognize(&Pos);
-    if (recogFlag(recog) == SCORE_EXACT) { return recogScore(recog); }
-
     return Score (-Infinity, Infinity);
 }
 
@@ -1547,23 +1542,6 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
     // Stop now if we ran out of time:
     if (OutOfTime()) { return alpha; }
 
-    // Check for a recognized endgame score:
-    if (Pos.TotalMaterial() <= Recognizer::MaxPieces()) {
-        int recog = Recognizer::Recognize(&Pos);
-        int rscore = recogScore(recog);
-        scoreFlagT rflag = recogFlag(recog);
-
-        if (rflag == SCORE_EXACT) {
-            return rscore;
-        } else if (rflag == SCORE_LOWER) {
-            if (rscore >= beta) { return rscore; }
-            if (rscore < alpha) { alpha = rscore; }
-        } else if (rflag == SCORE_UPPER) {
-            if (rscore <= alpha) { return rscore; }
-            if (rscore > beta) { beta = rscore; }
-        }
-    }
-
     // Probe the hash table:
     int hashscore = alpha;
     auto hashmove = ScoredMove();
@@ -1830,23 +1808,6 @@ Engine::Quiesce (int alpha, int beta)
 
     // Stop now if we are out of time:
     if (OutOfTime()) { return alpha; }
-
-    // Check for a recognized endgame score:
-    if (Pos.TotalMaterial() <= Recognizer::MaxPieces()) {
-        int recog = Recognizer::Recognize(&Pos);
-        int rscore = recogScore(recog);
-        scoreFlagT rflag = recogFlag(recog);
-
-        if (rflag == SCORE_EXACT) {
-            return rscore;
-        } else if (rflag == SCORE_LOWER) {
-            if (rscore >= beta) { return rscore; }
-            if (rscore < alpha) { alpha = rscore; }
-        } else if (rflag == SCORE_UPPER) {
-            if (rscore <= alpha) { return rscore; }
-            if (rscore > beta) { beta = rscore; }
-        }
-    }
 
     // Find the static evaluation of this position, to either cause
     // a beta cutoff or improve the alpha score:

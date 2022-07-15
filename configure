@@ -22,7 +22,6 @@ set var(OPTIMIZE) {-std=c++20 -O3 -march=native -fno-rtti -fno-exceptions}
 set var(PROFILE) {}
 set var(SCIDFLAGS) {}
 set var(SHAREDIR) /usr/local/share/scid
-set var(TB) {-DSCID_USE_TB -DT41_INCLUDE}
 set var(TCL_VERSION) $tcl_version
 set var(WARNINGS) -Wall
 set var(MAKEFILE) Makefile.conf
@@ -275,7 +274,6 @@ proc usage {} {
     puts {  PROFILE      Used for profiling the source code. Default: none.}
     puts {  SCIDFLAGS    Scid customization flags. Default: none.}
     puts {  SHAREDIR     Location of Scid data (ECO, spelling) files for "make install".}
-    puts {  TB           Tablebase support. Use TB="" to exclude Tablebase code.}
     puts {  TCL_INCLUDE  Compiler directives for including Tcl.}
     puts {  TCL_LIBRARY  Compiler directives for linking Tcl.}
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}

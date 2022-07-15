@@ -124,23 +124,6 @@ proc ::preferences::resources { } {
     ttk::label $w.folderHelp -text $::tr(SoundsFolderHelp)
     pack $w.folderHelp -side top -anchor w
 
-    # Prompt user to select a tablebase file; all the files in its
-    # directory will be used.
-    ttk::label $w.title -text [tr OptionsTablebaseDir]
-    pack $w.title -side top -fill x -pady "10 0"
-    foreach i {1 2 3 4} {
-        pack [ttk::frame $w.f$i] -side top -fill x -expand yes
-        ttk::entry $w.f$i.e -width 80
-        $w.f$i.e insert end $::initialDir(tablebase$i)
-        $w.f$i.e configure -validate key -validatecommand "
-              after cancel ::openTableBaseDirs $i $w.f$i.e
-              after 200 ::openTableBaseDirs $i $w.f$i.e
-              return true"
-        ttk::button $w.f$i.b -text "..." -command "chooseTableBaseDir $w.f$i.e"
-
-        pack $w.f$i.b -side right -padx 2
-        pack $w.f$i.e -side left -padx 2 -fill x -expand yes
-    }
     ttk::frame $w.b
     pack $w.b -side bottom -fill x
     dialogbutton $w.b.ok -text "OK" -command "destroy $w"

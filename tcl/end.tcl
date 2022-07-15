@@ -1084,7 +1084,6 @@ if { [tk windowingsystem] == "win32" } {
 
 set loadAtStart(spell) 1
 set loadAtStart(eco) 1
-set loadAtStart(tb) 1
 
 proc getCommandLineOptions {} {
   global argc argv windowsOS loadAtStart
@@ -1119,11 +1118,9 @@ proc getCommandLineOptions {} {
           ::splash::add "Fast start: no tablebases, ECO or spelling file loaded."
           set loadAtStart(spell) 0
           set loadAtStart(eco) 0
-          set loadAtStart(tb) 0
         }
         "xt" -
         "xtb" {
-          set loadAtStart(tb) 0
         }
         "xe" -
         "xeco" {
@@ -1145,29 +1142,6 @@ proc getCommandLineOptions {} {
 }
 
 getCommandLineOptions
-
-# Try to find tablebases:
-if {$loadAtStart(tb)} {
-  if {[sc_info tb]} {
-    ::splash::add "Checking for endgame tablebase files..."
-    set tbDirs {}
-    foreach i {1 2 3 4} {
-      if {$initialDir(tablebase$i) != ""} {
-        if {$tbDirs != ""} { append tbDirs ";" }
-        append tbDirs [file nativename $initialDir(tablebase$i)]
-      }
-    }
-    set result 0
-    if {$tbDirs != ""} {
-      set result [sc_info tb $tbDirs]
-    }
-    if {$result == 0} {
-      ::splash::add "    No tablebases were found."
-    } else {
-      ::splash::add "    Tablebases with up to $result pieces were found."
-    }
-  }
-}
 
 # Try to open the ECO classification file:
 set result 0

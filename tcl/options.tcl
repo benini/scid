@@ -354,10 +354,6 @@ set initialDir(html) "."
 set initialDir(tex)  "."
 set initialDir(stm)  "."
 set initialDir(report) "."
-set initialDir(tablebase1) ""
-set initialDir(tablebase2) ""
-set initialDir(tablebase3) ""
-set initialDir(tablebase4) ""
 
 # Default PGN display options:
 set pgnStyle(Tags) 1
@@ -385,8 +381,6 @@ set gameInfo(showFEN) 0
 set gameInfo(showMarks) 1
 set gameInfo(wrap) 0
 set gameInfo(fullComment) 0
-set gameInfo(showTB) 0
-if {[sc_info tb]} { set gameInfo(showTB) 2 }
 
 # Twin deletion options:
 
@@ -652,7 +646,7 @@ proc options.write {} {
           exportFlags(htmldiag) exportFlags(convertNullMoves) \
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
           gameInfo(fullComment) gameInfo(showMarks) \
-          gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
+          gameInfo(showMaterial) gameInfo(showFEN) \
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
