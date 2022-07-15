@@ -310,7 +310,7 @@ proc ::windows::gamelist::AweGuess {{txt}} {
 	set extra(0) "$txt"
 	for {set np 1} {
 	  [regexp \
-	    {^(?:(.*?)\s+)??(gnum|white|black|welo|belo|elo|eco|date|event|site)\s+(.+?)(?:\s+(.*))?$} \
+	    {^(?:(.*?)\s+)??(gnum|white|black|welo|belo|elo|eco|date|event|site|variant)\s+(.+?)(?:\s+(.*))?$} \
 	    $extra([expr $np -1]) -> extra([expr $np -1]) param($np) val($np) extra($np) \
 	  ]
 	} {incr np} {}
