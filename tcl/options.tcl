@@ -540,19 +540,6 @@ proc raiseWin {w} {
   return
 }
 
-# Email configuration:
-set email(logfile) [file join $scidLogDir "scidmail.log"]
-set email(oldlogfile) [file join $scidUserDir "scidmail.log"]
-set email(smtp) 1
-set email(smproc) "/usr/lib/sendmail"
-set email(server) localhost
-set email(from) ""
-set email(bcc) ""
-# Rename old email log file if necessary:
-if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
-  catch {file rename $email(oldlogfile) $email(logfile)}
-}
-
 ### Audio move announcement options:
 set ::utils::sound::soundFolder [file nativename [file join $::scidShareDir sounds]]
 set ::utils::sound::announceNew 0
@@ -669,8 +656,6 @@ proc options.write {} {
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \
           exportFlags(htmldiag) exportFlags(convertNullMoves) \
-          email(smtp) email(smproc) email(server) \
-          email(from) email(bcc) \
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
           gameInfo(fullComment) gameInfo(showMarks) \
           gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \

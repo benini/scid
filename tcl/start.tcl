@@ -120,11 +120,6 @@ proc InitDirs {} {
       file rename -force $scidUserDir "$scidUserDir.old"
     }
 
-    # Rename old "~/.scid_sent_emails" if necessary:
-    if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
-      catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
-    }
-
     foreach {oldname newname} {
       scidrc options.dat
       scid.opt options.dat
@@ -182,7 +177,7 @@ foreach ns {
   ::windows::switcher ::windows::eco ::crosstab ::pgn ::book
   ::windows::commenteditor
   ::tools
-  ::tools::analysis ::tools::email
+  ::tools::analysis
   ::tools::graphs
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
@@ -636,7 +631,6 @@ search/board.tcl
 search/header.tcl
 search/material.tcl
 contrib/ezsmtp/ezsmtp.tcl
-tools/email.tcl
 tools/import.tcl
 tools/optable.tcl
 tools/preport.tcl

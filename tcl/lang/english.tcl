@@ -186,7 +186,6 @@ menuText E ToolsAnalysis "Analysis Engine..." 0 \
 menuText E ToolsAnalysis2 "Analysis Engine #2..." 17 \
   {Start/stop the 2nd chess analysis engine}
 menuText E ToolsCross "Crosstable" 0 {Show tournament crosstable for this game}
-menuText E ToolsEmail "Email Manager" 0 {Open/close the email chess manager window}
 menuText E ToolsFilterGraph "Rel. Filter Graph" 12 {Open/close the filter graph window for relative values}
 menuText E ToolsAbsFilterGraph "Abs. Filter Graph" 7 {Open/close the filter graph window for absolute values}
 menuText E ToolsOpReport "Opening Report" 0 {Generate an opening report for the current position}

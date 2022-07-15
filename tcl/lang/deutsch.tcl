@@ -174,8 +174,6 @@ menuText D ToolsAnalysis "Analyse-Engine..." 0 \
 menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \
   {Schachanalyse-Programm Nr.2 starten/beenden}
 menuText D ToolsCross "Turniertabelle" 0 {Turniertabelle für diese Partie anzeigen}
-menuText D ToolsEmail "E-Mail-Manager" 7 \
-  {E-Mail-Manager öffnen/schließen}
 menuText D ToolsFilterGraph "Rel. Filtergrafik" 0 \
   {Filtergrafik mit relativen Werten öffnen/schließen}
 menuText D ToolsAbsFilterGraph "Abs. Filtergrafik" 11 \

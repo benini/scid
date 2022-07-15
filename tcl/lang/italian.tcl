@@ -152,8 +152,6 @@ menuText I ToolsAnalysis "Motore di analisi..." 10 \
 menuText I ToolsAnalysis2 "Motore di analisi 2..." 20 \
   {Avvia/ferma il motore di analisi scacchistica}
 menuText I ToolsCross "Tabellone" 0 {Mostra il tabellone del torneo per questa partita}
-menuText I ToolsEmail "Gestione email" 10 \
-  {Apre/chiude la finestra di gestione di partite per posta elettronica}
 menuText I ToolsFilterGraph "Grafici relativi" 3 \
   {Apre/chiude la finestra dei grafici sul filtro con valori relativi}
 menuText I ToolsAbsFilterGraph "Grafici assoluti" 13 {Apre/chiude la finestra dei grafici sul filtro con valori assoluti}

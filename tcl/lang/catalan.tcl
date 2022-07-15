@@ -167,8 +167,6 @@ menuText K ToolsAnalysis "Motor d'anàlisi..." 0 \
 menuText K ToolsAnalysis2 "Motor d'anàlisi #2..." 18 \
   {Inicia/Atura el segon motor d'análisi d'escacs}
 menuText K ToolsCross "Quadre" 0 {Mostra el Quadre del torneig per aquesta partida}
-menuText K ToolsEmail "Gestor d'Emails" 0 \
-  {Obre/tanca la finestra del Gestor d'Emails}
 menuText K ToolsFilterGraph "Filtre Gràfic Rel." 7 \
   {Obre/tanca la finestra del filtre gràfic per valors relatius}
 menuText K ToolsAbsFilterGraph "Filtre gràfic Abs." 7 {Obrir/Tancar la finestra de filtre gràfic per valors absoluts}

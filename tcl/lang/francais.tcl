@@ -162,8 +162,6 @@ menuText F ToolsAnalysis2 "Moteur d'analyse #2..." 18 \
   {Démarrer/Arrêter un moteur d'analyses}
 menuText F ToolsCross "Classement du tournoi" 9 \
   {Montrer le classement du tournoi}
-menuText F ToolsEmail "Gestion des messages" 0 \
-  {Ouvrir/Fermer la fenêtre de gestion des messages électroniques}
 menuText F ToolsFilterGraph "Graphique de filtre" 6 {Ouvrir/Fermer la fenêtre du graphique de filtre}
 menuText F ToolsAbsFilterGraph "Graphique de filtre absolu" 7 {Ouvrir/Fermer la fenêtre du graphique de filtre absolu}
 menuText F ToolsOpReport "Rapport d'ouverture" 0 {Générer un rapport d'ouvertures à partir de la position courante}

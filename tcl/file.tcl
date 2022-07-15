@@ -272,8 +272,6 @@ proc ::file::Close {{base -1}} {
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
   if {![catch {sc_base switch $b} res]} {
     set ::curr_db $res
-    # Close email window when a base is switched:
-    if {[winfo exists .emailWin]} { destroy .emailWin }
   }
   ::notify::GameChanged
   ::notify::DatabaseChanged

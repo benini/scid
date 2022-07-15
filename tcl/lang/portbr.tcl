@@ -153,8 +153,6 @@ menuText B ToolsAnalysis "Analisador #1..." 0 \
 menuText B ToolsAnalysis2 "Analisador #2..." 17 \
   {Inicia ou para o 2o. Analisador}
 menuText B ToolsCross "Tabela de Cruzamento" 0 {Mostra a tabela de cruzamentos do torneio para o jogo corrente}
-menuText B ToolsEmail "Gerenciador de e-mails" 0 \
-  {Abre/fecha a janela do gerenciador de e-mails}
 menuText B ToolsFilterGraph "Gréfico de filtro" 7 \
   {Abre/Fecha a janela do gráfico de filtro} 
 menuText B ToolsAbsFilterGraph "Grafico de Filtro Absoluto" 7 {Abre/Fecha a janela do grafico de filtro por valor absoluto}

@@ -157,8 +157,6 @@ menuText Y ToolsAnalysis "Program za analizu..." 0 \
 menuText Y ToolsAnalysis2 "Program za analizu #2..." 17 \
   {Pokreni/zaustavi drugi ¹ahovski program za analizu}
 menuText Y ToolsCross "Tabela turnira" 0 {Poka¾i tabelu turnira za ovu partiju}
-menuText Y ToolsEmail "Email menad¾er" 0 \
-  {Otvori/zatvori menad¾er za korespodentske partije preko email-a}
 menuText Y ToolsFilterGraph "Filter graph" 7 \
   {Open/close the filter graph window} ;# ***
 # ====== TODO To be translated ======

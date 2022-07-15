@@ -187,7 +187,6 @@ menuText U ToolsAnalysis "Analyysimoottori #1..." 18 \
 menuText U ToolsAnalysis2 "Analyysimoottori #2..." 18 \
   {Käynnistä/pysäytä toinen analyysimoottori}
 menuText U ToolsCross "Ristitaulukko" 0 {Näytä turnauksen ristitaulukko tälle pelille}
-menuText U ToolsEmail "Email" 0 {Avaa/sulje email-shakin hallintaikkuna}
 menuText U ToolsFilterGraph "Suhteellinen graafi" 13 {Avaa/sulje suodatingraafi suhteellisilla arvoilla}
 menuText U ToolsAbsFilterGraph "Absoluuttinen graafi" 17 {Avaa/sulje suodatingraafi absoluuttisilla arvoilla}
 menuText U ToolsOpReport "Avausraportti" 0 {Luo nykyisestä asemasta avausraportti}

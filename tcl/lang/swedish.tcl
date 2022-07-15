@@ -156,8 +156,6 @@ menuText W ToolsAnalysis "Analysmotor..." 6 \
 menuText W ToolsAnalysis2 "Analysmotor 2..." 12 \
   {Starta/ stoppa en andra analysmotor}
 menuText W ToolsCross "Resultattabell" 0 {Visa en resultattabell för den aktuella turneringen}
-menuText W ToolsEmail "Eposthanterare" 0 \
-  {Öppna/ stäng eposthanteraren}
 menuText W ToolsFilterGraph "Filterdiagram" 7 \
   {Öppna/ stäng filterdiagramfönstret} 
 menuText W ToolsAbsFilterGraph "Absolut Filtergraf" 7 {Öppna/stäng filtergraffönstret för absolutvärden}

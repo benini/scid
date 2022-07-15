@@ -241,8 +241,6 @@ $m  add command -label ToolsStartEngine2 \
     -command "::enginewin::start 2" -accelerator "F3"
 $m  add command -label ToolsAnalysis -command "makeAnalysisWin 1"
 $m add separator
-$m add checkbutton -label ToolsEmail \
-    -accelerator "Ctrl+Shift+E" -variable emailWin -command ::tools::email
 $m add checkbutton -label ToolsFilterGraph \
     -accelerator "Ctrl+Shift+G" -variable filterGraph -command tools::graphs::filter::Open
 $m add checkbutton -label ToolsAbsFilterGraph \

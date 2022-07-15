@@ -148,8 +148,6 @@ menuText C ToolsAnalysis "Program pro analýzu..." 0 \
 menuText C ToolsAnalysis2 "Program pro analýzu #2..." 20 \
   {Spustit/zastavit druhý ¹achový program pro analýzu pozice}
 menuText C ToolsCross "Turnajová tabulka" 0 {Ukázat turnajovou tabulku pro tuto partii}
-menuText C ToolsEmail "Email mana¾er" 1 \
-  {Otevøít/zavøít okno emailového mana¾era}
 menuText C ToolsFilterGraph "Graf filtru" 0 \
   {Otevøít/zavøít okno grafu filtru}
 menuText C ToolsAbsFilterGraph "Abs. graf filtru" 7 {Otevøít/zavøít okno grafu filtru s absolutními hodnotami}

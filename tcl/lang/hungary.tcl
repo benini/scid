@@ -154,8 +154,6 @@ menuText H ToolsAnalysis "Elemzõ motor..." 0 \
 menuText H ToolsAnalysis2 "Második elemzõ motor..." 1 \
   {Elindítja/leállítja a 2. sakkelemzõ programot.}
 menuText H ToolsCross "Versenytáblázat" 0 {Megmutatja az ehhez a játszmához tartozó verseny táblázatát.}
-menuText H ToolsEmail "Levelezési sakk" 0 \
-  {Kinyitja/becsukja az elektronikus sakklevelezés lebonyolítására szolgáló ablakot.}
 menuText H ToolsFilterGraph "Szûrõgrafikon" 0 \
   {Kinyitja/becsukja a szûrõgrafikont mutató ablakot.}
 menuText H ToolsAbsFilterGraph "Abszolút szûrõgrafikon" 0 {Kinyitja/becsukja az abszolút értékeket mutató szûrõgrafikon-ablakot}

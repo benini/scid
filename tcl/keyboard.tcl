@@ -154,7 +154,6 @@ proc keyboardShortcuts {w} {
 
 	bind $w <Control-C> ::copyFEN
 	bind $w <Control-V> ::pasteFEN
-	bind $w <Control-E> ::tools::email
 	bind $w <Control-I> importPgnGame
 	bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
 	bind $w <Control-G> tools::graphs::filter::Open

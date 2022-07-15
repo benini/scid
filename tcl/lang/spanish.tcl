@@ -168,8 +168,6 @@ menuText S ToolsAnalysis "Motor de análisis #1..." 0 \
 menuText S ToolsAnalysis2 "Motor de análisis #2..." 18 \
   {Inicia/para el análisis del motor de ajedrez #2}
 menuText S ToolsCross "Tabla cruzada" 0 {Muestra la tabla cruzada para esta partida}
-menuText S ToolsEmail "Administrador de Email" 0 \
-  {Abre/cierra la ventana del administrador de Email}
 menuText S ToolsFilterGraph "Filtro gráfico" 7 \
   {Abre/cierra la ventana del filtro gráfico}
 menuText S ToolsAbsFilterGraph "Filtro gráfico Abs." 7 {Abrir/Cerrar la ventana de filtro gráfico para valores absolutos}

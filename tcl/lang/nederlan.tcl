@@ -172,7 +172,6 @@ menuText N ToolsAnalysis2 "Schaakengine #2..." 17 \
   {Start/stop  schaak-analyse programma 2}
 menuText N ToolsCross "Kruistabel" 0 \
   {Toon toernooi-kruistabel voor huidige partij}
-menuText N ToolsEmail "EmailBeheerder" 0 {Open/sluit het email venster}
 menuText N ToolsFilterGraph "Filter grafiek" 7 \
   {Openen/sluiten grafisch filter venster}
 menuText N ToolsAbsFilterGraph "Abs. Filter Grafiek" 7 {Open/sluit het filter grafiek venster voor absolute waarden}

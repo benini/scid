@@ -163,8 +163,6 @@ menuText P ToolsAnalysis2 "Program analizuj±cy 2..." 21 \
   {Uruchom/zatrzymaj program analizuj±cy}
 menuText P ToolsCross "Tabela turniejowa" 0 \
   {Poka¿ tabelê turniejow± dla aktualnej partii}
-menuText P ToolsEmail "Zarz±dzanie poczt± e-mail" 0 \
-  {Otwórz/zamknij zarz±dzanie adresami e-mail}
 menuText P ToolsFilterGraph "Wykres filtra" 7 \
   {Otwórz/zamknij wykres filtra}
 # ====== TODO To be translated ======

@@ -159,8 +159,6 @@ menuText O ToolsAnalysis "Analysemotor..." 0 \
 menuText O ToolsAnalysis2 "Analysemotor #2..." 0 \
   {Start/stopp enda en sjakkanalysemotor}
 menuText O ToolsCross "Krysstabell" 0 {Vis turnerigskrystabellen for dette partiet}
-menuText O ToolsEmail "Epostbehandler" 0 \
-  {Åpne/lukk epostbehandlingsvinduet}
 menuText O ToolsFilterGraph "Filtergraf" 7 \
   {Åpne/lukk filtergrafvinduet}
 # ====== TODO To be translated ======
