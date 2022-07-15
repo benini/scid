@@ -61,8 +61,8 @@ class IndexEntry {
 
     uint32_t siteID_;
 
-    uint32_t variant_        :  4;
-    uint32_t roundID_        : 28;
+    uint32_t variant_        :  1;
+    uint32_t roundID_        : 31;
 
     uint32_t whiteElo_       : 12;
     uint32_t date_           : 20;

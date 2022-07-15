@@ -41,10 +41,11 @@ class CodecMemory : public ICodecDatabase {
 
 	enum : uint64_t {
 		LIMIT_GAMEOFFSET = 1ULL << 46,
-		LIMIT_GAMELEN = 1ULL << 18,
+		LIMIT_GAMELEN = 1ULL << 17,
 		LIMIT_NUMGAMES = (1ULL << 32) - 2,
-		LIMIT_UNIQUENAMES = 1ULL << 28,
-		LIMIT_NAMELEN = 255
+		LIMIT_UNIQUENAMES_PLAYER_EVENT = 1ULL << 28,
+		LIMIT_UNIQUENAMES_ROUND = 1ULL << 31,
+		LIMIT_UNIQUENAMES_SITE = 1ULL << 32
 	};
 
 public: // ICodecDatabase interface
@@ -158,7 +159,15 @@ private:
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
-		if (nb_->namebase_size(nt) < LIMIT_UNIQUENAMES)
+		static constexpr auto limit_unique_names = [] {
+			std::array<unsigned long long, NUM_NAME_TYPES> res;
+			res[NAME_PLAYER] = LIMIT_UNIQUENAMES_PLAYER_EVENT;
+			res[NAME_EVENT] = LIMIT_UNIQUENAMES_PLAYER_EVENT;
+			res[NAME_SITE] = LIMIT_UNIQUENAMES_SITE;
+			res[NAME_ROUND] = LIMIT_UNIQUENAMES_ROUND;
+			return res;
+		}();
+		if (nb_->namebase_size(nt) < limit_unique_names[nt])
 			return {OK, nb_->namebase_find_or_add(nt, name)};
 
 		idNumberT id;
