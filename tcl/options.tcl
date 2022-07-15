@@ -44,10 +44,6 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.spellcheckWin)  55
   set winHeight(.spellcheckWin) 25
 
-  # Default Correspondence Chess window size:
-  set winWidth(.ccWindow) 10
-  set winHeight(.ccWindow) 20
-
   # List of saved layouts : 3 slots available
   set ::docking::layout_list(1) {}
   set ::docking::layout_list(2) {{MainWindowGeometry 540x650+0+0} {{.pw vertical {}} {TNotebook .nb .fdockmain}}}
@@ -581,8 +577,6 @@ proc scidConfigFile {type} {
     reports "reports.dat"
     optrainer "optrainer.dat"
     resolvers "resolvers.dat"
-    xfccstate "xfccstate.dat"
-    correspondence "correspondence.dat"
     ExtHardware "hardware.dat"
     treecache "treecache.dat"
   } {

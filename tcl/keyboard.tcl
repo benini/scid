@@ -123,9 +123,6 @@ proc keyboardShortcuts {w} {
 
 	#TODO: to be checked
 	bind $w <F6>	::book::open
-	bind $w <F12> ::CorrespondenceChess::CCWindow
-	bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox}
-	bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;	::CorrespondenceChess::FetchGames}
 	bind $w <Control-equal> ::tb::Open
 	bind $w <Control-d> ::windows::switcher::Open
 	bind $w <Control-e> "::makeCommentWin toggle"

@@ -187,28 +187,6 @@ menu $m.training
   $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
   $m.training add command -label ToolsTrainCalvar -command ::calvar::config
 $m add cascade -label ToolsTraining -menu $m.training
-$m add separator
-menu $m.correspondence
-  $m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
-  $m.correspondence add command -label CCConfigRelay -command {::CorrespondenceChess::ConfigureRelay}
-  $m.correspondence add separator
-  $m.correspondence add command -label CCOpenDB      -command {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox} \
-      -accelerator "Ctrl+F12"
-  $m.correspondence add separator
-  $m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
-  $m.correspondence add command -label CCInbox       -command { ::CorrespondenceChess::ReadInbox }
-  $m.correspondence add separator
-  $m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
-  $m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
-  $m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
-  $m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
-  $m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
-  $m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
-  $m.correspondence add separator
-  $m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
-  $m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
-$m add cascade -label CorrespondenceChess -menu $m.correspondence
-
 
 ### Windows menu:
 set m .menu.windows
@@ -226,8 +204,6 @@ $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accel
 $m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
 $m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open -accelerator "Ctrl+="
 $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F6"
-$m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
-    -command ::CorrespondenceChess::CCWindow -accelerator "F12"
 
 
 ### Tools menu:

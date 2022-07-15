@@ -648,7 +648,6 @@ menus.tcl
 board.tcl
 move.tcl
 main.tcl
-tools/correspondence.tcl
 tools/uci.tcl
 end.tcl
 tools/tacgame.tcl
