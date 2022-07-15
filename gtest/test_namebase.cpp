@@ -53,7 +53,7 @@ TEST(Test_Namebase, id_limits) {
 TEST(Test_Namebase, max_chars) {
 	// .pgn and .sn4 files cannot store names longer than 255 bytes
 	const size_t MAX_LEN = 255; // Max 255 chars;
-	std::string s = u8"utf8 κόσμε\t\r ♚♛♜ \n ";
+	std::string s = (const char*)u8"utf8 κόσμε\t\r ♚♛♜ \n ";
 	s = s + s + s + s + s + s + s + s + s + s + s;
 	ASSERT_TRUE(s.size() > MAX_LEN);
 

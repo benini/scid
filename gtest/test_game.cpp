@@ -182,7 +182,7 @@ TEST(Test_Game, gamevisit) {
 	game.SetEventDate(date_parsePGNTag("2018.06.01", 10));
 	expected_extra.emplace_back("UTCDate", "2018.06.10");
 	game.AddPgnTag("UTCDate", "2018.06.10");
-	expected_extra.emplace_back("UTF-8", u8"Hell\u00F6");
+	expected_extra.emplace_back("UTF-8", (const char*)u8"Hell\u00F6");
 	game.AddPgnTag(expected_extra.back().first.c_str(),
 	               expected_extra.back().second.c_str());
 	expected_extra.emplace_back("special chars", R"(Escape\\\" and \n {}\")");

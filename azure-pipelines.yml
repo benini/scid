@@ -82,7 +82,7 @@ jobs:
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
       cd stockfish\src
-      cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
+      cl /std:c++20 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
     displayName: Generate stockfish
   - bash: |

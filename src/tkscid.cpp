@@ -7741,7 +7741,7 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             calc_san(a.move);
             std::string temp = tempTrans;
             calc_san(b.move);
-            return temp < std::string_view(tempTrans);
+            return temp.compare(tempTrans) < 0;
         });
 
     } else if (sortMethod == SORT_ECO) { // Order by eco code

@@ -62,7 +62,7 @@ protected:
 		{ "  a" , nullptr, nullptr, "  a", 0 } ,
 		{ " a  ", nullptr, nullptr, " a" , 2 } ,
 		{ " \rare\n\t\r  ", nullptr, nullptr, " \rare" , 5 } ,
-		{ u8"utf8 κόσμε\t\r ♚♛♜ \n ", nullptr, nullptr, u8"utf8 κόσμε\t\r ♚♛♜" , 3 }
+		{ (const char*)u8"utf8 κόσμε\t\r ♚♛♜ \n ", nullptr, nullptr, (const char*)u8"utf8 κόσμε\t\r ♚♛♜" , 3 }
 	};
 
 protected:
