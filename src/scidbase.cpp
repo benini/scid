@@ -91,6 +91,7 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 		gameNumber = -1;
 
 		// Initialize the filters: all the games are included by default.
+		all_filter_.Init(numGames());
 		dbFilter->Init(numGames());
 		treeFilter->Init(numGames());
 		ASSERT(filters_.empty());
@@ -123,6 +124,7 @@ void scidBaseT::Close () {
 	fileName_ = "<empty>";
 	gameNumber = -1;
 	gameAltered = false;
+	all_filter_.Init(0);
 	dbFilter->Init(0);
 	treeFilter->Init(0);
 	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
@@ -157,6 +159,7 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 
 	auto n_games = numGames();
 	if (dbFilter->Size() != n_games) {
+		all_filter_.Resize(n_games);
 		dbFilter->Resize(n_games);
 		treeFilter->Resize(n_games);
 		for (auto& filter : filters_) {
@@ -348,6 +351,8 @@ HFilter scidBaseT::getFilter(std::string_view filterId) const {
 			return dbFilter;
 		if (id == "tree")
 			return treeFilter;
+		if (id == "all")
+			return &all_filter_;
 
 		for (auto const& [name, filter] : filters_) {
 			if (name == id)

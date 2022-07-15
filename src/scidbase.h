@@ -423,6 +423,7 @@ private:
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
+	mutable Filter all_filter_{0};
 	mutable Stats* stats_;
 	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
 	std::unique_ptr<gamenumT[]> duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
