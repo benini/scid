@@ -1499,6 +1499,8 @@ translate Y ExportStripMarks {Strip square/arrow mark codes from comments?} ;# *
 # Goto game/move dialogs:
 translate Y LoadGameNumber {Unesi broj partije za uèitavanje:}
 translate Y GotoMoveNumber {Idi na potez broj:}
+# ====== TODO To be translated ======
+translate Y CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate Y CopyGames {Kopiraj partije}

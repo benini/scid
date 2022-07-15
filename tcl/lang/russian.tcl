@@ -1272,6 +1272,8 @@ translate R ExportStripMarks {Удалить маркированные коды
 # Goto game/move dialogs:
 translate R LoadGameNumber {Введите номер партии для загрузки:}
 translate R GotoMoveNumber {Перейти к ходу номер:}
+# ====== TODO To be translated ======
+translate R CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate R CopyGames {Скопировать партии}

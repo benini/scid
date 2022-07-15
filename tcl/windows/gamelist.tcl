@@ -361,8 +361,7 @@ proc ::windows::gamelist::AweParse {{txt}} {
 	return [join $res]
 }
 
-proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
-	set filter "dbfilter"
+proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase} {filter "dbfilter"} {ask true}} {
 	if {$w != "" && $srcBase == $::gamelistBase($w)} { set filter $::gamelistFilter($w) }
 
 	set fromName [file tail [sc_base filename $srcBase]]
@@ -381,7 +380,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 		return
 	}
 	# If copying to the clipbase, do not bother asking for confirmation:
-	if {$dstBase != $::clipbase_db} {
+	if {$ask && $dstBase != $::clipbase_db} {
 		set confirm [tk_messageBox -type "okcancel" -icon question -title "Scid: $::tr(CopyGames)" \
 			-message [subst $::tr(CopyConfirm)] ]
 		if {$confirm != "ok"} { return }

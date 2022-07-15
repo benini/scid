@@ -1304,6 +1304,8 @@ translate D ExportStripMarks \
 # Goto game/move dialogs:
 translate D LoadGameNumber {Geben Sie die zu ladende Spielnr. ein:}
 translate D GotoMoveNumber {Gehe zu Zugnr.:}
+# ====== TODO To be translated ======
+translate D CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate D CopyGames {Kopiere Spiele}

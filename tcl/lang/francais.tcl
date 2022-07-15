@@ -1302,6 +1302,8 @@ translate F ExportStripMarks {Enlever les codes de marquages de flèches et de c
 # Goto game/move dialogs:
 translate F LoadGameNumber {Entrer le numéro de la partie à charger:}
 translate F GotoMoveNumber {Aller au coup numéro:}
+# ====== TODO To be translated ======
+translate F CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate F CopyGames {Copier les parties}

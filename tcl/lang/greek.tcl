@@ -1348,6 +1348,8 @@ translate G ExportStripMarks {Να απομακρυνθούν τα σημάδι�
 # Goto game/move dialogs:
 translate G LoadGameNumber {Εισάγετε τον αριθμό παρτίδας για φόρτωση:}
 translate G GotoMoveNumber {Μετάβαση στην κίνηση αριθμός:}
+# ====== TODO To be translated ======
+translate G CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate G CopyGames {Αντιγραφή παρτίδων}

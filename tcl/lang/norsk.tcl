@@ -1498,6 +1498,8 @@ translate O ExportStripMarks {Fjern alle fargekoder og piler fra kommentarer?}
 # Goto game/move dialogs:
 translate O LoadGameNumber {Angi partinummer som skal lastes inn:}
 translate O GotoMoveNumber {Gå til trekk nummer:}
+# ====== TODO To be translated ======
+translate O CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate O CopyGames {Kopier partier}

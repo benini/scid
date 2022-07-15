@@ -1348,6 +1348,8 @@ translate K ExportStripMarks {Treure marca de codis de cassella/fletxa dels come
 # Goto game/move dialogs:
 translate K LoadGameNumber {Entra el número de la partida a carregar:}
 translate K GotoMoveNumber {Anar a la jugada número:}
+# ====== TODO To be translated ======
+translate K CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate K CopyGames {Copiar partides}

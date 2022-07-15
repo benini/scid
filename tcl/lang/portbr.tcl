@@ -1256,6 +1256,8 @@ translate B ExportStripMarks {Remover códigos de marca de casa/seta dos comentár
 # Goto game/move dialogs:
 translate B LoadGameNumber {Entre o numero do jogo a ser carregado:}
 translate B GotoMoveNumber {Ir p/ o lance no.:}
+# ====== TODO To be translated ======
+translate B CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate B CopyGames {Copiar jogos}

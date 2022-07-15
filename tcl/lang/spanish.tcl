@@ -1366,6 +1366,8 @@ translate S ExportStripMarks {¿Quitar marca de códigos de casilla/flecha de los 
 # Goto game/move dialogs:
 translate S LoadGameNumber {Escribe el número de la partida a cargar:}
 translate S GotoMoveNumber {Ir al movimiento número:}
+# ====== TODO To be translated ======
+translate S CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate S CopyGames {Copiar partidas}

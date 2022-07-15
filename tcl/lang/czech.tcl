@@ -1307,6 +1307,8 @@ translate C ExportStripMarks {Odstranit kódové znaèky polí/¹ipek z komentáøù?}
 # Goto game/move dialogs:
 translate C LoadGameNumber {Vlo¾te èíslo partie:}
 translate C GotoMoveNumber {Pøejít na tah èíslo:}
+# ====== TODO To be translated ======
+translate C CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate C CopyGames {Kopírovat partie}

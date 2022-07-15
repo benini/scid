@@ -1327,6 +1327,8 @@ translate H ExportStripMarks {Kivegye a megjegyzésekbõl a mezõ- és nyílmegjelölé
 # Goto game/move dialogs:
 translate H LoadGameNumber {A betöltendõ játszma sorszáma:}
 translate H GotoMoveNumber {Ugrás a következõ lépéshez:}
+# ====== TODO To be translated ======
+translate H CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate H CopyGames {Játszmák másolása}

@@ -1277,6 +1277,8 @@ translate W ExportStripMarks {Avlägsna koder för fält och pilar från kommentarer
 # Goto game/move dialogs:
 translate W LoadGameNumber {Ange partiets nummer:}
 translate W GotoMoveNumber {Gå till drag nummer:}
+# ====== TODO To be translated ======
+translate W CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate W CopyGames {kopiera partier}

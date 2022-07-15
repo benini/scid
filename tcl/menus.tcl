@@ -60,6 +60,21 @@ $m add checkbutton -label LoadatStartup -variable ::autoLoadBases_currdb -comman
   }
 }
 $m add separator
+menu $m.copygames
+  $m.copygames add command -label FileNew -command {
+    set srcBase $::curr_db
+    set destBase [::file::New]
+    if {$destBase ne ""} {
+      foreach {tag value} [sc_base extra $srcBase] {
+        # Try to copy the database info (may not be supported by a database type like PGN)
+        catch { sc_base extra $destBase $tag $value }
+      }
+      ::windows::gamelist::CopyGames {} $srcBase $destBase all false
+    }
+  }
+  $m.copygames add separator
+  set ::menuDBCopyGamesIdx [expr [$m.copygames index end] +1]
+$m add cascade -label CopyAllGames -menu $m.copygames
 menu $m.exportfilter
   $m.exportfilter add command -label ToolsExpFilterPGN \
       -command {exportGames filter PGN}
@@ -69,8 +84,6 @@ menu $m.exportfilter
       -command {::html::exportCurrentFilter}
   $m.exportfilter add command -label ToolsExpFilterLaTeX \
       -command {exportGames filter LaTeX}
-  $m.exportfilter add separator
-  set ::menuDbExportFilterIdx [expr [$m.exportfilter index end] +1]
 $m add cascade -label ToolsExpFilter -menu $m.exportfilter
 $m add command -label ToolsImportFile -command { importPgnFile $::curr_db }
 $m add separator
@@ -428,7 +441,7 @@ proc updateMenuStates {{menuname}} {
 proc menuUpdateBases {} {
   set ::currentSlot $::curr_db
   .menu.db delete $::menuDbSwitchIdx end
-  .menu.db.exportfilter delete $::menuDbExportFilterIdx end
+  .menu.db.copygames delete $::menuDBCopyGamesIdx end
 
   foreach i [sc_base list] {
     set fname [file tail [sc_base filename $i]]
@@ -439,8 +452,8 @@ proc menuUpdateBases {} {
         -command [list ::file::SwitchToBase $i]
 
     if {$i != $::curr_db && ![sc_base isReadOnly $i]} {
-        .menu.db.exportfilter add command -label "Base $i: $fname" \
-            -command "::windows::gamelist::CopyGames {} $::curr_db $i"
+        .menu.db.copygames add command -label "Base $i: $fname" \
+            -command "::windows::gamelist::CopyGames {} $::curr_db $i all"
     }
   }
 

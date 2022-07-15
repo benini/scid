@@ -1316,6 +1316,8 @@ translate U ExportStripMarks {Poista ruutu-/nuolimerkit kommenteista?}
 # Goto game/move dialogs:
 translate U LoadGameNumber {Ladattavan pelin numero:}
 translate U GotoMoveNumber {Siirry siirtoon nro:}
+# ====== TODO To be translated ======
+translate U CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate U CopyGames {Kopioi pelit}

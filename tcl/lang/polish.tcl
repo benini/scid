@@ -1506,6 +1506,8 @@ translate P ExportStripMarks {Usuwaæ z komentarzy kody kolorowania pól/strza³ek?
 # Goto game/move dialogs:
 translate P LoadGameNumber {Podaj numer partii do wczytania:}
 translate P GotoMoveNumber {Id¼ do posuniêcia nr:}
+# ====== TODO To be translated ======
+translate P CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate P CopyGames {Kopiuj partie}

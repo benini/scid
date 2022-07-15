@@ -1277,6 +1277,7 @@ translate I LoadGameNumber {Inserire il numero della partita da caricare:}
 translate I GotoMoveNumber {Vai alla mossa numero:}
 
 # Copy games dialog:
+translate I CopyAllGames {Copia tutte le partite}
 translate I CopyGames {Copia partite}
 translate I CopyConfirm {
  Vuoi veramente copiare

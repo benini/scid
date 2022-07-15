@@ -1345,6 +1345,8 @@ translate N ExportStripMarks {Wis vierkante haken/pijlen markeer codes uit de co
 # Goto game/move dialogs:
 translate N LoadGameNumber {Geef het nummer van de te laden partij:}
 translate N GotoMoveNumber {Ga naar zetnummer:}
+# ====== TODO To be translated ======
+translate N CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate N CopyGames {Kopiëren partijen}

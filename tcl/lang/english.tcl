@@ -1304,6 +1304,7 @@ translate E LoadGameNumber {Enter the game number to load:}
 translate E GotoMoveNumber {Goto move number:}
 
 # Copy games dialog:
+translate E CopyAllGames {Copy all games to}
 translate E CopyGames {Copy games}
 translate E CopyConfirm {
  Do you really want to copy
