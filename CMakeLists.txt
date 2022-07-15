@@ -54,7 +54,7 @@ if(MSVC)
 else()
   add_executable(scid ${SCID_SRC})
 endif()
-set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
+set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
 target_link_libraries(scid PRIVATE polyglot ${CMAKE_THREAD_LIBS_INIT} ${TCL_LIBRARY})
 
