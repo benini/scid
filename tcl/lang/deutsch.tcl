@@ -167,8 +167,7 @@ menuText D WindowsCorrChess "Fernschachfenster" 0 {Öffnet/schließt das Fernschac
 
 # Tools menu:
 menuText D Tools "Werkzeuge" 0
-# ====== TODO To be translated ======
-menuText D ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
+menuText D ToolsConfigureEngines "Engine konfigurieren" 10 {Manage engines' configuration}
 menuText D ToolsAnalysis "Analyse-Engine..." 0 \
   {Schachanalyse-Programm starten/beenden}
 menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \
@@ -325,7 +324,7 @@ menuText D HelpStartup "Startfenster" 0 {Startfenster zeigen}
 menuText D HelpAbout "Über Scid" 0 {Informationen zu Scid}
 
 # Game info box popup menu:
-menuText D GInfoHideNext "Nächsten Zug verstecken" 13
+menuText D GInfoHideNext "Nächsten Zug verbegen" 13
 menuText D GInfoMaterial "Materialwerte zeigen" 0
 menuText D GInfoFEN "FEN zeigen" 0
 menuText D GInfoMarks "Gefärbte Felder und Pfeile zeigen" 0
@@ -351,8 +350,7 @@ translate D Defaults {Standard}
 translate D Delete {Lösche}
 translate D Graph {Grafik}
 translate D Help {Hilfe}
-# ====== TODO To be translated ======
-translate D Hide {Hide}
+translate D Hide {Verbergen}
 translate D Import {Importieren}
 translate D Index {Index}
 translate D LoadGame {Partie laden}
@@ -1756,10 +1754,8 @@ translate D MenuColorForeground "Text"
 translate D MenuColorBackground "Hintergrund"
 translate D MenuColorSelect "Auswahl"
 translate D OptionsTablebaseDir "Bis zu 4 Verzeichnisse der Endspieltabellen auswählen:"
-# ====== TODO To be translated ======
-translate D BestMoveArrow "Best move arrow"
-# ====== TODO To be translated ======
-translate D NewLocalEngine "+ New engine ..."
+translate D BestMoveArrow "Besten Zug anzeigen"
+translate D NewLocalEngine "+ Neue Engine ..."
 
 ##########
 #
