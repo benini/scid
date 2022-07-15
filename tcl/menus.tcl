@@ -219,7 +219,6 @@ $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose 
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator
 $m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
-$m add command -label "Engine" -command ::enginewin::Open
 $m add checkbutton -label WindowsSwitcher -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
 $m add command -label ToolsCross -accelerator "Ctrl+Shift+X" -command ::crosstab::Open
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
@@ -235,14 +234,12 @@ $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOp
 set m .menu.tools
 menu $m
 .menu add cascade -label Tools -menu $m
-$m  add command -label ToolsAnalysis \
-    -command makeAnalysisWin -accelerator "Ctrl+Shift+A"
-$m  add command -label ToolsAnalysis2 \
-    -command "makeAnalysisWin 2" -accelerator "Ctrl+Shift+2"
-$m  add checkbutton -label ToolsStartEngine1 -variable analysisWin1 \
-    -command "makeAnalysisWin 1 0" -accelerator "F2"
-$m  add checkbutton -label ToolsStartEngine2 -variable analysisWin2 \
-    -command "makeAnalysisWin 2 0" -accelerator "F3"
+$m  add command -label ToolsConfigureEngines -command ::enginelist::choose
+$m  add command -label ToolsStartEngine1 \
+    -command "::enginewin::start 1" -accelerator "F2"
+$m  add command -label ToolsStartEngine2 \
+    -command "::enginewin::start 2" -accelerator "F3"
+$m  add command -label ToolsAnalysis -command "makeAnalysisWin 1"
 $m add separator
 $m add checkbutton -label ToolsEmail \
     -accelerator "Ctrl+Shift+E" -variable emailWin -command ::tools::email

@@ -174,6 +174,8 @@ menuText G WindowsCorrChess "Παράθυρο αλληλογραφίας" 0 {Ά�
 
 # Tools menu:
 menuText G Tools "Εργαλεία" 0
+# ====== TODO To be translated ======
+menuText G ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText G ToolsAnalysis "Μηχανή ανάλυσης..." 0 \
   {Εκκίνηση/διακοπή της σκακιστικής μηχανής ανάλυσης}
 menuText G ToolsAnalysis2 "Μηχανής ανάλυσης #2..." 17 \

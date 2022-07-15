@@ -167,6 +167,8 @@ menuText D WindowsCorrChess "Fernschachfenster" 0 {÷ffnet/schlieﬂt das Fernschac
 
 # Tools menu:
 menuText D Tools "Werkzeuge" 0
+# ====== TODO To be translated ======
+menuText D ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText D ToolsAnalysis "Analyse-Engine..." 0 \
   {Schachanalyse-Programm starten/beenden}
 menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \

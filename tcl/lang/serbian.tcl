@@ -150,6 +150,8 @@ menuText Y WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText Y Tools "Alati" 0
+# ====== TODO To be translated ======
+menuText Y ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText Y ToolsAnalysis "Program za analizu..." 0 \
   {Pokreni/zaustavi ¹ahovski program za analizu}
 menuText Y ToolsAnalysis2 "Program za analizu #2..." 17 \

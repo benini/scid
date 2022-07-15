@@ -147,6 +147,8 @@ menuText H WindowsCorrChess "Levelezési sakk" 14 {Open/close the Correspondence 
 
 # Tools menu:
 menuText H Tools "Eszközök" 0
+# ====== TODO To be translated ======
+menuText H ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText H ToolsAnalysis "Elemzõ motor..." 0 \
   {Elindít/leállít egy sakkelemzõ programot.}
 menuText H ToolsAnalysis2 "Második elemzõ motor..." 1 \

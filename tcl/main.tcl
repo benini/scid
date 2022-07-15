@@ -1293,11 +1293,6 @@ proc CreateMainBoard { {w} } {
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
   bind $w <Configure> {+::resizeMainBoard }
-  bind $w <Return> { #TODO: improve this
-    if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
-        .analysisWin1.b1.move invoke
-    }
-  }
 
   bindMouseWheel $w "main_mousewheelHandler"
 
@@ -1437,7 +1432,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
 	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
 	ttk::button .main.tb.crosstab -image tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
-	ttk::button .main.tb.engine -image tb_engine -command makeAnalysisWin -padding {2 0}
+	ttk::button .main.tb.engine -image tb_engine -command ::enginewin::Open -padding {2 0}
 	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
 
 	foreach i {newdb open save closedb finder bkm newgame copy paste gprev gnext \

@@ -154,6 +154,8 @@ menuText F WindowsCorrChess "Jeu par correspondance" 0 {Ouvrir/Fermer la fenêtr
 
 # Tools menu:
 menuText F Tools "Outils" 2
+# ====== TODO To be translated ======
+menuText F ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText F ToolsAnalysis "Moteur d'analyse..." 9 \
   {Démarrer/Arrêter un moteur d'analyses}
 menuText F ToolsAnalysis2 "Moteur d'analyse #2..." 18 \

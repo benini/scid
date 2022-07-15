@@ -160,6 +160,8 @@ menuText K WindowsCorrChess "Finestra d'Escacs Postal" 0 {Obrir/Tancar la Finest
 
 # Tools menu:
 menuText K Tools "Eines" 0
+# ====== TODO To be translated ======
+menuText K ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText K ToolsAnalysis "Motor d'anàlisi..." 0 \
   {Inicia/Atura un motor d'análisi d'escacs}
 menuText K ToolsAnalysis2 "Motor d'anàlisi #2..." 18 \

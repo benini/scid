@@ -161,6 +161,8 @@ menuText S WindowsCorrChess "Ventana de Correo" 0 {Abrir/Cerrar la ventra de Cor
 
 # Tools menu:
 menuText S Tools "Herramientas" 0
+# ====== TODO To be translated ======
+menuText S ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText S ToolsAnalysis "Motor de análisis #1..." 0 \
   {Inicia/para el análisis del motor de ajedrez #1}
 menuText S ToolsAnalysis2 "Motor de análisis #2..." 18 \

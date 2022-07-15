@@ -146,6 +146,8 @@ menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela d
 
 # Tools menu:
 menuText B Tools "Ferramentas" 0
+# ====== TODO To be translated ======
+menuText B ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText B ToolsAnalysis "Analisador #1..." 0 \
   {Inicia ou para o 1o. Analisador}
 menuText B ToolsAnalysis2 "Analisador #2..." 17 \

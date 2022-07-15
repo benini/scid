@@ -155,6 +155,8 @@ menuText P WindowsBook "Book Window" 0 {Open/close the Book window}
 menuText P WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
 
 menuText P Tools "Narzêdzia" 0
+# ====== TODO To be translated ======
+menuText P ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText P ToolsAnalysis "Program analizuj±cy..." 8 \
   {Uruchom/zatrzymaj program analizuj±cy}
 menuText P ToolsAnalysis2 "Program analizuj±cy 2..." 21 \

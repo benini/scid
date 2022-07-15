@@ -164,6 +164,8 @@ menuText N WindowsCorrChess "Correspondentieschaak venster" 0 \
 
 # Tools menu:
 menuText N Tools "Gereedschappen" 0
+# ====== TODO To be translated ======
+menuText N ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText N ToolsAnalysis "Schaakengine ..." 3 \
   {Start/stop schaak-analyse programma 1}
 menuText N ToolsAnalysis2 "Schaakengine #2..." 17 \

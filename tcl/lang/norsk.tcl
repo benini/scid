@@ -152,6 +152,8 @@ menuText O WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText O Tools "Verktøy" 0
+# ====== TODO To be translated ======
+menuText O ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText O ToolsAnalysis "Analysemotor..." 0 \
   {Start/stopp en sjakkanalysemotor}
 menuText O ToolsAnalysis2 "Analysemotor #2..." 0 \

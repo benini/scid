@@ -141,6 +141,8 @@ menuText C WindowsCorrChess "Korespondenèní okno" 0 {Otevøít/zavøít okno knihovn
 
 # Tools menu:
 menuText C Tools "Nástroje" 3
+# ====== TODO To be translated ======
+menuText C ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText C ToolsAnalysis "Program pro analýzu..." 0 \
   {Spustit/zastavit ¹achový program pro analýzu pozice}
 menuText C ToolsAnalysis2 "Program pro analýzu #2..." 20 \

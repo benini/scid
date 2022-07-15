@@ -180,6 +180,8 @@ menuText U WindowsCorrChess "Kirjeshakki" 6 {Avaa/sulje kirjeshakki-ikkuna}
 
 # Tools menu:
 menuText U Tools "Työkalut" 1
+# ====== TODO To be translated ======
+menuText U ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText U ToolsAnalysis "Analyysimoottori #1..." 18 \
   {Käynnistä/pysäytä analyysimoottori}
 menuText U ToolsAnalysis2 "Analyysimoottori #2..." 18 \

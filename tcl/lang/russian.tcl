@@ -147,6 +147,8 @@ menuText R WindowsCorrChess "Окно переписки" 0 {Открыть/за
 
 # Tools menu:
 menuText R Tools "Инструменты" 2
+# ====== TODO To be translated ======
+menuText R ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText R ToolsAnalysis "Аналитический движок №1..." 0 \
   {Запустить/остановить первый аналитический шахматный движок}
 menuText R ToolsAnalysis2 "Аналитический движок №2..." 22 \

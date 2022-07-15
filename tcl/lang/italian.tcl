@@ -145,6 +145,8 @@ menuText I WindowsCorrChess "Gioco per corrispondenza" 10 {Apre/chiude la finest
 
 # Tools menu:
 menuText I Tools "Strumenti" 0
+# ====== TODO To be translated ======
+menuText I ToolsConfigureEngines "Configura i motori" 12 {Gestione delle configurazioni dei motori}
 menuText I ToolsAnalysis "Motore di analisi..." 10 \
   {Avvia/ferma il motore di analisi scacchistica}
 menuText I ToolsAnalysis2 "Motore di analisi 2..." 20 \
@@ -204,8 +206,8 @@ menuText I ToolsImportOne "Importa una partita in formato PGN..." 0 \
   {Importa una partita da testo PGN}
 menuText I ToolsImportFile "Importa file di partite PGN..." 27 \
   {Importa le partite da uno o più file PGN}
-menuText I ToolsStartEngine1 "Avvia il motore 1" 1  {Avvia il primo motore per l'analisi della posizione}
-menuText I ToolsStartEngine2 "Avvia il motore 2" 7  {Avvia il secondo motore per l'analisi della posizione}
+menuText I ToolsStartEngine1 "Avvia il motore 1" 16  {Avvia il primo motore per l'analisi della posizione}
+menuText I ToolsStartEngine2 "Avvia il motore 2" 16  {Avvia il secondo motore per l'analisi della posizione}
 menuText I ToolsCaptureBoard "Salva la posizione come immagine..." 13  {Salva la posizione corrente come immagine.}
 
 # Play menue

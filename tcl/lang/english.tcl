@@ -180,6 +180,7 @@ menuText E WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText E Tools "Tools" 0
+menuText E ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText E ToolsAnalysis "Analysis Engine..." 0 \
   {Start/stop a chess analysis engine}
 menuText E ToolsAnalysis2 "Analysis Engine #2..." 17 \
