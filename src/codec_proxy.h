@@ -45,6 +45,8 @@
 template <typename Derived> class CodecProxy : public CodecMemory {
 	Derived* getDerived() { return static_cast<Derived*>(this); }
 
+	static constexpr const char* special_replace_tag = "__replace_game__";
+
 public:
 	/**
 	 * Opens/creates a database encoded in a non-native format.
@@ -91,8 +93,14 @@ public:
 	 * @param Game*:    valid pointer to a Game object with the new data.
 	 * @param gamenumT: valid gamenumT of the game to be replaced.
 	 * @returns OK in case of success, an @p errorT code otherwise.
+	 * If not overridden, adds a special tag and invoke gameAdd().
 	 */
-	errorT gameSave(Game*, gamenumT) { return ERROR_CodecUnsupFeat; }
+	errorT gameSave(Game* game, gamenumT replaced) {
+		game->assignTagValue(special_replace_tag,
+		                     std::strlen(special_replace_tag),
+		                     std::to_string(replaced));
+		return getDerived()->gameAdd(game);
+	}
 
 private:
 	errorT saveGame(IndexEntry const& ie, TagRoster const& tags,
@@ -151,6 +159,17 @@ private:
 		std::vector<byte> buf;
 		return parseGames(progress, *getDerived(), [&](Game& game) {
 			buf.clear();
+
+			if (auto replace_game = game.FindExtraTag(special_replace_tag)) {
+				auto gnum = std::strtoul(replace_game, NULL, 10);
+				if (gnum < CodecMemory::numGames()) {
+					game.RemoveExtraTag(special_replace_tag);
+					auto [ie, tags] = game.Encode(buf);
+					return CodecMemory::saveGame(
+					    ie, tags, {buf.data(), buf.size()}, gnum);
+				}
+			}
+
 			auto [ie, tags] = game.Encode(buf);
 			return CodecMemory::addGame(ie, tags, {buf.data(), buf.size()});
 		});

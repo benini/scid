@@ -377,8 +377,15 @@ public:
     // Functions that get/set the tag pairs:
     //
     void AddPgnTag(const char* tag, const char* value);
+    void RemoveExtraTag(const char* tag);
     const char* FindExtraTag(const char* tag) const;
     std::string& accessTagValue(const char* tag, size_t tagLen);
+
+    /// Change the value of a tag (add the tag if it wasn't present).
+    template <typename... Args>
+    auto assignTagValue(const char* tag, size_t tagLen, Args&&... args) {
+        return accessTagValue(tag, tagLen).assign(std::forward<Args>(args)...);
+    }
     const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
     void ClearExtraTags() { extraTags_.clear(); }
 

@@ -594,6 +594,10 @@ void Game::AddPgnTag(const char* tag, const char* value) {
     extraTags_.emplace_back(tag, value);
 }
 
+void Game::RemoveExtraTag(const char* tag) {
+    std::erase_if(extraTags_, [&](auto elem) { return elem.first == tag; });
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::FindExtraTag():
 //   Finds and returns an extra PGN tag if it
