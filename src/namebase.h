@@ -24,8 +24,10 @@
 #include "misc.h"
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 using nameT = unsigned;
@@ -66,40 +68,49 @@ class NameBase {
 	std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
 
 public:
-	/**
-	 * Add a name (string) to the NameBase.
-	 * If the name already exists the corresponding ID is returned.
-	 * @param nt:      @e nameT type of the name to add.
-	 * @param name:    the name to add.
-	 * @param MAX_LEN: the max length for names of type @e nt
-	 * @param MAX_ID:  the max ID allowed for names of type @e nt
-	 * @returns
-	 * - on success, a @e std::pair containing OK and the ID.
-	 * - on failure, a @e std::pair containing an error code and 0.
-	 */
-	std::pair<errorT, idNumberT> addName(nameT nt, const char* name,
-	                                     size_t MAX_LEN, idNumberT MAX_ID) {
-		ASSERT(IsValidNameType(nt) && name != NULL);
+	// Add a name (string) to the NameBase.
+	// @param nt:      @e nameT type of the name to add.
+	// @param name:    the name to add.
+	// @return the ID assigned to @e name.
+	idNumberT namebase_add(
+	    nameT nt, std::string_view name,
+	    std::map<const char*, idNumberT, idxCmp>::iterator* hint = nullptr) {
+		ASSERT(IsValidNameType(nt));
+		ASSERT(names_[nt].size() <= std::numeric_limits<idNumberT>::max());
 
-		auto exists = idx_[nt].lower_bound(name);
-		if (exists != idx_[nt].end() &&
-		    !idx_[nt].key_comp()(name, exists->first))
-			return std::make_pair(OK, exists->second);
-
-		const size_t nameLen = strlen(name);
-		if (nameLen > MAX_LEN)
-			return std::make_pair(ERROR_NameTooLong, 0);
-
-		if (names_[nt].size() >= MAX_ID)
-			return std::make_pair(ERROR_NameLimit, 0);
-
-		char* buf = new char[nameLen + 1];
-		std::copy_n(name, nameLen + 1, buf);
+		char* alloc = new char[name.size() + 1];
+		std::copy_n(name.data(), name.size(), alloc);
+		alloc[name.size()] = '\0';
 		idNumberT newID = static_cast<idNumberT>(names_[nt].size());
-		names_[nt].emplace_back(buf);
-		idx_[nt].emplace_hint(exists, buf, newID);
+		names_[nt].emplace_back(alloc);
+		if (hint) {
+			idx_[nt].emplace_hint(*hint, alloc, newID);
+		} else {
+			idx_[nt].emplace(alloc, newID);
+		}
+		return newID;
+	}
 
-		return std::make_pair(OK, newID);
+	// Return the ID corresponding to @e name.
+	// Add the name to the NameBase if it doesn't exists.
+	// @param nt:      @e nameT type of the name.
+	idNumberT namebase_find_or_add(nameT nt, const char* name) {
+		ASSERT(IsValidNameType(nt));
+
+		auto& nb = idx_[nt];
+		auto it = nb.lower_bound(name);
+		if (it != nb.end() && !nb.key_comp()(name, it->first))
+			return it->second;
+
+		return namebase_add(nt, name, &it);
+	}
+
+	// Return the number of names stored in the NameBase.
+	// @param nt: a valid @e nameT type.
+	size_t namebase_size(nameT nt) const {
+		ASSERT(IsValidNameType(nt));
+
+		return names_[nt].size();
 	}
 
 	/// DEPRECATED

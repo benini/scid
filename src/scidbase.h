@@ -129,7 +129,7 @@ struct scidBaseT {
 	/// Return the highest elo of the player (in the database's games)
 	eloT peakElo(idNumberT playerID) const {
 		if (peakEloCache_.empty()) {
-			const auto maxPlayerID = nb_->GetNumNames(NAME_PLAYER);
+			const auto maxPlayerID = nb_->namebase_size(NAME_PLAYER);
 			peakEloCache_.resize(maxPlayerID, 0);
 			auto updateMax = [&](auto id, auto elo) {
 				if (elo > peakEloCache_[id])

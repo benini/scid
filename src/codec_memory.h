@@ -158,7 +158,14 @@ private:
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
-		return nb_->addName(nt, name, LIMIT_NAMELEN, LIMIT_UNIQUENAMES);
+		if (nb_->namebase_size(nt) < LIMIT_UNIQUENAMES)
+			return {OK, nb_->namebase_find_or_add(nt, name)};
+
+		idNumberT id;
+		if (nb_->FindExactName(nt, name, &id) == OK)
+			return {OK, id};
+
+		return {ERROR_NameLimit, 0};
 	}
 
 	/**

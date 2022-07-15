@@ -190,13 +190,25 @@ private:
 	 * - on failure, a @e std::pair containing an error code and 0.
 	 */
 	std::pair<errorT, idNumberT> dyn_addName(nameT nt, const char* name) {
-		const idNumberT MAX_ID[] = {
-		    1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
-		    524287,  /* Event names:  Maximum of 2^19 -1 =   524,287 */
-		    524287,  /* Site names:   Maximum of 2^19 -1 =   524,287 */
-		    262143   /* Round names:  Maximum of 2^18 -1 =   262,143 */
-		};
-		return nb_->addName(nt, name, LIMIT_NAMELEN, MAX_ID[nt]);
+		if (std::string_view(name).size() > LIMIT_NAMELEN)
+			return {ERROR_NameTooLong, 0};
+
+		static constexpr auto limit_unique_names = [] {
+			std::array<unsigned long long, NUM_NAME_TYPES> res;
+			res[NAME_PLAYER] = 1048575; // Maximum of 2^20 -1 = 1,048,575
+			res[NAME_EVENT] = 524287;   // Maximum of 2^19 -1 =   524,287
+			res[NAME_SITE] = 524287;    // Maximum of 2^19 -1 =   524,287
+			res[NAME_ROUND] = 262143;   // Maximum of 2^18 -1 =   262,143
+			return res;
+		}();
+		if (nb_->namebase_size(nt) < limit_unique_names[nt])
+			return {OK, nb_->namebase_find_or_add(nt, name)};
+
+		idNumberT id;
+		if (nb_->FindExactName(nt, name, &id) == OK)
+			return {OK, id};
+
+		return {ERROR_NameLimit, 0};
 	}
 
 	/**

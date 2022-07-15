@@ -5296,7 +5296,7 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     const NameBase* nb = dbase->getNameBase();
     std::vector<idNumberT> oldIDs;
     std::vector<std::string> newNames;
-    std::vector<std::pair<dateT, dateT> > dates(nb->GetNumNames(nt),
+    std::vector<std::pair<dateT, dateT> > dates(nb->namebase_size(nt),
                                                 {ZERO_DATE, ZERO_DATE});
     while (*str != 0) {
         uint length = 0;
@@ -5335,7 +5335,7 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     std::vector<idNumberT> newIDs;
     auto initNewIDs = [&](const std::vector<idNumberT>& v_ids) {
-        newIDs.resize(nb->GetNumNames(nt));
+        newIDs.resize(nb->namebase_size(nt));
         std::iota(newIDs.begin(), newIDs.end(), idNumberT(0));
         auto it = v_ids.begin();
         for (auto& id : oldIDs) {
@@ -6420,7 +6420,7 @@ UI_res_t sc_name_ratings (UI_handle_t ti, scidBaseT& dbase, const SpellChecker& 
     uint numChangedGames = 0;
     const NameBase* nb = dbase.getNameBase();
     std::vector<bool> cached(nb->GetNumNames(NAME_PLAYER), false);
-    std::vector<const PlayerElo*> vElo(nb->GetNumNames(NAME_PLAYER), NULL);
+    std::vector<const PlayerElo*> vElo(nb->namebase_size(NAME_PLAYER), NULL);
 
     auto getElo = [&](idNumberT id, dateT date) {
         if (!cached[id]) {

@@ -535,7 +535,7 @@ errorT scidBaseT::getCompactStat(unsigned long long* n_deleted,
                                  unsigned long long* n_badNameId) {
 	std::vector<uint> nbFreq[NUM_NAME_TYPES];
 	for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-		nbFreq[n].resize(getNameBase()->GetNumNames(n), 0);
+		nbFreq[n].resize(nb_->namebase_size(n), 0);
 	}
 
 	uint64_t last_offset = 0;

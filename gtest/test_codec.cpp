@@ -206,33 +206,6 @@ void makeDatabase(ICodecDatabase::Codec dbtype, const char* test, Oper op) {
 
 class Test_Codec : public ::testing::TestWithParam<ICodecDatabase::Codec> {};
 
-TEST_P(Test_Codec, addGame_native) {
-	makeDatabase(GetParam(), "addGame_native",
-	             [](ICodecDatabase* codec, Index&, NameBase& nb) {
-		             for (const auto& game : gameGenerator.getNative()) {
-			             std::pair<errorT, idNumberT> names[] = {
-			                 nb.addName(NAME_PLAYER, "Dummy White", 255, 1000),
-			                 nb.addName(NAME_PLAYER, "Dummy Black", 255, 1000),
-			                 nb.addName(NAME_EVENT, "Dummy Event", 255, 1000),
-			                 nb.addName(NAME_SITE, "Dummy Site", 255, 1000),
-			                 nb.addName(NAME_ROUND, "Dummy Round", 255, 1000)};
-			             for (auto& e : names)
-				             ASSERT_EQ(OK, e.first);
-
-			             IndexEntry ie;
-			             std::memset(&ie, 0, sizeof(IndexEntry));
-			             ie.SetWhite(names[0].second);
-			             ie.SetBlack(names[1].second);
-			             ie.SetEvent(names[2].second);
-			             ie.SetSite(names[3].second);
-			             ie.SetRound(names[4].second);
-			             ASSERT_EQ(OK,
-			                       codec->addGame(ie, TagRoster::make(ie, nb),
-			                                      {game.data(), game.size()}));
-		             }
-	             });
-}
-
 // Try to get a ICodecDatabase pointer for each supported file mode, then test
 // the consistency of getType() and getFilenames().
 TEST_P(Test_Codec, fileModeT) {
