@@ -3908,11 +3908,8 @@ sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     db->game->ClearExtraTags ();
                     int largc;
                     const char ** largv;
-                    if (Tcl_SplitList (ti, value, &largc,
-                                       (CONST84 char ***) &largv) != TCL_OK) {
-                        // Error from Tcl_SplitList!
+                    if (Tcl_SplitList (ti, value, &largc, &largv) != TCL_OK)
                         return errorResult (ti, "Error parsing extra tags.");
-                    }
 
                     // Extract each tag-value pair and add it to the game:
                     for (int i=0; i < largc; i++) {
@@ -3922,7 +3919,7 @@ sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                         //			sscanf (largv[i+1], "%s", valueStr) == 1) {
                         // Usage :: sc_game tags set -extra [ list "Annotator \"boob [sc_pos moveNumber]\"\n" ]
                         if (sscanf (largv[i], "%s \"%[^\"]\"\n", tagStr, valueStr) == 2) {
-                            db->game->AddPgnTag (tagStr, valueStr);
+                            db->game->addTag(tagStr, valueStr);
                         } else {
                             // Invalid line in the list; just ignore it.
                         }
