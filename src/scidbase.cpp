@@ -592,7 +592,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 		order |= ie->GetFinalMatSig() & 0xFFFFFF;
 		sort.emplace_back(order, i);
 	}
-	if (sort.size() > 10000) // Reorder only larger databases
+	// Reorder only larger, not PGN, databases
+	if (sort.size() > 10000 && codec_->getType() != ICodecDatabase::PGN)
 		std::stable_sort(sort.begin(), sort.end());
 
 	//3) Copy the Index Header
