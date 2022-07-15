@@ -281,8 +281,8 @@ set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
 set ::pgn::showPhoto 1
 set pgnColor(Var) ""
-set pgnColor(Nag) "\#ee0000"
-set pgnColor(Comment) "\#008b00"
+set pgnColor(Nag) {#cf6403}
+set pgnColor(Comment) {#008b00}
 set pgnColor(Current) steelBlue
 
 # Defaults for FICS
