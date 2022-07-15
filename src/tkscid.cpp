@@ -3102,7 +3102,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Finally, add a comment describing the merge-game details:
-    const auto tags = TagRoster::make(*ie, *base->getNameBase());
+    const auto tags = base->tagRoster(*ie);
     const auto welo = ie->GetWhiteElo();
     const auto belo = ie->GetBlackElo();
     auto dstr = DString();
@@ -3944,8 +3944,8 @@ int
 sc_game_tags_reload(ClientData, Tcl_Interp*, int, const char**)
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
-    const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
-    db->game->LoadStandardTags(*ie, TagRoster::make(*ie, *db->getNameBase()));
+    const auto ie = db->getIndexEntry(db->gameNumber);
+    db->game->LoadStandardTags(*ie, db->tagRoster(*ie));
     return TCL_OK;
 }
 

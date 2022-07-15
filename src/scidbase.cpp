@@ -215,14 +215,12 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 }
 
 errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
-	auto srcIe = srcBase->getIndexEntry(gNum);
-	auto dataSz = srcIe->GetLength();
-	auto data = srcBase->codec_->getGameData(srcIe->GetOffset(), dataSz);
-	if (!data)
-		return ERROR_FileRead;
+	const auto ie = srcBase->getIndexEntry(gNum);
+	if (const auto data = srcBase->codec_->getGameData(ie->GetOffset(),
+	                                                   ie->GetLength()))
+		return codec_->addGame(*ie, srcBase->tagRoster(*ie), data);
 
-	return codec_->addGame(
-	    *srcIe, TagRoster::make(*srcIe, *srcBase->getNameBase()), data);
+	return ERROR_FileRead;
 }
 
 errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,

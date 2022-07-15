@@ -115,6 +115,13 @@ struct scidBaseT {
 		static_assert(std::is_unsigned_v<gamenumT>);
 		return g < numGames() ? getIndexEntry(g) : nullptr;
 	}
+	TagRoster tagRoster(gamenumT gnum) const {
+		return tagRoster(*getIndexEntry(gnum));
+	}
+	TagRoster tagRoster(IndexEntry const& ie) const {
+		return TagRoster::make(ie, *nb_);
+	}
+
 	const NameBase* getNameBase() const {
 		return nb_;
 	}
@@ -168,8 +175,7 @@ struct scidBaseT {
 		return codec_->getGameData(ie.GetOffset(), ie.GetLength());
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
-		return dest.Decode(ie, TagRoster::make(ie, *getNameBase()),
-		                   getGame(ie));
+		return dest.Decode(ie, tagRoster(ie), getGame(ie));
 	}
 
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
@@ -380,7 +386,7 @@ struct scidBaseT {
 			encodeTags(tagsBuf, encodeBuf);
 			encodeBuf.insert(encodeBuf.end(), gamedata.data(),
 			                 gamedata.data() + gamedata.size());
-			err = codec_->saveGame(ie, TagRoster::make(ie, *nb_),
+			err = codec_->saveGame(ie, tagRoster(ie),
 			                       {encodeBuf.data(), encodeBuf.size()}, gnum);
 			if (err != OK)
 				break;
