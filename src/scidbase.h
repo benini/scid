@@ -75,12 +75,14 @@ struct scidBaseT {
 
 	errorT open(std::string_view dbType, fileModeT fMode, const char* filename,
 	            const Progress& progress = {}) {
-		auto codec = ICodecDatabase::SCID4;
+		auto codec = ICodecDatabase::SCID5;
 		if (dbType == "PGN") {
 			codec = ICodecDatabase::PGN;
 		} else if (dbType == "MEMORY") {
 			codec = ICodecDatabase::MEMORY;
-		} else if (dbType != "SCID4") {
+		} else if (dbType == "SCID4") {
+			codec = ICodecDatabase::SCID4;
+		} else if (dbType != "SCID5") {
 			return ERROR_BadArg;
 		}
 		return openHelper(codec, fMode, filename, progress);
@@ -115,6 +117,13 @@ struct scidBaseT {
 		static_assert(std::is_unsigned_v<gamenumT>);
 		return g < numGames() ? getIndexEntry(g) : nullptr;
 	}
+	TagRoster tagRoster(gamenumT gnum) const {
+		return tagRoster(*getIndexEntry(gnum));
+	}
+	TagRoster tagRoster(IndexEntry const& ie) const {
+		return TagRoster::make(ie, *nb_);
+	}
+
 	const NameBase* getNameBase() const {
 		return nb_;
 	}
@@ -168,8 +177,7 @@ struct scidBaseT {
 		return codec_->getGameData(ie.GetOffset(), ie.GetLength());
 	}
 	errorT getGame(const IndexEntry& ie, Game& dest) const {
-		return dest.Decode(ie, TagRoster::make(ie, *getNameBase()),
-		                   getGame(ie));
+		return dest.Decode(ie, tagRoster(ie), getGame(ie));
 	}
 
 	errorT importGames(const scidBaseT* srcBase, const HFilter& filter,
@@ -380,7 +388,7 @@ struct scidBaseT {
 			encodeTags(tagsBuf, encodeBuf);
 			encodeBuf.insert(encodeBuf.end(), gamedata.data(),
 			                 gamedata.data() + gamedata.size());
-			err = codec_->saveGame(ie, TagRoster::make(ie, *nb_),
+			err = codec_->saveGame(ie, tagRoster(ie),
 			                       {encodeBuf.data(), encodeBuf.size()}, gnum);
 			if (err != OK)
 				break;
@@ -423,6 +431,7 @@ private:
 	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
+	mutable Filter all_filter_{0};
 	mutable Stats* stats_;
 	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
 	std::unique_ptr<gamenumT[]> duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).

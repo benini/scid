@@ -248,10 +248,7 @@ UI_res_t sc_base_gameflag(scidBaseT* dbase, UI_handle_t ti, int argc, const char
 		cmd = 4;
 	uint flagType = IndexEntry::CharToFlagMask(argv[5][0]);
 	if (flagType != 0 && cmd != 0) {
-		Filter filter_all(dbase->numGames());
-		const HFilter filter = std::strcmp("all", argv[3]) == 0
-		                           ? HFilter(&filter_all)
-		                           : dbase->getFilter(argv[3]);
+		const HFilter filter = dbase->getFilter(argv[3]);
 		if (filter != 0) {
 			switch (cmd) {
 			case 2: return UI_Result(ti, dbase->setFlags(true, flagType, filter));
@@ -305,13 +302,12 @@ UI_res_t sc_base_gamelocation(scidBaseT* dbase, UI_handle_t ti, int argc, const 
 			return UI_Result(ti, ERROR_BadArg, usage);
 		const char* text = argv[6];
 		size_t start = strGetUnsigned(argv[7]);
-		const NameBase* nb = dbase->getNameBase();
-		auto contains = [dbase, nb, text](gamenumT g) {
-			const IndexEntry* ie = dbase->getIndexEntry(g);
-			return strAlphaContains(nb->GetName(NAME_PLAYER, ie->GetWhite()), text) ||
-			       strAlphaContains(nb->GetName(NAME_PLAYER, ie->GetBlack()), text) ||
-			       strAlphaContains(nb->GetName(NAME_EVENT, ie->GetEvent()), text) ||
-			       strAlphaContains(nb->GetName(NAME_SITE, ie->GetSite()), text);
+		auto contains = [&](gamenumT g) {
+			const auto tags = dbase->tagRoster(g);
+			return strAlphaContains(tags.white, text) ||
+			       strAlphaContains(tags.black, text) ||
+			       strAlphaContains(tags.event, text) ||
+			       strAlphaContains(tags.site, text);
 		};
 		if (strGetBoolean(argv[8])) {
 			std::vector<gamenumT> buf(
@@ -356,7 +352,6 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 
 	UI_List res (count * 3);
 	UI_List ginfo(24);
-	const NameBase* nb = dbase->getNameBase();
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
 
@@ -364,7 +359,7 @@ UI_res_t sc_base_gameslist(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 		uint ply = filter->get(idx) -1;
 
 		const IndexEntry* ie = dbase->getIndexEntry(idx);
-		const auto tags = TagRoster::make(*ie, *nb);
+		const auto tags = dbase->tagRoster(*ie);
 
 		ginfo.clear();
 		ginfo.push_back(idx +1);

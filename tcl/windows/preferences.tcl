@@ -16,7 +16,9 @@ proc ::preferences::replaceConfig { nr w } {
     grid forget $::preferences::aktConfig
   }
   set ::preferences::aktConfig $w.f.$nr
-  grid $w.f.$nr -row 0 -column 1 -sticky news -pady "5 0"
+  grid $w.f.$nr -row 0 -column 1 -sticky news -pady "5 0" -padx "5 0"
+  $w xview moveto 0
+  $w yview moveto 0
 }
 
 proc ::preferences::updateScrollBar { w } {
@@ -32,17 +34,24 @@ proc ::preferences::Open { {toggle ""} } {
     return
   }
 
-  autoscrollframe -bars both $w canvas $w.c -highlightthickness 0
+  ttk::frame $w.options
+  ttk::treeview $w.options.list -columns {0} -show {} -selectmode browse
+  autoscrollframe -bars y $w.options ttk::treeview $w.options.list
+  bind $w.options.list <<TreeviewSelect>> "::preferences::replaceConfig \[%W selection\] $w.c"
+
+  ttk::frame $w.config
+  canvas $w.c -highlightthickness 0
+  autoscrollframe -bars both $w.config canvas $w.c
   ::applyThemeColor_background $w.c
   ttk::frame $w.c.f
   bind $w.c.f <Configure> "::preferences::updateScrollBar $w.c"
   $w.c create window 0 0 -window $w.c.f -anchor nw
+  grid columnconfigure $w.c.f 1 -weight 1
 
-  set t $w.c.f
-  ttk::treeview $t.list -columns {0} -show {} -selectmode browse
-  bind $t.list <<TreeviewSelect>> "::preferences::replaceConfig \[$t.list selection\] $w.c"
-  grid $t.list -sticky nsw -padx 10 -pady "5 0"
-  grid columnconfigure $t 1 -weight 1
+  grid $w.options -row 0 -column 0 -sticky news
+  grid $w.config -row 0 -column 1 -sticky news
+  grid rowconfigure $w 0 -weight 1
+  grid columnconfigure $w 1 -weight 1
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
@@ -50,19 +59,19 @@ proc ::preferences::Open { {toggle ""} } {
   set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
-    $t.list insert {} end -id $idx -values [list $m]
+    $w.options.list insert {} end -id $idx -values [list $m]
     set mlen [font measure font_Regular $m]
     if { $maxlen < $mlen } { set maxlen $mlen }
-    ttk::frame $t.$idx
-    $init $t.$idx
+    ttk::frame $w.c.f.$idx
+    $init $w.c.f.$idx
     incr idx
   }
-  $t.list column 0 -width [incr maxlen 12]
-  $t.list configure -height $idx
+  $w.options.list column 0 -width [incr maxlen 12]
+  $w.options.list configure -height $idx
 
   unset -nocomplain ::preferences::aktConfig
-  $t.list selection set 0
-  focus $t
+  $w.options.list selection set 0
+  focus $w.options
 }
 
 ### wrapper function: checking for valid file or directory and changed value then calling the setter function
@@ -115,23 +124,6 @@ proc ::preferences::resources { } {
     ttk::label $w.folderHelp -text $::tr(SoundsFolderHelp)
     pack $w.folderHelp -side top -anchor w
 
-    # Prompt user to select a tablebase file; all the files in its
-    # directory will be used.
-    ttk::label $w.title -text [tr OptionsTablebaseDir]
-    pack $w.title -side top -fill x -pady "10 0"
-    foreach i {1 2 3 4} {
-        pack [ttk::frame $w.f$i] -side top -fill x -expand yes
-        ttk::entry $w.f$i.e -width 80
-        $w.f$i.e insert end $::initialDir(tablebase$i)
-        $w.f$i.e configure -validate key -validatecommand "
-              after cancel ::openTableBaseDirs $i $w.f$i.e
-              after 200 ::openTableBaseDirs $i $w.f$i.e
-              return true"
-        ttk::button $w.f$i.b -text "..." -command "chooseTableBaseDir $w.f$i.e"
-
-        pack $w.f$i.b -side right -padx 2
-        pack $w.f$i.e -side left -padx 2 -fill x -expand yes
-    }
     ttk::frame $w.b
     pack $w.b -side bottom -fill x
     dialogbutton $w.b.ok -text "OK" -command "destroy $w"

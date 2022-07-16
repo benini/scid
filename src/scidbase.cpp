@@ -20,6 +20,7 @@
 #include "codec_memory.h"
 #include "codec_pgn.h"
 #include "codec_scid4.h"
+#include "codec_scid5.h"
 #include "common.h"
 #include "sortcache.h"
 #include "stored.h"
@@ -36,6 +37,8 @@ ICodecDatabase::open(Codec codec, fileModeT fMode, const char* filename,
 			return new CodecSCID4();
 		case ICodecDatabase::PGN:
 			return new CodecPgn();
+		case ICodecDatabase::SCID5:
+			return new CodecSCID5();
 		}
 		ASSERT(0);
 		return nullptr;
@@ -91,6 +94,7 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 		gameNumber = -1;
 
 		// Initialize the filters: all the games are included by default.
+		all_filter_.Init(numGames());
 		dbFilter->Init(numGames());
 		treeFilter->Init(numGames());
 		ASSERT(filters_.empty());
@@ -123,6 +127,7 @@ void scidBaseT::Close () {
 	fileName_ = "<empty>";
 	gameNumber = -1;
 	gameAltered = false;
+	all_filter_.Init(0);
 	dbFilter->Init(0);
 	treeFilter->Init(0);
 	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
@@ -157,6 +162,7 @@ errorT scidBaseT::endTransaction(gamenumT gNum) {
 
 	auto n_games = numGames();
 	if (dbFilter->Size() != n_games) {
+		all_filter_.Resize(n_games);
 		dbFilter->Resize(n_games);
 		treeFilter->Resize(n_games);
 		for (auto& filter : filters_) {
@@ -212,14 +218,12 @@ errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, c
 }
 
 errorT scidBaseT::importGameHelper(const scidBaseT* srcBase, gamenumT gNum) {
-	auto srcIe = srcBase->getIndexEntry(gNum);
-	auto dataSz = srcIe->GetLength();
-	auto data = srcBase->codec_->getGameData(srcIe->GetOffset(), dataSz);
-	if (!data)
-		return ERROR_FileRead;
+	const auto ie = srcBase->getIndexEntry(gNum);
+	if (const auto data = srcBase->codec_->getGameData(ie->GetOffset(),
+	                                                   ie->GetLength()))
+		return codec_->addGame(*ie, srcBase->tagRoster(*ie), data);
 
-	return codec_->addGame(
-	    *srcIe, TagRoster::make(*srcIe, *srcBase->getNameBase()), data);
+	return ERROR_FileRead;
 }
 
 errorT scidBaseT::importGames(ICodecDatabase::Codec dbtype,
@@ -348,6 +352,8 @@ HFilter scidBaseT::getFilter(std::string_view filterId) const {
 			return dbFilter;
 		if (id == "tree")
 			return treeFilter;
+		if (id == "all")
+			return &all_filter_;
 
 		for (auto const& [name, filter] : filters_) {
 			if (name == id)
@@ -592,7 +598,8 @@ errorT scidBaseT::compact(const Progress& progress) {
 		order |= ie->GetFinalMatSig() & 0xFFFFFF;
 		sort.emplace_back(order, i);
 	}
-	if (sort.size() > 10000) // Reorder only larger databases
+	// Reorder only larger, not PGN, databases
+	if (sort.size() > 10000 && codec_->getType() != ICodecDatabase::PGN)
 		std::stable_sort(sort.begin(), sort.end());
 
 	//3) Copy the Index Header

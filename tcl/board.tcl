@@ -549,8 +549,8 @@ proc ::board::addInfoBar {w varname} {
   set menu [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
     -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
-  grid $w.bar.cmd -in $w.bar -row 0 -column 0 -sticky news -padx 8
-  grid $w.bar.info -in $w.bar -row 0 -column 1 -sticky news
+  grid $w.bar.cmd -in $w.bar -row 0 -column 0 -sticky news
+  grid $w.bar.info -in $w.bar -row 0 -column 1 -sticky news -padx 4
   grid $w.bar.leavevar -row 0 -column 2 -sticky news
   grid $w.bar.back -row 0 -column 3 -sticky news
   grid $w.bar.forward -row 0 -column 4 -sticky news
@@ -1315,7 +1315,7 @@ proc ::board::mark::DrawBestMove {pathName moveUCI} {
   set to [ ::board::sq [ string range $moveUCI 2 3 ] ]
   set coord [GetArrowCoords $pathName.bd $from $to 0.2]
   {*}$pathName.bd create line $coord -fill #FF5E0E -arrow last -width 5 \
-    -tag [list mark arrows bestmove]
+    -arrowshape {18 24 10} -tag [list mark arrows bestmove]
 }
 
 # ::board::mark::DrawRectangle --

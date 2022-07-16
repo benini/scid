@@ -318,8 +318,9 @@ private:
 					return res;
 			}
 		}
-		auto& str = game.accessTagValue(tag, tagLen);
-		str.assign(value.first, value.second);
+		// The c++20 {value.first, value.second} fails on AppleClang13
+		size_t valueLen = std::distance(value.first, value.second);
+		auto& str = game.addTag({tag, tagLen}, {value.first, valueLen});
 		linenum_ += pgn::normalize<true>(str, 0);
 		return true;
 	}

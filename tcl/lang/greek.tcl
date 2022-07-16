@@ -174,12 +174,13 @@ menuText G WindowsCorrChess "Παράθυρο αλληλογραφίας" 0 {Ά�
 
 # Tools menu:
 menuText G Tools "Εργαλεία" 0
+# ====== TODO To be translated ======
+menuText G ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText G ToolsAnalysis "Μηχανή ανάλυσης..." 0 \
   {Εκκίνηση/διακοπή της σκακιστικής μηχανής ανάλυσης}
 menuText G ToolsAnalysis2 "Μηχανής ανάλυσης #2..." 17 \
   {Εκκίνηση/διακοπή της δεύτερης σκακιστικής μηχανής ανάλυσης}
 menuText G ToolsCross "Συγκριτικός πίνακας" 0 {Εμφανήστε τον συγκριτικό πίνακα προκριματικών γι' αυτή τη παρτίδα}
-menuText G ToolsEmail "Διαχείριση ηλ. αλληλογραφίας" 0 {Άνοιγμα/κλείσιμο του παραθύρου διαχείρισης σκακιστικής ηλ. αλληλογραφίας}
 menuText G ToolsFilterGraph "Γράφημα σχετικού φίλτρου" 12 {Άνοιγμα/κλείσιμο του παραθύρου των φίλτρων γραφημάτων σχετικών τιμών}
 menuText G ToolsAbsFilterGraph "Γράφημα απόλυτου φίλτρου" 7 {Άνοιγμα/κλείσιμο του παραθύρου των φίλτρων γραφημάτων απολύτων τιμών}
 menuText G ToolsOpReport "Αναφορά ανοίγματος" 0 {Δημιουργήστε μια αναφορά για το άνοιγμα της τρέχουσας θέσης}
@@ -1347,6 +1348,8 @@ translate G ExportStripMarks {Να απομακρυνθούν τα σημάδι�
 # Goto game/move dialogs:
 translate G LoadGameNumber {Εισάγετε τον αριθμό παρτίδας για φόρτωση:}
 translate G GotoMoveNumber {Μετάβαση στην κίνηση αριθμός:}
+# ====== TODO To be translated ======
+translate G CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate G CopyGames {Αντιγραφή παρτίδων}

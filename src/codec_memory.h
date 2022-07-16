@@ -187,9 +187,11 @@ private:
 	}
 
 protected:
-	bool equalExceptFlags(IndexEntry const& ie, gamenumT gnum) {
+	bool equalExceptFlags(IndexEntry const& ie, gamenumT gnum) const {
 		return idx_->GetEntry(gnum)->equalExceptFlags(ie);
 	}
+
+	auto numGames() const { return idx_->GetNumGames(); }
 
 private:
 	/// Add the game's roster tags and gamedata to the database.

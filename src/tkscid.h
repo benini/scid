@@ -61,7 +61,6 @@ int sc_game_tags_reload (TCL_ARGS);
 int sc_game_tags_share (TCL_ARGS);
 
 int sc_info_limit     (TCL_ARGS);
-int sc_info_tb        (TCL_ARGS);
 int sc_info_priority  (TCL_ARGS);
 
 int sc_move_add       (TCL_ARGS);
@@ -85,8 +84,6 @@ int sc_pos_isLegal    (TCL_ARGS);
 int sc_pos_isPromo    (TCL_ARGS);
 int sc_pos_matchMoves (TCL_ARGS);
 int sc_pos_moves      (TCL_ARGS);
-int sc_pos_probe      (TCL_ARGS);
-int sc_pos_probe_board (TCL_ARGS);
 int sc_pos_setComment (TCL_ARGS);
 
 int sc_tree_stats    (TCL_ARGS);

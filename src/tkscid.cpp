@@ -34,7 +34,6 @@
 #include "pgnparse.h"
 #include "polyglot.h"
 #include "position.h"
-#include "probe.h"
 #include "scidbase.h"
 #include "searchpos.h"
 #include "spellchk.h"
@@ -101,15 +100,6 @@ static const uint REPORT_PLAYER = 1;
 
 static char decimalPointChar = '.';
 static uint htmlDiagStyle = 0;
-
-// Tablebase probe modes:
-#define PROBE_NONE 0
-#define PROBE_RESULT 1
-#define PROBE_SUMMARY 2
-#define PROBE_REPORT 3
-#define PROBE_OPTIMAL 4
-
-
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -2517,345 +2507,6 @@ int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// probe_tablebase:
-//    Probes the tablebases for the current position, and returns
-//    the score, a descriptive score with optimal moves, or just a
-//    (random) optimal move.
-bool
-probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
-{
-    int score = 0;
-    bool showResult = false;
-    bool showSummary = false;
-    bool fullReport = false;
-    bool optimalMoves = false;
-    colorT toMove = db->game->GetCurrentPos()->GetToMove();
-
-    switch (mode) {
-    case PROBE_RESULT:
-        showResult = true;
-        break;
-    case PROBE_SUMMARY:
-        showResult = true;
-        showSummary = true;
-        break;
-    case PROBE_REPORT:
-        fullReport = true;
-        break;
-    case PROBE_OPTIMAL:
-        optimalMoves = true;
-        break;
-    default:
-        return false;
-    }
-
-    if (scid_TB_Probe (db->game->GetCurrentPos(), &score) != OK) {
-        if (! fullReport) { return false; }
-    }
-
-    Position * gamePos = NULL;
-    bool moveFound [MAX_LEGAL_MOVES] = {0};
-    int moveScore [MAX_LEGAL_MOVES] = {0};
-    bool movePrinted [MAX_LEGAL_MOVES] = {0};
-    uint winCount = 0;
-    uint drawCount = 0;
-    uint lossCount = 0;
-    uint unknownCount = 0;
-    
-    MoveList moveList;
-    sanListT sanList;
-    gamePos = db->game->GetCurrentPos();
-    gamePos->GenerateMoves (&moveList);
-    gamePos->CalcSANStrings (&sanList, SAN_CHECKTEST);
-
-    if (showSummary  ||  fullReport  ||  optimalMoves) {
-        Position scratchPos = *gamePos;
-
-        for (uint i=0; i < moveList.Size(); i++) {
-            simpleMoveT * smPtr = moveList.Get(i);
-            scratchPos.DoSimpleMove(*smPtr);
-            moveFound[i] = false;
-            movePrinted[i] = false;
-            int newScore = 0;
-            if (scid_TB_Probe (&scratchPos, &newScore) == OK) {
-                moveFound[i] = true;
-                moveScore[i] = newScore;
-                if (newScore < 0) {
-                    winCount++;
-                } else if (newScore == 0) {
-                    drawCount++;
-                } else {
-                    lossCount++;
-                }
-            } else {
-                unknownCount++;
-            }
-            scratchPos.UndoSimpleMove (smPtr);
-        }
-    }
-
-    // Optimal moves mode: return only the optimal moves, nothing else.
-    if (optimalMoves) {
-        uint count = 0;
-        for (uint i=0; i < moveList.Size(); i++) {
-            if ((score >= 0  &&  moveScore[i] == -score)  ||
-                (score < 0  &&  moveScore[i] == -score - 1)) {
-                if (count > 0) { dstr->Append (" "); }
-                dstr->Append (sanList.list[i]);
-                count++;
-            }
-        }
-        return true;
-    }
-
-    if (fullReport) {
-        char tempStr [80];
-        sprintf (tempStr, "+:%u  =:%u  -:%u  ?:%u",
-                 winCount, drawCount, lossCount, unknownCount);
-        dstr->Append (tempStr);
-        int prevScore = -9999999;   // Lower than any possible TB score
-        bool first = true;
-
-        while (1) {
-            bool found = false;
-            uint index = 0;
-            int bestScore = 0;
-            const char * bestMove = "";
-            for (uint i=0; i < moveList.Size(); i++) {
-                if (movePrinted[i]) { continue; }
-                if (! moveFound[i]) { continue; }
-                int newScore = - moveScore[i];
-                if (!found  ||
-                    (newScore > 0 && bestScore <= 0)  ||
-                    (newScore > 0 && newScore < bestScore)  ||
-                    (newScore == 0 && bestScore < 0)  ||
-                    (newScore < 0 && bestScore < 0 && newScore < bestScore)  ||
-                    (newScore == bestScore &&
-                     strCompare (bestMove, sanList.list[i]) > 0) ) {
-                    found = true;
-                    index = i;
-                    bestScore = newScore;
-                    bestMove = sanList.list[i];
-                }
-            }
-            if (!found) { break; }
-            movePrinted[index] = true;
-            if (first ||
-                (bestScore > 0  && prevScore < 0)  ||
-                (bestScore == 0 && prevScore != 0)  ||
-                (bestScore < 0  && prevScore >= 0)) {
-                dstr->Append ("\n");
-                first = false;
-                const char * tag = NULL;
-                const char * msg = NULL;
-                if (bestScore > 0) {
-                    tag = "WinningMoves"; msg = "Winning moves";
-                } else if (bestScore < 0) {
-                    tag = "LosingMoves"; msg = "Losing moves";
-                } else {
-                    tag = "DrawingMoves"; msg = "Drawing moves";
-                }
-                dstr->Append ("\n", translate(ti, tag, msg), ":");
-            }
-            if (bestScore != prevScore) {
-                if (bestScore > 0) {
-                    sprintf (tempStr, " +%3d   ", bestScore);
-                } else if (bestScore == 0) {
-                    strCopy (tempStr, " =      ");
-                } else {
-                    sprintf (tempStr, " -%3d   ", -bestScore);
-                }
-                dstr->Append ("\n", tempStr);
-            } else {
-                dstr->Append (", ");
-            }
-            prevScore = bestScore;
-            dstr->Append (bestMove);
-        }
-        if (unknownCount > 0) {
-            dstr->Append ("\n\n");
-            dstr->Append (translate (ti, "UnknownMoves", "Unknown-result moves"));
-            dstr->Append (":\n ?      ");
-            bool firstUnknown = true;
-            while (1) {
-                bool found = false;
-                const char * bestMove = "";
-                uint index = 0;
-                for (uint i=0; i < moveList.Size(); i++) {
-                    if (!moveFound[i]  && !movePrinted[i]) {
-                        if (!found  ||
-                            strCompare (bestMove, sanList.list[i]) > 0) {
-                            found = true;
-                            bestMove = sanList.list[i];
-                            index = i;
-                        }
-                    }
-                }
-                if (!found) { break; }
-                movePrinted[index] = true;
-                if (!firstUnknown) {
-                    dstr->Append (", ");
-                }
-                firstUnknown = false;
-                dstr->Append (bestMove);
-            }
-        }
-        dstr->Append ("\n");
-        return true;
-    }
-
-    if (score == 0) {
-        // Print drawn tablebase position info:
-        if (showResult) {
-            dstr->Append ("= [", translate (ti, "Draw"));
-        }
-        if (showSummary) {
-            uint drawcount = 0;
-            uint losscount = 0;
-            const char * drawlist [MAX_LEGAL_MOVES];
-            const char * losslist [MAX_LEGAL_MOVES];
-
-            for (uint i=0; i < moveList.Size(); i++) {
-                if (moveFound[i]) {
-                    if (moveScore[i] == 0) {
-                        drawlist[drawcount] = sanList.list[i];
-                        drawcount++;
-                    } else {
-                        losslist[losscount] = sanList.list[i];
-                        losscount++;
-                    }
-                }
-            }
-            if (moveList.Size() == 0) {
-                dstr->Append (" (", translate (ti, "stalemate"), ")");
-            } else if (drawcount == moveList.Size()) {
-                dstr->Append (" ", translate (ti, "withAllMoves"));
-            } else if (drawcount == 1) {
-                dstr->Append (" ", translate (ti, "with"));
-                dstr->Append (" ", drawlist[0]);
-            } else if (drawcount+1 == moveList.Size() && losscount==1) {
-                dstr->Append (" ", translate (ti, "withAllButOneMove"));
-            } else if (drawcount > 0) {
-                dstr->Append (" ", translate (ti, "with"), " ");
-                dstr->Append (drawcount);
-                dstr->Append (" ");
-                if (drawcount == 1) {
-                    dstr->Append (translate (ti, "move"));
-                } else {
-                    dstr->Append (translate (ti, "moves"));
-                }
-                dstr->Append (": ");
-                for (uint m=0; m < drawcount; m++) {
-                    if (m < 3) {
-                        if (m > 0) { dstr->Append (", "); }
-                        dstr->Append (drawlist[m]);
-                    }
-                }
-                if (drawcount > 3) { dstr->Append (", ..."); }
-            }
-            if (losscount > 0) {
-                dstr->Append (" (");
-                if (losscount == 1) {
-                    if (losscount+drawcount == moveList.Size()) {
-                        dstr->Append (translate (ti, "only"), " ");
-                    }
-                    dstr->Append (losslist[0], " ", translate (ti, "loses"));
-                } else if (drawcount < 4  &&
-                           drawcount+losscount == moveList.Size()) {
-                    dstr->Append (translate (ti, "allOthersLose"));
-                } else {
-                    dstr->Append (losscount);
-                    dstr->Append (" ", translate (ti, "lose"), ": ");
-                    for (uint m=0; m < losscount; m++) {
-                        if (m < 3) {
-                            if (m > 0) { dstr->Append (", "); }
-                            dstr->Append (losslist[m]);
-                        }
-                    }
-                    if (losscount > 3) { dstr->Append (", ..."); }
-                }
-                dstr->Append (")");
-            }
-        }
-        if (showResult) { dstr->Append ("]"); }
-
-    } else if (score > 0) {
-        // Print side-to-move-mates tablebase info:
-        if (showResult) {
-            char temp[200];
-            sprintf (temp, "%s:%d [%s %s %d",
-                     toMove == WHITE ? "+-" : "-+", score,
-                     translate (ti, toMove == WHITE ? "White" : "Black"),
-                     translate (ti, "matesIn"), score);
-            dstr->Append (temp);
-        }
-
-        // Now show all moves that mate optimally.
-        // This requires generating all legal moves, and trying each
-        // to find its tablebase score; optimal moves will have
-        // the condition (new_score == -old_score).
-
-        if (showSummary) {
-            uint count = 0;
-
-            for (uint i=0; i < moveList.Size(); i++) {
-                if (moveFound[i]  &&  moveScore[i] == -score) {
-                    count++;
-                    if (count == 1) {
-                        dstr->Append (" ", translate (ti, "with"), ": ");
-                    } else {
-                        dstr->Append (", ");
-                    }
-                    dstr->Append (sanList.list[i]);
-                }
-            }
-        }
-        if (showResult) { dstr->Append ("]"); }
-
-    } else {
-        // Score is negative so side to move is LOST:
-        if (showResult) {
-            char tempStr [80];
-            if (score == -1) {
-                sprintf (tempStr, "# [%s %s %s",
-                         translate (ti, toMove == WHITE ? "Black" : "White"),
-                         translate (ti, "hasCheckmated"),
-                         translate (ti, toMove == WHITE ? "White" : "Black"));
-            } else {
-                sprintf (tempStr, "%s:%d [%s %s %d",
-                         toMove == WHITE ? "-+" : "+-", -1 - score,
-                         translate (ti, toMove == WHITE ? "Black" : "White"),
-                         translate (ti, "matesIn"),
-                         -1 - score);
-            }
-            dstr->Append (tempStr);
-        }
-
-        // Now show all moves that last optimally.
-        // This requires generating all legal moves, and trying
-        // each to find its tablebase score; optimal moves will
-        // have the condition (new_score == (-old_score - 1)).
-
-        if (showSummary) {
-            uint count = 0;
-            for (uint i=0; i < moveList.Size(); i++) {
-                if (moveFound[i]  &&  moveScore[i] == (-score - 1)) {
-                    count++;
-                    dstr->Append (", ");
-                    if (count == 1) {
-                        dstr->Append (translate (ti, "longest"), ": ");
-                    }
-                    dstr->Append (sanList.list[i]);
-                }
-            }
-        }
-        if (showResult) { dstr->Append ("]"); }
-    }
-
-    return true;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_info:
 //    Return the Game Info string for the active game.
 //    The returned text includes color codes.
@@ -2868,7 +2519,6 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     uint commentWidth = 50;
     uint commentHeight = 1;
     bool fullComment = false;
-    uint showTB = 2;  // 0 = no TB output, 1 = score only, 2 = best moves.
     char temp[1024];
 
     int arg = 2;
@@ -2882,11 +2532,6 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             if (arg+1 < argc) {
                 arg++;
                 showMaterialValue = strGetBoolean(argv[arg]);
-            }
-        } else if  (strIsPrefix (argv[arg], "-tb")) {
-            if (arg+1 < argc) {
-                arg++;
-                showTB = strGetUnsigned(argv[arg]);
             }
         } else if  (strIsPrefix (argv[arg], "-fen")) {
             if (arg+1 < argc) {
@@ -3276,22 +2921,7 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
         Tcl_AppendResult (ti, "</run></green>", NULL);
-#ifdef WINCE
-        my_Tcl_Free((char*) str);
-#else
         delete[] str;
-#endif
-    }
-
-    // Probe tablebases:
-
-    if (!hideNextMove) {
-        DString * tbStr = new DString;
-        if (probe_tablebase (ti, showTB, tbStr)) {
-            Tcl_AppendResult (ti, "<br>TB: <blue><run ::tb::open>",
-                              tbStr->Data(), "</run></blue>", NULL);
-        }
-        delete tbStr;
     }
 
     // Now check ECO book for the current position:
@@ -3472,7 +3102,7 @@ sc_game_merge (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Finally, add a comment describing the merge-game details:
-    const auto tags = TagRoster::make(*ie, *base->getNameBase());
+    const auto tags = base->tagRoster(*ie);
     const auto welo = ie->GetWhiteElo();
     const auto belo = ie->GetBlackElo();
     auto dstr = DString();
@@ -4278,11 +3908,8 @@ sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     db->game->ClearExtraTags ();
                     int largc;
                     const char ** largv;
-                    if (Tcl_SplitList (ti, value, &largc,
-                                       (CONST84 char ***) &largv) != TCL_OK) {
-                        // Error from Tcl_SplitList!
+                    if (Tcl_SplitList (ti, value, &largc, &largv) != TCL_OK)
                         return errorResult (ti, "Error parsing extra tags.");
-                    }
 
                     // Extract each tag-value pair and add it to the game:
                     for (int i=0; i < largc; i++) {
@@ -4292,7 +3919,7 @@ sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                         //			sscanf (largv[i+1], "%s", valueStr) == 1) {
                         // Usage :: sc_game tags set -extra [ list "Annotator \"boob [sc_pos moveNumber]\"\n" ]
                         if (sscanf (largv[i], "%s \"%[^\"]\"\n", tagStr, valueStr) == 2) {
-                            db->game->AddPgnTag (tagStr, valueStr);
+                            db->game->addTag(tagStr, valueStr);
                         } else {
                             // Invalid line in the list; just ignore it.
                         }
@@ -4317,8 +3944,8 @@ int
 sc_game_tags_reload(ClientData, Tcl_Interp*, int, const char**)
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
-    const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
-    db->game->LoadStandardTags(*ie, TagRoster::make(*ie, *db->getNameBase()));
+    const auto ie = db->getIndexEntry(db->gameNumber);
+    db->game->LoadStandardTags(*ie, db->tagRoster(*ie));
     return TCL_OK;
 }
 
@@ -4594,12 +4221,12 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "clipbase", "decimal", "priority",
         "html", "limit", "ratings",
-        "suffix", "tb", "validDate", "version", "language", NULL
+        "suffix", "validDate", "version", "language", NULL
     };
     enum {
         INFO_CLIPBASE, INFO_DECIMAL, INFO_PRIORITY,
         INFO_HTML, INFO_LIMIT, INFO_RATINGS,
-        INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
+        INFO_SUFFIX, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
     int index = -1;
 
@@ -4640,9 +4267,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
         break;
-
-    case INFO_TB:
-        return sc_info_tb (cd, ti, argc, argv);
 
     case INFO_VALIDDATE:
         if (argc != 3) {
@@ -4718,61 +4342,6 @@ sc_info_limit (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     return UI_Result(ti, OK, result);
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_info_tb:
-//   Set up a tablebase directory, or check if a certain
-//   tablebase is available.
-int
-sc_info_tb (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage =
-        "Usage: sc_info tb [<directory>|available <material>|cache <size-kb>]";
-
-    if (argc == 2) {
-        // Command: sc_info tb
-        // Returns whether tablebase support is complied.
-        return UI_Result(ti, OK, scid_TB_compiled());
-
-    } else if (argc == 3) {
-        // Command: sc_info_tb <directories>
-        // Clears tablebases and registers all tablebases in the
-        // specified directories string, which can have more than
-        // one directory separated by commas or semicolons.
-        return setUintResult (ti, scid_TB_Init (argv[2]));
-
-    } else if (argc == 4  &&  argv[2][0] == 'a') {
-        // Command: sc_probe available <material>
-        // The material is specified as "KRKN", "kr-kn", etc.
-        // Set up the required material:
-        matSigT ms = MATSIG_Empty;
-        const char * material = argv[3];
-        if (toupper(*material) != 'K') { return UI_Result(ti, OK, false); }
-        material++;
-        colorT side = WHITE;
-        while (1) {
-            char ch = toupper(*material);
-            material++;
-            if (ch == 0) { break; }
-            if (ch == 'K') { side = BLACK; continue; }
-            pieceT p = piece_Make (side, piece_FromChar (ch));
-            if (ch == 'P') { p = piece_Make (side, PAWN); }
-            if (p == EMPTY) { continue; }
-            ms = matsig_setCount (ms, p, matsig_getCount (ms, p) + 1);
-        }
-        // Check if a tablebase for this material is available:
-        return UI_Result(ti, OK, scid_TB_Available (ms));
-    } else if (argc == 4  &&  argv[2][0] == 'c') {
-        // Set the preferred tablebase cache size, to take effect
-        // at the next tablebase initialisation.
-        uint cachesize = strGetUnsigned (argv[3]);
-        scid_TB_SetCacheSize (cachesize * 1024);
-        return TCL_OK;
-    } else {
-        return errorResult (ti, usage);
-    }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -5024,7 +4593,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isCheck", "isLegal", "isPromotion",
         "matchMoves", "moveNumber", "pgnOffset",
-        "probe", "setComment", "side", "tex", "moves", "location",
+        "setComment", "side", "tex", "moves", "location",
         "attacks", "getPrevComment", "coordToSAN", NULL
     };
     enum {
@@ -5032,7 +4601,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNOFFSET,
-        POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
+        POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
         POS_ATTACKS, POS_GETPREVCOMMENT, POS_COORDTOSAN
     };
 
@@ -5138,9 +4707,6 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case POS_PGNOFFSET:
         setUintResult (ti, db->game->GetPgnOffset());
         break;
-
-    case POS_PROBE:
-        return sc_pos_probe (cd, ti, argc, argv);
 
     case POS_SETCOMMENT:
         return sc_pos_setComment (cd, ti, argc, argv);
@@ -5666,104 +5232,6 @@ sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
 
     for (uint i=0; i < sanList.num; i++) {
             Tcl_AppendElement (ti, sanList.list[i]);
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_pos_probe:
-//    Probes tablebases for the current move.
-int
-sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage = "Usage: sc_pos probe [score|report|optimal|board <sq>]";
-    static const char * options[] = {
-        "score", "report", "optimal", "board", NULL
-    };
-    enum { OPT_SCORE, OPT_REPORT, OPT_OPTIMAL, OPT_BOARD };
-
-    int option = OPT_SCORE;  // Default option is to return the score.
-    if (argc >= 3) {
-        option = strUniqueMatch(argv[2], options);
-    }
-
-    if (option == OPT_REPORT) {
-        if (argc != 3) { return errorResult (ti, usage); }
-        // Command: sc_probe report
-        // Tablebase report:
-        DString * tbReport = new DString;
-        if (probe_tablebase (ti, PROBE_REPORT, tbReport)) {
-            Tcl_AppendResult (ti, tbReport->Data(), NULL);
-        }
-        delete tbReport;
-    } else if (option == OPT_OPTIMAL) {
-        if (argc != 3) { return errorResult (ti, usage); }
-        // Command: sc_probe optimal
-        // Optimal moves from tablebase:
-        DString * tbOptimal = new DString;
-        if (probe_tablebase (ti, PROBE_OPTIMAL, tbOptimal)) {
-            Tcl_AppendResult (ti, tbOptimal->Data(), NULL);
-        }
-        delete tbOptimal;
-    } else if (option == OPT_SCORE) {
-        int score = 0;
-        if (scid_TB_Probe (db->game->GetCurrentPos(), &score) == OK) {
-            setIntResult (ti, score);
-        }
-    } else if (option == OPT_BOARD) {
-        return sc_pos_probe_board (cd, ti, argc, argv);
-    } else {
-        return errorResult (ti, usage);
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_pos_probe_board:
-//    Probes tablebases for the current position with one piece
-//    (specified by its square) relocated to each empty board square.
-int
-sc_pos_probe_board (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage = "Usage: sc_pos probe board <square>";
-
-    if (argc != 4) { return errorResult (ti, usage); }
-
-    // Try to read the square parameter as algebraic ("h8") or numeric (63):
-    squareT sq = strGetSquare (argv[3]);
-    if (sq == NULL_SQUARE) {
-      int sqInt = strGetInteger (argv[3]);
-      if (sqInt >= 0  &&  sqInt <= 63) { sq = sqInt; }
-    }
-
-    if (sq == NULL_SQUARE) {
-         return errorResult (ti, usage);
-    }
-
-    Position pos = *(db->game->GetCurrentPos());
-    const pieceT * board = pos.GetBoard();
-    if (board[sq] == EMPTY) { return TCL_OK; }
-
-    for (squareT toSq = A1; toSq <= H8; toSq++) {
-        const char * result = "";
-        if (pos.RelocatePiece (sq, toSq) != OK) {
-            result = "X";
-        } else {
-            int score = 0;
-            if (scid_TB_Probe (&pos, &score) != OK) {
-                result = "?";
-            } else {
-                if (score > 0) {
-                    result = "+";
-                } else if (score < 0) {
-                    result = "-";
-                } else {
-                    result = "=";
-                }
-            }
-            pos.RelocatePiece (toSq, sq);
-        }
-        Tcl_AppendResult (ti, result, NULL);
     }
     return TCL_OK;
 }
@@ -7741,7 +7209,7 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             calc_san(a.move);
             std::string temp = tempTrans;
             calc_san(b.move);
-            return temp < std::string_view(tempTrans);
+            return temp.compare(tempTrans) < 0;
         });
 
     } else if (sortMethod == SORT_ECO) { // Order by eco code

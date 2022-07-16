@@ -7,7 +7,11 @@ namespace eval pgn {
   ################################################################################
   proc ChooseColor {type name} {
     global pgnColor
-    set x [tk_chooseColor -initialcolor $pgnColor($type) -title "PGN $name color"]
+    set initial_color {}
+    if {$::pgnColor($type) ne ""} {
+      lappend initial_color "-initialcolor" $::pgnColor($type)
+    }
+    set x [tk_chooseColor {*}$initial_color -title "PGN $name color"]
     if {$x != ""} { set pgnColor($type) $x; ::pgn::ResetColors }
   }
   ################################################################################
@@ -86,7 +90,7 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label PgnOptColor \
         -variable ::pgn::showColor -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptShort \
-        -variable ::pgn::shortHeader -command {updateBoard -pgn}
+        -variable ::pgn::shortHeader -command {::pgn::Refresh 1}
     $w.menu.opt add checkbutton -label PgnOptSymbols \
         -variable ::pgn::symbolicNags -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptIndentC \
@@ -104,8 +108,6 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
     
-    $w.menu.color add command -label PgnColorHeader \
-        -command {::pgn::ChooseColor Header "header text"}
     $w.menu.color add command -label PgnColorAnno \
         -command {::pgn::ChooseColor Nag annotation}
     $w.menu.color add command -label PgnColorComments \
@@ -137,6 +139,15 @@ namespace eval pgn {
     
     # Bind right button to popup a contextual menu:
     bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"
+
+    # Clicking on the header toggle between short-3-lines/full header
+    $w.text tag bind tag <ButtonRelease-1> {
+      if {[%W tag ranges sel] eq ""} {
+        set ::pgn::shortHeader [expr {!$::pgn::shortHeader}]
+        ::pgn::Refresh 1
+        %W yview moveto 0
+      }
+    }
 
     # Workaround for Text widget bug (Tk 8.6.6+)
     # The new "asynchronous update of line heights" does not work if

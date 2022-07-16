@@ -32,7 +32,7 @@ std::tuple<squareT, squareT, bool> line63[] = {
 const auto line63_fen =
     "rnbq1rk1/pppp1ppp/4pn2/8/1bPP4/2N5/PPQ1PPPP/R1B1KBNR w KQ - 0 5";
 
-auto cmp_moves = [&](auto move, auto line) {
+auto cmp_moves = [](auto move, auto line) {
 	if (line.isCastle())
 		return std::get<2>(move) && line.getFrom() < line.getTo();
 

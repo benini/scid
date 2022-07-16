@@ -716,7 +716,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
   foreach i [sc_base list] {
       incr n_bases
       set color white
-      if {$i == $selected} { set color lightSteelBlue }
+      if {$i == $selected} { set color steelBlue }
 
 #      $w.c.f$i configure -background $color
       if {$icons} {

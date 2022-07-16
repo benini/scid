@@ -146,21 +146,6 @@ MSG =^
 !error $(MSG)
 !endif
 
-##	SCID_TB: Tablebase support.
-#	for no tablebase reading capability.
-#		Use:	SCID_TB =
-#	for tablebase capability.
-#		Use:	SCID_TB = -DSCID_USE_TB
-#	for tablebase capability including 4-1
-#	(King + 3 pieces vs lone king) tablebases.
-#		Use:	SCID_TB = -DSCID_USE_TB -DT41_INCLUDE
-#
-#	Note: With 4-1 (King + 3 pieces vs lone King) tablebases,
-#	older MS compilers need a "/Zm" option to tell them to use
-#	more memory when compiling.
-#
-SCID_TB		= -DSCID_USE_TB -DT41_INCLUDE -Zm101
-
 ##	SCID_EXECS: all the executable programs compiled from C++ files.
 #	Note: only "scid.exe" is compiled by default.
 #
@@ -203,9 +188,7 @@ SCID_XOBJS = \
 	$(TMP_DIR)\crosstab.obj \
 	$(TMP_DIR)\engine.obj \
 	$(TMP_DIR)\optable.obj \
-	$(TMP_DIR)\pbook.obj \
-	$(TMP_DIR)\probe.obj \
-	$(TMP_DIR)\recog.obj
+	$(TMP_DIR)\pbook.obj
 
 
 #--------------------------------------------------------------------
@@ -256,7 +239,7 @@ PROFILE		= $(PROFILE) -DWIN32 -DWIN32_LEAN_AND_MEAN
 #	-c	:Compile Without linking
 #
 CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) \
-			$(SCID_INCLUDES) -c -nologo -std:c++17
+			$(SCID_INCLUDES) -c -nologo -std:c++20
 !message *** CFLAGS: $(CFLAGS)
 
 
@@ -317,10 +300,6 @@ scid.exe: $(TMP_DIR)\scid.obj $(SCID_XOBJS)
 
 $(TMP_DIR)\scid.obj: src\tkscid.cpp
 	$(CC) $(CFLAGS) /Fo$@ $?
-
-$(TMP_DIR)\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
-	$(CC) $(CFLAGS) $(SCID_TB) src\probe.cpp /Fo$@
-
 
 #--------------------------------------------------------------------
 # Implicit rules

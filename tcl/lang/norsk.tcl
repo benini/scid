@@ -152,13 +152,13 @@ menuText O WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText O Tools "Verktøy" 0
+# ====== TODO To be translated ======
+menuText O ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText O ToolsAnalysis "Analysemotor..." 0 \
   {Start/stopp en sjakkanalysemotor}
 menuText O ToolsAnalysis2 "Analysemotor #2..." 0 \
   {Start/stopp enda en sjakkanalysemotor}
 menuText O ToolsCross "Krysstabell" 0 {Vis turnerigskrystabellen for dette partiet}
-menuText O ToolsEmail "Epostbehandler" 0 \
-  {Åpne/lukk epostbehandlingsvinduet}
 menuText O ToolsFilterGraph "Filtergraf" 7 \
   {Åpne/lukk filtergrafvinduet}
 # ====== TODO To be translated ======
@@ -1498,6 +1498,8 @@ translate O ExportStripMarks {Fjern alle fargekoder og piler fra kommentarer?}
 # Goto game/move dialogs:
 translate O LoadGameNumber {Angi partinummer som skal lastes inn:}
 translate O GotoMoveNumber {Gå til trekk nummer:}
+# ====== TODO To be translated ======
+translate O CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate O CopyGames {Kopier partier}

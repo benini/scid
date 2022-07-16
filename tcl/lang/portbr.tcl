@@ -146,13 +146,13 @@ menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela d
 
 # Tools menu:
 menuText B Tools "Ferramentas" 0
+# ====== TODO To be translated ======
+menuText B ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText B ToolsAnalysis "Analisador #1..." 0 \
   {Inicia ou para o 1o. Analisador}
 menuText B ToolsAnalysis2 "Analisador #2..." 17 \
   {Inicia ou para o 2o. Analisador}
 menuText B ToolsCross "Tabela de Cruzamento" 0 {Mostra a tabela de cruzamentos do torneio para o jogo corrente}
-menuText B ToolsEmail "Gerenciador de e-mails" 0 \
-  {Abre/fecha a janela do gerenciador de e-mails}
 menuText B ToolsFilterGraph "Gréfico de filtro" 7 \
   {Abre/Fecha a janela do gráfico de filtro} 
 menuText B ToolsAbsFilterGraph "Grafico de Filtro Absoluto" 7 {Abre/Fecha a janela do grafico de filtro por valor absoluto}
@@ -1256,6 +1256,8 @@ translate B ExportStripMarks {Remover códigos de marca de casa/seta dos comentár
 # Goto game/move dialogs:
 translate B LoadGameNumber {Entre o numero do jogo a ser carregado:}
 translate B GotoMoveNumber {Ir p/ o lance no.:}
+# ====== TODO To be translated ======
+translate B CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate B CopyGames {Copiar jogos}

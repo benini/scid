@@ -155,14 +155,14 @@ menuText P WindowsBook "Book Window" 0 {Open/close the Book window}
 menuText P WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
 
 menuText P Tools "Narzêdzia" 0
+# ====== TODO To be translated ======
+menuText P ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText P ToolsAnalysis "Program analizuj±cy..." 8 \
   {Uruchom/zatrzymaj program analizuj±cy}
 menuText P ToolsAnalysis2 "Program analizuj±cy 2..." 21 \
   {Uruchom/zatrzymaj program analizuj±cy}
 menuText P ToolsCross "Tabela turniejowa" 0 \
   {Poka¿ tabelê turniejow± dla aktualnej partii}
-menuText P ToolsEmail "Zarz±dzanie poczt± e-mail" 0 \
-  {Otwórz/zamknij zarz±dzanie adresami e-mail}
 menuText P ToolsFilterGraph "Wykres filtra" 7 \
   {Otwórz/zamknij wykres filtra}
 # ====== TODO To be translated ======
@@ -1506,6 +1506,8 @@ translate P ExportStripMarks {Usuwaæ z komentarzy kody kolorowania pól/strza³ek?
 # Goto game/move dialogs:
 translate P LoadGameNumber {Podaj numer partii do wczytania:}
 translate P GotoMoveNumber {Id¼ do posuniêcia nr:}
+# ====== TODO To be translated ======
+translate P CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate P CopyGames {Kopiuj partie}

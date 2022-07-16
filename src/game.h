@@ -26,6 +26,7 @@
 #include <forward_list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 class ByteBuffer;
 class TextBuffer;
@@ -197,6 +198,22 @@ private:
     void ClearMoves();
     errorT DecodeVariation(ByteBuffer& buf, std::vector<moveT*>& comment_marks);
     errorT WritePGN(TextBuffer* tb);
+    std::string* find_std_tag(std::string_view tag) {
+        if (tag.size() == 5) {
+            if (tag == "Event")
+                return &EventStr;
+            if (tag == "Round")
+                return &RoundStr;
+            if (tag == "White")
+                return &WhiteStr;
+            if (tag == "Black")
+                return &BlackStr;
+        } else if (tag.size() == 4) {
+            if (tag == "Site")
+                return &SiteStr;
+        }
+        return nullptr;
+    }
 
     /**
      * Contains the information of the current position in the game, so that
@@ -376,11 +393,40 @@ public:
     //////////////////////////////////////////////////////////////
     // Functions that get/set the tag pairs:
     //
-    void AddPgnTag(const char* tag, const char* value);
+
+    // Add a tag.
+    // For the tags that cannot be duplicated (like Event or White), the
+    // previous value will be overwritten.
+    std::string& addTag(std::string_view tag, std::string_view value) {
+        if (auto overwrite = find_std_tag(tag))
+            return overwrite->assign(value);
+
+        return extraTags_.emplace_back(tag, value).second;
+    }
+
+    // Change the value of a tag (add the tag if it wasn't present).
+    template <typename... Args>
+    std::string& assignTagValue(std::string_view tag, Args&&... args) {
+        auto value = find_std_tag(tag);
+        if (!value) {
+            auto it = std::find_if(
+                extraTags_.begin(), extraTags_.end(),
+                [&](auto const& elem) { return elem.first == tag; });
+            if (it != extraTags_.end()) {
+                value = &it->second;
+            } else {
+                value = &extraTags_.emplace_back(tag, std::string()).second;
+            }
+        }
+        return value->assign(std::forward<Args>(args)...);
+    }
+
+    const decltype(extraTags_)& GetExtraTags() const { return extraTags_; }
     const char* FindExtraTag(const char* tag) const;
-    std::string& accessTagValue(const char* tag, size_t tagLen);
-    const decltype(extraTags_) & GetExtraTags() const { return extraTags_; }
     void ClearExtraTags() { extraTags_.clear(); }
+    void RemoveExtraTag(std::string_view tag) {
+        std::erase_if(extraTags_, [&](auto elem) { return elem.first == tag; });
+    }
 
     void LoadStandardTags(IndexEntry const& ie, TagRoster const& tags);
 

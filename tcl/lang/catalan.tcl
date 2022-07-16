@@ -160,13 +160,13 @@ menuText K WindowsCorrChess "Finestra d'Escacs Postal" 0 {Obrir/Tancar la Finest
 
 # Tools menu:
 menuText K Tools "Eines" 0
+# ====== TODO To be translated ======
+menuText K ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText K ToolsAnalysis "Motor d'anàlisi..." 0 \
   {Inicia/Atura un motor d'análisi d'escacs}
 menuText K ToolsAnalysis2 "Motor d'anàlisi #2..." 18 \
   {Inicia/Atura el segon motor d'análisi d'escacs}
 menuText K ToolsCross "Quadre" 0 {Mostra el Quadre del torneig per aquesta partida}
-menuText K ToolsEmail "Gestor d'Emails" 0 \
-  {Obre/tanca la finestra del Gestor d'Emails}
 menuText K ToolsFilterGraph "Filtre Gràfic Rel." 7 \
   {Obre/tanca la finestra del filtre gràfic per valors relatius}
 menuText K ToolsAbsFilterGraph "Filtre gràfic Abs." 7 {Obrir/Tancar la finestra de filtre gràfic per valors absoluts}
@@ -1348,6 +1348,8 @@ translate K ExportStripMarks {Treure marca de codis de cassella/fletxa dels come
 # Goto game/move dialogs:
 translate K LoadGameNumber {Entra el número de la partida a carregar:}
 translate K GotoMoveNumber {Anar a la jugada número:}
+# ====== TODO To be translated ======
+translate K CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate K CopyGames {Copiar partides}

@@ -55,7 +55,7 @@ namespace eval ExtHardware {
 
      }
      close $optionF
-     set ::statusBar "External hardware options were saved to: [scidConfigFile correspondence]"
+     set ::statusBar "External hardware options were saved to: [scidConfigFile ExtHardware]"
 
      # Check if the hw connect button exists already. If not, add it.
      if { [winfo exists .main.fbutton.button.exthardware]} { 

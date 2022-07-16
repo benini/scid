@@ -164,13 +164,14 @@ menuText N WindowsCorrChess "Correspondentieschaak venster" 0 \
 
 # Tools menu:
 menuText N Tools "Gereedschappen" 0
+# ====== TODO To be translated ======
+menuText N ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText N ToolsAnalysis "Schaakengine ..." 3 \
   {Start/stop schaak-analyse programma 1}
 menuText N ToolsAnalysis2 "Schaakengine #2..." 17 \
   {Start/stop  schaak-analyse programma 2}
 menuText N ToolsCross "Kruistabel" 0 \
   {Toon toernooi-kruistabel voor huidige partij}
-menuText N ToolsEmail "EmailBeheerder" 0 {Open/sluit het email venster}
 menuText N ToolsFilterGraph "Filter grafiek" 7 \
   {Openen/sluiten grafisch filter venster}
 menuText N ToolsAbsFilterGraph "Abs. Filter Grafiek" 7 {Open/sluit het filter grafiek venster voor absolute waarden}
@@ -1344,6 +1345,8 @@ translate N ExportStripMarks {Wis vierkante haken/pijlen markeer codes uit de co
 # Goto game/move dialogs:
 translate N LoadGameNumber {Geef het nummer van de te laden partij:}
 translate N GotoMoveNumber {Ga naar zetnummer:}
+# ====== TODO To be translated ======
+translate N CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate N CopyGames {Kopiëren partijen}

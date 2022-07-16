@@ -181,13 +181,13 @@ TEST(Test_Game, gamevisit) {
 	expected_extra.emplace_back("EventDate", "2018.06.01");
 	game.SetEventDate(date_parsePGNTag("2018.06.01", 10));
 	expected_extra.emplace_back("UTCDate", "2018.06.10");
-	game.AddPgnTag("UTCDate", "2018.06.10");
-	expected_extra.emplace_back("UTF-8", u8"Hell\u00F6");
-	game.AddPgnTag(expected_extra.back().first.c_str(),
-	               expected_extra.back().second.c_str());
+	game.addTag("UTCDate", "2018.06.10");
+	expected_extra.emplace_back("UTF-8", (const char*)u8"Hell\u00F6");
+	game.addTag(expected_extra.back().first.c_str(),
+	            expected_extra.back().second.c_str());
 	expected_extra.emplace_back("special chars", R"(Escape\\\" and \n {}\")");
-	game.AddPgnTag(expected_extra.back().first.c_str(),
-	               expected_extra.back().second.c_str());
+	game.addTag(expected_extra.back().first.c_str(),
+	            expected_extra.back().second.c_str());
 	expected_STR[6].second = "0-1";
 	game.SetResult(RESULT_Black);
 	expected_extra.emplace_back(
@@ -225,9 +225,9 @@ TEST(Test_Game, empty_tag_name) {
 	std::vector<unsigned char> encodedGame;
 	{
 		Game game;
-		game.AddPgnTag("Normal tag ", "normal  value");
-		game.AddPgnTag("", "empty tag name");
-		game.AddPgnTag("Annotator", "common tag");
+		game.addTag("Normal tag ", "normal  value");
+		game.addTag("", "empty tag name");
+		game.addTag("Annotator", "common tag");
 		EXPECT_EQ(game.GetExtraTags().size(), 3);
 
 		game.Encode(encodedGame);

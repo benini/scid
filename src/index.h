@@ -42,6 +42,7 @@ private:
     int nInvalidNameId_;
 
     friend class CodecSCID4;
+    friend class CodecSCID5;
 
 public:
     Index()  { Init(); }

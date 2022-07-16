@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 project(scid)
-set(CPACK_PACKAGE_VERSION 4.7.2)
+set(CPACK_PACKAGE_VERSION 4.8.0)
 set(
   CPACK_PACKAGE_DESCRIPTION_SUMMARY
   "chess database application with play and training functionality"
@@ -25,7 +25,7 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 include(CPack)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
@@ -54,14 +54,9 @@ if(MSVC)
 else()
   add_executable(scid ${SCID_SRC})
 endif()
-set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION True)
+set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
 target_link_libraries(scid PRIVATE polyglot ${CMAKE_THREAD_LIBS_INIT} ${TCL_LIBRARY})
-
-option(SCID_USE_TB "Enable Nalimov tablebases" OFF)
-if(SCID_USE_TB)
-  target_compile_definitions(scid PRIVATE -DSCID_USE_TB PRIVATE -DT41_INCLUDE)
-endif()
 
 option(SPELLCHKVALIDATE "Verify the integrity of spelling files" OFF)
 if(SPELLCHKVALIDATE)

@@ -180,12 +180,13 @@ menuText U WindowsCorrChess "Kirjeshakki" 6 {Avaa/sulje kirjeshakki-ikkuna}
 
 # Tools menu:
 menuText U Tools "Työkalut" 1
+# ====== TODO To be translated ======
+menuText U ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText U ToolsAnalysis "Analyysimoottori #1..." 18 \
   {Käynnistä/pysäytä analyysimoottori}
 menuText U ToolsAnalysis2 "Analyysimoottori #2..." 18 \
   {Käynnistä/pysäytä toinen analyysimoottori}
 menuText U ToolsCross "Ristitaulukko" 0 {Näytä turnauksen ristitaulukko tälle pelille}
-menuText U ToolsEmail "Email" 0 {Avaa/sulje email-shakin hallintaikkuna}
 menuText U ToolsFilterGraph "Suhteellinen graafi" 13 {Avaa/sulje suodatingraafi suhteellisilla arvoilla}
 menuText U ToolsAbsFilterGraph "Absoluuttinen graafi" 17 {Avaa/sulje suodatingraafi absoluuttisilla arvoilla}
 menuText U ToolsOpReport "Avausraportti" 0 {Luo nykyisestä asemasta avausraportti}
@@ -1315,6 +1316,8 @@ translate U ExportStripMarks {Poista ruutu-/nuolimerkit kommenteista?}
 # Goto game/move dialogs:
 translate U LoadGameNumber {Ladattavan pelin numero:}
 translate U GotoMoveNumber {Siirry siirtoon nro:}
+# ====== TODO To be translated ======
+translate U CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate U CopyGames {Kopioi pelit}

@@ -24,8 +24,10 @@
 #include "misc.h"
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 using nameT = unsigned;
@@ -66,6 +68,31 @@ class NameBase {
 	std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
 
 public:
+	// Add a name (string) to the NameBase.
+	// @param nt:      @e nameT type of the name to add.
+	// @param name:    the name to add.
+	// @return the ID assigned to @e name.
+	idNumberT namebase_add(nameT nt, std::string_view name) {
+		ASSERT(IsValidNameType(nt));
+		ASSERT(names_[nt].size() <= std::numeric_limits<idNumberT>::max());
+
+		char* alloc = new char[name.size() + 1];
+		std::copy_n(name.data(), name.size(), alloc);
+		alloc[name.size()] = '\0';
+		idNumberT newID = static_cast<idNumberT>(names_[nt].size());
+		names_[nt].emplace_back(alloc);
+		idx_[nt].emplace(alloc, newID);
+		return newID;
+	}
+
+	// Return the number of names stored in the NameBase.
+	// @param nt: a valid @e nameT type.
+	size_t namebase_size(nameT nt) {
+		ASSERT(IsValidNameType(nt));
+
+		return names_[nt].size();
+	}
+
 	/**
 	 * Add a name (string) to the NameBase.
 	 * If the name already exists the corresponding ID is returned.

@@ -150,13 +150,13 @@ menuText Y WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText Y Tools "Alati" 0
+# ====== TODO To be translated ======
+menuText Y ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText Y ToolsAnalysis "Program za analizu..." 0 \
   {Pokreni/zaustavi ¹ahovski program za analizu}
 menuText Y ToolsAnalysis2 "Program za analizu #2..." 17 \
   {Pokreni/zaustavi drugi ¹ahovski program za analizu}
 menuText Y ToolsCross "Tabela turnira" 0 {Poka¾i tabelu turnira za ovu partiju}
-menuText Y ToolsEmail "Email menad¾er" 0 \
-  {Otvori/zatvori menad¾er za korespodentske partije preko email-a}
 menuText Y ToolsFilterGraph "Filter graph" 7 \
   {Open/close the filter graph window} ;# ***
 # ====== TODO To be translated ======
@@ -1499,6 +1499,8 @@ translate Y ExportStripMarks {Strip square/arrow mark codes from comments?} ;# *
 # Goto game/move dialogs:
 translate Y LoadGameNumber {Unesi broj partije za uèitavanje:}
 translate Y GotoMoveNumber {Idi na potez broj:}
+# ====== TODO To be translated ======
+translate Y CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate Y CopyGames {Kopiraj partije}

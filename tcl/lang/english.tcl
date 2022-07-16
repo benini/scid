@@ -180,12 +180,12 @@ menuText E WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspond
 
 # Tools menu:
 menuText E Tools "Tools" 0
+menuText E ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText E ToolsAnalysis "Analysis Engine..." 0 \
   {Start/stop a chess analysis engine}
 menuText E ToolsAnalysis2 "Analysis Engine #2..." 17 \
   {Start/stop the 2nd chess analysis engine}
 menuText E ToolsCross "Crosstable" 0 {Show tournament crosstable for this game}
-menuText E ToolsEmail "Email Manager" 0 {Open/close the email chess manager window}
 menuText E ToolsFilterGraph "Rel. Filter Graph" 12 {Open/close the filter graph window for relative values}
 menuText E ToolsAbsFilterGraph "Abs. Filter Graph" 7 {Open/close the filter graph window for absolute values}
 menuText E ToolsOpReport "Opening Report" 0 {Generate an opening report for the current position}
@@ -1304,6 +1304,7 @@ translate E LoadGameNumber {Enter the game number to load:}
 translate E GotoMoveNumber {Goto move number:}
 
 # Copy games dialog:
+translate E CopyAllGames {Copy all games to}
 translate E CopyGames {Copy games}
 translate E CopyConfirm {
  Do you really want to copy

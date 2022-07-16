@@ -82,7 +82,7 @@ jobs:
       call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
       git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
       cd stockfish\src
-      cl /std:c++17 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
+      cl /std:c++20 /DNDEBUG /DUSE_POPCNT /DUSE_AVX2 /DUSE_SSE41 /DUSE_SSSE3 /DUSE_SSE2  /GS- /MT /O2 /Oi /Ot /Oy /GL /EHsc *.cpp nnue/*.cpp nnue/features/*.cpp syzygy/*.cpp /link /LTCG /STACK:reserve=8388608 /OUT:stockfish.exe advapi32.lib
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
     displayName: Generate stockfish
   - bash: |
@@ -150,6 +150,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fno-exceptions -fno-rtti" \
             -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" \
+            -DCMAKE_CXX_COMPILER=g++-10 \
              $(Build.SourcesDirectory)
       make package
     displayName: Generate SCID
@@ -190,6 +191,8 @@ jobs:
             -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)/tcltk/include \
             -DTCL_LIBRARY=$(Build.SourcesDirectory)/tcltk/lib/libtcl8.6.a \
             -DCMAKE_CXX_STANDARD_LIBRARIES="-lz -ldl" \
+            -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" \
+            -DCMAKE_CXX_COMPILER=g++-10 \
              $(Build.SourcesDirectory)
       make VERBOSE=1
       make install

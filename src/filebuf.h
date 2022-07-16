@@ -236,6 +236,17 @@ public:
 	}
 
 	/**
+	 * Invoke filebuf::sbumpc() and update @e filePos_.
+	 */
+	auto sbumpc() {
+		auto res = std::filebuf::sbumpc();
+		if (res != Filebuf::traits_type::eof())
+			++filePos_;
+
+		return res;
+	}
+
+	/**
 	 * Invoke filebuf::xsgetn() and update @e filePos_.
 	 */
 	std::streamsize sgetn(char_type* s, std::streamsize count) {

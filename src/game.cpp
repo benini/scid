@@ -580,20 +580,6 @@ Game::SetPgnFormatFromString (const char * str)
     return PgnFormatFromString (str, &PgnFormat);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Game::AddPgnTag(): Add a PGN Tag.
-//
-void Game::AddPgnTag(const char* tag, const char* value) {
-    // First, try to replace an existing tag:
-    for (auto& e : extraTags_) {
-        if (e.first == tag) {
-            e.second.assign(value);
-            return;
-        }
-    }
-    extraTags_.emplace_back(tag, value);
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::FindExtraTag():
 //   Finds and returns an extra PGN tag if it
@@ -604,30 +590,6 @@ const char* Game::FindExtraTag(const char* tag) const {
             return e.second.c_str();
     }
     return NULL;
-}
-
-std::string& Game::accessTagValue(const char* tag, size_t tagLen) {
-	if (tagLen == 5) {
-		if (std::equal(tag, tag + 5, "Event"))
-			return EventStr;
-		if (std::equal(tag, tag + 5, "Round"))
-			return RoundStr;
-		if (std::equal(tag, tag + 5, "White"))
-			return WhiteStr;
-		if (std::equal(tag, tag + 5, "Black"))
-			return BlackStr;
-	} else if (tagLen == 4) {
-		if (std::equal(tag, tag + 4, "Site"))
-			return SiteStr;
-	}
-
-	for (auto& elem : extraTags_) {
-		if (std::equal(tag, tag + tagLen, elem.first.begin(), elem.first.end()))
-			return elem.second;
-	}
-	extraTags_.emplace_back();
-	extraTags_.back().first.assign(tag, tagLen);
-	return extraTags_.back().second;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3024,7 +2986,7 @@ errorT Game::Decode(IndexEntry const& ie, TagRoster const& tags, ByteBuffer buf)
     LoadStandardTags(ie, tags);
 
     errorT err = buf.decodeTags([&](const auto& tag, const auto& value) {
-        accessTagValue(tag.data(), tag.size()).assign(value);
+        assignTagValue(tag, value);
     });
     if (err)
         return err;

@@ -161,13 +161,13 @@ menuText S WindowsCorrChess "Ventana de Correo" 0 {Abrir/Cerrar la ventra de Cor
 
 # Tools menu:
 menuText S Tools "Herramientas" 0
+# ====== TODO To be translated ======
+menuText S ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText S ToolsAnalysis "Motor de análisis #1..." 0 \
   {Inicia/para el análisis del motor de ajedrez #1}
 menuText S ToolsAnalysis2 "Motor de análisis #2..." 18 \
   {Inicia/para el análisis del motor de ajedrez #2}
 menuText S ToolsCross "Tabla cruzada" 0 {Muestra la tabla cruzada para esta partida}
-menuText S ToolsEmail "Administrador de Email" 0 \
-  {Abre/cierra la ventana del administrador de Email}
 menuText S ToolsFilterGraph "Filtro gráfico" 7 \
   {Abre/cierra la ventana del filtro gráfico}
 menuText S ToolsAbsFilterGraph "Filtro gráfico Abs." 7 {Abrir/Cerrar la ventana de filtro gráfico para valores absolutos}
@@ -1366,6 +1366,8 @@ translate S ExportStripMarks {¿Quitar marca de códigos de casilla/flecha de los 
 # Goto game/move dialogs:
 translate S LoadGameNumber {Escribe el número de la partida a cargar:}
 translate S GotoMoveNumber {Ir al movimiento número:}
+# ====== TODO To be translated ======
+translate S CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate S CopyGames {Copiar partidas}

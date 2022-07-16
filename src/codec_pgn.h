@@ -32,9 +32,8 @@
 #include <cstring>
 #include <vector>
 
-class CodecPgn : public CodecProxy<CodecPgn> {
-	Filebuf file_;
-	std::streamsize fileSize_ = 0;
+class CodecPgn final : public CodecProxy<CodecPgn> {
+	FilebufAppend file_;
 	std::string filename_;
 	std::vector<char> buf_;
 	size_t nParsed_ = 0;
@@ -63,25 +62,18 @@ public:
 	 * @returns OK in case of success, an @e errorT code otherwise.
 	 */
 	errorT open(const char* filename, fileModeT fmode) {
-		ASSERT(filename && !file_.is_open());
+		ASSERT(filename);
+
+		buf_.resize(128 * 1024);
+		nRead_ = nParsed_ = buf_.size();
 		filename_ = filename;
 		if (filename_.empty())
 			return ERROR_FileOpen;
 
-		errorT err_open = file_.Open(filename, fmode);
-		if (err_open != OK)
-			return err_open;
+		if (auto err = file_.open(filename, fmode))
+			return err;
 
-		buf_.resize(128 * 1024);
-		nRead_ = nParsed_ = buf_.size();
-		file_.pubsetbuf(nullptr, nRead_); // Optimization
-
-		fileSize_ = file_.pubseekoff(0, std::ios::end);
-		file_.pubseekpos(0);
-		if (fileSize_ < 0)
-			return ERROR_FileSeek;
-
-		return OK;
+		return file_.pubseekpos(0) == 0 ? OK : ERROR_FileSeek;
 	}
 
 	/**
@@ -134,7 +126,7 @@ public:
 	 * data parsed and second one is the total amount of data of the database.
 	 */
 	std::pair<size_t, size_t> parseProgress() {
-		return std::make_pair(parseLog_.n_bytes / 1024, fileSize_ / 1024);
+		return std::make_pair(parseLog_.n_bytes / 1024, file_.size() / 1024);
 	}
 
 	/**
@@ -159,15 +151,10 @@ public:
 		game->SetPgnFormat(PGN_FORMAT_Plain);
 		game->ResetPgnStyle(PGN_STYLE_TAGS | PGN_STYLE_VARS |
 		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
-		std::pair<const char*, unsigned> pgn = game->WriteToPGN(75, true);
+		auto [pgn, pgn_sz] = game->WriteToPGN(75, true);
 		language = old_language;
 
-		file_.pubseekpos(fileSize_);
-		if (file_.sputn(pgn.first, pgn.second) == pgn.second) {
-			fileSize_ += pgn.second;
-			return OK;
-		}
-		return ERROR_FileWrite;
+		return file_.append(pgn, pgn_sz);
 	}
 
 	/**

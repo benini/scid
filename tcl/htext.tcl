@@ -212,17 +212,12 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
-  $w tag configure tag -foreground $::pgnColor(Header)
-  if { $::pgn::boldMainLine } {
-    $w tag configure nag -foreground $::pgnColor(Nag) -font font_Regular
-    $w tag configure var -foreground $::pgnColor(Var) -font font_Regular
-  } else {
-    $w tag configure nag -foreground $::pgnColor(Nag)
+  $w tag configure var -font font_Regular
+  $w tag configure nag -font font_Regular
+  if { $::pgnColor(Var) ne "" } {
     $w tag configure var -foreground $::pgnColor(Var)
-	 ### TODO
-    ### $w tag configure var -foreground $::pgnColor(Var) -font font_Figurine_Var
-
   }
+  $w tag configure nag -foreground $::pgnColor(Nag)
 
   set lmargin 0
   for {set i 1} {$i <= 19} {incr i} {

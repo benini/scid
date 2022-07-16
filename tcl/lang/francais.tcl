@@ -154,14 +154,14 @@ menuText F WindowsCorrChess "Jeu par correspondance" 0 {Ouvrir/Fermer la fenêtr
 
 # Tools menu:
 menuText F Tools "Outils" 2
+# ====== TODO To be translated ======
+menuText F ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText F ToolsAnalysis "Moteur d'analyse..." 9 \
   {Démarrer/Arrêter un moteur d'analyses}
 menuText F ToolsAnalysis2 "Moteur d'analyse #2..." 18 \
   {Démarrer/Arrêter un moteur d'analyses}
 menuText F ToolsCross "Classement du tournoi" 9 \
   {Montrer le classement du tournoi}
-menuText F ToolsEmail "Gestion des messages" 0 \
-  {Ouvrir/Fermer la fenêtre de gestion des messages électroniques}
 menuText F ToolsFilterGraph "Graphique de filtre" 6 {Ouvrir/Fermer la fenêtre du graphique de filtre}
 menuText F ToolsAbsFilterGraph "Graphique de filtre absolu" 7 {Ouvrir/Fermer la fenêtre du graphique de filtre absolu}
 menuText F ToolsOpReport "Rapport d'ouverture" 0 {Générer un rapport d'ouvertures à partir de la position courante}
@@ -1302,6 +1302,8 @@ translate F ExportStripMarks {Enlever les codes de marquages de flèches et de c
 # Goto game/move dialogs:
 translate F LoadGameNumber {Entrer le numéro de la partie à charger:}
 translate F GotoMoveNumber {Aller au coup numéro:}
+# ====== TODO To be translated ======
+translate F CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate F CopyGames {Copier les parties}

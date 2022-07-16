@@ -39,7 +39,7 @@ if {$tcl_version == 8.5} { catch {package require img::png} }
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
-set scidVersionExpected "4.7.2"
+set scidVersionExpected "4.8.0"
 
 # Check that the version of c++ code matches the version of tcl code
 #
@@ -120,11 +120,6 @@ proc InitDirs {} {
       file rename -force $scidUserDir "$scidUserDir.old"
     }
 
-    # Rename old "~/.scid_sent_emails" if necessary:
-    if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
-      catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
-    }
-
     foreach {oldname newname} {
       scidrc options.dat
       scid.opt options.dat
@@ -182,7 +177,7 @@ foreach ns {
   ::windows::switcher ::windows::eco ::crosstab ::pgn ::book
   ::windows::commenteditor
   ::tools
-  ::tools::analysis ::tools::email
+  ::tools::analysis
   ::tools::graphs
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
@@ -350,12 +345,6 @@ proc safeStyle {interp args} {
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
 
-
-# Check for old (single-directory) tablebase option:
-if {[info exists initialDir(tablebase)]} {
-  set initialDir(tablebase1) $initialDir(tablebase)
-}
-
 proc createFonts {} {
   foreach name {Regular Menu Small Tiny Fixed} {
     set opts $::fontOptions($name)
@@ -464,8 +453,23 @@ proc autoscrollText {bars frame widget style} {
   autoscrollBars $bars $frame $widget
 }
 
+# Create a canvas and apply to it the current ttk style.
+proc ttk_canvas {pathName args} {
+  canvas $pathName {*}$args
+  ::applyThemeStyle Treeview $pathName
+}
+
+# Create an item into a widget (i.e. a canvas) and apply to it the current ttk style.
+# TODO: find a better way to do this and re-apply when <<ThemeChanged>>
+proc ttk_create {pathName type x y args} {
+  if {"-fill" ni $args} {
+    lappend args "-fill"
+    lappend args [ttk::style lookup Treeview -foreground "" black]
+  }
+  $pathName create $type $x $y {*}$args
+}
+
 # Create a menu and apply to it the ttk style.
-# TODO: checkbutton and radiobutton indicators are not effected.
 proc ttk_menu {pathName args} {
   menu $pathName {*}$args
   ::applyThemeStyle . $pathName
@@ -621,7 +625,6 @@ search/board.tcl
 search/header.tcl
 search/material.tcl
 contrib/ezsmtp/ezsmtp.tcl
-tools/email.tcl
 tools/import.tcl
 tools/optable.tcl
 tools/preport.tcl
@@ -629,7 +632,6 @@ tools/pinfo.tcl
 tools/analysis.tcl
 tools/wbdetect.tcl
 tools/graphs.tcl
-tools/tablebase.tcl
 tools/ptracker.tcl
 help/help.tcl
 help/tips.tcl
@@ -639,7 +641,6 @@ menus.tcl
 board.tcl
 move.tcl
 main.tcl
-tools/correspondence.tcl
 tools/uci.tcl
 end.tcl
 tools/tacgame.tcl

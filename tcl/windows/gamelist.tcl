@@ -310,7 +310,7 @@ proc ::windows::gamelist::AweGuess {{txt}} {
 	set extra(0) "$txt"
 	for {set np 1} {
 	  [regexp \
-	    {^(?:(.*?)\s+)??(gnum|white|black|welo|belo|elo|eco|date|event|site)\s+(.+?)(?:\s+(.*))?$} \
+	    {^(?:(.*?)\s+)??(gnum|white|black|welo|belo|elo|eco|date|event|site|variant)\s+(.+?)(?:\s+(.*))?$} \
 	    $extra([expr $np -1]) -> extra([expr $np -1]) param($np) val($np) extra($np) \
 	  ]
 	} {incr np} {}
@@ -361,8 +361,7 @@ proc ::windows::gamelist::AweParse {{txt}} {
 	return [join $res]
 }
 
-proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
-	set filter "dbfilter"
+proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase} {filter "dbfilter"} {ask true}} {
 	if {$w != "" && $srcBase == $::gamelistBase($w)} { set filter $::gamelistFilter($w) }
 
 	set fromName [file tail [sc_base filename $srcBase]]
@@ -381,7 +380,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 		return
 	}
 	# If copying to the clipbase, do not bother asking for confirmation:
-	if {$dstBase != $::clipbase_db} {
+	if {$ask && $dstBase != $::clipbase_db} {
 		set confirm [tk_messageBox -type "okcancel" -icon question -title "Scid: $::tr(CopyGames)" \
 			-message [subst $::tr(CopyConfirm)] ]
 		if {$confirm != "ok"} { return }
@@ -506,7 +505,7 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.stats.b -sticky news
 	grid rowconfigure $w.stats 0 -weight 1
 	grid columnconfigure $w.stats 0 -weight 1
-	autoscrollframe -bars y $w.stats.b canvas $w.stats.b.c -highlightthickness 0 -background white
+	autoscrollframe -bars y $w.stats.b ttk_canvas $w.stats.b.c -highlightthickness 0
 }
 
 proc ::windows::gamelist::createGList_ {{w}} {
@@ -514,19 +513,23 @@ proc ::windows::gamelist::createGList_ {{w}} {
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games "ly$w"
 	grid $w.games -row 0 -column 2 -sticky news
+	# TODO: always show the find bar instead of toggling between show/hide
+	bind [winfo toplevel $w] <Control-f> "
+		event generate $w.buttons.filter <<Invoke>>
+	"
 }
 
 proc ::windows::gamelist::menu_ {{w} {button}} {
 	if {$::gamelistMenu($w) != ""} {
 		$w.buttons.$::gamelistMenu($w) state !pressed
 		grid forget $w.$::gamelistMenu($w)
-		if {$button == "filter"} { event generate $w.games.find.hide <ButtonPress-1> }
+		if {$button == "filter"} { event generate $w.games <<FindBarHide>> }
 	}
 	if {$::gamelistMenu($w) != $button} {
 		$w.buttons.$button state pressed
 		set ::gamelistMenu($w) $button
 		grid $w.$button -row 0 -column 1 -sticky news
-		if {$button == "filter"} { event generate $w <Control-f> }
+		if {$button == "filter"} { event generate $w.games <<FindBarShow>> }
 	} else {
 		set ::gamelistMenu($w) ""
 	}
@@ -649,11 +652,11 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 			}
 		"
 		if { $toMove == "B" } { set moveSAN "..$moveSAN" }
-		$w.stats.b.c create text [expr int($rectW*1.5)] $line -anchor sw \
-		    -text $moveSAN -fill black -font font_Regular -tag add$i_add
+		ttk_create $w.stats.b.c text [expr int($rectW*1.5)] $line -anchor sw \
+		    -text $moveSAN -font font_Regular -tag add$i_add
 
 		incr i_add
-		$w.stats.b.c create text $moveW $line -anchor se \
+		ttk_create $w.stats.b.c text $moveW $line -anchor se \
 		    -text $n_totgames -fill #707070 -font font_Italic
 		set barh1 [expr { $line - 2*$rectB }]
 		set barh2 [expr { $line - $rectB }]
@@ -681,12 +684,12 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 
 			$w.stats.b.c create rectangle $barW $barh1 $loss $barh2
 
-			$w.stats.b.c create text [expr { $barW + $percW * 3 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_white"
-			$w.stats.b.c create text [expr { $barW + $percW * 6 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_draw"
-			$w.stats.b.c create text [expr { $barW + $percW * 9 }] $barh1 \
-				-font font_Small -anchor se -fill black -text "$t_black"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 3 }] $barh1 \
+				-font font_Small -anchor se -text "$t_white"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 6 }] $barh1 \
+				-font font_Small -anchor se -text "$t_draw"
+			ttk_create $w.stats.b.c text [expr { $barW + $percW * 9 }] $barh1 \
+				-font font_Small -anchor se -text "$t_black"
 		}
 
 		incr line $lineH
@@ -799,7 +802,7 @@ proc glist.create {{w} {layout}} {
   }
 
   ttk::treeview $w.glist -style Gamelist.Treeview -columns $::glist_Headers -show headings -selectmode browse
-  $w.glist tag configure current -background lightSteelBlue
+  $w.glist tag configure current -background steelBlue
   $w.glist tag configure fsmall -font font_Small
   $w.glist tag configure deleted -foreground #a5a2ac
   menu $w.glist.header_menu
@@ -873,8 +876,6 @@ proc glist.create {{w} {layout}} {
 
   # Find widget
   ttk::frame $w.find
-  ttk::label $w.find.hide -image "tb_close hover tb_close_hover"
-  bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
   ttk::frame $w.find.t
   ttk::label $w.find.t_text -text $::tr(Search)
   ttk::entry $w.find.text -width 20
@@ -883,7 +884,7 @@ proc glist.create {{w} {layout}} {
     "after cancel glist.findgame_ $w 1; after idle glist.findgame_ $w 1"
   ttk::button $w.find.b2_text -image tb_up -command \
     "after cancel glist.findgame_ $w 0; after idle glist.findgame_ $w 0"
-  bind $w.find.text <Escape> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
+  bind $w.find.text <Escape> "glist.showfindbar_ $w.glist $layout 0"
   bind $w.find.text <Return> "$w.find.filter invoke"
   bind $w.find.text <KeyPress-Down> "$w.find.b1_text invoke; break"
   bind $w.find.text <KeyPress-Up> "$w.find.b2_text invoke; break"
@@ -891,13 +892,13 @@ proc glist.create {{w} {layout}} {
   #TODO: set scale position when normal ybar is used
   ttk::scale $w.find.scale -command "glist.ybar_ $w.glist moveto"
   grid $w.find.t_text $w.find.text $w.find.filter $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
-  grid $w.find.hide
   grid $w.find.t -row 0 -column 1 -padx 6
   grid $w.find.scale -row 0 -column 3 -sticky ew
   grid columnconfigure $w.find 3 -weight 1
   set ::glistFindBar($w.glist) $w.find
   glist.showfindbar_ $w.glist $layout
-  bind [winfo toplevel $w] <Control-f> "set ::glist_FindBar($layout) 1; glist.showfindbar_ $w.glist $layout"
+  bind $w <<FindBarHide>> "glist.showfindbar_ $w.glist $layout 0"
+  bind $w <<FindBarShow>> "glist.showfindbar_ $w.glist $layout 1"
 
   # On exit save layout in options.dat
   options.save ::glist_ColOrder
@@ -1006,7 +1007,10 @@ proc glist.loadvalues_ {{w}} {
   glist.ybarupdate_ $w
 }
 
-proc glist.showfindbar_ {{w} {layout}} {
+proc glist.showfindbar_ {{w} {layout} {show ""}} {
+  if {$show ne ""} {
+    set ::glist_FindBar($layout) $show
+  }
   if {$::glist_FindBar($layout) == 0} {
     grid forget $::glistFindBar($w)
     focus $w

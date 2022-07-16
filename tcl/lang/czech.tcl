@@ -141,13 +141,13 @@ menuText C WindowsCorrChess "Korespondenèní okno" 0 {Otevøít/zavøít okno knihovn
 
 # Tools menu:
 menuText C Tools "Nástroje" 3
+# ====== TODO To be translated ======
+menuText C ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText C ToolsAnalysis "Program pro analýzu..." 0 \
   {Spustit/zastavit ¹achový program pro analýzu pozice}
 menuText C ToolsAnalysis2 "Program pro analýzu #2..." 20 \
   {Spustit/zastavit druhý ¹achový program pro analýzu pozice}
 menuText C ToolsCross "Turnajová tabulka" 0 {Ukázat turnajovou tabulku pro tuto partii}
-menuText C ToolsEmail "Email mana¾er" 1 \
-  {Otevøít/zavøít okno emailového mana¾era}
 menuText C ToolsFilterGraph "Graf filtru" 0 \
   {Otevøít/zavøít okno grafu filtru}
 menuText C ToolsAbsFilterGraph "Abs. graf filtru" 7 {Otevøít/zavøít okno grafu filtru s absolutními hodnotami}
@@ -1307,6 +1307,8 @@ translate C ExportStripMarks {Odstranit kódové znaèky polí/¹ipek z komentáøù?}
 # Goto game/move dialogs:
 translate C LoadGameNumber {Vlo¾te èíslo partie:}
 translate C GotoMoveNumber {Pøejít na tah èíslo:}
+# ====== TODO To be translated ======
+translate C CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate C CopyGames {Kopírovat partie}

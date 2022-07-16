@@ -147,12 +147,13 @@ menuText R WindowsCorrChess "Окно переписки" 0 {Открыть/за
 
 # Tools menu:
 menuText R Tools "Инструменты" 2
+# ====== TODO To be translated ======
+menuText R ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText R ToolsAnalysis "Аналитический движок №1..." 0 \
   {Запустить/остановить первый аналитический шахматный движок}
 menuText R ToolsAnalysis2 "Аналитический движок №2..." 22 \
   {Запустить/остановить второй аналитический шахматный движок}
 menuText R ToolsCross "Турнирная таблица" 0 {Показать турнирную таблицу для этой партии}
-menuText R ToolsEmail "Менеджер писем" 0 {Открыть/закрыть окно шахматного менеджера писем}
 menuText R ToolsFilterGraph "Диаграмма фильтра" 0 {Открыть/закрыть окно фильтрованной диаграммы}
 menuText R ToolsAbsFilterGraph "Диаграмма фильтра абсолютных значений" 7 {Открыть/закрыть окно диаграммы фильтра абсолютных значений}
 menuText R ToolsOpReport "Дебютный отчёт" 0 {Генерировать дебютный отчёт для текущей позиции}
@@ -1271,6 +1272,8 @@ translate R ExportStripMarks {Удалить маркированные коды
 # Goto game/move dialogs:
 translate R LoadGameNumber {Введите номер партии для загрузки:}
 translate R GotoMoveNumber {Перейти к ходу номер:}
+# ====== TODO To be translated ======
+translate R CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate R CopyGames {Скопировать партии}

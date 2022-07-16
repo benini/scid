@@ -587,7 +587,7 @@ proc updateGameInfo {} {
     ::htext::display .main.gameInfo.text [sc_game info -hide $gameInfo(hideNextMove) \
             -material $gameInfo(showMaterial) \
             -cfull $gameInfo(fullComment) \
-            -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
+            -fen $gameInfo(showFEN)]
     if {$gameInfo(wrap)} {
         .main.gameInfo.text configure -wrap word
         .main.gameInfo.text tag configure wrap -lmargin2 10
@@ -1293,11 +1293,6 @@ proc CreateMainBoard { {w} } {
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
   bind $w <Configure> {+::resizeMainBoard }
-  bind $w <Return> { #TODO: improve this
-    if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
-        .analysisWin1.b1.move invoke
-    }
-  }
 
   bindMouseWheel $w "main_mousewheelHandler"
 
@@ -1354,17 +1349,6 @@ proc CreateGameInfo {} {
   .main.gameInfo.menu add checkbutton -label GInfoPhotos \
           -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
           -command {togglePhotosSize 0}
-
-  .main.gameInfo.menu add separator
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBNothing \
-          -variable gameInfo(showTB) -value 0 -command updateBoard
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBResult \
-          -variable gameInfo(showTB) -value 1 -command updateBoard
-
-  .main.gameInfo.menu add radiobutton -label GInfoTBAll \
-          -variable gameInfo(showTB) -value 2 -command updateBoard
 
   .main.gameInfo.menu add separator
 
@@ -1437,7 +1421,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
 	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
 	ttk::button .main.tb.crosstab -image tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
-	ttk::button .main.tb.engine -image tb_engine -command makeAnalysisWin -padding {2 0}
+	ttk::button .main.tb.engine -image tb_engine -command ::enginewin::Open -padding {2 0}
 	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
 
 	foreach i {newdb open save closedb finder bkm newgame copy paste gprev gnext \

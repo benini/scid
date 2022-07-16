@@ -44,15 +44,11 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.spellcheckWin)  55
   set winHeight(.spellcheckWin) 25
 
-  # Default Correspondence Chess window size:
-  set winWidth(.ccWindow) 10
-  set winHeight(.ccWindow) 20
-
   # List of saved layouts : 3 slots available
   set ::docking::layout_list(1) {}
   set ::docking::layout_list(2) {{MainWindowGeometry 540x650+0+0} {{.pw vertical {}} {TNotebook .nb .fdockmain}}}
-  set ::docking::layout_list(3) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
-  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
+  set ::docking::layout_list(3) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
+  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw1 vertical 270} {TNotebook .tb2 {.fdockpgnWin}} {TNotebook .tb3 .fdockglistWin1}}}}}}}
 }
 
 proc InitDefaultStats {} {
@@ -197,7 +193,7 @@ set showGameInfo 0
 set language E
 
 # Default theme
-set ::lookTheme "default"
+set ::lookTheme "dark"
 set ::ThemePackageFile ""
 
 # Auto-save options when exiting:
@@ -284,12 +280,10 @@ set ::pgn::boldMainLine 1
 set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
 set ::pgn::showPhoto 1
-set pgnColor(Header) "\#00008b"
-set pgnColor(Main) "\#000000"
-set pgnColor(Var) "\#0000ee"
-set pgnColor(Nag) "\#ee0000"
-set pgnColor(Comment) "\#008b00"
-set pgnColor(Current) lightSteelBlue
+set pgnColor(Var) ""
+set pgnColor(Nag) {#cf6403}
+set pgnColor(Comment) {#008b00}
+set pgnColor(Current) steelBlue
 
 # Defaults for FICS
 set ::fics::use_timeseal 0
@@ -360,10 +354,6 @@ set initialDir(html) "."
 set initialDir(tex)  "."
 set initialDir(stm)  "."
 set initialDir(report) "."
-set initialDir(tablebase1) ""
-set initialDir(tablebase2) ""
-set initialDir(tablebase3) ""
-set initialDir(tablebase4) ""
 
 # Default PGN display options:
 set pgnStyle(Tags) 1
@@ -391,8 +381,6 @@ set gameInfo(showFEN) 0
 set gameInfo(showMarks) 1
 set gameInfo(wrap) 0
 set gameInfo(fullComment) 0
-set gameInfo(showTB) 0
-if {[sc_info tb]} { set gameInfo(showTB) 2 }
 
 # Twin deletion options:
 
@@ -542,19 +530,6 @@ proc raiseWin {w} {
   return
 }
 
-# Email configuration:
-set email(logfile) [file join $scidLogDir "scidmail.log"]
-set email(oldlogfile) [file join $scidUserDir "scidmail.log"]
-set email(smtp) 1
-set email(smproc) "/usr/lib/sendmail"
-set email(server) localhost
-set email(from) ""
-set email(bcc) ""
-# Rename old email log file if necessary:
-if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
-  catch {file rename $email(oldlogfile) $email(logfile)}
-}
-
 ### Audio move announcement options:
 set ::utils::sound::soundFolder [file nativename [file join $::scidShareDir sounds]]
 set ::utils::sound::announceNew 0
@@ -596,8 +571,6 @@ proc scidConfigFile {type} {
     reports "reports.dat"
     optrainer "optrainer.dat"
     resolvers "resolvers.dat"
-    xfccstate "xfccstate.dat"
-    correspondence "correspondence.dat"
     ExtHardware "hardware.dat"
     treecache "treecache.dat"
   } {
@@ -671,11 +644,9 @@ proc options.write {} {
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \
           exportFlags(htmldiag) exportFlags(convertNullMoves) \
-          email(smtp) email(smproc) email(server) \
-          email(from) email(bcc) \
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
           gameInfo(fullComment) gameInfo(showMarks) \
-          gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
+          gameInfo(showMaterial) gameInfo(showFEN) \
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
@@ -720,7 +691,7 @@ proc options.write {} {
     puts $optionF ""
     foreach i {squareColor_lite squareColor_dark whitecolor blackcolor highcolor bestcolor \
           whiteborder blackborder borderwidth \
-          pgnColor(Header) pgnColor(Main) pgnColor(Var) \
+          pgnColor(Var) \
           pgnColor(Nag) pgnColor(Comment) \
           pgnColor(Current) } {
       puts $optionF "set $i [list [set $i]]"

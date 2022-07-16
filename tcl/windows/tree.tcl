@@ -227,10 +227,6 @@ proc ::tree::doTraining { { n 0 } } {
     automove 2
     return
   }
-  if {[::tb::isopen]  &&  $::tbTraining} {
-    ::tb::move
-    return
-  }
   if {! [winfo exists .treeWin$::tree::trainingBase]} { return }
   if { $::tree::trainingBase == 0 } { return }
   

@@ -149,13 +149,13 @@ menuText W WindowsCorrChess "Korrespondensfönster" 0 {Öppna/stäng Korrespondensf
 
 # Tools menu:
 menuText W Tools "Verktyg" 0
+# ====== TODO To be translated ======
+menuText W ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
 menuText W ToolsAnalysis "Analysmotor..." 6 \
   {Starta/ stoppa en analysmotor}
 menuText W ToolsAnalysis2 "Analysmotor 2..." 12 \
   {Starta/ stoppa en andra analysmotor}
 menuText W ToolsCross "Resultattabell" 0 {Visa en resultattabell för den aktuella turneringen}
-menuText W ToolsEmail "Eposthanterare" 0 \
-  {Öppna/ stäng eposthanteraren}
 menuText W ToolsFilterGraph "Filterdiagram" 7 \
   {Öppna/ stäng filterdiagramfönstret} 
 menuText W ToolsAbsFilterGraph "Absolut Filtergraf" 7 {Öppna/stäng filtergraffönstret för absolutvärden}
@@ -1277,6 +1277,8 @@ translate W ExportStripMarks {Avlägsna koder för fält och pilar från kommentarer
 # Goto game/move dialogs:
 translate W LoadGameNumber {Ange partiets nummer:}
 translate W GotoMoveNumber {Gå till drag nummer:}
+# ====== TODO To be translated ======
+translate W CopyAllGames {Copy all games to}
 
 # Copy games dialog:
 translate W CopyGames {kopiera partier}

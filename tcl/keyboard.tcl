@@ -114,15 +114,15 @@ proc keyboardShortcuts {w} {
 	# Open the help window
 	bind $w <F1> { helpWindowPertinent %W }
 
+	# Engines
+	bind $w <F2> "::enginewin::toggleStartStop 1"
+	bind $w <F3> "::enginewin::toggleStartStop 2"
+
 	# Toggle the active window between docked/undocked
 	bind $w <F9> { ::win::toggleDocked %W }
 
 	#TODO: to be checked
 	bind $w <F6>	::book::open
-	bind $w <F12> ::CorrespondenceChess::CCWindow
-	bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox}
-	bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;	::CorrespondenceChess::FetchGames}
-	bind $w <Control-equal> ::tb::Open
 	bind $w <Control-d> ::windows::switcher::Open
 	bind $w <Control-e> "::makeCommentWin toggle"
 	bind $w <Control-i> ::windows::stats::Open
@@ -139,12 +139,6 @@ proc keyboardShortcuts {w} {
 
 
 	#TODO: to be improved
-	bind $w <F2> "::makeAnalysisWin 1 0"
-	bind $w <F3> "::makeAnalysisWin 2 0"
-	bind $w <F4> { if {[winfo exists .analysisWin1]} { .analysisWin1.b1.bStartStop invoke } }
-	bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
-	bind $w <Control-A> makeAnalysisWin
-	bind $w <Control-Shift-2>	"makeAnalysisWin 2"
 	bind $w <Control-a> {sc_var create; updateBoard -pgn}
 
 
@@ -156,7 +150,6 @@ proc keyboardShortcuts {w} {
 
 	bind $w <Control-C> ::copyFEN
 	bind $w <Control-V> ::pasteFEN
-	bind $w <Control-E> ::tools::email
 	bind $w <Control-I> importPgnGame
 	bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
 	bind $w <Control-G> tools::graphs::filter::Open
