@@ -31,13 +31,6 @@ int sc_eco_read       (TCL_ARGS);
 int sc_eco_summary    (TCL_ARGS);
 int sc_eco_translate  (TCL_ARGS);
 
-int sc_filter_first   (TCL_ARGS);
-int sc_filter_freq    (scidBaseT* dbase, const HFilter& filter, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_filter_last    (TCL_ARGS);
-int sc_filter_next    (TCL_ARGS);
-int sc_filter_prev    (TCL_ARGS);
-int sc_filter_stats   (TCL_ARGS);
-
 int sc_game_crosstable (TCL_ARGS);
 int sc_game_find      (TCL_ARGS);
 int sc_game_firstMoves (TCL_ARGS);

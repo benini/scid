@@ -1380,225 +1380,7 @@ translateECO (Tcl_Interp * ti, const char * strFrom, DString * dstrTo)
 
 //////////////////////////////////////////////////////////////////////
 ///  FILTER functions
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter: filter commands.  Valid minor commands:
-//    count:     returns the number of games in the filter.
-//    reset:     resets the filter so all games are included.
-//    remove:    removes game number <x> from the filter.
-//    stats:     prints filter statistics.
-int
-sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    int index = -1;
-    static const char * options [] = {
-        "count", "first", "frequency",
-        "last", "negate", "next",
-        "previous", "stats",
-        "search", "release",
-        "treestats", "export", "copy", "and", "or", "new", NULL
-    };
-    enum {
-        FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
-        FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
-        FILTER_PREV, FILTER_STATS,
-        FILTER_SEARCH, FILTER_RELEASE,
-        FILTER_TREESTATS, FILTER_EXPORT, FILTER_COPY, FILTER_AND, FILTER_OR, FILTER_NEW
-    };
-
-    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    switch (index) {
-    case FILTER_COUNT:
-        if (argc == 2) {
-            size_t res = db->getFilter("dbfilter")->size();
-            return UI_Result(ti, OK, res);
-        }
-        break;
-
-    case FILTER_NEW:
-        if (argc == 3) {
-            if (auto dbase = DBasePool::getBase(strGetUnsigned(argv[2])))
-                return UI_Result(ti, OK, dbase->newFilter());
-
-            return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
-        }
-        return UI_Result(ti, ERROR_BadArg, "Usage: sc_filter new baseId");
-
-    case FILTER_FIRST:
-        return sc_filter_first (cd, ti, argc, argv);
-
-    case FILTER_LAST:
-        return sc_filter_last (cd, ti, argc, argv);
-
-    case FILTER_NEXT:
-        return sc_filter_next (cd, ti, argc, argv);
-
-    case FILTER_PREV:
-        return sc_filter_prev (cd, ti, argc, argv);
-
-    case FILTER_STATS:
-        return sc_filter_stats (cd, ti, argc, argv);
-
-    }
-
-    if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
-    scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
-    if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
-    HFilter filter = dbase->getFilter(argv[3]);
-    if (filter == 0) return errorResult (ti, "sc_filter: invalid filterName");
-    switch (index) {
-    case FILTER_AND:
-        if (argc == 5) {
-            const HFilter f = dbase->getFilter(argv[4]);
-            if (f != 0) {
-                for (uint i=0, n = dbase->numGames(); i < n; i++) {
-                    if (filter.get(i) != 0 && f.get(i) == 0) filter.set(i, 0);
-                }
-                return UI_Result(ti, OK);
-            }
-        }
-        return errorResult (ti, "Usage: sc_filter and baseId filterName filterAnd");
-
-    case FILTER_OR:
-        if (argc == 5) {
-            const HFilter f = dbase->getFilter(argv[4]);
-            if (f != 0) {
-                for (uint i=0, n = dbase->numGames(); i < n; i++) {
-                    if (filter.get(i) == 0) filter.set(i, f.get(i));
-                }
-                return UI_Result(ti, OK);
-            }
-        }
-        return errorResult (ti, "Usage: sc_filter or baseId filterName filterOr");
-
-    case FILTER_COPY:
-        if (argc == 5) {
-            const HFilter f = dbase->getFilter(argv[4]);
-            if (f != 0) {
-                for (uint i=0, n = dbase->numGames(); i < n; i++) {
-                    filter.set(i, f.get(i));
-                }
-                return UI_Result(ti, OK);
-            }
-        }
-        return errorResult (ti, "Usage: sc_filter copy baseId filterTo filterFrom");
-
-    case FILTER_FREQ:
-        return sc_filter_freq (dbase, filter, ti, argc, argv);
-
-    case FILTER_NEGATE:
-        for (uint i=0, n = dbase->numGames(); i < n; i++) {
-            filter.set(i, ! filter.get(i) );
-        }
-        return UI_Result(ti, OK);
-
-    case FILTER_COUNT:
-        return UI_Result(ti, OK, filter->size());
-
-    case FILTER_RELEASE:
-        dbase->deleteFilter(argv[3]);
-        return TCL_OK;
-
-    case FILTER_SEARCH:
-        if (argc >= 5) {
-            std::string_view subcmd = argv[4];
-            if (subcmd == "header")
-                return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
-
-            if (subcmd == "board") {
-                if (argc == 5 || argc == 6) {
-                    // sc_filter search baseId filterTo board [filterFrom]
-                    bool useCache = (argc == 5);
-
-                    auto const& pos = *db->game->GetCurrentPos();
-                    if (useCache &&
-                        dbase->treeCache.cacheRestore(pos, *dbase->treeFilter))
-                        return UI_Result(ti, OK);
-
-                    if (!SearchPos(pos).setFilter(
-                            *dbase, filter, UI_CreateProgress(ti)))
-                        return UI_Result(ti, ERROR_UserCancel);
-
-                    if (useCache)
-                        dbase->treeCache.cacheAdd(pos, *dbase->treeFilter);
-
-                    return UI_Result(ti, OK);
-                }
-
-                if (argc == 10) {
-                    const char* args[6] = {argv[3], argv[4], argv[9],
-                                           argv[5], argv[6], argv[7]};
-                    return sc_search_board(ti, dbase, filter, 6, args);
-                }
-            }
-        }
-        return errorResult (ti, "Usage: sc_filter search baseId filterName <header|board> [args]");
-
-    case FILTER_TREESTATS: {
-            const auto stats = dbase->getTreeStat(filter);
-            UI_List res (stats.size());
-            UI_List ginfo(9);
-            for (auto const& node : stats) {
-                ginfo.clear();
-                ginfo.push_back(node.move ? node.move.getSAN() : "[end]");
-                ginfo.push_back(node.freq[0]);
-                ginfo.push_back(node.freq[RESULT_White]);
-                ginfo.push_back(node.freq[RESULT_Draw]);
-                ginfo.push_back(node.freq[RESULT_Black]);
-                ginfo.push_back(node.avgElo());
-                ginfo.push_back(node.eloPerformance());
-                ginfo.push_back(node.eloCount);
-                ginfo.push_back(node.move.getColor() == WHITE ? "W" : "B");
-                res.push_back(ginfo);
-            }
-            return UI_Result(ti, OK, res);
-        }
-
-    case FILTER_EXPORT:
-        if (argc >= 7 && argc <=9) {
-            FILE* exportFile = fopen(argv[5], "wb");
-            if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
-            Game g;
-            if (strCompare("LaTeX", argv[6]) == 0) {
-                g.SetPgnFormat (PGN_FORMAT_LaTeX);
-                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS | PGN_STYLE_SHORT_HEADER | PGN_STYLE_SYMBOLS | PGN_STYLE_INDENT_VARS);
-            } else { //Default to PGN
-                g.SetPgnFormat (PGN_FORMAT_Plain);
-                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS);
-            }
-            if (argc > 7) fprintf(exportFile, "%s", argv[7]);
-            Progress progress = UI_CreateProgress(ti);
-            size_t count = filter->size();
-            gamenumT* idxList = new gamenumT[count];
-            count = dbase->listGames(argv[4], 0, count, filter, idxList);
-            errorT err = OK;
-                for (size_t i = 0; i < count; ++i) {
-                    const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
-                    // Skip any corrupt games:
-                    if (dbase->getGame(*ie, g) != OK) continue;
-
-                    std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
-                    if (pgn.second != fwrite(pgn.first, 1, pgn.second, exportFile)) {
-                        err = ERROR_FileWrite;
-                        break;
-                    }
-                    if ((i % 1024 == 0) && !progress.report(i, count)) {
-                        err = ERROR_UserCancel;
-                        break;
-                    }
-                }
-            if (err == OK && argc > 8)
-                fprintf(exportFile, "%s", argv[8]);
-            fclose (exportFile);
-            delete[] idxList;
-            return UI_Result(ti, err);
-        }
-        return errorResult (ti, "Usage: sc_filter export baseId filterName sortCrit filename <PGN|LaTeX> [header] [footer]");
-
-	}
-    return InvalidCommand (ti, "sc_filter", options);
-}
+namespace {
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_filter_freq:
@@ -1880,6 +1662,227 @@ sc_filter_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
              percentScore / 10, decimalPointChar, percentScore % 10);
     Tcl_AppendResult (ti, temp, NULL);
     return TCL_OK;
+}
+
+} // namespace
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_filter: filter commands.  Valid minor commands:
+//    count:     returns the number of games in the filter.
+//    reset:     resets the filter so all games are included.
+//    remove:    removes game number <x> from the filter.
+//    stats:     prints filter statistics.
+int
+sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    int index = -1;
+    static const char * options [] = {
+        "count", "first", "frequency",
+        "last", "negate", "next",
+        "previous", "stats",
+        "search", "release",
+        "treestats", "export", "copy", "and", "or", "new", NULL
+    };
+    enum {
+        FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
+        FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
+        FILTER_PREV, FILTER_STATS,
+        FILTER_SEARCH, FILTER_RELEASE,
+        FILTER_TREESTATS, FILTER_EXPORT, FILTER_COPY, FILTER_AND, FILTER_OR, FILTER_NEW
+    };
+
+    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
+
+    switch (index) {
+    case FILTER_COUNT:
+        if (argc == 2) {
+            size_t res = db->getFilter("dbfilter")->size();
+            return UI_Result(ti, OK, res);
+        }
+        break;
+
+    case FILTER_NEW:
+        if (argc == 3) {
+            if (auto dbase = DBasePool::getBase(strGetUnsigned(argv[2])))
+                return UI_Result(ti, OK, dbase->newFilter());
+
+            return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
+        }
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_filter new baseId");
+
+    case FILTER_FIRST:
+        return sc_filter_first (cd, ti, argc, argv);
+
+    case FILTER_LAST:
+        return sc_filter_last (cd, ti, argc, argv);
+
+    case FILTER_NEXT:
+        return sc_filter_next (cd, ti, argc, argv);
+
+    case FILTER_PREV:
+        return sc_filter_prev (cd, ti, argc, argv);
+
+    case FILTER_STATS:
+        return sc_filter_stats (cd, ti, argc, argv);
+
+    }
+
+    if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
+    scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+    if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
+    HFilter filter = dbase->getFilter(argv[3]);
+    if (filter == 0) return errorResult (ti, "sc_filter: invalid filterName");
+    switch (index) {
+    case FILTER_AND:
+        if (argc == 5) {
+            const HFilter f = dbase->getFilter(argv[4]);
+            if (f != 0) {
+                for (uint i=0, n = dbase->numGames(); i < n; i++) {
+                    if (filter.get(i) != 0 && f.get(i) == 0) filter.set(i, 0);
+                }
+                return UI_Result(ti, OK);
+            }
+        }
+        return errorResult (ti, "Usage: sc_filter and baseId filterName filterAnd");
+
+    case FILTER_OR:
+        if (argc == 5) {
+            const HFilter f = dbase->getFilter(argv[4]);
+            if (f != 0) {
+                for (uint i=0, n = dbase->numGames(); i < n; i++) {
+                    if (filter.get(i) == 0) filter.set(i, f.get(i));
+                }
+                return UI_Result(ti, OK);
+            }
+        }
+        return errorResult (ti, "Usage: sc_filter or baseId filterName filterOr");
+
+    case FILTER_COPY:
+        if (argc == 5) {
+            const HFilter f = dbase->getFilter(argv[4]);
+            if (f != 0) {
+                for (uint i=0, n = dbase->numGames(); i < n; i++) {
+                    filter.set(i, f.get(i));
+                }
+                return UI_Result(ti, OK);
+            }
+        }
+        return errorResult (ti, "Usage: sc_filter copy baseId filterTo filterFrom");
+
+    case FILTER_FREQ:
+        return sc_filter_freq (dbase, filter, ti, argc, argv);
+
+    case FILTER_NEGATE:
+        for (uint i=0, n = dbase->numGames(); i < n; i++) {
+            filter.set(i, ! filter.get(i) );
+        }
+        return UI_Result(ti, OK);
+
+    case FILTER_COUNT:
+        return UI_Result(ti, OK, filter->size());
+
+    case FILTER_RELEASE:
+        dbase->deleteFilter(argv[3]);
+        return TCL_OK;
+
+    case FILTER_SEARCH:
+        if (argc >= 5) {
+            std::string_view subcmd = argv[4];
+            if (subcmd == "header")
+                return sc_search_header (cd, ti, dbase, filter, argc -3, argv +3);
+
+            if (subcmd == "board") {
+                if (argc == 5 || argc == 6) {
+                    // sc_filter search baseId filterTo board [filterFrom]
+                    bool useCache = (argc == 5);
+
+                    auto const& pos = *db->game->GetCurrentPos();
+                    if (useCache &&
+                        dbase->treeCache.cacheRestore(pos, *dbase->treeFilter))
+                        return UI_Result(ti, OK);
+
+                    if (!SearchPos(pos).setFilter(
+                            *dbase, filter, UI_CreateProgress(ti)))
+                        return UI_Result(ti, ERROR_UserCancel);
+
+                    if (useCache)
+                        dbase->treeCache.cacheAdd(pos, *dbase->treeFilter);
+
+                    return UI_Result(ti, OK);
+                }
+
+                if (argc == 10) {
+                    const char* args[6] = {argv[3], argv[4], argv[9],
+                                           argv[5], argv[6], argv[7]};
+                    return sc_search_board(ti, dbase, filter, 6, args);
+                }
+            }
+        }
+        return errorResult (ti, "Usage: sc_filter search baseId filterName <header|board> [args]");
+
+    case FILTER_TREESTATS: {
+            const auto stats = dbase->getTreeStat(filter);
+            UI_List res (stats.size());
+            UI_List ginfo(9);
+            for (auto const& node : stats) {
+                ginfo.clear();
+                ginfo.push_back(node.move ? node.move.getSAN() : "[end]");
+                ginfo.push_back(node.freq[0]);
+                ginfo.push_back(node.freq[RESULT_White]);
+                ginfo.push_back(node.freq[RESULT_Draw]);
+                ginfo.push_back(node.freq[RESULT_Black]);
+                ginfo.push_back(node.avgElo());
+                ginfo.push_back(node.eloPerformance());
+                ginfo.push_back(node.eloCount);
+                ginfo.push_back(node.move.getColor() == WHITE ? "W" : "B");
+                res.push_back(ginfo);
+            }
+            return UI_Result(ti, OK, res);
+        }
+
+    case FILTER_EXPORT:
+        if (argc >= 7 && argc <=9) {
+            FILE* exportFile = fopen(argv[5], "wb");
+            if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
+            Game g;
+            if (strCompare("LaTeX", argv[6]) == 0) {
+                g.SetPgnFormat (PGN_FORMAT_LaTeX);
+                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS | PGN_STYLE_SHORT_HEADER | PGN_STYLE_SYMBOLS | PGN_STYLE_INDENT_VARS);
+            } else { //Default to PGN
+                g.SetPgnFormat (PGN_FORMAT_Plain);
+                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS);
+            }
+            if (argc > 7) fprintf(exportFile, "%s", argv[7]);
+            Progress progress = UI_CreateProgress(ti);
+            size_t count = filter->size();
+            gamenumT* idxList = new gamenumT[count];
+            count = dbase->listGames(argv[4], 0, count, filter, idxList);
+            errorT err = OK;
+                for (size_t i = 0; i < count; ++i) {
+                    const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
+                    // Skip any corrupt games:
+                    if (dbase->getGame(*ie, g) != OK) continue;
+
+                    std::pair<const char*, unsigned> pgn = g.WriteToPGN(75, true);
+                    if (pgn.second != fwrite(pgn.first, 1, pgn.second, exportFile)) {
+                        err = ERROR_FileWrite;
+                        break;
+                    }
+                    if ((i % 1024 == 0) && !progress.report(i, count)) {
+                        err = ERROR_UserCancel;
+                        break;
+                    }
+                }
+            if (err == OK && argc > 8)
+                fprintf(exportFile, "%s", argv[8]);
+            fclose (exportFile);
+            delete[] idxList;
+            return UI_Result(ti, err);
+        }
+        return errorResult (ti, "Usage: sc_filter export baseId filterName sortCrit filename <PGN|LaTeX> [header] [footer]");
+
+	}
+    return InvalidCommand (ti, "sc_filter", options);
 }
 
 //////////////////////////////////////////////////////////////////////
