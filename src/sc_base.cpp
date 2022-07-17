@@ -61,7 +61,7 @@ static UI_res_t doOpenBase(UI_handle_t ti, const char* codec, fileModeT fMode,
 	if (DBasePool::find(filename))
 		return UI_Result(ti, ERROR_FileInUse);
 
-	scidBaseT* dbase = DBasePool::getFreeSlot();
+	auto dbase = DBasePool::getFreeSlot();
 	if (!dbase)
 		return UI_Result(ti, ERROR_Full);
 
@@ -135,7 +135,7 @@ UI_res_t sc_base_copygames(scidBaseT* dbase, UI_handle_t ti, int argc, const cha
 	const char* usage = "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId";
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
-	scidBaseT* targetBase = DBasePool::getBase(strGetUnsigned(argv[4]));
+	auto targetBase = DBasePool::getBase(strGetUnsigned(argv[4]));
 	if (targetBase == 0)
 		return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
 
@@ -647,7 +647,7 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
 	if (argc < 4) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const char* subcmd = argv[3];
-	const scidBaseT::Stats& stats = dbase->getStats();
+	auto const& stats = dbase->getStats();
 	UI_List res(6);
 
 	enum { OPT_DATE, OPT_ECO, OPT_FLAG, OPT_FLAGS, OPT_RATINGS, OPT_RESULTS };
@@ -707,7 +707,7 @@ UI_res_t sc_base_stats(const scidBaseT* dbase, UI_handle_t ti, int argc, const c
  *
  * DEPRECATED
  * Unfortunately Scid used to have only one database, one game, one filter, etc...
- * This function changes the current database and consequently the current game 
+ * This function changes the current database and consequently the current game
  * (sc_game functions works on the current game)
  *
  * Return: the current database ID after the switch
@@ -1008,7 +1008,7 @@ UI_res_t sc_base (UI_extra_t cd, UI_handle_t ti, int argc, const char ** argv)
 
 	//New multi-base functions
 	if (argc < 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd> baseId [args]");
-	scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+	auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
 	if (dbase == 0) return UI_Result(ti, ERROR_FileNotOpen);
 
 	switch (index) {

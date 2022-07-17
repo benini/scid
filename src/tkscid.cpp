@@ -310,7 +310,7 @@ str_prefix_len (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_base_inUse (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    const scidBaseT* basePtr = db;
+    auto basePtr = db;
     if (argc > 2) {
         basePtr = DBasePool::getBase(strGetUnsigned(argv[2]));
         if (basePtr == 0) return UI_Result(ti, OK, false);
@@ -1003,7 +1003,7 @@ UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
 int
 sc_clipbase (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    scidBaseT* clipbase = DBasePool::getBase(DBasePool::getClipBase());
+    auto clipbase = DBasePool::getBase(DBasePool::getClipBase());
     ASSERT(clipbase);
 
     static const char * options [] = {
@@ -1728,7 +1728,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
-    scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+    auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
     if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
     HFilter filter = dbase->getFilter(argv[3]);
     if (filter == 0) return errorResult (ti, "sc_filter: invalid filterName");
@@ -3236,7 +3236,7 @@ sc_game_novelty (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         baseArg++;
     }
     if (argc < baseArg  ||  argc > baseArg+1) return errorResult(ti, usage);
-    scidBaseT* base = DBasePool::getBase(strGetInteger (argv[baseArg]));
+    auto base = DBasePool::getBase(strGetInteger (argv[baseArg]));
     if (base == 0) return UI_Result(ti, ERROR_BadArg);
 
     // First, move to the deepest ECO position in the game.
@@ -3481,7 +3481,7 @@ sc_game_push (ClientData, Tcl_Interp*, int argc, const char ** argv)
 int
 sc_game_save (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    scidBaseT * dbase = db;
+    auto dbase = db;
     Game* currGame = db->game;
     if (argc == 4) {
         dbase = DBasePool::getBase(strGetUnsigned(argv[3]));
@@ -5295,7 +5295,7 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     uint correctionCount = 0;
     uint badDateCount = 0;
 
-    scidBaseT* dbase = db;
+    auto dbase = db;
     const NameBase* nb = dbase->getNameBase();
     std::vector<idNumberT> oldIDs;
     std::vector<std::string> newNames;
@@ -6265,7 +6265,7 @@ sc_name_plist (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_name plist [-<option> <value> ...]";
 
-    scidBaseT* dbase = db;
+    auto dbase = db;
     const char * namePrefix = "";
     uint minGames = 0;
     uint maxGames = dbase->numGames();
@@ -6806,7 +6806,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No report has been created yet.");
     }
 
-    const scidBaseT::Stats& stats = db->getStats();
+    auto const& stats = db->getStats();
     switch (index) {
     case OPT_AVGLENGTH:
         if (argc != 4) {
@@ -7329,7 +7329,7 @@ sc_tree_cachesize (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 4) {
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
   }
-  scidBaseT* base = DBasePool::getBase(strGetInteger(argv[2]));
+  auto base = DBasePool::getBase(strGetInteger(argv[2]));
   if (base) base->treeCache.CacheResize(strGetUnsigned(argv[3]));
   return TCL_OK;
 }
@@ -7342,7 +7342,7 @@ sc_tree_cacheinfo (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 3) {
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
   }
-  scidBaseT* base = DBasePool::getBase(strGetInteger(argv[2]));
+  auto base = DBasePool::getBase(strGetInteger(argv[2]));
   if (base)
       return UI_Result(ti, OK, base->treeCache.Size());
 

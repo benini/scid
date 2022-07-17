@@ -183,7 +183,7 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	if (argc < 3)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	scidBaseT* dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+	auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
 	if (!dbase)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
