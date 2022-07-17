@@ -2385,6 +2385,8 @@ void Game::LoadStandardTags(IndexEntry const& ie, TagRoster const& tags) {
     SetResult(ie.GetResult());
     SetEco(ie.GetEcoCode());
     ie.GetFlagStr(ScidFlags, NULL);
+    if (!ie.isChessStd())
+        assignTagValue("Variant", "Chess960");
 }
 
 eloT
