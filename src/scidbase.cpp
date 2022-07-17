@@ -82,7 +82,8 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	if (inUse)
 		return ERROR_FileInUse;
 
-	auto obj = ICodecDatabase::open(dbtype, fMode, filename, progress, idx, nb_);
+	auto obj = ICodecDatabase::open(dbtype, fMode, filename, progress, idx,
+	                                nb_);
 	if (obj.first) {
 		codec_.reset(obj.first);
 		inUse = true;
@@ -106,7 +107,7 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	return obj.second;
 }
 
-void scidBaseT::Close () {
+void scidBaseT::Close() {
 	ASSERT(inUse);
 
 	for (auto& sortCache : sortCaches_) {
@@ -127,14 +128,17 @@ void scidBaseT::Close () {
 	all_filter_.Init(0);
 	dbFilter->Init(0);
 	treeFilter->Init(0);
-	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
+	for (size_t i = 0, n = filters_.size(); i < n; i++)
+		delete filters_[i].second;
 	filters_.clear();
 	inUse = false;
 }
 
-
 void scidBaseT::clear() {
-	if (stats_ != NULL) { delete stats_; stats_ = NULL;}
+	if (stats_ != NULL) {
+		delete stats_;
+		stats_ = NULL;
+	}
 	duplicates_.reset();
 	treeCache.Clear();
 	for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
@@ -189,10 +193,12 @@ errorT scidBaseT::saveGame(Game* game, gamenumT replacedGameId) {
 	return (err != OK) ? err : errClear;
 }
 
-errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter, const Progress& progress) {
+errorT scidBaseT::importGames(const scidBaseT* srcBase, const HFilter& filter,
+                              const Progress& progress) {
 	ASSERT(srcBase != 0);
 	ASSERT(filter != 0);
-	if (srcBase == this) return ERROR_BadArg;
+	if (srcBase == this)
+		return ERROR_BadArg;
 
 	if (auto errModify = beginTransaction())
 		return errModify;
@@ -299,9 +305,7 @@ errorT scidBaseT::setFlags(bool value, uint flag, const HFilter& filter) {
  * Filters
  */
 std::string scidBaseT::newFilter() {
-	std::string newname = (filters_.size() == 0)
-		? "a_"
-		: filters_.back().first;
+	std::string newname = (filters_.size() == 0) ? "a_" : filters_.back().first;
 	if (newname[0] == 'z') {
 		newname = 'a' + newname;
 	} else {
@@ -314,7 +318,8 @@ std::string scidBaseT::newFilter() {
 std::string scidBaseT::composeFilter(std::string_view mainFilter,
                                      std::string_view maskFilter) const {
 	std::string res;
-	if (mainFilter.empty()) return res;
+	if (mainFilter.empty())
+		return res;
 
 	if (mainFilter[0] != '+') {
 		res = mainFilter;
@@ -329,7 +334,8 @@ std::string scidBaseT::composeFilter(std::string_view mainFilter,
 		res.append(maskFilter);
 	}
 
-	if (getFilter(res) == 0) res.clear();
+	if (getFilter(res) == 0)
+		res.clear();
 	return res;
 }
 
@@ -394,12 +400,12 @@ scidBaseT::getFilterComponents(std::string_view filterID) const {
  * Statistics
  */
 const scidBaseT::Stats& scidBaseT::getStats() const {
-	if (stats_ == NULL) stats_ = new scidBaseT::Stats(this);
+	if (stats_ == NULL)
+		stats_ = new scidBaseT::Stats(this);
 	return *stats_;
 }
 
-scidBaseT::Stats::Eco::Eco()
-: count(0) {
+scidBaseT::Stats::Eco::Eco() : count(0) {
 	std::fill_n(results, NUM_RESULT_TYPES, 0);
 }
 
@@ -416,38 +422,54 @@ scidBaseT::Stats::Stats(const scidBaseT* dbase) {
 	maxRating = 0;
 
 	// Read stats from index entry of each game:
-	for (gamenumT gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
+	for (gamenumT gnum = 0, n = dbase->numGames(); gnum < n; gnum++) {
 		const IndexEntry* ie = dbase->getIndexEntry(gnum);
 		nResults[ie->GetResult()]++;
 		eloT elo = ie->GetWhiteElo();
 		if (elo > 0) {
 			nRatings++;
 			sumRatings += elo;
-			if (minRating == 0) { minRating = elo; }
-			if (elo < minRating) { minRating = elo; }
-			if (elo > maxRating) { maxRating = elo; }
+			if (minRating == 0) {
+				minRating = elo;
+			}
+			if (elo < minRating) {
+				minRating = elo;
+			}
+			if (elo > maxRating) {
+				maxRating = elo;
+			}
 		}
 		elo = ie->GetBlackElo();
 		if (elo > 0) {
 			nRatings++;
 			sumRatings += elo;
-			if (minRating == 0) { minRating = elo; }
-			if (elo < minRating) { minRating = elo; }
-			if (elo > maxRating) { maxRating = elo; }
+			if (minRating == 0) {
+				minRating = elo;
+			}
+			if (elo < minRating) {
+				minRating = elo;
+			}
+			if (elo > maxRating) {
+				maxRating = elo;
+			}
 		}
 		dateT date = ie->GetDate();
 		if (gnum == 0) {
 			maxDate = minDate = date;
 		}
 		if (date_GetYear(date) > 0) {
-			if (date < minDate) { minDate = date; }
-			if (date > maxDate) { maxDate = date; }
+			if (date < minDate) {
+				minDate = date;
+			}
+			if (date > maxDate) {
+				maxDate = date;
+			}
 			nYears++;
-			sumYears += date_GetYear (date);
+			sumYears += date_GetYear(date);
 		}
 
 		for (uint flag = 0; flag < IndexEntry::IDX_NUM_FLAGS; flag++) {
-			bool value = ie->GetFlag (1 << flag);
+			bool value = ie->GetFlag(1 << flag);
 			if (value) {
 				flagCount[flag]++;
 			}
@@ -477,16 +499,19 @@ scidBaseT::Stats::Stats(const scidBaseT* dbase) {
 	}
 }
 
-const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) const {
+const scidBaseT::Stats::Eco*
+scidBaseT::Stats::getEcoStats(const char* ecoStr) const {
 	ASSERT(ecoStr != 0);
 
-	if (*ecoStr == 0) return &ecoValid_;
+	if (*ecoStr == 0)
+		return &ecoValid_;
 
 	ecoT eco = eco_FromString(ecoStr);
-	if (eco == 0) return 0;
+	if (eco == 0)
+		return 0;
 	eco = eco_Reduce(eco);
 
-	switch(strlen(ecoStr)) {
+	switch (strlen(ecoStr)) {
 	case 0:
 		return &ecoValid_;
 	case 1:
@@ -503,13 +528,14 @@ const scidBaseT::Stats::Eco* scidBaseT::Stats::getEcoStats(const char* ecoStr) c
 	return 0;
 }
 
-
 std::vector<TreeNode> scidBaseT::getTreeStat(const HFilter& filter) const {
 	std::vector<TreeNode> res;
 	for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
 		uint ply = filter.get(gnum);
-		if (ply == 0) continue;
-		else ply--;
+		if (ply == 0)
+			continue;
+		else
+			ply--;
 
 		const IndexEntry* ie = getIndexEntry(gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
@@ -541,12 +567,16 @@ errorT scidBaseT::getCompactStat(unsigned long long* n_deleted,
 	uint64_t last_offset = 0;
 	*n_sparse = 0;
 	*n_deleted = 0;
-	for (gamenumT i=0, n = numGames(); i < n; i++) {
-		const IndexEntry* ie = getIndexEntry (i);
-		if (ie->GetDeleteFlag()) { *n_deleted += 1; continue; }
+	for (gamenumT i = 0, n = numGames(); i < n; i++) {
+		const IndexEntry* ie = getIndexEntry(i);
+		if (ie->GetDeleteFlag()) {
+			*n_deleted += 1;
+			continue;
+		}
 
 		auto offset = ie->GetOffset();
-		if (offset < last_offset) *n_sparse += 1;
+		if (offset < last_offset)
+			*n_sparse += 1;
 		last_offset = offset;
 
 		nbFreq[NAME_PLAYER][ie->GetWhite()] += 1;
@@ -567,18 +597,20 @@ errorT scidBaseT::getCompactStat(unsigned long long* n_deleted,
 
 errorT scidBaseT::compact(const Progress& progress) {
 	std::vector<std::string> filenames = codec_->getFilenames();
-	if (filenames.empty()) return ERROR_CodecUnsupFeat;
+	if (filenames.empty())
+		return ERROR_CodecUnsupFeat;
 
-	//1) Create a new temporary database
+	// 1) Create a new temporary database
 	std::string filename = fileName_;
 	std::string tmpfile = filename + "__COMPACT__";
 	ICodecDatabase::Codec dbtype = codec_->getType();
 	scidBaseT tmp;
 	errorT err_Create = tmp.openHelper(dbtype, FMODE_Create, tmpfile.c_str());
-	if (err_Create != OK) return err_Create;
+	if (err_Create != OK)
+		return err_Create;
 
-	//2) Create the list of games to be copied
-	std::vector< std::pair<uint64_t, gamenumT> > sort;
+	// 2) Create the list of games to be copied
+	std::vector<std::pair<uint64_t, gamenumT>> sort;
 	uint n_deleted = 0;
 	for (gamenumT i = 0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry(i);
@@ -599,7 +631,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	if (sort.size() > 10000 && codec_->getType() != ICodecDatabase::PGN)
 		std::stable_sort(sort.begin(), sort.end());
 
-	//3) Copy the Index Header
+	// 3) Copy the Index Header
 	auto extraInfo = getExtraInfo();
 	errorT err_Header = tmp.beginTransaction();
 	for (auto& pair : extraInfo) {
@@ -620,18 +652,19 @@ errorT scidBaseT::compact(const Progress& progress) {
 		err_Header = tmp.codec_->setExtraInfo(pair.first, pair.second.c_str());
 	}
 
-	//4) Copy the games
+	// 4) Copy the games
 	uint iProgress = 0;
 	bool err_UserCancel = false;
 	errorT err_AddGame = OK;
 	for (auto it = sort.cbegin(); it != sort.cend(); ++it) {
 		err_AddGame = tmp.importGameHelper(this, it->second);
-		if (err_AddGame != OK) break;
+		if (err_AddGame != OK)
+			break;
 
-		//TODO:
+		// TODO:
 		//- update bookmarks game number
-		//  (*it).second   == old game number
-		//  tmp.numGames() == new game number
+		//   (*it).second   == old game number
+		//   tmp.numGames() == new game number
 		if (++iProgress % 8192 == 0) {
 			if (!progress.report(iProgress, sort.size())) {
 				err_UserCancel = true;
@@ -640,13 +673,13 @@ errorT scidBaseT::compact(const Progress& progress) {
 		}
 	}
 
-	//5) Finalize the new database
+	// 5) Finalize the new database
 	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
 	errorT err_NbWrite = tmp.endTransaction();
 	tmp.Close();
 	auto err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
-	//6) Error: cleanup and report
+	// 6) Error: cleanup and report
 	if (err_Header != OK || err_AddGame != OK || err_UserCancel ||
 	    err_NbWrite != OK || err_Close != OK) {
 		for (size_t i = 0, n = tmp_filenames.size(); i < n; i++) {
@@ -664,25 +697,26 @@ errorT scidBaseT::compact(const Progress& progress) {
 		return err_Close;
 	}
 
-	//7) Remember the active filters and SortCaches
+	// 7) Remember the active filters and SortCaches
 	std::vector<std::string> filters(filters_.size());
 	for (size_t i = 0, n = filters_.size(); i < n; i++) {
 		filters[i] = filters_[i].first;
 	}
-	std::vector< std::pair<std::string, int> > oldSC;
+	std::vector<std::pair<std::string, int>> oldSC;
 	for (auto& sortCache : sortCaches_) {
 		int refCount = sortCache.second->incrRef(0);
 		if (refCount >= 0)
 			oldSC.emplace_back(sortCache.first, refCount);
 	}
 
-	//8) Remove the old database
+	// 8) Remove the old database
 	Close();
 	for (size_t i = 0, n = filenames.size(); i < n; i++) {
-		if (std::remove(filenames[i].c_str()) != 0) return ERROR_CompactRemove;
+		if (std::remove(filenames[i].c_str()) != 0)
+			return ERROR_CompactRemove;
 	}
 
-	//9) Success: rename the files and open the new database
+	// 9) Success: rename the files and open the new database
 	for (size_t i = 0, n = filenames.size(); i < n; i++) {
 		const char* s1 = tmp_filenames[i].c_str();
 		const char* s2 = filenames[i].c_str();
@@ -690,7 +724,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 	errorT res = openHelper(dbtype, FMODE_Both, filename.c_str());
 
-	//10) Re-create filters and SortCaches
+	// 10) Re-create filters and SortCaches
 	if (res == OK || res == ERROR_NameDataLoss) {
 		for (size_t i = 0, n = filters.size(); i < n; i++) {
 			filters_.push_back(
@@ -743,7 +777,7 @@ void scidBaseT::releaseSortCache(const char* criteria) {
 		if (sortCaches_[i].second->incrRef(decr) <= 0) {
 			delete sortCaches_[i].second;
 			sortCaches_.erase(sortCaches_.begin() + i);
-			continue; //do not increment i
+			continue; // do not increment i
 		}
 		i += 1;
 	}

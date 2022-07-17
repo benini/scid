@@ -22,8 +22,8 @@
 #include "bytebuf.h"
 #include "codec.h"
 #include "containers.h"
-#include "gameview.h"
 #include "game.h"
+#include "gameview.h"
 #include "index.h"
 #include "namebase.h"
 #include "tree.h"
@@ -35,17 +35,17 @@
 
 class SortCache;
 
-
 const gamenumT INVALID_GAMEID = 0xffffffff;
 
 struct scidBaseT {
 	struct Stats {
-		uint flagCount[IndexEntry::IDX_NUM_FLAGS]; // Num of games with each flag set.
+		uint flagCount[IndexEntry::IDX_NUM_FLAGS]; // Num of games with each
+		                                           // flag set.
 		dateT minDate;
 		dateT maxDate;
 		uint64_t nYears;
 		uint64_t sumYears;
-		uint nResults [NUM_RESULT_TYPES];
+		uint nResults[NUM_RESULT_TYPES];
 		uint nRatings;
 		uint64_t sumRatings;
 		uint minRating;
@@ -55,7 +55,7 @@ struct scidBaseT {
 
 		struct Eco {
 			uint count;
-			uint results [NUM_RESULT_TYPES];
+			uint results[NUM_RESULT_TYPES];
 
 			Eco();
 		};
@@ -64,10 +64,10 @@ struct scidBaseT {
 	private:
 		Eco ecoEmpty_;
 		Eco ecoValid_;
-		Eco ecoStats_ [(1 + (1<<16)/131)*27];
-		Eco ecoGroup1_[(1 + (1<<16)/131)/100];
-		Eco ecoGroup2_[(1 + (1<<16)/131)/10];
-		Eco ecoGroup3_[(1 + (1<<16)/131)];
+		Eco ecoStats_[(1 + (1 << 16) / 131) * 27];
+		Eco ecoGroup1_[(1 + (1 << 16) / 131) / 100];
+		Eco ecoGroup2_[(1 + (1 << 16) / 131) / 10];
+		Eco ecoGroup3_[(1 + (1 << 16) / 131)];
 	};
 
 	scidBaseT();
@@ -86,7 +86,7 @@ struct scidBaseT {
 		return openHelper(codec, fMode, filename, progress);
 	}
 
-	void Close ();
+	void Close();
 
 	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }
@@ -94,7 +94,7 @@ struct scidBaseT {
 
 	/// Returns a vector of tag pairs containing extra information about the
 	/// database (type, description, autoload, etc..)
-	std::vector<std::pair<const char*, std::string> > getExtraInfo() const {
+	std::vector<std::pair<const char*, std::string>> getExtraInfo() const {
 		return codec_->getExtraInfo();
 	}
 
@@ -122,9 +122,7 @@ struct scidBaseT {
 		return TagRoster::make(ie, *nb_);
 	}
 
-	const NameBase* getNameBase() const {
-		return nb_;
-	}
+	const NameBase* getNameBase() const { return nb_; }
 
 	/// Return the highest elo of the player (in the database's games)
 	eloT peakElo(idNumberT playerID) const {
@@ -193,7 +191,7 @@ struct scidBaseT {
 	errorT saveGame(Game* game, gamenumT replacedGameId = INVALID_GAMEID);
 
 	bool getFlag(uint flag, uint gNum) const {
-		return idx->GetEntry(gNum)->GetFlag (flag);
+		return idx->GetEntry(gNum)->GetFlag(flag);
 	}
 	errorT setFlag(bool value, uint flag, uint gNum);
 	errorT setFlags(bool value, uint flag, const HFilter& filter);
@@ -227,7 +225,7 @@ struct scidBaseT {
 
 	const Stats& getStats() const;
 	std::vector<TreeNode> getTreeStat(const HFilter& filter) const;
-	uint getNameFreq (nameT nt, idNumberT id) {
+	uint getNameFreq(nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0)
 			nameFreq_ = getNameBase()->calcNameFreq(*idx);
 		return nameFreq_[nt][id];
@@ -238,7 +236,6 @@ struct scidBaseT {
 	                      unsigned long long* n_sparse,
 	                      unsigned long long* n_badNameId);
 	errorT compact(const Progress& progress);
-
 
 	/**
 	 * Increment the reference count of a SortCache object matching @e criteria.
@@ -410,12 +407,12 @@ struct scidBaseT {
 	}
 
 public:
-	bool inUse;       // true if the database is open (in use).
+	bool inUse; // true if the database is open (in use).
 	TreeCache treeCache;
 	Filter* dbFilter;
 	Filter* treeFilter;
 
-	//TODO: this vars do not belong to scidBaseT class
+	// TODO: this vars do not belong to scidBaseT class
 	Game* game;       // the active game for this base.
 	int gameNumber;   // game number of active game.
 	bool gameAltered; // true if game is modified
@@ -427,13 +424,14 @@ private:
 	Index* idx;
 	NameBase* nb_;
 	std::string fileName_; // File name without ".si" suffix
-	fileModeT fileMode_; // Read-only, write-only, or both.
-	std::vector< std::pair<std::string, Filter*> > filters_;
+	fileModeT fileMode_;   // Read-only, write-only, or both.
+	std::vector<std::pair<std::string, Filter*>> filters_;
 	mutable Filter all_filter_{0};
 	mutable Stats* stats_;
 	std::array<std::vector<int>, NUM_NAME_TYPES> nameFreq_;
-	std::unique_ptr<gamenumT[]> duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
-	std::vector< std::pair<std::string, SortCache*> > sortCaches_;
+	// For each game: idx of duplicate game + 1 (0 if there is no duplicate).
+	std::unique_ptr<gamenumT[]> duplicates_;
+	std::vector<std::pair<std::string, SortCache*>> sortCaches_;
 	mutable std::vector<eloT> peakEloCache_;
 
 private:

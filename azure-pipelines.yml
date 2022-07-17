@@ -115,7 +115,7 @@ jobs:
   steps:
   - script: |
       sudo apt-get update &&
-      sudo apt-get -y install tcl-dev clang clang-tidy clang-format cloc
+      sudo apt-get -y install tcl-dev cloc
     displayName: download tclk
   - script: |
       cloc src --exclude-dir=egtb,mtbgen,polyglot
@@ -129,6 +129,7 @@ jobs:
       clang-format -i src/bytebuf.h
       clang-format -i src/gameview.h
       clang-format -i src/namebase.h
+      clang-format -i src/scidbase*
       if [[ -n $(git diff) ]]; then
         git diff
         exit -1
@@ -137,9 +138,10 @@ jobs:
   - script: |
       mkdir build_tidy && cd build_tidy
       cmake -DCMAKE_CXX_FLAGS="-g -Wall -Wextra -Werror -pedantic" -DSPELLCHKVALIDATE=ON \
+            -DCMAKE_CXX_COMPILER=clang++-12 \
              $(Build.SourcesDirectory)
       make VERBOSE=1
-      run-clang-tidy -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
+      run-clang-tidy-12 -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
     displayName: clang-tidy
   - script: |
       mkdir build && cd build
