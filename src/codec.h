@@ -42,7 +42,7 @@ class ICodecDatabase {
 public:
 	virtual ~ICodecDatabase(){};
 
-	enum Codec { MEMORY, SCID4, PGN };
+	enum Codec { MEMORY, PGN, SCID4, SCID5 };
 	/**
 	 * Creates a new object and calls the virtual function dyn_open().
 	 * @param codec:    the type of the object to be created.

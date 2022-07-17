@@ -75,12 +75,14 @@ struct scidBaseT {
 
 	errorT open(std::string_view dbType, fileModeT fMode, const char* filename,
 	            const Progress& progress = {}) {
-		auto codec = ICodecDatabase::SCID4;
+		auto codec = ICodecDatabase::SCID5;
 		if (dbType == "PGN") {
 			codec = ICodecDatabase::PGN;
 		} else if (dbType == "MEMORY") {
 			codec = ICodecDatabase::MEMORY;
-		} else if (dbType != "SCID4") {
+		} else if (dbType == "SCID4") {
+			codec = ICodecDatabase::SCID4;
+		} else if (dbType != "SCID5") {
 			return ERROR_BadArg;
 		}
 		return openHelper(codec, fMode, filename, progress);

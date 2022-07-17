@@ -35,7 +35,7 @@ fileModeT fmodes[] = {FMODE_Create, FMODE_ReadOnly, FMODE_WriteOnly,
 const char* filename = "codecbase";
 
 ICodecDatabase::Codec codecs[] = {ICodecDatabase::MEMORY, ICodecDatabase::SCID4,
-                                  ICodecDatabase::PGN};
+                                  ICodecDatabase::SCID5, ICodecDatabase::PGN};
 
 std::vector<std::pair<ICodecDatabase::Codec, std::string>> unsupportedVec = {
     {ICodecDatabase::MEMORY, "FMODE" + std::to_string(FMODE_None)},
@@ -46,6 +46,10 @@ std::vector<std::pair<ICodecDatabase::Codec, std::string>> unsupportedVec = {
     {ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_None)},
     {ICodecDatabase::SCID4, "FMODE" + std::to_string(FMODE_WriteOnly)},
     {ICodecDatabase::SCID4, "empty_filename"},
+
+    {ICodecDatabase::SCID5, "FMODE" + std::to_string(FMODE_None)},
+    {ICodecDatabase::SCID5, "FMODE" + std::to_string(FMODE_WriteOnly)},
+    {ICodecDatabase::SCID5, "empty_filename"},
 
     {ICodecDatabase::PGN, "FMODE" + std::to_string(FMODE_None)},
     {ICodecDatabase::PGN, "saveGame_game"},
