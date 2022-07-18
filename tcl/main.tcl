@@ -333,7 +333,7 @@ proc ::cancelUpdateTreeFilter {progressbar} {
 # If there are multiple engines running, the eval bar will remain associated
 # with the first engine that send its evaluation until it stops running.
 proc ::updateMainEvalBar {engineID bestmove evaluation} {
-    if {! $::showEvalBar(.main) } { return }
+    if {! $::showEvalBar(.main) || ![winfo exists .main.board]} { return }
 
     if {![info exists ::mainEvalBarEngineID_]} {
         set ::mainEvalBarEngineID_ $engineID
