@@ -20,22 +20,51 @@ jobs:
       mkdir tcltk & cd tcltk
       git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl & cd win
-      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
-      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
     displayName: Generate tcl library
+  - script: |
+      pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+      for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+      popd
+      call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cd tcltk
+      git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
+      cd tk & cd win
+      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
+      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
+    displayName: Generate tk library
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include $(Build.SourcesDirectory) -DGTEST=ON'
+      cmakeArgs: '-DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/install -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include -DTCL_LIBRARY=$(Build.SourcesDirectory)\tcldir\lib\tcl86tg.lib $(Build.SourcesDirectory) -DGTEST=ON'
   - task: MSBuild@1
     inputs:
-      solution: 'build/ALL_BUILD.vcxproj'
+      solution: 'build/INSTALL.vcxproj'
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Debug'
     displayName: Generate SCID
   - script: build\gtest\Debug\scid_tests.exe
     displayName: run scid_tests.exe
+  - script: |
+      move bin engines
+      move scid bin
+      copy $(Build.SourcesDirectory)\tcldir\bin\*.dll bin
+      xcopy /e $(Build.SourcesDirectory)\tcldir\lib\tcl8 lib\tcl8\
+      xcopy /e $(Build.SourcesDirectory)\tcldir\lib\tcl8.6 lib\tcl8.6\
+      xcopy /e $(Build.SourcesDirectory)\tcldir\lib\tk8.6 lib\tk8.6\
+    workingDirectory: '$(Build.SourcesDirectory)\install'
+    displayName: Add the tcl/tk library to the package
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\install'
+      TargetFolder: '$(build.artifactstagingdirectory)'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: windows x64'
+    inputs:
+      artifactName: scid_debug_x64
+      PathtoPublish: '$(build.artifactstagingdirectory)'
 
 - job: windows_latest
   pool:
