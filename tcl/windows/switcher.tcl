@@ -589,7 +589,6 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
     if { [info exists ::sw_LinkedGList_($w)] } {
       if {[::windows::gamelist::GetBase $::sw_LinkedGList_($w)] != "$fromBase"} {
         ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
-        ::windows::switcher::Update_ $w
       } else {
         popupmenu $w "$w.c.f$fromBase" $x $y $fromBase
       }
@@ -659,7 +658,6 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   ttk::label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
   ::createToplevelFinalize $w
-  after idle "::windows::switcher::Update_ $w"
 }
 
 proc ::windows::switcher::Create {{w} {gamelist ""}} {
@@ -697,7 +695,9 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
       bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $w $f %X %Y $i"
     }
   }
-  bind $w <Configure> "+::windows::switcher::Update_ $w"
+  bind $w <Configure> "+if {\"%W\" eq \"$w\"} {
+    ::windows::switcher::Update_ %W
+  }"
   bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $::windows::switcher::wins $idx $idx] }
   lappend ::windows::switcher::wins $w
 
