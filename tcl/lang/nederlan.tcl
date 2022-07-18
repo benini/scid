@@ -499,6 +499,8 @@ translate N AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate N Tip {Tip}
 translate N TipAtStartup {Tip bij opstarten}
+# ====== TODO To be translated ======
+translate N TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText N TreeFile "BoomDataBestand" 0

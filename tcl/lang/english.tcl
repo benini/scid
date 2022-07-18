@@ -495,6 +495,7 @@ translate E AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate E Tip {Tip}
 translate E TipAtStartup {Tip at startup}
+translate E TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText E TreeFile "File" 0

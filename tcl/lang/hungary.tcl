@@ -484,6 +484,8 @@ translate H AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate H Tip {Tipp}
 translate H TipAtStartup {Tipp induláskor}
+# ====== TODO To be translated ======
+translate H TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText H TreeFile "Fájl" 0

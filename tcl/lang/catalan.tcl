@@ -500,6 +500,8 @@ translate K AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate K Tip {Suggeriment}
 translate K TipAtStartup {Suggeriment en començar}
+# ====== TODO To be translated ======
+translate K TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menús:
 menuText K TreeFile "Arxiu" 0

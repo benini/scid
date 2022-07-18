@@ -146,7 +146,8 @@ proc ::file::Open_ {{fName ""} } {
     set err [::file::Upgrade [file rootname "$fName"] ]
   } elseif {"$ext" == ".pgn"} {
     # PGN file:
-    progressWindow "Scid" "$::tr(OpeningTheDatabase): $fName..." $::tr(Cancel)
+    set tip "[tr Tip]:\n[tr TipConvertPGN]\n([tr Database] -> [tr CopyAllGames] -> [tr FileNew])"
+    progressWindow "Scid" "$::tr(OpeningTheDatabase): $fName...\n\n$tip" $::tr(Cancel)
     set err [catch {sc_base open PGN "$fName"} ::file::lastOpened]
     closeProgressWindow
     if {$err} {

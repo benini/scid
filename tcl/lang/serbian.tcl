@@ -538,6 +538,8 @@ translate Y AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate Y Tip {Tip} ;# ***
 translate Y TipAtStartup {Tip at startup} ;# ***
+# ====== TODO To be translated ======
+translate Y TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText Y TreeFile "Fajl" 0

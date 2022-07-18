@@ -483,6 +483,8 @@ translate D AllLoss {" Wer zieht verliert:     " }
 # Tip of the day:
 translate D Tip {Tip}
 translate D TipAtStartup {Tip beim Starten}
+# ====== TODO To be translated ======
+translate D TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText D TreeFile "Datei" 0

@@ -507,6 +507,8 @@ translate G AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate G Tip {Συμβουλή}
 translate G TipAtStartup {Συμβουλές κατά την εκκίνηση}
+# ====== TODO To be translated ======
+translate G TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText G TreeFile "Αρχείο" 0

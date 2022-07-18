@@ -469,6 +469,8 @@ translate C AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate C Tip {Tip}
 translate C TipAtStartup {Tip pøi spu¹tìní}
+# ====== TODO To be translated ======
+translate C TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText C TreeFile "Soubor" 0

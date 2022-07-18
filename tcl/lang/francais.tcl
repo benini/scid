@@ -473,6 +473,8 @@ translate F AllLoss {" Celui au trait perd:     " }
 # Tip of the day:
 translate F Tip {Conseil}
 translate F TipAtStartup {Conseil au démarrage}
+# ====== TODO To be translated ======
+translate F TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText F TreeFile "Fichier" 0

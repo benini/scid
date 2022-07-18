@@ -511,6 +511,8 @@ translate U AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate U Tip {Vihje}
 translate U TipAtStartup {Käynnistysvihje}
+# ====== TODO To be translated ======
+translate U TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText U TreeFile "Tiedosto" 0

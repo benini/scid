@@ -464,6 +464,8 @@ translate R AllLoss {" Прогрывает любой ход:     " }
 # Tip of the day:
 translate R Tip {Совет}
 translate R TipAtStartup {Совет при загрузке}
+# ====== TODO To be translated ======
+translate R TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText R TreeFile "Файл" 0

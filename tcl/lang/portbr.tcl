@@ -457,6 +457,8 @@ translate B AllLoss {" Quem mover perde   :     " }
 # Tip of the day:
 translate B Tip {Dica}
 translate B TipAtStartup {Dica ao iniciar}
+# ====== TODO To be translated ======
+translate B TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus: ***
 menuText B TreeFile "Arquivo" 0

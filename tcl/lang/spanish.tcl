@@ -518,6 +518,8 @@ translate S AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate S Tip {Sugerencia}
 translate S TipAtStartup {Sugerencia al iniciar}
+# ====== TODO To be translated ======
+translate S TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText S TreeFile "Archivo" 0

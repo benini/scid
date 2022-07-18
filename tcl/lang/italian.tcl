@@ -472,6 +472,7 @@ translate I AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate I Tip {Suggerimento}
 translate I TipAtStartup {Suggerimento all'avvio}
+translate I TipConvertPGN {Puoi ottenere performance migliori convertendo i file PGN}
 
 # Tree window menus:
 menuText I TreeFile "File" 0

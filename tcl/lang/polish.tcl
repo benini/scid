@@ -544,6 +544,8 @@ translate P AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate P Tip {Porada}
 translate P TipAtStartup {Poka¿ poradê przy starcie}
+# ====== TODO To be translated ======
+translate P TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText P TreeFile "Plik" 0

@@ -540,6 +540,8 @@ translate O AllLoss {" Whoever moves loses:     " }
 # Tip of the day:
 translate O Tip {Tips}
 translate O TipAtStartup {Tips ved oppstart}
+# ====== TODO To be translated ======
+translate O TipConvertPGN {You can get better performance by converting PGN files}
 
 # Tree window menus:
 menuText O TreeFile "Fil" 0
