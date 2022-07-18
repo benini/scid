@@ -347,7 +347,10 @@ proc translateMenuLabels {m} {
             $m entryconfig $i -label [tr $lbl] -underline $under
         }
         if {$type == "cascade"} {
-            translateMenuLabels [$m entrycget $i -menu]
+            set submenu [$m entrycget $i -menu]
+            if {$submenu ne ".menu.options.language"} {
+                translateMenuLabels $submenu
+            }
         }
     }
 }
