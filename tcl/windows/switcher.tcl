@@ -721,7 +721,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
 #      $w.c.f$i configure -background $color
       if {$icons} {
         set dbtype [getBaseType $i]
-        if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }
+        if {$dbtype < 0 || $dbtype >= $numBaseTypeIcons} { set dbtype 0 }
         $w.c.f$i.img configure -image dbt$dbtype -background $color
 		grid $w.c.f$i.img -row 0 -column 0 -rowspan 2
       } else {

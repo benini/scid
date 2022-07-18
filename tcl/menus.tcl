@@ -66,8 +66,10 @@ menu $m.copygames
     set destBase [::file::New]
     if {$destBase ne ""} {
       foreach {tag value} [sc_base extra $srcBase] {
-        # Try to copy the database info (may not be supported by a database type like PGN)
-        catch { sc_base extra $destBase $tag $value }
+        if {$tag ne "type"} {
+          # Try to copy the database info (may not be supported by a database type like PGN)
+          catch { sc_base extra $destBase $tag $value }
+        }
       }
       ::windows::gamelist::CopyGames {} $srcBase $destBase all false
     }
