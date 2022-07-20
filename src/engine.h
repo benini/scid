@@ -131,8 +131,8 @@ private:
     uint     RepStackSize;         // Repetition stack size.
     repeatT  RepStack [1024];      // Repetition stack.
     bool     InCheck [ENGINE_MAX_PLY];   // In-check at each ply.
-    principalVarT PV [ENGINE_MAX_PLY];   // Principal variation at each ply.
-    ScoredMove KillerMove [ENGINE_MAX_PLY][2];  // Two killer moves per ply.
+    principalVarT PV [ENGINE_MAX_PLY] = {};   // Principal variation at each ply.
+    ScoredMove KillerMove [ENGINE_MAX_PLY][2] = {};  // Two killer moves per ply.
     int History[16][64];    // Success history of piece-to-square moves.
     byte     TranTableSequence;    // Transposition table sequence number.
     uint     TranTableSize;        // Number of Transposition table entries.

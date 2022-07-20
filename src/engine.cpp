@@ -1041,13 +1041,8 @@ Engine::SetHashTableKilobytes (uint size)
 	{
       TranTableSize = bytes / sizeof(transTableEntryT);
       if ((TranTableSize % 2) == 1) { TranTableSize--; }
-#ifdef WINCE
-      if (TranTable != NULL) { my_Tcl_Free((char *) TranTable); }
-      TranTable = (transTableEntryT*)my_Tcl_Alloc(sizeof ( transTableEntryT [TranTableSize]));
-#else
       if (TranTable != NULL) { delete[] TranTable; }
-      TranTable = new transTableEntryT [TranTableSize];
-#endif
+      TranTable = new transTableEntryT [TranTableSize]{};
     }
     ClearHashTable();
 }
@@ -1063,13 +1058,8 @@ Engine::SetPawnTableKilobytes (uint size)
 	if(PawnTableSize != bytes / sizeof(pawnTableEntryT))
 	{
       PawnTableSize = bytes / sizeof(pawnTableEntryT);
-#ifdef WINCE
-      if (PawnTable != NULL) { my_Tcl_Free((char *) PawnTable); }
-      PawnTable = (pawnTableEntryT*)my_Tcl_Alloc(sizeof (pawnTableEntryT [PawnTableSize]) );
-#else
       if (PawnTable != NULL) { delete[] PawnTable; }
-      PawnTable = new pawnTableEntryT [PawnTableSize];
-#endif
+      PawnTable = new pawnTableEntryT [PawnTableSize]{};
     }
     ClearPawnTable();
 }
@@ -1141,6 +1131,9 @@ void
 Engine::StoreHash (int depth, scoreFlagT ttFlag, int score,
                    ScoredMove * bestMove, bool isOnlyMove)
 {
+    if (bestMove && Pos.isChess960() && bestMove->isCastle())
+        return;
+
     if (TranTableSize == 0) { return; }
     ASSERT (ttFlag <= SCORE_UPPER);
 
