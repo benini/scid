@@ -883,7 +883,7 @@ proc addMove { sq1 sq2 {animate "-animate"}} {
     } else {
         set moveUCI [::board::san $sq2][::board::san $sq1]
     }
-    addMoveUCI $moveUCI "" $animate
+    addMoveUCI $moveUCI "var" $animate
 }
 
 proc addSanMove { {san} } {
@@ -897,7 +897,7 @@ proc addSanMove { {san} } {
 #   If the move is a promotion, getPromoPiece will be called
 #   to get the promotion piece from the user.
 #
-proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
+proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
     set sq1 [::board::sq [string range $moveUCI 0 1] ]
     set sq2 [::board::sq [string range $moveUCI 2 3] ]
     if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
@@ -919,23 +919,6 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
 
 
     if {![sc_pos isAt vend]} {
-        if {$action == ""} {
-            set replacedmove ""
-            set n [sc_var count]
-            if {$n == 0} {
-                sc_move forward
-                if {[sc_pos isAt vend]} {
-                    set replacedmove [sc_game info previousMoveNT]
-                }
-                sc_move back
-            }
-            if {$replacedmove != ""} {
-                set ::guessedAddMove [list "Replaced Move $replacedmove"]
-            } else {
-                set action "var"
-            }
-        }
-
         switch -- $action {
             mainline { set ::guessedAddMove [list "New Main Line"]}
             var      { set ::guessedAddMove [list "New Variation"]}
