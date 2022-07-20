@@ -1084,35 +1084,6 @@ proc releaseSquare { w x y } {
     }
 }
 
-
-# backSquare:
-#    Handles the retracting of a move (when the right mouse button is
-#    clicked on a square). Recolors squares to normal color also.
-#    If the move is the last in the game or variation, is is removed
-#    by truncating the game after retracting the move.
-#
-proc backSquare {} {
-    global selectedSq bestSq
-    set lastMoveInLine 0
-    if {[sc_pos isAt vend]} {
-        set lastMoveInLine 1
-    }
-    sc_move back
-    
-    # RMB used to delete the move if it was the last in a line. Removed it as there is no undo.
-    # if {[sc_pos isAt vstart] && [sc_var level] != 0} {
-    # ::pgn::deleteVar [sc_var number]
-    # } elseif {$lastMoveInLine} {
-    # sc_game truncate
-    # }
-    
-    set selectedSq -1
-    set bestSq -1
-    # update the board without -pgn option because of poor performance with long games
-    updateBoard -animate
-    ::utils::sound::AnnounceBack
-}
-
 # addMarker:
 #   add/delete square markers and arrows to the current position
 #
@@ -1256,7 +1227,7 @@ proc CreateMainBoard { {w} } {
     ::board::bind $w.board $i <Control-ButtonRelease-1> "addMarker $w.board %X %Y"
     ::board::bind $w.board $i <B1-Motion> "::board::dragPiece $w.board %X %Y"
     ::board::bind $w.board $i <ButtonRelease-1> "releaseSquare $w.board %X %Y"
-    ::board::bind $w.board $i <ButtonPress-$::MB3> backSquare
+    ::board::bind $w.board $i <ButtonPress-$::MB3> ::move::Back
   }
 
   foreach i {o q r n k O Q R B N K} {
@@ -1269,8 +1240,6 @@ proc CreateMainBoard { {w} } {
     bind $w <Alt-$i> { continue }
   }
 
-  bind $w <Control-BackSpace> backSquare
-  bind $w <Control-Delete> backSquare
   bind $w <BackSpace> moveEntry_Backspace
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
