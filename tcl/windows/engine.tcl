@@ -23,16 +23,11 @@ proc ::enginewin::listEngines {} {
     return $result
 }
 
-# Inform the engine that there is a new game
-proc ::enginewin::onNewGame { {ids ""} } {
-    foreach {id state} [array get ::enginewin::engState] {
-        if {$ids ne "" && $id ni $ids} { continue }
-        set ::enginewin::newgame_$id true
-    }
-}
-
 # Sends the updated position to the active engines
-proc ::enginewin::onPosChanged { {ids ""} } {
+proc ::enginewin::onPosChanged { {ids ""} {newgame ""}} {
+    if {$newgame ne ""} {
+        ::enginewin::newGame $ids
+    }
     set position ""
     foreach {id state} [array get ::enginewin::engState] {
         if {$state ne "run"} { continue }
@@ -203,6 +198,14 @@ proc ::enginewin::updateName {id} {
     }
 }
 
+# Inform the engine that there is a new game
+proc ::enginewin::newGame { {ids ""} } {
+    foreach {id state} [array get ::enginewin::engState] {
+        if {$ids ne "" && $id ni $ids} { continue }
+        set ::enginewin::newgame_$id true
+    }
+}
+
 # Sets the current state of the engine and updates the relevant buttons.
 # The states are:
 # closed -> No engine is open.
@@ -356,7 +359,7 @@ proc ::enginewin::connectEngine {id config} {
         ::engine::send $id SetOptions $options
     }
     ::enginewin::changeState $id idle
-    ::enginewin::onNewGame $id
+    ::enginewin::newGame $id
 }
 
 # Checks whether the specified connection parameter has been changed, and
