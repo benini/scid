@@ -470,6 +470,7 @@ proc menuUpdateBases {} {
 
   menuConfig .menu.db FileClose entryconfig -state $notClipbase
   menuConfig .menu.db LoadatStartup entryconfig -state $notClipbase
+  menuConfig .menu.db CopyAllGames entryconfig -state $notEmpty
   menuConfig .menu.db ToolsExpFilter entryconfig -state $notEmpty
   menuConfig .menu.db FileMaintName entryconfig -state $canChange
   menuConfig .menu.db.utils Cleaner          entryconfig -state $canChange
