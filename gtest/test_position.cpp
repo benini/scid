@@ -15,6 +15,7 @@
  */
 
 #include "gameview.h"
+#include "pgnparse.h"
 #include "position.h"
 #include "searchpos.h"
 #include <cstring>
@@ -355,12 +356,12 @@ TEST(Test_ReadFromFen, halfmove_clock) {
 	Position pos;
 	for (auto fen : valid_fens) {
 		EXPECT_EQ(OK, pos.ReadFromFEN(fen));
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, fen);
 	}
 	for (auto fen : invalid_fens) {
 		EXPECT_EQ(OK, pos.ReadFromFEN(fen));
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "8/K7/8/8/7k/8/8/8 w - - 0 1");
 	}
 }
@@ -430,13 +431,13 @@ TEST(Test_PositionReadCoordMoves, ReadFromFENorUCI) {
 
 	EXPECT_EQ(OK,
 	          pos.ReadFromFENorUCI("   position startpos moves e2e4 c7c5 "));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(
 	    buf, "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
 
 	EXPECT_EQ(OK, pos.ReadFromFENorUCI("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/"
 	                                   "RNBQKBNR w KQkq - 0 2 moves g1f3 "));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(
 	    buf, "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
 }
@@ -457,7 +458,7 @@ TEST(Test_PositionReadCoordMoves, ReadCoordMoves) {
 		EXPECT_EQ(
 		    OK, pos.MakeCoordMoves(coordMoves, std::strlen(coordMoves), &san));
 		char buf[1024];
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(endpos, buf);
 		EXPECT_STREQ(sanMoves, san.c_str());
 	}
@@ -522,40 +523,40 @@ TEST(Test_PositionDoSimpleMove, castling_flags) {
 
 	pos.ParseMove(&sm.emplace_back(), "e1g1");
 	pos.DoSimpleMove(sm.back());
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
 
 	pos.ParseMove(&sm.emplace_back(), "h8g8");
 	pos.DoSimpleMove(sm.back());
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
 
 	pos.ParseMove(&sm.emplace_back(), "g1h2");
 	pos.DoSimpleMove(sm.back());
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
 
 	pos.ParseMove(&sm.emplace_back(), "e8c8");
 	pos.DoSimpleMove(sm.back());
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "2kr2r1/8/8/8/8/8/7K/R4R2 w - - 4 3");
 
 	// UndoSimpleMove
 	auto it = sm.crbegin();
 	pos.UndoSimpleMove(&(*it++));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
 
 	pos.UndoSimpleMove(&(*it++));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
 
 	pos.UndoSimpleMove(&(*it++));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
 
 	pos.UndoSimpleMove(&(*it++));
-	pos.PrintFEN(buf, FEN_ALL_FIELDS);
+	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
 }
 
@@ -567,28 +568,28 @@ TEST(Test_PositionDoSimpleMove, castling_flags_capture) {
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
 		pos.ParseMove(&sm, "h1h8");
 		pos.DoSimpleMove(sm);
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "r3k2R/8/8/8/8/8/8/R3K3 b Qq - 0 1");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
 		pos.ParseMove(&sm, "a1a8");
 		pos.DoSimpleMove(sm);
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "R3k2r/8/8/8/8/8/8/4K2R b Kk - 0 1");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
 		pos.ParseMove(&sm, "h8h1");
 		pos.DoSimpleMove(sm);
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "r3k3/8/8/8/8/8/8/R3K2r w Qq - 0 2");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
 		pos.ParseMove(&sm, "a8a1");
 		pos.DoSimpleMove(sm);
-		pos.PrintFEN(buf, FEN_ALL_FIELDS);
+		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "4k2r/8/8/8/8/8/8/r3K2R w Kk - 0 2");
 	}
 }
@@ -711,5 +712,65 @@ TEST(Test_PositionIsKingInCheck, last_move_optimization) {
 		pos.ParseMove(&sm, "e4f3");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
+	}
+}
+
+TEST(Test_PrintFen, castling_flag_kside) {
+	// clang-format off
+	std::string_view pgn =
+		"[FEN \"Brbnk1r1/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/bRBNK1R1 w KQkq - 0 1\"]"
+		"1. Rxa1 Rxa8 2. Ra3 Ra6 3. Rh3 Rh6 4. Rhh1 Rhh8 5. O-O O-O";
+	// clang-format on
+	Game game;
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(pgn.data(), pgn.size(), game, parseLog));
+	game.MoveToStart();
+
+	const char* fens[] = {
+	    "Brbnk1r1/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/bRBNK1R1 w KQkq - 0 1",
+	    "Brbnk1r1/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/R1BNK1R1 b Kkq - 0 1",
+	    "r1bnk1r1/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/R1BNK1R1 w Kk - 0 2",
+	    "r1bnk1r1/3pppq1/8/ppp3pp/PPP3PP/R7/3PPPQ1/2BNK1R1 b Kk - 1 2",
+	    "2bnk1r1/3pppq1/r7/ppp3pp/PPP3PP/R7/3PPPQ1/2BNK1R1 w Kk - 2 3",
+	    "2bnk1r1/3pppq1/r7/ppp3pp/PPP3PP/7R/3PPPQ1/2BNK1R1 b Kk - 3 3",
+	    "2bnk1r1/3pppq1/7r/ppp3pp/PPP3PP/7R/3PPPQ1/2BNK1R1 w Kk - 4 4",
+	    "2bnk1r1/3pppq1/7r/ppp3pp/PPP3PP/8/3PPPQ1/2BNK1RR b Gk - 5 4",
+	    "2bnk1rr/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/2BNK1RR w Gg - 6 5",
+	    "2bnk1rr/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/2BN1RKR b g - 7 5",
+	    "2bn1rkr/3pppq1/8/ppp3pp/PPP3PP/8/3PPPQ1/2BN1RKR w - - 8 6"};
+	for (auto expected : fens) {
+		char buf[1024];
+		game.currentPos()->PrintFEN(buf);
+		EXPECT_STREQ(buf, expected);
+		game.MoveForwardInPGN();
+	}
+}
+
+TEST(Test_PrintFen, castling_flag_qside) {
+	// clang-format off
+	std::string_view pgn =
+	"[FEN \"Br2k1r1/1b1ppn2/8/pppQ1pPp/PPPq1PP1/8/1B1PPN2/bR2K1R1 b KQkq - 0 1\"]"
+	"1... Rg6 2. Rg3 Ra6 3. Ra3 Raxa8 4. Raxa1 O-O-O 5. O-O-O";
+	// clang-format on
+	Game game;
+	PgnParseLog parseLog;
+	ASSERT_TRUE(pgnParseGame(pgn.data(), pgn.size(), game, parseLog));
+	game.MoveToStart();
+
+	const char* fens[] = {
+	    "Br2k1r1/1b1ppn2/8/pppQ1pPp/PPPq1PP1/8/1B1PPN2/bR2K1R1 b KQkq - 0 1",
+	    "Br2k3/1b1ppn2/6r1/pppQ1pPp/PPPq1PP1/8/1B1PPN2/bR2K1R1 w KQq - 1 2",
+	    "Br2k3/1b1ppn2/6r1/pppQ1pPp/PPPq1PP1/6R1/1B1PPN2/bR2K3 b Qq - 2 2",
+	    "Br2k3/1b1ppn2/r7/pppQ1pPp/PPPq1PP1/6R1/1B1PPN2/bR2K3 w Qq - 3 3",
+	    "Br2k3/1b1ppn2/r7/pppQ1pPp/PPPq1PP1/R7/1B1PPN2/bR2K3 b Qq - 4 3",
+	    "rr2k3/1b1ppn2/8/pppQ1pPp/PPPq1PP1/R7/1B1PPN2/bR2K3 w Qb - 0 4",
+	    "rr2k3/1b1ppn2/8/pppQ1pPp/PPPq1PP1/8/1B1PPN2/RR2K3 b Bb - 0 4",
+	    "r1kr4/1b1ppn2/8/pppQ1pPp/PPPq1PP1/8/1B1PPN2/RR2K3 w B - 1 5",
+	    "r1kr4/1b1ppn2/8/pppQ1pPp/PPPq1PP1/8/1B1PPN2/R1KR4 b - - 2 5"};
+	for (auto expected : fens) {
+		char buf[1024];
+		game.currentPos()->PrintFEN(buf);
+		EXPECT_STREQ(buf, expected);
+		game.MoveForwardInPGN();
 	}
 }

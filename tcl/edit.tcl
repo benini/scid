@@ -12,7 +12,7 @@ set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
 # Traces to keep entry values sensible:
 trace variable moveNum  w {::utils::validate::Integer 999 0}
 trace variable epFile   w {::utils::validate::Regexp {^(-|[a-h])?$}}
-trace variable castling w {::utils::validate::Regexp {^(-|[KQkq]*)$}}
+trace variable castling w {::utils::validate::Regexp {^(-|[a-hA-hKQkq]*)$}}
 
 set setupBd {}
 set setupFen {}

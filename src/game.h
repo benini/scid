@@ -234,7 +234,7 @@ public:
         if (!StartPos)
             return false;
         if (outFEN)
-            StartPos->PrintFEN(outFEN, FEN_ALL_FIELDS);
+            StartPos->PrintFEN(outFEN);
         return true;
     }
 
@@ -597,7 +597,7 @@ inline void collectPositions(Game& game, TCont& dest) {
 		gamepos.RAVdepth = game.GetVarLevel();
 		gamepos.RAVnum = game.GetVarNumber();
 		char strBuf[256];
-		game.currentPos()->PrintFEN(strBuf, FEN_ALL_FIELDS);
+		game.currentPos()->PrintFEN(strBuf);
 		gamepos.FEN = strBuf;
 		for (byte* nag = game.GetNags(); *nag; nag++) {
 			gamepos.NAGs.push_back(*nag);

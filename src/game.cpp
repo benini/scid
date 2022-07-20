@@ -810,7 +810,7 @@ std::string Game::currentPosUCI() const {
 			for (const moveT* m : moves) {
 				lastValidPos.UndoSimpleMove(&m->moveData);
 			}
-			lastValidPos.PrintFEN(FEN, FEN_ALL_FIELDS);
+			lastValidPos.PrintFEN(FEN);
 			break;
 		}
 		moves.emplace_back(move);
@@ -973,7 +973,7 @@ void Game::TruncateStart() {
     // It is necessary to rebuild the current position using ReadFromFEN()
     // because the order of pieces is important when encoding to SCIDv4 format.
     char tempStr[256];
-    CurrentPos->PrintFEN(tempStr, FEN_ALL_FIELDS);
+    CurrentPos->PrintFEN(tempStr);
     auto pos = std::make_unique<Position>();
     if (pos->ReadFromFEN(tempStr) != OK)
         return;
@@ -2237,8 +2237,7 @@ errorT Game::WritePGN(TextBuffer* tb) {
                 StartPos->DumpHtmlBoard (&dstr, HtmlStyle, NULL);
                 tb->PrintString (dstr.Data());
             } else {
-                StartPos->PrintFEN(std::copy_n("Position: ", 10, temp),
-                                   FEN_ALL_FIELDS);
+                StartPos->PrintFEN(std::copy_n("Position: ", 10, temp));
                 std::strcat(temp, newline);
                 tb->PrintString (temp);
             }
@@ -2304,7 +2303,7 @@ errorT Game::WritePGN(TextBuffer* tb) {
         }
         // Finally, write the FEN tag if necessary:
         if (StartPos) {
-            StartPos->PrintFEN(std::copy_n("[FEN \"", 6, temp), FEN_ALL_FIELDS);
+            StartPos->PrintFEN(std::copy_n("[FEN \"", 6, temp));
             auto it_end = std::copy_n("\"]", 2, temp + std::strlen(temp));
             std::strcpy(it_end, newline);
             tb->PrintString (temp);

@@ -262,7 +262,7 @@ TEST(Test_Game, encodeFEN) {
 		game.DecodeMovesOnly(bbuf);
 		game.MoveToStart();
 		char str[1024];
-		game.currentPos()->PrintFEN(str, FEN_ALL_FIELDS);
+		game.currentPos()->PrintFEN(str);
 		EXPECT_STREQ(kiwipete, str);
 	}
 }
@@ -327,11 +327,11 @@ TEST(Test_Game, illegalPGN_Castling) {
 	EXPECT_FALSE(pgnLog.log.empty());
 	char fen[256];
 	game.MoveToEnd();
-	game.currentPos()->PrintFEN(fen, FEN_ALL_FIELDS);
+	game.currentPos()->PrintFEN(fen);
 	EXPECT_STREQ(
 	    fen, "rnbq1rk1/ppppbppp/5n2/4p3/4P3/5N2/PPPPBPPP/RNBQ1RK1 w - - 6 5");
 	game.MoveBackup();
-	game.currentPos()->PrintFEN(fen, FEN_ALL_FIELDS);
+	game.currentPos()->PrintFEN(fen);
 	EXPECT_STREQ(
 	    fen, "rnbqk2r/ppppbppp/5n2/4p3/4P3/5N2/PPPPBPPP/RNBQ1RK1 b kq - 5 4");
 }
@@ -344,7 +344,7 @@ TEST(Test_Game, illegalPGN_KingCapture) {
 	EXPECT_FALSE(pgnLog.log.empty());
 	char fen[256];
 	game.MoveToEnd();
-	game.currentPos()->PrintFEN(fen, FEN_ALL_FIELDS);
+	game.currentPos()->PrintFEN(fen);
 	EXPECT_STREQ(
 	    fen, "rnbqk1nr/pppp1ppp/4p3/8/1b1PP3/8/PPP2PPP/RNBQKBNR b KQkq - 2 3");
 }

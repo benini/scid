@@ -561,12 +561,7 @@ Position::Clear (void)
     return;
 }
 
-void Position::setCastling(colorT col, squareT rsq) {
-	static_assert(1 << castlingIdx(WHITE, QSIDE) == 1);
-	static_assert(1 << castlingIdx(WHITE, KSIDE) == 2);
-	static_assert(1 << castlingIdx(BLACK, QSIDE) == 4);
-	static_assert(1 << castlingIdx(BLACK, KSIDE) == 8);
-
+squareT Position::find_castle_rook(colorT col, squareT rsq) const {
 	const auto ksq = GetKingSquare(col);
 	if (square_Rank(ksq) == square_Rank(rsq)) {
 		const auto rook = piece_Make(col, ROOK);
@@ -577,7 +572,17 @@ void Position::setCastling(colorT col, squareT rsq) {
 				--rsq;
 		}
 	}
+	return rsq;
+}
 
+void Position::setCastling(colorT col, squareT rsq) {
+	static_assert(1 << castlingIdx(WHITE, QSIDE) == 1);
+	static_assert(1 << castlingIdx(WHITE, KSIDE) == 2);
+	static_assert(1 << castlingIdx(BLACK, QSIDE) == 4);
+	static_assert(1 << castlingIdx(BLACK, KSIDE) == 8);
+
+	const auto ksq = GetKingSquare(col);
+	rsq = find_castle_rook(col, rsq);
 	const auto dir = square_Fyle(ksq) < square_Fyle(rsq) ? KSIDE : QSIDE;
 	const auto idx = castlingIdx(col, dir);
 	castleRookSq_[idx] = rsq;
@@ -2523,70 +2528,77 @@ errorT Position::ReadFromFENorUCI(std::string_view str) {
     return MakeCoordMoves(str.data(), str.size());
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::PrintFEN():
-//      Print the FEN representation of the position.
-//      If flags == FEN_COMPACT, only the board and side-to-move fields
-//              are printed, in compact form (no slashes between rows).
-//      If flags == FEN_BOARD, only the board and side-to-move fields
-//              are printed.
-//      If flags == FEN_CASTLING_EP, the castling and en passant fields
-//              are also printed.
-//      If flags == FEN_ALL_FIELDS, all fields are printed including
-//              the halfmove clock and ply counter.
-//
-void Position::PrintFEN(char* str, uint flags) const {
-    ASSERT (str != NULL);
+void Position::PrintFEN(char* str) const {
+    ASSERT(str != NULL);
     uint emptyRun, iRank, iFyle;
     for (iRank = 0; iRank < 8; iRank++) {
         const pieceT* pBoard = &(Board[(7 - iRank) * 8]);
         emptyRun = 0;
-        if (iRank > 0  &&  flags > FEN_COMPACT) { *str++ = '/'; }
+        if (iRank > 0) {
+            *str++ = '/';
+        }
         for (iFyle = 0; iFyle < 8; iFyle++, pBoard++) {
             if (*pBoard != EMPTY) {
-                if (emptyRun) { *str++ = (byte) emptyRun + '0'; }
+                if (emptyRun) {
+                    *str++ = (byte)emptyRun + '0';
+                }
                 emptyRun = 0;
                 *str++ = PIECE_CHAR[*pBoard];
             } else {
                 emptyRun++;
             }
         }
-        if (emptyRun) { *str++ = (byte) emptyRun + '0'; }
+        if (emptyRun) {
+            *str++ = (byte)emptyRun + '0';
+        }
     }
 
-    if (flags > FEN_COMPACT) { *str++ = ' '; }
+    *str++ = ' ';
     *str++ = (ToMove == WHITE ? 'w' : 'b');
-    *str = 0;
 
-    if (flags >= FEN_CASTLING_EP) {
-        // Add the castling flags and EP flag as well:
-        *str++ = ' ';
-        if (Castling == 0)  {
-            *str++ = '-';
-        } else {
-            if (GetCastling (WHITE, KSIDE))  { *str++ = 'K'; }
-            if (GetCastling (WHITE, QSIDE))  { *str++ = 'Q'; }
-            if (GetCastling (BLACK, KSIDE))  { *str++ = 'k'; }
-            if (GetCastling (BLACK, QSIDE))  { *str++ = 'q'; }
+    // Add the castling flags and EP flag as well:
+    *str++ = ' ';
+    if (Castling == 0) {
+        *str++ = '-';
+    } else {
+        if (GetCastling(WHITE, KSIDE)) {
+            auto rook_sq = castleRookSq(WHITE, true);
+            *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, H1)
+                         ? toupper(square_FyleChar(rook_sq))
+                         : 'K';
         }
-        *str++ = ' ';
-
-        // Now the EP target square:
-        if (EPTarget == NULL_SQUARE) {
-            *str++ = '-';
-        } else {
-            *str++ = square_FyleChar (EPTarget);
-            *str++ = square_RankChar (EPTarget);
+        if (GetCastling(WHITE, QSIDE)) {
+            auto rook_sq = castleRookSq(WHITE, false);
+            *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, A1)
+                         ? toupper(square_FyleChar(rook_sq))
+                         : 'Q';
         }
-        *str = 0;
-
-        if (flags >= FEN_ALL_FIELDS) {
-            // Also print the Halfmove and ply counters:
-            *str++ = ' ';
-            sprintf (str, "%d %d", HalfMoveClock, (PlyCounter / 2) + 1);
+        if (GetCastling(BLACK, KSIDE)) {
+            auto rook_sq = castleRookSq(BLACK, true);
+            *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, H8)
+                         ? square_FyleChar(rook_sq)
+                         : 'k';
+        }
+        if (GetCastling(BLACK, QSIDE)) {
+            auto rook_sq = castleRookSq(BLACK, false);
+            *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, A8)
+                         ? square_FyleChar(rook_sq)
+                         : 'q';
         }
     }
-    return;
+    *str++ = ' ';
+
+    // Now the EP target square:
+    if (EPTarget == NULL_SQUARE) {
+        *str++ = '-';
+    } else {
+        *str++ = square_FyleChar(EPTarget);
+        *str++ = square_RankChar(EPTarget);
+    }
+
+    // Also print the Halfmove and ply counters:
+    *str++ = ' ';
+    sprintf(str, "%d %d", HalfMoveClock, (PlyCounter / 2) + 1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

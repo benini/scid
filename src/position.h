@@ -42,14 +42,6 @@ const sanFlagT    SAN_NO_CHECKTEST   = 0,
                   SAN_MATETEST       = 2;
 
 
-// Flags that Position::PrintFEN() recognises:
-//
-const uint
-    FEN_COMPACT = 0,
-    FEN_BOARD = 1,
-    FEN_CASTLING_EP = 2,
-    FEN_ALL_FIELDS = 3;
-
 
 // Flags that Position::GenerateMoves() recognises:
 //
@@ -151,6 +143,7 @@ private:
     static constexpr unsigned castlingIdx(colorT color, castleDirT side) {
         return 2 * color + side;
     }
+    squareT find_castle_rook(colorT col, squareT rsq) const;
     squareT castleRookSq(colorT color, bool king_side) const {
         return castleRookSq_[2 * color + (king_side ? 1 : 0)];
     }
@@ -296,7 +289,7 @@ public:
     errorT      ReadFromFEN (const char * s);
     errorT      ReadFromFENorUCI (std::string_view str);
     void        PrintCompactStr (char * cboard);
-    void        PrintFEN(char* str, uint flags) const;
+    void        PrintFEN(char* str) const;
     void        DumpLatexBoard (DString * dstr, bool flip);
     void        DumpLatexBoard (DString * dstr) {
         DumpLatexBoard (dstr, false);

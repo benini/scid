@@ -2946,7 +2946,7 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     if (showFEN) {
         char boardStr [200];
-        db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
+        db->game->GetCurrentPos()->PrintFEN (boardStr);
         Tcl_AppendResult (ti, "<br><gray>", boardStr, "</gray>", NULL);
     }
     return TCL_OK;
@@ -3543,7 +3543,7 @@ sc_game_startBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         if (scratchPos.Random (str+7) != OK) {
             return errorResult (ti, "Invalid material string.");
         }
-        scratchPos.PrintFEN(buf, FEN_ALL_FIELDS);
+        scratchPos.PrintFEN(buf);
         str = buf;
     }
     auto err = db->game->SetStartFen(str);
@@ -4657,7 +4657,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case POS_FEN:
-        db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
+        db->game->GetCurrentPos()->PrintFEN (boardStr);
         Tcl_AppendResult (ti, boardStr, NULL);
         break;
 
@@ -8552,7 +8552,7 @@ sc_book_moves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
     uint slot = strGetUnsigned (argv[2]);
     char boardStr[100];
-    db->game->GetCurrentPos()->PrintFEN(boardStr, FEN_ALL_FIELDS);
+    db->game->GetCurrentPos()->PrintFEN(boardStr);
 
     char moves[1024] = {};
     auto extra_info = polyglot_moves(moves, boardStr, slot);
@@ -8581,7 +8581,7 @@ sc_book_positions (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_book positions slot");
     }
     uint slot = strGetUnsigned (argv[2]);
-		db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
+		db->game->GetCurrentPos()->PrintFEN (boardStr);
 		polyglot_positions(moves, (const char *) boardStr, slot);
     Tcl_AppendResult (ti, moves, NULL);
     return TCL_OK;
