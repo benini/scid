@@ -176,7 +176,6 @@ public:
     // Methods to get the Board or piece lists -- used in game.cpp to
     // decode moves:
     const squareT* GetList(colorT c) const { return List[c]; }
-    squareT *   GetList (colorT c)    { return List[c]; }
     uint        GetCount (colorT c) const { return Count[c]; }
     uint        TotalMaterial ()      { return Count[WHITE] + Count[BLACK]; }
     uint        NumNonPawns (colorT c) { 

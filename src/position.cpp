@@ -22,6 +22,29 @@
 #include "sqmove.h"
 #include <algorithm>
 #include <array>
+#include <vector>
+
+namespace {
+bool valid_sqlist(pieceT* begin, size_t n, pieceT* board) {
+	auto unique_sq = std::vector<pieceT>(begin, begin + n);
+	std::sort(unique_sq.begin(), unique_sq.end());
+	unique_sq.erase(std::unique(unique_sq.begin(), unique_sq.end()),
+	                unique_sq.end());
+	auto unique_col = std::vector<pieceT>(n);
+	std::transform(begin, begin + n, unique_col.begin(),
+	               [&](auto sq) { return piece_Color(board[sq]); });
+	std::sort(unique_col.begin(), unique_col.end());
+	unique_col.erase(std::unique(unique_col.begin(), unique_col.end()),
+	                 unique_col.end());
+	auto kings = std::vector<pieceT>(n);
+	std::transform(begin, begin + n, kings.begin(),
+	               [&](auto sq) { return piece_Type(board[sq]); });
+	return unique_sq.size() == n     // no duplicates
+	       && unique_col.size() == 1 // not EMPTY and all of same side
+	       && kings[0] == KING       // only 1 king with idx == 0;
+	       && std::count(kings.begin(), kings.end(), KING) == 1;
+}
+} // namespace
 
 inline void
 Position::AddHash (pieceT p, squareT sq)
@@ -1513,6 +1536,9 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
 			RemoveFromBoard(piece_Make(color, KING), GetKingSquare(color));
 			addPiece(kingIdx, KING, kingTo);
 			addPiece(rookIdx, ROOK, rookto);
+
+			ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+			ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
 			return;
 		}
 	}
@@ -1520,6 +1546,7 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
     // handle captures:
     if (sm.capturedPiece != EMPTY) {
         ASSERT(piece_Type(sm.capturedPiece) != KING);
+        ASSERT(piece_Color(sm.capturedPiece) == enemy);
         // update opponents List of pieces
         Count[enemy]--;
         ListPos[List[enemy][Count[enemy]]] = sm.capturedNum;
@@ -1569,7 +1596,10 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
             EPTarget = square_Move(from, DOWN);
         }
         HalfMoveClock = 0; // 50-move clock resets on pawn moves.
-    }
+	}
+
+	ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+	ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
 }
 
 
@@ -1619,7 +1649,10 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 			RemoveFromBoard(piece_Make(ToMove, ROOK), rookfrom);
 			addPiece(rookIdx, ROOK, rookto);
 			addPiece(kingIdx, KING, from);
-			return;
+
+		    ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+		    ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
+		    return;
 		}
 
     // Handle a capture: insert piece back into piecelist.
@@ -1654,6 +1687,9 @@ Position::UndoSimpleMove (simpleMoveT const* m)
     if (m->capturedPiece != EMPTY) {
         AddToBoard (m->capturedPiece, m->capturedSquare);
     }
+
+    ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+    ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
 }
 
 
@@ -2233,6 +2269,8 @@ Position::ReadFromLongStr (const char * str)
     default:
         return ERROR_Corrupt;
     }
+    ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+    ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
     return OK;
 }
 
@@ -2497,6 +2535,8 @@ errorT Position::ReadFromFEN(const char* str) {
         }
     }
     if (ToMove == BLACK) { PlyCounter++; }
+    ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
+    ASSERT(valid_sqlist(List[BLACK], Count[BLACK], Board));
     return OK;
 }
 

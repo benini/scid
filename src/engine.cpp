@@ -459,7 +459,7 @@ Engine::Score (int alpha, int beta)
         // squareT ownKing = Pos.GetKingSquare(c);
         squareT enemyKing = Pos.GetKingSquare(enemy);
         uint npieces = Pos.GetCount(c);
-        squareT * sqlist = Pos.GetList(c);
+        auto sqlist = Pos.GetList(c);
         int mscore = 0;  // Middlegame score adjustments
         int escore = 0;  // Endgame score adjustments
         int ascore = 0;  // All-position adjustments (middle and endgame)
