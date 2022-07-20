@@ -34,13 +34,13 @@ namespace eval ::windows::commenteditor {
 
 	proc notify_ {wait} {
 		if {$::windows::commenteditor::needNotify_} {
-			after cancel "::notify::PosChanged -pgn"
-			after $wait "::notify::PosChanged -pgn"
+			after cancel "::notify::PosChanged pgnonly"
+			after $wait "::notify::PosChanged pgnonly"
 		}
 	}
 
 	proc notifyCancel_ {} {
-		after cancel "::notify::PosChanged -pgn"
+		after cancel "::notify::PosChanged pgnonly"
 	}
 
 	proc storeComment_ {} {

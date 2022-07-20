@@ -316,7 +316,10 @@ namespace eval pgn {
       .pgnWin.text configure -state disabled
       unbusyCursor .
     }
+    ::pgn::update_current_move
+  }
 
+  proc update_current_move {} {
     if {$::pgn::showColor} {
       set offset [sc_pos pgnOffset]
       .pgnWin.text tag remove Current 1.0 end
@@ -329,8 +332,4 @@ namespace eval pgn {
       }
     }
   }
-  ################################################################################
-  #
-  ################################################################################
-  
 }

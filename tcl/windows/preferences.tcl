@@ -196,7 +196,8 @@ proc ::preferences::numbers { w } {
 proc ::preferences::internationalization { w } {
     global locale
 
-    ttk::checkbutton $w.tp -variable ::translatePieces -text [tr OptionsMovesTranslatePieces] -command setLanguage
+    ttk::checkbutton $w.tp -variable ::translatePieces -text [tr OptionsMovesTranslatePieces] \
+        -command "setLanguage; ::notify::PosChanged pgnonly"
     set numList { }
     set pre ""
     foreach numeric {".,"   ". "   ",."   ", "   "."   ","} {

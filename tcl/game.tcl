@@ -311,31 +311,50 @@ namespace eval ::notify {
   #            ignored if more than one piece is in a different position
   #
   # - inform the other modules that the current position is changed
-  # @-pgn: must be true if the pgn notation is different (new moves, new tags, etc)
+  # @-pgn: must be ne "" if the pgn notation is different (new moves, new tags, etc)
+  # Examples:
+  # ::notify::posChanged         -> only the current position has changed
+  # ::notify::posChanged pgnonly -> only the pgn has changed
+  # ::notify::posChanged -pgn    -> both the pgn and the current position are different
+  # ::notify::posChanged newgame -> everything is different and this is a new game
   #
   proc PosChanged {{pgn ""} {animate ""}} {
     set pgnNeedsUpdate [expr {$pgn ne ""}]
 
-    ::pgn::Refresh $pgnNeedsUpdate
+    if {$pgnNeedsUpdate} {
+      after cancel ::notify::privGameTextChanged
+    } else {
+      ::pgn::update_current_move
+    }
 
     ::board::setmarks .main.board [sc_pos getComment]
     ::board::update .main.board [sc_pos board] [expr {$animate ne ""}]
 
     after cancel ::notify::privPosChanged
     update idletasks
+    if {$pgnNeedsUpdate} { after idle ::notify::privGameTextChanged }
     after idle ::notify::privPosChanged
 
-    if {$pgnNeedsUpdate} {
-        ::tools::graphs::score::Refresh 0
-    }
+    if {$pgn ne "pgnonly"} {
+      # During the idle loop the engines can send Info messages for
+      # the old position. Send now the new position to avoid that.
+      if {$pgn ne "newgame"} { set pgn "" }
+      ::enginewin::onPosChanged "" $pgn
 
-    # During the idle loop the engines can send Info messages for
-    # the old position. Send now the new position to avoid that.
-    if {$pgn ne "newgame"} { set pgn "" }
-    ::enginewin::onPosChanged "" $pgn
+      # TODO: Move here the function in privPosChanged that don't care about
+      #       the game text and are not slow.
+    }
   }
 
-  # To be called when the position of the current game change
+  # Invoke all the function that don't care about the current position but want
+  # to be notified when the game text (tags, comments, notation) has changed.
+  proc privGameTextChanged {} {
+    ::pgn::Refresh 1
+    ::tools::graphs::score::Refresh 0
+  }
+
+  # Invoke all the function that want to be notified when the current position
+  # or the game text (tags, comments, notation) has changed.
   proc privPosChanged {} {
     moveEntry_Clear
     updateStatusBar

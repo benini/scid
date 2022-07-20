@@ -263,7 +263,7 @@ menu $m.language
   foreach l $::languages {
       $m.language add radiobutton -label $::langName($l) \
           -underline $::langUnderline($l) -variable language -value $l \
-          -command setLanguage
+          -command "setLanguage; ::notify::PosChanged pgnonly"
   }
 $m add cascade -label OptionsLanguage -menu $m.language
 menu $m.theme -tearoff 1
