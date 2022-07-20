@@ -535,15 +535,6 @@ namespace eval inputengine {
         "^move *" {
           set m [string range $line 5 end]
 
-          set s1 [string range $m 0 1]
-          set s2 [string range $m 2 end]
-          if {$s1 == "0-"} {
-            # castling must not be rewritten
-            set m "$s1$s2"
-          } else {
-            set m "$s1-$s2"
-          }
-
           logEngine "$line"
 
           if {[catch {sc_move addSan $m}]} {
