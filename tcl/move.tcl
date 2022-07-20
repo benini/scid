@@ -120,7 +120,7 @@ proc ::move::Back {{count 1}} {
 	if {[sc_pos isAt vstart]} { sc_var exit }
 
 	if {$count == 1} {
-		updateBoard -animate
+		::notify::PosChanged "" -animate
 		::utils::sound::AnnounceBack
 	} else {
 		updateBoard
@@ -147,7 +147,7 @@ proc ::move::Forward {{count 1}} {
 		}
 
 		# Animate and speak this move:
-		updateBoard -animate
+		::notify::PosChanged "" -animate
 		::utils::sound::AnnounceForward $move
 	} else {
 		if {! $bArrows} { sc_move forward $count }

@@ -548,8 +548,7 @@ namespace eval inputengine {
             .inputengineconsole.bPiece configure -background green
             .inputengineconsole.bMove  configure -background green -text $m
 
-             updateBoard -animate
-             updateBoard -pgn
+             updateBoard -pgn -animate
              ::inputengine::sendToEngine "getposition"
              ::inputengine::sendToEngine "getclock"
           }

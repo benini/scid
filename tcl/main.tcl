@@ -528,9 +528,10 @@ proc showVars {} {
         set cur [.variations.lbVar selection]
         destroy .variations
         if {$cur == 0} {
-            sc_move forward; updateBoard -animate
+            ::move::Forward
         } else  {
-            sc_var moveInto [expr $cur - 1]; updateBoard -animate
+            sc_var moveInto [expr $cur - 1]
+            ::notify::PosChanged "" -animate
         }
     }
     bind .variations <Up> { set cur [.variations.lbVar selection]
@@ -914,9 +915,11 @@ proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
     }
 
     if {! $::annotateMode} {
-        if {[::move::Follow $moveUCI]} { return [updateBoard $animate] }
+        if {[::move::Follow $moveUCI]} {
+            ::notify::PosChanged "" $animate
+            return
+        }
     }
-
 
     if {![sc_pos isAt vend]} {
         switch -- $action {

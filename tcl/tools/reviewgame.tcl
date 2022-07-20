@@ -306,12 +306,6 @@ proc ::reviewgame::checkPlayerMove {} {
     if {  ! $::reviewgame::solutionDisplayed } {
       incr ::reviewgame::movesLikePlayer
     }
-    # Starting with Scid 4.1, when the move entered already exists it is not added but we simply move forward, so the code below is useless
-    # set var [sc_var number]
-    # sc_var exit
-    # sc_var delete $var
-    # sc_move forward
-    # updateBoard -animate -pgn
     
     # display played move score
     $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
@@ -337,7 +331,7 @@ proc ::reviewgame::checkPlayerMove {} {
     }
     sc_var exit
     sc_move forward
-    updateBoard -animate -pgn
+    updateBoard -pgn -animate
     # display played move score
     $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
     # display engine's score

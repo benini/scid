@@ -314,18 +314,13 @@ namespace eval ::notify {
   # - inform the other modules that the current position is changed
   # @-pgn: must be true if the pgn notation is different (new moves, new tags, etc)
   #
-  proc PosChanged {args} {
-    set pgnNeedsUpdate 0
-    set animate 0
-    foreach arg $args {
-        if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
-        if {! [string compare $arg "-animate"]} { set animate 1 }
-    }
+  proc PosChanged {{pgn ""} {animate ""}} {
+    set pgnNeedsUpdate [expr {$pgn ne ""}]
 
     ::pgn::Refresh $pgnNeedsUpdate
 
     ::board::setmarks .main.board [sc_pos getComment]
-    ::board::update .main.board [sc_pos board] $animate
+    ::board::update .main.board [sc_pos board] [expr {$animate ne ""}]
 
     after cancel ::notify::privPosChanged
     update idletasks
