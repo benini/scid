@@ -6,7 +6,7 @@
 ############################################################
 ### Main window menus:
 
-menu .menu
+ttk_menu .menu
 
 ## Mac Application menu has to be before any call to configure.
 if { $macOS } {
@@ -32,17 +32,17 @@ if { $macOS } {
 
 ### File menu:
 set m .menu.file
-menu $m -postcommand "updateMenuStates $m"
+ttk_menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label File -menu $m
 $m add command -label FileNew -command ::file::New
 $m add command -label FileOpen -acc "Ctrl+O" -command ::file::Open
 $m add command -label FileFinder -acc "Ctrl+/" -command ::file::finder::Open
-menu $m.bookmarks
+ttk_menu $m.bookmarks
 $m add cascade -label FileBookmarks -menu $m.bookmarks
 $m add separator
 # naming is weird because the menus are moved from Tools to File menus
 $m add command -label ToolsOpenBaseAsTree -command ::file::openBaseAsTree
-menu $m.recenttrees
+ttk_menu $m.recenttrees
 $m add cascade -label ToolsOpenRecentBaseAsTree -menu $m.recenttrees
 $m add separator
 set ::menuFileRecentIdx [expr [$m index end] +1]
@@ -51,7 +51,7 @@ $m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
 
 ### Database menu:
 set m .menu.db
-menu $m -postcommand "updateMenuStates $m"
+ttk_menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Database -menu $m
 $m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
 $m add checkbutton -label LoadatStartup -variable ::autoLoadBases_currdb -command {
@@ -60,7 +60,7 @@ $m add checkbutton -label LoadatStartup -variable ::autoLoadBases_currdb -comman
   }
 }
 $m add separator
-menu $m.copygames
+ttk_menu $m.copygames
   $m.copygames add command -label FileNew -command {
     set srcBase $::curr_db
     set destBase [::file::New]
@@ -77,7 +77,7 @@ menu $m.copygames
   $m.copygames add separator
   set ::menuDBCopyGamesIdx [expr [$m.copygames index end] +1]
 $m add cascade -label CopyAllGames -menu $m.copygames
-menu $m.exportfilter
+ttk_menu $m.exportfilter
   $m.exportfilter add command -label ToolsExpFilterPGN \
       -command {exportGames filter PGN}
   $m.exportfilter add command -label ToolsExpFilterHTML \
@@ -89,7 +89,7 @@ menu $m.exportfilter
 $m add cascade -label ToolsExpFilter -menu $m.exportfilter
 $m add command -label ToolsImportFile -command { importPgnFile $::curr_db }
 $m add separator
-menu $m.utils
+ttk_menu $m.utils
   $m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
   $m.utils add command -label FileMaintCompact -command compactDB
   $m.utils add command -label FileMaintClass -command classifyAllGames
@@ -101,7 +101,7 @@ menu $m.utils
   $m.utils add separator
   $m.utils add command -label Cleaner -command cleanerWin
 $m add cascade -label FileMaint -menu $m.utils
-menu $m.spell
+ttk_menu $m.spell
   $m.spell add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
   $m.spell add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
   $m.spell add command -label FileMaintNameSite -command {openSpellCheckWin Site}
@@ -114,7 +114,7 @@ set ::menuDbSwitchIdx [expr [$m index end] +1]
 
 ### Edit menu:
 set m .menu.edit
-menu $m
+ttk_menu $m
 .menu add cascade -label Edit -menu $m
 $m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
 $m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
@@ -125,7 +125,7 @@ $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteF
 $m add command -label PgnFileCopy -command ::pgn::PgnClipboardCopy
 $m add command -label EditPastePGN -command importClipboardGame
 $m add separator
-menu $m.strip
+ttk_menu $m.strip
   $m.strip add command -label EditStripComments -command {::game::Strip comments}
   $m.strip add command -label EditStripVars -command {::game::Strip variations}
   $m.strip add command -label EditStripBegin -command {::game::TruncateBegin}
@@ -142,14 +142,14 @@ $m add command -label EditPaste -command {
 
 ### Game menu:
 set m .menu.game
-menu $m -postcommand "updateMenuStates $m"
+ttk_menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Game -menu $m
 $m add command -label GameNew -accelerator "Ctrl+N" -command ::game::Clear
 $m add command -label GameReload -command ::game::Reload
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
 $m add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
-menu $m.exportcurrent
+ttk_menu $m.exportcurrent
   $m.exportcurrent add command -label ToolsExpCurrentPGN \
       -command {exportGames current PGN}
   $m.exportcurrent add command -label ToolsExpCurrentHTML \
@@ -176,7 +176,7 @@ $m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" -command findNovel
 
 ### Search menu:
 set m .menu.search
-menu $m
+ttk_menu $m
 .menu add cascade -label Search -menu $m
 $m add command -label SearchCurrent -command ::search::board -accelerator "Ctrl+Shift+B"
 $m add command -label SearchHeader -command ::search::header -accelerator "Ctrl+Shift+H"
@@ -190,13 +190,13 @@ $m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefi
 
 ### Play menu:
 set m .menu.play
-menu $m -postcommand "updateMenuStates $m"
+ttk_menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Play -menu $m
 $m add command -label ToolsSeriousGame -command ::sergame::config
 $m add command -label ToolsTacticalGame -command ::tacgame::config
 $m add command -label ToolsTrainFics -command ::fics::config
 $m add separator
-menu $m.training
+ttk_menu $m.training
   $m.training add command -label ToolsTrainOpenings -command ::opening::config
   $m.training add command -label ToolsTrainTactics -command ::tactics::config
   $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
@@ -205,7 +205,7 @@ $m add cascade -label ToolsTraining -menu $m.training
 
 ### Windows menu:
 set m .menu.windows
-menu $m
+ttk_menu $m
 .menu add cascade -label Windows -menu $m
 $m add checkbutton -label WindowsComment -var ::windows::commenteditor::isOpen -command "::makeCommentWin toggle" -accelerator "Ctrl+E"
 $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
@@ -222,7 +222,7 @@ $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::
 
 ### Tools menu:
 set m .menu.tools
-menu $m
+ttk_menu $m
 .menu add cascade -label Tools -menu $m
 $m  add command -label ToolsConfigureEngines -command ::enginelist::choose
 $m  add command -label ToolsStartEngine1 \
@@ -240,13 +240,13 @@ $m add command -label ToolsOpReport \
 $m add command -label ToolsTracker \
     -accelerator "Ctrl+Shift+K" -command ::ptrack::make
 $m add command -label ToolsBookTuning -command ::book::tuning
-menu $m.hardware
+ttk_menu $m.hardware
   $m.hardware add command -label ToolsConnectHardwareConfigure -command ::ExtHardware::config
   $m.hardware add command -label ToolsConnectHardwareInputEngineConnect -command ::inputengine::connectdisconnect
   $m.hardware add command -label ToolsConnectHardwareNovagCitrineConnect -command ::novag::connect
 $m add cascade -label ToolsConnectHardware -menu $m.hardware
 $m add separator
-menu $m.pinfo
+ttk_menu $m.pinfo
   $m.pinfo add command -label GraphOptionsWhite -command { ::pinfo::playerInfo [sc_game info white] }
   $m.pinfo add command -label GraphOptionsBlack -command { ::pinfo::playerInfo [sc_game info black] }
 $m add cascade -label ToolsPInfo -menu $m.pinfo
@@ -257,27 +257,27 @@ $m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -ac
 
 ### Options menu:
 set m .menu.options
-menu $m
+ttk_menu $m
 .menu add cascade -label Options -menu $m
-menu $m.language
+ttk_menu $m.language
   foreach l $::languages {
       $m.language add radiobutton -label $::langName($l) \
           -underline $::langUnderline($l) -variable language -value $l \
           -command "setLanguage; ::notify::PosChanged pgnonly"
   }
 $m add cascade -label OptionsLanguage -menu $m.language
-menu $m.theme -tearoff 1
+ttk_menu $m.theme -tearoff 1
 set ::menuThemeListIdx [expr [$m.theme index end] +1]
 $m add cascade -label OptionsTheme -menu $m.theme
-menu $m.savelayout
-menu $m.restorelayout
+ttk_menu $m.savelayout
+ttk_menu $m.restorelayout
     foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
       $m.savelayout add command -label $i -command "::docking::layout_save $slot"
       $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
     }
 $m add command -label ConfigureScid -command { ::preferences::Open toggle }
 $m add command -label OptionsResources -command ::preferences::resources
-menu $m.export
+ttk_menu $m.export
   $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
   $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
   $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
@@ -296,7 +296,7 @@ $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
 
 ### Help menu:
 set m .menu.helpmenu
-menu $m
+ttk_menu $m
 .menu add cascade -label Help -menu $m
 set acc [expr {$macOS ? "Command-?" : "F1"}]
 $m add command -label HelpContents -command {helpWindow Contents} -accelerator "$acc"

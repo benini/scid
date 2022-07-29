@@ -1210,7 +1210,7 @@ proc CreateMainBoard { {w} } {
     ::board::mark::DrawBestMove $w.board ""
   }} $w]
 
-  menu .main.menuaddchoice -bg white -font font_Regular
+  ttk_menu .main.menuaddchoice -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
       -command {undoFeature undo}
   .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
@@ -1279,7 +1279,7 @@ proc CreateGameInfo {} {
   bind .main.photoB <ButtonPress-1> "togglePhotosSize"
 
   # Right-mouse button menu for gameInfo frame:
-  menu .main.gameInfo.menu -tearoff 0
+  ttk_menu .main.gameInfo.menu -tearoff 0
 
   .main.gameInfo.menu add checkbutton -label GInfoHideNext \
           -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
@@ -1352,7 +1352,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.closedb -image tb_closedb -command ::file::Close -padding {2 0}
 	ttk::button .main.tb.finder -image tb_finder -command ::file::finder::Open -padding {2 0}
 	ttk::menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
-	menu .main.tb.bkm.menu
+	ttk_menu .main.tb.bkm.menu
 	::bookmarks::RefreshMenu .main.tb.bkm.menu
 
 	ttk::frame .main.tb.space1 -width 4

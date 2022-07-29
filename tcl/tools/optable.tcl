@@ -163,14 +163,14 @@ proc ::optable::makeReportWin {args} {
   if {![winfo exists $w]} {
     ::createToplevel $w
     ::setTitle $w "[tr ToolsOpReport]"
-    menu $w.menu
+    ttk_menu $w.menu
     ::setMenu $w $w.menu
     
     $w.menu add cascade -label OprepFile -menu $w.menu.file
     $w.menu add cascade -label OprepFavorites -menu $w.menu.favorites
     $w.menu add cascade -label OprepHelp -menu $w.menu.helpmenu
     foreach i {file favorites helpmenu} {
-      menu $w.menu.$i -tearoff 0
+      ttk_menu $w.menu.$i -tearoff 0
     }
     
     $w.menu.file add command -label OprepFileText \
@@ -220,7 +220,7 @@ proc ::optable::makeReportWin {args} {
     ttk::button $w.b.opts -text [tr OprepFileOptions] -command ::optable::setOptions
     ttk::label $w.b.lexclude -text "Exclude:"
     ttk::menubutton $w.b.exclude -textvar ::optable::_data(exclude) -menu $w.b.exclude.m
-    menu $w.b.exclude.m -tearoff 0
+    ttk_menu $w.b.exclude.m -tearoff 0
     ttk::button $w.b.update -textvar ::tr(Update) -command {
       set ::optable::_data(yview) [lindex [.oprepWin.text yview] 0]
       ::optable::makeReportWin

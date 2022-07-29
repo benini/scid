@@ -281,7 +281,7 @@ proc ::file::finder::contextMenu {win fullPath x y xc yc} {
   
   if { [winfo exists $mctxt] } { destroy $mctxt }
   
-  menu $mctxt
+  ttk_menu $mctxt
   $mctxt add command -label [tr FinderCtxOpen ] -command "::file::Open [list $fullPath]"
   $mctxt add command -label [tr FinderCtxBackup ] -command "::file::finder::backup [list $fullPath]"
   $mctxt add command -label [tr FinderCtxCopy ] -command "::file::finder::copy [list $fullPath]"

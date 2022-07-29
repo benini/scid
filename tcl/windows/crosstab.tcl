@@ -37,7 +37,7 @@ proc ::crosstab::Open {} {
     return
   }
 
-  menu $w.menu
+  ttk_menu $w.menu
   ::setMenu $w $w.menu
   $w.menu add cascade -label CrosstabFile -menu $w.menu.file
   $w.menu add cascade -label CrosstabEdit -menu $w.menu.edit
@@ -46,7 +46,7 @@ proc ::crosstab::Open {} {
   $w.menu add cascade -label CrosstabText -menu $w.menu.color
   $w.menu add cascade -label CrosstabHelp -menu $w.menu.helpmenu
   foreach i {file edit opt sort color helpmenu} {
-    menu $w.menu.$i -tearoff 0
+    ttk_menu $w.menu.$i -tearoff 0
   }
   
   $w.menu.file add command -label CrosstabFileText -command {
@@ -207,7 +207,7 @@ proc ::crosstab::Open {} {
   ttk::button $w.b.stop -textvar ::tr(Stop) -state disabled \
       -command { set ::htext::interrupt 1 }
   ttk::menubutton $w.b.type -text "" -menu $w.b.type.menu
-  menu $w.b.type.menu
+  ttk_menu $w.b.type.menu
   $w.b.type.menu add radiobutton -label [tr CrosstabOptAll] \
       -variable crosstab(type) -value allplay -command crosstab::Refresh
   $w.b.type.menu add radiobutton -label [tr CrosstabOptSwiss] \

@@ -250,11 +250,11 @@ proc tools::graphs::filter::Open {} {
     return
   }
   win::createDialog $w 0
-  menu $w.menu
+  ttk_menu $w.menu
   ::setMenu $w $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
-  menu $w.menu.file
+  ttk_menu $w.menu.file
   $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
   configMenuText $w.menu.file 0 GraphFileColor $::language
   $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
@@ -270,10 +270,10 @@ proc tools::graphs::filter::Open {} {
   pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
-  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
-  $w.c create text 25 5 -tag title -justify center -width 1 \
+  ttk_canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+  ttk_create $w.c text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
-  $w.c create text 250 295 -tag type -justify center -width 1 \
+  ttk_create $w.c text 250 295 -tag type -justify center -width 1 \
       -font font_Small -anchor s
   pack $w.c -side top -expand yes -fill both
   ::utils::graph::create filter
@@ -623,10 +623,10 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   
   if {! [winfo exists $w] } {
     ::createToplevel $w
-    menu $w.menu
+    ttk_menu $w.menu
     ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
-    menu $w.menu.file
+    ttk_menu $w.menu.file
     $w.menu.file add command -label GraphFileColor \
         -command "::tools::graphs::Save color $w.c"
     $w.menu.file add command -label GraphFileGrey \
@@ -636,15 +636,15 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
     $w.menu add cascade -label GraphOptions -menu $w.menu.options
     $w.menu add command -label Help -accelerator F1 -command {helpWindow Graphs Score}
     #Checkbuttons for Invert white/black Score in Score graph
-    menu $w.menu.options
+    ttk_menu $w.menu.options
     foreach i {White Black} {
       $w.menu.options add checkbutton -label GraphOptions$i \
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    ttk_canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
 
-    $w.c create text 25 5 -tag text -justify center -width 1 \
+    ttk_create $w.c text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
     ttk::frame $w.fbuttons
     ttk::checkbutton $w.fbuttons.score -text [tr ToolsScore] -variable ::tools::graphs::score::Scores \
@@ -794,10 +794,10 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
   
   if {! [winfo exists $w]} {
     toplevel $w
-    menu $w.menu
+    ttk_menu $w.menu
     ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
-    menu $w.menu.file
+    ttk_menu $w.menu.file
     $w.menu.file add command -label GraphFileColor \
         -command "::tools::graphs::Save color $w.c"
     $w.menu.file add command -label GraphFileGrey \
@@ -805,7 +805,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
     $w.menu.file add separator
     $w.menu.file add command -label GraphFileClose -command "destroy $w"
     $w.menu add cascade -label GraphOptions -menu $w.menu.options
-    menu $w.menu.options
+    ttk_menu $w.menu.options
     foreach i {White Black Both PInfo} j {white black both player} {
       $w.menu.options add radiobutton -label GraphOptions$i \
           -variable ::tools::graphs::rating::type -value $j \
@@ -824,8 +824,8 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
           -command "::tools::graphs::rating::Refresh"
     }
     
-    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
-    $w.c create text 25 10 -tag text -justify center -width 1 \
+    ttk_canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    ttk_create $w.c text 25 10 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Rating}
@@ -922,11 +922,11 @@ proc tools::graphs::absfilter::Open {} {
     return
   }
   win::createDialog $w 0
-  menu $w.menu
+  ttk_menu $w.menu
   ::setMenu $w $w.menu
   $w.menu add cascade -label GraphFile -menu $w.menu.file
   configMenuText $w.menu 0 GraphFile $::language
-  menu $w.menu.file
+  ttk_menu $w.menu.file
   $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
   configMenuText $w.menu.file 0 GraphFileColor $::language
   $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
@@ -942,10 +942,10 @@ proc tools::graphs::absfilter::Open {} {
   pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
-  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
-  $w.c create text 25 5 -tag title -justify center -width 1 \
+  ttk_canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+  ttk_create $w.c text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
-  $w.c create text 250 295 -tag type -justify center -width 1 \
+  ttk_create $w.c text 250 295 -tag type -justify center -width 1 \
       -font font_Small -anchor s
   pack $w.c -side top -expand yes -fill both
   ::utils::graph::create absfilter

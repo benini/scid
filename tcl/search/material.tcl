@@ -101,7 +101,7 @@ proc makeBoolMenu {w varName} {
   if {![info exists var]} { set var "Yes" }
   ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
   
-  menu $w.menu -tearoff 0
+  ttk_menu $w.menu -tearoff 0
   $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
       -command "$w configure -image tb_tick"  ;# -hidemargin 1
   $w.menu add radiobutton -label No -image tb_cross -variable $varName -value No \
@@ -114,7 +114,7 @@ proc makePieceMenu {w varName} {
   upvar #0 $varName var
   if {![info exists var]} { set var "?" }
   ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
-  menu $w.menu -tearoff 0
+  ttk_menu $w.menu -tearoff 0
   $w.menu add radiobutton -label " ? " -variable $varName -value "?" \
       -command "$w configure -image e20"  -hidemargin 1
   foreach i {wk wq wr wb wn wp bk bq br bb bn bp} {
@@ -325,7 +325,7 @@ proc ::search::material {{ref_base ""}} {
   } ] Pad0.Small.TButton
   
   ttk::menubutton $f.common -textvar ::tr(CommonEndings...) -menu $f.common.m -style pad0.TMenubutton ;# -font $small -relief raised
-  menu $f.common.m -font $small
+  ttk_menu $f.common.m -font $small
   set m $f.common.m
   $m add command -label [tr EndingPawns] -command {
     ::search::material::zero
@@ -432,8 +432,8 @@ proc ::search::material {{ref_base ""}} {
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
     ttk::menubutton $f.grid.f$i -menu $f.grid.f$i.menu -style Pad0.Small.TButton -textvar pattFyle($i) -width 1
     ttk::menubutton $f.grid.r$i -menu $f.grid.r$i.menu -style Pad0.Small.TButton -textvar pattRank($i) -width 1
-    menu $f.grid.f$i.menu -tearoff 0
-    menu $f.grid.r$i.menu -tearoff 0
+    ttk_menu $f.grid.f$i.menu -tearoff 0
+    ttk_menu $f.grid.r$i.menu -tearoff 0
     foreach l { "?" a b c d e f g h } {
         $f.grid.f$i.menu add command -label $l -command "set pattFyle($i) $l"
     }
@@ -456,7 +456,7 @@ proc ::search::material {{ref_base ""}} {
   ttk::frame $f
   dialogbutton $f.clearPat -textvar ::tr(Clear) -command clearPatterns
   ttk::menubutton $f.common -textvar ::tr(CommonPatterns...) -menu $f.common.m
-  menu $f.common.m -font $small
+  ttk_menu $f.common.m -font $small
   $f.common.m add command -label [tr PatternWhiteIQP] -command {
     if {$pMin(wp) < 1} { set pMin(wp) 1 }
     setPatterns {{wp d ? Yes} {wp c ? No} {wp e ? No}}

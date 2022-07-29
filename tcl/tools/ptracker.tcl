@@ -248,7 +248,7 @@ proc ::ptrack::make {} {
   set f $w.t.color
 
   menubutton $f.b -menu $f.b.menu -indicatoron 0 -relief raised
-  menu $f.b.menu
+  ttk_menu $f.b.menu
   foreach col $::ptrack::colors {
     image create photo ptrack_$col -width 101 -height 20
     for {set i 0} {$i <= 100} {incr i} {

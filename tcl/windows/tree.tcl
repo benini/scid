@@ -48,7 +48,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   # Bind left button to close ctxt menu:
   bind $w <ButtonPress-1> "::tree::hideCtxtMenu $baseNumber"
   
-  menu $w.menu
+  ttk_menu $w.menu
   ::setMenu $w $w.menu
   $w.menu add cascade -label TreeFile -menu $w.menu.file
   $w.menu add cascade -label TreeMask -menu $w.menu.mask
@@ -56,10 +56,10 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.menu add cascade -label TreeOpt  -menu $w.menu.opt
   $w.menu add cascade -label TreeHelp -menu $w.menu.helpmenu
   foreach i {file mask sort opt helpmenu} {
-    menu $w.menu.$i -tearoff 0
+    ttk_menu $w.menu.$i -tearoff 0
   }
   
-  menu $w.menu.file.size
+  ttk_menu $w.menu.file.size
   foreach i { 250 500 1000 2000 5000 10000 } {
     $w.menu.file.size add radiobutton -label "$i" -value $i -variable ::tree::cachesize($baseNumber) -command "::tree::setCacheSize $baseNumber $i"
   }
@@ -79,7 +79,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.menu.mask add command -label TreeMaskOpen -command "::tree::mask::open"
   set helpMessage($w.menu.mask,1) TreeMaskOpen
   
-  menu $w.menu.mask.recent
+  ttk_menu $w.menu.mask.recent
   foreach f $::tree::mask::recentMask {
     $w.menu.mask.recent add command -label $f -command "::tree::mask::open $f"
   }
@@ -814,10 +814,10 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow Tree Graph}
     
-    menu $w.menu
+    ttk_menu $w.menu
     ::setMenu $w $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
-    menu $w.menu.file
+    ttk_menu $w.menu.file
     $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
     $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
     $w.menu.file add separator
@@ -1027,7 +1027,7 @@ proc ::tree::mask::open { {filename ""} } {
         set recentMask [ lreplace $recentMask  [ expr $::tree::mask::maxRecent -1 ] end ]
       }
       
-      # update recent masks menu entry
+      # update recent masks ttk_menu entry
       foreach i [sc_base list] {
         set w .treeWin$i
         if { [winfo exists $w] } {
@@ -1115,12 +1115,12 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   } else  {
     set state "normal"
   }
-  menu $mctxt
+  ttk_menu $mctxt
   $mctxt add command -label [tr AddToMask] -command "::tree::mask::addToMask $move" -state $state
   $mctxt add command -label [tr RemoveFromMask] -command "::tree::mask::removeFromMask $move" -state $state
   $mctxt add separator
   
-  menu $mctxt.nag
+  ttk_menu $mctxt.nag
   $mctxt add cascade -label [tr Nag] -menu $mctxt.nag -state $state
   
   foreach nag [ list "!!" " !" "!?" "?!" " ?" "??" " ~" [::tr "None"]  ] {
@@ -1128,7 +1128,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   }
   
   foreach j { 0 1 } {
-    menu $mctxt.image$j
+    ttk_menu $mctxt.image$j
     $mctxt add cascade -label "[tr Marker] [expr $j +1]" -menu $mctxt.image$j -state $state
     foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } {
       set i  $::tree::mask::marker2image($e)
@@ -1136,7 +1136,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
     }
     $mctxt.image$j add command -label [tr NoMarker] -command "::tree::mask::setImage $move {} $j"
   }
-  menu $mctxt.color
+  ttk_menu $mctxt.color
   $mctxt add cascade -label [tr ColorMarker] -menu $mctxt.color  -state $state
   foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
     $mctxt.color add command -label [ tr "${c}Mark" ] -background $c -command "::tree::mask::setColor $move $c"
@@ -1151,7 +1151,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   if {[llength $lMatchMoves ] > 16} {
     # split the moves in several menus
     for {set idxMenu 0} { $idxMenu <= [expr int([llength $lMatchMoves ] / 16) ]} {incr idxMenu} {
-      menu $mctxt.matchmoves$idxMenu
+      ttk_menu $mctxt.matchmoves$idxMenu
       $mctxt add cascade -label "[ tr AddThisMoveToMask ] ([expr $idxMenu + 1 ])" -menu $mctxt.matchmoves$idxMenu
       for {set i 0} {$i < 16} {incr i} {
         if {[expr $i + $idxMenu * 16 +1] > [llength $lMatchMoves ] } {
@@ -1164,7 +1164,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
       }
     }
   } else  {
-    menu $mctxt.matchmoves
+    ttk_menu $mctxt.matchmoves
     $mctxt add cascade -label [ tr AddThisMoveToMask ] -menu $mctxt.matchmoves
     foreach m [sc_pos matchMoves ""] {
       if {$m == "OK"} { set m "O-O" }
@@ -1889,7 +1889,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   
   # NAG selection
   ttk::checkbutton $w.f1.nagl -text [tr Nag] -variable ::tree::mask::searchMask_usenag
-  menu $w.f1.nagmenu
+  ttk_menu $w.f1.nagmenu
   ttk::menubutton $w.f1.nag -textvariable ::tree::mask::searchMask_nag -menu $w.f1.nagmenu -style pad0.TMenubutton
   set ::tree::mask::searchMask_nag  [::tr "None"]
   foreach nag [ list "!!" " !" "!?" "?!" " ?" "??" " ~" [::tr "None"]  ] {
@@ -1901,7 +1901,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   # Markers 1 & 2
   foreach j { 0 1 } {
     ttk::checkbutton $w.f1.ml$j -text "[tr Marker] [expr $j +1]" -variable ::tree::mask::searchMask_usemarker$j
-    menu $w.f1.menum$j
+    ttk_menu $w.f1.menum$j
     ttk::menubutton $w.f1.m$j -textvariable ::tree::mask::searchMask_trm$j -menu $w.f1.menum$j -style pad0.TMenubutton
     set ::tree::mask::searchMask_trm$j [tr "Include"]
     set ::tree::mask::searchMask_m$j $::tree::mask::marker2image(Include)
@@ -1916,7 +1916,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   
   # Color
   ttk::checkbutton $w.f1.colorl -text [tr ColorMarker] -variable ::tree::mask::searchMask_usecolor
-  menu $w.f1.colormenu
+  ttk_menu $w.f1.colormenu
   ttk::menubutton $w.f1.color -textvariable ::tree::mask::searchMask_trcolor -menu $w.f1.colormenu  -style pad0.TMenubutton
   set ::tree::mask::searchMask_trcolor  [::tr "White"]
   set ::tree::mask::searchMask_color "White"

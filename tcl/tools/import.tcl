@@ -25,7 +25,7 @@ proc importPgnGame {} {
   grid columnconfig $edit 0 -weight 1 -minsize 0
   
   # Right-mouse button cut/copy/paste menu:
-  menu $edit.text.rmenu -tearoff 0
+  ttk_menu $edit.text.rmenu -tearoff 0
   $edit.text.rmenu add command -label "Cut" -command "tk_textCut $edit.text"
   $edit.text.rmenu add command -label "Copy" -command "tk_textCopy $edit.text"
   $edit.text.rmenu add command -label "Paste" -command "tk_textPaste $edit.text"

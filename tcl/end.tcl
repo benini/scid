@@ -652,7 +652,7 @@ proc nameEditor {} {
   ttk::entry $w.g.ratingE -width 5 -textvariable editNameRating -justify right
   set mlist [split [sc_info ratings] " "]
   ttk::menubutton $w.g.rtype -textvariable editNameRType -menu $w.g.rtype.menu
-  menu $w.g.rtype.menu
+  ttk_menu $w.g.rtype.menu
   foreach m $mlist {
       $w.g.rtype.menu add radiobutton -variable editNameRType -label $m
   }

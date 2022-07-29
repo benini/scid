@@ -805,9 +805,9 @@ proc glist.create {{w} {layout}} {
   $w.glist tag configure current -background steelBlue
   $w.glist tag configure fsmall -font font_Small
   $w.glist tag configure deleted -foreground #a5a2ac
-  menu $w.glist.header_menu
-  menu $w.glist.header_menu.addcol
-  menu $w.glist.game_menu
+  ttk_menu $w.glist.header_menu
+  ttk_menu $w.glist.header_menu.addcol
+  ttk_menu $w.glist.game_menu
   bind $w.glist <Configure> {
     set hWin [winfo height %W]
     set hHeading 18
@@ -1155,15 +1155,15 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "::gbrowser::new $::glistBase($w) $idx $ply"
       $w.game_menu add command -label $::tr(MergeGame) \
          -command "mergeGame $::glistBase($w) $idx"
-      menu $w.game_menu.merge
-      menu $w.game_menu.copy
+      ttk_menu $w.game_menu.merge
+      ttk_menu $w.game_menu.copy
       $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
       $w.game_menu add cascade -label $::tr(CopyGameTo) -menu $w.game_menu.copy
       $w.game_menu add command -label [expr {[sc_base gameflag $::glistBase($w) $idx get del] ? $::tr(UndeleteGame) : $::tr(DeleteGame) }] \
         -command "glist.delflag_ $w $idx; $w selection set {};"
 
       $w.game_menu add separator
-      menu $w.game_menu.filter
+      ttk_menu $w.game_menu.filter
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label [tr SearchReset] \
         -command "::windows::gamelist::FilterReset [winfo toplevel $w] $::glistBase($w)"
@@ -1182,7 +1182,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu.filter add command -label $::tr(GlistUndeleteAllGames) \
         -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w)"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
-      menu $w.game_menu.export
+      ttk_menu $w.game_menu.export
       $w.game_menu.export add command -label [tr ToolsExpFilter] \
         -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
       $w.game_menu.export add separator

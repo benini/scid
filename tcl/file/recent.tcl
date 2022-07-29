@@ -133,7 +133,7 @@ proc ::recentFiles::show {menu idx} {
   
   # Now add the extra submenu of files:
   catch {destroy $menu.recentFiles}
-  menu $menu.recentFiles
+  ttk_menu $menu.recentFiles
   $menu insert $idx cascade -label "..." -underline 0 -menu $menu.recentFiles
   set i $nfiles
   for {set extra 0} {$extra < $nExtraFiles} {incr extra} {

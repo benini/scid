@@ -46,7 +46,7 @@ namespace eval pgn {
       return
     }
     
-    menu $w.menu
+    ttk_menu $w.menu
     ::setMenu $w $w.menu
     
     $w.menu add cascade -label PgnFile -menu $w.menu.file -underline 0
@@ -54,7 +54,7 @@ namespace eval pgn {
     $w.menu add cascade -label PgnColor -menu $w.menu.color -underline 0
     $w.menu add cascade -label PgnHelp -menu $w.menu.helpmenu -underline 0
     foreach i {file opt color helpmenu} {
-      menu $w.menu.$i -tearoff 0
+      ttk_menu $w.menu.$i -tearoff 0
     }
     
     $w.menu.file add command -label PgnFileCopy -command {::pgn::PgnClipboardCopy }
@@ -173,9 +173,9 @@ namespace eval pgn {
       set state normal
     }
 	
-    menu $mctxt
+    ttk_menu $mctxt
 
-    menu $mctxt.evals1
+    ttk_menu $mctxt.evals1
     $mctxt.evals1 add command -label "Clear" -command {::addNag X}
     $mctxt.evals1 add command -label "!" -command {::addNag !}
     $mctxt.evals1 add command -label "?" -command {::addNag ?}
@@ -184,7 +184,7 @@ namespace eval pgn {
     $mctxt.evals1 add command -label "!!" -command {::addNag !!}
     $mctxt.evals1 add command -label "??" -command {::addNag ??}
 
-    menu $mctxt.evals2
+    ttk_menu $mctxt.evals2
     $mctxt.evals2 add command -label "Clear" -command {::addNag Y}
     $mctxt.evals2 add command -label "=" -command {::addNag =}
     $mctxt.evals2 add command -label "~" -command {::addNag ~}

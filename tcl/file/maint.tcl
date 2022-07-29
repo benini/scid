@@ -182,7 +182,7 @@ proc ::maint::OpenClose {} {
 
   ttk::label $w.dm.delete.vdelete
   ttk::menubutton $w.dm.mark.title -menu $w.dm.mark.title.m
-  menu $w.dm.mark.title.m -font $font
+  ttk_menu $w.dm.mark.title.m -font $font
   
   foreach flag $maintFlaglist  {
       $w.dm.mark.title.m add command -label $flag -command "set maintFlag $flag; ::maint::Refresh"

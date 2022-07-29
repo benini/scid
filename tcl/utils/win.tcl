@@ -600,7 +600,7 @@ proc ::docking::manage_rightclick_ {noteb x y localX localY} {
 
 	set m .ctxtMenu
 	if { [winfo exists $m] } { destroy $m }
-	menu $m -tearoff 0
+	ttk_menu $m -tearoff 0
 	$m add command -label [ ::tr DockTop ] -state $state \
 		-command "::docking::move_tab_ $wnd $noteb n"
 	$m add command -label [ ::tr DockBottom ] -state $state \

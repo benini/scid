@@ -317,8 +317,8 @@ proc search::headerCreateFrame { w } {
   ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin ""; set sGnumMax ""}
   ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
   ttk::menubutton $f.last -style pad0.TMenubutton -textvar ::tr(Last...) -menu $f.last.m
-  menu $f.first.m
-  menu $f.last.m
+  ttk_menu $f.first.m
+  ttk_menu $f.last.m
   foreach x {10 50 100 500 1000 5000 10000} {
     $f.first.m add command -label $x \
         -command "set sGnumMin 1; set sGnumMax $x"

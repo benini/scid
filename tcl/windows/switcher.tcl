@@ -690,7 +690,7 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
       bind $f$win <ButtonRelease-1> [list ::windows::switcher::releaseMouseEvent $i %X %Y $w]
     }
 
-    menu $f.menu -tearoff 0
+    ttk_menu $f.menu -tearoff 0
     foreach win {"" .img .name .ngames} {
       bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $w $f %X %Y $i"
     }

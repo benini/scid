@@ -98,7 +98,7 @@ proc ::game::LoadRandom {} {
 proc ::game::LoadMenu {w base gnum x y} {
   set m $w.gLoadMenu
   if {! [winfo exists $m]} {
-    menu $m
+    ttk_menu $m
     $m add command -label $::tr(BrowseGame)
     $m add command -label $::tr(LoadGame)
     $m add command -label $::tr(MergeGame)

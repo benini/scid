@@ -302,7 +302,7 @@ namespace eval book {
     
     
     ttk::menubutton $w.fbutton.mbAdd -text $::tr(AddMove) -menu $w.fbutton.mbAdd.otherMoves
-    menu $w.fbutton.mbAdd.otherMoves
+    ttk_menu $w.fbutton.mbAdd.otherMoves
     
     
     ttk::button $w.fbutton.bExport -text $::tr(Export) -command ::book::export

@@ -410,7 +410,7 @@ namespace eval fics {
         set ::fics::gameSelection [.fics.f.top.fgames.glist set [.fics.f.top.fgames.glist identify row %x %y] 0]
         ::fics::writechan "observe $::fics::gameSelection"
     }
-    menu $w.f.top.fgames.glist.menu -borderwidth 1
+    ttk_menu $w.f.top.fgames.glist.menu -borderwidth 1
     bind $w.f.top.fgames.glist <ButtonPress-$::MB3> "fics::gamespopupmenu %W %x %y %X %Y"
 
     ttk::scrollbar $w.f.top.fgames.ybar -command "$w.f.top.fgames.glist yview"
@@ -443,7 +443,7 @@ namespace eval fics {
         set ::fics::playerSelection [.fics.f.top.fplayer.plist set [.fics.f.top.fplayer.plist identify row %x %y] 1]
         ::fics::writechan "finger $::fics::playerSelection"
     }
-    menu $w.f.top.fplayer.plist.menu -borderwidth 1
+    ttk_menu $w.f.top.fplayer.plist.menu -borderwidth 1
     bind $w.f.top.fplayer.plist <ButtonPress-$::MB3> "fics::playerpopupmenu %W %x %y %X %Y"
 
     ttk::scrollbar $w.f.top.fplayer.ybar -command "$w.f.top.fplayer.plist yview"

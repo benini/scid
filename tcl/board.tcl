@@ -709,7 +709,8 @@ proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
     set idx -1
     catch { set idx [lindex [$menu entryconfigure $i -image] 4] }
     if {[info exists "${varname}($idx)"] } {
-      $menu entryconfigure $i -foreground black -command "eval \$::${varname}($idx)"
+      #ToDo: maybe a better solution for getting the theme foreground color for the menu
+      $menu entryconfigure $i -foreground [ttk::style lookup . -foreground "" black] -command "eval \$::${varname}($idx)"
     } else {
       catch { $menu entryconfigure $i -foreground gray -command "" }
     }
@@ -728,19 +729,22 @@ proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
 proc ::board::newToolBar_ {{w} {varname}} {
   global "$varname"
 
-  set m [menu $w.menu_back -bg white -font font_Regular]
+  ttk_menu $w.menu_back -font font_Regular
+  set m $w.menu_back
   $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
   $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
   $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
   $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left -accelerator "<home>"
   ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
-  set m [menu $w.menu_forw -bg white -font font_Regular]
+  ttk_menu $w.menu_forw -font font_Regular
+  set m $w.menu_forw
   $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
   $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left -accelerator "<end>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
-  set m [menu $w.menu -bg white -font font_Regular]
+  ttk_menu $w.menu -font font_Regular
+  set m $w.menu
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
   $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
   $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left

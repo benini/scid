@@ -41,7 +41,7 @@ proc ::bookmarks::RefreshMenu {menu} {
   $menu add command -label FileBookmarksAdd -command ::bookmarks::AddCurrent
   set helpMessage($menu,0) FileBookmarksAdd
   $menu add cascade -label FileBookmarksFile -menu $menu.file
-  menu $menu.file
+  ttk_menu $menu.file
   set helpMessage($menu,1) FileBookmarksFile
   if {! [::bookmarks::CanAdd]} {
     $menu entryconfigure 0 -state disabled
@@ -225,7 +225,7 @@ proc ::bookmarks::NewSubMenu {w entry} {
   set i 1
   while {[winfo exists $w.m$i]} { incr i }
   $w add cascade -label [::bookmarks::Text $entry] -menu $w.m$i
-  menu $w.m$i -tearoff 0
+  ttk_menu $w.m$i -tearoff 0
   return $w.m$i
 }
 
