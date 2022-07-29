@@ -88,7 +88,7 @@ proc ::appearance::setMenuColors {} {
 }
 
 proc ::appearance::defaultColors {} {
-  foreach col { background foreground activeBackground activeForeground selectColor disabledForeground } {
+  foreach col { background foreground activebackground activeforeground selectcolor disabledforeground } {
     set config [.menu configure -[string tolower $col]]
     set ::menuDialogDefault_($col) [lindex $config 3]
     set ::menuDialog_($col) $::menuDialogDefault_($col)
@@ -121,10 +121,10 @@ proc ::appearance::menuConfigDialog { w } {
   }
   ttk::label $f.menuline0 -text "Disabled"
   grid $f.menuline0 -row $r -column 2 -padx 4
-  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(disabledForeground) $w"
+  ttk::button $f.dfg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(disabledforeground) $w"
   grid $f.dfg -row $r -column 3 -padx 4
   incr r
-  ttk::button $f.sel -text $::tr(MenuColorSelect) -command "::appearance::chooseMenuColor ::menuDialog_(selectColor) $w"
+  ttk::button $f.sel -text $::tr(MenuColorSelect) -command "::appearance::chooseMenuColor ::menuDialog_(selectcolor) $w"
   grid $f.sel -row $r -column 0 -padx 4
   ttk::label $f.select -text "x"
   grid $f.select -row $r -column 1
@@ -137,9 +137,9 @@ proc ::appearance::menuConfigDialog { w } {
   incr r
   ttk::label $f.menuline2 -text "Menu2"
   grid $f.menuline2 -row $r -column 2 -padx 4
-  ttk::button $f.afg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(activeForeground) $w"
+  ttk::button $f.afg -text $::tr(MenuColorForeground) -command "::appearance::chooseMenuColor ::menuDialog_(activeforeground) $w"
   grid $f.afg -row $r -column 3 -padx 4
-  ttk::button $f.abg -text $::tr(MenuColorBackground) -command "::appearance::chooseMenuColor ::menuDialog_(activeBackground) $w"
+  ttk::button $f.abg -text $::tr(MenuColorBackground) -command "::appearance::chooseMenuColor ::menuDialog_(activebackground) $w"
   grid $f.abg -row $r -column 4 -padx 4 -pady 5
   ::appearance::Refresh $w
 }
@@ -147,10 +147,10 @@ proc ::appearance::menuConfigDialog { w } {
 proc ::appearance::Refresh { w } {
   global menuDialog_
 
-  $w.f.menuline0 configure -background $menuDialog_(background) -foreground $menuDialog_(disabledForeground)
+  $w.f.menuline0 configure -background $menuDialog_(background) -foreground $menuDialog_(disabledforeground)
   $w.f.menuline1 configure -background $menuDialog_(background) -foreground $menuDialog_(foreground)
-  $w.f.menuline2 configure -background $menuDialog_(activeBackground) -foreground $menuDialog_(activeForeground)
-  $w.f.select configure -foreground $menuDialog_(selectColor)
+  $w.f.menuline2 configure -background $menuDialog_(activebackground) -foreground $menuDialog_(activeforeground)
+  $w.f.select configure -foreground $menuDialog_(selectcolor)
   $w.f.mainmenu configure -background $::menuBarDialog_(background) -foreground $menuDialog_(foreground)
   ::appearance::setMenuColors
 }

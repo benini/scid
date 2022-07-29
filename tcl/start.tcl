@@ -485,11 +485,31 @@ proc applyThemeColor_background { widget } {
 # Apply a ttk style to a tk widget
 proc applyThemeStyle {style widget} {
   set exclude [list "-font"]
+  set menucolors ""
+  set isMenu 0
+  if { [winfo class $widget] eq "Menu" } {
+      foreach col [array names ::menuColor] {
+          lappend menucolors "-$col"
+      }
+      if { [info exists ::menuBarColor(background)] } {
+          lappend menucolors "-background"
+      }
+      set isMenu 1
+  }
+
   set options [ttk::style configure .]
   lappend options {*}[ttk::style configure $style]
 
   foreach {option value} $options {
     if {$option in $exclude} { continue }
+    if {$isMenu && $option in $menucolors} {
+        # if user defined menucolor exist use them and replace theme colors
+        if { ".menu" in $widget && $option eq "-background" } {
+            if { [info exists ::menuBarColor(background)] } { set value $::menuBarColor(background) }
+        } else {
+            catch { set value $::menuColor([string range $option 1 end]) }
+        }
+    }
     catch { $widget configure $option $value }
   }
   bind $widget <<ThemeChanged>> "::applyThemeStyle $style $widget"
