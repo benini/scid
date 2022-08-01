@@ -1228,9 +1228,10 @@ proc CreateMainBoard { {w} } {
     ::board::bind $w.board $i <ButtonPress-1> "pressSquare $i"
     ::board::bind $w.board $i <Control-ButtonPress-1> "addMarker $w.board %X %Y"
     ::board::bind $w.board $i <Control-ButtonRelease-1> "addMarker $w.board %X %Y"
+    ::board::bind $w.board $i <ButtonPress-$::MB3> "addMarker $w.board %X %Y"
+    ::board::bind $w.board $i <ButtonRelease-$::MB3> "addMarker $w.board %X %Y"
     ::board::bind $w.board $i <B1-Motion> "::board::dragPiece $w.board %X %Y"
     ::board::bind $w.board $i <ButtonRelease-1> "releaseSquare $w.board %X %Y"
-    ::board::bind $w.board $i <ButtonPress-$::MB3> ::move::Back
   }
 
   foreach i {o q r n k O Q R B N K} {
