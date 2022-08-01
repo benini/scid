@@ -3533,7 +3533,6 @@ sc_game_startBoard (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game startBoard <fenString>");
     }
     const char * str = argv[2];
-    char buf[256];
     auto err = db->game->SetStartFen(str);
     if (err != OK)
         return errorResult(ti, "Invalid FEN string.");
