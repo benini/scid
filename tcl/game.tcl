@@ -388,6 +388,7 @@ namespace eval ::notify {
   # To be called after modifying data in a database
   # The filter name is provided if it was the only thing modified (searches)
   proc DatabaseModified {{dbase} {filter -1}} {
+    menuUpdateBases
     if {$filter == -1} {
       ::updateTreeFilter $dbase
     }
