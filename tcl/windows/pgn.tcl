@@ -320,7 +320,7 @@ namespace eval pgn {
   }
 
   proc update_current_move {} {
-    if {$::pgn::showColor} {
+    if {[winfo exists .pgnWin] && $::pgn::showColor} {
       set offset [sc_pos pgnOffset]
       .pgnWin.text tag remove Current 1.0 end
       set moveRange [.pgnWin.text tag nextrange "m_$offset" 1.0]
