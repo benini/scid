@@ -412,23 +412,8 @@ std::size_t normalize(TString& str, std::size_t pos) {
 				++i;
 				++n;
 			}
-		} else if (ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v') {
-			if (ch == '\n')
-				++n_newlines;
-
-			// Tab and new line characters are removed if there is an adjacent
-			// space, or converted to a normal space otherwise.
-			if (i == pos ||                             // First char
-			    (i + 1) == n ||                         // Last char
-			    str[i - 1] == ' ' ||                    // Preceded by a space
-			    pgn_impl::is_PGNwhitespace(str[i + 1])) // Followed by a space
-			{
-				str.erase(i, 1);
-				--i;
-				--n;
-			} else {
-				str[i] = ' ';
-			}
+		} else if (ch == '\n') {
+			++n_newlines;
 		} else if (unescape && ch == '\\' && i + 1 != n) {
 			// "A quote inside a string is represented by the backslash
 			// immediately followed by a quote. A backslash inside a string is

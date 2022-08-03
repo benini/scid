@@ -113,8 +113,8 @@ TEST(Test_PgnParser, EPD) {
 		"[Result \"*\"]\n"
 		"\n"
 		"{29th game of the 1992 match} \n"
-		"1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 {This opening is called the; Ruy% Lopez.} 4.Ba4\n"
-		"Nf6 5.O-O {rnbqkb1r/1ppppppp/5n2/p7/2P5/4P3/PP1P1PPP/RNBQKBNR b KQkq -1; \n"
+		"1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 {This opening is called\nthe; Ruy% Lopez.} 4.Ba4 "
+		"Nf6 5.O-O {rnbqkb1r/1ppppppp/5n2/p7/2P5/4P3/PP1P1PPP/RNBQKBNR b KQkq -1; "
 		"%comm} 5...Be7 {6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7}"
 		" *\n\n";
 	// clang-format on
@@ -173,7 +173,7 @@ TEST(Test_PgnParser, EPD) {
 	ASSERT_TRUE(pgnParseGame(pgn + parseLog.n_bytes, len - parseLog.n_bytes,
 	                         game, parseLog));
 	EXPECT_TRUE(parseLog.log.size() > last_log.size());
-	EXPECT_STREQ(expected_game, game.WriteToPGN(75, true).first);
+	EXPECT_STREQ(expected_game, game.WriteToPGN(1024, true).first);
 
 	game.Clear();
 	last_log = parseLog.log;
@@ -217,37 +217,6 @@ TEST(Test_PgnParser, is_PGNsymbol) {
 		          pgn_impl::is_PGNsymbol(static_cast<signed char>(i)));
 		EXPECT_EQ(chars[i],
 		          pgn_impl::is_PGNsymbol(static_cast<unsigned char>(i)));
-	}
-}
-
-TEST(Test_PgnParser, pgn_normalize) {
-	std::string buf;
-	auto make_str = [&buf](size_t pos, const char* str) {
-		buf.assign(pos, '^');
-		buf.append(str, str + std::strlen(str));
-		size_t n_newlines = std::count(buf.begin(), buf.end(), '\n');
-		return n_newlines == pgn::normalize(buf, pos) &&
-		       buf.substr(0, pos) == std::string(pos, '^');
-	};
-
-	std::pair<const char*, const char*> tests[] = {
-	    {"Surname, Name (2800)", "Surname, Name (2800)"},
-	    {"    Surname,     Name (2800)       ",
-	     "    Surname,     Name (2800)       "},
-	    {"Surname,\nName (2800)", "Surname, Name (2800)"},
-	    {"Surname,\r\nName (2800)", "Surname, Name (2800)"},
-	    {"Surname, \r\nName (2800)", "Surname, Name (2800)"},
-	    {"Surname,\r\n Name (2800)", "Surname, Name (2800)"},
-	    {"Surname, \r\n Name (2800)", "Surname,  Name (2800)"},
-	    {"\n\tSurname, \v\r\t\nName\r\n(2800)\n", "Surname, Name (2800)"},
-	    {"  \n \r Surname,  \v\n   \tName\t\v(2800)        \r\n",
-	     "    Surname,     Name (2800)        "}};
-
-	for (int pos = 0; pos <= 30; pos = (pos + 1) * 2) { // 0, 2, 6, 14, 30
-		for (auto str : tests) {
-			EXPECT_TRUE(make_str(pos, str.first));
-			EXPECT_STREQ(buf.substr(pos).c_str(), str.second);
-		}
 	}
 }
 
@@ -409,7 +378,7 @@ TEST(Test_PgnParser, TagPairs) {
 		tmp_e[1] = "[Site \"  Site test  \"]";
 		tmp_s[1] = "[Site\n\"  Site test  \"]";
 		test(tmp_s, tmp_e, false);
-		tmp_s[1] = "[Site  \n\t\v\r\n\n   \"  Site\ntest  \"   \n \t \v \r  ]";
+		tmp_s[1] = "[Site  \n\t\v\r\n\n   \"  Site test  \"   \n \t \v \r  ]";
 		test(tmp_s, tmp_e, false);
 	}
 	{ // Unescape \\ to \ and \" to "
