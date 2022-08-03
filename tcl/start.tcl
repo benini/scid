@@ -455,8 +455,9 @@ proc autoscrollText {bars frame widget style} {
 
 # Create a canvas and apply to it the current ttk style.
 proc ttk_canvas {pathName args} {
-  canvas $pathName {*}$args
+  set res [canvas $pathName {*}$args]
   ::applyThemeStyle Treeview $pathName
+  return $res
 }
 
 # Create an item into a widget (i.e. a canvas) and apply to it the current ttk style.
@@ -471,8 +472,9 @@ proc ttk_create {pathName type x y args} {
 
 # Create a menu and apply to it the ttk style.
 proc ttk_menu {pathName args} {
-  menu $pathName {*}$args
+  set res [menu $pathName {*}$args]
   ::applyThemeStyle . $pathName
+  return $res
 }
 
 # Apply the theme's background color to a widget
