@@ -87,17 +87,17 @@ proc InitDefaultStats {} {
 proc InitDefaultFonts {} {
   global fontOptions
   if {$::windowsOS} {
-    set fontOptions(Regular) [list Tahoma    10 normal roman]
-    set fontOptions(Menu)    [list system     9 normal roman]
-    set fontOptions(Small)   [list Tahoma     8 normal roman]
-    set fontOptions(Tiny)    [list Arial      7 normal roman]
-    set fontOptions(Fixed)   [list courier    9 normal roman]
+    set fontOptions(Regular) [list {Segoe UI}   10 normal roman]
+    set fontOptions(Menu)    [list {Segoe UI}   10 normal roman]
+    set fontOptions(Small)   [list {Segoe UI}    8 normal roman]
+    set fontOptions(Tiny)    [list {Segoe UI}    7 normal roman]
+    set fontOptions(Fixed)   [list courier       9 normal roman]
   } elseif {$::macOS} {
-    set fontOptions(Regular) [list system    11 normal roman]
-    set fontOptions(Menu)    [list menu      14 normal roman]
-    set fontOptions(Small)   [list system    10 normal roman]
-    set fontOptions(Tiny)    [list system     9 normal roman]
-    set fontOptions(Fixed)   [list Monaco    10 normal roman]
+    set fontOptions(Regular) {}
+    set fontOptions(Menu)    {}
+    set fontOptions(Small)   {}
+    set fontOptions(Tiny)    {}
+    set fontOptions(Fixed)   [list Monaco              10 normal roman]
   } else {
     set fontOptions(Regular) [list {DejaVu Sans}       10 normal roman]
     set fontOptions(Menu)    [list {DejaVu Sans}       10 normal roman]
