@@ -112,33 +112,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>gz</string>
-				<string>gzip</string>
-				<string>GZ</string>
-			</array>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>application/gzip</string>
-				<string>application/x-gzip</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Gzip File</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>Gzip</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>org.gnu.gnu-zip-archive</string>
-			</array>
-			<key>LSTypeIsPackage</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
 				<string>sso</string>
 			</array>
 			<key>CFBundleTypeMIMETypes</key>
@@ -336,13 +309,13 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>scid</string>
+	<string>scid/scid</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Scid x.x</string>
+	<string>Scid 4.8.0</string>
 	<key>CFBundleIconFile</key>
 	<string>ScidApp.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.sourceforge.scid</string>
+	<string>scid.sourceforge.net</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -350,14 +323,10 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>x.x</string>
+	<string>4.8.0</string>
 	<key>CFBundleSignature</key>
 	<string>Scid</string>
-	<key>CFBundleVersion</key>
-	<string>x.x</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.4</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (C) Shane Hudson and others</string>
 </dict>
 </plist>

@@ -268,7 +268,7 @@ jobs:
       export LDFLAGS="-lz -framework CoreFoundation"
       cmake -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fno-exceptions -fno-rtti" \
-            -DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/scid_macos \
+            -DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/scid.app \
             -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)/tcltk/include \
             -DTCL_LIBRARY=$(Build.SourcesDirectory)/tcltk/lib/libtcl8.6.a \
              $(Build.SourcesDirectory)
@@ -276,7 +276,10 @@ jobs:
       make install
     displayName: Generate SCID
   - script: |
-      cd scid_macos
+      cd scid.app
+      mkdir Contents
+      cp -R $(Build.SourcesDirectory)/resources/macos Contents/Resources
+      mv Contents/Resources/Info.plist Contents
       mv bin engines
       mkdir lib
       cp $(Build.SourcesDirectory)/tcltk/lib/*.dylib lib/
@@ -284,7 +287,8 @@ jobs:
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8.6 lib/
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tk8.6 lib/
       cd ..
-      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS.tar.gz' scid_macos
+      zip -r '$(build.artifactstagingdirectory)/scid_macos.zip' scid.app
+      hdiutil create -fs "HFS+" -volname scid -srcfolder scid.app '$(build.artifactstagingdirectory)/scid.dmg'
     displayName: Add the tcl/tk library to the package
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: macOS static x64'
