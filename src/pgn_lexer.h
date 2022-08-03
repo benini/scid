@@ -443,26 +443,6 @@ std::size_t normalize(TString& str, std::size_t pos) {
 }
 
 /**
- * Escape quote and backslash chars according to the PGN standard:
- * "A quote inside a string is represented by the backslash immediately followed
- * by a quote. A backslash inside a string is represented by two adjacent
- * backslashes."
- * @param str: the string containing the chars to be escaped.
- * @param pos: start of the substring of @e str to be processed.
- */
-template <typename TString> void escape_string(TString& str, std::size_t pos) {
-	auto it = str.begin() + pos;
-	while (true) {
-		it = std::find_if(it, str.end(),
-		                  [](char ch) { return ch == '\\' || ch == '\"'; });
-		if (it != str.end())
-			it = str.insert(it, '\\') + 2;
-		else
-			break;
-	}
-}
-
-/**
  * Trim leading and trailing white spaces.
  * @param str: the string to trim.
  * @returns the number of '\n' chars in @e str.

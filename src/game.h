@@ -238,6 +238,12 @@ public:
         return true;
     }
 
+    // The last field of the initial FEN is the number of the full moves.
+    // @return  2 * full move - 2; +1 if it is black to move.
+    long long initialPlyCounter() const {
+        return StartPos ? StartPos->GetPlyCounter() : 0;
+    }
+
     /// Setup the start position from a FEN string and remove all the moves.
     /// If the FEN is invalid the game is not changed.
     errorT SetStartFen(const char* fenStr) {
@@ -390,9 +396,14 @@ public:
     void GetPrevMoveUCI(char* str) const;
     void GetNextMoveUCI(char* str);
 
+    const moveT* movetree() const { return FirstMove; }
+
     //////////////////////////////////////////////////////////////
     // Functions that get/set the tag pairs:
     //
+
+    // Invoke @e visitor for each existing tag pair
+    template <typename TFunc> void viewTagPairs(TFunc visitor) const;
 
     // Add a tag.
     // For the tags that cannot be duplicated (like Event or White), the
@@ -453,6 +464,7 @@ public:
     dateT    GetDate ()        const { return Date; }
     dateT    GetEventDate ()   const { return EventDate; }
     resultT  GetResult ()      const { return Result; }
+    std::string_view GetResultStr() const;
     eloT     GetWhiteElo ()    const { return WhiteElo; }
     eloT     GetBlackElo ()    const { return BlackElo; }
     byte     GetWhiteRatingType () const { return WhiteRatingType; }
@@ -509,53 +521,46 @@ public:
     Game* clone();
 };
 
-namespace gamevisit {
-
-template <typename TFunc> void tags_STR(const Game& game, TFunc visitor) {
-	char dateBuf[16];
-	visitor("Event", game.GetEventStr());
-	visitor("Site", game.GetSiteStr());
-	date_DecodeToString(game.GetDate(), dateBuf);
-	visitor("Date", dateBuf);
-	visitor("Round", game.GetRoundStr());
-	visitor("White", game.GetWhiteStr());
-	visitor("Black", game.GetBlackStr());
-	visitor("Result", RESULT_LONGSTR[game.GetResult()]);
-}
-
-template <typename TFunc> void tags_extra(const Game& game, TFunc visitor) {
+template <typename TFunc> void Game::viewTagPairs(TFunc visitor) const {
 	char strBuf[256];
-	if (auto elo = game.GetWhiteElo()) {
+	visitor("Event", GetEventStr());
+	visitor("Site", GetSiteStr());
+	date_DecodeToString(GetDate(), strBuf);
+	visitor("Date", strBuf);
+	visitor("Round", GetRoundStr());
+	visitor("White", GetWhiteStr());
+	visitor("Black", GetBlackStr());
+	visitor("Result", RESULT_LONGSTR[GetResult()]);
+
+	if (auto elo = GetWhiteElo()) {
 		std::string rType = "White";
-		rType.append(ratingTypeNames[game.GetWhiteRatingType()]);
+		rType.append(ratingTypeNames[GetWhiteRatingType()]);
 		visitor(rType.c_str(), std::to_string(elo).c_str());
 	}
-	if (auto elo = game.GetBlackElo()) {
+	if (auto elo = GetBlackElo()) {
 		std::string rType = "Black";
-		rType.append(ratingTypeNames[game.GetBlackRatingType()]);
+		rType.append(ratingTypeNames[GetBlackRatingType()]);
 		visitor(rType.c_str(), std::to_string(elo).c_str());
 	}
-	if (game.GetEco() != ECO_None) {
-		eco_ToExtendedString(game.GetEco(), strBuf);
+	if (GetEco() != ECO_None) {
+		eco_ToExtendedString(GetEco(), strBuf);
 		visitor("ECO", strBuf);
 	}
-	if (game.GetEventDate() != ZERO_DATE) {
-		date_DecodeToString(game.GetEventDate(), strBuf);
+	if (GetEventDate() != ZERO_DATE) {
+		date_DecodeToString(GetEventDate(), strBuf);
 		visitor("EventDate", strBuf);
 	}
-	// TODO:
+	// TODO?
 	// if (*ScidFlags)
-	//	visitor("ScidFlags", ScidFlags);
+	//     visitor("ScidFlags", ScidFlags);
 
-	for (auto& e : game.GetExtraTags()) {
+	for (auto& e : GetExtraTags()) {
 		visitor(e.first.c_str(), e.second.c_str());
 	}
-	if (game.HasNonStandardStart(strBuf)) {
+	if (HasNonStandardStart(strBuf)) {
 		visitor("FEN", strBuf);
 	}
 }
-
-} // namespace gamevisit
 
 namespace gamepos {
 

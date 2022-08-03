@@ -592,6 +592,12 @@ const char* Game::FindExtraTag(const char* tag) const {
     return NULL;
 }
 
+std::string_view Game::GetResultStr() const {
+	using namespace std::literals;
+	static std::string_view res[] = {"*"sv, "1-0"sv, "0-1"sv, "1/2-1/2"sv};
+	return res[Result];
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::SetMoveComment():
 //      Sets the comment for a move. A comment before the game itself

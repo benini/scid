@@ -142,7 +142,7 @@ TEST(Test_Game, MoveToStart_MoveToEnd) {
 	}
 }
 
-TEST(Test_Game, gamevisit) {
+TEST(Test_Game, viewTagPairs) {
 	Game game;
 
 	// Expect to visit the STR even for an empty game
@@ -150,21 +150,14 @@ TEST(Test_Game, gamevisit) {
 	    {"Event", ""}, {"Site", ""},  {"Date", "????.??.??"}, {"Round", ""},
 	    {"White", ""}, {"Black", ""}, {"Result", "*"}};
 	std::vector<std::pair<std::string, std::string>> result_STR;
-	gamevisit::tags_STR(game, [&](const char* tag, const char* value) {
+	game.viewTagPairs([&](const char* tag, const char* value) {
 		result_STR.emplace_back(tag, value);
 	});
 	EXPECT_TRUE(std::equal(expected_STR.begin(), expected_STR.end(),
 	                       result_STR.begin(), result_STR.end()));
 
-	// Expect no extra tags for an empty game
-	std::vector<std::pair<std::string, std::string>> expected_extra;
-	std::vector<std::pair<std::string, std::string>> result_extra;
-	gamevisit::tags_extra(game, [&](const char* tag, const char* value) {
-		result_extra.emplace_back(tag, value);
-	});
-	EXPECT_TRUE(result_extra.size() == 0);
-
 	// Set all possible tag-pair types and expect to visit them all
+	std::vector<std::pair<std::string, std::string>> expected_extra;
 	expected_STR[4].second = "white player";
 	game.SetWhiteStr(expected_STR[4].second.c_str());
 	expected_STR[5].second = "black \\player\"";
@@ -202,23 +195,17 @@ TEST(Test_Game, gamevisit) {
 
 	// Expect to visit the STR (in order)
 	result_STR.clear();
-	gamevisit::tags_STR(game, [&](const char* tag, const char* value) {
+	game.viewTagPairs([&](const char* tag, const char* value) {
 		result_STR.emplace_back(tag, value);
 	});
 	auto it = result_STR.begin();
 	for (auto& exp : expected_STR) {
 		EXPECT_EQ(exp, *it++);
 	}
-
-	// Expect to visit all the extra tags
-	result_extra.clear();
-	gamevisit::tags_extra(game, [&](const char* tag, const char* value) {
-		result_extra.emplace_back(tag, value);
-	});
-	it = result_extra.begin();
 	for (auto& exp : expected_extra) {
 		EXPECT_EQ(exp, *it++);
 	}
+	EXPECT_EQ(it, result_STR.end());
 }
 
 TEST(Test_Game, empty_tag_name) {
