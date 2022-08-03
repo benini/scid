@@ -27,6 +27,7 @@
 
 #include "codec_proxy.h"
 #include "filebuf.h"
+#include "pgn_encode.h"
 #include "pgnparse.h"
 #include <algorithm>
 #include <cstring>
@@ -141,20 +142,17 @@ public:
 	 * @returns OK in case of success, an @e errorT code otherwise.
 	 */
 	errorT gameAdd(Game* game) {
-		// buf_.clear();
-		// auto moves_begin = encode(*game, buf_);
-		// Split the range (moves_begin, buf_.size()) into lines
-		// auto sz = static_cast<std::streamsize>(buf_.size());
+		// TODO: we need this to fill in all the moveT->san
+		// It would be better to do this when the game is decoded.
+		game->MoveToStart();
+		do {
+			game->GetNextSAN();
+		} while (game->MoveForwardInPGN() == OK);
 
-		auto old_language = language;
-		language = 0;
-		game->SetPgnFormat(PGN_FORMAT_Plain);
-		game->ResetPgnStyle(PGN_STYLE_TAGS | PGN_STYLE_VARS |
-		                    PGN_STYLE_COMMENTS | PGN_STYLE_SCIDFLAGS);
-		auto [pgn, pgn_sz] = game->WriteToPGN(75, true);
-		language = old_language;
-
-		return file_.append(pgn, pgn_sz);
+		buf_.clear();
+		pgn::encode(*game, buf_);
+		buf_.push_back('\n');
+		return file_.append(buf_.data(), buf_.size());
 	}
 };
 
