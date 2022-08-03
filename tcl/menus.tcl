@@ -705,33 +705,6 @@ proc updateLocale {} {
   updateTitle
 }
 
-proc chooseFont {fType} {
-  global fontOptions
-  set fontOptions(temp) [FontDialog font_$fType $fontOptions($fType)]
-  if {$fontOptions(temp) != ""} { set fontOptions($fType) $fontOptions(temp) }
-  switch $fType {
-    {Regular} {
-      set font [font configure font_Regular -family]
-      set fontsize [font configure font_Regular -size]
-      font configure font_Bold -family $font -size $fontsize
-      font configure font_Italic -family $font -size $fontsize
-      font configure font_BoldItalic -family $font -size $fontsize
-      font configure font_H1 -family $font -size [expr {$fontsize + 8} ]
-      font configure font_H2 -family $font -size [expr {$fontsize + 6} ]
-      font configure font_H3 -family $font -size [expr {$fontsize + 4} ]
-      font configure font_H4 -family $font -size [expr {$fontsize + 2} ]
-      font configure font_H5 -family $font -size [expr {$fontsize + 0} ]
-    }
-    {Small} {
-      set font [font configure font_Small -family]
-      set fontsize [font configure font_Small -size]
-      font configure font_SmallBold -family $font -size $fontsize
-      font configure font_SmallItalic -family $font -size $fontsize
-      calculateGlistRowHeight
-    }
-  }
-}
-
 proc chooseHighlightColor {} {
   set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]
   if { $col != "" } {

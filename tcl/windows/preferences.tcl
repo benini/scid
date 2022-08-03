@@ -225,7 +225,12 @@ proc ::preferences::fonts { w } {
     foreach font { Regular Menu Small Tiny Fixed } {
         set f [string tolower $font]
         ttk::label $w.lb$f -font font_$font -text "[tr OptionsFonts$font]: AaBbCcDdEe 01234"
-        ttk::button $w.font$f  -text "..." -command "chooseFont $font"
+        ttk::button $w.font$f  -text "..." -command [list apply {{name} {
+            set new_options [FontDialog font_$name $::fontOptions($name)]
+            if {$new_options != ""} {
+                set ::fontOptions($name) $new_options
+            }
+        }} $font]
         grid $w.lb$f -row $idx -column 0 -sticky w -pady 5
         grid $w.font$f -row $idx -column 1 -sticky w -padx 5 -pady 5
         incr idx

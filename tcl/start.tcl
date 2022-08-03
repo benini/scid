@@ -345,29 +345,62 @@ proc safeStyle {interp args} {
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
 
-proc createFonts {} {
-  foreach name {Regular Menu Small Tiny Fixed} {
-    set opts $::fontOptions($name)
-    font create font_$name \
-      -family [lindex $opts 0] -size [lindex $opts 1] \
-      -weight [lindex $opts 2] -slant [lindex $opts 3]
+proc calculateGlistRowHeight { } {
+    set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
+    ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
+}
+
+proc updateFonts {font_name} {
+  switch $font_name {
+    {font_Regular} {
+      set font [font actual $font_name -family]
+      set fontsize [font actual $font_name -size]
+      font configure font_Bold       -family $font -size $fontsize -weight bold
+      font configure font_Italic     -family $font -size $fontsize -slant italic
+      font configure font_BoldItalic -family $font -size $fontsize -weight bold -slant italic
+      font configure font_H1 -family $font -size [expr {$fontsize + 8} ] -weight bold
+      font configure font_H2 -family $font -size [expr {$fontsize + 6} ] -weight bold
+      font configure font_H3 -family $font -size [expr {$fontsize + 4} ] -weight bold
+      font configure font_H4 -family $font -size [expr {$fontsize + 2} ] -weight bold
+      font configure font_H5 -family $font -size [expr {$fontsize + 0} ] -weight bold
+    }
+    {font_Small} {
+      set font [font actual $font_name -family]
+      set fontsize [font actual $font_name -size]
+      font configure font_SmallBold -family $font -size $fontsize -weight bold
+      font configure font_SmallItalic -family $font -size $fontsize -slant italic
+      calculateGlistRowHeight
+    }
   }
+}
 
-  set fontsize [font configure font_Regular -size]
-  set font [font configure font_Regular -family]
-  font create font_Bold -family $font -size $fontsize -weight bold
-  font create font_BoldItalic -family $font -size $fontsize -weight bold -slant italic
-  font create font_Italic -family $font -size $fontsize -slant italic
-  font create font_H1 -family $font -size [expr {$fontsize + 8} ] -weight bold
-  font create font_H2 -family $font -size [expr {$fontsize + 6} ] -weight bold
-  font create font_H3 -family $font -size [expr {$fontsize + 4} ] -weight bold
-  font create font_H4 -family $font -size [expr {$fontsize + 2} ] -weight bold
-  font create font_H5 -family $font -size [expr {$fontsize + 0} ] -weight bold
+proc createFonts {} {
+  font create font_Bold
+  font create font_BoldItalic
+  font create font_Italic
+  font create font_H1
+  font create font_H2
+  font create font_H3
+  font create font_H4
+  font create font_H5
 
-  set fontsize [font configure font_Small -size]
-  set font [font configure font_Small -family]
-  font create font_SmallBold -family $font -size $fontsize -weight bold
-  font create font_SmallItalic -family $font -size $fontsize -slant italic
+  font create font_SmallBold
+  font create font_SmallItalic
+
+  foreach {name value} [array get ::fontOptions] {
+    lassign $value f sz w s
+    if {$f ne ""} {
+      font create font_$name -family $f -size $sz -weight $w -slant $s
+    } else {
+      font create font_$name
+      if {$name eq "Small"} {
+        font configure font_$name -size [expr {int([font actual font_$name -size] * 0.85)}]
+      } elseif {$name eq "Tiny"} {
+        font configure font_$name -size [expr {int([font actual font_$name -size] * 0.7)}]
+      }
+    }
+    updateFonts font_$name
+  }
 
   set ::utils::tooltip::font font_Small
 }
@@ -393,7 +426,7 @@ option add *TSpinbox.font font_Regular
 
 # Set the menu options
 option add *Menu*TearOff 0
-option add *Menu*Font font_Menu
+if {[llength $::fontOptions(Menu)] == 4} { option add *Menu*Font font_Menu }
 foreach col [array names ::menuColor] {
   option add *Menu.$col $::menuColor($col)
 }
@@ -439,10 +472,6 @@ if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element n
     ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
 }
 
-proc calculateGlistRowHeight { } {
-    set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
-    ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
-}
 calculateGlistRowHeight
 
 proc autoscrollText {bars frame widget style} {

@@ -181,6 +181,7 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   # Restore old font characteristics on a cancel:
   if { $fd_close == 0 } {
     font configure $font_name -family $family -size $size -slant $slant -weight $weight
+    ::updateFonts $font_name
     return ""
   }
 
@@ -265,6 +266,7 @@ proc FontDialogRegen { font_name } {
 
   # Change font to have new characteristics.
   font configure $font_name -family $fd_family -size $fd_size -slant $slant -weight $weight
+  ::updateFonts $font_name
 }
 
 ## End of file: fontsel.tcl
