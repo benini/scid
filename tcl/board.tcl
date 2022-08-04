@@ -506,13 +506,12 @@ proc ::board::new {w {psize 40} } {
 }
 
 proc ::board::addNamesBar {w {varname}} {
-  set bgcolor #fbfbfb
-  frame $w.playerW -background $bgcolor
+  ttk::frame $w.playerW -style fieldbg.TLabel
   frame $w.playerW.color -background #EAE0C8 -width 6 -height 6
-  canvas $w.playerW.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 9 -height 9
-  label $w.playerW.name -textvariable ${varname}(nameW) -background $bgcolor -font font_SmallBold
-  label $w.playerW.elo -textvariable ${varname}(eloW) -background $bgcolor -font font_Small
-  label $w.playerW.clock -textvariable ${varname}(clockW) -background $bgcolor -font font_Small
+  ttk_canvas $w.playerW.tomove -borderwidth 0 -highlightthickness 0 -width 9 -height 9
+  ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
+  ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
+  ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Small -style fieldbg.TLabel
   grid $w.playerW.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerW.name -row 0 -column 1 -sticky w
   grid $w.playerW.elo -row 0 -column 2 -sticky w
@@ -521,12 +520,12 @@ proc ::board::addNamesBar {w {varname}} {
   grid columnconfigure $w.playerW 3 -weight 1
   grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
 
-  frame $w.playerB -background $bgcolor
+  ttk::frame $w.playerB -style fieldbg.TLabel
   frame $w.playerB.color -background black -width 6 -height 6
-  canvas $w.playerB.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 9 -height 9
-  label $w.playerB.name -textvariable ${varname}(nameB) -background $bgcolor -font font_SmallBold
-  label $w.playerB.elo -textvariable ${varname}(eloB) -background $bgcolor -font font_Small
-  label $w.playerB.clock -textvariable ${varname}(clockB) -background $bgcolor -font font_Small
+  ttk_canvas $w.playerB.tomove -borderwidth 0 -highlightthickness 0 -width 9 -height 9
+  ttk::label $w.playerB.name -textvariable ${varname}(nameB) -font font_SmallBold -style fieldbg.TLabel
+  ttk::label $w.playerB.elo -textvariable ${varname}(eloB) -font font_Small -style fieldbg.TLabel
+  ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Small -style fieldbg.TLabel
   grid $w.playerB.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerB.name -row 0 -column 1 -sticky w
   grid $w.playerB.elo -row 0 -column 2 -sticky w

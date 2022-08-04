@@ -1260,6 +1260,7 @@ proc CreateMainBoard { {w} } {
   grid columnconfigure $w 0 -weight 1
   grid $w.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
 
+  updateMainGame
   toggleGameInfo
   updateStatusBar
   updateMainToolbar
