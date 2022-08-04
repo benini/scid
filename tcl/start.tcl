@@ -459,6 +459,8 @@ ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
 ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
 
+ttk::style configure fieldbg.TLabel -background [ttk::style lookup . -fieldbackground "" white]
+
 # Some themes (e.g. vista and xpnative) use custom field elements and ignore -fieldbackground
 if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element names]]} {
     ttk::style configure Error.TCombobox -foreground #b80f0a

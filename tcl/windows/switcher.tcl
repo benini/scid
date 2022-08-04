@@ -674,16 +674,17 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
   autoscrollframe -bars y $w.border canvas $w.c -highlightthickness 0
 
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
-    set f [ttk::frame $w.c.f$i -borderwidth 1 -relief raised]
+    set f [ttk::frame $w.c.f$i]
     $w.c create window 0 0 -window $w.c.f$i -anchor nw -tag tag$i
 
     set f $w.c.f$i
-    label $f.img -image dbt0
-    label $f.name -width 12 -anchor w -font font_Small
-    label $f.ngames -text "0" -width 12 -anchor e -font font_Tiny
-    grid $f.img -row 0 -column 0 -rowspan 2
-    grid $f.name -row 0 -column 1 -sticky we
-    grid $f.ngames -row 1 -column 1 -sticky we
+    ttk::label $f.img -image dbt0 -style fieldbg.TLabel
+    ttk::label $f.name -width 12 -anchor w -font font_Small -style fieldbg.TLabel
+    ttk::label $f.ngames -text "0" -width 12 -anchor e -font font_Tiny -style fieldbg.TLabel
+    grid $f.img -row 0 -column 0 -rowspan 2 -sticky news
+    grid $f.name -row 0 -column 1 -sticky news
+    grid $f.ngames -row 1 -column 1 -sticky news
+    grid rowconfigure $f 0 -weight 1
 
     foreach win {"" .img .name .ngames} {
       bind $f$win <ButtonPress-1> [list ::windows::switcher::pressMouseEvent $i $w]
@@ -715,10 +716,9 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
   set n_bases 0
   foreach i [sc_base list] {
       incr n_bases
-      set color white
+      set color {}
       if {$i == $selected} { set color steelBlue }
 
-#      $w.c.f$i configure -background $color
       if {$icons} {
         set dbtype [getBaseType $i]
         if {$dbtype < 0 || $dbtype >= $numBaseTypeIcons} { set dbtype 0 }
@@ -771,7 +771,6 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
   if {$numRows < 1} { set numRows 1 }
   set right [expr {$numColumns * $iconWidth}]
   set bottom [expr {$numRows * $iconHeight}]
-  set bgcolor [ttk::style lookup Button.label -background]
   $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat
   ::applyThemeColor_background $w.c
 }
