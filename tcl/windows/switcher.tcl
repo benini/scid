@@ -589,6 +589,7 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
     if { [info exists ::sw_LinkedGList_($w)] } {
       if {[::windows::gamelist::GetBase $::sw_LinkedGList_($w)] != "$fromBase"} {
         ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
+        ::windows::switcher::Update_ $w
       } else {
         popupmenu $w "$w.c.f$fromBase" $x $y $fromBase
       }
