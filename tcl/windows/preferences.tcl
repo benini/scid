@@ -55,7 +55,18 @@ proc ::preferences::Open { {toggle ""} } {
 
   ### Add all preference dialogs to this list. Add for every dialog: textlabel proc
   set idx 0
-  set configList [list [tr OptionsBoard] chooseBoardColors [tr OptionsFonts] ::preferences::fonts [tr OptionsMenuColor] ::appearance::menuConfigDialog [tr OptionsToolbar] ConfigToolbar [tr OptionsInternationalization] ::preferences::internationalization [tr OptionsRecent] ::recentFiles::configure [tr OptionsSounds] ::utils::sound::OptionsDialog [tr OptionsMoves] ::preferences::moves [tr ConfigureInformant] configInformant]
+  set configList {}
+  lappend configList [tr OptionsBoard] chooseBoardColors
+  lappend configList [tr OptionsFonts] ::preferences::fonts
+  if {! $::macOS } { # on macos it is not possible to change the menu's colors.
+    lappend configList [tr OptionsMenuColor] ::appearance::menuConfigDialog
+  }
+  lappend configList [tr OptionsToolbar] ConfigToolbar
+  lappend configList [tr OptionsInternationalization] ::preferences::internationalization
+  lappend configList [tr OptionsRecent] ::recentFiles::configure
+  lappend configList [tr OptionsSounds] ::utils::sound::OptionsDialog
+  lappend configList [tr OptionsMoves] ::preferences::moves
+  lappend configList [tr ConfigureInformant] configInformant
   set maxlen 0
   ### create the dialogs
   foreach {m init} $configList {
