@@ -153,3 +153,50 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid $w.header
     grid $w.options -sticky news
 }
+
+# Invoke ::engine::netserver to start/stop listening to remote connection.
+# If successful it also updates engConfig_$id
+# Return the listening port ("" is the engine is not accepting remote connection).
+proc ::enginecfg::setupNetd {id netport} {
+    set new_value ""
+    if {[string match "auto_*" $netport]} {
+        set new_value "auto_"
+        set netport 0
+    }
+    set port [::engine::netserver $id $netport]
+    append new_value $port
+    lset ::enginewin::engConfig_$id 6 5 $new_value
+    return $port
+}
+
+# Invoked when the value of one of the netd widgets is changed.
+# Invoke ::enginecfg::setupNetd and update the netd widgets accordingly.
+proc ::enginecfg::onSubmitNetd {id w} {
+    switch [$w.netd get] {
+      "auto_port" {
+          set netport auto_
+          set state readonly
+      }
+      "on" {
+          set netport [$w.netport get]
+          set state normal
+      }
+      default {
+          set netport ""
+          set state disabled
+      }
+    }
+    $w.netport configure -state normal -style {}
+    set old_value [lindex [set ::enginewin::engConfig_$id] 6 5]
+    if {$old_value ne $netport} {
+        if {[catch {
+            set port [::enginecfg::setupNetd $id $netport]
+            $w.netport delete 0 end
+            $w.netport insert 0 $port
+        }]} {
+            $w.netport configure -style Error.TEntry
+            ERROR::MessageBox
+        }
+    }
+    $w.netport configure -state $state
+}

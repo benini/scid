@@ -345,13 +345,7 @@ proc ::enginewin::connectEngine {id config} {
         return
     }
 
-    if {[catch {
-        if {[string match "auto_*" $netport]} {
-            lset engConfig_ 6 5 "auto_[::engine::netserver $id 0]"
-        } else {
-            lset engConfig_ 6 5 [::engine::netserver $id $netport]
-        }
-    }]} {
+    if {[catch { ::enginecfg::setupNetd $id $netport }]} {
         ERROR::MessageBox
     }
 
@@ -489,7 +483,13 @@ proc ::enginewin::createConfigWidgets {id options} {
     $w insert end "  port: "
     ttk::entry $w.netport -width 6 -validate key -validatecommand { string is integer %P }
     $w window create end -window $w.netport
-    bind $w.netd <<ComboboxSelected>> "::enginewin::updateConfigNetd $id $w"
+    bind $w.netd <<ComboboxSelected>> "::enginecfg::onSubmitNetd $id $w"
+    bind $w.netport <FocusOut> "if {\"readonly\" ni \[$w.netport state\]} {
+        ::enginecfg::onSubmitNetd $id $w
+    }"
+    bind $w.netport <Return>   "if {\"readonly\" ni \[$w.netport state\]} {
+        ::enginecfg::onSubmitNetd $id $w
+    }"
     $w insert end "\n" netclients
 
     set disableReset 1
@@ -619,19 +619,18 @@ proc ::enginewin::updateConfig {id msgData} {
         }
     }
 
+    $w.netport configure -state normal -style {}
+    $w.netport delete 0 end
     if {$netport eq ""} {
         $w.netd set "off"
         $w.netport configure -state disabled
-        bind $w.netport <FocusOut> {}
     } elseif {[string match "auto_*" $netport]} {
         $w.netd set "auto_port"
         $w.netport insert 0 [string range $netport 5 end]
         $w.netport configure -state readonly
-        bind $w.netport <FocusOut> {}
     } else {
         $w.netd set "on"
         $w.netport insert 0 $netport
-        bind $w.netport <FocusOut> "::enginewin::updateConfigNetd $id $w"
     }
     set strclients "\n"
     if {[llength $netclients]} {
@@ -735,41 +734,6 @@ proc ::enginewin::updateConfigReset {id} {
     }
     if {[llength $options]} {
         ::engine::send $id SetOptions $options
-    }
-}
-
-proc ::enginewin::updateConfigNetd {id w} {
-    bind $w.netport <FocusOut> {}
-    $w.netport configure -state normal -style {}
-    set port [$w.netport get]
-    $w.netport delete 0 end
-    if {[catch {
-        switch [$w.netd get] {
-          "auto_port" {
-              set port [::engine::netserver $id 0]
-              $w.netport insert 0 $port
-              $w.netport configure -state readonly
-              lset ::enginewin::engConfig_$id 6 5 "auto_$port"
-          }
-          "on" {
-              bind $w.netport <FocusOut> "::enginewin::updateConfigNetd $id $w"
-              set port [::engine::netserver $id $port]
-              $w.netport insert 0 $port
-              lset ::enginewin::engConfig_$id 6 5 $port
-          }
-          default {
-              set port [::engine::netserver $id ""]
-              $w.netport insert 0 $port
-              $w.netport configure -state disabled
-              lset ::enginewin::engConfig_$id 6 5 $port
-          }
-        }
-    }]} {
-        $w.netport configure -style Error.TEntry
-        if {[$w.netd get] ne "on"} {
-            $w.netport configure -state disabled
-        }
-        ERROR::MessageBox
     }
 }
 
