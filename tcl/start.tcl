@@ -440,39 +440,41 @@ bind . <<ThemeChanged>> {
 
 catch { ttk::style theme use $::lookTheme }
 
-#TODO: all the style configurations should be re-applied when the theme is changed
-# Use default font everywhere
-ttk::style configure . -font font_Regular
-ttk::style configure Heading -font font_Regular
+proc configure_style {} {
+  # Use default font everywhere
+  ttk::style configure . -font font_Regular
+  ttk::style configure Heading -font font_Regular
 
-# Style definitions
-ttk::style configure Bold.TCheckbutton -font font_Bold
-ttk::style configure Small.TCheckbutton -font font_Small
+  # Style definitions
+  ttk::style configure Bold.TCheckbutton -font font_Bold
+  ttk::style configure Small.TCheckbutton -font font_Small
 
-ttk::style configure Small.TButton -font font_Small
-ttk::style configure Bold.TButton -font font_Bold
-ttk::style configure Pad0.Small.TButton -padding 0
+  ttk::style configure Small.TButton -font font_Small
+  ttk::style configure Bold.TButton -font font_Bold
+  ttk::style configure Pad0.Small.TButton -padding 0
 
-ttk::style configure Small.TRadiobutton -font font_Small
-ttk::style configure Bold.TRadiobutton -font font_Bold
-ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
+  ttk::style configure Small.TRadiobutton -font font_Small
+  ttk::style configure Bold.TRadiobutton -font font_Bold
+  ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
-ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
+  ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
 
-ttk::style configure fieldbg.TLabel -background [ttk::style lookup . -fieldbackground "" white]
+  ttk::style configure fieldbg.TLabel -background [ttk::style lookup . -fieldbackground "" white]
 
-# Some themes (e.g. vista and xpnative) use custom field elements and ignore -fieldbackground
-if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element names]]} {
-    ttk::style configure Error.TCombobox -foreground #b80f0a
-    ttk::style configure Error.TEntry -foreground #b80f0a
-    ttk::style configure Error.TSpinbox -foreground #b80f0a
-} else {
-    ttk::style configure Error.TCombobox -fieldbackground #b80f0a
-    ttk::style configure Error.TEntry -fieldbackground #b80f0a
-    ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
+  # Some themes (e.g. vista and xpnative) use custom field elements and ignore -fieldbackground
+  if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element names]]} {
+      ttk::style configure Error.TCombobox -foreground #b80f0a
+      ttk::style configure Error.TEntry -foreground #b80f0a
+      ttk::style configure Error.TSpinbox -foreground #b80f0a
+  } else {
+      ttk::style configure Error.TCombobox -fieldbackground #b80f0a
+      ttk::style configure Error.TEntry -fieldbackground #b80f0a
+      ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
+  }
+
+  calculateGlistRowHeight
 }
-
-calculateGlistRowHeight
+bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
 
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame
