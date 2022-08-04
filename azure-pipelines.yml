@@ -276,10 +276,17 @@ jobs:
       make install
     displayName: Generate SCID
   - script: |
+      git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
+      cd stockfish/src
+      make build
+      cp stockfish $(Build.SourcesDirectory)/scid.app/bin
+    displayName: Generate stockfish
+  - script: |
       cd scid.app
       mkdir Contents
       cp -R $(Build.SourcesDirectory)/resources/macos Contents/Resources
       mv Contents/Resources/Info.plist Contents
+      rm bin/scid
       mv bin engines
       mkdir lib
       cp $(Build.SourcesDirectory)/tcltk/lib/*.dylib lib/
