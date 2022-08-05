@@ -88,6 +88,9 @@ struct moveT {
 	bool endMarker() const { return marker == END_MARKER; }
 	bool isNull() const { return moveData.isNullMove(); }
 
+	const moveT* Next() const { return next; }
+	simpleMoveT const& move() const { return moveData; }
+
 	template <typename TNew>
 	moveT* cloneLine(moveT* parent, TNew newMove) const {
 		const moveT* orig = this;
