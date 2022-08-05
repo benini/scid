@@ -178,6 +178,32 @@ proc ::enginecfg::onSubmitReset {id w} {
     }
 }
 
+# Invoked to send to the engine a button option that have no value.
+# It also used for option of type "file" and type "path": a dialog is showed
+# to select the path (a directory path is appended to the previous value).
+# Also, for the options of type "file" or "path", the related widget that
+# display the value is updated when the engine replies with InfoConfig.
+proc ::enginecfg::onSubmitButton {id idx} {
+    lassign [lindex [set ::enginewin::engConfig_$id] 8 $idx] \
+        name oldValue type default min max
+
+    if {$type eq "file"} {
+        set value [tk_getOpenFile]
+        if {$value == ""} { return }
+    } elseif {$type eq "path"} {
+        set value [tk_chooseDirectory]
+        if {$value == ""} { return }
+        if {$oldValue ne "" && $oldValue ne "<empty>"} {
+            append oldValue [expr {$::windowsOS ? ";" : ":"}]
+            set value "$oldValue$value"
+        }
+    } else {
+        set value ""
+    }
+    ::engine::send $id SetOptions [list [list $name $value]]
+}
+
+
 # Read an option's value from widget and if it has changed sends a SetOptions
 # message to the engine.
 proc ::enginecfg::onSubmitOption {id idx widget} {

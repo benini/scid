@@ -525,8 +525,10 @@ proc ::enginewin::createConfigWidgets {id options} {
                         -command "after idle \[bind $w.value$i <FocusOut>\] "
                 } else {
                     ttk::entry $w.value$i
-                    if {$type eq "file" || $type eq "path"} {
+                    if {$type eq "file"} {
                         set btn "..."
+                    } elseif {$type eq "path"} {
+                        set btn "+ ..."
                     }
                 }
                 # Special vars like %W cannot be used in <FocusOut> because the
@@ -538,7 +540,7 @@ proc ::enginewin::createConfigWidgets {id options} {
         }
         if {$btn ne ""} {
             ttk::button $w.button$i -style Pad0.Small.TButton -text $btn \
-                -command "::enginewin::updateConfigBtn $id \"$name\" $type"
+                -command "::enginecfg::onSubmitButton $id $i"
             $w window create end -window $w.button$i
         } elseif {$type eq "spin" || $type eq "slider"} {
             $w insert end " (Range: $min ... $max)"
@@ -692,19 +694,6 @@ proc ::enginewin::updateConfig {id msgData} {
     }
 
     $w configure -state disabled
-}
-
-proc ::enginewin::updateConfigBtn {idEngine name type} {
-    if {$type eq "file"} {
-        set value [tk_getOpenFile]
-        if {$value == ""} { return }
-    } elseif {$type eq "path"} {
-        set value [tk_chooseDirectory]
-        if {$value == ""} { return }
-    } else {
-        set value ""
-    }
-    ::engine::send $idEngine SetOptions [list [list $name $value]]
 }
 
 proc ::enginewin::createDisplayFrame {id w} {
