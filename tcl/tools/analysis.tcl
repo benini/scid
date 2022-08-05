@@ -487,7 +487,7 @@ proc ::enginelist::edit {index} {
     set f [ttk::frame $w.f]
     pack $f -side top -fill x -expand yes
     set row 0
-    foreach i {Name Cmd Args Dir URL} {
+    foreach i {Name Cmd Args Dir} {
         ttk::label $f.l$i -text $i
         if {[info exists ::tr(Engine$i)]} {
             $f.l$i configure -text $::tr(Engine$i)
