@@ -408,7 +408,8 @@ proc ::enginewin::callback {id msg} {
 }
 
 proc ::enginewin::createConfigWidgets {id options} {
-    set w .engineWin$id.config.options.text
+    set configFrame .engineWin$id.config
+    set w $configFrame.options.text
 
     $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
 
@@ -502,7 +503,7 @@ proc ::enginewin::createConfigWidgets {id options} {
             set disableReset 0
             $w insert end "\n"
             ttk::button $w.reset -style Pad0.Small.TButton -text "Reset Options" \
-                -command "::enginewin::updateConfigReset $id"
+                -command "::enginecfg::onSubmitReset $id $configFrame"
             $w window create end -window $w.reset
         }
         $w insert end "\n$name\t"
@@ -704,26 +705,6 @@ proc ::enginewin::updateConfigBtn {idEngine name type} {
         set value ""
     }
     ::engine::send $idEngine SetOptions [list [list $name $value]]
-}
-
-proc ::enginewin::updateConfigReset {id} {
-    upvar ::enginewin::engConfig_$id engConfig_
-    if {[lindex $engConfig_ 7] != 2} {
-        # Local engine: re-open
-        ::enginewin::reconnect $id options {}
-        return
-    }
-
-    set options {}
-    foreach option [lindex [set ::enginewin::engConfig_$id] 8] {
-        lassign $option name value type default min max var_list internal
-        if {! $internal && $value ne $default} {
-            lappend options [list $name $default]
-        }
-    }
-    if {[llength $options]} {
-        ::engine::send $id SetOptions $options
-    }
 }
 
 proc ::enginewin::createDisplayFrame {id w} {

@@ -156,6 +156,28 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid $w.options -sticky news
 }
 
+# Reset all the engine's options to their default values.
+proc ::enginecfg::onSubmitReset {id w} {
+    upvar ::enginewin::engConfig_$id engConfig_
+    if {[lindex $engConfig_ 7] != 2} {
+        # Local engine: reset options and re-open
+        lset engConfig_ 8 {}
+        $w.header.reload invoke
+        return
+    }
+
+    set options {}
+    foreach option [lindex engConfig_ 8] {
+        lassign $option name value type default min max var_list internal
+        if {! $internal && $value ne $default} {
+            lappend options [list $name $default]
+        }
+    }
+    if {[llength $options]} {
+        ::engine::send $id SetOptions $options
+    }
+}
+
 # Read an option's value from widget and if it has changed sends a SetOptions
 # message to the engine.
 proc ::enginecfg::onSubmitOption {id idx widget} {
