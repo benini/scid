@@ -286,7 +286,6 @@ jobs:
       mkdir Contents
       cp -R $(Build.SourcesDirectory)/resources/macos Contents/Resources
       mv Contents/Resources/Info.plist Contents
-      rm bin/scid
       mv bin engines
       mkdir lib
       cp $(Build.SourcesDirectory)/tcltk/lib/*.dylib lib/
