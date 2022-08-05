@@ -108,33 +108,10 @@ proc InitDirs {} {
   set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
   set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
 
-  proc moveOldConfigFiles {} {
-    # Moves configuration files from the old (3.4 and earlier) names
-    # to the new file names used since Scid 3.5.
-    global scidUserDir scidConfigDir
-
-    # Since the options file used to be ".scid", rename it:
-    if {[file isfile $scidUserDir]} {
-      file rename -force $scidUserDir "$scidUserDir.old"
-    }
-
-    foreach {oldname newname} {
-      scidrc options.dat
-      scid.opt options.dat
-      scid.bkm bookmarks.dat
-      scid.rfl recentfiles.dat
-      engines.lis engines.dat
-    } {
-      set oldpath [file nativename [file join $scidUserDir $oldname]]
-      set newpath [file nativename [file join $scidConfigDir $newname]]
-      if {[file readable $oldpath]  &&  ![file readable $newpath]} {
-        if {[catch {file rename $oldpath $newpath} err]} {
-          tk_messageBox -message "Error moving $oldpath to $newpath: $err"
-        }
-      }
-    }
+  set ::scidEnginesDir [file normalize [file join $::scidExeDir "../engines"]]
+  if {! [file isdirectory $::scidEnginesDir]} {
+    set ::scidEnginesDir $::scidExeDir
   }
-  moveOldConfigFiles
 
   # Create the config, data and log directories if they do not exist:
   proc makeScidDir {dir} {

@@ -82,7 +82,7 @@ proc ::enginecfg::dlgNewLocal {} {
         lappend ftype [list "Executable" [list ".exe" ".bat"]]
     }
     lappend ftype [list "All files" *]
-    set fName [tk_getOpenFile -filetypes $ftype]
+    set fName [tk_getOpenFile -initialdir $::scidEnginesDir -filetypes $ftype]
     if {$fName eq ""} { return "" }
     return [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
 }
