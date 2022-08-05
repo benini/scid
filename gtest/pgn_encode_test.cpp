@@ -101,10 +101,17 @@ TEST(Test_PgnEncode, encode_tag_pair) {
 	}
 	{
 		std::string text;
-		pgn::encode_tag_pair("Event", "", text);
+		pgn::encode_tag_pair<true>("Event", "", text);
 		EXPECT_EQ("[Event\0\"?\"]\n"sv, text);
 		pgn::break_lines(text.begin(), text.end());
 		EXPECT_STREQ("[Event \"?\"]\n", text.c_str());
+	}
+	{
+		std::string text;
+		pgn::encode_tag_pair("Event", "", text);
+		EXPECT_EQ("[Event\0\"\"]\n"sv, text);
+		pgn::break_lines(text.begin(), text.end());
+		EXPECT_STREQ("[Event \"\"]\n", text.c_str());
 	}
 	{
 		std::string text;
@@ -178,12 +185,12 @@ TEST(Test_PgnEncode, encode_game) {
 	using namespace std::literals;
 	{
 		Game empty;
-		auto expected = "[Event\0\"?\"]\n"sv
-		                "[Site\0\"?\"]\n"sv
+		auto expected = "[Event\0\"\"]\n"sv
+		                "[Site\0\"\"]\n"sv
 		                "[Date\0\"????.??.??\"]\n"sv
-		                "[Round\0\"?\"]\n"sv
-		                "[White\0\"?\"]\n"sv
-		                "[Black\0\"?\"]\n"sv
+		                "[Round\0\"\"]\n"sv
+		                "[White\0\"\"]\n"sv
+		                "[Black\0\"\"]\n"sv
 		                "[Result\0\"*\"]\n"sv
 		                "\n*\n"sv;
 		std::string pgn;
@@ -198,12 +205,12 @@ TEST(Test_PgnEncode, encode_game) {
 		game.AddMove(sm);
 		game.SetMoveComment("after the move");
 		SAN_hack(game);
-		auto expected = "[Event\0\"?\"]\n"sv
-		                "[Site\0\"?\"]\n"sv
+		auto expected = "[Event\0\"\"]\n"sv
+		                "[Site\0\"\"]\n"sv
 		                "[Date\0\"????.??.??\"]\n"sv
-		                "[Round\0\"?\"]\n"sv
-		                "[White\0\"?\"]\n"sv
-		                "[Black\0\"?\"]\n"sv
+		                "[Round\0\"\"]\n"sv
+		                "[White\0\"\"]\n"sv
+		                "[Black\0\"\"]\n"sv
 		                "[Result\0\"*\"]\n"sv
 		                "\n"sv
 		                "{before the move}\0"sv
@@ -218,12 +225,12 @@ TEST(Test_PgnEncode, encode_game) {
 TEST(Test_PgnEncode, encode) {
 	{
 		Game empty;
-		auto expected = "[Event \"?\"]\n"
-		                "[Site \"?\"]\n"
+		auto expected = "[Event \"\"]\n"
+		                "[Site \"\"]\n"
 		                "[Date \"????.??.??\"]\n"
-		                "[Round \"?\"]\n"
-		                "[White \"?\"]\n"
-		                "[Black \"?\"]\n"
+		                "[Round \"\"]\n"
+		                "[White \"\"]\n"
+		                "[Black \"\"]\n"
 		                "[Result \"*\"]\n"
 		                "\n*\n";
 		std::string pgn;
@@ -238,12 +245,12 @@ TEST(Test_PgnEncode, encode) {
 		game.AddMove(sm);
 		game.SetMoveComment("after the move");
 		SAN_hack(game);
-		auto expected = "[Event \"?\"]\n"
-		                "[Site \"?\"]\n"
+		auto expected = "[Event \"\"]\n"
+		                "[Site \"\"]\n"
 		                "[Date \"????.??.??\"]\n"
-		                "[Round \"?\"]\n"
-		                "[White \"?\"]\n"
-		                "[Black \"?\"]\n"
+		                "[Round \"\"]\n"
+		                "[White \"\"]\n"
+		                "[Black \"\"]\n"
 		                "[Result \"*\"]\n"
 		                "\n"
 		                "{before the move} 1.e4 {after the move}\n"
@@ -261,12 +268,12 @@ TEST(Test_PgnEncode, encode) {
 		                PgnVisitor{game});
 		SAN_hack(game);
 		auto expected =
-		    "[Event \"?\"]\n"
-		    "[Site \"?\"]\n"
+		    "[Event \"\"]\n"
+		    "[Site \"\"]\n"
 		    "[Date \"????.??.??\"]\n"
-		    "[Round \"?\"]\n"
-		    "[White \"?\"]\n"
-		    "[Black \"?\"]\n"
+		    "[Round \"\"]\n"
+		    "[White \"\"]\n"
+		    "[Black \"\"]\n"
 		    "[Result \"*\"]\n"
 		    "\n"
 		    "{pre} 1.e4 {comm} ({pre var} 1.d4 d5 {end var with comm}) 1...e5 "
