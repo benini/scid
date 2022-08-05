@@ -108,6 +108,8 @@ proc ::enginecfg::dlgNewRemote {} {
     return [::enginecfg::add [list $::enginecfg_dlgresult $::enginecfg_dlgresult {} {} {} 0 {} 2]]
 }
 
+# TODO: no references to ::enginewin should exists in this file
+
 # Creates the frame with the widgets necessary to select the desired engine and
 # change its configuration.
 # It also creates the buttons used to manage the configured engines:
@@ -154,6 +156,34 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid $w.options -sticky news
 }
 
+# Read an option's value from widget and if it has changed sends a SetOptions
+# message to the engine.
+proc ::enginecfg::onSubmitOption {id idx widget} {
+    lassign [lindex [set ::enginewin::engConfig_$id] 8 $idx] \
+        name oldValue type default min max
+
+    $widget configure -style {}
+    set value [$widget get]
+    if {$value eq $oldValue} { return }
+
+    if {$value eq ""} {
+        set value $default
+    } elseif {$min != "" && $max != ""} {
+        if {$value < $min || $value > $max} {
+            $widget configure -style Error.TSpinbox
+            return
+        }
+    } elseif {![catch { set values [$widget cget -values] }]} {
+        if {[set idx [lsearch -exact -nocase $values $value]] != -1} {
+            set value [lindex $values $idx]
+        } else {
+            $widget configure -style Error.TCombobox
+            return
+        }
+    }
+    ::engine::send $id SetOptions [list [list $name $value]]
+}
+
 # Invoke ::engine::netserver to start/stop listening to remote connection.
 # If successful it also updates engConfig_$id
 # Return the listening port ("" is the engine is not accepting remote connection).
@@ -169,9 +199,11 @@ proc ::enginecfg::setupNetd {id netport} {
     return $port
 }
 
-# Invoked when the value of one of the netd widgets is changed.
+# Invoked when the value of one of the netd widgets has changed.
 # Invoke ::enginecfg::setupNetd and update the netd widgets accordingly.
 proc ::enginecfg::onSubmitNetd {id w} {
+    set old_value [lindex [set ::enginewin::engConfig_$id] 6 5]
+
     switch [$w.netd get] {
       "auto_port" {
           set netport auto_
@@ -187,7 +219,6 @@ proc ::enginecfg::onSubmitNetd {id w} {
       }
     }
     $w.netport configure -state normal -style {}
-    set old_value [lindex [set ::enginewin::engConfig_$id] 6 5]
     if {$old_value ne $netport} {
         if {[catch {
             set port [::enginecfg::setupNetd $id $netport]

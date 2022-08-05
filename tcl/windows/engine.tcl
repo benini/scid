@@ -513,10 +513,10 @@ proc ::enginewin::createConfigWidgets {id options} {
             if {$type eq "combo"} {
                 lassign [lsort -decreasing -integer [lmap elem $var_list { string length $elem }]] maxlen
                 ttk::combobox $w.value$i -width [incr maxlen] -values $var_list -state readonly
-                bind $w.value$i <<ComboboxSelected>> "::enginewin::onSubmitOption $id $i %W"
+                bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
             } elseif {$type eq "check"} {
                 ttk::combobox $w.value$i -width 6 -values {false true} -state readonly
-                bind $w.value$i <<ComboboxSelected>> "::enginewin::onSubmitOption $id $i %W"
+                bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
             } else {
                 if {$type eq "spin" || $type eq "slider"} {
                     ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1 \
@@ -530,7 +530,7 @@ proc ::enginewin::createConfigWidgets {id options} {
                 }
                 # Special vars like %W cannot be used in <FocusOut> because the
                 # other events are forwarded to it
-                bind $w.value$i <FocusOut> "::enginewin::onSubmitOption $id $i $w.value$i"
+                bind $w.value$i <FocusOut> "::enginecfg::onSubmitOption $id $i $w.value$i"
                 bind $w.value$i <Return> { {*}[bind %W <FocusOut>] }
             }
             $w window create end -window $w.value$i
@@ -693,33 +693,6 @@ proc ::enginewin::updateConfig {id msgData} {
     $w configure -state disabled
 }
 
-proc ::enginewin::onSubmitOption {idEngine idx widgetValue} {
-    set options [lindex [set ::enginewin::engConfig_$idEngine] 8]
-    lassign [lindex $options $idx] name oldValue type default min max
-
-    $widgetValue configure -style {}
-    set value [$widgetValue get]
-    if {$value eq $oldValue} {
-        return
-    }
-    if {$value eq ""} {
-        set value $default
-    } elseif {$min != "" && $max != ""} {
-        if {$value < $min || $value > $max} {
-            $widgetValue configure -style Error.TSpinbox
-            return
-        }
-    } elseif {![catch { set values [$widgetValue cget -values] }]} {
-        if {[set idx [lsearch -exact -nocase $values $value]] != -1} {
-            set value [lindex $values $idx]
-        } else {
-            $widgetValue configure -style Error.TCombobox
-            return
-        }
-    }
-    ::engine::send $idEngine SetOptions [list [list $name $value]]
-}
-
 proc ::enginewin::updateConfigBtn {idEngine name type} {
     if {$type eq "file"} {
         set value [tk_getOpenFile]
@@ -836,7 +809,7 @@ proc ::enginewin::changeDisplayLayout {id param value} {
                 bind $w.btn.multipv <Return> { {*}[bind %W <FocusOut>] }
                 bind $w.btn.multipv <FocusOut> [list apply {{id idx widget} {
                     set prev_state $::enginewin::engState($id)
-                    ::enginewin::onSubmitOption $id $idx $widget
+                    ::enginecfg::onSubmitOption $id $idx $widget
                     if {$prev_state in {run lock}} {
                         #TODO: enginewin::start does not work because the
                         # state is updated asynchronously
