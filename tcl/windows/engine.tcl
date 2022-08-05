@@ -419,6 +419,7 @@ proc ::enginewin::createConfigWidgets {id options} {
     $w insert end "\n[tr EngineCmd]:\t"
     ttk::entry $w.cmd
     bind $w.cmd <FocusOut> "::enginewin::reconnect $id cmd \[ %W get \]"
+    bind $w.cmd <Return> [bind $w.cmd <FocusOut>]
     $w window create end -window $w.cmd
     ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... \
         -command "::enginewin::reconnect $id cmd {} 1"
@@ -427,11 +428,13 @@ proc ::enginewin::createConfigWidgets {id options} {
     $w insert end "\n[tr EngineArgs]:\t"
     ttk::entry $w.args
     bind $w.args <FocusOut> "::enginewin::reconnect $id args \[ %W get \]"
+    bind $w.args <Return> [bind $w.args <FocusOut>]
     $w window create end -window $w.args
 
     $w insert end "\n[tr EngineDir]:\t"
     ttk::entry $w.wdir
     bind $w.wdir <FocusOut> "::enginewin::reconnect $id wdir \[ %W get \]"
+    bind $w.wdir <Return> [bind $w.wdir <FocusOut>]
     $w window create end -window $w.wdir
     ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... \
         -command "::enginewin::reconnect $id wdir {} 2"
@@ -487,9 +490,7 @@ proc ::enginewin::createConfigWidgets {id options} {
     bind $w.netport <FocusOut> "if {\"readonly\" ni \[$w.netport state\]} {
         ::enginecfg::onSubmitNetd $id $w
     }"
-    bind $w.netport <Return>   "if {\"readonly\" ni \[$w.netport state\]} {
-        ::enginecfg::onSubmitNetd $id $w
-    }"
+    bind $w.netport <Return> [bind $w.netport <FocusOut>]
     $w insert end "\n" netclients
 
     set disableReset 1
@@ -509,20 +510,29 @@ proc ::enginewin::createConfigWidgets {id options} {
         if {$type eq "button" || $type eq "save" || $type eq "reset"} {
             set btn $name
         } else {
-            if {$type eq "spin" || $type eq "slider"} {
-                ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1
-            } elseif {$type eq "combo"} {
+            if {$type eq "combo"} {
                 lassign [lsort -decreasing -integer [lmap elem $var_list { string length $elem }]] maxlen
-                ttk::combobox $w.value$i -width [incr maxlen] -values $var_list
+                ttk::combobox $w.value$i -width [incr maxlen] -values $var_list -state readonly
+                bind $w.value$i <<ComboboxSelected>> "::enginewin::onSubmitOption $id $i %W"
             } elseif {$type eq "check"} {
-                ttk::combobox $w.value$i -width 6 -values {false true}
+                ttk::combobox $w.value$i -width 6 -values {false true} -state readonly
+                bind $w.value$i <<ComboboxSelected>> "::enginewin::onSubmitOption $id $i %W"
             } else {
-                ttk::entry $w.value$i
-                if {$type eq "file" || $type eq "path"} {
-                    set btn "..."
+                if {$type eq "spin" || $type eq "slider"} {
+                    ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1 \
+                        -validate key -validatecommand { string is integer %P } \
+                        -command "after idle \[bind $w.value$i <FocusOut>\] "
+                } else {
+                    ttk::entry $w.value$i
+                    if {$type eq "file" || $type eq "path"} {
+                        set btn "..."
+                    }
                 }
+                # Special vars like %W cannot be used in <FocusOut> because the
+                # other events are forwarded to it
+                bind $w.value$i <FocusOut> "::enginewin::onSubmitOption $id $i $w.value$i"
+                bind $w.value$i <Return> { {*}[bind %W <FocusOut>] }
             }
-            bind $w.value$i <FocusOut> "::enginewin::updateConfigSetOption $id $i $w.value$i"
             $w window create end -window $w.value$i
         }
         if {$btn ne ""} {
@@ -578,6 +588,7 @@ proc ::enginewin::updateConfig {id msgData} {
                 ::enginewin::updateName $id
             }
         }} $id]
+        bind $w.name <Return> [bind $w.name <FocusOut>]
 
         $w.cmd delete 0 end
         $w.cmd insert end $cmd
@@ -664,8 +675,12 @@ proc ::enginewin::updateConfig {id msgData} {
             if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
             $w.value$i configure -width $wd
         }
-        $w.value$i delete 0 end
-        $w.value$i insert 0 $value
+        if {$type in {combo check}} {
+            $w.value$i set $value
+        } else {
+            $w.value$i delete 0 end
+            $w.value$i insert 0 $value
+        }
 
         if {[string equal -nocase $name "multipv"]} {
             ::enginewin::changeDisplayLayout $id multipv [list $i $value $min $max]
@@ -678,9 +693,11 @@ proc ::enginewin::updateConfig {id msgData} {
     $w configure -state disabled
 }
 
-proc ::enginewin::updateConfigSetOption {idEngine idx widgetValue} {
+proc ::enginewin::onSubmitOption {idEngine idx widgetValue} {
     set options [lindex [set ::enginewin::engConfig_$idEngine] 8]
     lassign [lindex $options $idx] name oldValue type default min max
+
+    $widgetValue configure -style {}
     set value [$widgetValue get]
     if {$value eq $oldValue} {
         return
@@ -700,7 +717,6 @@ proc ::enginewin::updateConfigSetOption {idEngine idx widgetValue} {
             return
         }
     }
-    $widgetValue configure -style {}
     ::engine::send $idEngine SetOptions [list [list $name $value]]
 }
 
@@ -810,18 +826,23 @@ proc ::enginewin::changeDisplayLayout {id param value} {
         }
         "multipv" {
             if {$value eq ""} {
+                $w.btn.multipv set ""
                 $w.btn.multipv configure -state disabled
             } else {
                 lassign $value idx value min max
-                # TODO: bind focusout
                 $w.btn.multipv configure -state normal -from $min -to $max \
-                  -command "after idle {
-                    set go \[expr { \$::enginewin::engState($id) in {run lock} }\]
-                    ::enginewin::updateConfigSetOption $id $idx $w.btn.multipv
-                    if {\$go} {
-                        ::enginewin::onPosChanged $id
+                    -validate key -validatecommand { string is integer %P } \
+                    -command "after idle \[bind $w.btn.multipv <FocusOut>\]"
+                bind $w.btn.multipv <Return> { {*}[bind %W <FocusOut>] }
+                bind $w.btn.multipv <FocusOut> [list apply {{id idx widget} {
+                    set prev_state $::enginewin::engState($id)
+                    ::enginewin::onSubmitOption $id $idx $widget
+                    if {$prev_state in {run lock}} {
+                        #TODO: enginewin::start does not work because the
+                        # state is updated asynchronously
+                        ::enginewin::sendPosition $id [sc_game UCI_currentPos]
                     }
-                }"
+                }} $id $idx $w.btn.multipv]
             }
             $w.btn.multipv set $value
             return
