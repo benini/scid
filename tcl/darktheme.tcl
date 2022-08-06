@@ -138,14 +138,6 @@ namespace eval ttk::theme::dark {
             -background $buttonsbg \
             -lightcolor $borders \
         ;
-        if {[info procs ::styleOption] ne ""} {
-            ::styleOption dark *TCombobox*Listbox.highlightThickness 1
-            ::styleOption dark *TCombobox*Listbox.borderWidth 4
-            ::styleOption dark *TCombobox*Listbox.background $colors(fieldbg)
-            ::styleOption dark *TCombobox*Listbox.foreground $colors(foreground)
-            ::styleOption dark *TCombobox*Listbox.selectBackground $basecol
-            ::styleOption dark *TCombobox*Listbox.selectForeground $colors(selectfg)
-        }
 
         ttk::style configure TEntry \
             -foreground $colors(selectfg) \

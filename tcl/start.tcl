@@ -406,17 +406,6 @@ foreach col [array names ::menuColor] {
   option add *Menu.$col $::menuColor($col)
 }
 
-# Add the theme's options only when the theme is in use
-bind . <<ThemeChanged>> {
-  if {[string equal %W "."]} {
-    foreach elem [lsearch -all -inline -exact -index 0 $::themeOptions [ttk::style theme use]] {
-      option add [lindex $elem 1] [lindex $elem 2]
-    }
-  }
-}
-
-catch { ttk::style theme use $::lookTheme }
-
 proc configure_style {} {
   # Use default font everywhere
   ttk::style configure . -font font_Regular
@@ -450,8 +439,21 @@ proc configure_style {} {
   }
 
   calculateGlistRowHeight
+
+  # The ttk::combobox popdown listbox cannot be configured using ttk::style
+  option add *TCombobox*Listbox.background [ttk::style lookup . -fieldbackground "" white] startupFile
+  option add *TCombobox*Listbox.foreground [ttk::style lookup . -foreground] startupFile
+  option add *TCombobox*Listbox.selectBackground [ttk::style lookup . -selectbackground] startupFile
+  option add *TCombobox*Listbox.selectForeground [ttk::style lookup . -selectforeground] startupFile
+
+  # Add the theme's specific options
+  foreach elem [lsearch -all -inline -exact -index 0 $::themeOptions [ttk::style theme use]] {
+    option add [lindex $elem 1] [lindex $elem 2]
+  }
 }
 bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
+
+catch { ttk::style theme use $::lookTheme }
 
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame
