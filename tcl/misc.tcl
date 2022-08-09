@@ -28,21 +28,6 @@ proc vwaitTimed { var {delay 0} {warn "warnuser"} } {
   
 }
 
-################################################################################
-# bindFocusColors:
-#   Configures a text or entry widget so it turns lightYellow when it
-#   gets the focus, and turns white again when it loses focus.
-#
-# THIS IS CURRENTLY DISABLED since it works fine with regular entry widgets
-# but causes problems with our combobox widgets, not sure why!
-#
-proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
-  $w configure -background $outColor
-  #bind $w <FocusIn> "+$w configure -background $inColor"
-  #bind $w <FocusOut> "+$w configure -background $outColor"
-}
-
-
 ## FROM TK 8.5.9
 ## ttk::bindMouseWheel $bindtag $command...
 #	Adds basic mousewheel support to $bindtag.

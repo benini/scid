@@ -493,7 +493,6 @@ proc ::enginelist::edit {index} {
             $f.l$i configure -text $::tr(Engine$i)
         }
         ttk::entry $f.e$i -textvariable engines(new$i) -width 40
-        bindFocusColors $f.e$i
         grid $f.l$i -row $row -column 0 -sticky w
         grid $f.e$i -row $row -column 1 -sticky we
         
@@ -560,7 +559,6 @@ proc ::enginelist::edit {index} {
     
     ttk::label $f.lElo -text $::tr(EngineElo)
     ttk::entry $f.eElo -textvariable engines(newElo) -justify right -width 5
-    bindFocusColors $f.eElo
     grid $f.lElo -row $row -column 0 -sticky w
     grid $f.eElo -row $row -column 1 -sticky w
     incr row

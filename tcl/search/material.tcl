@@ -100,7 +100,7 @@ proc makeBoolMenu {w varName} {
   upvar #0 $varName var
   if {![info exists var]} { set var "Yes" }
   ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
-  
+
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
       -command "$w configure -image tb_tick"  ;# -hidemargin 1
@@ -195,7 +195,7 @@ proc showPattern { count } {
 
 proc setPatterns {pattlist} {
   global pattPiece pattFyle pattRank pattBool nPatterns nMaxPatterns
-  
+
   clearPatterns
   set count 1
   foreach patt $pattlist {
@@ -232,7 +232,7 @@ proc ::search::material {{ref_base ""}} {
   global dark pMin pMax ignoreColors minMoveNum maxMoveNum
   global pattPiece pattFyle pattRank pattBool oppBishops sameBishops nPatterns nMaxPatterns
   global minHalfMoves
-  
+
   set w .sm
   if {[winfo exists $w]} {
     wm deiconify $w
@@ -240,10 +240,10 @@ proc ::search::material {{ref_base ""}} {
     return
   }
   set small font_Small
-  
+
   win::createDialog $w
   wm title $w "Scid: $::tr(MaterialSearch)"
-  
+
   bind $w <F1> { helpWindow Searches Material }
   bind $w <Escape> "$w.b3.cancel invoke"
   bind $w <Return> "$w.b3.search invoke"
@@ -255,12 +255,12 @@ proc ::search::material {{ref_base ""}} {
   ttk::labelframe $w.mp.material -text $::tr(Material)
   pack $w.mp -side top
   grid $w.mp.material -row 0 -column 0 -rowspan 2 -columnspan 2 -sticky nswe -padx "0 10" -pady 5
-  
+
   foreach piece {q r b n m p} {
     ttk::frame $w.mp.material.$piece
     pack $w.mp.material.$piece -side top
   }
-  
+
   foreach i {q r b n m p} {
     set f $w.mp.material.$i
     ttk::button $f.w0 -text "0" -command "set pMin(w$i) 0; set pMax(w$i) 0"
@@ -273,7 +273,7 @@ proc ::search::material {{ref_base ""}} {
     ttk::entry $f.wmin -width 2 -textvar pMin(w$i) -font font_Small -justify right ;#-relief sunken
     ttk::entry $f.wmax -width 2 -textvar pMax(w$i) -font font_Small -justify right ;#-relief sunken
     pack $f.w0 $f.w1 $f.w2 $f.wa $f.w1p $f.wi $f.wmin $f.wto $f.wmax -side left -pady 1
-    
+
     pack [ttk::frame $f.space -width 20] -side left
     ttk::button $f.b0 -text "0" -command "set pMin(b$i) 0; set pMax(b$i) 0"
     ttk::button $f.b1 -text "1" -command "set pMin(b$i) 1; set pMax(b$i) 1"
@@ -285,13 +285,10 @@ proc ::search::material {{ref_base ""}} {
     ttk::entry $f.bmin -width 2 -textvar pMin(b$i) -font font_Small -justify right ;#-relief sunken
     ttk::entry $f.bmax -width 2 -textvar pMax(b$i) -font font_Small -justify right ;#-relief sunken
     pack $f.b0 $f.b1 $f.b2 $f.ba $f.b1p $f.bi $f.bmin $f.bto $f.bmax -side left -pady 1
-    
+
     foreach b {0 1 2 a 1p} {
       $f.w$b configure -width 2 -takefocus 0 -style Pad0.Small.TButton ;# -font $small -pady 0 -padx 1
       $f.b$b configure -width 2 -takefocus 0 -style Pad0.Small.TButton ;# -font $small -pady 0 -padx 1
-    }
-    foreach widget {wmin wmax bmin bmax} {
-      bindFocusColors $f.$widget
     }
     if {$i == "p"} {
       $f.w1p configure -command "set pMin(wp) 1; set pMax(wp) 8"
@@ -306,11 +303,11 @@ proc ::search::material {{ref_base ""}} {
       $f.ba configure -command "set pMin(bm) 0; set pMax(bm) 4"
     }
   }
-  
+
   # Buttons that manipulate material settings:
   set f $w.mp.material.b1
   pack [ttk::frame $f] -side top
-  
+
   dialogbuttonsmall $f.zero [ list -textvar ::tr(Zero) -command ::search::material::zero] Pad0.Small.TButton
   dialogbuttonsmall $f.reset [ list -textvar ::tr(Any) -command ::search::material::any ] Pad0.Small.TButton
   dialogbuttonsmall $f.current [ list -textvar ::tr(CurrentBoard) -command {
@@ -323,7 +320,7 @@ proc ::search::material {{ref_base ""}} {
       }
     }
   } ] Pad0.Small.TButton
-  
+
   ttk::menubutton $f.common -textvar ::tr(CommonEndings...) -menu $f.common.m -style pad0.TMenubutton ;# -font $small -relief raised
   menu $f.common.m -font $small
   set m $f.common.m
@@ -396,20 +393,18 @@ proc ::search::material {{ref_base ""}} {
     array set pMin {wb 2 bn 2 wm 2 bm 2}
     array set pMax {wq 1 bq 1 wr 2 br 2 wb 2 bn 2 wm 2 bm 2 wp 8 bp 8}
   }
-  
+
   pack $f.zero -side left -pady 5 -padx "0 10"
   pack $f.reset $f.current -side left -pady 5 -padx 10
   pack $f.common -side left -padx "10 0" -pady 5
-  
+
   ttk::frame $w.mp.material.mdiff
   set f $w.mp.material.mdiff
   pack $f -side left -anchor n -pady 5
   ttk::label $f.label -text $::tr(MaterialDiff)
   ttk::entry $f.min -width 3 -textvar minMatDiff -font $small -justify right ;#-relief sunken
-  bindFocusColors $f.min
   ttk::label $f.sep -text "-" -font $small
   ttk::entry $f.max -width 3 -textvar maxMatDiff -font $small -justify right ;#-relief sunken
-  bindFocusColors $f.max
   ttk::label $f.sep2 -text " " -font $small
   ttk::button $f.any -textvar ::tr(Any) -style Pad0.Small.TButton -command {set minMatDiff -40; set maxMatDiff +40} -width 0
   ttk::button $f.w1 -text " + " -style Pad0.Small.TButton -command {set minMatDiff +1; set maxMatDiff +40}  -width 0
@@ -421,11 +416,11 @@ proc ::search::material {{ref_base ""}} {
   pack $f.explain -side bottom
   pack $f.min $f.sep $f.max -side left
   pack $f.sep2 $f.any $f.w1 $f.equal $f.b1 -side left -padx 1 -pady 1
-  
+
   ttk::labelframe $w.mp.patt -text $::tr(Patterns)
   set f $w.mp.patt
   grid $w.mp.patt -row 0 -column 2 -sticky nwe -pady 5
-  
+
   ttk::frame $f.grid
   for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
@@ -450,7 +445,7 @@ proc ::search::material {{ref_base ""}} {
     }
   }
   updatePatternImages
-  
+
   ### Buttons that manipulate patterns:
   set f $w.mp.patt.b2
   ttk::frame $f
@@ -526,7 +521,7 @@ proc ::search::material {{ref_base ""}} {
     set pMin(wb) 2; set pMin(bb) 2
     setPatterns { {wb b 2 Yes} {wb g 2 Yes} {bb b 7 Yes} {bb g 7 Yes} }
   }
-  
+
 #  ttk::button $f.pattAdd -text $::tr(GlistAddField) -command {}
   ttk::button $f.pattAdd -text " + " -command {
       if { $::nPatterns < $::nMaxPatterns } {
@@ -542,7 +537,7 @@ proc ::search::material {{ref_base ""}} {
   pack $f.clearPat -side left -anchor w -pady "0 5"
   pack $w.mp.patt.grid -side top -anchor w ;# -fill both -expand 1
   updatePatternImages
-  
+
   ttk::frame $w.mp.material.bishops
   set f $w.mp.material.bishops
   pack $f -side right -pady 5
@@ -554,10 +549,10 @@ proc ::search::material {{ref_base ""}} {
   foreach i { same opp } { pack $f.$i -side top -anchor w }
 
   addHorizontalRule $w
-  
+
   ### Now the move counter:
   pack [ ttk::frame $w.fmc ] -side top -expand 1 -fill both
-  
+
   set f $w.fmc.move
   pack [ttk::frame $f] -side top -ipady 5 ;# -expand 1 -fill both
   ttk::label $f.fromlab -textvar ::tr(MoveNumberRange:) -font font_Small
@@ -568,30 +563,27 @@ proc ::search::material {{ref_base ""}} {
   ttk::label $f.label1 -textvar ::tr(MatchForAtLeast) -font font_Small
   ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right -font font_Small
   ttk::label $f.label2 -textvar ::tr(HalfMoves) -font font_Small
-  bindFocusColors $f.from
-  bindFocusColors $f.to
-  bindFocusColors $f.hmoves
   pack $f.fromlab $f.from $f.tolab $f.to $f.space $f.label1 $f.hmoves $f.label2 -side left
-  
+
   ::search::addFilterOpFrame $w 1
-  
+
   ### Progress bar:
   ttk::frame $w.fprogress
   canvas $w.fprogress.progress -height 20 -width 500 -bg white -relief solid -border 1
   $w.fprogress.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
   $w.fprogress.progress create text 495 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
-  
+
   ### Last of all, the buttons frame:
-  
+
   set f $w.b3
   pack [ttk::frame $f] -side top -ipady 5 -fill x
   ttk::checkbutton $f.ignorecol -textvar ::tr(IgnoreColors) -variable ignoreColors ;# -padx 4
-  
+
   dialogbutton $f.save -textvar ::tr(Save...) -command ::search::material::save
-  
+
   dialogbutton $f.stop -textvar ::tr(Stop) -command progressBarCancel
   $f.stop configure -state disabled
-  
+
   dialogbutton $f.search -textvar ::tr(Search) -command {
     busyCursor .
     set curr_base [sc_base current]
@@ -635,15 +627,15 @@ proc ::search::material {{ref_base ""}} {
     set str [::windows::gamelist::formatFilterText $filterSz $gameSz]
     .sm.filterop configure -text "$::tr(FilterOperation) ($str)"
   }
-  
+
   dialogbutton $f.cancel -textvar ::tr(Close) \
       -command { focus .; destroy .sm }
-  
+
   pack $f.ignorecol $w.b3.save -side left -pady 5 -padx 5
   pack $w.b3.cancel $w.b3.search $w.b3.stop -side right -pady 5 -padx 5
   pack $w.fprogress.progress -side top -pady 2
   pack $w.fprogress -expand 1 -fill both
-  
+
   # update
   wm resizable $w 0 0
   ::search::Config
@@ -653,15 +645,15 @@ proc ::search::material {{ref_base ""}} {
 proc ::search::material::save {} {
   global pMin pMax ignoreColors minMoveNum maxMoveNum minHalfMoves
   global pattPiece pattFyle pattRank pattBool sameBishops oppBishops nPatterns
-  
+
   set ftype { { "Scid SearchOptions files" {".sso"} } }
   set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]
   if {$fName == ""} { return }
-  
+
   if {[string compare [file extension $fName] ".sso"] != 0} {
     append fName ".sso"
   }
-  
+
   if {[catch {set searchF [open $fName w]}]} {
     tk_messageBox -title "Error: Unable to open file" -type ok -icon error \
         -message "Unable to create SearchOptions file: $fName"

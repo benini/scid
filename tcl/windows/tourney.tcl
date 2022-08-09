@@ -73,23 +73,19 @@ proc ::tourney::Open {} {
   set f $w.o1
   ttk::label $f.from -text "[tr TmtSortDate]:" -font $fbold
   ttk::entry $f.efrom -textvariable ::tourney::start -width 10 -font $font
-  bindFocusColors $f.efrom
   ttk::label $f.to -text "-" -font $font
   ttk::entry $f.eto -textvariable ::tourney::end -width 10 -font $font
-  bindFocusColors $f.eto
   pack $f.from $f.efrom $f.to $f.eto -side left
 
   ttk::label $f.cn -text "  $::tr(Country):" -font $fbold
   ttk::combobox $f.ecn -width 4 -textvar ::tourney::country -values {{} AUT CZE DEN ENG ESP FRA GER GRE HUN ITA NED POL RUS \
         SCG SUI SWE USA YUG}
-  
-  bindFocusColors $f.ecn
+
   pack $f.cn $f.ecn -side left
 
   ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
   ttk::combobox $f.esize -width 4 -justify right -textvar ::tourney::size -values {10 20 50 100 200 500 1000}
   trace variable ::tourney::size w {::utils::validate::Integer 1000 0}
-  bindFocusColors $f.esize
 
   pack $f.esize $f.size -side right -pady "2 0"
 
@@ -97,49 +93,40 @@ proc ::tourney::Open {} {
   ttk::label $f.players -text "[tr TmtSortPlayers]:" -font $fbold
   ttk::entry $f.pmin -textvariable ::tourney::minPlayers \
     -width 3 -justify right -font $font
-  bindFocusColors $f.pmin
   ttk::label $f.pto -text "-"
   ttk::entry $f.pmax -textvariable ::tourney::maxPlayers \
     -width 3 -justify right -font $font
-  bindFocusColors $f.pmax
   pack $f.players $f.pmin $f.pto $f.pmax -side left -pady "2 0"
 
   ttk::label $f.games -text "   [tr TmtSortGames]:" -font $fbold
   ttk::entry $f.gmin -textvariable ::tourney::minGames \
     -width 4 -justify right -font $font
-  bindFocusColors $f.gmin
   ttk::label $f.gto -text "-" -font $font
   ttk::entry $f.gmax -textvariable ::tourney::maxGames \
     -width 4 -justify right -font $font
-  bindFocusColors $f.gmax
   pack $f.games $f.gmin $f.gto $f.gmax -side left -pady "2 0"
   ttk::label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
   ttk::entry $f.elomin -textvariable ::tourney::minElo \
     -width 5 -justify right -font $font
-  bindFocusColors $f.elomin
   ttk::label $f.eto -text "-" -font $font
   ttk::entry $f.elomax -textvariable ::tourney::maxElo \
     -width 5 -justify right -font $font
-  bindFocusColors $f.elomax
   pack $f.elomax $f.eto $f.elomin $f.elolab -side right
 
   set f $w.o3
   ttk::label $f.sitelab -text "$::tr(Site):" -font $fbold
   ttk::combobox $f.site -textvariable ::tourney::site -width 12
   ::utils::history::SetCombobox ::tourney::site $f.site
-  bindFocusColors $f.site
   pack $f.sitelab $f.site -side left
 
   ttk::label $f.eventlab -text "   $::tr(Event):" -font $fbold
   ttk::combobox $f.event -textvariable ::tourney::event -width 12
   ::utils::history::SetCombobox ::tourney::event $f.event
-  bindFocusColors $f.event
   pack $f.eventlab $f.event -side left -pady "2 0"
 
   ttk::label $f.playerlab -text "$::tr(Player):" -font $fbold
   ttk::combobox $f.player -textvariable ::tourney::player -width 12
   ::utils::history::SetCombobox ::tourney::player $f.player
-  bindFocusColors $f.player
   pack $f.player $f.playerlab -side right
   focus $f.site
 

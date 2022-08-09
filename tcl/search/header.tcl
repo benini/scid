@@ -108,7 +108,7 @@ proc search::headerCreateFrame { w } {
   foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res ano gl ends eco} {
     ttk::frame $w.$frame
   }
-  
+
   set regular font_Small
   ttk::labelframe $w.player -text $::tr(Player)
   pack $w.player -side top -fill x -pady 5
@@ -117,15 +117,12 @@ proc search::headerCreateFrame { w } {
     ttk::label $w.c$color.lab -textvar ::tr($color:) -width 9 -anchor w
     ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
-    
+
     ttk::label $w.c$color.space
     ttk::label $w.c$color.elo1 -textvar ::tr(Rating:)
     ttk::entry $w.c$color.elomin -textvar s${color}EloMin -width 6 -justify right
     ttk::label $w.c$color.elo2 -text "-"
     ttk::entry $w.c$color.elomax -textvar s${color}EloMax -width 6 -justify right
-    bindFocusColors $w.c$color.e
-    bindFocusColors $w.c$color.elomin
-    bindFocusColors $w.c$color.elomax
     pack $w.c$color.lab $w.c$color.e $w.c$color.space -side left
     pack $w.c$color.elomax $w.c$color.elo2 $w.c$color.elomin $w.c$color.elo1 -side right
   }
@@ -137,8 +134,6 @@ proc search::headerCreateFrame { w } {
   ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMin -justify right
   ttk::label $w.ignore.rdto -text "-"
   ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMax -justify right
-  bindFocusColors $w.ignore.rdmin
-  bindFocusColors $w.ignore.rdmax
   pack $w.ignore.rdmax $w.ignore.rdto $w.ignore.rdmin $w.ignore.rdiff -side right
 
   pack [ttk::separator $w.sep] -side top -fill x -in $w.player
@@ -155,9 +150,9 @@ proc search::headerCreateFrame { w } {
       pack $w.t$c.b$i -side left -padx "0 10"
     }
   }
-  
+
   lower $w.player
-  
+
   ttk::labelframe $w.tournement -text $::tr(Event)
   pack $w.tournement -side top -fill x -pady 5
   set f $w.eventsite
@@ -166,12 +161,11 @@ proc search::headerCreateFrame { w } {
     ttk::label $f.l$i -textvar ::tr(${i}:)
     ttk::combobox $f.e$i -textvariable s$i -width 30
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
-    bindFocusColors $f.e$i
   }
   pack $f.lEvent $f.eEvent -side left
   pack $f.eSite -side right
   pack $f.lSite -side right -padx "10 0"
-  
+
   set f $w.eventround
   pack $f -side top -fill x -in $w.tournement
   lower $w.tournement
@@ -195,8 +189,6 @@ proc search::headerCreateFrame { w } {
       set sEventDateMax "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  bindFocusColors $f.demin
-  bindFocusColors $f.demax
   bind $f.demin <FocusOut> +checkDates
   bind $f.demax <FocusOut> +checkDates
   ttk::button $f.dlyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
@@ -209,7 +201,6 @@ proc search::headerCreateFrame { w } {
 
   ttk::label $f.lRound -textvar ::tr(Round:)
   ttk::entry $f.eRound -textvariable sRound -width 10
-  bindFocusColors $f.eRound
   pack $f.eRound $f.lRound -side right
 
   set f $w.date
@@ -234,8 +225,6 @@ proc search::headerCreateFrame { w } {
       set sDateMax "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  bindFocusColors $f.emin
-  bindFocusColors $f.emax
   bind $f.emin <FocusOut> +checkDates
   bind $f.emax <FocusOut> +checkDates
   ttk::button $f.lyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
@@ -245,7 +234,7 @@ proc search::headerCreateFrame { w } {
   ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
 
   pack $f.l1 $f.emin $f.eminCal $f.l2 $f.emax $f.emaxCal $f.l3 $f.lyear -side left
-  
+
   ttk::labelframe $w.result -text $::tr(Result)
   pack $w.result -side top -fill x -pady 5
   pack $w.res -side top -fill x -in $w.result
@@ -262,17 +251,15 @@ proc search::headerCreateFrame { w } {
   ttk::label $w.gl.l3 -textvar ::tr(HalfMoves)
   ttk::entry $w.gl.emin -textvariable sGlMin -justify right -width 4
   ttk::entry $w.gl.emax -textvariable sGlMax -justify right -width 4
-  bindFocusColors $w.gl.emin
-  bindFocusColors $w.gl.emax
   pack $w.gl -in $w.res -side right -fill x
   pack $w.gl.l1 $w.gl.emin $w.gl.l2 $w.gl.emax $w.gl.l3 -side left
-  
+
   ttk::label $w.ends.label -textvar ::tr(EndSideToMove)
   ttk::checkbutton $w.ends.white -textvar ::tr(White) -variable sSideToMoveW -offvalue "" -onvalue w
   ttk::checkbutton $w.ends.black -textvar ::tr(Black) -variable sSideToMoveB -offvalue "" -onvalue b
   pack $w.ends.label $w.ends.white $w.ends.black -side left -padx "0 5"
   pack $w.ends -side top -fill x -in $w.result
-  
+
   pack $w.ano -side top -fill x
   ttk::label $w.ano.a1 -textvar ::tr(Annotations:)
   ttk::label $w.ano.a2 -textvar ::tr(Annotator:)
@@ -288,8 +275,6 @@ proc search::headerCreateFrame { w } {
   ttk::label $w.eco.l3 -text " "
   ttk::entry $w.eco.emin -textvariable sEcoMin -width 5
   ttk::entry $w.eco.emax -textvariable sEcoMax -width 5
-  bindFocusColors $w.eco.emin
-  bindFocusColors $w.eco.emax
   ttk::button $w.eco.range -text "..." -style  Pad0.Small.TButton -width 0 -command {
     set tempResult [chooseEcoRange]
     if {[scan $tempResult "%\[A-E0-9a-z\]-%\[A-E0-9a-z\]" sEcoMin_tmp sEcoMax_tmp] == 2} {
@@ -303,7 +288,7 @@ proc search::headerCreateFrame { w } {
   pack $w.eco.l1 $w.eco.emin $w.eco.l2 $w.eco.emax -side left
   pack $w.eco.range -side left -padx "5 10"
   pack $w.eco.l3 $w.eco.yes -side left
-  
+
   set f [ttk::frame $w.gnum]
   pack $f -side top -fill x
   ttk::label $f.l1 -textvar ::tr(GlistGameNumber:)
@@ -311,8 +296,6 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.l2 -text "-" -font $regular
   ttk::entry $f.emax -textvariable sGnumMax -width 8 -justify right
   pack $f.l1 $f.emin $f.l2 $f.emax -side left
-  bindFocusColors $f.emin
-  bindFocusColors $f.emax
   ttk::label $f.l3 -text " "
   ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin ""; set sGnumMax ""}
   ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
@@ -326,7 +309,7 @@ proc search::headerCreateFrame { w } {
         -command "set sGnumMin -$x; set sGnumMax -1"
   }
   pack $f.l3 $f.all $f.first $f.last -side left -padx 2
-  
+
   pack [ttk::frame $w.variant] -side top -fill x
   ttk::label $w.variant.label -text "Variant:"
   ttk::checkbutton $w.variant.std -text "standard" -variable sVariantStd -offvalue 0 -onvalue 1
@@ -342,13 +325,10 @@ proc search::headerCreateFrame { w } {
   ttk::entry $f.e2 -textvariable sPgntext(2) -width 15
   ttk::label $f.l3 -text "+" -font $regular
   ttk::entry $f.e3 -textvariable sPgntext(3) -width 15
-  bindFocusColors $f.e1
-  bindFocusColors $f.e2
-  bindFocusColors $f.e3
   pack $f.l1 $f.e1 $f.l2 $f.e2 $f.l3 $f.e3 -side left -pady "0 5"
-  
+
   addHorizontalRule $w
-  
+
   ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command "
     if {\$::sHeaderFlagFrame} {
       set ::sHeaderFlagFrame 0
@@ -364,7 +344,7 @@ proc search::headerCreateFrame { w } {
   if {$::sHeaderFlagFrame} {
     pack $w.flags -side top -pady 5 -fill x
   }
-  
+
   set row 0
   set col 0
   foreach var [concat $::sHeaderFlagList $::sHeaderCustomFlagList] {
@@ -563,15 +543,15 @@ proc ::search::header::save {} {
   global sEloDiffMin sEloDiffMax sGlMin sGlMax
   global sEco sEcoMin sEcoMax sHeaderFlags sSideToMoveW sSideToMoveB
   global sResWin sResLoss sResDraw sResOther sPgntext
-  
+
   set ftype { { "Scid SearchOptions files" {".sso"} } }
   set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]
   if {$fName == ""} { return }
-  
+
   if {[string compare [file extension $fName] ".sso"] != 0} {
     append fName ".sso"
   }
-  
+
   if {[catch {set searchF [open [file nativename $fName] w]} ]} {
     tk_messageBox -title "Error: Unable to open file" -type ok -icon error \
         -message "Unable to create SearchOptions file: $fName"
@@ -595,7 +575,7 @@ proc ::search::header::save {} {
   foreach i [array names sPgntext] {
     puts $searchF "set sPgntext($i) [list $sPgntext($i)]"
   }
-  
+
   tk_messageBox -type ok -icon info -title "Search Options saved" \
       -message "Header search options saved to: $fName"
   close $searchF
@@ -673,13 +653,13 @@ proc chooseEcoRange {} {
       "E80-E89     [tr KingsIndianSamisch]: 4.e4 d6 5.f3" \
       "E90-E99     [tr KingsIndianMainLine]: [trans [list 4.e4 d6 5.Nf3]]" \
       ]
-  
+
   if {[winfo exists .ecoRangeWin]} { return }
   set w .ecoRangeWin
   toplevel $w
   wm title $w "Scid: Choose ECO Range"
   wm minsize $w 30 5
-  
+
   ttk::treeview $w.list -yscrollcommand "$w.ybar set" -columns {0} -show {} -selectmode browse
   $w.list column 0 -width 400
   set i -1
@@ -690,7 +670,7 @@ proc chooseEcoRange {} {
   pack [ttk::frame $w.b] -side bottom -fill x
   pack $w.ybar -side right -fill y
   pack $w.list -side left -fill both -expand yes
-  
+
   ttk::button $w.b.ok -text "OK" -command {
     set sel [.ecoRangeWin.list selection]
     if {[llength $sel] > 0} {

@@ -278,8 +278,6 @@ proc ::ptrack::make {} {
   ttk::label $f.lto -text "-"
   ttk::entry $f.to -width 3 -justify right -textvariable ::ptrack::moves(end)
   pack $f.lfrom $f.from $f.lto $f.to -side left -pady 5
-  bindFocusColors $f.from
-  bindFocusColors $f.to
   bind $f.from <FocusIn> [list +::ptrack::status $::tr(TrackerMovesStart)]
   bind $f.from <FocusOut> +::ptrack::status
   bind $f.to <FocusIn> [list +::ptrack::status $::tr(TrackerMovesStop)]

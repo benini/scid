@@ -64,12 +64,10 @@ proc ::plist::Open {} {
   ttk::label $f.nlabel -text $::tr(Player:) -font $fbold
   ttk::combobox $f.name -textvariable ::plist::name -width 20
   ::utils::history::SetCombobox ::plist::name $f.name
-  bindFocusColors $f.name
   focus $f.name
   ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
   ttk::combobox $f.esize -width 4 -justify right -textvar ::plist::size -values {50 100 200 500 1000}
   trace variable ::plist::size w {::utils::validate::Integer 1000 0}
-  bindFocusColors $f.esize
   # foreach n {50 100 200 500 1000} {
     # $f.esize list insert end $n
   # }
@@ -91,14 +89,12 @@ proc ::plist::Open {} {
 
   foreach entry {emin emax} {
     $f.$entry configure -width 4 -justify right -font $font
-    bindFocusColors $f.$entry
   }
 
   foreach entry {gmin gmax} {
     $f.$entry configure -width 6 -justify right -font $font
-    bindFocusColors $f.$entry
   }
-  
+
   pack $f.elo -side left -padx "8 0"
   pack $f.emin $f.eto $f.emax -side left
   pack $f.gmax -side right -padx "0 8"
