@@ -22,7 +22,7 @@ proc findNovelty {} {
   }
   win::createDialog $w
   wm title $w "Scid: $::tr(FindNovelty)"
-  
+
   pack [ttk::frame $w.help] -side top -fill x
   ttk::label $w.help.text -wraplength 3i -justify left -text $::tr(NoveltyHelp)
   pack $w.help.text -side left -fill x -expand yes
@@ -30,7 +30,7 @@ proc findNovelty {} {
   pack $w.bases -side top -fill x -pady 5
 
   pack [ttk::frame $w.bases.del]
-  
+
   ttk::labelframe $w.which -text $::tr(TwinsWhich)
   pack $w.which -side top -fill x -pady 5
   ttk::radiobutton $w.which.all -text $::tr(SelectAllGames) \
@@ -38,7 +38,7 @@ proc findNovelty {} {
   ttk::radiobutton $w.which.older -text $::tr(SelectOlderGames) \
       -variable noveltyOlder -value 1
   pack $w.which.all $w.which.older -side top -anchor w -fill x
-  
+
   pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.go -text $::tr(FindNovelty) -command {
     destroy .noveltyWin
@@ -186,7 +186,7 @@ proc updateMergeGame {{w} {n_moves}} {
 #
 proc setExportText {exportType} {
   global exportStartFile exportEndFile
-  
+
   switch -- $exportType {
     "PGN" {
       set title "Set PGN file export text"
@@ -201,15 +201,15 @@ proc setExportText {exportType} {
       return
     }
   }
-  
+
   set w .setExportText$exportType
   if {[winfo exists $w]} { return }
   win::createDialog $w
   wm title $w "Scid: $title"
-  
+
   ttk::frame $w.buttons
   pack $w.buttons -side bottom -fill x -anchor e
-  
+
   set pane [::utils::pane::Create $w.pane start end 500 400]
   ::utils::pane::SetRange $w.pane 0.3 0.7
   pack $pane -side top -expand true -fill both
@@ -222,10 +222,10 @@ proc setExportText {exportType} {
     grid rowconfig $f 1 -weight 1 -minsize 0
     grid columnconfig $f 0 -weight 1 -minsize 0
   }
-  
+
   $pane.start.text insert end $exportStartFile($exportType)
   $pane.end.text insert end $exportEndFile($exportType)
-  
+
   ttk::button $w.buttons.default -text "Reset to Default" -command "
   $pane.start.text delete 1.0 end
   $pane.start.text insert end \$default_exportStartFile($exportType)
@@ -312,7 +312,7 @@ image create photo htmldiag1 -data {
 #
 proc exportOptions {exportType} {
   global exportFlags
-  
+
   set w .exportFlagsWin
   set exportFlags(ok) -1
   win::createDialog $w
@@ -322,7 +322,7 @@ proc exportOptions {exportType} {
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.ok invoke"
   bind $w <F1> {helpWindow Export}
-  
+
   pack [ttk::frame $w.o] -side top -fill x
   ttk::checkbutton $w.o.append -variable exportFlags(append) -offvalue 0 -onvalue 1 -textvar ::tr(AddToExistingFile)
   ttk::checkbutton $w.o.comments -variable exportFlags(comments) -offvalue 0 -onvalue 1 -textvar ::tr(ExportComments)
@@ -340,13 +340,13 @@ proc exportOptions {exportType} {
   grid $w.o.indentv -row 5 -column 0 -sticky w
   grid $w.o.column -row 6 -column 0 -sticky w
   grid $w.o.symbols -row 7 -column 0 -sticky w
-  
+
   # Extra option for PGN format: handling of null moves
   if {$exportType == "PGN"} {
     ttk::checkbutton $w.o.nullMoves -variable exportFlags(convertNullMoves) -offvalue 0 -onvalue 1 -textvar ::tr(ConvertNullMove)
     grid $w.o.nullMoves -row 8 -column 0 -sticky w
   }
-  
+
   # Extra option for HTML format: diagram image set
   if {$exportType == "HTML"} {
     ttk::label $w.o.hdiag -text "Diagram"
@@ -362,7 +362,7 @@ proc exportOptions {exportType} {
     grid $w.o.hl0 -row 10 -column 0 -sticky w
     grid $w.o.hl1 -row 10 -column 1 -sticky w
   }
-  
+
   pack [ttk::frame $w.b] -side top -fill x
   dialogbutton $w.b.ok -text "OK" -command {
     set exportFlags(ok) 1
@@ -371,7 +371,7 @@ proc exportOptions {exportType} {
     set exportFlags(ok) 0
   }
   packbuttons right $w.b.cancel $w.b.ok
-  
+
   grab $w
   tkwait variable exportFlags(ok)
   grab release $w
@@ -389,10 +389,10 @@ proc exportGames {selection exportType} {
           -message "The filter contains no games."
       return
   }
-  
+
   if {[exportOptions $exportType] == 0} { return }
   sc_info html $exportFlags(htmldiag)
-  
+
   switch -- $exportType {
     "PGN" {
       set ftype {
@@ -423,7 +423,7 @@ proc exportGames {selection exportType} {
     }
     default { return }
   }
-  
+
   if {$exportFlags(append)} {
     set getfile tk_getOpenFile
     set title "Add games to $title"
@@ -481,7 +481,7 @@ proc updateMatchList { tw nametype maxMatches name el op } {
   global nameMatches nameMatchCount
   global $name editNameType
   if {![winfo exists $tw]} return
-  
+
   if {$nametype == ""} { set nametype $editNameType }
   if {$nametype == "rating"} { set nametype "player" }
   set val [set $name]
@@ -558,7 +558,7 @@ proc setNameEditorType {type} {
 proc nameEditor {} {
   global editName editNameType editNameNew nameEditorWin editNameSelect
   global editNameRating editDate editDateNew
-  
+
   set w .nedit
   if {[winfo exists $w]} {
     destroy $w
@@ -632,7 +632,7 @@ proc nameEditor {} {
         -variable editNameSelect -value $i
     grid $w.selectButtons.$i -row $row -column 0 -sticky w
   }
-  
+
   autoscrollText y $w.g $w.g.list Treeview
   $w.g.list configure -height 9 -width 40 -relief sunken \
       -tabs {2c right 2.5c left} -wrap none
@@ -642,13 +642,13 @@ proc nameEditor {} {
   ttk::entry $w.g.fromD -width 15 -textvariable editDate
   grid $w.g.fromL -row 0 -column 1 -sticky e
   grid $w.g.fromE -row 0 -column 2 -sticky we
-  
+
   ttk::label $w.g.toL -textvar ::tr(NameEditWith:) -font font_Bold -anchor e
   ttk::entry $w.g.toE -width 40 -textvariable editNameNew
   ttk::entry $w.g.toD -width 15 -textvariable editDateNew
   grid $w.g.toL -row 1 -column 1 -sticky e
   grid $w.g.toE -row 1 -column 2 -sticky we
-  
+
   ttk::entry $w.g.ratingE -width 5 -textvariable editNameRating -justify right
   set mlist [split [sc_info ratings] " "]
   ttk::menubutton $w.g.rtype -textvariable editNameRType -menu $w.g.rtype.menu
@@ -656,15 +656,15 @@ proc nameEditor {} {
   foreach m $mlist {
       $w.g.rtype.menu add radiobutton -variable editNameRType -label $m
   }
-  
+
   ttk::label $w.g.title -textvar ::tr(NameEditMatches) \
       -font font_Bold
-  
+
   grid $w.g.title -row 2 -column 1 -columnspan 2 -sticky n
   grid $w.g.list -row 3 -column 1 -rowspan 9 -columnspan 2 -sticky e
-  
+
   updateMatchList $w.g.list "" 9 editName "" w
-  
+
   foreach {i j} {.nedit.g.fromE "editName"  .nedit.g.toE "editNameNew" } {
     for {set z 1} {$z <= 9} {incr z} {
       bind $i [format "<Control-Key-%d>" $z] \
@@ -672,7 +672,7 @@ proc nameEditor {} {
               set %s \$nameMatches(%d)}}; break" $z $j $z ]
     }
   }
-  
+
   ttk::frame $w.buttons
   ttk::button $w.buttons.replace -textvar ::tr(NameEditReplace) -command {
     if {$editNameType == "rating"} {
@@ -691,14 +691,14 @@ proc nameEditor {} {
     updateBoard -pgn
     ::windows::gamelist::Refresh
   }
-  
+
   dialogbutton $w.buttons.cancel -textvar ::tr(Close) -command {focus .; destroy .nedit}
   pack $w.buttons -fill x
   packdlgbuttons $w.buttons.cancel $w.buttons.replace
-  
+
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
-  
+
   wm resizable $w 0 0
   bind $w <Escape> { focus .; destroy .nedit }
   bind $w <Return> {.nedit.buttons.replace invoke}
@@ -728,7 +728,7 @@ proc gameSave { gnum } {
   global date year month day white black resultVal event site round
   global whiteElo blackElo whiteRType blackRType eco extraTags gsaveNum
   global edate eyear emonth eday
-  
+
   # Make a new toplevel that contains the game save dialog:
   set w .save
   if {[winfo exists $w]} { return }
@@ -742,14 +742,14 @@ proc gameSave { gnum } {
   }
   set gsaveNum $gnum
   catch {grab $w}
-  
+
   set f $w.g
   autoscrollText y $f $f.list Treeview
   $f.list configure -height 9 -width 40 -state disabled \
       -tabs {2c right 2.5c left} -wrap none
   ttk::label $f.title -textvar ::tr(NameEditMatches)
   pack $f -side top -anchor w
-  
+
   # Get current values of tags:
   set year [sc_game tag get Year];    set eyear [sc_game tag get EYear]
   set month [sc_game tag get Month];  set emonth [sc_game tag get EMonth]
@@ -773,7 +773,7 @@ proc gameSave { gnum } {
     }
   }
   clearMatchList $f.list
-  
+
   # Use question marks instead of zero values in date:
   if {$year == 0} { set year "????" }
   if {$month == 0} { set month "??" }
@@ -781,13 +781,13 @@ proc gameSave { gnum } {
   if {$eyear == 0} { set eyear "????" }
   if {$emonth == 0} { set emonth "??" }
   if {$eday == 0} { set eday "??" }
-  
+
   addGameSaveEntry event 0 ::tr(Event:)
   addGameSaveEntry site 1 ::tr(Site:)
-  
+
   ttk::frame $f.dateframe
   ttk::label $f.datelabel -textvar ::tr(Date:)
-  ttk::entry $f.dateyear -width 6 -textvariable year -justify right ;# -background white -relief sunken
+  ttk::entry $f.dateyear -width 6 -textvariable year -justify right
   ttk::label $f.datedot1 -text "."
   ttk::entry $f.datemonth -width 3 -textvariable month -justify right
   ttk::label $f.datedot2 -text "."
@@ -813,7 +813,7 @@ proc gameSave { gnum } {
     pack $f.datechoose -in $f.dateframe -side left
   }
   pack $f.today -in $f.dateframe -side left
-  
+
   ttk::frame $f.edateframe
   ttk::label $f.edatelabel -textvar ::tr(EventDate:)
   ttk::entry $f.edateyear -width 6 -textvariable eyear -justify right
@@ -842,51 +842,51 @@ proc gameSave { gnum } {
     pack $f.edatechoose -in $f.edateframe -side left
   }
   pack $f.esame -in $f.edateframe -side left
-  
+
   addGameSaveEntry round 4 ::tr(Round:)
   addGameSaveEntry white 5 ::tr(White:)
   addGameSaveEntry black 6 ::tr(Black:)
-  
+
   ttk::label $f.reslabel -textvar ::tr(Result:)
   ttk::frame $f.resentry
   ttk::radiobutton $f.resentry.w -text "1-0  " -variable resultVal -value 1
   ttk::radiobutton $f.resentry.b -text "0-1  " -variable resultVal -value 0
   ttk::radiobutton $f.resentry.r -text "1/2-1/2  " -variable resultVal -value =
   ttk::radiobutton $f.resentry.u -text "*" -variable resultVal -value *
-  pack $f.resentry.w $f.resentry.b $f.resentry.r $f.resentry.u -side left 
+  pack $f.resentry.w $f.resentry.b $f.resentry.r $f.resentry.u -side left
   grid $f.reslabel -row 7 -column 0 -sticky w
   grid $f.resentry -row 7 -column 1 -sticky w -columnspan 4
-  
+
   ttk::label $f.welolabel -text "$::tr(White) "
-  
+
   ttk::combobox $f.wrtype -values [sc_info ratings] -width 7 -textvariable whiteRType
-  
+
   ttk::entry $f.weloentry -width 5 -textvariable whiteElo -justify right
-  
+
   ttk::label $f.belolabel -text "$::tr(Black) "
-  
+
   ttk::combobox $f.brtype -values [sc_info ratings] -width 7 -textvariable blackRType
-  
+
   ttk::entry $f.beloentry -width 5 -textvariable blackElo -justify right
-  
+
   grid $f.welolabel -row 8 -column 0 -sticky w
   grid $f.wrtype -row 8 -column 1 -sticky w
   grid $f.weloentry -row 8 -column 2 -sticky w
   grid $f.belolabel -row 9 -column 0 -sticky w
   grid $f.brtype -row 9 -column 1 -sticky w
   grid $f.beloentry -row 9 -column 2 -sticky w
-  
+
   ttk::label $f.ecolabel -text "ECO Code:"
   ttk::entry $f.ecoentry -width 6 -textvariable eco
   grid $f.ecolabel -row 10 -column 0 -sticky w
   grid $f.ecoentry -row 10 -column 1 -sticky w
-  
+
   ttk::button $f.ecob -textvar ::tr(ClassifyGame) -command {set eco [sc_eco game]}
   grid $f.ecob -row 10 -column 2 -sticky w
-  
+
   grid $f.title -row 0 -column 8 -sticky w  -padx "10 0"
   grid $f.list -row 1 -column 8 -rowspan 9 -sticky nw -padx "10 0"
-  
+
   ttk::labelframe .save.extrafr -text "Extra Tags: (example format: Annotator \"Anand, V\") "
   autoscrollText y .save.extra .save.extra.text Treeview
   .save.extra.text configure -height 4 -width 40 -wrap none -state normal -relief sunken
@@ -903,16 +903,16 @@ proc gameSave { gnum } {
     pack .save.extrafr.last -side right -padx 10
   }
   .save.extra.text insert 1.0 $extraTags
-  
+
   foreach i {entryevent entrysite dateyear datemonth dateday \
         entryround entrywhite entryblack resentry \
         weloentry beloentry ecoentry edateyear edatemonth edateday} {
     bind $f.$i <Return> {.save.buttons.save invoke}
   }
-  
+
   # Bindings so Ctrl-1 to Ctrl-9 select a matching name in the player,
   # site, event and round entryboxes:
-  
+
   set j 0
   foreach {i j} {entryevent "event" entrysite "site"
     entrywhite "white" entryblack "black"
@@ -923,7 +923,7 @@ proc gameSave { gnum } {
             {set %s \$nameMatches(%d)}}" $z $j $z ]
     }
   }
-  
+
   ttk::frame .save.buttons
   if {$gnum == 0} {
     ttk::button .save.buttons.prev -text "As last game" -command {
@@ -938,14 +938,14 @@ proc gameSave { gnum } {
     }
   }
   bind .save <Alt-s> { .save.buttons.save invoke; break }
-  
+
   dialogbutton .save.buttons.cancel -textvar ::tr(Cancel) -command {destroy .save}
   pack .save.buttons -side bottom -padx 10 -fill both -expand 1
   if {$gnum == 0} {
     #pack .save.buttons.prev -side left -padx 10
   }
   packdlgbuttons .save.buttons.cancel .save.buttons.save
-  
+
   bind .save <Escape> { focus .; destroy .save; }
   focus .save.g.entryevent
   .save.g.entryevent selection range 0 end
@@ -960,7 +960,7 @@ proc gsave { gnum } {
   global date year month day white black resultVal event site round
   global whiteElo blackElo whiteRType blackRType eco extraTags
   global edate eyear emonth eday
-  
+
   set date [format "%s.%s.%s" $year $month $day]
   set edate [format "%s.%s.%s" $eyear $emonth $eday]
   set extraTagsList [split $extraTags "\n"]
@@ -1087,13 +1087,13 @@ set loadAtStart(eco) 1
 
 proc getCommandLineOptions {} {
   global argc argv windowsOS loadAtStart
-  
+
   if { $::macOS && ([string first "-psn" [lindex $argv 0]] == 0)} {
     # Remove Process Serial Number from argument list:
     set argv [lrange $argv 1 end]
     incr argc -1
   }
-  
+
   while {$argc > 0} {
     set arg [lindex $argv 0]
     set firstChar [string index $arg 0]
@@ -1101,16 +1101,16 @@ proc getCommandLineOptions {} {
       # Seen option argument:
       incr argc -1
       set argv [lrange $argv 1 end]
-      
+
       # Special argument "--" means no more options:
       if {$arg == "--"} { return }
-      
+
       # Check for known option names:
       #   -f (/f), -fast (/fast): Fast start with no tablebases, etc.
       #   -xeco, -xe: Do not load ECO file.
       #   -xspell, -xs: Do not load spellcheck file.
       #   -xtb, -xt: Do not check tablebase directory.
-      
+
       set argName [string range $arg 1 end]
       switch $argName {
         "f"    -
@@ -1166,7 +1166,7 @@ if {$loadAtStart(eco)} {
 # returns a list of all toplevel windows, except some that are utilities
 ################################################################################
 proc getTopLevel {} {
-  
+
   set topl {}
   set exclude { ".glistExtra" ".menu" "." ".pgnPopup" }
   foreach c [winfo children .] {

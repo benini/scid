@@ -37,7 +37,6 @@ proc ::tourney::Open {} {
   if {! [info exists ::tourney::_defaults]} { ::tourney::defaults }
 
   ::createToplevel $w
-#  $w configure -background [ttk::style lookup . -background]
   ::setTitle $w "Scid: [tr WindowsTmt]"
   wm title $w "Scid: [tr WindowsTmt]"
 

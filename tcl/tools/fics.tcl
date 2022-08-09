@@ -635,9 +635,9 @@ namespace eval fics {
     ttk::frame $w.f
     pack $w.f -side top -anchor w -fill x
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
-    ttk::spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbTime1 -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     ttk::label $w.f.linc -text [::tr "FICSIncrement"]
-    ttk::spinbox $w.f.sbTime2 -background white -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbTime2 -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.f.linit -column 0 -row 0 -sticky w
     grid $w.f.sbTime1 -column 1 -row 0 -sticky w -pady "0 2"
     grid $w.f.linc -column 0 -row 1 -sticky w
@@ -654,8 +654,8 @@ namespace eval fics {
     pack $w.f.rb1 $w.f.rb2 $w.f.rb3 -side top -anchor w -in $w.f.color
 
     ttk::checkbutton $w.f.cblimitrating -text [::tr "RatingRange"] -variable ::fics::findopponent(limitrating)
-    ttk::spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    ttk::spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbrating1 -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.f.sbrating2 -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     grid $w.f.cblimitrating -column 0 -row 5 -columnspan 2 -sticky ew
     grid $w.f.sbrating1 -column 0 -row 6 -sticky w
     grid $w.f.sbrating2 -column 1 -row 6 -sticky w

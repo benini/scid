@@ -58,7 +58,7 @@ proc setupBoard {} {
   grid $w.l.bd -sticky news
   grid rowconfigure $w.l.bd 0 -weight 1
   grid columnconfigure $w.l.bd 0 -weight 1
-  
+
   ### Piece Buttons
   foreach psize $::boardSizes {
       if {$psize >= 40} { break }
@@ -96,23 +96,23 @@ proc setupBoard {} {
       -command {set setupFen [makeSetupFen]}
   ttk::radiobutton $w.r.tomove.buttons.b -text $::tr(Black) -variable toMove -value Black \
       -command {set setupFen [makeSetupFen]}
-  
+
   pack $w.r.tomove -pady 7
   pack $w.r.tomove.label -side top -pady 2
   pack $w.r.tomove.buttons -side top
   pack $w.r.tomove.buttons.w $w.r.tomove.buttons.b -side left
-  
+
   ### Entry boxes: Move number, Castling and En Passant file.
   pack [ttk::frame $w.r.mid] -padx 5 -pady 5
-  
+
   set moveNum [lindex $origFen 5]
   ttk::frame $w.r.mid.movenum
   ttk::label $w.r.mid.movenum.label -textvar ::tr(MoveNumber:)
-  ttk::entry $w.r.mid.movenum.e -width 3 -background white -textvariable moveNum
-  
+  ttk::entry $w.r.mid.movenum.e -width 3 -textvariable moveNum
+
   pack $w.r.mid.movenum -pady 10 -expand yes -fill x
   pack $w.r.mid.movenum.label $w.r.mid.movenum.e -side left -anchor w -expand yes -fill x
-  
+
   set castling [lindex $origFen 2]
   ttk::frame $w.r.mid.castle
   ttk::label $w.r.mid.castle.label -textvar ::tr(Castling:)
@@ -120,25 +120,25 @@ proc setupBoard {} {
 
   pack $w.r.mid.castle -pady 10 -expand yes -fill x
   pack $w.r.mid.castle.label $w.r.mid.castle.e -side left -anchor w -expand yes -fill x
-  
+
   set epFile [string index [lindex $origFen 3] 0]
   ttk::frame $w.r.mid.ep
   ttk::label $w.r.mid.ep.label -textvar ::tr(EnPassantFile:)
   ttk::combobox $w.r.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
-  
+
   pack $w.r.mid.ep -pady 10 -expand yes -fill x
   pack $w.r.mid.ep.label $w.r.mid.ep.e -side left -anchor w -expand yes -fill x
-  
+
   # Set bindings so the Fen string is updated at any change. The "after idle"
   # is needed to ensure any keypress which causes a text edit is processed
   # before we regenerate the FEN text.
-  
+
   foreach i "$w.r.mid.ep.e $w.r.mid.castle.e $w.r.mid.movenum.e" {
     bind $i <Any-KeyPress> {after idle {set setupFen [makeSetupFen]}}
     bind $i <FocusOut> {
       after idle {set setupFen [makeSetupFen]}}
   }
-  
+
   ### Buttons: Clear Board and Initial Board.
   ttk::frame $w.r.b
   ttk::button $w.r.b.clear -textvar ::tr(EmptyBoard) -command {
@@ -170,14 +170,14 @@ proc setupBoard {} {
   pack $w.r.b.initial -side top -padx 5 -pady 5 -fill x
   pack $w.r.b.switchcolor -side top -padx 5 -pady 5 -fill x
   pack $w.r.b.flip -side top -padx 5 -pady 5 -fill x
-  
+
   ### Buttons: Setup and Cancel.
   ttk::button $w.buttons.ok -text "OK" -width 7 -command exitSetupBoard
   ttk::button $w.buttons.cancel -textvar ::tr(Cancel) -command {destroy .setup}
   pack [ttk::frame $w.buttons.spaceTop -height 4] -side top
   pack $w.buttons.cancel -side right -padx 5
   pack $w.buttons.ok -side right -padx 5
-  
+
   ttk::button .setup.paste -textvar ::tr(PasteFen) -command {
     if {[catch {set setupFen [selection get -selection CLIPBOARD]} ]} {
       # PRIMARY is the X selection, unsure about CLIPBOARD
@@ -186,12 +186,12 @@ proc setupBoard {} {
     setSetupBoardToFen %W $setupFen
   }
   ttk::button .setup.clear -textvar ::tr(ClearFen) -command {set setupFen ""}
-  
+
   ttk::combobox .setup.status -textvariable setupFen -height 10
   bind .setup.status <<ComboboxSelected>> {setSetupBoardToFen %W $setupFen}
   ::utils::history::SetCombobox setupFen .setup.status
   ::utils::history::SetLimit setupFen 20
-  
+
   pack .setup.paste .setup.clear -in .setup.statusbar -side left
   pack .setup.status -in .setup.statusbar -side right -expand yes -fill x -anchor w
 

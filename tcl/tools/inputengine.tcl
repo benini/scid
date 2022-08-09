@@ -58,8 +58,8 @@ namespace eval ExtHardware {
      set ::statusBar "External hardware options were saved to: [scidConfigFile ExtHardware]"
 
      # Check if the hw connect button exists already. If not, add it.
-     if { [winfo exists .main.fbutton.button.exthardware]} { 
-        return 
+     if { [winfo exists .main.fbutton.button.exthardware]} {
+        return
      } else {
         if { $::ExtHardware::showbutton == 1 } {
 
@@ -124,7 +124,7 @@ namespace eval ExtHardware {
     ttk::entry $w.eparam -width 50 -textvariable ::ExtHardware::param
 
     ttk::label $w.options -text [::tr ExtHWHardware]
-    
+
     ttk::checkbutton $w.showbutton -text [::tr ExtHWShowButton] -variable ::ExtHardware::showbutton
 
     #--------------
@@ -159,13 +159,13 @@ namespace eval ExtHardware {
     grid $w.novag      -stick w     -row 0 -column 1
     grid $w.inputeng   -stick w     -row 1 -column 1
 
-    grid $w.lport      -stick ew    -row 2 -column 0 
+    grid $w.lport      -stick ew    -row 2 -column 0
     grid $w.eport                   -row 2 -column 1
 
     grid $w.lengine    -stick ew    -row 3 -column 0
     grid $w.eengine                 -row 3 -column 1
 
-    grid $w.lparam     -stick ew    -row 4 -column 0 
+    grid $w.lparam     -stick ew    -row 4 -column 0
     grid $w.eparam                  -row 4 -column 1
 
     grid $w.showbutton -stick w     -row 5 -column 1
@@ -236,13 +236,12 @@ namespace eval inputengine {
   proc consoleWindow {} {
 
     set w .inputengineconsole
-    if { [winfo exists $w]} { 
+    if { [winfo exists $w]} {
        ::inputengine::disconnect
        return
     }
 
     ::createToplevel $w
-    $w configure -background [ttk::style lookup . -background]
     ::setTitle $w [::tr IEConsole]
 
     ttk::scrollbar $w.ysc     -command { .inputengineconsole.console yview }
@@ -289,9 +288,9 @@ namespace eval inputengine {
     grid $w.engine     -stick ewns   -column 0  -row 1 -columnspan 9
 
     grid $w.lmode      -stick ew    -column 0  -row 2
-    grid $w.sendboth   -stick e     -column 2  -row 2 
-    grid $w.sendwhite               -column 4  -row 2 
-    grid $w.sendblack  -stick w     -column 6  -row 2 
+    grid $w.sendboth   -stick e     -column 2  -row 2
+    grid $w.sendwhite               -column 4  -row 2
+    grid $w.sendblack  -stick w     -column 6  -row 2
 
     grid $w.bInfo      -stick ew    -column 0  -row 3
     ###---### grid $w.bRotate   -stick ew    -column 0  -row 4
@@ -371,13 +370,13 @@ namespace eval inputengine {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
 
-    set ::inputengine::connectimg tb_eng_connecting 
+    set ::inputengine::connectimg tb_eng_connecting
 
     ::inputengine::sendToEngine "stop"
     ::inputengine::sendToEngine "quit"
     set ::inputengine::connectimg tb_eng_disconnected
 
-    if { [winfo exists ::inputengine::.inputengineconsole]} { 
+    if { [winfo exists ::inputengine::.inputengineconsole]} {
        destroy ::inputengine::.inputengineconsole
     }
   }
@@ -780,7 +779,7 @@ namespace eval inputengine {
         default  {
           logEngine "< $line"
         }
-        # Should better show current wooden board position? Return value of 
+        # Should better show current wooden board position? Return value of
         # sc_pos board is
         # RNBQKBNRPPPP.PPP............P................n..pppppppprnbqkb.r w
         ::board::update .inputengineconsole.bd [sc_pos board]
