@@ -314,7 +314,7 @@ proc ::windows::gamelist::AweGuess {{txt}} {
 	    $extra([expr $np -1]) -> extra([expr $np -1]) param($np) val($np) extra($np) \
 	  ]
 	} {incr np} {}
-	
+
 	#Guess extras
 	set res {}
 	for {set i 0} {$i < $np} { incr i} {
@@ -1124,7 +1124,7 @@ proc glist.removeFromFilter_ {{w} {idx} {dir ""}} {
   } else {
     sc_filter remove $::glistBase($w) $::glistFilter($w) $idx $dir $::glistSortStr($w)
   }
-  ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w) 
+  ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w)
   if {$dir == "+"} { glist.ybar_ $w moveto 1 }
 }
 

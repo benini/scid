@@ -13,17 +13,17 @@ if { $macOS } {
   # Application menu:
   .menu add cascade -label Scid -menu .menu.apple
   menu .menu.apple
-  
+
   set m .menu.apple
-  
+
   $m add command -label HelpAbout -command helpAbout
-  
+
   $m add separator
-  
+
   # To Quit
   bind all <Command-q> "exit"
   bind all <Command-Q> "exit"
-  
+
   ## To get Help
   bind all <Command-?> {helpWindow Contents}
   bind all <Help> {helpWindow Contents}
@@ -410,25 +410,25 @@ proc updateMenuStates {{menuname}} {
     $m.game entryconfig [tr GameFirst] -state $state
     $m.game entryconfig [tr GameLast] -state $state
     $m.game entryconfig [tr GameRandom] -state $state
-    
+
     # Load previous button:
     if {[sc_filter previous]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GamePrev] -state $state
     .main.tb.gprev configure -state $state
-    
+
     # Reload button:
     if {[sc_game number]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GameReload] -state $state
-    
+
     # Load next button:
     if {[sc_filter next]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GameNext] -state $state
     .main.tb.gnext configure -state $state
-    
+
     # Save add button:
     set state normal
     $m.game entryconfig [tr GameAdd] -state $state
-    
+
     # Save replace button:
     set state normal
     if {[sc_game number] == 0  ||  $isReadOnly } {
@@ -565,11 +565,11 @@ proc checkMenuUnderline {menu} {
 ################################################################################
 proc configInformant { w } {
   global informant
-  
+
   ttk::frame $w.spinF
   set idx 0
   set row 0
-  
+
   foreach i [lsort [array names informant]] {
     ttk::label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
     ttk::label $w.spinF.label$idx -text $i

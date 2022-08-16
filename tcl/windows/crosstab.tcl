@@ -48,7 +48,7 @@ proc ::crosstab::Open {} {
   foreach i {file edit opt sort color helpmenu} {
     menu $w.menu.$i -tearoff 0
   }
-  
+
   $w.menu.file add command -label CrosstabFileText -command {
     set ftype {
       { "Text files" {".txt"} }
@@ -115,7 +115,7 @@ proc ::crosstab::Open {} {
   $w.menu.file add separator
   $w.menu.file add command -label CrosstabFileClose \
       -command "::win::closeWindow $w"
-  
+
   $w.menu.edit add command -label CrosstabEditEvent -command {
     makeNameEditor
     setNameEditorType event
@@ -138,7 +138,7 @@ proc ::crosstab::Open {} {
     set editDateNew [sc_game info date]
     set editNameSelect crosstable
   }
-  
+
   $w.menu.opt add radiobutton -label CrosstabOptAll \
       -variable crosstab(type) -value allplay -command crosstab::Refresh
   $w.menu.opt add radiobutton -label CrosstabOptSwiss \
@@ -180,26 +180,26 @@ proc ::crosstab::Open {} {
   $w.menu.opt add checkbutton -label CrosstabOptGroup \
       -underline 0 -variable crosstab(groups) \
       -onvalue "+groups" -offvalue "-groups" -command crosstab::Refresh
-  
+
   $w.menu.sort add radiobutton -label CrosstabSortName \
       -variable crosstab(sort) -value name -command crosstab::Refresh
   $w.menu.sort add radiobutton -label CrosstabSortRating \
       -variable crosstab(sort) -value rating -command crosstab::Refresh
   $w.menu.sort add radiobutton -label CrosstabSortScore \
       -variable crosstab(sort) -value score -command crosstab::Refresh
-  
+
   $w.menu.color add radiobutton -label CrosstabColorPlain \
       -variable crosstab(text) -value plain -command crosstab::Refresh
   $w.menu.color add radiobutton -label CrosstabColorHyper \
       -variable crosstab(text) -value hypertext -command crosstab::Refresh
-  
+
   $w.menu.helpmenu add command -label CrosstabHelpCross \
       -command {helpWindow Crosstable}
   $w.menu.helpmenu add command -label CrosstabHelpIndex \
       -command {helpWindow Index}
-  
+
   translateMenuLabels $w.menu
-  
+
   ttk::frame $w.b
   autoscrollText both $w.f $w.f.text Treeview
   $w.f.text configure -wrap none -font font_Fixed -state normal
@@ -230,7 +230,7 @@ proc ::crosstab::Open {} {
   pack $w.b.setfilter $w.b.addfilter -side left -pady 3 -padx 5
   pack $w.b -side bottom -fill x
   pack $w.f -side top -fill both -expand true
-  
+
   # Take input focus even if -state is disabled
   bind $w.f.text <ButtonPress-1> "focus %W"
 
@@ -249,7 +249,7 @@ proc ::crosstab::Refresh {} {
   global crosstab
   set w $::crosstab::win
   if {! [winfo exists $w]} { return }
-  
+
   switch $crosstab(type) {
     allplay  { $w.b.type configure -text [tr CrosstabOptAll] }
     swiss    { $w.b.type configure -text [tr CrosstabOptSwiss] }

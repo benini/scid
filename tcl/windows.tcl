@@ -66,7 +66,7 @@ proc recordWinSize {win} {
   global winWidth winHeight winX winY
   if {![winfo exists $win]} { return }
   set temp [wm geometry $win]
-  
+
   set suffix ""
   set n [scan $temp "%dx%d+%d+%d" width height x y]
   if {$n == 4} {

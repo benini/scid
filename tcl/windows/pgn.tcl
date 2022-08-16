@@ -22,9 +22,9 @@ namespace eval pgn {
       set pgnStr [sc_game pgn -width 75 -indentComments $::pgn::indentComments \
           -indentVariations $::pgn::indentVars -space $::pgn::moveNumberSpaces]
       setLanguageTemp $::language
-      
+
       set wt .tempFEN
-      
+
       if {! [winfo exists $wt]} { text $wt }
       $wt delete 1.0 end
       $wt insert end $pgnStr sel
@@ -45,10 +45,10 @@ namespace eval pgn {
       ::win::closeWindow $w
       return
     }
-    
+
     menu $w.menu
     ::setMenu $w $w.menu
-    
+
     $w.menu add cascade -label PgnFile -menu $w.menu.file -underline 0
     $w.menu add cascade -label PgnOpt -menu $w.menu.opt -underline 0
     $w.menu add cascade -label PgnColor -menu $w.menu.color -underline 0
@@ -56,9 +56,9 @@ namespace eval pgn {
     foreach i {file opt color helpmenu} {
       menu $w.menu.$i -tearoff 0
     }
-    
+
     $w.menu.file add command -label PgnFileCopy -command {::pgn::PgnClipboardCopy }
-    
+
     $w.menu.file add command -label PgnFilePrint -command {
       set ftype {
         { "PGN files"  {".pgn"} }
@@ -86,7 +86,7 @@ namespace eval pgn {
     $w.menu.file add separator
     $w.menu.file add command -label PgnFileClose \
         -command "::win::closeWindow $w"
-    
+
     $w.menu.opt add checkbutton -label PgnOptColor \
         -variable ::pgn::showColor -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptShort \
@@ -107,7 +107,7 @@ namespace eval pgn {
         -variable ::pgn::boldMainLine -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
-    
+
     $w.menu.color add command -label PgnColorAnno \
         -command {::pgn::ChooseColor Nag annotation}
     $w.menu.color add command -label PgnColorComments \
@@ -118,9 +118,9 @@ namespace eval pgn {
 
     $w.menu.helpmenu add command -label PgnHelpPgn -command {helpWindow PGN}
     $w.menu.helpmenu add command -label PgnHelpIndex -command {helpWindow Index}
-    
+
     translateMenuLabels $w.menu
-    
+
     autoscrollText y $w.frame $w.text Treeview
     $w.text configure -wrap word -state normal -tabs {1c right 2c 4c}
     if { $::pgn::boldMainLine } {
@@ -136,7 +136,7 @@ namespace eval pgn {
 
     # Take input focus even if -state is disabled
     bind $w.text <ButtonPress-1> "focus %W"
-    
+
     # Bind right button to popup a contextual menu:
     bind $w.text <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text %X %Y"
 
@@ -157,14 +157,14 @@ namespace eval pgn {
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors
   }
-  
+
   ################################################################################
   #
   ################################################################################
   proc contextMenu {win x y} {
-    
+
     update idletasks
-    
+
     set mctxt $win.ctxtMenu
     if { [winfo exists $mctxt] } { destroy $mctxt }
     if {[sc_var level] == 0} {
@@ -172,7 +172,7 @@ namespace eval pgn {
     } else  {
       set state normal
     }
-	
+
     menu $mctxt
 
     menu $mctxt.evals1
@@ -198,7 +198,7 @@ namespace eval pgn {
     $mctxt.evals2 add command -label "--+" -command {::addNag --+}
     $mctxt.evals2 add command -label "N" -command {::addNag N}
     $mctxt.evals2 add command -label "D" -command {::addNag D}
-	
+
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar"
     $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar"
@@ -212,7 +212,7 @@ namespace eval pgn {
     $mctxt add cascade -label "!  ?  ..." -menu $mctxt.evals1
     $mctxt add cascade -label "+-  +/-  ..." -menu $mctxt.evals2
     $mctxt add command -label "[tr WindowsComment]" -command {::makeCommentWin}
-    
+
     tk_popup $mctxt $x $y
   }
 
@@ -221,13 +221,13 @@ namespace eval pgn {
     sc_var delete
     updateBoard -pgn
   }
-  
+
   proc firstVar {} {
     undoFeature save
     sc_var first
     updateBoard -pgn
   }
-  
+
   proc mainVar {} {
     undoFeature save
     sc_var promote
@@ -248,7 +248,7 @@ namespace eval pgn {
 
     ::board::popup .pgnPopup $bd $xc $yc
   }
-  
+
   ################################################################################
   # ::pgn::HideBoard
   #
@@ -258,7 +258,7 @@ namespace eval pgn {
   proc HideBoard {} {
     if {[winfo exists .pgnPopup]} {wm withdraw .pgnPopup}
   }
-  
+
   ################################################################################
   # # ::pgn::ResetColors
   #
@@ -296,7 +296,7 @@ namespace eval pgn {
       ::setTitle .pgnWin "$windowTitle"
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
-      
+
       if {$::pgn::showColor} {
         ::htext::display .pgnWin.text $pgnStr
       } else {

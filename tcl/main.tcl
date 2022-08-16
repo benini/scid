@@ -77,7 +77,7 @@ proc moveEntry_Char {ch} {
         # case insensitive to allow for 'b' to match both pawn and
         # Bishop moves.
         set move [string tolower [lindex $moveEntry(List) 0]]
-        
+
         if {$moveEntry(AutoExpand) > 0  ||
             ![string compare [string tolower $moveEntry(Text)] $move]} {
             return [moveEntry_Complete]
@@ -202,7 +202,7 @@ proc updateStatusBar {} {
         ::board::addInfo .main.board [sc_game info ECO]
         return
     }
-    
+
 
     set statusBar ""
     set move [sc_game info previousMoveNT]
@@ -465,12 +465,12 @@ proc getNextMoves { {num 4} } {
 ################################################################################
 proc showVars {} {
     if {$::autoplayMode == 1} { return }
-    
+
     # No need to display an empty menu
     if {[sc_var count] == 0} {
         return
     }
-    
+
     if {[sc_var count] == 1 &&  [sc_game info nextMove] == ""} {
         # There is only one variation and no main line, so enter it
         sc_var moveInto 0
@@ -480,10 +480,10 @@ proc showVars {} {
 
     set w .variations
     if {[winfo exists $w]} { return }
-    
+
     set varList [sc_var list]
     set numVars [sc_var count]
-    
+
     # Present a menu of the possible variations
     toplevel $w
     ::setTitle $w $::tr(Variations)
@@ -494,7 +494,7 @@ proc showVars {} {
     $w.lbVar configure -height $h
     $w.lbVar column 0 -width 250
     pack $w.lbVar -side left -fill both -expand 1
-    
+
     #insert main line
     set move [sc_game info nextMove]
     set j 0
@@ -504,7 +504,7 @@ proc showVars {} {
         $w.lbVar insert {} end -id $j -values [list "0: [getNextMoves 5]"]
         incr j
     }
-    
+
     # insert variations
     for {set i 0} {$i < $numVars} {incr i} {
         set move [::trans [lindex $varList $i]]
@@ -555,7 +555,7 @@ proc showVars {} {
         focus .variations
         raise .variations
     }
-    
+
     # Needed or the main window loses the focus
     bind .variations <Destroy> { focus -force .main }
 
@@ -627,12 +627,12 @@ proc togglePhotosSize {{toggle 1}} {
 proc readPhotoFile {fname} {
     set count 0
     set writespi 0
-    
+
     if {! [regsub {\.spf$} $fname {.spi} spi]} {
         # How does it happend?
         return
     }
-    
+
     # If SPI file was found then just source it and exit
     if { [file readable $spi]} {
         set count [array size ::unsafe::spffile]
@@ -646,15 +646,15 @@ proc readPhotoFile {fname} {
             set count 0
         }
     }
-    
+
     # Check for the absence of the SPI file and check for the write permissions
     if { ![file exists $spi] && ![catch {open $spi w} fd_spi]} {
         # SPI file will be written to disk by scid
         set writespi 1
     }
-    
+
     if {! [file readable $fname]} { return }
-    
+
     set fd [open $fname]
     while {[gets $fd line] >= 0} {
         # search for the string      photo "Player Name"
@@ -689,7 +689,7 @@ proc readPhotoFile {fname} {
         ::splash::add "Could not generate index file [file tail $spi]"
         ::splash::add "Use spf2spi script to generate [file tail $spi] file "
     }
-    
+
     if { $writespi } { close $fd_spi }
     close $fd
     return $count
@@ -755,7 +755,7 @@ proc trimEngineName { engine } {
         if {$spell_name != ""} { set engine $spell_name }
     }
     set engine [string tolower $engine]
-    
+
     if { [string first "deep " $engine] == 0 } {
         # strip "deep "
         set engine [string range $engine 5 end]
@@ -983,7 +983,7 @@ proc suggestMove {} {
 #   legal move to or from this square), and colors the squares
 #   to indicate the suggested move.
 #
-proc enterSquare { square } {	
+proc enterSquare { square } {
     global bestSq bestcolor selectedSq
     if {$selectedSq == -1} {
         set bestSq -1
@@ -991,7 +991,7 @@ proc enterSquare { square } {
             set bestSq [sc_pos bestSquare $square]
             if {$bestSq != -1} {
                 ::board::colorSquare .main.board $square $bestcolor
-                ::board::colorSquare .main.board $bestSq $bestcolor        
+                ::board::colorSquare .main.board $bestSq $bestcolor
             }
         }
     }
@@ -1005,7 +1005,7 @@ proc leaveSquare { square } {
     global selectedSq bestSq
     if {$selectedSq == -1} {
         ::board::colorSquare .main.board $bestSq
-        ::board::colorSquare .main.board $square  
+        ::board::colorSquare .main.board $square
     }
 }
 
@@ -1015,15 +1015,15 @@ proc leaveSquare { square } {
 #
 proc pressSquare { square } {
     global selectedSq highcolor
-    
+
     if { ![::fics::playerCanMove] || ![::reviewgame::playerCanMove] } { return } ;# not player's turn
-    
+
     # if training with calculations of var is on, just log the event
     if { [winfo exists .calvarWin] } {
         ::calvar::pressSquare $square
         return
     }
-    
+
     if {$selectedSq == -1} {
         set selectedSq $square
         ::board::colorSquare .main.board $square $highcolor
@@ -1054,9 +1054,9 @@ proc pressSquare { square } {
 #
 proc releaseSquare { w x y } {
     if { [winfo exists .calvarWin] } { return }
-    
+
     global selectedSq bestSq
-    
+
     ::board::setDragSquare $w -1
     set square [::board::getSquare $w $x $y]
     if {$square < 0} {

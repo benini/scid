@@ -10,22 +10,22 @@
 # vwait but will timeout after a delay. Var must be fully qualified (::)
 ################################################################################
 proc vwaitTimed { var {delay 0} {warn "warnuser"} } {
-  
+
   proc trigger {var warn} {
     if {$warn == "warnuser"} {
       tk_messageBox -type ok -icon error -parent . -title "Protocol error" -message "vwait timeout for $var"
     }
     set $var 1
   }
-  
+
   if { $delay != 0 } {
     set timerId [after $delay "trigger $var $warn"]
   }
-  
+
   vwait $var
-  
+
   if [info exists timerId] { after cancel $timerId }
-  
+
 }
 
 ## FROM TK 8.5.9
@@ -133,7 +133,7 @@ proc autoscrollframe {args} {
   set type [lindex $args 1]
   set w [lindex $args 2]
   set args [lrange $args 3 end]
-  
+
   set retval $frame
   if {! [winfo exists $frame]} {
     ttk::frame $frame
@@ -231,7 +231,7 @@ proc doBusyCursor {w flag} {
   global scid_busycursor
   if {! [winfo exists $w]} { return }
   if {[winfo class $w] == "Menu"} { return }
-  
+
   if {$flag} {
     if { [ catch { set scid_busycursor($w) [$w cget -cursor] } ] } {
       return
@@ -263,10 +263,10 @@ set vertRuleCounter 0
 
 proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
   global horizRuleCounter
-  
+
   ttk::separator $w.line$horizRuleCounter -orient horizontal
   pack $w.line$horizRuleCounter -fill x ;# -pady $ypadding
-  
+
   # set f [ ttk::frame $w.line$horizRuleCounter -height $height -borderwidth 2 -relief $relief ]
   # pack $f -fill x -pady $ypadding
   incr horizRuleCounter
@@ -274,10 +274,10 @@ proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
 
 proc addVerticalRule {w {xpadding 5} {relief sunken}} {
   global vertRuleCounter
-  
+
   ttk::separator $w.line$vertRuleCounter -orient vertical
   pack $w.line$vertRuleCounter -fill y -side left ;# -padx $xpadding
-  
+
   # set f [ ttk::frame $w.line$vertRuleCounter -width 2 -borderwidth 2 -relief $relief ]
   # pack $f -fill y -padx $xpadding -side left
   incr vertRuleCounter
@@ -522,7 +522,7 @@ namespace eval gameclock {
 
     if {! [winfo exists $data(id$n)]} { return }
     $data(id$n) delete aig$n
-    
+
     set w [$data(id$n) cget -width ]
     set h [$data(id$n) cget -height ]
     set cx [ expr $w / 2 ]
@@ -538,9 +538,9 @@ namespace eval gameclock {
     } else  {
       set color $::gameclock::data(fg$n)
     }
-    
+
     if {$color == "white"} {set fg "black"} else {set fg "white"}
-    
+
     foreach divisor {30 1800 21600} length "[expr $size/2 * 0.8] [expr $size/2 * 0.7] [expr $size/2 * 0.4]" \
         width {1 2 3} {
           set angle [expr {$sec * acos(-1) / $divisor}]
@@ -578,7 +578,7 @@ namespace eval gameclock {
     set ::gameclock::data(counter$n) [ expr $::gameclock::data(counter$n) - $value ]
     ::gameclock::draw $n
   }
-  
+
   ################################################################################
   proc reset { n } {
     ::gameclock::stop $n
@@ -649,7 +649,7 @@ namespace eval gameclock {
 namespace eval html {
   set data {}
   set idx 0
-  
+
   ################################################################################
   proc exportCurrentFilter {} {
     # Check that we have some games to export:
@@ -681,7 +681,7 @@ namespace eval html {
     set players {}
     set ::html::cancelHTML 0
     set total [sc_filter count]
-    
+
     # build the list of matches
     set idx 1
     while {$gn != 0 && ! $::html::cancelHTML} {
@@ -692,7 +692,7 @@ namespace eval html {
       set gn [sc_filter next]
       incr idx
     }
-    
+
     set idx 1
     set gn [sc_filter first]
     while {$gn != 0 && ! $::html::cancelHTML} {
@@ -704,7 +704,7 @@ namespace eval html {
       set gn [sc_filter next]
       incr idx
     }
-    
+
     closeProgressWindow
     exportPGN "[file join $dirtarget $prefix].pgn" "filter"
     sc_game load $savedGameNum
@@ -715,7 +715,7 @@ namespace eval html {
   }
   ################################################################################
   proc exportCurrentGame {} {
-    
+
     set ftype {
       { "HTML files" {".html" ".htm"} }
       { "All files" {"*"} }
@@ -732,7 +732,7 @@ namespace eval html {
     catch { file copy -force [file join $sourcedir bitmaps] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.js] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.css] $dirtarget }
-    
+
     fillData
     set players [list "[sc_game tags get White] - [sc_game tags get Black]"]
     toHtml $::html::data -1 $dirtarget $prefix $players [lindex $players 0] \
@@ -804,7 +804,7 @@ namespace eval html {
   }
   ################################################################################
   proc toHtml { dt game dirtarget prefix {players ""} {this_players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
-    
+
     if { $game != -1 } {
       set f [open "[file join $dirtarget $prefix]_${game}.html" w]
     } else  {
@@ -952,11 +952,11 @@ namespace eval html {
   }
   ################################################################################
   proc insertMiniDiag {fen f} {
-    
+
     set square 0
     set space " "
     puts $f "<table Border=0 CellSpacing=0 CellPadding=0><tr>"
-    
+
     for {set i 0} {$i < [string length $fen]} {incr i} {
       set l [string range $fen $i $i ]
       set res [scan $l "%d" c]
@@ -974,10 +974,10 @@ namespace eval html {
         incr square
       }
     }
-    
+
     puts $f "</tr></table>"
   }
-  
+
   ################################################################################
   # fill data with { idx FEN prev next move nag comment depth }
   proc fillData {} {
@@ -986,15 +986,15 @@ namespace eval html {
     sc_move start
     parseGame
   }
-  
+
   ################################################################################
   proc parseGame { {prev -2} } {
     global ::html::data ::html::idx
-    
+
     set already_written 0
-    
+
     set dots 0
-    
+
     while {1} {
       if { ! $already_written } {
         recordElt $dots $prev
@@ -1004,7 +1004,7 @@ namespace eval html {
         set dots 1
       }
       set already_written 0
-      
+
       # handle variants
       if {[sc_var count]>0} {
         # First write the move in the current line for which variations exist
@@ -1030,7 +1030,7 @@ namespace eval html {
         #update the "previous" token
         set prev $lastIdx
       }
-      
+
       if {[sc_pos isAt vend]} { break }
       sc_move forward
     }
@@ -1038,9 +1038,9 @@ namespace eval html {
   ################################################################################
   proc recordElt { dots {prev -2} } {
     global ::html::data ::html::idx
-    
+
     array set elt {}
-    
+
     incr idx
     set elt(idx) $idx
     set elt(fen) [lindex [split [sc_pos fen]] 0]
@@ -1049,7 +1049,7 @@ namespace eval html {
     } else  {
       set elt(prev) [expr $idx-1]
     }
-    
+
     set nag [sc_pos getNags]
     if {$nag == "0"} { set nag "" }
     if {[string match "*D *" $nag] || [string match "*# *" $nag]} {
@@ -1070,15 +1070,15 @@ namespace eval html {
     } else  {
       set elt(next) -1
     }
-    
+
     set m [sc_game info previousMove]
     set mn [sc_pos moveNumber]
-    
+
     set elt(move) ""
     if {[sc_pos side] == "black" && $m != ""} {
       set elt(move) "$mn.$m"
     } else {
-      
+
       if {! [sc_pos isAt vstart] } {
         sc_move back
         set pnag [sc_pos getNags]
@@ -1093,19 +1093,19 @@ namespace eval html {
         }
         sc_move forward
       }
-      
+
       if {$dots && $m != ""} {
         set elt(move) "[expr $mn -1]. ... $m"
       } else  {
         set elt(move) $m
       }
-      
+
     }
-    
+
     lappend ::html::data [array get elt]
-    
+
   }
-  
+
   ################################################################################
   # proc writeIndex {fn prefix} {
   # set f [open $fn w]
@@ -1137,7 +1137,7 @@ namespace eval html {
       closeProgressWindow
     }
   }
-  
+
 }
 ################################################################################
 #

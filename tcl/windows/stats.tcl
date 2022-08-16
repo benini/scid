@@ -123,7 +123,7 @@ proc ::windows::stats::refresh_wnd {} {
   if {$years} { incr height }
 
   set s ""
-  set sm "\n"  
+  set sm "\n"
   set stat ""
   append s " [::utils::string::Pad $stat [expr $len - 4]] [::utils::string::PadRight $games 10]"
   append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
@@ -226,7 +226,7 @@ proc ::windows::stats::refresh_wnd {} {
 	    }
 	}
     }
-#Old statistic: count the games from specific value to maximum value 
+#Old statistic: count the games from specific value to maximum value
   set stat ""
   if { $::windows::stats::old_elo || $::windows::stats::old_year} {
       append s "\n\n"
@@ -261,7 +261,7 @@ proc ::windows::stats::refresh_wnd {} {
   append s "\n"
 
   set w .statsWin.stats
-  if { $height > 50  } { set height 50 }  
+  if { $height > 50  } { set height 50 }
   $w configure -state normal
   $w delete 1.0 end
   $w insert end $s

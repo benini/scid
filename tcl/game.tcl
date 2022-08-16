@@ -10,7 +10,7 @@ proc ::game::Clear {} {
   if {$confirm == 0} { return "cancel"}
   if {$confirm == 1} { ::notify::DatabaseModified $::curr_db }
   if {$confirm == 2} { ::notify::DatabaseModified $::clipbase_db }
-  
+
   sc_game new
   ::notify::GameChanged
 }
@@ -133,12 +133,12 @@ proc ::game::GotoMoveNumber {} {
 
   ttk::label $f.label -text $::tr(GotoMoveNumber)
   pack $f.label -side top -pady 5 -padx 5
-  
+
   ttk::entry $f.entry -width 8 -textvariable ::game::moveEntryNumber
   bind $f.entry <Escape> { .mnumDialog.f.buttons.cancel invoke }
   bind $f.entry <Return> { .mnumDialog.f.buttons.load invoke }
   pack $f.entry -side top -pady 5
-  
+
   set b [ttk::frame $f.buttons]
   pack $b -side top -fill x
   dialogbutton $b.load -text "OK" -command {
@@ -157,11 +157,11 @@ proc ::game::GotoMoveNumber {} {
     focus .
   }
   packbuttons right $b.cancel $b.load
-  
+
   set x [ expr {[winfo width .] / 4 + [winfo rootx .] } ]
   set y [ expr {[winfo height .] / 4 + [winfo rooty .] } ]
   wm geometry $w "+$x+$y"
-  
+
   focus $f.entry
 }
 

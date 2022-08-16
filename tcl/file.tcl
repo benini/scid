@@ -24,15 +24,15 @@ proc ::file::Exit {}  {
   }
   # Switch back to original database:
   sc_base switch $savedBase
-  
+
   # Check if a mask is opened and dirty
   ::tree::mask::close
-  
+
   if {$msg != ""} {
     append msg "\n"
   }
   append msg $::tr(ExitDialog)
-  
+
   # Only ask before exiting if there are unsaved changes:
   if {$unsavedCount > 0} {
     set answer [tk_messageBox -title "Scid: [tr FileExit]" \
@@ -57,13 +57,13 @@ proc ::file::New {} {
     { "Scid databases" {".si4"} }
     { "PGN files" {".pgn" ".PGN"} }
   }
-  
+
   set fName [tk_getSaveFile \
              -initialdir $::initialDir(base) \
              -filetypes $ftype \
              -defaultextension ".si4" \
              -title "Create a Scid database"]
-  
+
   if {$fName == ""} { return }
   set file_extension [string tolower [file extension $fName]]
   set dbName $fName
@@ -129,7 +129,7 @@ proc ::file::Open_ {{fName ""} } {
         { "PGN files" {".pgn" ".PGN"} }
         { "EPD files" {".epd" ".EPD"} }
       }
-  
+
     set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
     if {$fName == ""} { return 2}
   }
@@ -186,7 +186,7 @@ proc ::file::Open_ {{fName ""} } {
       ::recentFiles::add "$fName"
     }
   }
-  
+
   return $err
 }
 
@@ -201,7 +201,7 @@ proc ::file::Upgrade {name} {
     if {$res == "no"} { return }
     return [::file::Open_ "$name.si4"]
   }
-  
+
   set msg [string trim $::tr(ConfirmUpgrade)]
   set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
   if {$res == "no"} { return }

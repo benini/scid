@@ -397,7 +397,7 @@ JZCYasm01FZrrSUGIKTAttwu4O234Ia7AAMAMGTuueieGxAAOw==
   R0lGODdhIAAgAKEAAP/739jGpgAAAP///ywAAAAAIAAgAAACfYRvoauIzNyBSyYaLMDZcv15
   GDiKFHmaELqqkVvBXCN3UniXebq3/fuLBWlDmwN31CV5S18T+BRqokSqTSCYKB8lwWCQ3Wy1
   PCzZyU15wRdmerX+ZpHvCPY+H7fRZ2h9VvUX2CclaGTI4kc4uKfYWLh4GJkI+cgo5jZZo1EA
-  ADs=  
+  ADs=
   }
   {Theory: 1.d4}
   {
@@ -425,14 +425,14 @@ JZCYasm01FZrrSUGIKTAttwu4O234Ia7AAMAMGTuueieGxAAOw==
   R0lGODdhIAAgAKEAAP/739jGpgAAAP///ywAAAAAIAAgAAACmIRvoauIzI4QBy5XbTBzJo19
   lkSJUAhoG9CVKvq23hvGcgrWOUbz6u7oBXceU0Q3YnWMF+SJU8IlfckWs+GMyCjCB2grfVLF
   wymqTPZOi9JJc3wUDAaugJyOhb/ZC3ceHTdXdyfwp3ZyJ5iSiAfzdWMns6JnmGF2+PMGqInJ
-  aZn2eUQ5uVl5RdppGiZaihrqeep4+aradVAAADs=	  
+  aZn2eUQ5uVl5RdppGiZaihrqeep4+aradVAAADs=
   }
   {Theory: 1.d4 Nf6}
   {
   R0lGODdhIAAgAKEAAP/739jGpgAAAP///ywAAAAAIAAgAAACioRvoauIKqJoLrFVrYwhg4tl
   wcZ5IFWNZCeeJiexqdtCZX29q0lXZNxznGTC4MN4GPJAyxyO0YQ+QzPmFFW0Vp1baZfqyXLF
   3iwHe9QWBYPBhJgep8/wJFLTfkfBD3bbXWeh1rdzFfhxhzg0aMcoKNcI+VgWRxlpOcl3qZmJ
-  tunZeahkuAeqKAlQAAA7	  
+  tunZeahkuAeqKAlQAAA7
   }
   {Theory: 1.e4}
   {
@@ -543,7 +543,7 @@ proc changeBaseType {baseNum} {
   set numtypes [llength $base_types]
   for {set i  0} {$i < $numtypes} {incr i} {
       $w.t insert {} end -id $i -image dbt$i -text " [lindex $base_types $i]"
-  } 
+  }
 
   bind $w <Up> {
     if {$temp_dbtype != 0} { selectBaseType [expr $temp_dbtype - 1] }
@@ -650,7 +650,7 @@ proc ::windows::switcher::Open {{w .baseWin}} {
     set ::baseWin 0
     return
   }
-  
+
   ::setTitle $w "Scid: [tr WindowsSwitcher]"
   ::windows::switcher::Create $w
   bind $w <Escape> "focus .; destroy $w"
