@@ -480,13 +480,6 @@ proc ttk_create {pathName type x y args} {
   $pathName create $type $x $y {*}$args
 }
 
-# Create a menu and apply to it the ttk style.
-proc ttk_menu {pathName args} {
-  set res [menu $pathName {*}$args]
-  ::applyThemeStyle . $pathName
-  return $res
-}
-
 # Apply the theme's background color to a widget
 proc applyThemeColor_background { widget } {
   set bgcolor [ttk::style lookup . -background "" #d9d9d9]

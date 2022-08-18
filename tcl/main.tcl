@@ -363,11 +363,8 @@ proc ::updateMainEvalBar {engineID bestmove evaluation} {
 # - if a different engine is selected, stop the current engine and start the new one.
 # Returns the name of the created menu.
 proc ::createMainEvalBarMenu {w} {
-    if {[winfo exists $w.evalbar_menu]} {
-        $w.evalbar_menu delete 0 end
-    } else {
-        ttk_menu $w.evalbar_menu
-    }
+    if {[winfo exists $w.evalbar_menu]} { destroy $w.evalbar_menu }
+    menu $w.evalbar_menu
 
     set engines {}
     set enginewins [enginewin::listEngines]

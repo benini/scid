@@ -49,7 +49,6 @@ namespace eval ttk::theme::dark {
             -arrowcolor $colors(foreground) \
             -insertcolor $colors(foreground) \
             -insertbackground $colors(foreground) \
-            -selectcolor $colors(foreground) \
         ;
 
         ttk::style map "." \
