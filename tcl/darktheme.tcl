@@ -55,7 +55,7 @@ namespace eval ttk::theme::dark {
             -foreground [list \
                 disabled $colors(disabledfg)] \
             -background [list \
-                active $colors(buttonbglight)] \
+                active $basecol] \
             -fieldbackground [list \
                 disabled $colors(background)] \
             -indicatorbackground [list \

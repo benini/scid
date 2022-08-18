@@ -400,10 +400,25 @@ option add *TEntry.font font_Regular
 option add *TSpinbox.font font_Regular
 
 # Set the menu options
-option add *Menu*TearOff 0
-if {[llength $::fontOptions(Menu)] == 4} { option add *Menu*Font font_Menu }
-foreach col [array names ::menuColor] {
-  option add *Menu.$col $::menuColor($col)
+# This options are used only when a menu is created. If the theme is changed,
+# it is necessary to restart the program to show the new colors.
+proc configure_menus {} {
+  option add *Menu*TearOff 0
+  if {[llength $::fontOptions(Menu)] == 4} { option add *Menu*Font font_Menu }
+
+  if {$::unixOS} {
+    option add *Menu.background [ttk::style lookup . -background] startupFile
+    option add *Menu.activeBackground [ttk::style lookup . -background active] startupFile
+    option add *Menu.disabledBackground [ttk::style lookup . -background disabled] startupFile
+    option add *Menu.foreground [ttk::style lookup . -foreground] startupFile
+    option add *Menu.selectColor [ttk::style lookup . -foreground] startupFile
+    option add *Menu.activeForeground [ttk::style lookup . -foreground active] startupFile
+    option add *Menu.disabledForeground [ttk::style lookup . -foreground disabled] startupFile
+  }
+
+  foreach col [array names ::menuColor] {
+    option add *Menu.$col $::menuColor($col)
+  }
 }
 
 proc configure_style {} {
@@ -454,6 +469,7 @@ proc configure_style {} {
 bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
 
 catch { ttk::style theme use $::lookTheme }
+configure_menus
 
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame

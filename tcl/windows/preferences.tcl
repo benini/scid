@@ -58,7 +58,9 @@ proc ::preferences::Open { {toggle ""} } {
   set configList {}
   lappend configList [tr OptionsBoard] chooseBoardColors
   lappend configList [tr OptionsFonts] ::preferences::fonts
-  if {! $::macOS } { # on macos it is not possible to change the menu's colors.
+  if { $::windowsOS } {
+    # on macos it is not possible to change the menu's colors.
+    # on linux we infer the menu's colors from the theme
     lappend configList [tr OptionsMenuColor] ::appearance::menuConfigDialog
   }
   lappend configList [tr OptionsToolbar] ConfigToolbar
