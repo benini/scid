@@ -54,7 +54,26 @@ proc ::enginecfg::add {enginecfg} {
     return [lindex $::engines(list) end]
 }
 
+# Remove an engine from the "Engine list" file.
+# Returns true if the engine was removed
+proc ::enginecfg::remove {name} {
+    set idx [lsearch -exact -index 0 $::engines(list) $name]
+    if {$idx < 0} { return false }
+
+    lassign [lindex $::engines(list) $idx] name cmd
+    set msg "Name: $name\n"
+    append msg "Command: $cmd\n\n"
+    append msg "Do you really want to remove this engine from the list?"
+    set answer [tk_messageBox -title Scid -icon question -type yesno -message $msg]
+    if {$answer ne "yes"} { return false }
+
+    set ::engines(list) [lreplace $::engines(list) $idx $idx]
+    ::enginelist::write
+    return true
+}
+
 # Search a previous configuration with the same name and replace it.
+# Returns "" and does nothing if the engine do not exists.
 # If necessary write the "Engine list" file.
 proc ::enginecfg::save {enginecfg} {
     lassign $enginecfg name
@@ -138,12 +157,12 @@ proc ::enginecfg::createConfigFrame {id w} {
     ttk::button $w.header.clone -image tb_eng_clone -command "
         ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
     "
-    ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id widget} {
-        $widget configure -values [::enginecfg::names]
-        if {[::enginelist::delete [$widget current]]} {
+    ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id} {
+        lassign [set ::enginewin::engConfig_$id] name
+        if {[::enginecfg::remove $name]} {
             ::enginewin::connectEngine $id {}
         }
-    }} $id $w.header.engine]
+    }} $id]
     grid $w.header.engine $w.header.addpipe $w.header.addremote \
          $w.header.reload $w.header.clone $w.header.delete -sticky news
 
