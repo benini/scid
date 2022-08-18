@@ -471,6 +471,7 @@ proc ::engine::rawsend {n msg} {
     }
 }
 
+namespace eval uci {}
 namespace eval xboard {}
 
 proc ::uci::sendOptions {id msgData}  {
