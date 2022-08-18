@@ -1207,7 +1207,7 @@ proc CreateMainBoard { {w} } {
     ::board::mark::DrawBestMove $w.board ""
   }} $w]
 
-  menu .main.menuaddchoice -bg white -font font_Regular
+  menu .main.menuaddchoice
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
       -command {undoFeature undo}
   .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
