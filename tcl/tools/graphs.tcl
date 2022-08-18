@@ -270,7 +270,7 @@ proc tools::graphs::filter::Open {} {
   pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
-  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+  canvas $w.c -width 600 -height 400
   $w.c create text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
   $w.c create text 250 295 -tag type -justify center -width 1 \
@@ -942,7 +942,7 @@ proc tools::graphs::absfilter::Open {} {
   pack $w.b -side top -fill x
   ttk::label $w.b.status -width 1 -font font_Small -anchor w
   
-  canvas $w.c -width 600 -height 400 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+  canvas $w.c -width 600 -height 400
   $w.c create text 25 5 -tag title -justify center -width 1 \
       -font font_Small -anchor n
   $w.c create text 250 295 -tag type -justify center -width 1 \
