@@ -401,9 +401,8 @@ proc ::createMainEvalBarMenu {w} {
         }} $engID $engName]
     }
 
-    #TODO: improve and translate label
     $w.evalbar_menu add command -label [tr NewLocalEngine] -command {
-        lassign [::enginecfg::dlgNewLocal] newEngName
+        set newEngName [::enginecfg::dlgNewLocal]
         if {$newEngName ne ""} {
             ::enginewin::start "" $newEngName
         }

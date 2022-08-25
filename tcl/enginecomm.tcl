@@ -59,6 +59,7 @@
 # }
 #
 # message InfoDisconnected {
+#   string error_msg = 1;
 # }
 #
 # message InfoReady {
