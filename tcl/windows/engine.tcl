@@ -278,35 +278,31 @@ proc ::enginewin::connectEngine {id enginename} {
     ::enginewin::changeState $id closed
 
     lassign $config name cmd args wdir elo time url uci options
-    lassign $url scoreside notation pvwrap debugframe priority netport
     set engConfig_ [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    # Update engine's last used time.
+    lset engConfig_ 5 [clock seconds]
 
     set ::enginewin_lastengine($id) $name
+
+    ::enginecfg::clearConfigFrame $id .engineWin$id.config
 
     .engineWin$id.debug.lines delete 1.0 end
     ::enginewin::updateDisplay $id ""
 
     if {$config eq ""} {
         ::setTitle .engineWin$id "Engine Window"
-        ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
         return
     }
 
     ::setTitle .engineWin$id "[tr Engine]: $name"
 
-    # Update engine's last used time.
-    lset ::enginewin::engConfig_$id 5 [clock seconds]
-
+    lassign $url scoreside notation pvwrap debugframe priority netport
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
     ::enginewin::changeDisplayLayout $id multipv ""
     ::enginewin::logEngine $id $debugframe
 
-    .engineWin$id.config.options.text configure -state normal
-    .engineWin$id.config.options.text delete 1.0 end
-    .engineWin$id.config.options.text insert end "$cmd $args\nConnecting..."
-    .engineWin$id.config.options.text configure -state disabled
     update idletasks
 
     switch $uci {

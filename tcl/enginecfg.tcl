@@ -182,6 +182,25 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid $w.options -sticky news
 }
 
+# Remove all the widgets and display a message in the configFrame
+proc ::enginecfg::clearConfigFrame {id configFrame} {
+    upvar ::enginewin::engConfig_$id engConfig_
+    lassign $engConfig_ name cmd args
+
+    set w $configFrame.options.text
+    if {$name eq ""} {
+        $configFrame.header.engine set "[tr Engine]:"
+        set msg "No engine open: select or add one."
+    } else {
+        $configFrame.header.engine set $name
+        set msg "$cmd $args\nConnecting..."
+    }
+    $w configure -state normal
+    $w delete 1.0 end
+    $w insert end $msg
+    $w configure -state disabled
+}
+
 # Update or recreate the config and option widgets
 proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     upvar ::enginewin::engConfig_$id engConfig_
@@ -242,8 +261,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
 
     if {$name == ""} {
-        $configFrame.header.engine set "[tr Engine]:"
-        $w insert end "No engine open: select or add one."
+        ::enginecfg::clearConfigFrame $configFrame
         return false
     }
 
