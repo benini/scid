@@ -415,6 +415,7 @@ namespace eval tactics {
         while {![sc_pos isAt end]} {
             sc_move forward
             set cmt [sc_pos getComment]
+            sc_var exit;
             if {[regexp {^\*\*\*\*D?[0-9]} $cmt]} {
                 set nextTactic 1
                 break
@@ -534,7 +535,6 @@ namespace eval tactics {
             set analysisEngine(score) $prevScore
             set analysisEngine(moves) $prevLine
             sc_game tags set -site $::tactics::failed
-            sc_game save [sc_game number]
             sc_move back
             updateBoard -pgn
             set ::tactics::prevFen [sc_pos fen]
