@@ -1193,10 +1193,10 @@ proc CreateMainBoard { {w} } {
   options.persistent ::showEvalBar($w) 1
   options.persistent ::showMainEvalBarArrow 1
   if {$::showEvalBar($w)} { ::board::toggleEvalBar $w.board }
-  if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
+  if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
   set ::gameInfoBar(tb_BD_Scorebar) [list apply {{w} {
