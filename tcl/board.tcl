@@ -503,9 +503,10 @@ proc ::board::new {w {psize 40} } {
 
 proc ::board::addNamesBar {w {varname}} {
   ttk::frame $w.playerW -style fieldbg.TLabel
-  frame $w.playerW.color -background #EAE0C8 -width 6 -height 6
+  ttk::frame $w.playerW.color -width 6 -height 6
   ttk_canvas $w.playerW.tomove -borderwidth 0 -highlightthickness 0 -width 10 -height 10
   ttk_canvas $w.playerW.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20
+  ttk::label $w.playerW.mval -font font_SmallBold
   ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Small -style fieldbg.TLabel
@@ -513,15 +514,17 @@ proc ::board::addNamesBar {w {varname}} {
   grid $w.playerW.name -row 0 -column 1 -sticky w
   grid $w.playerW.elo -row 0 -column 2 -sticky w
   grid $w.playerW.mat -row 0 -column 3 -sticky e
-  grid $w.playerW.clock -row 0 -column 4 -sticky e
-  grid $w.playerW.tomove -row 0 -column 5 -sticky w -padx 4
+  grid $w.playerW.mval -row 0 -column 4 -sticky e
+  grid $w.playerW.clock -row 0 -column 5 -sticky e
+  grid $w.playerW.tomove -row 0 -column 6 -sticky w -padx 4
   grid columnconfigure $w.playerW 3 -weight 1
   grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
 
   ttk::frame $w.playerB -style fieldbg.TLabel
-  frame $w.playerB.color -background black -width 6 -height 6
+  ttk::frame $w.playerB.color -width 6 -height 6
   ttk_canvas $w.playerB.tomove -borderwidth 0 -highlightthickness 0 -width 10 -height 10
   ttk_canvas $w.playerB.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20
+  ttk::label $w.playerB.mval -font font_SmallBold
   ttk::label $w.playerB.name -textvariable ${varname}(nameB) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerB.elo -textvariable ${varname}(eloB) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Small -style fieldbg.TLabel
@@ -529,8 +532,9 @@ proc ::board::addNamesBar {w {varname}} {
   grid $w.playerB.name -row 0 -column 1 -sticky w
   grid $w.playerB.elo -row 0 -column 2 -sticky w
   grid $w.playerB.mat -row 0 -column 3 -sticky e
-  grid $w.playerB.clock -row 0 -column 4 -sticky e
-  grid $w.playerB.tomove -row 0 -column 5 -sticky w -padx 4
+  grid $w.playerB.mval -row 0 -column 4 -sticky e
+  grid $w.playerB.clock -row 0 -column 5 -sticky e
+  grid $w.playerB.tomove -row 0 -column 6 -sticky w -padx 4
   grid columnconfigure $w.playerB 3 -weight 1
   grid $w.playerB -row 3 -column 3 -columnspan 8 -sticky news -pady 4
 }
@@ -1776,16 +1780,17 @@ proc ::board::material {w} {
       incr rankw $count
     }
   }
-  set rankw [expr $rankw * 20 + 40]
-  set rankb [expr $rankb * 20 + 40]
+  set rankw [expr $rankw * 20 ]
+  set rankb [expr $rankb * 20 ]
   $w.playerW.mat configure -width $rankw
   $w.playerB.mat configure -width $rankb
+  $w.playerW.mval configure -text "" 
+  $w.playerB.mval configure -text "" 
   if {$matDiff < 0} {
-        $w.playerB.mat create text $rankb 20 -anchor se -text "+[expr abs($matDiff)]" -tag material \
-            -fill [ttk::style lookup . -foreground]
+    set matDiff "[expr abs($matDiff)] "
+    $w.playerB.mval configure -text "+$matDiff " 
   } elseif {$matDiff > 0} {
-        $w.playerW.mat create text $rankw 20 -anchor se -text "+$matDiff" -tag material \
-            -fill [ttk::style lookup . -foreground]
+    $w.playerW.mval configure -text "+$matDiff " 
   }
   set rankw 0
   set rankb 0
@@ -1801,11 +1806,11 @@ proc ::board::material {w} {
   }
 }
 proc ::board::addMaterial {count piece parent rank} {
-  set w [expr [$parent cget -width]  - 30 - $rank * 20 ]
+  set w [expr [$parent cget -width] - 10 - $rank * 18 ]
   set h [$parent cget -height]
   set y [expr $h / 2]
   for {set i 0} {$i<$count} {incr i} {
-    set x [expr $w - $i * 20]
+    set x [expr $w - $i * 18]
     $parent create image $x $y -image w${piece}20 -tag material
   }
 }
