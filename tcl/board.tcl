@@ -505,7 +505,7 @@ proc ::board::addNamesBar {w {varname}} {
   ttk::frame $w.playerW -style fieldbg.TLabel
   frame $w.playerW.color -background #EAE0C8 -width 6 -height 6
   ttk_canvas $w.playerW.tomove -borderwidth 0 -highlightthickness 0 -width 10 -height 10
-  ttk_canvas $w.playerW.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20 -background [ttk::style lookup . -background]
+  ttk_canvas $w.playerW.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20
   ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Small -style fieldbg.TLabel
