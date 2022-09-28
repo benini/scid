@@ -1819,6 +1819,8 @@ proc ::board::toggleMaterial {w} {
   if {!$::board::_showmat($w)} {
     $w.playerW.mat delete material
     $w.playerB.mat delete material
+    $w.playerW.mval configure -text "" 
+    $w.playerB.mval configure -text "" 
   }
   ::board::update $w
   return $::board::_showmat($w)
