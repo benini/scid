@@ -72,7 +72,6 @@ const errorT
     ERROR_VariationLimit = 405,
     ERROR_Decode = 406,
     ERROR_GameFull = 407,
-    ERROR_CastlingAvailability = 408,
 
     // Buffer errors
     ERROR_BufferFull = 601,

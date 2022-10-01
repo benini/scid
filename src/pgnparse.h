@@ -142,14 +142,10 @@ public:
 		simpleMoveT sm;
 		auto err = game.GetCurrentPos()->ParseMove(&sm, tok.first, tok.second);
 		if (err != OK) {
-			if (err == ERROR_CastlingAvailability) {
-				logWarning("Warning: illegal castling ", tok);
-			} else {
-				if (game_parseNag(tok)) // may be 'D', 'N' or a weird suffix
-					return visitPGN_NAG(tok);
+			if (game_parseNag(tok)) // may be 'D', 'N' or a weird suffix
+				return visitPGN_NAG(tok);
 
-				return logFatalErr("Failed to parse the move: ", tok);
-			}
+			return logFatalErr("Failed to parse the move: ", tok);
 		}
 		return (game.AddMove(sm) == OK)
 		           ? true

@@ -399,14 +399,15 @@ TEST(Test_Game, illegalSCID4_Castling) {
 	// Illegal castling. Allowed by both gameview and game.
 	// The chess rules for castling (king not in check, empty squares between
 	// the rook and the king final positions) are not enforced.
-	auto obstacles = make_invalid(0, // unchanged,
-	                              "1.d4 d5 2.Qd3 Nf6 3.Bg5 Nc6 4.O-O-O");
+	auto obstacles = make_invalid(9, // replace 4.h4 with O-O-O
+	                              "1.d4 d5 2.Qd3 Nf6 3.Bg5 Nc6 {_} 4.h4");
 	EXPECT_EQ(decode_game(obstacles), "d4 d5 Qd3 Nf6 Bg5 Nc6 O-O-O ");
 	EXPECT_EQ(decode_gameview(obstacles),
 	          "1.d4 d5  2.Qd3 Nf6  3.Bg5 Nc6  4.O-O-O");
 
-	auto check = make_invalid(0, // unchanged,
-	                          "1.d4 d5 2.Nf3 e6 3.e3 Nf6 4.Nc3 Be7 5.Bb5+ O-O");
+	auto check = make_invalid(
+	    10, // replace 5...h5 with O-O
+	    "1.d4 d5 2.Nf3 e6 3.e3 Nf6 4.Nc3 Be7 5.Bb5+ {_} h5");
 	EXPECT_EQ(decode_game(check), "d4 d5 Nf3 e6 e3 Nf6 Nc3 Be7 Bb5+ O-O ");
 	EXPECT_EQ(decode_gameview(check),
 	          "1.d4 d5  2.Nf3 e6  3.e3 Nf6  4.Nc3 Be7  5.Bb5+ O-O");

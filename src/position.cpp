@@ -2106,8 +2106,7 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, std::string_view str) const {
 	if (!under_attack(king_sq) && canCastle(king_side))
 		return OK;
 
-	return canCastle<false>(king_side) ? ERROR_CastlingAvailability
-	                                   : ERROR_InvalidMove;
+	return ERROR_InvalidMove;
 }
 
 errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
