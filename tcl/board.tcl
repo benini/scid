@@ -503,10 +503,10 @@ proc ::board::new {w {psize 40} } {
 
 proc ::board::addNamesBar {w {varname}} {
   ttk::frame $w.playerW -style fieldbg.TLabel
-  ttk::frame $w.playerW.color -width 6 -height 6
+  frame $w.playerW.color -background #EAE0C8 -width 6 -height 6
   ttk_canvas $w.playerW.tomove -borderwidth 0 -highlightthickness 0 -width 10 -height 10
   ttk_canvas $w.playerW.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20
-  ttk::label $w.playerW.mval -font font_SmallBold
+  ttk::label $w.playerW.mval -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Small -style fieldbg.TLabel
@@ -521,10 +521,10 @@ proc ::board::addNamesBar {w {varname}} {
   grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
 
   ttk::frame $w.playerB -style fieldbg.TLabel
-  ttk::frame $w.playerB.color -width 6 -height 6
+  frame $w.playerB.color -background black -width 6 -height 6
   ttk_canvas $w.playerB.tomove -borderwidth 0 -highlightthickness 0 -width 10 -height 10
   ttk_canvas $w.playerB.mat -borderwidth 0 -highlightthickness 0 -width 60 -height 20
-  ttk::label $w.playerB.mval -font font_SmallBold
+  ttk::label $w.playerB.mval -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerB.name -textvariable ${varname}(nameB) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerB.elo -textvariable ${varname}(eloB) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Small -style fieldbg.TLabel
