@@ -1196,6 +1196,7 @@ proc CreateMainBoard { {w} } {
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
+  ::board::addMaterialBar $w.board
   if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
