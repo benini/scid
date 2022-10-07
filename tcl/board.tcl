@@ -508,14 +508,10 @@ proc ::board::addMaterialBar { w } {
   ttk::frame $w.playerW.mat
   ttk::label $w.playerW.mat.mat -textvariable ::board::_matDiffW($w) -style fieldbg.TLabel -font font_Small
   grid $w.playerW.mat.mat -row 0 -column 0 -sticky e
-  pack $w.playerW.mat -side right
 
   ttk::frame $w.playerB.mat
   ttk::label $w.playerB.mat.mat -textvariable ::board::_matDiffB($w) -style fieldbg.TLabel -font font_Small
   grid $w.playerB.mat.mat -row 0 -column 0 -sticky e
-  pack $w.playerB.mat -side right
-  grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
-  grid $w.playerB -row 3 -column 3 -columnspan 8 -sticky news -pady 4
 }
 
 proc ::board::addNamesBar {w {varname}} {
@@ -1821,6 +1817,22 @@ proc ::board::toggleMaterial {w} {
   if {!$::board::_showmat($w)} {
     set ::board::_matDiffW($w) ""
     set ::board::_matDiffB($w) ""
+    if { ![winfo exists $w.playerW.front] } {
+        grid forget $w.playerW
+        grid forget $w.playerB
+    }
+  } else {
+    pack $w.playerW.mat -side right
+    pack $w.playerB.mat -side right
+    if { [::board::isFlipped $w]} {
+        set bottom 3
+        set top 16
+    } else {
+        set bottom 16
+        set top 3
+    }
+    grid $w.playerW -row $bottom -column 3 -columnspan 8 -sticky news -pady 4
+    grid $w.playerB -row $top -column 3 -columnspan 8 -sticky news -pady 4
   }
   ::board::update $w
   return $::board::_showmat($w)
