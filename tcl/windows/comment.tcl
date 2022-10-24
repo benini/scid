@@ -114,10 +114,10 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	ttk::frame $w_.nf.b
 	set i 0
 	foreach {nag description} {
-		! GoodMove
-		? PoorMove
 		!! ExcellentMove
 		?? Blunder
+		! GoodMove
+		? PoorMove
 		!? InterestingMove
 		?! DubiousMove
 		+-- WhiteCrushing
@@ -134,7 +134,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 		D Diagram
 	} {
 		ttk::button $w_.nf.b.b$i -text "$nag" -width 3 -command "::addNag $nag"
-		::utils::tooltip::Set $w_.nf.b.b$i $description
+		::utils::tooltip::Set $w_.nf.b.b$i [tr $description]
 		grid $w_.nf.b.b$i -row [expr {$i % 2}] -column [expr {int($i / 2)}] -padx 2 -pady 2
 		incr i
 	}

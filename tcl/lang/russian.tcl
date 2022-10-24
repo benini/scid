@@ -659,7 +659,7 @@ translate R Informant?! {Сомнительный ход}
 translate R Informant+= {У белых небольшое преимущество}
 translate R Informant+/- {У белых умеренное преимущество}
 translate R Informant+- {У белых решающее преимущество}
-translate R Informant++- {Партия считается выигранной}
+translate R Informant+-- {Партия считается выигранной}
 
 # Book window
 translate R Book {Книга}
@@ -965,6 +965,10 @@ translate R WhiteClearAdvantage {Белые имеют чистое преиму
 translate R BlackClearAdvantage {Чёрное имеют чистое преимущество}
 translate R WhiteSlightAdvantage {Белые имеют малое преимущество}
 translate R BlackSlightAdvantage {Чёрные имеют малое преимущество}
+# ====== TODO To be translated ======
+translate R WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate R BlackCrushing {Black has a crushing advantage}
 translate R Equality {Равенство}
 translate R Unclear {Непонятно}
 translate R Diagram {Диаграмма}

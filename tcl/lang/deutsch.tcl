@@ -680,9 +680,9 @@ translate D Informant? {Schwacher Zug}
 translate D Informant?? {Fehler}
 translate D Informant?! {Zweifelhafter Zug}
 translate D Informant+= {Weiß hat leichten Vorteil}
-translate D Informant+/- {Weiß hat mäßigen Vorteil}
+translate D Informant+/- {Weiß hat klaren Vorteil}
 translate D Informant+- {Weiß hat großen Vorteil}
-translate D Informant++- {Partie wird gewonnen}
+translate D Informant+-- {Weiß hat erdrückenden Vorteil}
 translate D Book {Buch}
 translate D OtherBookMoves {Eröffnungsbuch des Gegners}
 translate D OtherBookMovesTooltip {Züge, für die der Gegner eine Antwort kennt}
@@ -986,12 +986,14 @@ translate D ExcellentMove {Ausgezeichneter Zug}
 translate D Blunder {Grober Fehler}
 translate D InterestingMove {Interessanter Zug}
 translate D DubiousMove {Zweifelhafter Zug}
-translate D WhiteDecisiveAdvantage {Weiß hat Vorteil}
-translate D BlackDecisiveAdvantage {Schwarz hat Vorteil}
+translate D WhiteDecisiveAdvantage {Weiß hat großen Vorteil}
+translate D BlackDecisiveAdvantage {Schwarz hat großen Vorteil}
 translate D WhiteClearAdvantage {Weiß hat klaren Vorteil}
 translate D BlackClearAdvantage {Schwarz hat klaren Vorteil}
 translate D WhiteSlightAdvantage {Weiß hat leichten Vorteil}
 translate D BlackSlightAdvantage {Schwarz hat leichten Vorteil}
+translate D WhiteCrushing {Weiß hat erdrückenden Vorteil}
+translate D BlackCrushing {Schwarz hat erdrückenden Vorteil}
 translate D Equality {Gleiche Chancen}
 translate D Unclear {Unklar}
 translate D Diagram {Diagramm}

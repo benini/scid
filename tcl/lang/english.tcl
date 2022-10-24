@@ -687,9 +687,9 @@ translate E Informant? {Poor move}
 translate E Informant?? {Blunder}
 translate E Informant?! {Dubious move}
 translate E Informant+= {White has a slight advantage}
-translate E Informant+/- {White has a moderate advantage}
+translate E Informant+/- {White has a clear advantage}
 translate E Informant+- {White has a decisive advantage}
-translate E Informant++- {The game is considered won}
+translate E Informant+-- {White has a crushing advantage}
   
 # Book window
 translate E Book {Book}
@@ -994,6 +994,8 @@ translate E WhiteClearAdvantage {White has a clear advantage}
 translate E BlackClearAdvantage {Black has a clear advantage}
 translate E WhiteSlightAdvantage {White has a slight advantage}
 translate E BlackSlightAdvantage {Black has a slight advantage}
+translate E WhiteCrushing {White has a crushing advantage}
+translate E BlackCrushing {Black has a crushing advantage}
 translate E Equality {Equality}
 translate E Unclear {Unclear}
 translate E Diagram {Diagram}

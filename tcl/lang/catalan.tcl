@@ -706,7 +706,7 @@ translate K Informant?! {Jugada dubtosa}
 translate K Informant+= {Les Blanques tenen un lleuger avantatge}
 translate K Informant+/- {Les Blanques tenen avantatge}
 translate K Informant+- {Les Blanques tenen un avantatge decisiu}
-translate K Informant++- {La partida es considerada com guanyada}
+translate K Informant+-- {La partida es considerada com guanyada}
 translate K Book {Llibre}
 translate K OtherBookMoves {Altres jugades del llibre}
 translate K OtherBookMovesTooltip {Jugades a les que el contrari te una respuesta}
@@ -1040,6 +1040,10 @@ translate K WhiteClearAdvantage {Les blanques tenen clar avantatge}
 translate K BlackClearAdvantage {Les negres tenen clar avantatge}
 translate K WhiteSlightAdvantage {Les blanques tenen lleuger avantatge}
 translate K BlackSlightAdvantage {Les negres tenen lleuger avantatge}
+# ====== TODO To be translated ======
+translate K WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate K BlackCrushing {Black has a crushing advantage}
 translate K Equality {Igualtat}
 translate K Unclear {Poc clar}
 translate K Diagram {Diagrama}

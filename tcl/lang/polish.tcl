@@ -821,7 +821,7 @@ translate P Informant+/- {White has a moderate advantage}
 # ====== TODO To be translated ======
 translate P Informant+- {White has a decisive advantage}
 # ====== TODO To be translated ======
-translate P Informant++- {The game is considered won}
+translate P Informant+-- {White has a crushing advantage}
 # ====== TODO To be translated ======
 translate P Book {Book}
 # ====== TODO To be translated ======
@@ -1188,6 +1188,10 @@ translate P WhiteClearAdvantage {White has a clear advantage} ;# ***
 translate P BlackClearAdvantage {Black has a clear advantage} ;# ***
 translate P WhiteSlightAdvantage {White has a slight advantage} ;# ***
 translate P BlackSlightAdvantage {Black has a slight advantage} ;# ***
+# ====== TODO To be translated ======
+translate P WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate P BlackCrushing {Black has a crushing advantage}
 translate P Equality {Equality} ;# ***
 translate P Unclear {Unclear} ;# ***
 translate P Diagram {Diagram} ;# ***

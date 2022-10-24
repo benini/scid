@@ -995,7 +995,7 @@ proc markExercise { prevscore score nag} {
     if { [expr abs($deltamove)] < $::informant("+/-") } { return 0 }
     # dismiss games where the result is already clear (high score,and we continue in the same way)
     if { [expr $prevscore * $score] >= 0} {
-        if { [expr abs($prevscore) ] > $::informant("++-") } { return 0 }
+        if { [expr abs($prevscore) ] > $::informant("+--") } { return 0 }
         if { [expr abs($prevscore)] > $::informant("+-") && [expr abs($score) ] < [expr 2 * abs($prevscore)]} { return 0 }
     }
     
@@ -1200,13 +1200,13 @@ proc addAnnotation { {n 1} } {
     set deltamove [expr {$prevscore - $score}]
     # and whether the game was already lost for us
     #
-    set gameIsLost [expr {$prevscore < (0.0 - $::informant("++-"))}]
+    set gameIsLost [expr {$prevscore < (0.0 - $::informant("+--"))}]
     
     # Invert this logic for black
     #
     if { $tomove == "white" } {
         set deltamove [expr {0.0 - $deltamove}]
-        set gameIsLost [expr {$prevscore > $::informant("++-")}] 
+        set gameIsLost [expr {$prevscore > $::informant("+--")}] 
     }
     
     # Note btw that if the score decay is - unexpectedly - negative, we played
@@ -1364,7 +1364,7 @@ proc addAnnotation { {n 1} } {
 }
 
 # Informant index strings
-array set ana_informantList { 0 "+=" 1 "+/-" 2 "+-" 3 "++-" }
+array set ana_informantList { 0 "+=" 1 "+/-" 2 "+-" 3 "+--" }
 # Nags. Note the slight inconsistency for the "crushing" symbol (see game.cpp)
 array set ana_nagList  { 0 "=" 1 "+=" 2 "+/-" 3 "+-" 4 "+--" 5 "=" 6 "=+" 7 "-/+" 8 "-+" 9 "--+" }
 ################################################################################

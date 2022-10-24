@@ -698,7 +698,7 @@ translate N Informant?! {Twijfelachtige zet}
 translate N Informant+= {Wit heeft een klein voordeel}
 translate N Informant+/- {Wit heeft een gematigd voordeel}
 translate N Informant+- {Wit heeft een beslissend voordeel}
-translate N Informant++- {Deze partij kan als gewonnen beschouwd worden}
+translate N Informant+-- {Deze partij kan als gewonnen beschouwd worden}
 translate N Book {Openingenboek}
 translate N OtherBookMoves {Boek van de tegenspeler}
 translate N OtherBookMovesTooltip {Zetten waarvoor de tegenspeler een antwoord heeft}
@@ -1035,6 +1035,10 @@ translate N WhiteClearAdvantage {Wit heeft duidelijk voordeel} ;
 translate N BlackClearAdvantage {Zwart heeft beslissend voordeel} ;
 translate N WhiteSlightAdvantage {Wit heeft licht voordeel} ;
 translate N BlackSlightAdvantage {Zwart heeft licht voordee} ;
+# ====== TODO To be translated ======
+translate N WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate N BlackCrushing {Black has a crushing advantage}
 translate N Equality {Gelijk} ;
 translate N Unclear {Onduidelijk} ;
 translate N Diagram {Diagram} ;

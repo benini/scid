@@ -685,7 +685,7 @@ translate H Informant?! {Kétes lépés}
 translate H Informant+= {Világosnak némi elõnye van}
 translate H Informant+/- {Világosnak jelentõs elõnye van}
 translate H Informant+- {Világosnak döntõ elõnye van}
-translate H Informant++- {A játszma eldõlt}
+translate H Informant+-- {A játszma eldölt}
 translate H Book {Megnyitástár}
 translate H OtherBookMoves {Az ellenfél megnyitástára}
 translate H OtherBookMovesTooltip {Azok a lépések, amelyekre az ellenfélnek van válasza}
@@ -1019,6 +1019,10 @@ translate H WhiteClearAdvantage {Világos elõnye nyilvánvaló.}
 translate H BlackClearAdvantage {Sötét elõnye nyilvánvaló.}
 translate H WhiteSlightAdvantage {Világos valamivel jobban áll.}
 translate H BlackSlightAdvantage {Sötét valamivel jobban áll.}
+# ====== TODO To be translated ======
+translate H WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate H BlackCrushing {Black has a crushing advantage}
 translate H Equality {Egyenlõ állás}
 translate H Unclear {Tisztázatlan állás}
 translate H Diagram {Diagram}

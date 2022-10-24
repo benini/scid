@@ -665,7 +665,7 @@ translate F Informant?! {Coup douteux}
 translate F Informant+= {Les blancs ont un léger avantage}
 translate F Informant+/- {Les blancs ont l'avantage}
 translate F Informant+- {Les blancs ont un avantage décisif}
-translate F Informant++- {La partie est gagnée}
+translate F Informant+-- {La partie est gagnée}
 
 # Book window
 translate F Book {Bibliothèque}
@@ -994,6 +994,10 @@ translate F WhiteClearAdvantage {Les blancs ont l'avantage}
 translate F BlackClearAdvantage {Les noirs ont l'avantage}
 translate F WhiteSlightAdvantage {Les blancs ont un léger avantage}
 translate F BlackSlightAdvantage {Les noirs ont un léger avantage}
+# ====== TODO To be translated ======
+translate F WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate F BlackCrushing {Black has a crushing advantage}
 translate F Equality {Egalité}
 translate F Unclear {Peu clair}
 translate F Diagram {Diagramme}

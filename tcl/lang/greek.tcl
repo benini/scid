@@ -704,7 +704,7 @@ translate G Informant?! {Αμφίβολη κίνηση}
 translate G Informant+= {Τα Λευκά έχουν μικρό πλεονέκτημα}
 translate G Informant+/- {Τα Λευκά έχουν μέτριο πλεονέκτημα}
 translate G Informant+- {Τα Λευκά έχουν αποφασιστικό πλεονέκτημα}
-translate G Informant++- {Η παρτίδα θεωρείται κερδισμένη}
+translate G Informant+-- {Η παρτίδα θεωρείται κερδισμένη}
   
 # Book window
 translate G Book {Βιβλίο}
@@ -1041,6 +1041,10 @@ translate G WhiteClearAdvantage {Τα Λευκά έχουν σαφές προβ�
 translate G BlackClearAdvantage {Τα Μαύρα έχουν σαφές προβάδισμα}
 translate G WhiteSlightAdvantage {Τα Λευκά έχουν μικρό πλεονέκτημα}
 translate G BlackSlightAdvantage {Τα Μαύρα έχουν μικρό πλεονέκτημα}
+# ====== TODO To be translated ======
+translate G WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate G BlackCrushing {Black has a crushing advantage}
 translate G Equality {Ισότητα}
 translate G Unclear {Ασαφής}
 translate G Diagram {Διάγραμμα}
