@@ -731,7 +731,7 @@ translate S Informant?! {Movimiento dudoso}
 translate S Informant+= {Blancas tienen una ligera ventaja}
 translate S Informant+/- {Blancas tienen ventaja}
 translate S Informant+- {Blancas tienen una ventaja decisiva}
-translate S Informant++- {La partida es considerada ganada}
+translate S Informant+-- {La partida es considerada ganada}
 translate S Book {Libro}
 translate S OtherBookMoves {Otros movimientos del libro}
 translate S OtherBookMovesTooltip {Movimientos para los que el oponente tiene una respuesta}
@@ -1062,6 +1062,10 @@ translate S WhiteClearAdvantage {Las blancas tienen clara ventaja}
 translate S BlackClearAdvantage {Las negras tienen clara ventaja}
 translate S WhiteSlightAdvantage {Las blancas tienen ligera ventaja}
 translate S BlackSlightAdvantage {Las negras tienen ligera ventaja}
+# ====== TODO To be translated ======
+translate S WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate S BlackCrushing {Black has a crushing advantage}
 translate S Equality {Igualdad}
 translate S Unclear {Incierto}
 translate S Diagram {Diagrama}

@@ -673,7 +673,7 @@ translate W Informant?! {Tveksamt drag}
 translate W Informant+= {Vit har en mindre fördel}
 translate W Informant+/- {Vit har en liten fördel}
 translate W Informant+- {Vit har en avgörande fördel}
-translate W Informant++- {Partiet anses vara vunnet}
+translate W Informant+-- {Partiet anses vara vunnet}
 translate W Book {Bok}
 translate W OtherBookMoves {Motståndarens bok}
 translate W OtherBookMovesTooltip {Drag som motståndaren har ett svar på}
@@ -969,6 +969,10 @@ translate W WhiteClearAdvantage {Vit har en klar fördel}
 translate W BlackClearAdvantage {Svart har en klar fördel}
 translate W WhiteSlightAdvantage {Vit har en liten fördel}
 translate W BlackSlightAdvantage {Svart har en liten fördel}
+# ====== TODO To be translated ======
+translate W WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate W BlackCrushing {Black has a crushing advantage}
 translate W Equality {Jämnvikt}
 translate W Unclear {Oklar}
 translate W Diagram {Diagram}

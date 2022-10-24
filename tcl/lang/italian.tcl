@@ -671,7 +671,7 @@ translate I Informant?! {Mossa dubbia}
 translate I Informant+= {Il bianco ha un leggero vantaggio}
 translate I Informant+/- {Il bianco ha un moderato vantaggio}
 translate I Informant+- {Il bianco ha un vantaggio decisivo}
-translate I Informant++- {La partita è considerata vinta}
+translate I Informant+-- {La partita è considerata vinta}
 translate I Book {Libro}
 translate I OtherBookMoves {Libro dell'avversario}
 translate I OtherBookMovesTooltip {Mosse alle quali l'avversario ha una risposta}

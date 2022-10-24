@@ -457,7 +457,7 @@ set informant("?!") 0.5
 set informant("+=") 0.5
 set informant("+/-") 1.5
 set informant("+-") 3.0
-set informant("++-") 5.5
+set informant("+--") 5.5
 
 # Export file options:
 set exportFlags(comments) 1

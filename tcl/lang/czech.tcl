@@ -668,7 +668,7 @@ translate C Informant?! {Pochybný tah}
 translate C Informant+= {Bílý má malou výhodu}
 translate C Informant+/- {Bílý má støední výhodu}
 translate C Informant+- {Bílý má rozhodující výhodu}
-translate C Informant++- {Partie je pova¾ována za vyhranou}
+translate C Informant+-- {Partie je pova¾ována za vyhranou}
 translate C Book {Knihovna zahájení}
 translate C OtherBookMoves {Soupeøova knihovna zahájení}
 translate C OtherBookMovesTooltip {Tahy, na které má soupeø odpovìï}

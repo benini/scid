@@ -656,7 +656,7 @@ translate B Informant?! {Movimento duvidoso}
 translate B Informant+= {Branca tem alguma vantagem}
 translate B Informant+/- {Branca tem vantagem moderada}
 translate B Informant+- {Branca tem vantagem decisiva}
-translate B Informant++- {O jogo é considerado como ganho}
+translate B Informant+-- {O jogo á considerado como ganho}
 translate B Book {Livro}
 translate B OtherBookMoves {Livro do oponente}
 translate B OtherBookMovesTooltip {Movimentos para os quais o oponente tem resposta}
@@ -952,6 +952,10 @@ translate B WhiteClearAdvantage {Branca tem clara vantagem}
 translate B BlackClearAdvantage {Preta tem clara vantagem} 
 translate B WhiteSlightAdvantage {Branca tem alguma vantagem} 
 translate B BlackSlightAdvantage {Preta tem alguma vantagem} 
+# ====== TODO To be translated ======
+translate B WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate B BlackCrushing {Black has a crushing advantage}
 translate B Equality {Igualdade} 
 translate B Unclear {Não claro} 
 translate B Diagram {Diagrama} 

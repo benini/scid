@@ -708,7 +708,7 @@ translate U Informant?! {Epäilyttävä siirto}
 translate U Informant+= {Valkean pieni etu}
 translate U Informant+/- {Valkean etu}
 translate U Informant+- {Valkean ratkaiseva etu}
-translate U Informant++- {Voittoasema}
+translate U Informant+-- {Voittoasema}
   
 # Book window
 translate U Book {Kirja}
@@ -1011,6 +1011,10 @@ translate U WhiteClearAdvantage {Valkealla on selvä etu}
 translate U BlackClearAdvantage {Mustalla on selvä etu}
 translate U WhiteSlightAdvantage {Valkealla on hieman etua}
 translate U BlackSlightAdvantage {Mustalla on hieman etua}
+# ====== TODO To be translated ======
+translate U WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate U BlackCrushing {Black has a crushing advantage}
 translate U Equality {Tasa-asema}
 translate U Unclear {Epäselvä}
 translate U Diagram {Kaavio}
