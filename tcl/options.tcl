@@ -92,6 +92,7 @@ proc InitDefaultFonts {} {
     set fontOptions(Small)   [list {Segoe UI}    8 normal roman]
     set fontOptions(Tiny)    [list {Segoe UI}    7 normal roman]
     set fontOptions(Fixed)   [list courier       9 normal roman]
+    set fontOptions(Figurine) [list {Segoe UI}   10 normal roman]
   } elseif {$::macOS} {
     set fontOptions(Regular) {}
     set fontOptions(Menu)    {}
@@ -104,6 +105,7 @@ proc InitDefaultFonts {} {
     set fontOptions(Small)   [list {DejaVu Sans}        9 normal roman]
     set fontOptions(Tiny)    [list {DejaVu Sans}        8 normal roman]
     set fontOptions(Fixed)   [list {DejaVu Sans Mono}  10 normal roman]
+    set fontOptions(Figurine) [list {DejaVu Serif}     12 normal roman]
   }
 }
 

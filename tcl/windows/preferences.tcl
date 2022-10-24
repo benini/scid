@@ -235,7 +235,7 @@ proc ::preferences::fonts { w } {
     global locale
 
     set idx 0
-    foreach font { Regular Menu Small Tiny Fixed } {
+    foreach font { Regular Menu Small Tiny Fixed Figurine} {
         set f [string tolower $font]
         ttk::label $w.lb$f -font font_$font -text "[tr OptionsFonts$font]: AaBbCcDdEe 01234"
         ttk::button $w.font$f  -text "..." -command [list apply {{name} {
