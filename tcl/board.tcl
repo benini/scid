@@ -815,10 +815,6 @@ proc ::board::resizeAuto {w bbox} {
     if {$size <= $maxSize && $size > $newSize} { set newSize $size }
   }
 
-  # Redraw material values
-  if {$::board::_showmat($w)} {
-      ::board::material $w
-  }
   return [::board::resize $w $newSize]
 }
 
