@@ -571,10 +571,11 @@ proc configInformant { w } {
   set row 0
 
   foreach i [lsort [array names informant]] {
+    if {$i == "\"++-\""} { continue } ; # ignore old version: ++- from options.dat
     ttk::label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
     ttk::label $w.spinF.label$idx -text $i
      # Allow the configuration of "won game" up to "Mate found"
-     if {$i == "\"++-\""} {
+     if {$i == "\"+--\""} {
          ttk::spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
      } else {
          ttk::spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
