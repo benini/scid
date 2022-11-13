@@ -133,8 +133,8 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   grid columnconfigure $w.statusframe 0 -weight 1
   ttk::label $w.status -anchor w -font font_Small -relief sunken
   grid $w.status -in $w.statusframe -column 0 -row 0 -sticky nsew
-  canvas $w.progress -height 0 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  ttk_canvas $w.progress -height 0 -relief solid -border 1
+  $w.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
 
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both

@@ -300,9 +300,9 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   ttk::frame $w.f
   ttk::label $w.f.t -text $text
   autoscrollframe -bars y $w.f.cmsg text $w.f.cmsg.text -width 70 -height 14 -wrap word -font font_Regular
-  canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
+  ttk_canvas $w.f.c -width 400 -height 20 -relief solid -border 1 -highlightthickness 0
   $w.f.c create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
-  $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  ttk_create $w.f.c text 395 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
   ttk::button $w.f.cancel -text $button -command "$command"
 
   grid $w.f.t -row 0 -columnspan 2 -pady 4 -sticky news

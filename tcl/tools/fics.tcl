@@ -451,7 +451,7 @@ namespace eval fics {
     grid $w.f.top.fplayer.ybar -column 1 -row 0 -sticky nwes
 
     # graph
-    canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
+    ttk_canvas $w.f.top.foffers.c -width $width -height $height -relief solid
     grid $w.f.top.foffers.c
     bind $w.f.top.foffers <Configure> { ::fics::configureCanvas}
 
@@ -1441,7 +1441,7 @@ namespace eval fics {
     set y_unit [expr $height / 32.0]
     for {set i 0} {$i < 32} {incr i} {
       set y [expr $height - $i * $y_unit]
-      $w.c create line 0 $y $width $y -fill "light gray"
+      $w.c create line 0 $y $width $y -fill "grey50"
     }
 
     # Draw horizontal tics and labels
@@ -1449,8 +1449,8 @@ namespace eval fics {
     set x_text [expr $width - 2]
     foreach elo [list 5 10 15 20 25 30] {
       set y [expr $height - $elo * $y_unit]
-      $w.c create line $x1_tick $y $width $y -fill black
-      $w.c create text $x_text $y -fill black -anchor se -text [expr $elo * 100]
+      $w.c create line $x1_tick $y $width $y -fill "grey50"
+      ttk_create $w.c text $x_text $y -anchor se -text [expr $elo * 100]
     }
 
     # Draw vertical lines, tics and labels
@@ -1458,9 +1458,9 @@ namespace eval fics {
     set y2_tick [expr $height - $off]
     foreach t [list 2 5 10 15 30 60] {
       set x [expr $t * $x_unit + $off]
-      $w.c create line $x $height $x 0 -fill "light gray"
-      $w.c create line $x $height $x $y2_tick -fill black
-      $w.c create text [expr $x + 2] $height -fill black -anchor sw -text "${t}m"
+      $w.c create line $x $height $x 0 -fill "grey50"
+      $w.c create line $x $height $x $y2_tick -fill "grey50"
+      ttk_create $w.c text [expr $x + 2] $height -anchor sw -text "${t}m"
     }
 
     foreach g $::fics::soughtlist {
@@ -1628,7 +1628,7 @@ namespace eval fics {
         append anchor "e"
       }
 
-      $w.c create text [expr $x + $off] $y -tags status -text $m -font font_offers -anchor $anchor
+      ttk_create $w.c text [expr $x + $off] $y -tags status -text $m -font font_offers -anchor $anchor
       $w.c raise game_$idx
     } else {
       $w.c delete status

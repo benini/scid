@@ -569,9 +569,9 @@ proc ::search::material {{ref_base ""}} {
 
   ### Progress bar:
   ttk::frame $w.fprogress
-  canvas $w.fprogress.progress -height 20 -width 500 -bg white -relief solid -border 1
-  $w.fprogress.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
-  $w.fprogress.progress create text 495 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  ttk_canvas $w.fprogress.progress -height 20 -width 500 -relief solid -border 1
+  $w.fprogress.progress create rectangle 0 0 0 0 -outline DodgerBlue3 -fill DodgerBlue3 -tags bar
+  ttk_create $w.fprogress.progress text 495 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
 
   ### Last of all, the buttons frame:
 

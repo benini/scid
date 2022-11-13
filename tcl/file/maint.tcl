@@ -426,10 +426,9 @@ proc markTwins {{parent .}} {
   
   dialogbuttonsmall $w.f.b.cancel [ list -text $::tr(Cancel) -command "grab release $w; focus .; destroy $w" ]
   
-  canvas $w.f.progress -width 300 -height 20 -bg white -relief solid -border 1
-  $w.f.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.f.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
+  ttk_canvas $w.f.progress -width 300 -height 20 -relief solid -border 1
+  $w.f.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+  ttk_create $w.f.progress text 295 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
   
   pack $w.f.progress -side bottom -padx 2 -pady 2
   pack $w.f.b -side bottom -fill x
@@ -591,10 +590,9 @@ proc makeClassifyWin {} {
     ::windows::gamelist::Refresh
   }
   ttk::button $w.f.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
-  canvas $w.f.progress -width 300 -height 20 -bg white -relief solid -border 1
-  $w.f.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.f.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
+  ttk_canvas $w.f.progress -width 300 -height 20 -relief solid -border 1
+  $w.f.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+  ttk_create $w.f.progress create 295 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
   
   pack $w.f.g -anchor w -fill x -side top -pady "0 10"
 

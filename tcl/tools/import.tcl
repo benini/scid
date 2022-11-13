@@ -153,10 +153,9 @@ proc importPgnFile {{base} {fnames ""}} {
   wm title $w "Scid: $::tr(ImportingFiles) [file tail [sc_base filename $base] ]"
 
   ttk::frame $w.buttons
-  canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
+  ttk_canvas $w.progress -width 400 -height 20 -relief solid -border 1 -highlightthickness 0
   $w.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
-  $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
-    -fill black -text "0:00 / 0:00"
+  ttk_create $w.progress text 395 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
 
   ttk::button $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel}
   ttk::button $w.buttons.close -textvar ::tr(Close) -state disabled -command "

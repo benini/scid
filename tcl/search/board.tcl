@@ -58,9 +58,9 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 	grid columnconfigure $w.buttons 2 -weight 1
 
 	ttk::button $w.buttons.stop -text [::tr Stop] -command progressBarCancel
-	canvas $w.progressbar -width 300 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
-	$w.progressbar create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-	$w.progressbar create text 295 10 -anchor e -font font_Regular -tags time
+	ttk_canvas $w.progressbar -width 300 -height 20 -relief solid -border 1 -highlightthickness 0
+	$w.progressbar create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+	ttk_create $w.progressbar text 295 10 -anchor e -font font_Regular -tags time
 	grid $w.buttons.stop -row 0 -column 0
 	grid $w.progressbar -in $w.buttons -row 0 -column 1 -columnspan 4
 	progressbar_ $w hide

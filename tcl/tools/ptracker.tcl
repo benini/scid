@@ -122,10 +122,9 @@ proc ::ptrack::make {} {
   ttk::label $w.status -width 1 -anchor w -relief sunken -font font_Small
   pack $w.status -side bottom -fill x
 
-  canvas $w.progress -height 20 -width 400 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
-    -fill black -text "0:00 / 0:00"
+  ttk_canvas $w.progress -height 20 -width 400 -relief solid -border 1
+  $w.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+  ttk_create $w.progress text 395 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
   pack $w.progress -side bottom -pady 2
 
   ttk::frame $w.bd

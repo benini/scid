@@ -135,6 +135,7 @@ proc ::preport::makeReportWin {args} {
   if {$showProgress} {
     set w .progress
     toplevel $w
+    applyThemeColor_background $w
     wm withdraw $w
     wm title $w "Scid: [tr ToolsPlayerReport]"
     bind $w <Visibility> "raiseWin $w"
@@ -151,10 +152,9 @@ proc ::preport::makeReportWin {args} {
       "Searching current board" "Generating report information"} {
       ttk::label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
-      canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
-      $w.c$i create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-      $w.c$i create text 395 10 -anchor e -font font_Regular -tags time \
-          -fill black -text "0:00 / 0:00"
+      ttk_canvas $w.c$i -width 400 -height 20 -relief solid -border 1
+      $w.c$i create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+      ttk_create $w.c$i text 395 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
       pack $w.c$i -side top -pady 10
     }
     wm resizable $w 0 0

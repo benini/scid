@@ -208,10 +208,9 @@ proc openSpellCheckWin {type {parent .}} {
     # Draw a canvas ("progress") to hold the progress bar
     # and put it above the buttons at the bottom of the window
     #
-    canvas $w.progress -width 450 -height 20 -bg white -relief solid -border 1
-    $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-    $w.progress create text 445 10 -anchor e -font font_Regular -tags time \
-                                   -fill black -text "0:00 / 0:00"
+    ttk_canvas $w.progress -width 450 -height 20 -relief solid -border 1
+    $w.progress create rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
+    ttk_create $w.progress text 445 10 -anchor e -font font_Regular -tags time -text "0:00 / 0:00"
     pack $w.progress -side top -pady 5
 
     # Create the button pad at the bottom of the window

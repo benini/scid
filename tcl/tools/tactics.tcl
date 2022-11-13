@@ -234,8 +234,8 @@ namespace eval tactics {
         $w.s.bases column 3 -width 80 -anchor c
         autoscrollframe -bars both $w.s "" $w.s.bases
 
-        canvas $w.pbar -width 600 -height 10 -bg white -relief solid -border 1
-        $w.pbar create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+        ttk_canvas $w.pbar -width 600 -height 10 -relief solid -border 1
+        ttk_create $w.pbar rectangle 0 0 0 0 -fill DodgerBlue3 -outline DodgerBlue3 -tags bar
         grid $w.pbar -pady "0 5"
 
 
