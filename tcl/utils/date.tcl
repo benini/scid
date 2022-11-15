@@ -174,8 +174,19 @@ proc ::utils::date::_layout {time} {
   set month [string trimleft [clock format $time -format "%m"] 0]
   set year  [clock format $time -format "%Y"]
 
-  foreach lastday {31 30 29 28} {
-    if {[catch {clock scan "$year-$month-$lastday"}] == 0} { break }
+  switch $month {
+    1 -
+    3 -
+    5 -
+    7 -
+    8 -
+    10 -
+    12 { set lastday 31 }
+    4 -
+    6 -
+    9 -
+    11 { set lastday 30 }
+    2 { set lastday 28;  if { $year % 4 == 0 } { set lastday 29 } }
   }
   set seconds [clock scan "$year-$month-1"]
   set firstday [clock format $seconds -format %w]
