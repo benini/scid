@@ -36,8 +36,8 @@ proc ::utils::date::chooser {{date "now"}} {
 
   set win .dateChooser
   toplevel $win
-  canvas $win.cal -width 300 -height 220
-  ::applyThemeColor_background $win.cal
+  ttk_canvas $win.cal -width 300 -height 220
+  # ::applyThemeColor_background $win.cal
   pack [ttk::frame $win.b] -side bottom -fill x
   ttk::button $win.b.ok -text "OK" -command "destroy $win"
   ttk::button $win.b.cancel -text $::tr(Cancel) -command "
@@ -122,7 +122,7 @@ proc ::utils::date::_redraw {win} {
 
   set month [string trimleft [clock format $time -format "%m"] 0]
   set year [clock format $time -format "%Y"]
-  $win.cal create text [expr {$wmax/2} ] $bottom -anchor s -font font_Bold \
+  ttk_create $win.cal text [expr {$wmax/2} ] $bottom -anchor s -font font_Bold \
     -text "[lindex $::tr(Months) [expr $month - 1]] $year"
 
   incr bottom 3
@@ -137,7 +137,7 @@ proc ::utils::date::_redraw {win} {
   for {set day 0} {$day < 7} {incr day} {
     set x0 [expr {$day*($wmax-7)/7+3} ]
     set x1 [expr {($day+1)*($wmax-7)/7+3} ]
-    $win.cal create text [expr {($x1+$x0)/2} ] $bottom -anchor s \
+    ttk_create $win.cal text [expr {($x1+$x0)/2} ] $bottom -anchor s \
       -text [lindex $::tr(Days) $day] -font font_Small
   }
   incr bottom 3
@@ -150,10 +150,10 @@ proc ::utils::date::_redraw {win} {
 
     if {$date == $::utils::date::_selected} {set current $date}
 
-    $win.cal create rectangle $x0 $y0 $x1 $y1 -outline black -fill white
+    $win.cal create rectangle $x0 $y0 $x1 $y1 -outline grey80 -fill ""
 
-    $win.cal create text [expr {$x0+4} ] [expr {$y0+2} ] -anchor nw -text "$day" \
-      -fill black -font font_Small -tags [list $date-text all-text]
+    ttk_create $win.cal text [expr {$x0+4} ] [expr {$y0+2} ] -anchor nw -text "$day" \
+      -font font_Small -tags [list $date-text all-text]
 
     $win.cal create rectangle $x0 $y0 $x1 $y1 \
       -outline "" -fill "" -tags [list $date-sensor all-sensor]
@@ -174,8 +174,19 @@ proc ::utils::date::_layout {time} {
   set month [string trimleft [clock format $time -format "%m"] 0]
   set year  [clock format $time -format "%Y"]
 
-  foreach lastday {31 30 29 28} {
-    if {[catch {clock scan "$year-$month-$lastday"}] == 0} { break }
+  switch $month {
+    1 -
+    3 -
+    5 -
+    7 -
+    8 -
+    10 -
+    12 { set lastday 31 }
+    4 -
+    6 -
+    9 -
+    11 { set lastday 30 }
+    2 { set lastday 28;  if { $year % 4 == 0 } { set lastday 29 } }
   }
   set seconds [clock scan "$year-$month-1"]
   set firstday [clock format $seconds -format %w]
