@@ -453,6 +453,8 @@ proc ::board::new {w {psize 40} } {
   set ::board::_evalbarHeight($w) 0
   set ::board::_evalbarWidth($w) 0
   set ::board::_evalbarScale($w) 1
+  set ::board::_matDiff(W,$w) ""
+  set ::board::_matDiff(B,$w) ""
 
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
