@@ -1274,6 +1274,8 @@ proc CreateGameInfo {} {
   # Set up player photos:
   ttk::label .main.photoW -image photoW -anchor ne
   ttk::label .main.photoB -image photoB -anchor ne
+  applyThemeStyle Treeview .main.photoW
+  applyThemeStyle Treeview .main.photoB
   bind .main.photoW <ButtonPress-1> "togglePhotosSize"
   bind .main.photoB <ButtonPress-1> "togglePhotosSize"
 
