@@ -1,6 +1,21 @@
 
 ####################
 # Player Info window
+proc shapeRoundCorners { photo size } {
+    set x [expr [image width $photo] - 1 ]
+    set y [expr [image height $photo] -1 ]
+    if { $x < $size || $y < $size } { return }
+
+    for {set i 0} {$i <= $size} {incr i} {
+        set c [expr sqrt( 1.0 - double($i) / $size * double($i) / $size ) * $size] 
+        for {set j $size} {$j >= $c} {incr j -1} {
+            $photo transparency set [expr $size - $i ] [expr $size - $j] true
+            $photo transparency set [expr $x - $size + $i ] [expr $size - $j] true
+            $photo transparency set [expr $size - $i ] [expr $y - $size + $j] true
+            $photo transparency set [expr $x - $size + $i ] [expr $y - $size + $j] true
+        }
+    }
+}
 
 namespace eval pinfo {
 set playerInfoName ""
@@ -383,7 +398,9 @@ proc playerInfo {{player ""}} {
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
+    shapeRoundCorners photoPInfo 12
     $w.photo configure -image photoPInfo -anchor ne
+    applyThemeStyle Treeview $w.photo
     place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
     place forget $w.photo

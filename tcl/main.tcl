@@ -786,6 +786,7 @@ proc updatePlayerPhotos {{force ""}} {
             set ::gamePlayers($img) $spellname
             catch { set spellname [trimEngineName $spellname] }
             image create photo $img -data [getphoto $spellname]
+            shapeRoundCorners $img 12
         }
     }
 }
