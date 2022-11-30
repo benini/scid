@@ -17,7 +17,7 @@ namespace eval ::utils::tooltip {
 
   # Undocumented tooltip variable that allows users to extend / override
   # label creation options.
-  set tooltip::labelOpts [list -highlightthickness 0 -relief solid -bd 1 \
+  set ::tooltip::labelOpts [list -highlightthickness 0 -relief solid -bd 1 \
       -background lightyellow -fg black -font $font]
 
   proc Set {button msg} {
