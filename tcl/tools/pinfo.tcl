@@ -384,6 +384,7 @@ proc playerInfo {{player ""}} {
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
     $w.photo configure -image photoPInfo -anchor ne
+    applyThemeStyle Treeview $w.photo
     place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
     place forget $w.photo
