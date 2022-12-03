@@ -2153,7 +2153,6 @@ set helpText(F,Contents) {
   <li><a CalVar><b>Entraînement : calcul des variantes</b></a></li>
   <li><a TacticsTrainer><b>Entraînement : exercices tactiques</b></a></li>
   <li><a ReviewGame><b>Entraînement : reviser une partie</b></a></li>
-  <li><a Email>Fenêtre <b>Gestionnaire de messagerie</b></a></li>
   <li><a Import>Fenêtre <b>Importation de jeux</b></a></li>
   <li><a PInfo>Fenêtre <b>Information sur un joueur</b></a></li>
   <li><a GameList>Fenêtre <b>Liste des jeux</b></a></li>
@@ -2253,8 +2252,6 @@ set helpText(F,Index) {
   <li><a ECO Codes>Système de code ECO</a></li>
   <li><a ECO>Classification des ouvertures de l'ECO</a></li>
   <li><a Menus Edit>Menu d'édition</a></li>
-  <li><a Email>Gestionnaire d'e-mail</a> window</li>
-  <li><a CCeMailChess>Echecs par courriel</a></li>
   <li><a Analysis List>Liste des moteurs</a></li>
   <li><a Moves>Entrer des coups d'échecs</a></li>
   <li><a EPD>Fichiers EPD</a></li>
@@ -5607,79 +5604,6 @@ set helpText(F,EPD) {
   </p>
   
   <p><footer>(Mise à jour : Scid 3.6.26, octobre 2008)</footer></p>
-}
-
-####################
-### Email window help:
-
-set helpTitle(F,Email) "Fenêtre Gestionnaire de messagerie"
-set helpText(F,Email) {
-<h1>Fenêtre Gestionnaire de messagerie</h1>
-  <p>
-  La fenêtre du gestionnaire de courriers électroniques de Scid vous offre un moyen de
-  gérer les parties d'échecs par correspondance jouées par courriel.
-  Si vous ne jouez pas aux <a CCeMailChess>échecs par courriel</a>, cela ne vous
-  intéressera pas. Mais si vous y jouez, vous pouvez envoyer votre courriel directement
-  de Scid !
-  </p>
-  <h3>Utilisation</h3>
-  <p>
-  Pour utiliser le gestionnaire de messagerie :
-  <ul>
-  <li><b>1.</b> Créez le(s) partie(s) de jeu pour votre adversaire dans la
-  base de données.</li>
-  <li><b>2.</b> Dans la fenêtre du gestionnaire de messagerie, sélectionnez
-  <b>[Ajouter]</b>, et entrez les détails de vos adversaires : nom, adresse
-  email, et les numéros de jeu dans cette base de données.</li>
-  <li><b>3.</b> Sélectionnez <b>[Envoyer email]</b> à chaque fois que vous
-  avez ajouté des coups à la/aux partie(s) et voulez envoyer un message.</li>
-  </ul>
-  </p>
-  <p>
-  La boîte à liste <b>[Temps]</b> permet de sélectionner "Reçus aujourd'hui",
-  "Envoyés aujourd'hui", ou "Édition".
-  </p>
-  <p>
-  Lorsque vous envoyez un message électronique, Scid génère le contenu du message avec
-  les jeux en <a PGN>format PGN</a> <b>sans</b> commentaires, annotations ou
-  variantes, puisque vous ne voudriez généralement pas que votre adversaire voie votre
-  analyse. Vous pouvez éditer le message avant de l'envoyer pour ajouter des coups
-  conditionnels ou d'autres textes.
-  </p>
-  <p>
-  Pour chaque adversaire, vous pouvez avoir n'importe quel nombre de parties ; une ou
-  deux étant le plus commun. Notez que Scid ne vérifie pas si les numéros de jeu
-  changent, donc après la mise en place des détails de vos adversaires,
-  <b>faites attention à ne pas effacer ou trier les parties</b> de votre base de données
-  de jeux par email, car cela réorganisera les jeux et les numéros de jeu pour chaque
-  adversaire seront incorrects.
-  </p>
-  
-  <h3>Limitations</h3>
-  <p>
-  Scid n'a pas encore la possibilité de vérifier votre dossier de courrier électronique,
-  donc vous devez toujours ajouter manuellement les coups de vos adversaires
-  aux parties en cours.
-  </p>
-  
-  <h3>Configuration</h3>
-  <p>
-  Une copie de chaque message électronique envoyé par Scid est stockée dans le fichier
-  <b>~/.scid4.7/scidmail.log</b>. Si vous voulez qu'ils soient stockés
-  dans un autre fichier, vous devrez éditer le fichier <b>tcl/start.tcl</b>
-  et recompiler Scid.
-  </p>
-  <p>
-  Scid peut envoyer des messages électroniques en utilisant un serveur SMTP ou sendmail.
-  Utilisez le bouton <b>[Configurer...]</b> dans le gestionnaire de messagerie
-  pour spécifier celui que vous voulez utiliser.
-  </p>
-  <p>
-  Scid stocke les détails de l'adversaire pour une base de données dans un fichier
-  avec le même nom que cette base et le suffixe "<b>.sem</b>".
-  </p>
-  
-  <p><footer>(Mise à jour : Scid 4.7.1, janvier 2020)</footer></p>
 }
 
 ####################
