@@ -213,23 +213,10 @@ menuText H ToolsStartEngine2 "A 2. motor elindítása" 2  {Elindítja a 2. motort.}
 # ====== TODO To be translated ======
 menuText H ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText H Play "Játék" 0
-menuText H CorrespondenceChess "Levelezési sakk" 0 {Segédeszközök eMail vagy Xfcc alapú levelezési sakkhoz}
-menuText H CCConfigure "Beállítások" 0 {Külsõ eszközök és alaptulajdonságok}
 # ====== TODO To be translated ======
-menuText H CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-menuText H CCOpenDB "Adatbázis megnyitása" 0 {Megnyitja az alapértelmezésû levelezési adatbázist.}
-menuText H CCRetrieve "Játszmák bekérése" 0 {Játszmák lekérdezése külsõ (Xfcc-) segédeszköz útján}
-menuText H CCInbox "Bejövõ postafiók feldolgozása" 7 {A SCID bejövõ postafiókjában található összes fájl feldolgozása}
-menuText H CCSend "Lépés elküldése" 8 {Lépés elküldése eMail vagy külsõ (Xfcc-) segédeszköz útján}
 menuText H CCResign "Feladás" 0 {Feladás (nem eMail útján)}
 menuText H CCClaimDraw "Döntetlen igénylése" 10 {Lépés elküldése és döntetlen igénylése (nem eMail útján)}
-menuText H CCOfferDraw "Döntetlenajánlat" 0 {Lépés elküldése és döntetlenajánlat (nem eMail útján)}
-menuText H CCAcceptDraw "Döntetlenajánlat elfogadása" 17 {Döntetlenajánlat elfogadása (nem eMail útján)}
-menuText H CCNewMailGame "Új eMail-es játszma" 0 {Új eMail-es játszma kezdése}
-menuText H CCMailMove "Lépés elküldése" 4 {Lépés elküldése az ellenfélnek eMail útján}
-menuText H CCGamePage "Játszmaoldal..." 0 {Böngészõvel jeleníti meg a játszmát.}
 # ====== TODO To be translated ======
-menuText H CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText H Options "Beállítások" 0
@@ -1681,86 +1668,25 @@ translate H GameReviewMoveNotGood {This move is not good, score is}
 translate H GameReviewMovesPlayedLike {Moves played like}
 # ====== TODO To be translated ======
 translate H GameReviewMovesPlayedEngine {Moves played like engine}
-translate H CCDlgConfigureWindowTitle {Levelezési sakk beállításai}
 translate H CCDlgCGeneraloptions {Általános lehetõségek}
-translate H CCDlgDefaultDB {Alapértelmezésû adatbázis:}
-translate H CCDlgInbox {Bejövõ postafiók (útvonal):}
-translate H CCDlgOutbox {Kimenõ postafiók (útvonal):}
-translate H CCDlgXfcc {Xfcc-beállítás:}
-translate H CCDlgExternalProtocol {Külsõ protokollkezelõ (pl. Xfcc)}
-translate H CCDlgFetchTool {Bekérõ eszköz:}
-translate H CCDlgSendTool {Küldõ eszköz:}
-translate H CCDlgEmailCommunication {eMail-kapcsolat}
-translate H CCDlgMailPrg {Levelezõprogram:}
-translate H CCDlgBCCAddr {(B)CC-cím:}
-translate H CCDlgMailerMode {Üzemmód:}
-translate H CCDlgThunderbirdEg {pl. Thunderbird, Mozilla Mail, Icedove...}
-translate H CCDlgMailUrlEg {pl. Evolution}
-translate H CCDlgClawsEg {pl. Sylpheed Claws}
-translate H CCDlgmailxEg {pl. mailx, mutt, nail...}
-translate H CCDlgAttachementPar {Mellékletparaméter:}
-translate H CCDlgInternalXfcc {Belsõ Xfcc-támogatás használata}
 # ====== TODO To be translated ======
-translate H CCDlgConfirmXfcc {Confirm moves}
-translate H CCDlgSubjectPar {Tárgyparaméter:}
-translate H CCDlgDeleteBoxes {Be/kimenõ postafiók kiürítése}
-translate H CCDlgDeleteBoxesText {Tényleg ki akarod üríteni a levelezési sakk be- és kimenõ postafiókjait? Ehhez újra szinkronizálni kell, amely játszmáid utolsó állapotát mutatja.}
 # ====== TODO To be translated ======
-translate H CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
-translate H CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 # ====== TODO To be translated ======
-translate H CCDlgDBGameToLong {Inconsistent Mainline}
 # ====== TODO To be translated ======
-translate H CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
-translate H CCDlgStartEmail {Start new eMail game}
-translate H CCDlgYourName {Neved:}
-translate H CCDlgYourMail {eMail-címed:}
-translate H CCDlgOpponentName {Az ellenfél neve:}
-translate H CCDlgOpponentMail {Az ellenfél eMail-címe:}
-translate H CCDlgGameID {Játszmaazonosító (egyedi):}
-translate H CCDlgTitNoOutbox {Scid: A levelezési sakk kimenõ postafiókja}
-translate H CCDlgTitNoInbox {Scid: A levelezési sakk bejövõ postafiókja}
-translate H CCDlgTitNoGames {Scid: Nincsenek levelezési játszmák.}
-translate H CCErrInboxDir {A levelezési sakk bejövõ postafiókjának könyvtára:}
-translate H CCErrOutboxDir {A levelezési sakk kimenõ postafiókjának könyvtára:}
-translate H CCErrDirNotUsable {nem létezik vagy nem hozzáférhetõ!\nEllenõrizd és javítsd ki a beállításokat.}
-translate H CCErrNoGames {nem tartalmaz játszmát!\nElõbb kérd be õket.}
-translate H CCDlgTitNoCCDB {Scid: Nincs levelezési adatbázis.}
-translate H CCErrNoCCDB {Nincs megnyitva "levelezési" típusú adatbázis. Nyiss meg egyet mielõtt levelezési funkciókat akarnál használni.}
-translate H CCFetchBtn {Kérj be játszmákat a szervertõl, és dolgozd fel a bejövõ postafiókot.}
-translate H CCPrevBtn {Menj az elõzõ játszmához.}
-translate H CCNextBtn {Menj a következõ játszmához.}
-translate H CCSendBtn {Lépés elküldése}
-translate H CCEmptyBtn {A postafiókok kiürítése}
-translate H CCHelpBtn {Segítség ikonokhoz és állapotjelzõkhöz\nÁltalános segítségért nyomd meg F1-et!}
-translate H CCDlgServerName {Szervernév:}
 translate H CCDlgLoginName  {Bejelentkezõ név:}
 translate H CCDlgPassword   {Jelszó:}
 # ====== TODO To be translated ======
 translate H CCDlgShowPassword {Show password}
-translate H CCDlgURL        {Xfcc-URL:}
-translate H CCDlgRatingType {Értékszám típusa:}
-translate H CCDlgDuplicateGame {Nem egyedi játszmaazonosító}
-translate H CCDlgDuplicateGameError {Ez a játszma egynél többször fordul elõ adatbázisodban. Töröld a másolatokat, és tömörítsd játszmafájlodat (Fájl/Gondozás/Adatbázis tömörítése).}
 # ====== TODO To be translated ======
-translate H CCDlgSortOption {Sorting:}
 # ====== TODO To be translated ======
-translate H CCDlgListOnlyOwnMove {Only games I have the move}
 # ====== TODO To be translated ======
-translate H CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
 # ====== TODO To be translated ======
-translate H CCOrderMyTimeTxt {My Clock}
 # ====== TODO To be translated ======
-translate H CCOrderTimePerMoveTxt {Time per move till next time control}
 # ====== TODO To be translated ======
-translate H CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
-translate H CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
-translate H CCDlgConfigRelay {Configure ICCF observations}
 # ====== TODO To be translated ======
-translate H CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate H ExtHWConfigConnection {Külsõ hardver beállítása}
 translate H ExtHWPort {Port}
 translate H ExtHWEngineCmd {Motorparancs}

@@ -228,33 +228,9 @@ menuText S ToolsStartEngine1 "Empezar motor 1" 0  {Empieza el motor 1}
 menuText S ToolsStartEngine2 "Empezar motor 2" 0  {Empieza el motor 2}
 menuText S ToolsCaptureBoard "Capturar Tablero Actual..." 0  {Guardar el tablero actual como imagen.}
 menuText S Play "Jugar" 0
-menuText S CorrespondenceChess "Ajedrez por correo" 0 \
-  {Funciones para ajedrez por correo basado en email y Xfcc}
-menuText S CCConfigure "Configurar..." 0 \
-  {Configura herramientas externas y configuración general}
-menuText S CCConfigRelay "Configurar observaciones..." 10 {Configurar partidas para ser observadas}
-menuText S CCOpenDB "Abrir base de datos..." 0 \
-  {Abrir la base de correo por defecto}
-menuText S CCRetrieve "Reparar partidas" 0 \
-  {Repara partidas vía ayuda externa (Xfcc)}
-menuText S CCInbox "Procesar correo entrante" 0 \
-  {Procesa todos los ficheros en correo entrante de Scid (Inbox)}
-menuText S CCSend "Enviar movimiento" 0 \
-  {Envia tu movimiento via eMail o ayuda externa (Xfcc)}
 menuText S CCResign "Abandonar" 0 {Abandona}
 menuText S CCClaimDraw "Reclamar tablas" 0 \
   {Envia un movimiento y reclama tablas}
-menuText S CCOfferDraw "Ofrecer tablas" 0 \
-  {Envia un movimiento y ofrecer tablas}
-menuText S CCAcceptDraw "Aceptar tablas" 0 {Acepta un ofrecimiento de tablas}
-menuText S CCNewMailGame "Nueva partida email..." 0 \
-  {Empeza una nueva partida por email}
-menuText S CCMailMove "Enviar jugada via email..." 0 \
-  {Envía el movimiento via email al oponente}
-menuText S CCGamePage "Página de la partida..." 0 \
-  {Abre la partida desde el navegador}
-menuText S CCEditCopy "Copiar lista de partidas a Clipbase" 0 \
-  {Copia las partidas como una lista CSV a Clipbase}
 
 # Options menu:
 menuText S Options "Opciones" 0
@@ -1688,72 +1664,11 @@ translate S GameReviewNotEngineMoveButGoodMove {No es el movimiento del motor, p
 translate S GameReviewMoveNotGood {Este movimiento no es bueno, la puntuación es }
 translate S GameReviewMovesPlayedLike {Movimientos jugados como}
 translate S GameReviewMovesPlayedEngine {Movimientos jugados como motor}
-translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por correo}
 translate S CCDlgCGeneraloptions {Opciones generales}
-translate S CCDlgDefaultDB {Base por defecto:}
-translate S CCDlgInbox {Entrante (Carpeta):}
-translate S CCDlgOutbox {Saliente (carpeta):}
-translate S CCDlgXfcc {Configuración Xfcc:}
-translate S CCDlgExternalProtocol {Protocolo externo (e.g. Xfcc)}
-translate S CCDlgFetchTool {Herramienta de traer:}
-translate S CCDlgSendTool {Herramienta de envío:}
-translate S CCDlgEmailCommunication {Comunicación email}
-translate S CCDlgMailPrg {Programa de correo:}
-translate S CCDlgBCCAddr {(B)CC Dirección:}
-translate S CCDlgMailerMode {Modo:}
-translate S CCDlgThunderbirdEg {p.e. Thunderbird, Mozilla Mail, Icedove...}
-translate S CCDlgMailUrlEg {p.e. Evolution}
-translate S CCDlgClawsEg {p.e. Sylpheed Claws}
-translate S CCDlgmailxEg {p.e. mailx, mutt, nail...}
-translate S CCDlgAttachementPar {Parámetro Adjunto (Attachment):}
-translate S CCDlgInternalXfcc {Usar soporte interno Xfcc}
-translate S CCDlgConfirmXfcc {Confirmar jugadas}
-translate S CCDlgSubjectPar {Parámetro Sujeto (Subject):}
-translate S CCDlgDeleteBoxes {Vaciar Entrante/Saliente}
-translate S CCDlgDeleteBoxesText {¿Quieres realmente vaciar tus carpetas Entrante y Saliente para Ajedrez por correspondencia? Esto requiere una nueva sincronización para mostrar el estado último de tus partidas}
-translate S CCDlgConfirmMove {Confirmar jugada}
-translate S CCDlgConfirmMoveText {Si tú confirmas, la siguiente jugada y comentario será enviado al servidor:}
-translate S CCDlgDBGameToLong {Línea principal inconsistente}
-translate S CCDlgDBGameToLongError {La línea principal en tu base es más larga que de la partida en la bandeja de entrada. Si la bandeja de entrada contiene la partida actual, algunos movimientos fueron añadidos a la línea principal en la base erróneamente.\nEn este caso acorte la línea principal a la (max) jugada\n}
-translate S CCDlgStartEmail {Empezar nueva partida por email}
-translate S CCDlgYourName {Tu nombre:}
-translate S CCDlgYourMail {Tu dirección email:}
-translate S CCDlgOpponentName {Nombre de oponente:}
-translate S CCDlgOpponentMail {Dirección email de oponente:}
-translate S CCDlgGameID {Partida ID (único):}
-translate S CCDlgTitNoOutbox {Scid: Salida del Correo de Ajedrez}
-translate S CCDlgTitNoInbox {Scid: Entrada del Correo de Ajedrez}
-translate S CCDlgTitNoGames {Scid: No hay partidas de Ajedrez por Correo}
-translate S CCErrInboxDir {Carpeta de entrada del Correo de Ajedrez (Entrante):}
-translate S CCErrOutboxDir {Carpeta de salida del Correo de Ajedrez (Saliente):}
-translate S CCErrDirNotUsable {¡No existe o no está accesible!\nPor favor, compruebe y corrija los parámetros.}
-translate S CCErrNoGames {¡No contiene ninguna partida!\nPor favor, tráigala primero.}
-translate S CCDlgTitNoCCDB {Scid: No es una Base de Ajedrez por Correo}
-translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, abra una antes de usar funciones de ajedrez por correo.}
-translate S CCFetchBtn {Traer partidas desde el servidor y procesar correo entrante}
-translate S CCPrevBtn {Ir a partida anterior}
-translate S CCNextBtn {Ir a partida siguiente}
-translate S CCSendBtn {Enviar movimiento}
-translate S CCEmptyBtn {Correos entrante y saliente vacíos}
-translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda general, pulse F1}
-translate S CCDlgServerName {Nombre del servidor:}
 translate S CCDlgLoginName  {Nombre de registro:}
 translate S CCDlgPassword   {Contraseña:}
 # ====== TODO To be translated ======
 translate S CCDlgShowPassword {Show password}
-translate S CCDlgURL        {Xfcc-URL:}
-translate S CCDlgRatingType {Tipo de puntuación (Rating):}
-translate S CCDlgDuplicateGame {El ID de la partida no es único}
-translate S CCDlgDuplicateGameError {Esta partida existe más de una vez en tu base. Por favor, borra todos los duplicados y compacta tu fichero de partidas (Fichero/Mantenimiento/Compactar base de datos).}
-translate S CCDlgSortOption {Ordenando:}
-translate S CCDlgListOnlyOwnMove {Sólo partidas que tienen el movimiento}
-translate S CCOrderClassicTxt {Lugar, Evento, Ronda, Resultado, Blancas, Negras}
-translate S CCOrderMyTimeTxt {Mi reloj}
-translate S CCOrderTimePerMoveTxt {Tiempo por movimiento falta el próximo control de tiempo}
-translate S CCOrderStartDate {Empezar fecha}
-translate S CCOrderOppTimeTxt {Reloj de los oponentes}
-translate S CCDlgConfigRelay {Configurar observaciones ICCF}
-translate S CCDlgConfigRelayHelp {Ir a las partidas de la página en http://www.iccf-webchess.com y mostrar la partida a ser observada. Si tu ves el tablero de ajedrez copia la URL desde tu explorador a la lista. !Una sola URL por línea!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}

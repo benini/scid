@@ -244,35 +244,22 @@ menuText P ToolsCaptureBoard "Capture Current Board..." 0  {Save the current boa
 # ====== TODO To be translated ======
 menuText P Play "Play" 0
 # ====== TODO To be translated ======
-menuText P CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
 # ====== TODO To be translated ======
-menuText P CCConfigure "Configure..." 0 {Configure external tools and general setup}
 # ====== TODO To be translated ======
-menuText P CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 # ====== TODO To be translated ======
-menuText P CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 # ====== TODO To be translated ======
-menuText P CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
 # ====== TODO To be translated ======
-menuText P CCInbox "Process Inobx" 0 {Process all files in scids Inbox}
 # ====== TODO To be translated ======
-menuText P CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
 # ====== TODO To be translated ======
 menuText P CCResign "Resign" 0 {Resign (not via eMail)}
 # ====== TODO To be translated ======
 menuText P CCClaimDraw "Claim Draw" 0 {Send move and claim a draw (not via eMail)}
 # ====== TODO To be translated ======
-menuText P CCOfferDraw "Offer Draw" 0 {Send move and offer a draw (not via eMail)}
 # ====== TODO To be translated ======
-menuText P CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 # ====== TODO To be translated ======
-menuText P CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
-menuText P CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
 # ====== TODO To be translated ======
-menuText P CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 # ====== TODO To be translated ======
-menuText P CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 menuText P Options "Opcje" 0
 # ====== TODO To be translated ======
@@ -2058,103 +2045,55 @@ translate P GameReviewMovesPlayedLike {Moves played like}
 # ====== TODO To be translated ======
 translate P GameReviewMovesPlayedEngine {Moves played like engine}
 # ====== TODO To be translated ======
-translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate P CCDlgCGeneraloptions {General Options}
 # ====== TODO To be translated ======
-translate P CCDlgDefaultDB {Default Database:}
 # ====== TODO To be translated ======
-translate P CCDlgInbox {Inbox (path):}
 # ====== TODO To be translated ======
-translate P CCDlgOutbox {Outbox (path):}
 # ====== TODO To be translated ======
-translate P CCDlgXfcc {Xfcc Configuration:}
 # ====== TODO To be translated ======
-translate P CCDlgExternalProtocol {External Protocol Handler (e.g. Xfcc)}
 # ====== TODO To be translated ======
-translate P CCDlgFetchTool {Fetch Tool:}
 # ====== TODO To be translated ======
-translate P CCDlgSendTool {Send Tool:}
 # ====== TODO To be translated ======
-translate P CCDlgEmailCommunication {eMail Communication}
 # ====== TODO To be translated ======
-translate P CCDlgMailPrg {Mail program:}
 # ====== TODO To be translated ======
-translate P CCDlgBCCAddr {(B)CC Address:}
 # ====== TODO To be translated ======
-translate P CCDlgMailerMode {Mode:}
 # ====== TODO To be translated ======
-translate P CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
 # ====== TODO To be translated ======
-translate P CCDlgMailUrlEg {e.g. Evolution}
 # ====== TODO To be translated ======
-translate P CCDlgClawsEg {e.g Sylpheed Claws}
 # ====== TODO To be translated ======
-translate P CCDlgmailxEg {e.g. mailx, mutt, nail...}
 # ====== TODO To be translated ======
-translate P CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
-translate P CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
-translate P CCDlgConfirmXfcc {Confirm moves}
 # ====== TODO To be translated ======
-translate P CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
-translate P CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
-translate P CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
 # ====== TODO To be translated ======
-translate P CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
-translate P CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 # ====== TODO To be translated ======
-translate P CCDlgDBGameToLong {Inconsistent Mainline}
 # ====== TODO To be translated ======
-translate P CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
 # ====== TODO To be translated ======
-translate P CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
-translate P CCDlgYourName {Your Name:}
 # ====== TODO To be translated ======
-translate P CCDlgYourMail {Your eMail Address:}
 # ====== TODO To be translated ======
-translate P CCDlgOpponentName {Opponents Name:}
 # ====== TODO To be translated ======
-translate P CCDlgOpponentMail {Opponents eMail Address:}
 # ====== TODO To be translated ======
-translate P CCDlgGameID {Game ID (unique):}
 # ====== TODO To be translated ======
-translate P CCDlgTitNoOutbox {Scid: Correspondence Chess Outbox}
 # ====== TODO To be translated ======
-translate P CCDlgTitNoInbox {Scid: Correspondence Chess Inbox}
 # ====== TODO To be translated ======
-translate P CCDlgTitNoGames {Scid: No Correspondence Chess Games}
 # ====== TODO To be translated ======
-translate P CCErrInboxDir {Correspondence Chess inbox directory:}
 # ====== TODO To be translated ======
-translate P CCErrOutboxDir {Correspondence Chess outbox directory:}
 # ====== TODO To be translated ======
-translate P CCErrDirNotUsable {does not exist or is not accessible!\nPlease check and correct the settings.}
 # ====== TODO To be translated ======
-translate P CCErrNoGames {does not contain any games!\nPlease fetch them first.}
 # ====== TODO To be translated ======
-translate P CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
-translate P CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
-translate P CCFetchBtn {Fetch games from the server and process the Inbox}
 # ====== TODO To be translated ======
-translate P CCPrevBtn {Goto previous game}
 # ====== TODO To be translated ======
-translate P CCNextBtn {Goto next game}
 # ====== TODO To be translated ======
-translate P CCSendBtn {Send move}
 # ====== TODO To be translated ======
-translate P CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
-translate P CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
-translate P CCDlgServerName {Server Name:}
 # ====== TODO To be translated ======
 translate P CCDlgLoginName  {Login Name:}
 # ====== TODO To be translated ======
@@ -2162,31 +2101,18 @@ translate P CCDlgPassword   {Password:}
 # ====== TODO To be translated ======
 translate P CCDlgShowPassword {Show password}
 # ====== TODO To be translated ======
-translate P CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
-translate P CCDlgRatingType {Rating Type:}
 # ====== TODO To be translated ======
-translate P CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
-translate P CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
-translate P CCDlgSortOption {Sorting:}
 # ====== TODO To be translated ======
-translate P CCDlgListOnlyOwnMove {Only games I have the move}
 # ====== TODO To be translated ======
-translate P CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
 # ====== TODO To be translated ======
-translate P CCOrderMyTimeTxt {My Clock}
 # ====== TODO To be translated ======
-translate P CCOrderTimePerMoveTxt {Time per move till next time control}
 # ====== TODO To be translated ======
-translate P CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
-translate P CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
-translate P CCDlgConfigRelay {Configure ICCF observations}
 # ====== TODO To be translated ======
-translate P CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 # ====== TODO To be translated ======
 translate P ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======

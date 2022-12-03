@@ -231,22 +231,9 @@ menuText N ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
 # ====== TODO To be translated ======
 menuText N ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
 menuText N Play "Speel" 0
-menuText N CorrespondenceChess "Correspondentieschaak" 0 {Functies voor eMail en Xfcc gebaseerde correspondentieschaak}
-menuText N CCConfigure "Configureer..." 0 {Configureer externe gereedschappen en algemene instellingen}
 # ====== TODO To be translated ======
-menuText N CCConfigRelay "Observe games..." 10 {Configure games to be observed}
-menuText N CCOpenDB "Open Database..." 0 {Open de standaard correspondentieschaak database}
-menuText N CCRetrieve "Haal Partijen op" 0 {Haal partijen op via externe (Xfcc-)helper}
-menuText N CCInbox "Verwerk Inbox" 0 {Verwerk alle bestanden in scids Inbox}
-menuText N CCSend "Stuur de Zet op" 0 {Stuur de zet op via eMail of de externe (Xfcc-)helper}
 menuText N CCResign "Geef op" 0 {Geef op (niet via eMail)}
 menuText N CCClaimDraw "Eis Remise" 0 {Stuur de zet op en eis remise (niet via eMail)}
-menuText N CCOfferDraw "Stel Remise voor" 0 {Stuur de zet op en stel remise voor (niet via eMail)}
-menuText N CCAcceptDraw "Accepteer Remise" 0 {Accepteer een remise voorstel (niet via eMail)}
-menuText N CCNewMailGame "Nieuwe eMail Partij..." 0 {Start een nieuwe eMail partij}
-menuText N CCMailMove "Stuur de zet op..." 0 {Stuur de zet op naar de tegenspeler via eMail}
-menuText N CCGamePage "Partij Pagina..." 0 {Roep de partij op met een web browser}
-menuText N CCEditCopy "Kopieer de Partijlijst naar het Clipbord" 0 {Kopieer de Partijen als CSV lijst naar het clipbord}
 
 # Options menu:
 menuText N Options "Opties" 0
@@ -1789,74 +1776,13 @@ translate N GameReviewNotEngineMoveButGoodMove {Geen engine zet maar ook goed}
 translate N GameReviewMoveNotGood {Deze zet is niet goed, de score is}
 translate N GameReviewMovesPlayedLike {Zetten gespeeld zoals}
 translate N GameReviewMovesPlayedEngine {Zetten gespeeld zoals de engine}
-translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
-translate N CCDlgDefaultDB {Default Databank:}
-translate N CCDlgInbox {Inbox (pad):}
-translate N CCDlgOutbox {Outbox (pad):}
-translate N CCDlgXfcc {Xfcc Configuratie:}
-translate N CCDlgExternalProtocol {Externe Protocol Verwerker (b.v. Xfcc)}
-translate N CCDlgFetchTool {Verwerf Tool:}
-translate N CCDlgSendTool {Zend Tool:}
-translate N CCDlgEmailCommunication {eMail Communicatie}
-translate N CCDlgMailPrg {Mail programma:}
-translate N CCDlgBCCAddr {(B)CC Address:}
-translate N CCDlgMailerMode {Mode:}
-translate N CCDlgThunderbirdEg {b.v. Thunderbird, Mozilla Mail, Icedove...}
-translate N CCDlgMailUrlEg {b.v. Evolution}
-translate N CCDlgClawsEg {b.v Sylpheed Claws}
-translate N CCDlgmailxEg {b.v. mailx, mutt, nail...}
-translate N CCDlgAttachementPar {Aanhangsel parameter:}
-translate N CCDlgInternalXfcc {Gebruik interne Xfcc ondersteuning}
-translate N CCDlgConfirmXfcc {Bevestig de zetten}
-translate N CCDlgSubjectPar {Onderwerp parameter:}
-translate N CCDlgDeleteBoxes {Lege In-/Uitbox}
-translate N CCDlgDeleteBoxesText {Wil je echt de  In- and Uitbox mappen voor Correspondentieschaak ledigen? Dit vereist een nieuwe synchronisatie om de laatste staat van je partijen te tonen.}
-translate N CCDlgConfirmMove {Bevestig zet}
-translate N CCDlgConfirmMoveText {Als je bevestigt zal volgende zet en commentaar naar de server gestuurd worden:}
-translate N CCDlgDBGameToLong {Onverenigbare Hoofdvariant}
-translate N CCDlgDBGameToLongError {De hoofdvariant in jouw database is langer dan de partij in je Inbox. Als de Inbox huidige partijen bevat bvb. vlak na een synchronisatie, dan werden enkele verkeerde zetten toegevoegd aan de hoofdvariant.\nIn dit geval verkort de hoofdvariant tot (max) zetten\n}
-translate N CCDlgStartEmail {Start een nieuwe eMail partij}
-translate N CCDlgYourName {Uw Naam:}
-translate N CCDlgYourMail {Uw eMail Addres:}
-translate N CCDlgOpponentName {Naam van de tegenstander:}
-translate N CCDlgOpponentMail {EMail Addres van de tegenstander:}
-translate N CCDlgGameID {Game ID (uniek):}
-translate N CCDlgTitNoOutbox {Scid: Correspondentie Schaak Outbox}
-translate N CCDlgTitNoInbox {Scid: Correspondentie Schaak Inbox}
-translate N CCDlgTitNoGames {Scid: Geen Correspondentie Schaak partijen}
-translate N CCErrInboxDir {Correspondentie Schaak inbox folder:}
-translate N CCErrOutboxDir {Correspondentie Schaak outbox folder:}
-translate N CCErrDirNotUsable {dit bestaat niet of is niet toegankelijk!\nVerifieer en corrigeer de instellingen.}
-translate N CCErrNoGames {dit bevat geen partijen!\nHaal ze alstublieft eerst op.}
-translate N CCDlgTitNoCCDB {Scid: No Correspondentie Databank}
-translate N CCErrNoCCDB {Er werd geen databank van type 'Correspondentie' geopend. U moet er eerst een openen alvorens de correspondentie schaak functies te gebruiken.}
-translate N CCFetchBtn {Haal de partijen van de server en verwerk de Inbox}
-translate N CCPrevBtn {Ga naar de vorige partij}
-translate N CCNextBtn {Ga naar de volgende}
-translate N CCSendBtn {Stuur de zet op}
-translate N CCEmptyBtn {Ledig In- en Outbox}
-translate N CCHelpBtn {Hulp over iconen en status indicatoren.\nVoor algemen hulp: druk F1!}
-translate N CCDlgServerName {Server Naam:}
 translate N CCDlgLoginName  {Login Naam:}
 translate N CCDlgPassword   {Paswoord:}
 # ====== TODO To be translated ======
 translate N CCDlgShowPassword {Show password}
-translate N CCDlgURL        {Xfcc-URL:}
-translate N CCDlgRatingType {Klassering Type:}
-translate N CCDlgDuplicateGame {Niet-unieke partij ID}
-translate N CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
-translate N CCDlgSortOption {Rangschikken:}
-translate N CCDlgListOnlyOwnMove {De enige partijen waarvan ik de zet heb}
-translate N CCOrderClassicTxt {Plaats, Wedstrijd, Ronde, Resultaat, Wit, Zwart}
-translate N CCOrderMyTimeTxt {Mijn klok}
-translate N CCOrderTimePerMoveTxt {Tijd per zet tot de volgende tijdscontrole}
-translate N CCOrderStartDate {Start datum}
-translate N CCOrderOppTimeTxt {Tegenstander Klok}
 # ====== TODO To be translated ======
-translate N CCDlgConfigRelay {Observe games}
 # ====== TODO To be translated ======
-translate N CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}

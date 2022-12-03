@@ -212,21 +212,8 @@ menuText I ToolsCaptureBoard "Salva la posizione come immagine..." 13  {Salva la
 menuText I Play "Gioca" 0
 
 # --- Correspondence Chess
-menuText I CorrespondenceChess "Gioco per corrispondenza" 0 {Funzioni per il gioco per corrispondenza tramite email e Xfcc}
-menuText I CCConfigure "Configura..." 0 {Configurazione generale e degli strumenti esterni}
-menuText I CCConfigRelay "Configura l'osservazione..." 10 {Configura le partite da osservare}
-menuText I CCOpenDB "Apri database..." 0 {Apri il database di default per il gioco per corrispondenza}
-menuText I CCRetrieve "Trova partite" 0 {Trova le partite tramite l'aiuto esterno Xfcc}
-menuText I CCInbox "Processa posta in arrivo" 0 {Processa tutti i file nella posta in arrivo di Scid}
-menuText I CCSend "Spedisci mossa" 0 {Spedisce la tua mossa tramite email o Xfcc}
 menuText I CCResign "Abbandona" 1 {Abbandona la partita (non tramite email)}
 menuText I CCClaimDraw "Richiedi patta" 0 {Spedisce la mossa e richiede la patta (non tramite email)}
-menuText I CCOfferDraw "Offri patta" 0 {Spedisce la mossa e offre la patta (non tramite email)}
-menuText I CCAcceptDraw "Accetta patta" 3 {Accetta l'offerta di patta (non tramite email)}
-menuText I CCNewMailGame "Nuova partita per email..." 0 {Avvia una nuova partita tramite email}
-menuText I CCMailMove "Mossa per email..." 0 {Spedisce la mossa all'avversariio tramite email}
-menuText I CCGamePage "Pagina della partita..." 2 {Apre la partita tramite il browser web}
-menuText I CCEditCopy "Copia la lista di partite nella clipboard" 0 {Copia le partite come lista CSV nella clipbase}
 
 # Options menu:
 menuText I Options "Opzioni" 0
@@ -1592,71 +1579,10 @@ translate I GameReviewNotEngineMoveButGoodMove {Non è la mossa del motore ma è c
 translate I GameReviewMoveNotGood {Questa mossa è debole, il punteggio è}
 translate I GameReviewMovesPlayedLike {Mosse giocate come}
 translate I GameReviewMovesPlayedEngine {Mosse giocate come il motore}
-translate I CCDlgConfigureWindowTitle {Configura il gioco per corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
-translate I CCDlgDefaultDB {Database predefinito:}
-translate I CCDlgInbox {Posta in arrivo (percorso):}
-translate I CCDlgOutbox {Posta in uscita (percorso):}
-translate I CCDlgXfcc {Configurazione di Xfcc:}
-translate I CCDlgExternalProtocol {Gestore del protocollo esterno (p. es. Xfcc)}
-translate I CCDlgFetchTool {Strumento per la scansione:}
-translate I CCDlgSendTool {Strumento per l'invio:}
-translate I CCDlgEmailCommunication {Comunicazione via email}
-translate I CCDlgMailPrg {Programma di posta:}
-translate I CCDlgBCCAddr {Indirizzo (B)CC:}
-translate I CCDlgMailerMode {Modo:}
-translate I CCDlgThunderbirdEg {p. es. Thunderbird, Icedove...}
-translate I CCDlgMailUrlEg {p. es. Evolution}
-translate I CCDlgClawsEg {p. es Sylpheed Claws}
-translate I CCDlgmailxEg {p. es. mailx, mutt, nail...}
-translate I CCDlgAttachementPar {Parametro per l'allegato:}
-translate I CCDlgInternalXfcc {Usa il supporto interno per Xfcc}
-translate I CCDlgConfirmXfcc {Conferma le mosse}
-translate I CCDlgSubjectPar {Parametro per l'oggetto:}
-translate I CCDlgDeleteBoxes {Svuota le caselle di posta}
-translate I CCDlgDeleteBoxesText {Vuoi veramente svuotare le caselle di posta in entrata e uscita per il gioco per corrispondenza? Questo richiede una nuova sincronizzazione per mostrare l'ultimo stato delle tue partite}
-translate I CCDlgConfirmMove {Conferma la mossa}
-translate I CCDlgConfirmMoveText {Se confermi, la mossa e il commento seguenti saranno inviati al server:}
-translate I CCDlgDBGameToLong {Linea principale non valida}
-translate I CCDlgDBGameToLongError {La linea principale nel tuo database è più lunga della partita nella tua Posta in arrivo. Se la Posta in arrivo contiene la partita corrente, dopo una sincronizzazione, alcune mosse sono state aggiunte alla linea principale nel database erroneamente.\nIn questo caso, accorcia la linea principale (al massimo) alla mossa\n}
-translate I CCDlgStartEmail {Avvia una nuova partita tramite email}
-translate I CCDlgYourName {Il tuo nome:}
-translate I CCDlgYourMail {Il tuo indirizzo email:}
-translate I CCDlgOpponentName {Nome dell'avversario:}
-translate I CCDlgOpponentMail {Indirizzo email dell'avversario:}
-translate I CCDlgGameID {ID (univoco) della partita:}
-translate I CCDlgTitNoOutbox {Scid: Posta in uscita del gioco per corrispondenza}
-translate I CCDlgTitNoInbox {Scid: Posta in arrivo del gioco per corrispondenza}
-translate I CCDlgTitNoGames {Scid: Nessuna partita per corrispondenza}
-translate I CCErrInboxDir {Directory della posta in arrivo:}
-translate I CCErrOutboxDir {Directory della posta in uscita:}
-translate I CCErrDirNotUsable {non esiste o non è accessibile\nControlla e correggi le impostazioni.}
-translate I CCErrNoGames {non contiene partite!\nEffettua prima una scansione.}
-translate I CCDlgTitNoCCDB {Scid: Nessun database per il gioco per corrispondenza}
-translate I CCErrNoCCDB {Non è aperto nessun database di tipo "gioco per corrispondenza". Aprine uno usando le funzioni per il gioco per corrispondenza.}
-translate I CCFetchBtn {Recupera le partite dal server ed elabora la posta in arrivo}
-translate I CCPrevBtn {Vai alla partita precedente}
-translate I CCNextBtn {Vai alla partita successiva}
-translate I CCSendBtn {Invia mossa}
-translate I CCEmptyBtn {Svuota le caselle di posta}
-translate I CCHelpBtn {Aiuto sulle icone e gli indicatori.\nPer Aiuto generale premi F1!}
-translate I CCDlgServerName {Nome del server:}
 translate I CCDlgLoginName  {Login:}
 translate I CCDlgPassword   {Password:}
 translate I CCDlgShowPassword {Mostra password}
-translate I CCDlgURL        {Xfcc-URL:}
-translate I CCDlgRatingType {Tipo di rating:}
-translate I CCDlgDuplicateGame {ID della partita non unico}
-translate I CCDlgDuplicateGameError {Questa partita esiste più di una volta nel tuo database. Elimina tutti i duplicati e compatta il file di partite (File/Gestione/Compatta database).}
-translate I CCDlgSortOption {Ordinamento:}
-translate I CCDlgListOnlyOwnMove {Solo le partite nelle quali devo muovere}
-translate I CCOrderClassicTxt {Sito, Evento, Turno, Risultato, Bianco, Nero}
-translate I CCOrderMyTimeTxt {Mio orologio}
-translate I CCOrderTimePerMoveTxt {Tempo per mossa fino al prossimo controllo}
-translate I CCOrderStartDate {Data di inizio}
-translate I CCOrderOppTimeTxt {Orologio dell'avversario}
-translate I CCDlgConfigRelay {Configura osservazioni ICCF}
-translate I CCDlgConfigRelayHelp {Vai alla pagina delle partite su http://www.iccf-webchess.com e visualizza la partita da osservare.  Se vedi la scacchiera, copia l'URL dal tuo browser nella lista qui sotto. Un solo URL per linea!\nEsempio: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate I ExtHWConfigConnection {Configura un dispositivo esterno}
 translate I ExtHWPort {Porta}
 translate I ExtHWEngineCmd {Comando del motore}

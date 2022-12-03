@@ -244,25 +244,12 @@ menuText E ToolsCaptureBoard "Capture Current Board..." 5  {Save the current boa
 menuText E Play "Play" 0
 
 # --- Correspondence Chess
-menuText E CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
-menuText E CCConfigure "Configure..." 0 {Configure external tools and general setup}
-menuText E CCConfigRelay "Observe games..." 10 {Configure games to be observed}
-menuText E CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
-menuText E CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
-menuText E CCInbox "Process Inbox" 8 {Process all files in scids Inbox}
-menuText E CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
 
 menuText E CCResign "Resign" 1 {Resign (not via eMail)}
 menuText E CCClaimDraw "Claim Draw" 6 {Send move and claim a draw (not via eMail)}
-menuText E CCOfferDraw "Offer Draw" 1 {Send move and offer a draw (not via eMail)}
-menuText E CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 
-menuText E CCNewMailGame "New eMail Game..." 2 {Start a new eMail game}
-menuText E CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
-menuText E CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # menu in cc window:
-menuText E CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 #  B    GHiJKL    Q  TUV XYZ
 
@@ -1619,83 +1606,19 @@ translate E GameReviewMovesPlayedLike {Moves played like}
 translate E GameReviewMovesPlayedEngine {Moves played like engine}
 
 # Correspondence Chess Dialogs:
-translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 translate E CCDlgCGeneraloptions {General Options}
-translate E CCDlgDefaultDB {Default Database:}
-translate E CCDlgInbox {Inbox (path):}
-translate E CCDlgOutbox {Outbox (path):}
-translate E CCDlgXfcc {Xfcc Configuration:}
-translate E CCDlgExternalProtocol {External Protocol\nHandler (e.g. Xfcc)}
-translate E CCDlgFetchTool {Fetch Tool:}
-translate E CCDlgSendTool {Send Tool:}
-translate E CCDlgEmailCommunication {eMail Communication}
-translate E CCDlgMailPrg {Mail program:}
-translate E CCDlgBCCAddr {(B)CC Address:}
-translate E CCDlgMailerMode {Mode:}
-translate E CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
-translate E CCDlgMailUrlEg {e.g. Evolution}
-translate E CCDlgClawsEg {e.g Sylpheed Claws}
-translate E CCDlgmailxEg {e.g. mailx, mutt, nail...}
-translate E CCDlgAttachementPar {Attachment\nparameter:}
-translate E CCDlgInternalXfcc {Use internal Xfcc support}
-translate E CCDlgConfirmXfcc {Confirm moves}
-translate E CCDlgSubjectPar {Subject\nparameter:}
-translate E CCDlgDeleteBoxes {Empty In-/Outbox}
-translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess?\nThis requires a new sync to show the last state of your games.}
-translate E CCDlgConfirmMove {Confirm move}
-translate E CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-translate E CCDlgDBGameToLong {Inconsistent Mainline}
-translate E CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.
-
-In this case please shorten the mainline to (at max) move
-}
 
 
-translate E CCDlgStartEmail {Start new eMail game}
-translate E CCDlgYourName {Your Name:}
-translate E CCDlgYourMail {Your eMail Address:}
-translate E CCDlgOpponentName {Opponents Name:}
-translate E CCDlgOpponentMail {Opponents eMail Address:}
-translate E CCDlgGameID {Game ID (unique):}
 
-translate E CCDlgTitNoOutbox {Scid: Correspondence Chess Outbox}
-translate E CCDlgTitNoInbox {Scid: Correspondence Chess Inbox}
-translate E CCDlgTitNoGames {Scid: No Correspondence Chess Games}
-translate E CCErrInboxDir {Correspondence Chess inbox directory:}
-translate E CCErrOutboxDir {Correspondence Chess outbox directory:}
-translate E CCErrDirNotUsable {does not exist or is not accessible!\nPlease check and correct the settings.}
-translate E CCErrNoGames {does not contain any games!\nPlease fetch them first.}
 
-translate E CCDlgTitNoCCDB {Scid: No Correspondence Database}
-translate E CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 
-translate E CCFetchBtn {Fetch games from the server and process the Inbox}
-translate E CCPrevBtn {Goto previous game}
-translate E CCNextBtn {Goto next game}
-translate E CCSendBtn {Send move}
-translate E CCEmptyBtn {Empty In- and Outbox}
-translate E CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 
-translate E CCDlgServerName {Server Name:}
 translate E CCDlgLoginName  {Login Name:}
 translate E CCDlgPassword   {Password:}
 translate E CCDlgShowPassword {Show password}
-translate E CCDlgURL        {Xfcc-URL:}
-translate E CCDlgRatingType {Rating Type:}
 
-translate E CCDlgDuplicateGame {Non-unique game ID}
-translate E CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 
-translate E CCDlgSortOption {Sorting:}
-translate E CCDlgListOnlyOwnMove {Only games I have the move}
-translate E CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-translate E CCOrderMyTimeTxt {My Clock}
-translate E CCOrderTimePerMoveTxt {Time per move till next time control}
-translate E CCOrderStartDate {Start date}
-translate E CCOrderOppTimeTxt {Opponents Clock}
 
-translate E CCDlgConfigRelay {Observe games}
-translate E CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate E ExtHWConfigConnection {Configure external hardware}

@@ -245,25 +245,12 @@ menuText U ToolsCaptureBoard "Kuvakaappaus asemasta..." 1  {Tallenna asema kuvan
 menuText U Play "Pelaa" 0
 
 # --- Correspondence Chess
-menuText U CorrespondenceChess "Kirjeshakki" 0 {Toiminnot sähköposti- ja Xfcc-pohjaista kirjeshakkia varten}
-menuText U CCConfigure "Asetukset" 0 {Määritä ohjelmat ja tee kirjeshakkiin liittyvät asetukset}
-menuText U CCConfigRelay "Seuraa pelejä..." 12 {Seurattavien pelien asetukset}
-menuText U CCOpenDB "Avaa tietokanta" 1 {Avaa kirjeshakin oletustietokanta}
-menuText U CCRetrieve "Nouda pelit" 0 {Hae pelit ulkoisella (Xfcc-) avustajalla}
-menuText U CCInbox "Käsittele Saapuneet" 1 {Käsittele kaikki saapuneet tiedostot}
-menuText U CCSend "Lähetä siirto" 2 {Lähetä siirtosi sähköpostina tai (Xfcc-) avustajalla}
 
 menuText U CCResign "Luovuta" 0 {Luovuta (ei sähköposti)}
 menuText U CCClaimDraw "Vaadi tasapeliä" 0 {Lähetä siirto ja vaadi tasapeliä (ei sähköposti)}
-menuText U CCOfferDraw "Tarjoa tasapeliä" 2 {Lähetä siirto ja ehdota tasapeliä (ei sähköposti)}
-menuText U CCAcceptDraw "Hyväksy tasapeli" 1 {Hyväksy vastustajan tarjoama tasapeli (ei sähköposti)}
 
-menuText U CCNewMailGame "Uusi sähköpostipeli" 0 {Aloita uusi sähköpostipeli}
-menuText U CCMailMove "Sähköpostisiirto" 0 {Lähetä siirto sähköpostilla vastustajalle}
-menuText U CCGamePage "Pelisivusto" 0 {Avaa pelisivusto selaimessa}
 
 # menu in cc window:
-menuText U CCEditCopy "Kopioi pelilista leikekantaan" 0 {Kopioi pelit leikekantaan CSV-tiedostona (pilkuilla erotettu teksti)}
 
 #  B    GHiJKL    Q  TUV XYZ
 
@@ -1645,80 +1632,19 @@ translate U GameReviewMovesPlayedLike {Siirrot kuin}
 translate U GameReviewMovesPlayedEngine {Siirrot kuin moottorilla}
 
 # Correspondence Chess Dialogs:
-translate U CCDlgConfigureWindowTitle {Kirjeshakkiasetukset}
 translate U CCDlgCGeneraloptions {Yleiset}
-translate U CCDlgDefaultDB {Oletustietokanta:}
-translate U CCDlgInbox {Inbox/Saapuneet (polku):}
-translate U CCDlgOutbox {Outbox/Lähtevät (polku):}
-translate U CCDlgXfcc {Xfcc-asetukset:}
-translate U CCDlgExternalProtocol {Ulkoisten protokollien käsittelijä (esim. Xfcc)}
-translate U CCDlgFetchTool {Noutotyökalu:}
-translate U CCDlgSendTool {Lähetystyökalu:}
-translate U CCDlgEmailCommunication {eMail}
-translate U CCDlgMailPrg {eMail-ohjelma:}
-translate U CCDlgBCCAddr {(B)CC-osoite:}
-translate U CCDlgMailerMode {Moodi:}
-translate U CCDlgThunderbirdEg {esim. Thunderbird, Mozilla Mail, Icedove...}
-translate U CCDlgMailUrlEg {esim. Evolution}
-translate U CCDlgClawsEg {esim. Sylpheed Claws}
-translate U CCDlgmailxEg {esim. mailx, mutt, nail...}
-translate U CCDlgAttachementPar {Liiteparametrit:}
-translate U CCDlgInternalXfcc {Käytä sisäänrakennettua tukea Xfcc:lle}
-translate U CCDlgConfirmXfcc {Vahvista siirrot}
-translate U CCDlgSubjectPar {Otsikko:}
-translate U CCDlgDeleteBoxes {Tyhjennä In-/Outbox}
-translate U CCDlgDeleteBoxesText {Haluatko varmasti tyhjentää Saapuneet ja Lähetetyt?\nTyhjennykse jälkeen sinun täytyy synkronoida nähdäksesi tämänhetkiset asemat.}
-translate U CCDlgConfirmMove {Vahvista siirto}
-translate U CCDlgConfirmMoveText {Jos vahvistat, seuraava siirto kommentteineen lähetetään palvelimelle:}
-translate U CCDlgDBGameToLong {Epäyhtenäinen päämuunnelma}
-translate U CCDlgDBGameToLongError {Päämuunnelma on pidempi kuin peli Saapuneet-kansiossa (Inbox). Mikäli Saapuneet on ajan tasalla, on pelin päämuunnelmaan lisätty vahingossa siirtoja.\nLyhennä päämuunnelma ainakin siirtoon \n}
 
 
-translate U CCDlgStartEmail {Aloita uusi eMail-peli}
-translate U CCDlgYourName {Nimi:}
-translate U CCDlgYourMail {eMail-osoite:}
-translate U CCDlgOpponentName {Vastustajan nimi:}
-translate U CCDlgOpponentMail {Vastustajan eMail-osoite:}
-translate U CCDlgGameID {Peli ID (yksilöllinen):}
 
-translate U CCDlgTitNoOutbox {Scid: Kirjeshakki - Lähtevät (Outbox)}
-translate U CCDlgTitNoInbox {Scid: Kirjeshakki - Saapuneet (Inbox)}
-translate U CCDlgTitNoGames {Scid: Ei kirjeshakkipelejä}
-translate U CCErrInboxDir {Kirjeshakki - Saapuneet-hakemisto:}
-translate U CCErrOutboxDir {Kirjeshakki - Lähtevät-hakemisto:}
-translate U CCErrDirNotUsable {ei ole olemassa tai siihen ei saada yhteyttä!\nTarkista ja korjaa asetukset.}
-translate U CCErrNoGames {ei siällä pelejä!\nNouda pelit ensin.}
 
-translate U CCDlgTitNoCCDB {Scid: Ei kirjeshakkitietokantaa}
-translate U CCErrNoCCDB {Ei löydy avointa 'Kirjeshakki (Correspondence)' tyyppistä tietokantaa. Avaa ainakin yksi kirjeshakkikanta ennen kirjeshakkitoimintojen käyttöä.}
 
-translate U CCFetchBtn {Nouda pelit serveriltä ja prosessoi Saapuneet (Inbox)}
-translate U CCPrevBtn {Edelliseen peliin}
-translate U CCNextBtn {Seuraavaan peliin}
-translate U CCSendBtn {Lähetä siirto}
-translate U CCEmptyBtn {Tyhjennä Saapuneet ja Lähetetyt}
-translate U CCHelpBtn {Apua kuvakkeiden ja statussanomien tulkintaan.\nYleisempää apua saa painamalla F1!}
 
-translate U CCDlgServerName {Serverin nimi:}
 translate U CCDlgLoginName  {Käyttäjätunnus:}
 translate U CCDlgPassword   {Salasana:}
 # ====== TODO To be translated ======
 translate U CCDlgShowPassword {Show password}
-translate U CCDlgURL        {Xfcc-URL:}
-translate U CCDlgRatingType {Vahvuuslukutyyppi:}
 
-translate U CCDlgDuplicateGame {Ei-yksilöllinen peli-ID}
-translate U CCDlgDuplicateGameError {Tämä peli löytyy useammasta kuin yhdestä tietokannastasi. Poista tuplat ja tiivistä tietokantasi (Tiedosto/Ylläpito/Tiivistä kanta).}
 
-translate U CCDlgSortOption {Lajittelu:}
-translate U CCDlgListOnlyOwnMove {Vain ne, joissa olen siirtovuorossa}
-translate U CCOrderClassicTxt {Paika, Tapahtuma, Kierros, Tulos, Valkea, Musta}
-translate U CCOrderMyTimeTxt {Kelloni}
-translate U CCOrderTimePerMoveTxt {Aikaa per siirto ennen seuraavaa ajantarkastusta}
-translate U CCOrderStartDate {Aloituspvm.}
-translate U CCOrderOppTimeTxt {Vastustajan kello}
-translate U CCDlgConfigRelay {Seuraa pelejä}
-translate U CCDlgConfigRelayHelp {Siirry sivulle http://www.iccf-webchess.com ja näytä seurattava peli.  Jos näet shakkilaudan, kopioi osoite selaimestasi URL alla olevaan listaan. Vain yksi osoite per rivi!\nEsim: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate U ExtHWConfigConnection {Ulkoisten laitteiden asetukset}
