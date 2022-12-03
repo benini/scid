@@ -659,34 +659,6 @@ translate B EngineTime {Data}
 translate B EngineNew {Novo}
 translate B EngineEdit {Editar}
 translate B EngineRequired {Campos em negrito são obrigatórios; os demais são opcionais}
-# ====== TODO To be translated ======
-translate B EngineMoveLinesNotation {Move lines notation:}
-# ====== TODO To be translated ======
-translate B EngineScorePerspective {Score perspective:}
-# ====== TODO To be translated ======
-translate B EngineWrapMoveLines {Wrap move lines:}
-# ====== TODO To be translated ======
-translate B EngineShowDebugFrame {Show debug frame:}
-# ====== TODO To be translated ======
-translate B EngineProcessPriority {Engine process priority:}
-# ====== TODO To be translated ======
-translate B EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate B EngineAcceptNetworkConnections {Accept network connections:}
-# ====== TODO To be translated ======
-translate B EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate B EngineAdd {Add a local engine}
-# ====== TODO To be translated ======
-translate B EngineAddRemote {Add a remote engine}
-# ====== TODO To be translated ======
-translate B EngineReload {Reload engine}
-# ====== TODO To be translated ======
-translate B EngineClone {Clone engine}
-# ====== TODO To be translated ======
-translate B EngineDelete {Delete engine}
-# ====== TODO To be translated ======
-translate B EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText B PgnFile "Arquivo" 0

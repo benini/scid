@@ -709,34 +709,6 @@ translate G EngineTime {Ημερομηνία}
 translate G EngineNew {Νέα}
 translate G EngineEdit {Επεξεργασία}
 translate G EngineRequired {Τα παιδία με έντονη γραμματοσειρά είναι απαραίτητα, τα άλλα είναι προαιρετικά}
-# ====== TODO To be translated ======
-translate G EngineMoveLinesNotation {Move lines notation:}
-# ====== TODO To be translated ======
-translate G EngineScorePerspective {Score perspective:}
-# ====== TODO To be translated ======
-translate G EngineWrapMoveLines {Wrap move lines:}
-# ====== TODO To be translated ======
-translate G EngineShowDebugFrame {Show debug frame:}
-# ====== TODO To be translated ======
-translate G EngineProcessPriority {Engine process priority:}
-# ====== TODO To be translated ======
-translate G EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate G EngineAcceptNetworkConnections {Accept network connections:}
-# ====== TODO To be translated ======
-translate G EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate G EngineAdd {Add a local engine}
-# ====== TODO To be translated ======
-translate G EngineAddRemote {Add a remote engine}
-# ====== TODO To be translated ======
-translate G EngineReload {Reload engine}
-# ====== TODO To be translated ======
-translate G EngineClone {Clone engine}
-# ====== TODO To be translated ======
-translate G EngineDelete {Delete engine}
-# ====== TODO To be translated ======
-translate G EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText G PgnFile "Αρχείο" 0

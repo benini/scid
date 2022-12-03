@@ -683,9 +683,9 @@ translate E Book {Book}
 translate E OtherBookMoves {Opponent's book}
 translate E OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
-# Analysis Engine open dialog and EngineConfig:
+# Analysis Engine open dialog:
 translate E EngineList {Analysis Engine List}
-translate E EngineName {Engine Name}
+translate E EngineName {Name}
 translate E EngineCmd {Command}
 translate E EngineArgs {Parameters}
 translate E EngineDir {Directory}
@@ -694,19 +694,6 @@ translate E EngineTime {Date}
 translate E EngineNew {New}
 translate E EngineEdit {Edit}
 translate E EngineRequired {Fields in bold are required; others are optional}
-translate E EngineMoveLinesNotation {Move lines notation:}
-translate E EngineScorePerspective {Score perspective:}
-translate E EngineWrapMoveLines {Wrap move lines:}
-translate E EngineShowDebugFrame {Show debug frame:}
-translate E EngineProcessPriority {Engine process priority:}
-translate E EngineProtocol {Protocol:}
-translate E EngineAcceptNetworkConnections {Accept network connections:}
-translate E EngineAdd {Add a local engine}
-translate E EngineAddRemote {Add a remote engine}
-translate E EngineReload {Reload engine}
-translate E EngineClone {Clone engine}
-translate E EngineDelete {Delete engine}
-translate E EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText E PgnFile "File" 0

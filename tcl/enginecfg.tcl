@@ -71,7 +71,7 @@ proc ::enginecfg::remove {name} {
     lassign [lindex $::engines(list) $idx] name cmd
     set msg "Name: $name\n"
     append msg "Command: $cmd\n\n"
-    append msg [tr EngineRemove]
+    append msg "Do you really want to remove this engine from the list?"
     set answer [tk_messageBox -title Scid -icon question -type yesno -message $msg]
     if {$answer ne "yes"} { return false }
 
@@ -154,27 +154,22 @@ proc ::enginecfg::createConfigFrame {id w} {
             ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
-    ::utils::tooltip::Set $w.header.addpipe [tr EngineAdd]
     ttk::button $w.header.addremote -image tb_eng_network -command [list apply {{id} {
         if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
             ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
-    ::utils::tooltip::Set $w.header.addremote [tr EngineAddRemote]
     ttk::button $w.header.reload -image tb_eng_reload \
         -command "event generate $w.header.engine <<ComboboxSelected>>"
-    ::utils::tooltip::Set $w.header.reload [tr EngineReload]
     ttk::button $w.header.clone -image tb_eng_clone -command "
         ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
     "
-    ::utils::tooltip::Set $w.header.clone [tr EngineClone]
     ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id} {
         lassign [set ::enginewin::engConfig_$id] name
         if {[::enginecfg::remove $name]} {
             ::enginewin::connectEngine $id {}
         }
     }} $id]
-    ::utils::tooltip::Set $w.header.delete [tr EngineDelete]
     grid $w.header.engine $w.header.addpipe $w.header.addremote \
          $w.header.reload $w.header.clone $w.header.delete -sticky news
 
@@ -281,7 +276,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     }}
 
     $configFrame.header.engine set "$name"
-    apply $fn_create_entry $w name [tr EngineName] $name
+    apply $fn_create_entry $w name "Engine name" $name
     bind $w.name <FocusOut> [list apply {{id} {
         lassign [set ::enginewin::engConfig_$id] old
         if {$old ne [set name [%W get]]} {
@@ -310,14 +305,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w window create end -window $w.wdirbtn
 
     if {$uci == 0 || $uci == 1} {
-        $w insert end "\n[tr EngineProtocol]\t"
+        $w insert end "\nProtocol:\t"
         ttk::combobox $w.protocol -state readonly -width 12 -values {xboard uci}
         bind $w.protocol <<ComboboxSelected>> "::enginecfg::onSubmitParam $id protocol \[ %W current \]"
         $w window create end -window $w.protocol
         $w.protocol set [expr { $uci == 0 ? "xboard" : "uci" }]
     }
 
-    $w insert end "\n[tr EngineMoveLinesNotation]\t"
+    $w insert end "\nMove lines notation:\t"
     ttk::combobox $w.notation -state readonly -width 12 -values [list engine SAN "English SAN" figurine]
     bind $w.notation <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id notation \[ $w.notation current \]
@@ -326,7 +321,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w.notation current [expr { $notation < 0 ? 0 - $notation : $notation }]
     ::enginewin::changeDisplayLayout $id notation $notation
 
-    $w insert end "\n[tr EngineScorePerspective]\t"
+    $w insert end "\nScore perspective:\t"
     ttk::combobox $w.scoreside -state readonly -width 12 -values [list engine white]
     bind $w.scoreside <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id scoreside \[ $w.scoreside get \]
@@ -334,7 +329,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w window create end -window $w.scoreside
     $w.scoreside set $scoreside
 
-    $w insert end "\n[tr EngineWrapMoveLines]\t"
+    $w insert end "\nWrap move lines:\t"
     ttk::combobox $w.wrap -state readonly -width 12 -values [list word char none]
     bind $w.wrap <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id wrap \[ $w.wrap get \]
@@ -342,7 +337,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w window create end -window $w.wrap
     $w.wrap set $pvwrap
 
-    $w insert end "\n[tr EngineShowDebugFrame]\t"
+    $w insert end "\nShow debug frame:\t"
     ttk::combobox $w.debug -state readonly -width 12 -values [list false true]
     bind $w.debug <<ComboboxSelected>> "
         ::enginewin::logEngine $id \[ $w.debug get \]
@@ -354,7 +349,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         return false
     }
     if {$enginePid != ""} {
-        $w insert end "\n[tr EngineProcessPriority]\t"
+        $w insert end "\nEngine process priority:\t"
         ttk::combobox $w.priority -state readonly -width 12 -values {normal idle}
         bind $w.priority <<ComboboxSelected>> "
             catch { sc_info priority $enginePid \[ $w.priority get \] }
@@ -368,7 +363,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         }
     }
 
-    $w insert end "\n[tr EngineAcceptNetworkConnections]\t"
+    $w insert end "\nAccept network connections:\t"
     ttk::combobox $w.netd -state readonly -width 12 -values {off on auto_port}
     $w window create end -window $w.netd
     $w insert end "  port: "

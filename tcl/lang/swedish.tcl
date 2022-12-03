@@ -676,34 +676,6 @@ translate W EngineTime {Datum}
 translate W EngineNew {Ny}
 translate W EngineEdit {Redigera}
 translate W EngineRequired {Fet stil indikerar obligatoriska fält; övriga fält är frivilliga} 
-# ====== TODO To be translated ======
-translate W EngineMoveLinesNotation {Move lines notation:}
-# ====== TODO To be translated ======
-translate W EngineScorePerspective {Score perspective:}
-# ====== TODO To be translated ======
-translate W EngineWrapMoveLines {Wrap move lines:}
-# ====== TODO To be translated ======
-translate W EngineShowDebugFrame {Show debug frame:}
-# ====== TODO To be translated ======
-translate W EngineProcessPriority {Engine process priority:}
-# ====== TODO To be translated ======
-translate W EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate W EngineAcceptNetworkConnections {Accept network connections:}
-# ====== TODO To be translated ======
-translate W EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate W EngineAdd {Add a local engine}
-# ====== TODO To be translated ======
-translate W EngineAddRemote {Add a remote engine}
-# ====== TODO To be translated ======
-translate W EngineReload {Reload engine}
-# ====== TODO To be translated ======
-translate W EngineClone {Clone engine}
-# ====== TODO To be translated ======
-translate W EngineDelete {Delete engine}
-# ====== TODO To be translated ======
-translate W EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText W PgnFile "Fil" 0

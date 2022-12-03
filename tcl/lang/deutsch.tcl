@@ -685,19 +685,6 @@ translate D EngineTime {Datum}
 translate D EngineNew {Neu}
 translate D EngineEdit {Bearbeiten}
 translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
-translate D EngineMoveLinesNotation {Variatennotation:}
-translate D EngineScorePerspective {Bewertungssicht:}
-translate D EngineWrapMoveLines {Zeilen umbrechen:}
-translate D EngineShowDebugFrame {Debug Fenster anzeigen:}
-translate D EngineProcessPriority {Prozesspriorität der Engine:}
-translate D EngineProtocol {Protokoll:}
-translate D EngineAcceptNetworkConnections {Netzwerkverbindungen annehmen:}
-translate D EngineAdd {lokale Engine hinzufügen}
-translate D EngineAddRemote {remote Engine hinzufügen}
-translate D EngineReload {Engine neu laden}
-translate D EngineClone {Engine duplizieren}
-translate D EngineDelete {Engine löschen}
-translate D EngineRemove {Wollen Sie die Engine aus der Liste löschen?}
 
 # PGN window menus:
 menuText D PgnFile "Datei" 0

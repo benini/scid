@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#mv english.tcl english.tcl.bak
 mv italian.tcl italian.tcl.bak
 mv portbr.tcl portbr.tcl.bak
 mv russian.tcl russian.tcl.bak
@@ -18,7 +17,6 @@ mv catalan.tcl catalan.tcl.bak
 mv suomi.tcl suomi.tcl.bak
 mv greek.tcl greek.tcl.bak
 
-#mv english.tcl.new english.tcl
 mv italian.tcl.new italian.tcl
 mv portbr.tcl.new portbr.tcl
 mv russian.tcl.new russian.tcl

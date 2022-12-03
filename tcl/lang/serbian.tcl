@@ -821,34 +821,6 @@ translate Y EngineTime {Datum}
 translate Y EngineNew {New} ;# ***
 translate Y EngineEdit {Edit} ;# ***
 translate Y EngineRequired {Fields in bold are required; others are optional} ;# ***
-# ====== TODO To be translated ======
-translate Y EngineMoveLinesNotation {Move lines notation:}
-# ====== TODO To be translated ======
-translate Y EngineScorePerspective {Score perspective:}
-# ====== TODO To be translated ======
-translate Y EngineWrapMoveLines {Wrap move lines:}
-# ====== TODO To be translated ======
-translate Y EngineShowDebugFrame {Show debug frame:}
-# ====== TODO To be translated ======
-translate Y EngineProcessPriority {Engine process priority:}
-# ====== TODO To be translated ======
-translate Y EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate Y EngineAcceptNetworkConnections {Accept network connections:}
-# ====== TODO To be translated ======
-translate Y EngineProtocol {Protocol:}
-# ====== TODO To be translated ======
-translate Y EngineAdd {Add a local engine}
-# ====== TODO To be translated ======
-translate Y EngineAddRemote {Add a remote engine}
-# ====== TODO To be translated ======
-translate Y EngineReload {Reload engine}
-# ====== TODO To be translated ======
-translate Y EngineClone {Clone engine}
-# ====== TODO To be translated ======
-translate Y EngineDelete {Delete engine}
-# ====== TODO To be translated ======
-translate Y EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText Y PgnFile "Fajl" 0
