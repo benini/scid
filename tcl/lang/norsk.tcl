@@ -823,6 +823,34 @@ translate O EngineTime {Dato}
 translate O EngineNew {Ny}
 translate O EngineEdit {Rediger}
 translate O EngineRequired {Fete felter er nødvendige, de øvrige er valgfrie}
+# ====== TODO To be translated ======
+translate O EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate O EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate O EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate O EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate O EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate O EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate O EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate O EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate O EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate O EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate O EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate O EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate O EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate O EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText O PgnFile "Fil" 0

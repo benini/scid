@@ -670,6 +670,34 @@ translate C EngineTime {Datum}
 translate C EngineNew {Nový}
 translate C EngineEdit {Editace}
 translate C EngineRequired {Tuènì vyznaèené polo¾ky jsou povinné; ostatní jsou volitelné}
+# ====== TODO To be translated ======
+translate C EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate C EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate C EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate C EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate C EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate C EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate C EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate C EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate C EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate C EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate C EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate C EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate C EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate C EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText C PgnFile "Soubor" 0
@@ -986,6 +1014,10 @@ translate C WhiteClearAdvantage {Bílý má jasnou výhodu}
 translate C BlackClearAdvantage {Èerný má jasnou výhodu}
 translate C WhiteSlightAdvantage {Bílý má malou výhodu}
 translate C BlackSlightAdvantage {Èerný má malou výhodu}
+# ====== TODO To be translated ======
+translate C WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate C BlackCrushing {Black has a crushing advantage}
 translate C Equality {Rovné ¹ance}
 translate C Unclear {Nejasná pozice}
 translate C Diagram {Diagram}

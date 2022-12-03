@@ -664,6 +664,34 @@ translate R EngineTime {Дата}
 translate R EngineNew {Новый}
 translate R EngineEdit {Редактор}
 translate R EngineRequired {Поля, отмеченные жирным шрифтом, заполнять обязательно, остальные - по желанию}
+# ====== TODO To be translated ======
+translate R EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate R EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate R EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate R EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate R EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate R EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate R EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate R EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate R EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate R EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate R EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate R EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate R EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate R EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText R PgnFile "Файл" 0

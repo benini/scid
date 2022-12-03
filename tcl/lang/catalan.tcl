@@ -709,6 +709,34 @@ translate K EngineTime {Data}
 translate K EngineNew {Nova}
 translate K EngineEdit {Editar}
 translate K EngineRequired {Els camps en negreta son obligatoris; la resta opcionals}
+# ====== TODO To be translated ======
+translate K EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate K EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate K EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate K EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate K EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate K EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate K EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate K EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate K EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate K EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate K EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate K EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate K EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate K EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menús:
 menuText K PgnFile "Arxiu" 0

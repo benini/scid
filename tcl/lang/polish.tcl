@@ -827,6 +827,34 @@ translate P EngineTime {Data}
 translate P EngineNew {Dodaj}
 translate P EngineEdit {Edytuj}
 translate P EngineRequired {Pola wyt³uszczone s± konieczne; reszta opcjonalna} 
+# ====== TODO To be translated ======
+translate P EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate P EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate P EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate P EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate P EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate P EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate P EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate P EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate P EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate P EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate P EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate P EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate P EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate P EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText P PgnFile "Plik" 0

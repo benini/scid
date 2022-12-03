@@ -701,6 +701,34 @@ translate N EngineTime {Datum}
 translate N EngineNew {Nieuw}
 translate N EngineEdit {Bewerk}
 translate N EngineRequired {Velden in <b>vet</b> zijn vereist; de andere facultatief}
+# ====== TODO To be translated ======
+translate N EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate N EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate N EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate N EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate N EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate N EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate N EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate N EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate N EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate N EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate N EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate N EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate N EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate N EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText N PgnFile "Bestand" 0

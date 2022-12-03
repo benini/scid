@@ -670,6 +670,34 @@ translate F EngineTime {Date}
 translate F EngineNew {Nouveau}
 translate F EngineEdit {Éditer}
 translate F EngineRequired {Les champs en gras sont requis; les autres sont optionnels}
+# ====== TODO To be translated ======
+translate F EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate F EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate F EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate F EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate F EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate F EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate F EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate F EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate F EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate F EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate F EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate F EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate F EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate F EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText F PgnFile "Fichier" 0
