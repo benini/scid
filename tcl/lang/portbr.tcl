@@ -209,21 +209,8 @@ menuText B ToolsStartEngine1 "Iniciar engine 1" 0  {Inicia engine 1}
 menuText B ToolsStartEngine2 "Iniciar engine 2" 0  {Inicia engine 2}
 menuText B ToolsCaptureBoard "Capturar posicao atual..." 5  {Salva uma imagem da posicao atual.}
 menuText B Play "Jogar" 0
-menuText B CorrespondenceChess "Xadrez por correspondência" 0 {Funções para jogar xadrez por correspondência usando eMail e Xfcc}
-menuText B CCConfigure "Configurar..." 0 {Configura ferramentas externas e configuração geral}
-menuText B CCConfigRelay "Observar jogos..." 10 {Configura jogos para observar}
-menuText B CCOpenDB "Abrir base..." 0 {Abre a base de correspondência padrão}
-menuText B CCRetrieve "Recupera jogos" 0 {Recupera jogos via (Xfcc-)}
-menuText B CCInbox "Processa caixa de entrada" 0 {Processa todos os arquivos na caixa de entrada do Scid}
-menuText B CCSend "Enviar movimento" 0 {Envia seu movimento via eMail ou (Xfcc-)}
 menuText B CCResign "Resignar" 0 {Aceita a derrota (não via eMail)}
 menuText B CCClaimDraw "Declarar empate" 0 {Envia o movimento e declara empate (não via eMail)}
-menuText B CCOfferDraw "Oferecer empate" 0 {Envia o movimento e oferece empate (não via eMail)}
-menuText B CCAcceptDraw "Aceitar empate" 0 {Aceita uma oferta de empate (não via eMail)}
-menuText B CCNewMailGame "Novo jogo por eMail..." 0 {Inicia um novo jogo por eMail}
-menuText B CCMailMove "Enviar movimento..." 0 {Envia movimento ao oponente via eMaail}
-menuText B CCGamePage "Página do jogo..." 0 {Chama o jogo através do browser}
-menuText B CCEditCopy "Copiar Lista de Jogos para a base de cópia" 0 {Copia os jogos no formato CSV para a base de cópia}
 
 # Options menu:
 menuText B Options "Opcoes" 0
@@ -1578,72 +1565,11 @@ translate B GameReviewNotEngineMoveButGoodMove {Não é o movimento do engine, mas
 translate B GameReviewMoveNotGood {Este movimento não é bom; seu score e}
 translate B GameReviewMovesPlayedLike {Movimentos semelhantes}
 translate B GameReviewMovesPlayedEngine {Movimentos semelhantes aos do engine}
-translate B CCDlgConfigureWindowTitle {Configurar Xadrez por correspondencia}
 translate B CCDlgCGeneraloptions {Opções Gerais}
-translate B CCDlgDefaultDB {Base default:}
-translate B CCDlgInbox {Caixa de Entrada (caminho):}
-translate B CCDlgOutbox {Caixa de Saida (caminho):}
-translate B CCDlgXfcc {Configuraçãao do Xfcc:}
-translate B CCDlgExternalProtocol {Tratamento de protocolo externo (ex. Xfcc)}
-translate B CCDlgFetchTool {Ferramenta de busca:}
-translate B CCDlgSendTool {Ferramenta de envio:}
-translate B CCDlgEmailCommunication {Comunicação por eMail}
-translate B CCDlgMailPrg {Programa de Mail:}
-translate B CCDlgBCCAddr {Endereço Cópia Oculta:}
-translate B CCDlgMailerMode {Modo:}
-translate B CCDlgThunderbirdEg {ex. Thunderbird, Mozilla Mail, Icedove...}
-translate B CCDlgMailUrlEg {ex. Evolution}
-translate B CCDlgClawsEg {ex. Sylpheed Claws}
-translate B CCDlgmailxEg {ex. mailx, mutt, nail...}
-translate B CCDlgAttachementPar {Parametro de anexos:}
-translate B CCDlgInternalXfcc {Usar suporte internal Xfcc}
-translate B CCDlgConfirmXfcc {Confirmar movimentos}
-translate B CCDlgSubjectPar {Parametro de Assunto:}
-translate B CCDlgDeleteBoxes {Esvaziar caixas de entrada e saída}
-translate B CCDlgDeleteBoxesText {Voce quer realmente esvaziar as caixas de Entrada e Saida usadas para o Xadrez por correspondência? Esta operação exige uma novaa sincronização para mostrar o ultimo estado dos seus jogos}
-translate B CCDlgConfirmMove {Confirmar movimento}
-translate B CCDlgConfirmMoveText {Se voce confirmar, o movimento indicado a seguir e os comentários serão enviados para o servidor:}
-translate B CCDlgDBGameToLong {Linha principal inconsistente}
-translate B CCDlgDBGameToLongError {A linha principal na sua base é maior do que o jogo que está na caixa de entrada. Se a caixa de entrada contem jogos correntes, isto é logo após uma sincronização, alguns movimentos foram adicionados erroneamente à linha principal na base.\nNeste caso, por favor, diminua a linha principal para (no maximo) movimentos\n}
-translate B CCDlgStartEmail {Iniciar novo jogo por eMail}
-translate B CCDlgYourName {Seu nome:}
-translate B CCDlgYourMail {Seu eMail:}
-translate B CCDlgOpponentName {Nome do Oponente:}
-translate B CCDlgOpponentMail {eMail do Oponente:}
-translate B CCDlgGameID {ID do jogo (unico):}
-translate B CCDlgTitNoOutbox {Scid: Caixa de Saida}
-translate B CCDlgTitNoInbox {Scid: Caixa de Entrada}
-translate B CCDlgTitNoGames {Scid: Nenhum jogo por correspondência}
-translate B CCErrInboxDir {Diretorio da Caixa de Entrada:}
-translate B CCErrOutboxDir {Diretorio da Caixa de Saida:}
-translate B CCErrDirNotUsable {não existe ou não está acessivel!\nPor favor, verifique e corrija a configuração.}
-translate B CCErrNoGames {não contem nenhum jogo!\nPor favor, localize-os primeiro.}
-translate B CCDlgTitNoCCDB {Scid: Nenhuma base de correspondência}
-translate B CCErrNoCCDB {Nenhuma base do tipo 'Correspondencia' está aberta. Por favor, abra uma antes de usar as funcoes do xadrez por correspondencia.}
-translate B CCFetchBtn {Busca jogos no servidor e processa a Caixa de Entrada}
-translate B CCPrevBtn {Ir para o jogo anterior}
-translate B CCNextBtn {Ir para o proximo jogo}
-translate B CCSendBtn {Enviar movimento}
-translate B CCEmptyBtn {Esvaziar caixas de entrada e saida}
-translate B CCHelpBtn {Ajuda sobre icones e indicadores de estado.\nPara ajuda geral, use a tecla F1!}
-translate B CCDlgServerName {Nome do Servidor:}
 translate B CCDlgLoginName  {Login Name:}
 translate B CCDlgPassword   {Senha:}
 translate B CCDlgShowPassword {Mostra a Senha}
-translate B CCDlgURL        {Xfcc-URL:}
-translate B CCDlgRatingType {Tipo de Rating:}
-translate B CCDlgDuplicateGame {ID de jogo não único}
-translate B CCDlgDuplicateGameError {Este jogo existe mais de uma vez em sua base. Exclua todas as duplicatas e compacte seu arquivo de jogos (Arquivo/Manutenção/Compactar Base).}
-translate B CCDlgSortOption {Ordenando:}
-translate B CCDlgListOnlyOwnMove {Somente jogos nos quais tenho o movimento}
-translate B CCOrderClassicTxt {Local, Evento, Rodada, Resultado, Branca, Preta}
-translate B CCOrderMyTimeTxt {Meu Relógio}
-translate B CCOrderTimePerMoveTxt {Tempo por movimento até o próximo controle de tempo}
-translate B CCOrderStartDate {Data de Inicio}
-translate B CCOrderOppTimeTxt {Relogio do Oponente}
 
-translate B CCDlgConfigRelay {Observar jogos}
-translate B CCDlgConfigRelayHelp {Consulta a pagina de jogos em http://www.iccf-webchess.com e mostra o jogo a ser observado.  Se voce enxergar o tabuleiro, copie a URL do seu navegador para a lista abaixo. Apenas uma URL por linha!\nExemplo: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 translate B ExtHWConfigConnection {Configurar hardware externo}
 translate B ExtHWPort {Porta}

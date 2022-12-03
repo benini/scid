@@ -212,25 +212,12 @@ menuText R ToolsCaptureBoard "Фиксировать текущую позици
 menuText R Play "Играть" 1
 
 # --- Correspondence Chess
-menuText R CorrespondenceChess "Шахматы по переписке" 0 {Функции для игры в шахматы по переписке через электронную почту и Xfcc}
-menuText R CCConfigure "Настройка..." 0 {Настройки внешних инструментов и основные установки}
-menuText R CCConfigRelay "Настройка слежения.." 10 {Настроить партии для наблюдения}
-menuText R CCOpenDB "Открыть базу данных..." 0 {Открыть базу данных переписки по-умолчанию}
-menuText R CCRetrieve "Получить партии" 0 {Получить партии через внешний (Xfcc-)помощник}
-menuText R CCInbox "Обработать Входящие" 0 {Обработать все файлы в папке Входящие}
-menuText R CCSend "Послать ход" 0 {Послать ваш ход через электронную почту или внешний (Xfcc-)помощник}
 
 menuText R CCResign "Сдаться" 0 {Сдаться (не через электронную почту)}
 menuText R CCClaimDraw "Требовать ничью" 0 {Послать ход и потребовать ничью (не через электронную почту)}
-menuText R CCOfferDraw "Предложить ничью" 0 {Послать ход и предложить ничью (не через электронную почту)}
-menuText R CCAcceptDraw "Принять ничью" 0 {Принять запрос о ничьей (не через электронную почту)}
 
-menuText R CCNewMailGame "Новая партия по электронной почте..." 0 {Начинает новую партию по электронной почте}
-menuText R CCMailMove "Письмо с ходом..." 0 {Послать сопернику письмо с ходом по электронной почте}
-menuText R CCGamePage "Страница партии..." 0 {Позвать в партию через веб-браузер}
 
 # menu in cc window:
-menuText R CCEditCopy "Копировать список партий в буферную базу" 0 {Копирует партии как CSV список в буферную базу}
 
 #  B    GHiJKL    Q  TUV XYZ
 
@@ -1603,83 +1590,19 @@ translate R GameReviewMovesPlayedLike {Ходы сделаны как}
 translate R GameReviewMovesPlayedEngine {Ходы сделаны как у движка}
 
 # Correspondence Chess Dialogs:
-translate R CCDlgConfigureWindowTitle {Настройка шахмат по переписке}
 translate R CCDlgCGeneraloptions {Основные настройки}
-translate R CCDlgDefaultDB {База данных по-умолчанию:}
-translate R CCDlgInbox {Входящие (путь):}
-translate R CCDlgOutbox {Исходящие (путь):}
-translate R CCDlgXfcc {Конфигурация Xfcc:}
-translate R CCDlgExternalProtocol {Драйвер внешнего протокола (например, Xfcc)}
-translate R CCDlgFetchTool {Инструмент для приёма партий:}
-translate R CCDlgSendTool {Инструмент для отправки партий:}
-translate R CCDlgEmailCommunication {Передача по электронной почте}
-translate R CCDlgMailPrg {Почтовая программа:}
-translate R CCDlgBCCAddr {Адрес (B)CC:}
-translate R CCDlgMailerMode {Режим:}
-translate R CCDlgThunderbirdEg {например, Thunderbird, Mozilla Mail, Icedove...}
-translate R CCDlgMailUrlEg {например, Evolution}
-translate R CCDlgClawsEg {например, Sylpheed Claws}
-translate R CCDlgmailxEg {например, mailx, mutt, nail...}
-translate R CCDlgAttachementPar {Параметр вложения:}
-translate R CCDlgInternalXfcc {Использовать встроенную поддержку Xfcc}
-translate R CCDlgConfirmXfcc {Подтвердить ходы}
-translate R CCDlgSubjectPar {Параметр темы:}
-translate R CCDlgDeleteBoxes {Очистить Входящие/Исходящие}
-translate R CCDlgDeleteBoxesText {Вы действительно хотите очистить ваши папки с Входящими и Исходящими для партий в шахматы по переписке? Это потребует новой синхронизации для показа последнего состояния ваших партий}
-translate R CCDlgConfirmMove {Подтвердить ход}
-translate R CCDlgConfirmMoveText {Если вы подтверждаете, то следующий ход и комментарий будут посланы на сервер:}
-translate R CCDlgDBGameToLong {Противоречивый главный план}
-translate R CCDlgDBGameToLongError {Главный план в вашей базе данных длиннее, чем в партии в папке Входящих. Если Входящие содержат текущие партии, то есть они сразу после синхронизации, то некоторые ходы были добавлены в главный план базы данных ошибочно.\n
-
-В этом случае, пожалуйста, укоротите главную ветвь максимально до хода
-}
 
 
-translate R CCDlgStartEmail {Начать новую партию по почте}
-translate R CCDlgYourName {Ваше имя:}
-translate R CCDlgYourMail {Ваш адрес электронной почты:}
-translate R CCDlgOpponentName {Имя соперника:}
-translate R CCDlgOpponentMail {Адрес электронной почты соперника:}
-translate R CCDlgGameID {Идентификатор партии (уникальный):}
 
-translate R CCDlgTitNoOutbox {Scid: Исходящие шахмат по переписке}
-translate R CCDlgTitNoInbox {Scid: Входящие шахмат по переписке}
-translate R CCDlgTitNoGames {Scid: Нет партий в шахматы по переписке}
-translate R CCErrInboxDir {Папка Входящие партий в шахматы по переписке:}
-translate R CCErrOutboxDir {Папка Исходящие партий в шахматы по переписке:}
-translate R CCErrDirNotUsable {не существует или недоступно!\nПроверьте, пожалуйста, корректность настроек.}
-translate R CCErrNoGames {не содержит ни одной партии!\nВначале, пожалуйста, загрузите их.}
 
-translate R CCDlgTitNoCCDB {Scid: Нет базы данных переписки}
-translate R CCErrNoCCDB {Тип открытой базы данных не 'Переписка'. Пожалуйста, откройте соответствующую базу для использования функций переписки.}
 
-translate R CCFetchBtn {Получить партии с сервера и обработать папку Входящие}
-translate R CCPrevBtn {Перейти к предыдущей партии}
-translate R CCNextBtn {Перейти к следующей партии}
-translate R CCSendBtn {Послать ход}
-translate R CCEmptyBtn {Отчистить папки Входящих и Исходящих}
-translate R CCHelpBtn {Помощь на иконках и статусных индикаторах.\nДля получения помощи нажмите F1!}
 
-translate R CCDlgServerName {Имя сервера:}
 translate R CCDlgLoginName  {Логин:}
 translate R CCDlgPassword   {Пароль:}
 translate R CCDlgShowPassword {Показать пароль}
-translate R CCDlgURL        {Адрес Xfcc:}
-translate R CCDlgRatingType {Тип рейтинга:}
 
-translate R CCDlgDuplicateGame {Не уникальный ID партии}
-translate R CCDlgDuplicateGameError {Эта партия содержится более чем один раз в вашей базе данных. Пожалуйста, удалите дубликаты и упорядочите файл ваших партий (Файл/Обслуживание/Упорядочивание базы данных).}
 
-translate R CCDlgSortOption {Сортировка:}
-translate R CCDlgListOnlyOwnMove {Только партии, в которых я ходил}
-translate R CCOrderClassicTxt {Местность, Событие, Раунд, Результат, Белые, Чёрные}
-translate R CCOrderMyTimeTxt {Мои часы}
-translate R CCOrderTimePerMoveTxt {Время на ход до следующего контроля времени}
-translate R CCOrderStartDate {Начальная дата}
-translate R CCOrderOppTimeTxt {Часы соперника}
 
-translate R CCDlgConfigRelay {Настройка наблюдения ICCF}
-translate R CCDlgConfigRelayHelp {Перейти на страницу партии http://www.iccf-webchess.com и показать наблюдаемую партию. Если вы видите шахматную доску, то скопируейте URL из вашего браузера в список ниже. Только один URL в строку!\nНапример: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate R ExtHWConfigConnection {Настройка внешнего оборудования}

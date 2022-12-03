@@ -205,21 +205,8 @@ menuText C ToolsStartEngine1 "Spustit herní program 1" 0  {Spustit herní program
 menuText C ToolsStartEngine2 "Spustit herní program 2" 0  {Spustit herní program 2}
 menuText C ToolsCaptureBoard "Ulo¾it aktuální ¹achovnici..." 0  {Ulo¾it aktuální ¹achovnici jako obrázek.}
 menuText C Play "Hra" 0
-menuText C CorrespondenceChess "Korespondenèní ¹ach" 0 {Funkce pro korespondenèní ¹ach zalo¾ený na e-mailu a Xfcc}
-menuText C CCConfigure "Konfigurovat..." 0 {Konfigurovat externí nástroje a obecná nastavení}
-menuText C CCConfigRelay "Konfigurovat sledování..." 10 {Konfigurovat partie ke sledování}
-menuText C CCOpenDB "Otevøít databázi..." 0 {Otevøít výchozí korespondenèní databázi}
-menuText C CCRetrieve "Stáhnout partie" 0 {Stáhnout partie s pomocí externího (Xfcc-)nástroje}
-menuText C CCInbox "Zpracovat pøíchozí schránku" 0 {Zpracovat v¹echny soubory v pøíchozí schránce scidu}
-menuText C CCSend "Poslat tah" 0 {Poslat tah prostøednictvím e-mailu nebo externího (Xfcc-)nástroje}
 menuText C CCResign "Vzdát" 0 {Vzdát (nikoliv prostøednictvím e-mailu)}
 menuText C CCClaimDraw "Reklamovat remízu" 0 {Poslat tah a reklamovat remízu (nikoliv prostøednictvím e-mailu)}
-menuText C CCOfferDraw "Nabídnout remízu" 0 {Odeslat tah a nabídnout remízu (nikoliv prostøednictvím e-mailu)}
-menuText C CCAcceptDraw "Pøijmout remízu" 0 {Pøijmout nabídku remízy (nikoliv prostøednictvím e-mailu)}
-menuText C CCNewMailGame "Nová e-mailová partie..." 0 {Zaèít novou e-mailovou partii}
-menuText C CCMailMove "Mailovat tah..." 0 {Odeslat tah soupeøi prostøednictvím e-mailu}
-menuText C CCGamePage "Stránka partie..." 0 {Vyvolat partii pomocí webového prohlí¾eèe}
-menuText C CCEditCopy "Zkopírovat seznam partií do schránky" 0 {Zkopírovat partie jako CVS seznam do schránky}
 
 # Options menu:
 menuText C Options "Volby" 0
@@ -1641,73 +1628,12 @@ translate C GameReviewNotEngineMoveButGoodMove {Není to tah herního programu, al
 translate C GameReviewMoveNotGood {Tento tah není dobrý, skóre je}
 translate C GameReviewMovesPlayedLike {Tahy hrané jako}
 translate C GameReviewMovesPlayedEngine {Tahy hrané jako herním programem}
-translate C CCDlgConfigureWindowTitle {Konfigurovat korespondenèní ¹ach}
 translate C CCDlgCGeneraloptions {Obecná nastavení}
-translate C CCDlgDefaultDB {Výchozí databáze:}
-translate C CCDlgInbox {Pøíchozí schránka (cesta):}
-translate C CCDlgOutbox {Odchozí schránka (cesta):}
-translate C CCDlgXfcc {Konfigurace Xfcc:}
-translate C CCDlgExternalProtocol {Externí nástroj pro protokoly (napø. Xfcc)}
-translate C CCDlgFetchTool {Stahovací nástroj:}
-translate C CCDlgSendTool {Odesílací nástroj:}
-translate C CCDlgEmailCommunication {E-mailová komunikace}
-translate C CCDlgMailPrg {E-mailový program:}
-translate C CCDlgBCCAddr {(B)CC adresa:}
-translate C CCDlgMailerMode {Re¾im:}
-translate C CCDlgThunderbirdEg {napø. Thunderbird, Mozilla Mail, Icedove...}
-translate C CCDlgMailUrlEg {napø. Evolution}
-translate C CCDlgClawsEg {napø. Sylpheed Claws}
-translate C CCDlgmailxEg {napø. mailx, mutt, nail...}
-translate C CCDlgAttachementPar {Parametr pøílohy:}
-translate C CCDlgInternalXfcc {Pou¾ít vystavìnou podporu Xfcc}
-translate C CCDlgConfirmXfcc {Potvrdit tahy}
-translate C CCDlgSubjectPar {Pøedmìt:}
-translate C CCDlgDeleteBoxes {Prázdná pøíchozí/odchozí schránka}
-translate C CCDlgDeleteBoxesText {Opravdu chcete vyprázdnit pøíchozí a odchozí schránky pro korespondeèní ¹ach? To vy¾aduje novou synchronizaci, aby mohl být zobrazen poslední stav va¹ich partií.}
-translate C CCDlgConfirmMove {Potvrdit tah}
-translate C CCDlgConfirmMoveText {Pokud potvrdíte, následující tah a komentáø bude zaslán na server:}
-translate C CCDlgDBGameToLong {Nekonzistentní hlavní varianta}
-translate C CCDlgDBGameToLongError {Hlavní varianta v databázi je del¹í ne¾ partie v pøíchozí schránce. Jestli¾e pøíchozí schránka obsahuje aktuální partie, tj. èerstvì po synchronizaci, nìkteré tahy byly do hlavní varianty v databázi pøidány chybnì.\nV takovém pøípadì prosím zkra»te hlavní variantu do (max.) tahu\n}
-translate C CCDlgStartEmail {Zaèít novou e-mailovou partii}
-translate C CCDlgYourName {Va¹e jména:}
-translate C CCDlgYourMail {Va¹e e-mailová adresa:}
-translate C CCDlgOpponentName {Jméno soupeøe:}
-translate C CCDlgOpponentMail {E-mailová adresa soupeøe:}
-translate C CCDlgGameID {Identifikátor partie (jednoznaèný):}
-translate C CCDlgTitNoOutbox {Scid: Odchozí schránka korespondenèního ¹achu}
-translate C CCDlgTitNoInbox {Scid: Pøíchozí schránka korespondenèního ¹achu}
-translate C CCDlgTitNoGames {Scid: ®ádné korespondenèní partie}
-translate C CCErrInboxDir {Adresáø pøíchozí schránky korespondenèního ¹achu:}
-translate C CCErrOutboxDir {Adresáø odchozí schránky korespondenèního ¹achu:}
-translate C CCErrDirNotUsable {neexistuje nebo není pøístupná!\nProsím zkontrolujte a opravte nastavení.}
-translate C CCErrNoGames {neobsahuje ¾ádné partie!\nNejprve je prosím stáhnìte.}
-translate C CCDlgTitNoCCDB {Scid: ®ádná korespondenèní databáze.}
-translate C CCErrNoCCDB {®ádná korespondenèní databáze není otevøena. Prosím otevøete nìjakou ne¾ budete pou¾ívat funkce korespondenèního ¹achu.}
-translate C CCFetchBtn {Stáhnout partie ze serveru a zpracovat pøíchozí schránku}
-translate C CCPrevBtn {Jít na pøedchozí partii}
-translate C CCNextBtn {Jít na následující partii}
-translate C CCSendBtn {Poslat tah}
-translate C CCEmptyBtn {Vyprázdnit pøíchozí a odchozí schránku}
-translate C CCHelpBtn {Nápovìda k ikonám a stavovým indikátorùm.\nPro obecnou nápovìdu stisknìte F1!}
-translate C CCDlgServerName {Jméno serveru:}
 translate C CCDlgLoginName  {Pøihla¹ovací jméno:}
 translate C CCDlgPassword   {Heslo:}
 # ====== TODO To be translated ======
 translate C CCDlgShowPassword {Show password}
-translate C CCDlgURL        {URL Xfcc:}
-translate C CCDlgRatingType {Typ ratingu:}
-translate C CCDlgDuplicateGame {Nejednoznaèný identifikátor partie}
-translate C CCDlgDuplicateGameError {Tato partie se v databázi vyskytuje více ne¾ jednou. Prosím sma¾te v¹echny duplikáty a soubor partií zhutnìte (Soubor/Údr¾ba/Zhutnit databázi).}
-translate C CCDlgSortOption {Tøídìní:}
 # ====== TODO To be translated ======
-translate C CCDlgListOnlyOwnMove {Only games I have the move}
-translate C CCOrderClassicTxt {Místo, událost, kolo, výsledek, bílý, èerný}
-translate C CCOrderMyTimeTxt {Mé hodiny}
-translate C CCOrderTimePerMoveTxt {Èas na ka¾dý tah do pøí¹tí èasové kontroly}
-translate C CCOrderStartDate {Poèáteèní datum}
-translate C CCOrderOppTimeTxt {Soupeøovy hodiny}
-translate C CCDlgConfigRelay {Konfigurovat sledování ICCF}
-translate C CCDlgConfigRelayHelp {Bì¾te na stránku partií na http://www.iccf-webchess.com a zobrazte partii, která má být sledována. Pokud vidíte ¹achovnici, zkopírujte URL z prohlí¾eèe do seznamu ní¾e. Pouze jediné URL na ka¾dém øádku!\nPøíklad: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate C ExtHWConfigConnection {Konfigurovat externí hardware}
 translate C ExtHWPort {Port}
 translate C ExtHWEngineCmd {Pøíkaz herního programu}

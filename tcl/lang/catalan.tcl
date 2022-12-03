@@ -227,23 +227,10 @@ menuText K ToolsStartEngine2 "Iniciar motor 2" 0  {Iniciar Motor 2}
 # ====== TODO To be translated ======
 menuText K ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText K Play "Jugar" 0
-menuText K CorrespondenceChess "Escacs Postal" 0 {Funcions d'Escacs Postal per a eMail i Xfcc}
-menuText K CCConfigure "Configurar..." 0 {Configurar eines externes i Paràmetres Generals}
 # ====== TODO To be translated ======
-menuText K CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-menuText K CCOpenDB "Obrir base de dades..." 0 {Obrir la base per defecte d'Escac Postal}
-menuText K CCRetrieve "Recuperar partides" 0 {Recuperar partides via programari extern (Xfcc)}
-menuText K CCInbox "Processa Bústia D'Entrada" 0 {Processar tots els registres de la bústia d'entrada (Inbox) d'Scid }
-menuText K CCSend "Enviar jugada" 0 {Envia la teva jugada via EMail o amb programari extern (Xfcc)}
 menuText K CCResign "Abandonar" 0 {Abandonar}
 menuText K CCClaimDraw "Reclamar taules" 0 {Enviar un jugada i reclamar taules}
-menuText K CCOfferDraw "Oferir taules" 0 {Enviar un jugada i oferir taules}
-menuText K CCAcceptDraw "Acceptar taules" 0 {Acceptar un oferiment de taules}
-menuText K CCNewMailGame "Nova partida per email..." 0 {Iniciar una nova partida eMail}
-menuText K CCMailMove "Enviar jugada via email..." 0 {Envia la jugada via EMail al contrari}
-menuText K CCGamePage "Pàgina de la partida..." 0 {Obrir la partida al navegador}
 # ====== TODO To be translated ======
-menuText K CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText K Options "Opcions" 0
@@ -1695,88 +1682,27 @@ translate K GameReviewMoveNotGood {This move is not good, score is}
 translate K GameReviewMovesPlayedLike {Moves played like}
 # ====== TODO To be translated ======
 translate K GameReviewMovesPlayedEngine {Moves played like engine}
-translate K CCDlgConfigureWindowTitle {Configurar Escacs Postals}
 translate K CCDlgCGeneraloptions {Opcions Generals}
-translate K CCDlgDefaultDB {Base per defecte:}
-translate K CCDlgInbox {Entrant (Carpeta):}
-translate K CCDlgOutbox {Sortint (carpeta):}
-translate K CCDlgXfcc {Configuració Xfcc:}
-translate K CCDlgExternalProtocol {Protocol Extern de procés (ex. Xfcc)}
-translate K CCDlgFetchTool {Eina de recuperació:}
-translate K CCDlgSendTool {Eina de tramessa:}
-translate K CCDlgEmailCommunication {Comunicació Email}
-translate K CCDlgMailPrg {Programa de correu:}
-translate K CCDlgBCCAddr {(B)CC Adreça:}
-translate K CCDlgMailerMode {Mode:}
-translate K CCDlgThunderbirdEg {p.ex. Thunderbird, Mozilla Mail, Icedove...}
-translate K CCDlgMailUrlEg {p.ex. Evolution}
-translate K CCDlgClawsEg {p.ex. Sylpheed Claws}
-translate K CCDlgmailxEg {p.ex. mailx, mutt, nail...}
-translate K CCDlgAttachementPar {Adjunt:}
-translate K CCDlgInternalXfcc {Utilitzar suport intern Xfcc}
 # ====== TODO To be translated ======
-translate K CCDlgConfirmXfcc {Confirma jugades}
-translate K CCDlgSubjectPar {Assumpte:}
 # ====== TODO To be translated ======
-translate K CCDlgDeleteBoxes {Buida Entrant/Sortint}
 # ====== TODO To be translated ======
-translate K CCDlgDeleteBoxesText {Realment vols buidar les teves carpetes d'Entrada i Sortida d'Escacs per Correspondència? Aixó requereix una nova sincronització per mostrar l'estat actual de les teves partides}
 # ====== TODO To be translated ======
-translate K CCDlgConfirmMove {Confirma jugada}
 # ====== TODO To be translated ======
-translate K CCDlgConfirmMoveText {Si ho confirmes, la propera jugada i comentari serà enviada al servidor:}
 # ====== TODO To be translated ======
-translate K CCDlgDBGameToLong {Línia principal inconsistent}
 # ====== TODO To be translated ======
-translate K CCDlgDBGameToLongError {la línia principal a la teva base es més llarga que la de la partida de la Bústia d'Entrada. Si la Bútia d'Entrada conté partides actuals, p.ex. després d'una sincronització, vol dir que s'han afegit jugades a la base erròniament.\nEn aquest cas escurça la línia principal fins a (max) jugada\n}
-translate K CCDlgStartEmail {Iniciar nova partida Email}
-translate K CCDlgYourName {El teu nom:}
-translate K CCDlgYourMail {La teva adreça Email:}
-translate K CCDlgOpponentName {Nom del Contrari:}
-translate K CCDlgOpponentMail {Direcció Email del Contrari:}
-translate K CCDlgGameID {Partida ID (única):}
-translate K CCDlgTitNoOutbox {Scid: Sortida del Correu d'Escacs}
-translate K CCDlgTitNoInbox {Scid: Entrada del Correu d'Escacs}
-translate K CCDlgTitNoGames {Scid: No hi han Partides d'Escacs Postal}
-translate K CCErrInboxDir {Carpeta d'entrada del Correu d'Escacs (Entrant):}
-translate K CCErrOutboxDir {Carpeta de sortida del Correu d'Escacs (Sortint):}
-translate K CCErrDirNotUsable {No existeix o no es accessible!\nSi-us-plau, verifica els paràmetres.}
-translate K CCErrNoGames {No conté cap partida!\nSi-us-plau, posa'n primer.}
-translate K CCDlgTitNoCCDB {Scid: No es una Base d'Escacs Postals}
-translate K CCErrNoCCDB {No hi ha una Base de tipus 'Correu' oberta. Si-us-plau, obre'n una abans d'utilitzar funcions d'escacs postals.}
-translate K CCFetchBtn {Baixar partides des del servidor i processar correu entrant}
-translate K CCPrevBtn {Anar a partida anterior}
-translate K CCNextBtn {Anar a partida següent }
-translate K CCSendBtn {Enviar jugada}
-translate K CCEmptyBtn {Correus entrants i sortints buits}
-translate K CCHelpBtn {Ajut a icones e indicadors d'estatus. \n Per ajut general prémer F1!}
-translate K CCDlgServerName {Nom del servidor:}
 translate K CCDlgLoginName  {Nom de registre:}
 translate K CCDlgPassword   {Contrasenya:}
 # ====== TODO To be translated ======
 translate K CCDlgShowPassword {Show password}
-translate K CCDlgURL        {Xfcc-URL:}
-translate K CCDlgRatingType {Tipus de puntuació (Rating):}
-translate K CCDlgDuplicateGame {ID de partida no únic}
-translate K CCDlgDuplicateGameError {Aquesta partida existeix més d'un cop a la base. Si-us-plau esborra totes les duplicades i compacta el fitxer de partides (Arxiu/Manteniment/Compactar Base).}
 # ====== TODO To be translated ======
-translate K CCDlgSortOption {Sorting:}
 # ====== TODO To be translated ======
-translate K CCDlgListOnlyOwnMove {Only games I have the move}
 # ====== TODO To be translated ======
-translate K CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
 # ====== TODO To be translated ======
-translate K CCOrderMyTimeTxt {My Clock}
 # ====== TODO To be translated ======
-translate K CCOrderTimePerMoveTxt {Time per move till next time control}
 # ====== TODO To be translated ======
-translate K CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
-translate K CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
-translate K CCDlgConfigRelay {Configure ICCF observations}
 # ====== TODO To be translated ======
-translate K CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate K ExtHWConfigConnection {Configurar maquinari extern}
 translate K ExtHWPort {Port}
 translate K ExtHWEngineCmd {Línia d'ordres del motor}

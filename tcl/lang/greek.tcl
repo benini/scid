@@ -240,25 +240,12 @@ menuText G ToolsCaptureBoard "Σύλληψη τρέχουσας σκακιέρα
 menuText G Play "Παιχνίδι" 0
 
 # --- Correspondence Chess
-menuText G CorrespondenceChess "Σκάκι δι' αλληλογραφίας" 0 {Λειτουργίες σκακιού δι' αλληλογραφίας βάσει eMail και Xfcc}
-menuText G CCConfigure "Ρυθμίσεις..." 0 {Προσαρμογή εξωτερικών εργαλείων και γενικές ρυθμίσεις}
-menuText G CCConfigRelay "Παρακολούθηση παρτίδων..." 10 {Ρυθμίστε τις παρτίδες προς παρακολούθηση}
-menuText G CCOpenDB "Άνοιγμα βάσης δεδομένων..." 0 {Ανοίξτε την προκαθορισμένη βάση δεδομένων αλληλογραφίας}
-menuText G CCRetrieve "Ανάκτηση παρτίδων" 0 {Ανακτήστε παρτίδες μέσω εξωτερικής εφαρμογής (Xfcc-)helper}
-menuText G CCInbox "Επεξεργασία εισερχομένων" 8 {Επεξεργαστείτε όλα τα αρχεία στα εισερχόμενα του Scid}
-menuText G CCSend "Αποστολή κίνησης" 0 {Στείλτε την κίνησή σας μέσω eMail ή εξωτερικής εφαρμογής (Xfcc-)helper}
 
 menuText G CCResign "Παραίτηση" 1 {Παραιτηθείτε (όχι μέσω eMail)}
 menuText G CCClaimDraw "Αίτηση ισοπαλίας" 6 {Στείλτε την κίνησή σας και ζητήστε ισοπαλία (όχι μέσω eMail)}
-menuText G CCOfferDraw "Παραχώρηση ισοπαλίας" 1 {Στείλτε την κίνησή σας και παραχωρήστε ισοπαλία (όχι μέσω eMail)}
-menuText G CCAcceptDraw "Αποδοχή ισοπαλίας" 0 {Δεχθείτε μια παραχώρηση ισοπαλίας (όχι μέσω eMail)}
 
-menuText G CCNewMailGame "Νέα παρτίδα eMail..." 2 {Ξεκινήστε μια νέα παρτίδα μέσω eMail}
-menuText G CCMailMove "Αποστολή κίνησης..." 0 {Ταχυδρομήστε την κίνησή σας μέσω eMail προς τον αντίπαλο}
-menuText G CCGamePage "Σελίδα παρτίδας..." 0 {Εμφανήστε την παρτίδα μέσα από τον περιηγητή ιστού}
 
 # menu in cc window:
-menuText G CCEditCopy "Αντιγραφή λίστας παρτίδων στην προσωρινή μνήμη (Clipbase)" 0 {Αντιγράψτε τις παρτίδες ως λίστα CSV στην μνήμη clipbase}
 
 #  B    GHiJKL    Q  TUV XYZ
 
@@ -1681,84 +1668,20 @@ translate G GameReviewMovesPlayedLike {Κινήσεις που παίχτηκα�
 translate G GameReviewMovesPlayedEngine {Κινήσεις που παίχτηκαν σαν της μηχανής}
 
 # Correspondence Chess Dialogs:
-translate G CCDlgConfigureWindowTitle {Προσαρμογή Σκακιού Δι' αλληλογραφίας}
 translate G CCDlgCGeneraloptions {Γενκές επιλογές}
-translate G CCDlgDefaultDB {Αρχική Βάση δεδομένων:}
-translate G CCDlgInbox {ΕισερχόμεναInbox (διαδρομή):}
-translate G CCDlgOutbox {Εξερχόμενα (διαδρομή):}
-translate G CCDlgXfcc {Παραμετροποίηση Xfcc:}
-translate G CCDlgExternalProtocol {Χειριστής Εξωτερικού Πρωτοκόλου (π.χ. Xfcc)}
-translate G CCDlgFetchTool {Εργαλείο ανάκτησης:}
-translate G CCDlgSendTool {Εργαλείο αποστολής:}
-translate G CCDlgEmailCommunication {Επικοινωνία eMail}
-translate G CCDlgMailPrg {Πρόγραμμα αλληλογραφίας:}
-translate G CCDlgBCCAddr {Διεύθυνση (B)CC:}
-translate G CCDlgMailerMode {Λειτουργία:}
-translate G CCDlgThunderbirdEg {π.χ. Thunderbird, Mozilla Mail, Icedove...}
-translate G CCDlgMailUrlEg {π.χ. Evolution}
-translate G CCDlgClawsEg {π.χ. Sylpheed Claws}
-translate G CCDlgmailxEg {π.χ. mailx, mutt, nail...}
-translate G CCDlgAttachementPar {Παράμτερος επισυναπτόμενου:}
-translate G CCDlgInternalXfcc {Χρήση της εσωτερικής υποστήριξης Xfcc}
-translate G CCDlgConfirmXfcc {Επιβεβαίωση κινήσεων}
-translate G CCDlgSubjectPar {Παράμετρος Θέματος:}
-translate G CCDlgDeleteBoxes {Κενό Εισ/Εξερχόμενα}
-translate G CCDlgDeleteBoxesText {Θέλετε πράγματι να αδειάσετε τους καταλόγους Εισερχομένων και Εξερχομένων;\nΚάτι τέτοιο απαιτεί έναν νέο συγχρονισμός για να εμφανιστεί η πρόσφατη κατάσταση των παρτίδων σας.}
-translate G CCDlgConfirmMove {Επιβεβαίωση κίνησης}
-translate G CCDlgConfirmMoveText {Αν επιβεβαιώσετε, θα σταλούν στον διακομηστή η ακόλουθη κίνηση και το ακόλουθο σχόλιο:}
-translate G CCDlgDBGameToLong {Αντιφατική Mainline}
-translate G CCDlgDBGameToLongError {Η mainline της βάσης δεδομένων σας είναι μεγαλύτερη από ό,τι η παρτίδα στα Εισερχόμενά σας. Αν τα Εισερχόμενα περιέχουν τρέχουσες παρτίδες, δηλαδή, αμέσως μετά από έναν συγχρονισμός, κάποιες κινήσεις προστέθηκαν στην mainline της βάσης δεδομένων με τρόπο λανθασμένο.
-
-Στην περίπτωση αυτή συντομεύστε την mainline στην κίνηση (μέγιστο)
-}
 
 
-translate G CCDlgStartEmail {Έναρξη νέας παρτίδας με eMail}
-translate G CCDlgYourName {Το όνομά σας:}
-translate G CCDlgYourMail {Η ηλ. διεύθυνσή σας:}
-translate G CCDlgOpponentName {Όνομα αντιπάλου:}
-translate G CCDlgOpponentMail {Ηλ. διεύθυνση αντιπάλου:}
-translate G CCDlgGameID {Ταυτότητα παρτίδας (μοναδική):}
 
-translate G CCDlgTitNoOutbox {Scid: Εξερχόμενα Σκακιού Δι' Αλληλογραφίας}
-translate G CCDlgTitNoInbox {Scid: Εισερχόμενα Σκακιού Δι' Αλληλογραφίας}
-translate G CCDlgTitNoGames {Scid: Δεν υπάρχουν παρτίδες δι' αλληλογραφίας}
-translate G CCErrInboxDir {Κατάλογος εισερχομένων σκακιού δι' αλληλογραφίας:}
-translate G CCErrOutboxDir {Κατάλογος εξερχομένων σκακιού δι' αλληλογραφίας:}
-translate G CCErrDirNotUsable {δεν υπάρχει ή δεν είναι προσβάσιμος!\nΠαρακαλώ ελέγξτε και διορθώστε τις ρυθμίσεις.}
-translate G CCErrNoGames {does not contain any games!\nPlease fetch them first.}
 
-translate G CCDlgTitNoCCDB {Scid: Δεν υπάρχει βάση δεδομένων αλληλογραφίας}
-translate G CCErrNoCCDB {Δεν ανοίχτηκε κάποια βάση δεδομένων τύπου 'Αλληλογραφία'. Παρακαλώ ανοίξτε μια πριν χρησιμοποιήσετε τις λειτουργίες σκακιού δι' αλληλογραφίας.}
 
-translate G CCFetchBtn {Ανάκτηση παρτίδων από τον διακομηστή και επεξεργασία Εισερχομένων}
-translate G CCPrevBtn {Μετάβαση σε προηγούμενη παρτίδα}
-translate G CCNextBtn {Μετάβαση σε επόμενη παρτίδα}
-translate G CCSendBtn {Αποστολή κίνησης}
-translate G CCEmptyBtn {Εκκένωση Εισερχομένων και Εξερχομένων}
-translate G CCHelpBtn {Βοήθεια για τα εικονίδια και τους δείκτες κατάστασης.\nΓια γενική Βοήθεια πατήστε F1!}
 
-translate G CCDlgServerName {ΌΝομα διακομηστή:}
 translate G CCDlgLoginName  {Όνομα σύνδεσης:}
 translate G CCDlgPassword   {Κωδικός:}
 # ====== TODO To be translated ======
 translate G CCDlgShowPassword {Show password}
-translate G CCDlgURL        {Xfcc-URL:}
-translate G CCDlgRatingType {Τύπως αξιολόγησης:}
 
-translate G CCDlgDuplicateGame {Μη μοναδική ταυτότητα παρτίδας}
-translate G CCDlgDuplicateGameError {Η παρτίδα αυτή υπάρχει περισσότερες από μια φορές στην βάση δεδομένων σας. Παρακαλώ διαγράψτε τις διπλότυπες και συμπιέστε το αρχείο παρτίδων σας (Αρχείο/Συντήρηση/Συμπίεση βάσης δεδομένων).}
 
-translate G CCDlgSortOption {Ταξινόμηση:}
-translate G CCDlgListOnlyOwnMove {Μόνον παρτίδες στις οποίες παίζω εγώ}
-translate G CCOrderClassicTxt {Τοποθεσία, Διοργάνωση, Γύρος, Αποτέλεσμα, Λευκά, Μαύρα}
-translate G CCOrderMyTimeTxt {Το ρολόι μου}
-translate G CCOrderTimePerMoveTxt {Χρόνος ανά κίνηση μέχρι τον επόμενο έλεγχο χρόνου}
-translate G CCOrderStartDate {Ημερομηνία έναρξης}
-translate G CCOrderOppTimeTxt {Ρολόι αντιπάλου}
 
-translate G CCDlgConfigRelay {Παρακολούθηση παρτίδων}
-translate G CCDlgConfigRelayHelp {Μετάβαση στην σελίδα παρτίδας http://www.iccf-webchess.com και εμφάνιση της παρτίδας για παρακολούθηση. Αν βλέπετε την σκακιέρα αντιγράψτε την διεύθυνση URL από τον φυλλομετρητή σας στην παρακάτω λίστα. Μόνον ένα URL ανά γραμμή!\nΠαράδειγμα: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate G ExtHWConfigConnection {Προσαρμογή εξωτερικών συσκευών}

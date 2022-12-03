@@ -213,21 +213,8 @@ menuText W ToolsStartEngine1 "Starta schackmotor 1" 0  {Starta schackmotor 1}
 menuText W ToolsStartEngine2 "Starta schackmotor 2" 0  {Starta schackmotor 2}
 menuText W ToolsCaptureBoard "Spara aktuellt schackbräde..." 0  {Spara det aktuella schackbrädet som en bild.}
 menuText W Play "Spela" 0
-menuText W CorrespondenceChess "Korrespondensschack" 0 {Funktioner för eMail och Xfcc baserad Korrespondensschack}
-menuText W CCConfigure "Konfigurera..." 0 {Konfigurera externa verktyg och generella inställningar}
-menuText W CCConfigRelay "Konfigurera observationer..." 10 {Konfigurera partier att observera}
-menuText W CCOpenDB "Öppna Databas..." 0 {Öppna standardkorrespondensdatabasen}
-menuText W CCRetrieve "Hämta Partier" 0 {Hämta partier via extern (Xfcc-)hjälpare}
-menuText W CCInbox "Hantera Inkorg" 0 {Hantera alla filer i Scids Inkorg}
-menuText W CCSend "Skicka Drag" 0 {Skicka ditt drag via eMail eller extern (Xfcc-)hjälpare}
 menuText W CCResign "Ge upp" 0 {Ge upp (inte via eMail)}
 menuText W CCClaimDraw "Hävda Remi" 0 {Skicka drag och hävda Remi (inte via eMail)}
-menuText W CCOfferDraw "Erbjud Remi" 0 {Skicka drag och erbjud Remi (inte via eMail)}
-menuText W CCAcceptDraw "Acceptera Remi" 0 {Acceptera en erbjuden Remi (inte via eMail)}
-menuText W CCNewMailGame "Nytt eMail-parti..." 0 {Starta ett nytt eMail-parti}
-menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motståndaren}
-menuText W CCGamePage "Partisida..." 0 {Starta upp partiet via webläsaren}
-menuText W CCEditCopy "Kopiera partilista till Clipbase" 0 {Kopiera partierna som CSV-lista till Clipbase}
 
 # Options menu:
 menuText W Options "Alternativ" 2
@@ -1601,72 +1588,11 @@ translate W GameReviewNotEngineMoveButGoodMove {Inte schackmotordraget, men det 
 translate W GameReviewMoveNotGood {Detta drag är inte bra, värderingen är}
 translate W GameReviewMovesPlayedLike {Drag spelade som}
 translate W GameReviewMovesPlayedEngine {Drag apelade som schackmotorn}
-translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 translate W CCDlgCGeneraloptions {Generella inställningar}
-translate W CCDlgDefaultDB {Standarddatabas:}
-translate W CCDlgInbox {Inkorg (sökväg):}
-translate W CCDlgOutbox {Utkorg (sökväg):}
-translate W CCDlgXfcc {Xfcc-Konfiguration:}
-translate W CCDlgExternalProtocol {Extern Protokollhanterare (t.ex. Xfcc)}
-translate W CCDlgFetchTool {Hämtningsverktyg:}
-translate W CCDlgSendTool {Sändverktyg:}
-translate W CCDlgEmailCommunication {eMail-kommunikation}
-translate W CCDlgMailPrg {eMail-program:}
-translate W CCDlgBCCAddr {(B)CC-address:}
-translate W CCDlgMailerMode {Mod:}
-translate W CCDlgThunderbirdEg {t.ex. Thunderbird, Mozilla Mail, Icedove...}
-translate W CCDlgMailUrlEg {t.ex. Evolution}
-translate W CCDlgClawsEg {t.ex Sylpheed Claws}
-translate W CCDlgmailxEg {t.ex. mailx, mutt, nail...}
-translate W CCDlgAttachementPar {Bilage-parameter:}
-translate W CCDlgInternalXfcc {Använd internt Xfcc-stöd}
-translate W CCDlgConfirmXfcc {Bekräfta drag}
-translate W CCDlgSubjectPar {Ämnes-parameter:}
-translate W CCDlgDeleteBoxes {Töm In-/Utkorg} 
-translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utkorgskataloger för Korrespondensschack? Detta kräver en ny synkronisering för att visa den seanaste statusen på dina partier} 
-translate W CCDlgConfirmMove {Bekräfta drag} 
-translate W CCDlgConfirmMoveText {Om du bekräftar, kommer följande drag och kommentar att skickas till servern:} 
-translate W CCDlgDBGameToLong {Inkonsekvent huvudvariation}
-translate W CCDlgDBGameToLongError {Huvudvariationen i din databas är längre än partiet i din Inkorg. Om Inkorgen innehåller aktuella partier, dvs precis efter en synkronisering, lades några drag felaktigt till i huvudvariationen i databasen.\nI detta fall var god och förkorta huvudvariationen till (maximalt) drag\n}
-translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
-translate W CCDlgYourName {Ditt Namn:}
-translate W CCDlgYourMail {Din eMail-address:}
-translate W CCDlgOpponentName {Motståndarnamn:}
-translate W CCDlgOpponentMail {Motståndarens eMail-address:}
-translate W CCDlgGameID {Parti-ID (unikt):}
-translate W CCDlgTitNoOutbox {Scid: Korrespondensschackutkorg}
-translate W CCDlgTitNoInbox {Scid: Korrespondensschackinkorg}
-translate W CCDlgTitNoGames {Scid: Inga Korrespondensschackpartier}
-translate W CCErrInboxDir {Korrespondensschacksinkorgskatalog:}
-translate W CCErrOutboxDir {Korrespondensschacksutkorgskatalog:}
-translate W CCErrDirNotUsable {finns inte eller är inte möjlig att använda!\nVar god och kontrollera och korrigera inställningarna.}
-translate W CCErrNoGames {innehåller inga partier!\nVar god och hämta dem först.}
-translate W CCDlgTitNoCCDB {Scid: Ingen Korrespondensdatabas}
-translate W CCErrNoCCDB {Ingen Databas av typ 'Korrespondens' är öppnad. Var god och öppna en innan du använder Korrespondensschackfunktioner.}
-translate W CCFetchBtn {Hämta partier från servern och bearbeta Inkorgen}
-translate W CCPrevBtn {Gå till tidigare parti}
-translate W CCNextBtn {Gå till nästa parti}
-translate W CCSendBtn {Skicka drag}
-translate W CCEmptyBtn {Töm Inkorgen och Utkorgen}
-translate W CCHelpBtn {Hjälp med ikoner och statusindikatorer.\nFör generell Hjälp tryck på F1!}
-translate W CCDlgServerName {Servernamn:}
 translate W CCDlgLoginName  {Inloggningsnamn:}
 translate W CCDlgPassword   {Lösenord:}
 # ====== TODO To be translated ======
 translate W CCDlgShowPassword {Show password}
-translate W CCDlgURL        {Xfcc-URL:}
-translate W CCDlgRatingType {Ratingtyp:}
-translate W CCDlgDuplicateGame {Icke unikt parti-ID}
-translate W CCDlgDuplicateGameError {Detta parti finns fler än en gång i din databas. Var god och ta bort alla dubbletter och komprimera din partifil (Arkiv/Underhåll/Komprimera Databas).}
-translate W CCDlgSortOption {Sorterar:}
-translate W CCDlgListOnlyOwnMove {Bara partier där jag är vid draget}
-translate W CCOrderClassicTxt {Plats, Evenemang, Runda, Resultat, Vit, Svart}
-translate W CCOrderMyTimeTxt {Min klocka}
-translate W CCOrderTimePerMoveTxt {Tid per drag till nästa tidskontroll}
-translate W CCOrderStartDate {Startdatum}
-translate W CCOrderOppTimeTxt {Motståndarens klocka}
-translate W CCDlgConfigRelay {Konfigurera ICCF-observationer}
-translate W CCDlgConfigRelayHelp {Gå till partisidan på http://www.iccf-webchess.com och visa partiet att observera.  Om du ser schackbräder kopiera webadressen från din webläsare till listan nedanför. Bara en webadress per rad!\nExempel: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 translate W ExtHWPort {Port}
 translate W ExtHWEngineCmd {Schackmotorkommando}
