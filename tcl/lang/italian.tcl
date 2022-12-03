@@ -674,6 +674,32 @@ translate I EngineTime {Data}
 translate I EngineNew {Nuovo}
 translate I EngineEdit {Modifica}
 translate I EngineRequired {I campi in grassetto sono obbligatori; gli altri sono opzionali}
+# ====== TODO To be translated ======
+translate I EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate I EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate I EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate I EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate I EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate I EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate I EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate I EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate I EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate I EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate I EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate I EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate I EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText I PgnFile "File" 0
@@ -955,6 +981,10 @@ translate I WhiteClearAdvantage {Il Bianco sta meglio}
 translate I BlackClearAdvantage {Il Nero sta meglio}
 translate I WhiteSlightAdvantage {Il Bianco sta leggermente meglio}
 translate I BlackSlightAdvantage {Il Nero sta leggermente meglio}
+# ====== TODO To be translated ======
+translate I WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate I BlackCrushing {Black has a crushing advantage}
 translate I Equality {Parità}
 translate I Unclear {Posizione incerta}
 translate I Diagram {Diagramma}

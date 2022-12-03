@@ -713,6 +713,32 @@ translate U EngineTime {Pvm}
 translate U EngineNew {Uusi}
 translate U EngineEdit {Muokkaa}
 translate U EngineRequired {Lihavoidut kentät ovat pakollisia}
+# ====== TODO To be translated ======
+translate U EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate U EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate U EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate U EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate U EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate U EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate U EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate U EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate U EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate U EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate U EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate U EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate U EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText U PgnFile "Tiedosto" 0

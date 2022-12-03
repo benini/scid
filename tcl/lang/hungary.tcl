@@ -688,6 +688,32 @@ translate H EngineTime {Dátum}
 translate H EngineNew {Új}
 translate H EngineEdit {Szerkesztés}
 translate H EngineRequired {A vastagbetûs mezõk szükségesek, a többiek kihagyhatók.}
+# ====== TODO To be translated ======
+translate H EngineMoveLinesNotation {Move lines notation:}
+# ====== TODO To be translated ======
+translate H EngineScorePerspective {Score perspective:}
+# ====== TODO To be translated ======
+translate H EngineWrapMoveLines {Wrap move lines:}
+# ====== TODO To be translated ======
+translate H EngineShowDebugFrame {Show debug frame:}
+# ====== TODO To be translated ======
+translate H EngineProcessPriority {Engine process priority:}
+# ====== TODO To be translated ======
+translate H EngineProtocol {Protocol:}
+# ====== TODO To be translated ======
+translate H EngineAcceptNetworkConnections {Accept network connections:}
+# ====== TODO To be translated ======
+translate H EngineAdd {Add a local engine}
+# ====== TODO To be translated ======
+translate H EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate H EngineReload {Reload engine}
+# ====== TODO To be translated ======
+translate H EngineClone {Clone engine}
+# ====== TODO To be translated ======
+translate H EngineDelete {Delete engine}
+# ====== TODO To be translated ======
+translate H EngineRemove {Do you really want to remove this engine from the list?}
 
 # PGN window menus:
 menuText H PgnFile "Fájl" 0
