@@ -1782,7 +1782,6 @@ translate N CCDlgPassword   {Paswoord:}
 # ====== TODO To be translated ======
 translate N CCDlgShowPassword {Show password}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}

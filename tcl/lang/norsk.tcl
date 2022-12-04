@@ -240,21 +240,9 @@ menuText O ToolsCaptureBoard "Capture Current Board..." 0  {Save the current boa
 # ====== TODO To be translated ======
 menuText O Play "Play" 0
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 menuText O CCResign "Resign" 0 {Resign (not via eMail)}
 # ====== TODO To be translated ======
 menuText O CCClaimDraw "Claim Draw" 0 {Send move and claim a draw (not via eMail)}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 
 # Options menu:
@@ -2033,74 +2021,13 @@ translate O GameReviewMovesPlayedLike {Moves played like}
 # ====== TODO To be translated ======
 translate O GameReviewMovesPlayedEngine {Moves played like engine}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate O CCDlgCGeneraloptions {General Options}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O CCDlgLoginName  {Login Name:}
 # ====== TODO To be translated ======
 translate O CCDlgPassword   {Password:}
 # ====== TODO To be translated ======
 translate O CCDlgShowPassword {Show password}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======

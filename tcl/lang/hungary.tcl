@@ -1670,22 +1670,10 @@ translate H GameReviewMovesPlayedLike {Moves played like}
 translate H GameReviewMovesPlayedEngine {Moves played like engine}
 translate H CCDlgCGeneraloptions {Általános lehetõségek}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate H CCDlgLoginName  {Bejelentkezõ név:}
 translate H CCDlgPassword   {Jelszó:}
 # ====== TODO To be translated ======
 translate H CCDlgShowPassword {Show password}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate H ExtHWConfigConnection {Külsõ hardver beállítása}
 translate H ExtHWPort {Port}

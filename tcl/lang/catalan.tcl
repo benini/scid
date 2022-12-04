@@ -1684,24 +1684,10 @@ translate K GameReviewMovesPlayedLike {Moves played like}
 translate K GameReviewMovesPlayedEngine {Moves played like engine}
 translate K CCDlgCGeneraloptions {Opcions Generals}
 # ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate K CCDlgLoginName  {Nom de registre:}
 translate K CCDlgPassword   {Contrasenya:}
 # ====== TODO To be translated ======
 translate K CCDlgShowPassword {Show password}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate K ExtHWConfigConnection {Configurar maquinari extern}
 translate K ExtHWPort {Port}
