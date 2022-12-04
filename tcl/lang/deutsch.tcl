@@ -470,8 +470,7 @@ translate D AllLoss {" Wer zieht verliert:     " }
 # Tip of the day:
 translate D Tip {Tip}
 translate D TipAtStartup {Tip beim Starten}
-# ====== TODO To be translated ======
-translate D TipConvertPGN {You can get better performance by converting PGN files}
+translate D TipConvertPGN {Sie können eine bessere Leistung erreichen, wenn die PGN-Dateien konvertiert werden.}
 
 # Tree window menus:
 menuText D TreeFile "Datei" 0
@@ -1306,8 +1305,7 @@ translate D ExportStripMarks \
 # Goto game/move dialogs:
 translate D LoadGameNumber {Geben Sie die zu ladende Spielnr. ein:}
 translate D GotoMoveNumber {Gehe zu Zugnr.:}
-# ====== TODO To be translated ======
-translate D CopyAllGames {Copy all games to}
+translate D CopyAllGames {Kopiere alle Spiele nach}
 
 # Copy games dialog:
 translate D CopyGames {Kopiere Spiele}
