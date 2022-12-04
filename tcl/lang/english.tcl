@@ -244,10 +244,8 @@ menuText E ToolsCaptureBoard "Capture Current Board..." 5  {Save the current boa
 menuText E Play "Play" 0
 
 # --- Correspondence Chess
-
 menuText E CCResign "Resign" 1 {Resign (not via eMail)}
 menuText E CCClaimDraw "Claim Draw" 6 {Send move and claim a draw (not via eMail)}
-
 
 # menu in cc window:
 
@@ -860,7 +858,6 @@ translate E GlistSep {Separator}
 translate E GlistCurrentSep {-- Current --}
 translate E GlistNewSort {New}
 translate E GlistAddToSort {Add}
-
 
 # base sorting
 translate E GsortSort {Sort...}
@@ -1620,18 +1617,9 @@ translate E GameReviewMovesPlayedEngine {Moves played like engine}
 
 # Correspondence Chess Dialogs:
 translate E CCDlgCGeneraloptions {General Options}
-
-
-
-
-
-
 translate E CCDlgLoginName  {Login Name:}
 translate E CCDlgPassword   {Password:}
 translate E CCDlgShowPassword {Show password}
-
-
-
 
 # Connect Hardware dialogs
 translate E ExtHWConfigConnection {Configure external hardware}
@@ -1651,7 +1639,6 @@ translate E IESending {Moves sent for}
 translate E IESynchronise {Synchronise}
 translate E IERotate  {Rotate}
 translate E IEUnableToStart {Unable to start Input Engine:}
-
 
 # Calculation of Variations
 translate E DoneWithPosition {Done with position}
