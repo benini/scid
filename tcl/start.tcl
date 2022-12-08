@@ -479,6 +479,23 @@ proc autoscrollText {bars frame widget style} {
   autoscrollBars $bars $frame $widget
 }
 
+# Create a text widget and apply to it the current ttk style.
+# It also creates a tag "header" in the text widget.
+proc ttk_text {pathName {args ""}} {
+  set style Treeview
+  if {[set idx [lsearch $args "-style"]] >=0} {
+    set style [lindex $args [expr $idx + 1]]
+    set args [lreplace $args $idx [expr $idx + 1]]
+  }
+  set res [text $pathName -cursor arrow -highlightthickness 0 -font font_Regular]
+  if {[llength $args] > 0} {
+    eval $pathName configure $args
+  }
+  $pathName tag configure header -font font_Bold
+  ::applyThemeStyle $style $pathName
+  return $res
+}
+
 # Create a canvas and apply to it the current ttk style.
 proc ttk_canvas {pathName args} {
   set res [canvas $pathName {*}$args]
