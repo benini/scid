@@ -8,8 +8,9 @@ proc ::tip::show {{n -1}} {
   if {! [winfo exists .tipsWin]} {
     win::createDialog $w
     wm title $w "Scid: [tr HelpTip]"
-    autoscrollText y $w.text_frame $w.text TLabel
-    $w.text configure -width 40 -height 8 -wrap word
+    ttk::frame $w.text_frame
+    ttk_text $w.text -width 40 -height 8 -wrap word
+    autoscrollBars y $w.text_frame $w.text
     ::htext::init $w.text
     pack $w.text_frame -side top -fill both
     pack [ttk::frame $w.b] -side bottom -fill x

@@ -173,8 +173,9 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid $w.header.engine $w.header.addpipe $w.header.addremote \
          $w.header.reload $w.header.clone $w.header.delete -sticky news
 
-    autoscrollText both $w.options $w.options.text Treeview
-    $w.options.text configure -wrap none
+    ttk::frame $w.options
+    ttk_text $w.options.text -wrap none
+    autoscrollBars both $w.options $w.options.text
 
     grid columnconfigure $w 0 -weight 1
     grid rowconfigure $w 1 -weight 1

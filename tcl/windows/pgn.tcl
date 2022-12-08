@@ -121,8 +121,9 @@ namespace eval pgn {
 
     translateMenuLabels $w.menu
 
-    autoscrollText y $w.frame $w.text Treeview
-    $w.text configure -wrap word -state normal -tabs {1c right 2c 4c}
+    ttk::frame $w.frame
+    ttk_text $w.text -wrap word -tabs {1c right 2c 4c}
+    autoscrollBars y $w.frame $w.text
     if { $::pgn::boldMainLine } {
         $w.text configure -font font_Bold
     }
