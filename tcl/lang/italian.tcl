@@ -65,7 +65,7 @@ menuText I EditFirst "Variante principale" 5 \
 menuText I EditMain "Promuove una variante a linea principale" 9 \
   {Promuove una variante a linea principale}
 menuText I EditTrial "Prova una variante" 8 \
-  {Attiva/disattiva la modalit‡ di prova di una variante, per provare idee direttamente sulla scacchiera}
+  {Attiva/disattiva la modalit√† di prova di una variante, per provare idee direttamente sulla scacchiera}
 menuText I EditStrip "Pulisci" 2 {Elimina commenti o varianti dalla partita corrente}
 menuText I EditUndo "Annulla" 0 {Annulla l'ultima modifica della partita}
 menuText I EditRedo "Ripeti" 0 {Ripete l'ultima modifica della partita}
@@ -111,10 +111,10 @@ menuText I GameReplace "Salva: sostituisce la partita..." 8 \
 menuText I GameAdd "Salva: aggiunge la nuova partita..." 7 \
   {Salva questa partita come nuova partita nel database}
 menuText I GameDeepest "Identifica apertura" 0 \
-  {Va alla posizione di partita pi˘ profonda listata nel libro ECO}
+  {Va alla posizione di partita pi√π profonda listata nel libro ECO}
 menuText I GameGotoMove "Vai alla mossa numero..." 0 \
   {Va al numero di mossa specificato nella partita attuale}
-menuText I GameNovelty "Trova novit‡..." 0 \
+menuText I GameNovelty "Trova novit√†..." 0 \
   {Cerca la prima mossa mai giocata della partita corrente}
 
 # Search Menu:
@@ -203,7 +203,7 @@ menuText I ToolsExpFilterLaTeX "Esporta filtro in un file LaTeX..." 3 \
 menuText I ToolsImportOne "Importa una partita in formato PGN..." 0 \
   {Importa una partita da testo PGN}
 menuText I ToolsImportFile "Importa file di partite PGN..." 27 \
-  {Importa le partite da uno o pi˘ file PGN}
+  {Importa le partite da uno o pi√π file PGN}
 menuText I ToolsStartEngine1 "Avvia il motore 1" 16  {Avvia il primo motore per l'analisi della posizione}
 menuText I ToolsStartEngine2 "Avvia il motore 2" 16  {Avvia il secondo motore per l'analisi della posizione}
 menuText I ToolsCaptureBoard "Salva la posizione come immagine..." 13  {Salva la posizione corrente come immagine.}
@@ -345,7 +345,7 @@ translate I games {Partite}
 translate I move {mossa}
 translate I moves {mosse}
 translate I all {tutto}
-translate I Yes {SÏ}
+translate I Yes {S√¨}
 translate I No {No}
 translate I Both {Entrambi}
 translate I King {Re}
@@ -394,9 +394,9 @@ translate I Total {Totale}
 translate I readonly {sola lettura}
 
 # Standard error messages:
-translate I ErrNotOpen {Questo database non Ë aperto.}
-translate I ErrReadOnly {Questo database Ë di sola lettura; non puÚ essere modificato.}
-translate I ErrSearchInterrupted {Ricerca interrotta; il risultato Ë incompleto.}
+translate I ErrNotOpen {Questo database non √® aperto.}
+translate I ErrReadOnly {Questo database √® di sola lettura; non pu√≤ essere modificato.}
+translate I ErrSearchInterrupted {Ricerca interrotta; il risultato √® incompleto.}
 
 # Game information:
 translate I twin {doppio}
@@ -414,8 +414,8 @@ translate I LineEnd {Fine della variante}
 translate I PInfoAll {Risultati per <b>tutte</b> le partite}
 translate I PInfoFilter {Risultati per le partite nel <b>filtro</b>}
 translate I PInfoAgainst {Risultati contro}
-translate I PInfoMostWhite {Le pi˘ frequenti aperture con il Bianco}
-translate I PInfoMostBlack {Le pi˘ frequenti aperture con il Nero}
+translate I PInfoMostWhite {Le pi√π frequenti aperture con il Bianco}
+translate I PInfoMostBlack {Le pi√π frequenti aperture con il Nero}
 translate I PInfoRating {Variazioni Elo}
 translate I PInfoBio {Biografia}
 translate I PInfoEditRatings {Edita i rating}
@@ -433,8 +433,8 @@ translate I lose {persa}
 translate I loses {perde}
 translate I allOthersLose {tutte le altre perse}
 translate I matesIn {matto in}
-translate I hasCheckmated {Ë mattato}
-translate I longest {la pi˘ lunga}
+translate I hasCheckmated {√® mattato}
+translate I longest {la pi√π lunga}
 translate I WinningMoves {Mosse vincenti}
 translate I DrawingMoves {Mosse pattanti}
 translate I LosingMoves {Mosse perdenti}
@@ -470,7 +470,7 @@ menuText I TreeFileCacheInfo "Informazioni cache" 0 {Visualizza informazioni sul
 menuText I TreeFileSave "Salva il file di cache" 0 \
   {Salva il file (.stc) della cache dell'albero}
 menuText I TreeFileFill "Riempie il file di cache" 0 \
-  {Riempie il file di cache con le pi˘ frequenti posizioni di apertura}
+  {Riempie il file di cache con le pi√π frequenti posizioni di apertura}
 menuText I TreeFileBest "Lista delle migliori partite" 0 {Mostra la lista delle migliori partite}
 menuText I TreeFileGraph "Grafico dell'albero" 0 \
   {Mostra il grafico per la corrente variante dell'albero}
@@ -495,12 +495,12 @@ menuText I TreeSortECO "Codice ECO" 0
 menuText I TreeSortFreq "Frequenza" 0
 menuText I TreeSortScore "Punti" 0
 menuText I TreeOpt "Opzioni" 0
-menuText I TreeOptSlowmode "Modalit‡ lenta" 0 {Modalit‡ lenta per l'aggiornamento (pi˘ precisa)}
-menuText I TreeOptFastmode "Modalit‡ veloce" 0 {Modalit‡ veloce per l'aggiornamento (nessuna trasposizione di mosse)}
-menuText I TreeOptFastAndSlowmode "Modalit‡ lenta e veloce" 0 {Modalit‡ lenta e veloce per l'aggiornamento}
+menuText I TreeOptSlowmode "Modalit√† lenta" 0 {Modalit√† lenta per l'aggiornamento (pi√π precisa)}
+menuText I TreeOptFastmode "Modalit√† veloce" 0 {Modalit√† veloce per l'aggiornamento (nessuna trasposizione di mosse)}
+menuText I TreeOptFastAndSlowmode "Modalit√† lenta e veloce" 0 {Modalit√† lenta e veloce per l'aggiornamento}
 menuText I TreeOptStartStop "Aggiornamento automatico" 0 {Attiva/disattiva l'aggiornamento automatico della finestra di albero}
 menuText I TreeOptLock "Blocca" 0 {Blocca/sblocca l'albero al database corrente}
-menuText I TreeOptTraining "Allenamento" 0 {Attiva/disattiva la modalit‡ di esercizio dell'albero}
+menuText I TreeOptTraining "Allenamento" 0 {Attiva/disattiva la modalit√† di esercizio dell'albero}
 menuText I TreeOptAutosave "File di cache per il salvataggio automatico" 0 \
   {Salva automaticamente il file di cache quando si chiude la finestra dell'albero}
 menuText I TreeHelp "Aiuto" 0
@@ -586,8 +586,8 @@ menuText I PListSort "Ordina" 0
 menuText I PListSortName "Nome" 0
 menuText I PListSortElo "Elo" 0
 menuText I PListSortGames "Partite" 0
-menuText I PListSortOldest "Pi˘ vecchie" 0
-menuText I PListSortNewest "Pi˘ recenti" 0
+menuText I PListSortOldest "Pi√π vecchie" 0
+menuText I PListSortNewest "Pi√π recenti" 0
 
 # Tournament finder:
 menuText I TmtFile "File" 0
@@ -602,8 +602,8 @@ menuText I TmtSortSite "Siti" 0
 menuText I TmtSortEvent "Eventi" 1
 menuText I TmtSortWinner "Vincitore" 0
 translate I TmtLimit "Limite della lista"
-translate I TmtMeanElo "Media Elo pi˘ bassa"
-translate I TmtNone "Non Ë stato trovato nessun torneo."
+translate I TmtMeanElo "Media Elo pi√π bassa"
+translate I TmtNone "Non √® stato trovato nessun torneo."
 
 # Graph windows:
 menuText I GraphFile "File" 0
@@ -644,11 +644,11 @@ translate I AnnotateAll {Per mosse di entrambi i colori}
 translate I AnnotateAllMoves {Tutte le mosse}
 translate I AnnotateWhite {Solo per le mosse del Bianco}
 translate I AnnotateBlack {Solo per le mosse del Nero}
-translate I AnnotateBlundersOnly {Quando la mossa Ë chiaramente un errore}
+translate I AnnotateBlundersOnly {Quando la mossa √® chiaramente un errore}
 translate I AnnotateBlundersOnlyScoreChange {L'analisi riporta un errore, con variazione del punteggio da/a:}
 translate I BlundersThreshold {Limite}
 translate I ScoreAllMoves {Punteggio ad ogni mossa}
-translate I LowPriority {Imposta la priorit‡ della CPU a bassa}
+translate I LowPriority {Imposta la priorit√† della CPU a bassa}
 translate I ClickHereToSeeMoves {Clicca qui per vedere le mosse}
 translate I ConfigureInformant {Valore dei simboli per i commenti}
 translate I Informant!? {Mossa interessante}
@@ -658,7 +658,7 @@ translate I Informant?! {Mossa dubbia}
 translate I Informant+= {Il bianco ha un leggero vantaggio}
 translate I Informant+/- {Il bianco ha un moderato vantaggio}
 translate I Informant+- {Il bianco ha un vantaggio decisivo}
-translate I Informant+-- {La partita Ë considerata vinta}
+translate I Informant+-- {La partita √® considerata vinta}
 translate I Book {Libro}
 translate I OtherBookMoves {Libro dell'avversario}
 translate I OtherBookMovesTooltip {Mosse alle quali l'avversario ha una risposta}
@@ -718,8 +718,8 @@ menuText I CrosstabOptAll "Torneo all'italiana" 0
 menuText I CrosstabOptSwiss "Sistema svizzero" 0
 menuText I CrosstabOptKnockout "Knockout" 0
 menuText I CrosstabOptAuto "Auto" 0
-menuText I CrosstabOptAges "Et‡ in anni" 8
-menuText I CrosstabOptNats "Nazionalit‡" 0
+menuText I CrosstabOptAges "Et√† in anni" 8
+menuText I CrosstabOptNats "Nazionalit√†" 0
 menuText I CrosstabOptRatings "Punteggi" 0
 menuText I CrosstabOptTitles "Titoli" 0
 menuText I CrosstabOptBreaks "Spareggio tecnico" 4
@@ -776,7 +776,7 @@ translate I WhiteOpFlag {Apertura del Bianco}
 translate I BlackOpFlag {Apertura del Nero}
 translate I MiddlegameFlag {Mediogioco}
 translate I EndgameFlag {Finale}
-translate I NoveltyFlag {Novit‡}
+translate I NoveltyFlag {Novit√†}
 translate I PawnFlag {Struttura pedonale}
 translate I TacticsFlag {Tatticismi}
 translate I QsideFlag {Gioco su lato di Donna}
@@ -861,7 +861,7 @@ translate I GlistRemoveGameAndBelowFromFilter  {Rimuovi la partita (e le seguent
 translate I GlistDeleteGame {Elimina/recupera questa partita}
 translate I GlistDeleteAllGames {Elimina tutte le partite nel filtro}
 translate I GlistUndeleteAllGames {Recupera tutte le partite nel filtro}
-translate I GlistMergeGameInBase {Fondi la partita in un altro database} 
+translate I GlistMergeGameInBase {Fondi la partita in un altro database}
 
 # Maintenance window:
 translate I DatabaseName {Nome del database:}
@@ -897,16 +897,16 @@ translate I ReclassifyGames {Partite classificate ECO}
 translate I CompactDatabase {Compatta database}
 translate I SortDatabase {Ordina database}
 translate I AddEloRatings {Aggiungi punteggio Elo}
-translate I AutoloadGame {Numero della partita che si caricher‡ automaticamente}
+translate I AutoloadGame {Numero della partita che si caricher√† automaticamente}
 translate I StripTags {Togli i tag PGN}
 translate I StripTag {Toglie i tag}
 translate I Cleaner {Manutentore globale}
-translate I CleanerHelp {La finestra Manutentore globale effettur‡ tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
+translate I CleanerHelp {La finestra Manutentore globale effettur√† tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
 
 Le impostazioni correnti nelle finestre della classificazione ECO e della cancellazione delle partite doppie verranno applicate se selezionate.}
-translate I CleanerConfirm {Una volta attivata l'operazione di pulizia, questa non puÚ pi˘ essere interrotta!
+translate I CleanerConfirm {Una volta attivata l'operazione di pulizia, questa non pu√≤ pi√π essere interrotta!
 
-Questo puÚ richiedere molto tempo su un grosso database, a seconda delle funzioni selezionate e delle impostazioni correnti.
+Questo pu√≤ richiedere molto tempo su un grosso database, a seconda delle funzioni selezionate e delle impostazioni correnti.
 
 Sei sicuro di voler procedere con le funzioni selezionate?}
 
@@ -916,17 +916,17 @@ translate I TwinChecknextPair {Coppia seguente}
 translate I TwinChecker {Scid: Controllo partite doppie}
 translate I TwinCheckTournament {Partite nel torneo:}
 translate I TwinCheckNoTwin {Nessuna partita doppia}
-translate I TwinCheckNoTwinfound {Nessun doppio Ë stato trovato per questa partita.\nPer mostrare i doppi con questa finestra, devi prima usare la funzione "Cancella le partite doppie".}
+translate I TwinCheckNoTwinfound {Nessun doppio √® stato trovato per questa partita.\nPer mostrare i doppi con questa finestra, devi prima usare la funzione "Cancella le partite doppie".}
 translate I TwinCheckTag {Condividi i tag...}
 translate I TwinCheckFound1 {Scid ha trovato $result partite doppie}
 translate I TwinCheckFound2 { e ha impostato il loro stato a cancellato}
 translate I TwinCheckNoDelete {Non ci sono partite da cancellare nel database.}
 translate I TwinCriteria1 {Le impostazioni per trovare le partite doppie possono portare a determinare come doppie partite diverse con mosse simili.}
-translate I TwinCriteria2 {Si consiglia di selezionare "No" per "Stesse mosse", e "SÏ" per colori, evento, luogo, turno, anno e mese.\nVuoi procedere e cancellare le partite doppie comunque?}
-translate I TwinCriteria3 {Si consiglia di selezionare "SÏ" per almeno due tra "stesso luogo", "stesso turno" e "stesso anno".\nVuoi procedere e cancellare le partite doppie comunque?}
+translate I TwinCriteria2 {Si consiglia di selezionare "No" per "Stesse mosse", e "S√¨" per colori, evento, luogo, turno, anno e mese.\nVuoi procedere e cancellare le partite doppie comunque?}
+translate I TwinCriteria3 {Si consiglia di selezionare "S√¨" per almeno due tra "stesso luogo", "stesso turno" e "stesso anno".\nVuoi procedere e cancellare le partite doppie comunque?}
 translate I TwinCriteriaConfirm {Scid: Conferma le impostazioni per le partite doppie}
 translate I TwinChangeTag "Cambia i seguenti tag della partita:\n\n"
-translate I AllocRatingDescription "Questo comando usa l'attuale controllore ortografico per aggiungere i punteggi Elo alle partite in questo database. Se un giocatore non ha un punteggio ma il suo punteggio al momento della partita Ë presente nel controllore ortografico, quel punteggio sar‡ aggiunto."
+translate I AllocRatingDescription "Questo comando usa l'attuale controllore ortografico per aggiungere i punteggi Elo alle partite in questo database. Se un giocatore non ha un punteggio ma il suo punteggio al momento della partita √® presente nel controllore ortografico, quel punteggio sar√† aggiunto."
 translate I RatingOverride "Sovrascrivi i punteggi diversi da zero?"
 
 translate I AddRatings "Aggiungi i punteggi a:"
@@ -949,15 +949,15 @@ translate I ExcellentMove {Mossa ottima}
 translate I Blunder {Svista}
 translate I InterestingMove {Mossa interessante}
 translate I DubiousMove {Mossa dubbia}
-translate I WhiteDecisiveAdvantage {Il Bianco Ë in vantaggio decisivo}
-translate I BlackDecisiveAdvantage {Il Nero Ë in vantaggio decisivo}
+translate I WhiteDecisiveAdvantage {Il Bianco √® in vantaggio decisivo}
+translate I BlackDecisiveAdvantage {Il Nero √® in vantaggio decisivo}
 translate I WhiteClearAdvantage {Il Bianco sta meglio}
 translate I BlackClearAdvantage {Il Nero sta meglio}
 translate I WhiteSlightAdvantage {Il Bianco sta leggermente meglio}
 translate I BlackSlightAdvantage {Il Nero sta leggermente meglio}
 translate I WhiteCrushing {Il Bianco ha un enorme vantaggio}
 translate I BlackCrushing {Il Nero ha un enorme vantaggio}
-translate I Equality {Parit‡}
+translate I Equality {Parit√†}
 translate I Unclear {Posizione incerta}
 translate I Diagram {Diagramma}
 
@@ -1045,23 +1045,23 @@ translate I GoBack {Indietro}
 translate I ReplaceMove {Sostituisci la mossa}
 translate I AddNewVar {Aggiunge una nuova variante}
 translate I NewMainLine {Nuova linea principale}
-translate I ReplaceMoveMessage {Esiste gi‡ una mossa qui.
+translate I ReplaceMoveMessage {Esiste gi√† una mossa qui.
 
 Puoi sostituirla, rinunciando a tutte le mosse dopo di essa, o aggiungere la tua mossa come nuova variante.
 
 (Puoi impedire di vedere questo messaggio in futuro ponendo ad off l'opzione "Domanda prima di sostiture le mosse" nel menu Opzioni:Mosse.)}
 
 # Make database read-only dialog:
-translate I ReadOnlyDialog {Se rendi questo database di sola lettura, nessuna modifica sar‡ permessa.
-Nessuna partita puÚ essere salvata o sostituita, e nessun identificatore di cancellazione puÚ essere alterato.
-Ogni ordinamento o classificazione ECO risulter‡ essere temporaneo.
+translate I ReadOnlyDialog {Se rendi questo database di sola lettura, nessuna modifica sar√† permessa.
+Nessuna partita pu√≤ essere salvata o sostituita, e nessun identificatore di cancellazione pu√≤ essere alterato.
+Ogni ordinamento o classificazione ECO risulter√† essere temporaneo.
 
 Puoi facilmente rendere ancora scrivibile il database, chiudendolo e riaprendolo.
 
 Desideri veramente rendere questo database di sola lettura?}
 
 # Clear game dialog:
-translate I ClearGameDialog {Questa partita Ë stata modificata.
+translate I ClearGameDialog {Questa partita √® stata modificata.
 
 Sei sicuro di voler continuare ed eliminare le modifiche effettuate?}
 
@@ -1072,7 +1072,7 @@ translate I ExitUnsaved {Il database ha partite modificate e non salvate. Se esc
 # Import window:
 translate I PasteCurrentGame {Incolla la partita attuale}
 translate I ImportHelp1 {Immetti o incolla una partita in formato PGN nella struttura precedente.}
-translate I ImportHelp2 {Ogni errore di importazione di partita sar‡ visualizzato qui.}
+translate I ImportHelp2 {Ogni errore di importazione di partita sar√† visualizzato qui.}
 translate I OverwriteExistingMoves {Sovrascrivere le mosse presenti?}
 
 # ECO Browser:
@@ -1090,19 +1090,19 @@ translate I OprepStats {Statistica}
 translate I OprepStatAll {tutte le partite della statistica}
 translate I OprepStatBoth {Entrambe classificate}
 translate I OprepStatSince {Da}
-translate I OprepOldest {Le partite pi˘ vecchie}
-translate I OprepNewest {Le partite pi˘ recenti}
-translate I OprepPopular {Attuale popolarit‡}
+translate I OprepOldest {Le partite pi√π vecchie}
+translate I OprepNewest {Le partite pi√π recenti}
+translate I OprepPopular {Attuale popolarit√†}
 translate I OprepFreqAll {Frequenza in tutti gli anni: }
 translate I OprepFreq1   {Da  1 anno ad oggi:          }
 translate I OprepFreq5   {Da  5 anni ad oggi:          }
 translate I OprepFreq10  {Da 10 anni ad oggi:          }
 translate I OprepEvery {una volta ogni %u partite}
-translate I OprepUp {pi˘ %u%s da tutti gli anni}
+translate I OprepUp {pi√π %u%s da tutti gli anni}
 translate I OprepDown {meno %u%s da tutti gli anni}
 translate I OprepSame {nessuna variazione da tutti gli anni}
-translate I OprepMostFrequent {Giocatori pi˘ frequenti}
-translate I OprepMostFrequentOpponents {Avversari pi˘ frequenti}
+translate I OprepMostFrequent {Giocatori pi√π frequenti}
+translate I OprepMostFrequentOpponents {Avversari pi√π frequenti}
 
 
 
@@ -1112,7 +1112,7 @@ translate I OprepWRating {Punteggio del Bianco}
 translate I OprepBRating {Punteggio del Nero}
 translate I OprepWPerf {Performance del Bianco}
 translate I OprepBPerf {Performance del Nero}
-translate I OprepHighRating {Partite con il pi˘ alto punteggio medio}
+translate I OprepHighRating {Partite con il pi√π alto punteggio medio}
 translate I OprepTrends {Tendenze dei risultati}
 translate I OprepResults {Risultato, lunghezza e frequenza}
 translate I OprepLength {Lunghezza della partita}
@@ -1121,7 +1121,7 @@ translate I OprepWWins {Vittorie del Bianco: }
 translate I OprepBWins {Vittorie del Nero: }
 translate I OprepDraws {Patte:      }
 translate I OprepWholeDB {intero database}
-translate I OprepShortest {Vittorie pi˘ brevi}
+translate I OprepShortest {Vittorie pi√π brevi}
 translate I OprepMovesThemes {Mosse e temi}
 translate I OprepMoveOrders {Ordini di mosse che raggiungono la posizione considerata}
 translate I OprepMoveOrdersOne \
@@ -1131,7 +1131,7 @@ translate I OprepMoveOrdersAll \
 translate I OprepMoveOrdersMany \
   {C'erano %u ordini di mosse che raggiungevano questa posizione. I primi %u sono:}
 translate I OprepMovesFrom {Mosse dalla posizione del rapporto}
-translate I OprepMostFrequentEcoCodes {Codici ECO pi˘ frequenti}
+translate I OprepMostFrequentEcoCodes {Codici ECO pi√π frequenti}
 translate I OprepThemes {Temi posizionali}
 translate I OprepThemeDescription {Frequenza dei temi nelle prime %u mosse di ogni partita}
 translate I OprepThemeSameCastling {Arrocchi omogenei}
@@ -1150,7 +1150,7 @@ translate I OprepReportGames {Partite del rapporto}
 translate I OprepAllGames {Tutte le partite}
 translate I OprepEndClass {Materiale alla fine di ogni partita}
 translate I OprepTheoryTable {Tabella della teoria}
-translate I OprepTableComment {Generato da %u partite pi˘ quotate.}
+translate I OprepTableComment {Generato da %u partite pi√π quotate.}
 translate I OprepExtraMoves {Mosse extra note nella tabella della teoria}
 translate I OprepMaxGames {Numero massimo di partite nella tabella della teoria}
 translate I OprepViewHTML {Vedi HTML}
@@ -1179,10 +1179,10 @@ translate I TrackerMovesStop {Inserisci il numero di mossa dove finire il tracci
 translate I SelectAllGames {Tutte le partite nel database}
 translate I SelectFilterGames {Solo le partite nel filtro}
 translate I SelectTournamentGames {Solo le partite del torneo attuale}
-translate I SelectOlderGames {Solo le partite pi˘ vecchie}
+translate I SelectOlderGames {Solo le partite pi√π vecchie}
 
 # Delete Twins window:
-translate I TwinsNote {Per essere doppie, due partite devono avere almeno gli stessi due giocatori, e criteri che puoi definire sotto. Quando viene trovata una coppia di doppie, la partita pi˘ breve viene cancellata. Suggerimento: Ë meglio controllare per caratteri il database prima di cancellare le doppie, per migliorare la ricerca delle stesse.}
+translate I TwinsNote {Per essere doppie, due partite devono avere almeno gli stessi due giocatori, e criteri che puoi definire sotto. Quando viene trovata una coppia di doppie, la partita pi√π breve viene cancellata. Suggerimento: √® meglio controllare per caratteri il database prima di cancellare le doppie, per migliorare la ricerca delle stesse.}
 translate I TwinsCriteria {Criteri: le partite doppie devono avere...}
 translate I TwinsWhich {Quali partite esaminare}
 translate I TwinsColors {Stessi colori?}
@@ -1205,7 +1205,7 @@ translate I TwinsSetFilter {Definisci il filtro a tutte le partite doppie cancel
 translate I TwinsComments {Mantieni sempre le partite con commenti?}
 translate I TwinsVars {Mantieni sempre le partite con varianti?}
 translate I TwinsDeleteWhich {Quale partita cancellare:}
-translate I TwinsDeleteShorter {La partita pi˘ corta}
+translate I TwinsDeleteShorter {La partita pi√π corta}
 translate I TwinsDeleteOlder {La partita inserita prima nel database}
 translate I TwinsDeleteNewer {La partita inserita dopo nel database}
 translate I TwinsDelete {Cancella partite}
@@ -1242,9 +1242,9 @@ translate I CurrentState {Stato attuale}
 translate I AfterCompaction {Dopo la compattazione}
 translate I CompactNames {Compatta il file di nomi}
 translate I CompactGames {Compatta il file di partite}
-translate I NoUnusedNames "Non ci sono nomi inutilizzati, il file dei nomi Ë gi‡ compresso."
-translate I NoUnusedGames "Il file delle partite Ë gi‡ compresso."
-translate I GameFileCompacted {Il file delle partite del database Ë stato compresso.}
+translate I NoUnusedNames "Non ci sono nomi inutilizzati, il file dei nomi √® gi√† compresso."
+translate I NoUnusedGames "Il file delle partite √® gi√† compresso."
+translate I GameFileCompacted {Il file delle partite del database √® stato compresso.}
 
 # Sorting:
 translate I SortCriteria {Criteri}
@@ -1279,8 +1279,8 @@ translate I CopyErr {Impossibile copiare le partite}
 translate I CopyErrSource {il database di origine}
 translate I CopyErrTarget {il database di destinazione}
 translate I CopyErrNoGames {non contiene nessuna partita nel suo filtro}
-translate I CopyErrReadOnly {Ë di sola lettura}
-translate I CopyErrNotOpen {non Ë aperto}
+translate I CopyErrReadOnly {√® di sola lettura}
+translate I CopyErrNotOpen {non √® aperto}
 
 # Colors:
 translate I LightSquares {Case chiare}
@@ -1293,12 +1293,12 @@ translate I WhiteBorder {Bordi del Bianco}
 translate I BlackBorder {Bordi del Nero}
 
 # Novelty window:
-translate I FindNovelty {Trova novit‡}
-translate I Novelty {Novit‡}
-translate I NoveltyInterrupt {Ricerca novit‡ interrotta}
-translate I NoveltyNone {Non Ë stata trovata nessuna novit‡ per la partita corrente}
+translate I FindNovelty {Trova novit√†}
+translate I Novelty {Novit√†}
+translate I NoveltyInterrupt {Ricerca novit√† interrotta}
+translate I NoveltyNone {Non √® stata trovata nessuna novit√† per la partita corrente}
 translate I NoveltyHelp {
-Scid cercher‡ la prima mossa della partita corrente che raggiunger‡ una posizione non presente nel database selezionato o nel libro delle aperture.
+Scid cercher√† la prima mossa della partita corrente che raggiunger√† una posizione non presente nel database selezionato o nel libro delle aperture.
 }
 
 # Sounds configuration:
@@ -1308,21 +1308,21 @@ translate I SoundsAnnounceOptions {Opzioni per l'annuncio delle mosse}
 translate I SoundsAnnounceNew {Annuncia l'esecuzione di una nuova mossa}
 translate I SoundsAnnounceForward {Annuncia quando si va avanti di una mossa}
 translate I SoundsAnnounceBack {Annuncia quando si va indietro di una mossa}
-translate I SoundsSoundDisabled {Scid non Ë riuscito a trovare il pacchetto audio Snack all'avvio;\nSound Ë disabilitato.}
+translate I SoundsSoundDisabled {Scid non √® riuscito a trovare il pacchetto audio Snack all'avvio;\nSound √® disabilitato.}
 
 # Upgrading databases:
 translate I Upgrading {Aggiornamento}
 translate I ConfirmOpenNew {
-Questo Ë un vecchio formato (Scid 3) di database che non puÚ essere aperto da Scid 4, ma ne Ë stata appena creata una nuova versione nel formato (Scid 4).
+Questo √® un vecchio formato (Scid 3) di database che non pu√≤ essere aperto da Scid 4, ma ne √® stata appena creata una nuova versione nel formato (Scid 4).
 
 Vuoi aprire la nuova versione del database?
 }
 translate I ConfirmUpgrade {
-Questo Ë un vecchio formato (Scid 3) di database. Prima di poter utilizzare il database in Scid 4 va creata una nuova versione.
+Questo √® un vecchio formato (Scid 3) di database. Prima di poter utilizzare il database in Scid 4 va creata una nuova versione.
 
-L'aggiornamento creer‡ una nuova versione del database.
+L'aggiornamento creer√† una nuova versione del database.
 
-Questo richieder‡ del tempo, ma Ë sufficiente farlo una volta sola. Puoi arrestare il processo se durer‡ a lungo.
+Questo richieder√† del tempo, ma √® sufficiente farlo una volta sola. Puoi arrestare il processo se durer√† a lungo.
 
 Vuoi aggiornare il database ora?
 }
@@ -1335,7 +1335,7 @@ translate I RecentFilesExtra {Numero di file recentemente utilizzati nel sottome
 translate I MyPlayerNamesDescription {
 Inserisci sotto una lista di giocatori preferiti, un nome per linea. Caratteri jolly (p. es. "?" per ogni singolo carattere, "*" per ogni sequenza di caratteri) sono accettati.
 
-Ogni volta che viene caricata una partita con un giocatore nella lista, la finestra principale della scacchiera se necessario ruoter‡ e vi proporr‡ la partita dal punto di vista di quel giocatore.
+Ogni volta che viene caricata una partita con un giocatore nella lista, la finestra principale della scacchiera se necessario ruoter√† e vi proporr√† la partita dal punto di vista di quel giocatore.
 }
 translate I showblunderexists {mostra gli errori}
 translate I showblundervalue {mostra il valore dell'errore}
@@ -1345,7 +1345,7 @@ translate I configurecoachgame {configura la partita con il maestro}
 translate I configuregame {Configurazione della partita}
 translate I Phalanxengine {Motore Phalanx}
 translate I Coachengine {Motore per il maestro}
-translate I difficulty {difficolt‡}
+translate I difficulty {difficolt√†}
 translate I hard {difficile}
 translate I easy {facile}
 translate I Playwith {Gioca con}
@@ -1357,7 +1357,7 @@ translate I Noblunder {Nessun errore}
 translate I blunder {errore}
 translate I Noinfo {-- Nessuna info --}
 translate I PhalanxOrTogaMissing {Phalanx o Toga non trovato}
-translate I moveblunderthreshold {la mossa Ë un errore se la perdita Ë maggiore di}
+translate I moveblunderthreshold {la mossa √® un errore se la perdita √® maggiore di}
 translate I limitanalysis {limita il tempo di analisi del motore}
 translate I seconds {secondi}
 translate I Abort {Annulla}
@@ -1372,7 +1372,7 @@ translate I DubiousMovePlayedTakeBack {Mossa dubbia, vuoi ripetere?}
 translate I WeakMovePlayedTakeBack {Mossa debole, vuoi ripetere?}
 translate I BadMovePlayedTakeBack {Mossa cattiva, vuoi ripetere?}
 translate I Iresign {Abbandono}
-translate I yourmoveisnotgood {La tua mossa non Ë buona}
+translate I yourmoveisnotgood {La tua mossa non √® buona}
 translate I EndOfVar {Fine della variante}
 translate I Openingtrainer {Allenatore delle aperture}
 translate I DisplayCM {Mostra le mosse candidate}
@@ -1382,7 +1382,7 @@ translate I ShowReport {Mostra il report}
 translate I NumberOfGoodMovesPlayed {buone mosse giocate}
 translate I NumberOfDubiousMovesPlayed {mosse dubbie giocate}
 translate I NumberOfMovesPlayedNotInRepertoire {mosse giocate non presenti nel repertorio}
-translate I NumberOfTimesPositionEncountered {numero di volte che si Ë incontrata la posizione}
+translate I NumberOfTimesPositionEncountered {numero di volte che si √® incontrata la posizione}
 translate I PlayerBestMove  {Permetti solo le mosse migliori}
 translate I OpponentBestMove {L'avversario gioca le mosse migliori}
 translate I OnlyFlaggedLines {Solo linee segnate}
@@ -1411,9 +1411,9 @@ translate I Next {Seguente}
 translate I ResettingScore {Azzero il punteggio}
 translate I LoadingGame {Leggo la partita}
 translate I MateFound {Scacco matto trovato}
-translate I BestSolutionNotFound {La migliore soluzione NON Ë stata trovata!}
+translate I BestSolutionNotFound {La migliore soluzione NON √® stata trovata!}
 translate I MateNotFound {Scacco matto non trovato}
-translate I ShorterMateExists {Esiste uno scacco matto pi˘ breve}
+translate I ShorterMateExists {Esiste uno scacco matto pi√π breve}
 translate I ScorePlayed {Punteggio giocato}
 translate I Expected {atteso}
 translate I ChooseTrainingBase {Scegli il database di allenamento}
@@ -1428,9 +1428,9 @@ translate I FixedLevel {Livello prefissato}
 translate I Opening {Apertura}
 translate I RandomLevel {Livello casuale}
 translate I StartFromCurrentPosition {Parti dalla posizione attuale}
-translate I FixedDepth {Profondit‡ fissa}
+translate I FixedDepth {Profondit√† fissa}
 translate I Nodes {Nodi}
-translate I Depth {Profondit‡}
+translate I Depth {Profondit√†}
 
 translate I Time {Tempo}
 translate I SecondsPerMove {Secondi per mossa}
@@ -1442,7 +1442,7 @@ translate I TimeSec {sec}
 translate I AllExercisesDone {Tutti gli esercizi eseguiti}
 translate I MoveOutOfBook {Mossa fuori dal libro}
 translate I LastBookMove {Ultima mossa del libro}
-translate I AnnotateSeveralGames {Annota pi˘ partite,\ndall'attuale a:}
+translate I AnnotateSeveralGames {Annota pi√π partite,\ndall'attuale a:}
 translate I FindOpeningErrors {Trova errori in apertura}
 translate I MarkTacticalExercises {Segna gli esercizi tattici}
 translate I UseBook {Usa il libro}
@@ -1501,9 +1501,9 @@ translate I QGDExchange {Gambetto di Donna rifiutato variante del cambio}
 translate I SemiSlav {Semi-Slava}
 translate I QGDwithBg5 {Gambetto di Donna rifiutato con Ag5}
 translate I QGDOrthodox {Gambetto di Donna rifiutato Ortodossa}
-translate I Grunfeld {Gr¸nfeld}
-translate I GrunfeldExchange {Gr¸nfeld variante del cambio}
-translate I GrunfeldRussian {Gr¸nfeld sistema russo}
+translate I Grunfeld {Gr√ºnfeld}
+translate I GrunfeldExchange {Gr√ºnfeld variante del cambio}
+translate I GrunfeldRussian {Gr√ºnfeld sistema russo}
 translate I Catalan {Catalana}
 translate I CatalanOpen {Catalana aperta}
 translate I CatalanClosed {Catalana chiusa}
@@ -1512,7 +1512,7 @@ translate I NimzoIndian {Nimzo-Indiana}
 translate I NimzoIndianClassical {Nimzo-Indiana variante classica}
 translate I NimzoIndianRubinstein {Nimzo-Indiana Rubinstein}
 translate I KingsIndian {Indiana di Re}
-translate I KingsIndianSamisch {Indiana di Re S‰misch}
+translate I KingsIndianSamisch {Indiana di Re S√§misch}
 translate I KingsIndianMainLine {Indiana di Re linea principale}
 translate I ConfigureFics {Configura FICS}
 translate I FICSGuest {Entra come guest}
@@ -1565,20 +1565,20 @@ translate I FICSNetError {Network error\nCan't connect to }
 translate I GameReview {Rivedi partita}
 translate I GameReviewTimeExtended {Tempo esteso}
 translate I GameReviewMargin {Margine di errore}
-translate I GameReviewAutoContinue {Continua quando la mossa Ë corretta}
+translate I GameReviewAutoContinue {Continua quando la mossa √® corretta}
 translate I GameReviewReCalculate {Usa tempo esteso}
 translate I GameReviewAnalyzingMovePlayedDuringTheGame {Analisi della mossa giocata durante la partita}
 translate I GameReviewAnalyzingThePosition {Analisi della posizione}
 translate I GameReviewEnterYourMove {Immetti la tua mossa}
 translate I GameReviewCheckingYourMove {Controlla la tua mossa}
-translate I GameReviewYourMoveWasAnalyzed {La tua mossa Ë stata analizzata}
+translate I GameReviewYourMoveWasAnalyzed {La tua mossa √® stata analizzata}
 translate I GameReviewYouPlayedSameMove {Hai giocato la stessa mossa della partita}
 translate I GameReviewScoreOfYourMove {Punteggio della tua mossa}
 translate I GameReviewGameMoveScore {Punteggio della mossa della partita}
 translate I GameReviewEngineScore {Punteggio del motore}
 translate I GameReviewYouPlayedLikeTheEngine {Hai giocato come il motore}
-translate I GameReviewNotEngineMoveButGoodMove {Non Ë la mossa del motore ma Ë comunque buona}
-translate I GameReviewMoveNotGood {Questa mossa Ë debole, il punteggio Ë}
+translate I GameReviewNotEngineMoveButGoodMove {Non √® la mossa del motore ma √® comunque buona}
+translate I GameReviewMoveNotGood {Questa mossa √® debole, il punteggio √®}
 translate I GameReviewMovesPlayedLike {Mosse giocate come}
 translate I GameReviewMovesPlayedEngine {Mosse giocate come il motore}
 translate I CCDlgCGeneraloptions {Opzioni generali}
@@ -1706,24 +1706,24 @@ translate I NewLocalEngine "+ Nuovo motore ..."
 
 set tips(I) {
   {
-    SCID ha oltre 30 <a Index>pagine di aiuto</a> e in molte finestre, 
-    premendo il tasto funzione <b>F1</b>, apparir‡ una pagina di aiuto
+    SCID ha oltre 30 <a Index>pagine di aiuto</a> e in molte finestre,
+    premendo il tasto funzione <b>F1</b>, apparir√† una pagina di aiuto
     relativa alla finestra.
   }
   {
     Molte finestre di SCID (p. es. <a Switcher>selezione di database</a>,
     ecc.) hanno un menu collegato al pulsante destro del mouse. Prova a
-    premerlo in ogni finestra per vedere se c'Ë e quali funzionalit‡ permette.
+    premerlo in ogni finestra per vedere se c'√® e quali funzionalit√† permette.
   }
   {
-    SCID ti consente pi˘ di una modalit‡ per inserire le mosse, scegli
+    SCID ti consente pi√π di una modalit√† per inserire le mosse, scegli
     quale preferisci. Puoi utilizzare il mouse (con o senza il suggerimento
     della mossa) o la tastiera (con o senza il completamento della mossa).
-    Leggi la pagina di aiuto <a Moves>Inserire le mosse</a> per maggiori dettagli. 
+    Leggi la pagina di aiuto <a Moves>Inserire le mosse</a> per maggiori dettagli.
   }
   {
     Se utilizzi pochi database che apri spesso, aggiungi un
-    <a Bookmarks>segnalibro</a> a ognuno di essi. Potrai poi aprirlo pi˘
+    <a Bookmarks>segnalibro</a> a ognuno di essi. Potrai poi aprirlo pi√π
     velocemente con il menu Segnalibri.
   }
   {
@@ -1735,20 +1735,20 @@ set tips(I) {
   }
   {
     Puoi copiare partite da un database ad un altro usando la tecnica del
-    drag and drop utilizzando il tasto sinistro del mouse nella finestra 
+    drag and drop utilizzando il tasto sinistro del mouse nella finestra
     <a Switcher>Selezione di database</a>.
   }
   {
-    SCID puÚ aprire file PGN, anche se sono compressi con Gzip (con il
+    SCID pu√≤ aprire file PGN, anche se sono compressi con Gzip (con il
     suffisso .gz). I file PGN aperti sono di sola lettura ma li puoi
     modificare creando un nuovo database SCID e copiando
     il file PGN in esso utilizzando la <a Switcher>selezione di database</a>.
   }
   {
     Se hai un grosso database e usi spesso la finestra di <a Tree>albero</a>,
-    Ë il caso di utilizzare <b>Riempi cache</b> dal menu File della finestra.
-    CiÚ memorizza le statistiche dell'albero delle
-    pi˘ comuni posizioni di apertura, rendendo pi˘ veloci gli accessi
+    √® il caso di utilizzare <b>Riempi cache</b> dal menu File della finestra.
+    Ci√≤ memorizza le statistiche dell'albero delle
+    pi√π comuni posizioni di apertura, rendendo pi√π veloci gli accessi
     all'albero per quel database.
   }
   {
@@ -1770,33 +1770,33 @@ set tips(I) {
     in <red>rosso</red>.
   }
   {
-    Quando studi un'apertura puÚ essere utile effettuare una
+    Quando studi un'apertura pu√≤ essere utile effettuare una
     <a Searches Board>ricerca su scacchiera</a> con le opzioni
     <b>Pedoni</b> oppure <b>Colonne</b> sulla posizione che ti
-    interessa, in maniera da evidenziarti se altre aperture 
+    interessa, in maniera da evidenziarti se altre aperture
     raggiungono la stessa struttura di pedoni.
   }
   {
     Nell'area di informazioni sulla partita (sotto la scacchiera) puoi
-    premere il tasto destro del mouse e visualizzare un menu per 
-    personalizzarla. Per esempio, puoi nascondere la prossima mossa e ciÚ
-    Ë utile quando visualizzi una partita per allenamento e vuoi trovare
-    da solo le mosse successive. 
+    premere il tasto destro del mouse e visualizzare un menu per
+    personalizzarla. Per esempio, puoi nascondere la prossima mossa e ci√≤
+    √® utile quando visualizzi una partita per allenamento e vuoi trovare
+    da solo le mosse successive.
   }
   {
     Se effettui spesso la <a Maintenance>manutenzione</a> di un database
-    di grosse dimensioni, puoi effettuare tutte le attivit‡ in un colpo
+    di grosse dimensioni, puoi effettuare tutte le attivit√† in un colpo
     solo utilizzando il <a Maintenance Cleaner>manutentore globale</a>.
   }
   {
-    Se hai un grosso database dove in molte partite Ë stato utilizzato il campo 
+    Se hai un grosso database dove in molte partite √® stato utilizzato il campo
     Data evento e tu vuoi le partite in ordine di data, utilizza
     l'<a Sorting>ordinamento</a> per Data evento/Evento invece di Data/Evento
-    cosicchÈ otterrai insieme le partite dello stesso torneo anche se hanno
+    cosicch√© otterrai insieme le partite dello stesso torneo anche se hanno
     date diverse (partendo dal presupposto che abbiano la stessa data evento).
   }
   {
-    Prima di <a Maintenance Twins>cancellare le partite doppie</a>, Ë meglio
+    Prima di <a Maintenance Twins>cancellare le partite doppie</a>, √® meglio
     utilizzare il <a Maintenance Spellcheck>controllo ortografico</a> sul tuo
     database, permettendo a SCID di identificare un numero maggiore di
     partite doppie e contrassegnarle per la cancellazione.
@@ -1809,21 +1809,21 @@ set tips(I) {
   }
   {
     Se stai visualizzando una partita e vuoi provare qualche altra mossa
-    senza modificare la partita, puoi entrare nella modalit‡ Prova (con lo
+    senza modificare la partita, puoi entrare nella modalit√† Prova (con lo
     scorciatoia <b>Ctrl+space</b> oppure cliccando l'apposita icona).
-    Quando hai finito, puoi deselezionare la modalit‡ Prova ritornando
+    Quando hai finito, puoi deselezionare la modalit√† Prova ritornando
     alla partita originale.
   }
   {
     Per cercare le partite maggiormente rilevanti (quelle con i giocatori
-    con l'Elo pi˘ alto) in una posizione, apri la finestra <a Tree>albero</a>
+    con l'Elo pi√π alto) in una posizione, apri la finestra <a Tree>albero</a>
     e da quella apri la lista delle migliori partite.
     Puoi personalizzare la lista ottenendo solo le partite con un
     certo risultato che ti interessa.
   }
   {
     Un buon modo per studiare le aperture utilizzando un grosso database
-    Ë attivare la modalit‡ esercizio nella finestra <a Tree>albero</a> e
+    √® attivare la modalit√† esercizio nella finestra <a Tree>albero</a> e
     giocare contro il database per vedere quali linee appaiono spesso.
   }
   {
@@ -1834,22 +1834,22 @@ set tips(I) {
     il secondo database.
   }
   {
-    La finestra <a Tmt>Trova torneo</a> non Ë utile solo per trovare un
-    certo torneo, ma puÚ essere usato anche per vedere quali tornei
+    La finestra <a Tmt>Trova torneo</a> non √® utile solo per trovare un
+    certo torneo, ma pu√≤ essere usato anche per vedere quali tornei
     ha giocato recentemente un certo giocatore oppure vedere i tornei
-    pi˘ importanti giocati in una certa nazione.
+    pi√π importanti giocati in una certa nazione.
   }
   {
     La finestra <a Searches Material>Materiale/schema</a> ti propone
-    alcune possibilit‡, fra le pi˘ comuni, facilitandoti ricerche
+    alcune possibilit√†, fra le pi√π comuni, facilitandoti ricerche
     per aperture o tipi di mediogioco a fine di studio.
   }
   {
     Quando effettui una ricerca per una particolare posizione
-    nella finestra <a Searches Material>Materiale/schema</a> Ë
+    nella finestra <a Searches Material>Materiale/schema</a> √®
     spesso utile restringere la ricerca a partite che permangono
     nella posizione voluta almeno qualche semi-mossa, eliminando
-    partite che raggiungono la posizione voluta solo una volta. 
+    partite che raggiungono la posizione voluta solo una volta.
   }
   {
     Se hai un importante database e non vuoi correre il rischio
@@ -1860,17 +1860,17 @@ set tips(I) {
   {
     Se usi XBoard oppure WinBoard (o altri programmi scacchistici
     che possono copiare sulla clipboard la posizione attuale in notazione
-    standard FEN) e vuoi copiare la tua posizione su SCID, il modo pi˘
-    facile e veloce Ë selezionare <b>Copia posizione</b> dal menu File
+    standard FEN) e vuoi copiare la tua posizione su SCID, il modo pi√π
+    facile e veloce √® selezionare <b>Copia posizione</b> dal menu File
     in XBoard/WinBoard e poi <b>Incolla come posizione di partenza</b> dal
-    menu Modifica in SCID.  
+    menu Modifica in SCID.
   }
   {
     In una <a Searches Header>ricerca per intestazione</a>,
     giocatore/evento/luogo/turno non sono sensibili alle maiuscole e
     vengono cercate anche all'interno dei nomi. Puoi scegliere di
     fare una ricerca sensibile alle maiuscole (dove "?" = ogni singolo
-    carattere e "*" = zero o pi˘ caratteri) digitando la stringa che
+    carattere e "*" = zero o pi√π caratteri) digitando la stringa che
     vuoi trovare fra virgolette. Per esempio, digitando "*BEL" (con
     le virgolette) nel campo luogo otterrai tutte le partite giocate
     in Belgio ma non a Belgrado.
@@ -1883,7 +1883,7 @@ set tips(I) {
   }
   {
     Se hai caricato un file di classificazione ECO, puoi andare alla
-    posizione classificata pi˘ profonda della partita correntemente
+    posizione classificata pi√π profonda della partita correntemente
     caricata con <b>Identifica apertura</b> nel menu <b>Partita</b>
     (scorciatoia: Ctrl+Shift+D).
   }
@@ -1893,7 +1893,7 @@ set tips(I) {
     aprirlo.
   }
   {
-    Un file di <a Repertoire>repertorio</a> Ë un grande strumento per
+    Un file di <a Repertoire>repertorio</a> √® un grande strumento per
     monitorare le tue aperture preferite e per trovare le partite nelle
     quali queste linee sono state giocate. Dopo aver memorizzato le tue
     aperture in un file di repertorio puoi effettuare ricerche tutte le
@@ -1901,15 +1901,15 @@ set tips(I) {
     che ti interessano.
   }
   {
-    Un <a OpReport>rapporto di apertura</a> Ë molto utile per apprendere
+    Un <a OpReport>rapporto di apertura</a> √® molto utile per apprendere
     ulteriori informazioni su una particolare posizione. Puoi vedere il
     punteggio percentuale che raggiunge, se porta a rapide patte, i temi
-    posizionali pi˘ comuni e molto altro.
+    posizionali pi√π comuni e molto altro.
   }
   {
-    Puoi aggiungere i pi˘ comuni simboli di annotazione (!, !?, +=, ecc)
+    Puoi aggiungere i pi√π comuni simboli di annotazione (!, !?, +=, ecc)
     alla posizione attualmente caricata con scorciatoie da tastiera senza
-    necessit‡ di utilizzare l'<a Comment>editor di commenti</a>.
+    necessit√† di utilizzare l'<a Comment>editor di commenti</a>.
     Per esempio, digitando "!" seguito dal tasto Invio,
     aggiungerete il simbolo "!". Guarda la pagina di aiuto
     <a Moves>Inserire le mosse</a> per maggiori informazioni.
@@ -1927,7 +1927,7 @@ set tips(I) {
   }
   {
     Dopo una <a Searches>ricerca</a>, puoi facilmente visualizzare tutte le
-    partite trovate premendo <b>Ctrl</b> e con i tasti <b>Su</b> o <b>Gi˘</b>
+    partite trovate premendo <b>Ctrl</b> e con i tasti <b>Su</b> o <b>Gi√π</b>
     caricare la precedente o successiva partita del <a Searches Filter>filtro</a>.
   }
 }

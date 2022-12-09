@@ -217,7 +217,7 @@ addLanguage D Deutsch 0 iso8859-1 deutsch.tcl
 addLanguage F Francais 0 utf-8 francais.tcl
 addLanguage G Greek 0 utf-8 greek.tcl
 addLanguage H Hungarian 0 iso8859-2 hungary.tcl
-addLanguage I Italian 0 iso8859-1 italian.tcl
+addLanguage I Italian 0 utf-8 italian.tcl
 addLanguage N Nederlands 0 iso8859-1 nederlan.tcl
 addLanguage O Norsk 1 iso8859-1 norsk.tcl
 addLanguage P Polish 0 iso8859-2 polish.tcl

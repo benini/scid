@@ -12,7 +12,7 @@ array set encodings {
   deutsch iso8859-1
   francais utf-8
   hungary iso8859-2
-  italian iso8859-1
+  italian utf-8
   nederlan iso8859-1
   norsk iso8859-1
   polish iso8859-2
