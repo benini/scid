@@ -986,6 +986,10 @@ translate C WhiteClearAdvantage {Bílý má jasnou výhodu}
 translate C BlackClearAdvantage {Èerný má jasnou výhodu}
 translate C WhiteSlightAdvantage {Bílý má malou výhodu}
 translate C BlackSlightAdvantage {Èerný má malou výhodu}
+# ====== TODO To be translated ======
+translate C WhiteCrushing {White has a crushing advantage}
+# ====== TODO To be translated ======
+translate C BlackCrushing {Black has a crushing advantage}
 translate C Equality {Rovné ¹ance}
 translate C Unclear {Nejasná pozice}
 translate C Diagram {Diagram}

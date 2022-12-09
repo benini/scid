@@ -955,6 +955,8 @@ translate I WhiteClearAdvantage {Il Bianco sta meglio}
 translate I BlackClearAdvantage {Il Nero sta meglio}
 translate I WhiteSlightAdvantage {Il Bianco sta leggermente meglio}
 translate I BlackSlightAdvantage {Il Nero sta leggermente meglio}
+translate I WhiteCrushing {Il Bianco ha un enorme vantaggio}
+translate I BlackCrushing {Il Nero ha un enorme vantaggio}
 translate I Equality {Parità}
 translate I Unclear {Posizione incerta}
 translate I Diagram {Diagramma}
