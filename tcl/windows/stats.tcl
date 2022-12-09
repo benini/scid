@@ -19,18 +19,13 @@ proc ::windows::stats::Open {} {
     return
   }
   win::createDialog $w
-#  toplevel $w
   keyboardShortcuts $w
   wm title $w "Scid: $::tr(FilterStatistic)"
   setWinLocation $w
   bind $w <Configure> "recordWinSize $w"
 
-#  use autoscrollframe to display large infos
   autoscrollText y $w.statsasb $w.stats Treeview
   $w.stats configure -width 64 -height 40 -state normal -font font_Fixed -wrap none
-#  autoscrollframe $w.statsasb text $w.stats -width 64 -height 40\
-#      -foreground black -background white -font font_Fixed\
-#       -wrap none
 
   ttk::frame $w.fbuttons
   ttk::button $w.fbuttons.print -image tb_save -command {

@@ -505,7 +505,8 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.stats.b -sticky news
 	grid rowconfigure $w.stats 0 -weight 1
 	grid columnconfigure $w.stats 0 -weight 1
-	autoscrollframe -bars y $w.stats.b ttk_canvas $w.stats.b.c -highlightthickness 0
+	ttk_canvas $w.stats.b.c -highlightthickness 0
+	autoscrollBars y $w.stats.b $w.stats.b.c
 }
 
 proc ::windows::gamelist::createGList_ {{w}} {
@@ -703,8 +704,9 @@ namespace eval ::glist_Ly {
 		if {! [info exists ::glist_Layouts] } { set ::glist_Layouts {} }
 		options.save ::glist_Layouts
 		set ::gamelistNewLayout [::glist_Ly::createName_]
-		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0
+		canvas $w.layout.b.c -highlightthickness 0
 		::applyThemeColor_background $w.layout.b.c
+		autoscrollBars y $w.layout.b $w.layout.b.c
 		bind $w.layout.b.c <Configure>  { ::glist_Ly::AdjScrollbar_ %W }
 		::glist_Ly::Update_ $w
 	}
@@ -867,7 +869,7 @@ proc glist.create {{w} {layout}} {
   }
   $w.glist configure -displaycolumns $::glist_ColOrder($layout)
 
-  autoscrollframe -bars both $w "" $w.glist
+  autoscrollBars both $w $w.glist
   set ::glistYScroll($w.glist) [$w.glist cget -yscrollcommand]
   $w.glist configure -yscrollcommand "glist.yscroll_ $w.glist"
   $w.ybar configure -command "glist.ybar_ $w.glist"

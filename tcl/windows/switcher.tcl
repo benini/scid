@@ -672,7 +672,8 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
   grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
   grid columnconfigure $w 0 -weight 1
-  autoscrollframe -bars y $w.border canvas $w.c -highlightthickness 0
+  canvas $w.c -highlightthickness 0
+  autoscrollBars y $w.border $w.c
 
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
     set f [ttk::frame $w.c.f$i]
