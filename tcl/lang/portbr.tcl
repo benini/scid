@@ -1,6 +1,5 @@
 # portbr.tcl:
 # Scid in Brazilian Portuguese.
-# Translated by Gilberto de Almeida Peres.
 
 proc setLanguage_B {} {
 
@@ -92,7 +91,7 @@ menuText B ConfigureScid "Preferencias..." 0 {Configurar todas as opcoes para o 
 
 # Game menu:
 menuText B Game "Jogo" 0
-menuText B GameNew "Limpar Jogo" 0 \
+menuText B GameNew "Novo Jogo" 0 \
   {Limpa o jogo corrente, descartando qualquer alteracao}
 menuText B GameFirst "Primeiro Jogo" 5 {Carrega o primeiro jogo filtrado}
 menuText B GamePrev "Jogo Anterior" 5 {Carrega o jogo anterior}
@@ -146,8 +145,7 @@ menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela d
 
 # Tools menu:
 menuText B Tools "Ferramentas" 0
-# ====== TODO To be translated ======
-menuText B ToolsConfigureEngines "Configure Engines" 10 {Manage engines' configuration}
+menuText B ToolsConfigureEngines "Configurar Engines" 10 {Gerencia configuracao dos engines}
 menuText B ToolsAnalysis "Analisador #1..." 0 \
   {Inicia ou para o 1o. Analisador}
 menuText B ToolsAnalysis2 "Analisador #2..." 17 \
@@ -325,8 +323,7 @@ translate B Defaults {Defaults}
 translate B Delete {Deletar}
 translate B Graph {Grafico}
 translate B Help {Ajuda}
-# ====== TODO To be translated ======
-translate B Hide {Hide}
+translate B Hide {Ocultar}
 translate B Import {Importar}
 translate B Index {Indice}
 translate B LoadGame {Carrega jogo}
@@ -457,8 +454,7 @@ translate B AllLoss {" Quem mover perde   :     " }
 # Tip of the day:
 translate B Tip {Dica}
 translate B TipAtStartup {Dica ao iniciar}
-# ====== TODO To be translated ======
-translate B TipConvertPGN {You can get better performance by converting PGN files}
+translate B TipConvertPGN {Voce pode obter melhor desempenho convertendo seus arquivos PGN}
 
 # Tree window menus: ***
 menuText B TreeFile "Arquivo" 0
@@ -952,10 +948,8 @@ translate B WhiteClearAdvantage {Branca tem clara vantagem}
 translate B BlackClearAdvantage {Preta tem clara vantagem} 
 translate B WhiteSlightAdvantage {Branca tem alguma vantagem} 
 translate B BlackSlightAdvantage {Preta tem alguma vantagem} 
-# ====== TODO To be translated ======
-translate B WhiteCrushing {White has a crushing advantage}
-# ====== TODO To be translated ======
-translate B BlackCrushing {Black has a crushing advantage}
+translate B WhiteCrushing {Branca tem enorme vantagem}
+translate B BlackCrushing {Preta tem enorme vantagem}
 translate B Equality {Igualdade} 
 translate B Unclear {Não claro} 
 translate B Diagram {Diagrama} 
@@ -1262,8 +1256,7 @@ translate B ExportStripMarks {Remover códigos de marca de casa/seta dos comentár
 # Goto game/move dialogs:
 translate B LoadGameNumber {Entre o numero do jogo a ser carregado:}
 translate B GotoMoveNumber {Ir p/ o lance no.:}
-# ====== TODO To be translated ======
-translate B CopyAllGames {Copy all games to}
+translate B CopyAllGames {Copiar todos os jogos}
 
 # Copy games dialog:
 translate B CopyGames {Copiar jogos}
@@ -1543,22 +1536,14 @@ translate B FICSConnect {Conectar}
 translate B FICSdefaultuservars {Usar variaveis default}
 translate B FICSObserveconfirm {Voce quer observar o jogo}
 translate B FICSpremove {Habilita Pre-movimento}
-# ====== TODO To be translated ======
-translate B FICSObserve {Observe}
-# ====== TODO To be translated ======
-translate B FICSRatedGames {Rated Games}
-# ====== TODO To be translated ======
-translate B FICSUnratedGames {Unrated Games}
-# ====== TODO To be translated ======
-translate B FICSRated {Rated}
-# ====== TODO To be translated ======
-translate B FICSUnrated {Unrated}
-# ====== TODO To be translated ======
-translate B FICSRegisteredPlayer {Registered player only}
-# ====== TODO To be translated ======
-translate B FICSFreePlayer {Free player only}
-# ====== TODO To be translated ======
-translate B FICSNetError {Network error\nCan't connect to }
+translate B FICSObserve {Observar}
+translate B FICSRatedGames {Jogos com rating}
+translate B FICSUnratedGames {Jogos sem rating}
+translate B FICSRated {Com rating}
+translate B FICSUnrated {Sem rating}
+translate B FICSRegisteredPlayer {Apenas jogador registrado}
+translate B FICSFreePlayer {Apenas jogador gratuito}
+translate B FICSNetError {Erro de rede\nNao pode conectar }
 translate B GameReview {Rever jogo}
 translate B GameReviewTimeExtended {Tempo estendido}
 translate B GameReviewMargin {Mergem de erro}
@@ -1714,10 +1699,8 @@ translate B MenuColorForeground "Cor do Texto"
 translate B MenuColorBackground "Cor de Fundo"
 translate B MenuColorSelect "Selecionar"
 translate B OptionsTablebaseDir "Selecione até 4 pastas tabela base de finais:"
-# ====== TODO To be translated ======
-translate B BestMoveArrow "Best move arrow"
-# ====== TODO To be translated ======
-translate B NewLocalEngine "+ New engine ..."
+translate B BestMoveArrow "Seta de melhor movimento"
+translate B NewLocalEngine "+ Novo engine ..."
 }
 
 # end of portbr.tcl
