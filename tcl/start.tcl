@@ -489,7 +489,7 @@ proc ttk_text {pathName {args ""}} {
   }
   set res [text $pathName -cursor arrow -highlightthickness 0 -font font_Regular]
   if {[llength $args] > 0} {
-    eval $pathName configure $args
+    $pathName configure {*}$args
   }
   $pathName tag configure header -font font_Bold
   ::applyThemeStyle $style $pathName

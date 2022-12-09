@@ -115,9 +115,9 @@ proc mergeGame {base gnum} {
   pack $w.title -side top -fill x
   pack [ttk::frame $w.b] -side bottom -fill x
 
-  autoscrollText y $w.f $w.f.text Treeview
-  $w.f.text configure -wrap word -width 60 -height 20 \
-      -font font_Small -state normal
+  ttk::frame $w.f
+  ttk_text $w.f.text -wrap word -width 60 -height 20
+  autoscrollBars y $w.f $w.f.text
   event generate $w.f.text <ButtonRelease-1>
   pack $w.f -fill both -expand yes
   set small font_Small
@@ -215,8 +215,9 @@ proc setExportText {exportType} {
   pack $pane -side top -expand true -fill both
   foreach f [list $pane.start $pane.end] type {start end} {
     ttk::label $f.title -font font_Bold -text "Text at $type of $exportType file:"
-    autoscrollText both $f.f $f.text Treeview
-    $f.text configure -state normal -wrap none
+    ttk::frame $f.f
+    ttk_text $f.text -wrap none
+    autoscrollBars both $f.f $f.text
     grid $f.title -row 0 -column 0 -sticky w
     grid $f.f -row 1 -column 0 -sticky nesw
     grid rowconfig $f 1 -weight 1 -minsize 0
@@ -633,9 +634,9 @@ proc nameEditor {} {
     grid $w.selectButtons.$i -row $row -column 0 -sticky w
   }
 
-  autoscrollText y $w.g $w.g.list Treeview
-  $w.g.list configure -height 9 -width 40 -relief sunken \
-      -tabs {2c right 2.5c left} -wrap none
+  ttk::frame $w.g
+  ttk_text $w.g.list -height 9 -width 40 -wrap none -tabs {2c right 2.5c left}
+  autoscrollBars y $w.g $w.g.list
   pack $w.g -side top -fill x
   ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
   ttk::entry $w.g.fromE -width 40 -textvariable editName
@@ -743,10 +744,10 @@ proc gameSave { gnum } {
   set gsaveNum $gnum
   catch {grab $w}
 
-  set f $w.g
-  autoscrollText y $f $f.list Treeview
-  $f.list configure -height 9 -width 40 -state disabled \
+  set f [ttk::frame $w.g]
+  ttk_text $f.list -height 9 -width 40 -state disabled \
       -tabs {2c right 2.5c left} -wrap none
+  autoscrollBars y $f $f.list
   ttk::label $f.title -textvar ::tr(NameEditMatches)
   pack $f -side top -anchor w
 
@@ -888,8 +889,9 @@ proc gameSave { gnum } {
   grid $f.list -row 1 -column 8 -rowspan 9 -sticky nw -padx "10 0"
 
   ttk::labelframe .save.extrafr -text "Extra Tags: (example format: Annotator \"Anand, V\") "
-  autoscrollText y .save.extra .save.extra.text Treeview
-  .save.extra.text configure -height 4 -width 40 -wrap none -state normal -relief sunken
+  ttk::frame .save.extra
+  ttk_text .save.extra.text -height 4 -width 40 -wrap none
+  autoscrollBars y .save.extra .save.extra.text
   pack .save.extrafr -side top -fill both -expand 1
   pack .save.extra -in .save.extrafr -side left -fill both -expand 1
   # Override tab-binding for this text widget:
