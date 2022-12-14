@@ -370,7 +370,7 @@ proc playerInfo {{player ""}} {
 
     autoscrollText both $w.frame $w.text Treeview
     $w.text configure -font font_Regular -wrap none -state normal
-    ttk::label $w.photo
+    ttk_canvas $w.photo
     pack $w.frame -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"
     ::htext::init $w.text
@@ -379,12 +379,14 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     ::createToplevelFinalize $w
   }
-  set player [trimEngineName $player]
+  set player [spellcheckPlayerName $player]
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
-    image create photo photoPInfo -data $imgdata
-    $w.photo configure -image photoPInfo -anchor ne
-    place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+      image create photo photoPInfo -data $imgdata
+      $w.photo create image 0 0 -image photoPInfo -anchor nw
+      set width [image width photoPInfo]
+      $w.photo configure -width $width -height [image height photoPInfo]
+      place $w.photo -in $w.text -relx 1.0 -rely 0.0 -x [expr -5 - $width]
   } else {
     place forget $w.photo
   }

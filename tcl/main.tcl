@@ -605,6 +605,8 @@ proc togglePhotosSize {{toggle 1}} {
     updatePlayerPhotos
     if {$toggle} { set ::photosMinimized [expr !$::photosMinimized] }
 
+    .main.photoW configure -width [image width photoW] -height [image height photoW]
+    .main.photoB configure -width [image width photoB] -height [image height photoB]
     set distance [expr {[image width photoB] + 2}]
     if { $distance < 10 } { set distance 82 }
 
@@ -692,13 +694,10 @@ proc readPhotoFile {fname} {
 }
 
 
-#convert $data string tolower case and strip the first two blanks.
+#convert $data string tolower case and strip all blanks.
 proc trimString {data} {
     set data [string tolower $data]
-    set strindex [string first "\ " $data]
-    set data [string replace $data $strindex $strindex]
-    set strindex [string first "\ " $data]
-    set data [string replace $data $strindex $strindex]
+    set data [string map { " " "" } $data]
     return $data
 }
 
@@ -743,36 +742,21 @@ proc loadPlayersPhoto {} {
 }
 loadPlayersPhoto
 
-# Try to change the engine name: ignore version number, try to ignore blanks
-# TODO: rename this function (spellcheck playernames, converts to lower case and remove spaces)
-proc trimEngineName { engine } {
+# Try to change the normalize name of player or engines:  ignore blanks, ignore version number
+proc spellcheckPlayerName { playername } {
     catch {
-        set spell_name [sc_name retrievename $engine]
-        if {$spell_name != ""} { set engine $spell_name }
+        set spell_name [sc_name retrievename $playername]
+        if {$spell_name != ""} { set playername $spell_name }
     }
-    set engine [string tolower $engine]
+    set playername [trimString $playername]
 
-    if { [string first "deep " $engine] == 0 } {
-        # strip "deep "
-        set engine [string range $engine 5 end]
-    }
-    # delete two first blank to make "The King" same as "TheKing"
-    # or "Green Light Chess" as "Greenlightchess"
-    set strindex [string first "\ " $engine]
-    set engine [string replace $engine $strindex $strindex]
-    set strindex [string first "\ " $engine]
-    set engine [string replace $engine $strindex $strindex]
-    set strindex [string first "," $engine]
-    set slen [string len $engine]
-    if { $strindex == -1 && $slen > 2 } {
-        #seems to be a engine name:
-        # search until longest name matches an engine name
-        set slen [string len $engine]
-        for { set strindex $slen} {![info exists ::unsafe::spffile([string range $engine 0 $strindex])]\
-                    && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
-        set engine [string range $engine 0 $strindex]
-    }
-    return $engine
+    # Engines may have version in the name, check for "Enginename 1.2a" and convert to "Enginename" 
+    set slen [string len $playername]
+    for { set strindex $slen} { $strindex > 3 && ![info exists ::unsafe::spffile([string range $playername 0 $strindex])]\
+                                && ([string is digit [string index $playername end]] ||
+                                    [string is digit [string index $playername end-1]])} { incr strindex -1 } { }
+    set playername [string range $playername 0 $strindex]
+    return $playername
 }
 
 
@@ -784,7 +768,7 @@ proc updatePlayerPhotos {{force ""}} {
         set spellname $::gamePlayers($name)
         if {$::gamePlayers($img) != $spellname} {
             set ::gamePlayers($img) $spellname
-            catch { set spellname [trimEngineName $spellname] }
+            catch { set spellname [spellcheckPlayerName $spellname] }
             image create photo $img -data [getphoto $spellname]
         }
     }
@@ -1271,8 +1255,10 @@ proc CreateGameInfo {} {
   ::htext::init .main.gameInfo.text
 
   # Set up player photos:
-  ttk::label .main.photoW -image photoW -anchor ne
-  ttk::label .main.photoB -image photoB -anchor ne
+  ttk_canvas .main.photoW
+  ttk_canvas .main.photoB
+  .main.photoW create image 0 0 -image photoW -anchor nw
+  .main.photoB create image 0 0 -image photoB -anchor nw
   bind .main.photoW <ButtonPress-1> "togglePhotosSize"
   bind .main.photoB <ButtonPress-1> "togglePhotosSize"
 
