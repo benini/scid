@@ -382,11 +382,11 @@ proc playerInfo {{player ""}} {
   set player [spellcheckPlayerName $player]
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
-      image create photo photoPInfo -data $imgdata
-      $w.photo create image 0 0 -image photoPInfo -anchor nw
-      set width [image width photoPInfo]
-      $w.photo configure -width $width -height [image height photoPInfo]
-      place $w.photo -in $w.text -relx 1.0 -rely 0.0 -x [expr -5 - $width]
+    image create photo photoPInfo -data $imgdata
+    $w.photo create image 0 0 -image photoPInfo -anchor nw
+    set width [image width photoPInfo]
+    $w.photo configure -width $width -height [image height photoPInfo]
+    place $w.photo -in $w.text -relx 1.0 -rely 0.0 -x [expr -5 - $width]
   } else {
     place forget $w.photo
   }
