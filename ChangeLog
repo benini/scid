@@ -1,6 +1,113 @@
              Changelog
             ===========
 
+[tdb ??? ????]
+scid-5.0
+==========
+- New features:
+	* New database format SCID5
+	* Full support for PGN-Databases
+		- ability to modify games and store comments without adding extra new line characters
+		- add and replace games
+		- compacting pgn databases
+	* Main board's toolbar
+		- Add the option to open preference dialog
+		- Rearrange buttons in main board's toolbar
+
+- Removed features:
+	* Nalimov Endgame Tables no more supported. Window Endgame Tablebases removed.
+	* On Linux menu colors are infer from the theme, no configuration anymore
+	* Correspondence Chess
+
+- Fixes :
+	* Fix: Bug #182: FIDE Photo Error. Thanks to Jason Salaz
+	* Fix: Fixed bug that calender chooser shows allways 31 day per month.
+	* Fix: Bug #167: Preferences Menu vs Comment Editor Annotations. Thanks to rsarson
+	* Fix: Fixed a endless loop when tactic game include variations
+
+[July 2022]
+scid-4.7.4
+==========
+- New features:
+	* Support for Dark Themes
+		- New theme "Dark" is default.
+		- Rearrange many windows to work with dark themes
+		- windows / dialogs not supported yet by dark themes: score graph, filter graphs,eco browser, rating graph
+	* Support Chess960
+	* Add option for Chess960 games in Header search
+	* New preferences dialog:
+		- individual menus are merged in one preference dialog and clustered to:
+			- Chessboard, Fonts, Menu colors (Windows OS only), Toolbar, Internationalization,
+			- Recent files, Sound, Moves, Informant values
+	* New resources dialog:
+		- individual menus for files and directories are merged in one resources dialog.
+	* New Engine Window:
+		- Switch, Create, Reload, Delete,Copy engines. Network Play
+		- no restriction on open engines
+		- Configure engine parameter, output format (figurine, SAN, engine)
+		- Ability to change the engine process priority
+		- Moving the cursor over a move, a small board appears
+		  with the current position and hightlight the last move.
+		- Supports Chess960 (if engine does)
+		- Engine communication rewritten
+	* New evaluation bar in main board
+		- Shows graphically the evaluation of the postion from comments or from assigned engine
+		- Click in evaluation bar: Assign engine to evaluation board or engine to load in new engine window
+		- Enable/Disable via option menu in main board
+		- Also shown in analysis board in Analysis window (not in the new engine window)
+	* Show best move of engine in main board
+	* Edit game and change last move insert new variation (instead of replace the last move)
+	* FICS: New tabs for games and players
+        	- two new tabs for output of "games" and "who" command.
+		- The right mouse button can be used to carry out further actions in the tabs:
+		- Observe games, finger player, Challenge player
+		- Filter for registered/unregistered player or type of games
+	* Score graph:
+		- Adjust hight of y-axis: add an option to scale the y-axes of score graph and set default value to 6.
+		- Add option to show time usage per move or per game
+	* Animate rook on castles
+	* Board coordinates:
+		- new option to draw the coordinates on the board (to save space)
+		- Setup type of board Coordinate in preferences dialog:
+			- no, inner left and bottom, inner all sides, outer left and bottom, outer all sides
+	* Extent Database menu:
+		- Add the "Load at Startup" option for active database
+		- Add  "Copy all games to other database"
+	* Add 'Copy games' to the gameslist's context menu
+	* Country flags in crosstable added
+	* Change book window to show available Polyglot engine analysis
+	* Logic changed for edit/replace ELO? commit	7dd4ce9bbc624573b1375d46485b5aaa309b4cb2 ??
+	* Update translation: Deutsch, Francais
+
+- Removed features:
+	* Full Screen option removed from main board option menu
+	* Scidlet engine
+
+- Fixes :
+	* Fix: slow pgn import (and let the user choose in which base)
+	* Fix: fix a endless loop when tactic game includes variations
+	* Fix: Bug #154: v4.7 broke Input Engine for DGT
+	* Fix: Bug #164: clock bug, can't play at all. Thanks to Jarek Czekalski.
+	* Fix: Bug #163: invalid command in cancelAutoplay. Thanks to Andreas Marschall.
+	* Fix: Bug #162: the new panedwindow obscured the tabs. Thanks to rsarson
+	* Fix: Bug #136: Add variation for single colour doesn't work.
+	* Fix: Bug #148: disabling "Show Colored Squares and Arrows" does not work. Thanks to rsarson
+	* Fix: Bug #158: don't use the fast version of Position::IsLegalMove when the king is in check. Thanks to rsarson.
+	* Fix: Bug #145: Engine Analysis on null moves is broken. Thanks to rsarson.
+	* Fix: Bug #142: Multiple variations setting no longer working. Thanks to rsarson.
+	* Fix: Bug #137: illegal SCID4 gamefiles generate weird behaviors.
+	* Fix: Bug #126: PV spinbox auto increments. Thanks to purefan.
+	* Fix: Bug #141: Test_Namebase.sort_order test fails on ARM. Thanks to Dan Fandrich.
+	* Fix: Bug #139: 'New Variation' under board disappears. Thanks to Nils-Hero Lindemann.
+	* Fix: Bug #134: ::pinfo::playerInfo cannot handle a 0.0 date. Thanks to b606
+	* Fix: Bug #132: missing translations for PinfoEloFile. Thanks to Pixeldj
+	* Fix: Bug #131: reset UCI options before 'Edit'. Thanks to rsarson
+	* Fix: Bug #130: extend indentation limit to 19
+
+- New features for developers:
+	* Catalina is now the oldest macOS version supported by azure pipelines.
+	* Use c++17 standard
+
 [February 2019]
 scid-4.7.0
 ==========
