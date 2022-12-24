@@ -385,7 +385,7 @@ proc ::board::san {sqno} {
 # Show a pop-up board.
 # xc and yc are the coordinates of the top-left corner, or the bottom-left
 # corner if above is not "".
-proc ::board::popup {w positionLongStr xc yc {above ""}} {
+proc ::board::popup {w positionLongStr xc yc {above ""} {parent .main.board}} {
     set psize 30
     if {$psize > $::boardSize} { set psize $::boardSize }
 
@@ -397,6 +397,7 @@ proc ::board::popup {w positionLongStr xc yc {above ""}} {
         ::update idletasks
     }
 
+    ::board::flip $w.bd [::board::isFlipped $parent]
     lassign $positionLongStr pos lastmove
     ::board::update $w.bd $pos
 
@@ -1750,7 +1751,7 @@ proc ::board::material {w} {
 
   $f delete material
 
-  set fen [lindex [sc_pos fen] 0]
+  set fen [string range $::board::_data($w) 0 63]
   set p 0
   set n 0
   set b 0
