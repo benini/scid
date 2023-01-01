@@ -58,7 +58,7 @@ scid-4.7.4
 	* Show best move of engine in main board
 	* Edit game and change last move insert new variation (instead of replace the last move)
 	* FICS: New tabs for games and players
-        	- two new tabs for output of "games" and "who" command.
+		- two new tabs for output of "games" and "who" command.
 		- The right mouse button can be used to carry out further actions in the tabs:
 		- Observe games, finger player, Challenge player
 		- Filter for registered/unregistered player or type of games
@@ -520,7 +520,7 @@ scid-4.1
 ------------
 - Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fulvio)
 - When playing a move already existing in a variation, the variation is automatically entered into. To add a new variation starting with the same move, the menu Edit-> Add variation must be used (Thanks to Fulvio)
-- Added undo feature (10 undos max). Shortcut is Ctrl-z. 
+- Added undo feature (10 undos max). Shortcut is Ctrl-z.
     For coders : rollback points are set by calling {sc_game undoPoint} in Tcl or sc_game_save_for_undo() in C++.
 - Updated Scid Pocket to new base format (version 4). Version 4.1 includes Robbolito chess engine, which is by far the best of all ! Really impressive. It outweighs all other engines on Pocket PC.
 - Fixes :
@@ -537,7 +537,7 @@ scid-4.1
 - Modified slightly UCI parser in order to get Prodeo to work (there's no guarantee that Prodeo will work as it does not comply to UCI protocol) (Thanks to Shiv Shivaji)
 - Fixed an error popping up when pressing right arrow very quickly with the variations window displayed and engines taking all available CPU
 - Fixed impossibility of stripping comments and variations when display of short headers was turned on.
-- Rewrite of "Review game" code : moves are no longer in comments, engine analysis is updated more often 
+- Rewrite of "Review game" code : moves are no longer in comments, engine analysis is updated more often
 
 
 =============================================================================
@@ -551,7 +551,7 @@ scid-4.1
 ---------
 	* serious game play when use book is checked and book name is empty leads to crash (thanks to Benigno Hernández)
 	* Check for engines allowed in eMail games caused an exception (noENG not set)
-	* Internet play (FICS) : 
+	* Internet play (FICS) :
 	  - the first offer not displayed on the graph
 		- hardened the code to avoid the (rare) case where the opponent moves but Scid does not reflect it. Still the need to see whether it is a FICS bug or a Scid one.
 		- IP address of FICS server is cached (faster login)
@@ -569,8 +569,8 @@ scid-4.1
 	* when using a Novag Citrine board, the referee mode selected is saved
 	* cleaned up code for Scid versions 2.x (don't think anybody still uses it)
 	* Scid no longer crashes when importing a very long game (current limit is still 32 kB)
-	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster 
-	* Right mouse button takes back a move. It used to also delete the last move of a line. This is inhibited now as there is no possible undo, and the user can have triggered this function by error. 
+	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster
+	* Right mouse button takes back a move. It used to also delete the last move of a line. This is inhibited now as there is no possible undo, and the user can have triggered this function by error.
 	* Game export to HTML + Javascript : export comment before first move, fixed a problem when exporting some variations (which were stripped)
 	* Comment editor : avoid the repetition of last comment when entering a new variation (see line 1235 of main.tcl)
 	* Fixed menus when Scid is compiled without endgame tablebases support (thanks to Vlastimil Babula)
@@ -583,12 +583,12 @@ scid-4.1
 		- any base opened in version 3 will be automatically converted to new format in a few seconds (.si3 file is converted to .si4 and then removed, .sg3 and sn3 files are renamed respectively to .sg4 and .sn4)
 	* NAG support : add symbolic NAGs using UTF-8 symbols
 	* Search position : if the search is done in a reference base (not the current one), don't switch to it if the result returns no game
-	* Tree mask : 
+	* Tree mask :
 		- added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
 		- added a sub-menu for displaying the Mask content in a tree form
 		- remember the most recent opened masks
-		- new moves can be added to a mask even if there is no corresponding position in the Tree 
-	* FICS : 
+		- new moves can be added to a mask even if there is no corresponding position in the Tree
+	* FICS :
 		- save options for finding opponents based on login
 		- display forecast of win / draw / loss score (in fact sends assess when creating the game)
 	* Highlight last move played (switchable and configurable in options menu)
@@ -634,10 +634,10 @@ scid-3.7.2
 	* Fixed menu in opening report window (docked mode)
 	* FEN pasting : reversed CLIPBOARD and PRIMARY (file edit.tcl)
 	* Endgame tablebase window cleanup when closing (remove its tab)
-	* Twin checker : loads the first pair of twin games (thanks to  J. Wesley Cleveland)  
+	* Twin checker : loads the first pair of twin games (thanks to  J. Wesley Cleveland)
 	* when no book is found, handle this case correctly (Book window, serious game, ...)
-	* Comment editor window taking a lot of CPU under Windows 
-- FICS : user interface improvements : 
+	* Comment editor window taking a lot of CPU under Windows
+- FICS : user interface improvements :
 	* click on a game to observe it
 	* redesign in notebook style
 	* better looking "offers" graph
@@ -653,7 +653,7 @@ scid-3.7.2
 	* Strip of text in [] when sending game comments
 	* Show start date for individual challenges in tooltip
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
-- Search 
+- Search
 	* Header: Allow to search for the special player !me which is mapped to all Playernames defined in Options / Chessboard / My Player names (can be combined with all other header search options as well as saved as search)
 	* Header: Allow to search for the special player !mymove. Similar to !me but the player has to have the move at the end of the game.
 	* Position: added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).
@@ -670,11 +670,11 @@ scid-3.7.2
 	* swedish updated (thanks to Hans Eriksson)
 	* added catalan translation (thanks to Natalia Pares Vives)
 - Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)
-- Engines handling : 
+- Engines handling :
 	* renamed Phalanx-XII to phalanx-scid (as Phalanx is no longer maintained we need a way to differentiate them)
 	* try to auto-configure engines (scidlet, toga and phalanx) (thanks to Israel Chauca)
 - Game annotation : book to use is saved (defaults to same book as Book window)
-- HTML export of games (HTML + Javascript) : improved output, better piece sets, no frames (thanks to Charly Founes) 
+- HTML export of games (HTML + Javascript) : improved output, better piece sets, no frames (thanks to Charly Founes)
 - Novag Citrine support : improved interface
 
 
@@ -722,11 +722,11 @@ scid-3.7
   * Cancelled games now no longer show up in the games list (suggested by Austin and wyb)
 - Tools Menu
   * Remove Novag entry
-  * Add "Connect Hardware" 
+  * Add "Connect Hardware"
   * Add "Connect Hardware / Configure" usable for Novag & Input Engine
   * Add "Connect Hardware / Input Engine"
   * Add "Connect Hardware / Novag Citrine"
-  * Make hardware connect buttons visibility configurable 
+  * Make hardware connect buttons visibility configurable
     (remove it needs restart)
 - Novag Citrine
   * Remove own config (replaced by unified dialogue)
@@ -757,11 +757,11 @@ scid-3.7
   by means of Tools / Database information. This includes reading
   metadata from a sme file.
   * menu item disabled for future use
-- Mask (Tree window) : 
+- Mask (Tree window) :
 	* added menu entry to remove NAG value for a move
 	* added entry in popup menu to enter moves not present in Tree
 	* In training mode, game is annotated if the user made poor moves (related to values in Mask)
-- Book tuning : 
+- Book tuning :
 	* any move can be added to a polyglot book at a given position (thanks to Michel Van den Bergh)
 	* moves present in the book at ply N+1 but where the previous move is not present at ply N, is displayed in the lower part of the book window : see button "other moves" and its tooltip (thanks to Michel Van den Bergh)
 - Plenty of changes in user interface, among others :
@@ -783,7 +783,7 @@ scid-3.7
 - Tree window : when a Tree is updated and the current base is not the Tree's one, the Tree base will automatically load the first game in the filter (so by switching to the Tree's base, the position is already set to the previous one and for example an Opening report can be immediately generated)
 - Import clipboard as game : on Unix systems the X selection is pasted only if the clipboard is empty
 - MacOS : various updates (better support, among them the switch of mouse buttons 2 & 3) (thanks to Israel Chauca Fuentes)
-- Book : 
+- Book :
 	* last opened book is reopened by default
 	* Books should be usable from read only drives as well (without
 	tuning/save of course)
@@ -814,7 +814,7 @@ scid-3.6.26
   * Fix: clicking beyond the last game in the cc list caused an error
 - Confirm / discard dialog box : rewritten to look a little bit better
 - photos of players are now also searched in Scid shared directory (under photos directory) (Thanks to Mikhail Kalenkov)
-- if "Strip out coloured square/arrow codes" is checked and PGN display is in color, comments are no longer surrounded with {} 
+- if "Strip out coloured square/arrow codes" is checked and PGN display is in color, comments are no longer surrounded with {}
 - PGN window : removed extra lines between moves and comments
 - After closing a base, the current game is reseted
 - After game searches (header, material or board), the first game of the filter is automatically loaded
@@ -824,7 +824,7 @@ scid-3.6.26
 - Play on internet : a digital clock is displayed inside the analog clock (seems required for blitz games)
 - Windows release : Tcl/Tk is upgraded to version 8.5, so latest piece sets (with transparency effects) are correctly displayed
 - Fix : Scid could crash when generating an opening report from a huge base from particular positions. Bug introduced with Scid 3.6.21 and fixed now (buffer overflow due to moves translation in OpLine::PrintMove)
-- Pocket PC : 
+- Pocket PC :
 	* Greko upgraded to 5.9 and then to 6.0 ... (5.7.1 and 5.9 versions were buggy)
 	* Scidlet added as new engine (also added xboard commands "analyze" and "exit" to Scidlet, but only for the PPC version)
 	* Fix : manual draw adjudication when insufficient material (waited for ever for bestmove reply)
@@ -835,7 +835,7 @@ scid-3.6.26
 - Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This previously could lead to an UI freeze in some cases.
 - Tactical game : reworked user interface and some enhancements : parameters saving, ability to go back in game (thanks to Steven Atkinson)
 - Serious game : reworked user interface (thanks to Steven Atkinson)
-- Fix : Tree window 
+- Fix : Tree window
 	* abort refreshing before closing the window
 	* after a search with Tree window opened for current base, don't load automatically the first game in filter, or the Tree will be refreshed, overwriting the filter
 - updated spanish translation (thanks to Benigno Hernández)
@@ -847,11 +847,11 @@ scid-3.6.26
 
 scid-3.6.25
 -----------
-- Opening trainer : 
+- Opening trainer :
    * automatic switch to clipbase
    * trainer window made easier to understand
 - Removed Crafty engine, as tacgame.tcl does not need it any longer. So the two mandatory engines for Scid's features are Toga and Phalanx. Note that any Toga version should work, but only the patched version of Phalanx works.
-- Correspondence Chess: 
+- Correspondence Chess:
    * do not drop a comment from the move list if one is sent via message.
    * Add a visual indicator to the game list if a comment was sent by the opponent.
    * Sort the game list by Site, Event, Round, Result, White, Black
@@ -914,7 +914,7 @@ scid-3.6.25
 - Tuned the startup communication between scid and engines
 - Rybka 3 supported despite a small bug in its command line parser
 - Scid-engine log files: maxsize to 5000 lines (was 500) and flush on every put (to aid problem detection when an engine crashes)
-- Training - Serious game : 
+- Training - Serious game :
    * UCI options of engines are now sent, so if an engine has for example an UCI_Elo present and set up, playing a serious game will be done in fact with a weakened engine (then similar to Tactical game that is designed solely for Phalanx usage).
    * added a "Configure engine" button to tweak an engine before playing (style, strength for example)
 - UCI engine configuration : spinbox entries are now user writable (a check is done to ensure input is correct) and UCI checkbox is ON by default when creating a new engine entry
@@ -954,14 +954,14 @@ scid-3.6.24
 - Added move announcements when playing on Internet (a simple move is always played when the opponent moves)
 - FICS play : the graph of game offers is added (inspired by JIN), and Time seal is supported (timeseal exec must be installed). When observing a game, previous played moves are retrieved from server.
 - reworked Merida and Fantasy piece sets so that there is no aliasing problem (requires package Img, which should be present everywhere)
-- Fixed a bug (many years old) in Twin games detection : the parameter "Always keep games with variations" was hidden, hence always ON, preventing deletion of twins  
+- Fixed a bug (many years old) in Twin games detection : the parameter "Always keep games with variations" was hidden, hence always ON, preventing deletion of twins
 - changes in code (menus, changes in Crafty) to help compile Scid under Mac Os (thanks to Garth Corral)
 - Engine priority is idle by default on Windows and on other platforms latest setting is kept, but resetted after each start of Scid or there would be no mean to get back to a normal priority on Linux
 - minor bug fixes and enhancements :
    * Changes in crosstable and tourney finders : hope this will make them more accurate
    * Header search. 'Defaults' did not reset 'Side to move'
    *  Click on any line in ECO browser : used to replace game without asking
-   * changed sizes of photos of players when clicking on them 
+   * changed sizes of photos of players when clicking on them
    * fixed "coach is watching" that would not detect user's blunders
    * show variations window improved
    * up arrow leaves current variation if at start of variation (like z shortcut)
@@ -1013,7 +1013,7 @@ scid-3.6.21
 - added two new piece set : Fantasy & Fantasy2 by Maurizio Monge (Thanks to Uwe Klimmek)
 - added a new Merida2 piece set with outlined pieces (Thanks to Alexander Wagner)
 - added a new Kingdom piece set (from jin)
-- Output of UCI engine is converted to SAN when multipv is 1 
+- Output of UCI engine is converted to SAN when multipv is 1
 - updated swedish translation (thanks to Hans Eriksson)
 - Added an option in graph filter to switch the method used to determine players' ELO (estimated or not)
 - Added translations to formerly english only code and updates to german help (thanks to Uwe Klimmek)
@@ -1129,7 +1129,7 @@ scid-3.6.14
 -----------
 - added an option for PGN output : add spaces conforming to PGN standard. This will be reflected in every place PGN is used (PGN window, PGN export,...)
 - fixed a bug (that existed since Scid 1.9 ?!) where Scid would crash importing some very particular games (played on internet), with extraordinary long comments (whispers)
-- windows OS : 
+- windows OS :
    * updated inno setup and cygwin1.dll
    * by default engine starts in low priority to make UI more responsive
 - the resign value is now configurable and equal to ++-
@@ -1153,7 +1153,7 @@ scid-3.6.11
 - changed book handling : several books can be opened at the same time (in windows or for use by engines)
 - it is possible to play a "serious game" from current board position (and not necessarily from start position)
 - When analysing a game that is not ended by a mate, the best continuation is added as a variation (previously the annotation process would not evaluate the last move and then not give the best line)
-- PGN window : next moves and variations are made visible when moving through a game (instead of just having the last move displayed at bottom). The text window is scrolled to make (if possible) all relevant information visible. 
+- PGN window : next moves and variations are made visible when moving through a game (instead of just having the last move displayed at bottom). The text window is scrolled to make (if possible) all relevant information visible.
 - configuration of a serious game : added fixed depth, fixed seconds and fixed nodes per move as "time controls"
 - modified Toga in order to make it more UCI compliant (ie understand "go nodes")
 - added a clock for tactical exercises
@@ -1183,7 +1183,7 @@ scid-3.6.13
 - game annotation now uses informant symbols (+=, -/+, etc)
 - added a new export file format : HTML + Javascript (games can be replayed online, small boards are added in moves frame). [Thank to Marc Lacrosse for his valuable hints, and at same time, to have proven that Anand is beatable !]
 - fixed an important bug in book tuning
-- put back the "delete last move" triggered by a click on right mouse button. So the use of the mouse is the following : 
+- put back the "delete last move" triggered by a click on right mouse button. So the use of the mouse is the following :
    * left button : enter a move, asking for replacement, variation, etc
    * middle button : enter a new variation without asking
    * right button : delete last move if at end of var, else go back one move
@@ -1227,7 +1227,7 @@ scid-3.6.8
 scid-3.6.9
 ----------
 - Annotation :
-   - when annotating a game for opening blunders, the Annotator tag is set to "opBlunder X (side)", where X is the move number 
+   - when annotating a game for opening blunders, the Annotator tag is set to "opBlunder X (side)", where X is the move number
    - The engine name used for annotation is appended to the Annotator tag and as a comment before inserting engine's variation
 - Using third mouse button will automatically add variations without asking (entering a complex game is faster)
 - EPD support :
@@ -1235,15 +1235,15 @@ scid-3.6.9
    - EPD window displays the list of positions which are directly selectable with mouse
    - EPD file can be automatically annotated (the EPD tags used are : acd, acn, ce and pv)
 - Book :
-   - Book window position and size is saved / restored 
+   - Book window position and size is saved / restored
    - Added book window for auto opening at startup (menu Options -> startup)
 - several fixes in language encodings and translations, added a new swedish translation file (thanks to Hans Eriksson)
 - fixed a minor error in scid help file (thanks to Hans Eriksson)
 - fixed a major (and old) bug in some translations files where procedure names were also translated, hence breaking some of Scid features
 
 scid-3.6.10
------------ 
-- added the possibility to play (seriously) against an UCI engine (tools->training->serious game): 
+-----------
+- added the possibility to play (seriously) against an UCI engine (tools->training->serious game):
    * setting time per move and increment per move (called "serious game")
    * follow specific opening lines
    * choice between several books
@@ -1252,7 +1252,7 @@ scid-3.6.10
    * Save windows size and position between sessions for tactical games and exercises
    * save position of the variations popup window
    * <Return> adds move of analysis engine #1
-   * added a shadow under the text of tablebases diagrams to make them more visible (added an extra parameter to ::board::mark::DrawText) 
+   * added a shadow under the text of tablebases diagrams to make them more visible (added an extra parameter to ::board::mark::DrawText)
 - changes to engines:
    * some code optimisation in UCI engine protocol
    * added a button in analysis window of engine #1 : engine can continue (ie play) automatically a game until the end ("demo mode")
@@ -1305,7 +1305,7 @@ scid-3.6.1-pg.16
 ----------------
 - UCI parser (much) improved
 - added dynamic UCI configuration by reading engine's published parameters
-- VERY HUGE memory leak fixed (sc_game push and pop don't free game memory) 
+- VERY HUGE memory leak fixed (sc_game push and pop don't free game memory)
 - optimised conversion UCI -> San notation (takes 0.5 msec at each iteration)
 - In repertoire trainer, value of candidate moves were always displayed : now the option (checkbox) is taken into account
 
@@ -1366,7 +1366,7 @@ scid-3.6.1-pg.3
    - shift + mouse button {1,2,3} for squares
    - ctrl + mouse button {1,2,3} for arrows
 - removed the ability to go back one move with right mouse click : too risky because if at the end of a line it erases the last move. Use CTRL+DEL or CTRL+BACKSPACE instead.
-   
+
 scid-3.6.1-pg.4
 ---------------
 - modified the way variants are handled : Scid can read recursive variations but the user can no longer enter
@@ -1933,7 +1933,7 @@ Version 2.6: (August 2001)
 
  n.  New "Trial" mode ("Try variation"), for trying out a temporary
      variation without actually changing the current game.
-  
+
  o.  Set the default location Scid looks for the spelling and ECO
      files (if the user has no options file) to /usr/local/share/scid/,
      since that is their default "make install" directory.
@@ -2097,7 +2097,7 @@ Version 2.4: (May 2001)
      editor. Also, "Fill cache file" which does a tree search for
      about 100 common opening positions and saves the tree cache file.
 
- t.  New maintenance window command: "Add Elo ratings", which uses a 
+ t.  New maintenance window command: "Add Elo ratings", which uses a
      modified version of the spellcheck file with rating history info
      for each player, and adds Elo ratings for players wherever the
      rating for each player at the date of each game is known.
