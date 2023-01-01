@@ -76,7 +76,7 @@ scid-4.7.4
 	* Add 'Copy games' to the gameslist's context menu
 	* Country flags in crosstable added
 	* Change book window to show available Polyglot engine analysis
-	* Logic changed for edit/replace ELO? commit	7dd4ce9bbc624573b1375d46485b5aaa309b4cb2 ??
+	* Don't show the players' peakElo in games that don't have Elo tags
 	* Update translation: Deutsch, Francais
 
 - Removed features:
