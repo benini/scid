@@ -1,10 +1,6 @@
 # end.tcl: part of Scid.
 # Copyright (C) 2000-2003 Shane Hudson.
 
-if { ! [file isdirectory $::scidBooksDir]} {
-  tk_messageBox -title "Scid" -type ok -icon warning -message "Books directory not found"
-}
-
 
 # findNovelty:
 #   Searches the for first position in the current game not
