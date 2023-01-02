@@ -92,7 +92,7 @@ proc ::preferences::checkFileDir { widget command type oldvalue} {
     global spellCheckFile
 
     set filename [$widget get]
-    if {$filename eq "" || ![file $type $filename]} {
+    if {$filename ne "" && ![file $type $filename]} {
         $widget configure -style Error.TEntry
         return
     }
