@@ -108,6 +108,7 @@ proc updateMainGame {} {
     set gamePlayers(eloB)   [expr {$eloB == 0 ? "" : "($eloB)"}]
     set gamePlayers(clockW) ""
     set gamePlayers(clockB) ""
+    ::board::configureMaterialBar .main.board
 }
 
 # updateTitle:
@@ -175,6 +176,7 @@ proc updateStatusBar {} {
             regexp $clkExp $comment -> ::gamePlayers(clockW)
             regexp $clkExp $prevCom -> ::gamePlayers(clockB)
         }
+        ::board::configureMaterialBar .main.board
     }
 
     if {[info exists ::guessedAddMove]} {
@@ -1152,6 +1154,8 @@ proc setPlayMode { callback } {
 ################################################################################
 # In docked mode, resize board automatically
 ################################################################################
+set ::mainboardWidth 0
+set ::mainboardHigh 0
 proc resizeMainBoard {} {
   if { $::autoResizeBoard } {
     update idletasks
@@ -1163,6 +1167,12 @@ proc resizeMainBoard {} {
     if { [llength [pack slaves .main.tb]] != 0 } {
       set availh [expr $availh - [winfo height .main.tb] ]
     }
+    # ignore resize if size has not changed
+    if { $availw == $::mainboardWidth && $availh == $::mainboardHigh } {
+        return
+    }
+    set ::mainboardWidth $availw
+    set ::mainboardHigh $availh
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
   }
 }
@@ -1193,10 +1203,11 @@ proc CreateMainBoard { {w} } {
   options.persistent ::showEvalBar($w) 1
   options.persistent ::showMainEvalBarArrow 1
   if {$::showEvalBar($w)} { ::board::toggleEvalBar $w.board }
-  if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
+  ::board::addMaterialBar $w.board
+  if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
   set ::gameInfoBar(tb_BD_Scorebar) [list apply {{w} {
