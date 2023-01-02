@@ -126,6 +126,57 @@ proc InitDirs {} {
 }
 InitDirs
 
+
+proc InitImg {} {
+	global scidImgDir boardStyle boardStyles textureSquare
+
+	#Set app icon
+	set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
+	if {[file readable $scidIconFile]} {
+		wm iconphoto . -default [image create photo -file "$scidIconFile"]
+	}
+
+	#Load all img/buttons/_filename_.gif
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [glob -directory $dname *.gif] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+	}
+
+	#Load all img/buttons/_filename_.png
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [glob -directory $dname *.png] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -format png -file $fname
+	}
+
+	#Load all img/boards/_filename_.gif
+	set textureSquare {}
+	set dname [file join $::scidImgDir boards]
+	foreach {fname} [glob -directory $dname *.gif] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+		if {[string range $iname end-1 end] == "-l"} {
+			lappend textureSquare [string range $iname 0 end-2]
+		}
+	}
+
+	#Search available piece sets
+	set boardStyles {}
+	set dname [file join $::scidImgDir pieces]
+	foreach {piecetype} [glob -directory $dname *] {
+		if {[file isdirectory $piecetype] == 1} {
+			lappend boardStyles [file tail $piecetype]
+		}
+	}
+}
+if {[catch {InitImg}]} {
+	tk_messageBox -type ok -icon error -title "Scid: Error" \
+		-message "Cannot load images.\n$::errorCode\n\n$::errorInfo"
+	exit
+}
+
+
 #############################################################
 #
 # NAMESPACES
@@ -557,55 +608,6 @@ proc getFlagImage { countryID { returnUnknowFlag no } } {
     }
   }
   return $country
-}
-
-proc InitImg {} {
-	global scidImgDir boardStyle boardStyles textureSquare
-
-	#Set app icon
-	set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
-	if {[file readable $scidIconFile]} {
-		wm iconphoto . -default [image create photo -file "$scidIconFile"]
-	}
-
-	#Load all img/buttons/_filename_.gif
-	set dname [file join $::scidImgDir buttons]
-	foreach {fname} [glob -directory $dname *.gif] {
-		set iname [string range [file tail $fname] 0 end-4]
-		image create photo $iname -file $fname
-	}
-
-	#Load all img/buttons/_filename_.png
-	set dname [file join $::scidImgDir buttons]
-	foreach {fname} [glob -directory $dname *.png] {
-		set iname [string range [file tail $fname] 0 end-4]
-		image create photo $iname -format png -file $fname
-	}
-
-	#Load all img/boards/_filename_.gif
-	set textureSquare {}
-	set dname [file join $::scidImgDir boards]
-	foreach {fname} [glob -directory $dname *.gif] {
-		set iname [string range [file tail $fname] 0 end-4]
-		image create photo $iname -file $fname
-		if {[string range $iname end-1 end] == "-l"} {
-			lappend textureSquare [string range $iname 0 end-2]
-		}
-	}
-
-	#Search available piece sets
-	set boardStyles {}
-	set dname [file join $::scidImgDir pieces]
-	foreach {piecetype} [glob -directory $dname *] {
-		if {[file isdirectory $piecetype] == 1} {
-			lappend boardStyles [file tail $piecetype]
-		}
-	}
-}
-if {[catch {InitImg}]} {
-	tk_messageBox -type ok -icon error -title "Scid: Error" \
-		-message "Cannot load images.\n$::errorCode\n\n$::errorInfo"
-	exit
 }
 
 # Set numeric format
