@@ -113,6 +113,7 @@ namespace eval ttk::theme::dark {
                 disabled $colors(disabledfg)] \
             -background [list \
                 pressed $basecol \
+                selected $basecol \
                 active $colors(darkcolor)] \
             -lightcolor [list pressed $basecol] \
             -darkcolor [list pressed $basecol] \
