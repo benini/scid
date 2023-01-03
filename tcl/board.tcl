@@ -1837,7 +1837,9 @@ proc ::board::toggleMaterial {w} {
   if {!$::board::_showmat($w)} {
     set ::board::_matDiff(W,$w) 0
     set ::board::_matDiff(B,$w) 0
-    if { ![winfo exists $w.playerW] } {
+    if { [winfo exists $w.playerW] } {
+        $w.playerW.materialDiff delete material
+        $w.playerB.materialDiff delete material
         grid forget $w.playerW.materialDiff
         grid forget $w.playerB.materialDiff
     }
