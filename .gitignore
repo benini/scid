@@ -18,6 +18,7 @@ Makefile.bak
 .cache
 .vs
 .vscode
+.flatpak-builder
 
 engines/phalanx-scid/phalanx-scid
 engines/togaII1.2.1a/src/.depend
