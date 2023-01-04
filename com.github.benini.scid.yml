@@ -15,14 +15,14 @@ finish-args:
   - --socket=pulseaudio      # play sound with PulseAudio
 
 modules:
-- name: stockfish # Stockfish engine, put into /app/bin/Engines/stockfish/
+- name: stockfish # Stockfish engine, put into /app/engines/stockfish/
   buildsystem: simple
   build-commands:
   - cp nn-ad9b42354671.nnue ./src
   - cd src; make -j build
-  - mkdir -p /app/bin/Engines/stockfish
-  - cp ./src/stockfish /app/bin/Engines/stockfish/
-  - cp ./nn-ad9b42354671.nnue /app/bin/Engines/stockfish/
+  - mkdir -p /app/engines/stockfish
+  - cp ./src/stockfish /app/engines/stockfish/
+  - cp ./nn-ad9b42354671.nnue /app/engines/stockfish/
   sources:
   - type: archive
     url: https://github.com/official-stockfish/Stockfish/archive/refs/tags/sf_15.1.zip
@@ -55,7 +55,7 @@ modules:
     url: https://github.com/xianyi/OpenBLAS/archive/refs/tags/v0.3.21.tar.gz
     sha256: f36ba3d7a60e7c8bcc54cd9aaa9b1223dd42eaf02c811791c37e8ca707c241ca
 
-- name: lc0 # Lc0 engine, put into /app/bin/Engines/lc0
+- name: lc0 # Lc0 engine, put into /app/engines/lc0
   buildsystem: meson
   config-opts:
   - "-Dopenblas=true"
@@ -64,8 +64,8 @@ modules:
   - "-Db_lto=true"
   - "-Dopencl=false"
   post-install:
-  - mkdir -p /app/bin/Engines/lc0
-  - mv /app/bin/lc0 /app/bin/Engines/lc0/
+  - mkdir -p /app/engines/lc0
+  - mv /app/bin/lc0 /app/engines/lc0/
   sources:
   - type: archive
     url: https://github.com/LeelaChessZero/lc0/archive/refs/tags/v0.29.0.zip
@@ -78,13 +78,13 @@ modules:
 - name: nn # neural network T79, added to Lc0 (see https://lczero.org/play/networks/bestnets/)
   buildsystem: simple
   build-commands:
-  - mkdir -p /app/bin/Engines/lc0
-  - mv nn /app/bin/Engines/lc0/
+  - mkdir -p /app/engines/lc0
+  - mv nn /app/engines/lc0/
   sources:
   - type: file
     dest-filename: nn
     url: https://training.lczero.org/get_network?sha=195b450999e874d07aea2c09fd0db5eff9d4441ec1ad5a60a140fe8ea94c4f3a
-    sha256: 5cf80e9e5091134241235400366c6c46c8b1613b07b98243f4e4dcc691bf47ae
+    sha256: ece2b5e06dc7c2121c31649be0effdd645f3df53bcf801623246d75494a866ad
 
 - name: tcl # latest stable tcl, required for scid
   sources:
