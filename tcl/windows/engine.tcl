@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (C) 2020-2022 Fulvio Benini
+# Copyright (C) 2020-2023 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 # Scid is free software: you can redistribute it and/or modify
@@ -94,64 +94,46 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
         return
     }
 
-    grid [ttk::panedwindow $w.pane] -sticky news
-    grid columnconfigure $w 0 -weight 1
-    grid rowconfigure $w 0 -weight 1
-    ttk::frame $w.main
-    grid columnconfigure $w.main 0 -weight 1
-    grid rowconfigure $w.main 0 -weight 1
-    $w.pane add $w.main -weight 1
+    # The main windows is divided in three parts:
+    # - at the top $w.header_info which shows time, nps, etc...
+    # - at the bottom the buttons bar
+    # - in the middle $w.main which is further divided in three parts:
+    #   - top-left: $w.display where the pv lines are shown
+    #   - bottom-left: $w.debug where all the engine's i/o is shown
+    #   - right: $w.config with all the engine options.
+    # $w.debug can be hidden and $w.display would expand downward.
+    # $w.config can be hidden and $w.display and eventually $w.debug would expand rightward.
 
+    ttk::frame $w.header_info
+    ttk_text $w.header_info.text -style Toolbutton -wrap word -height 1 -pady 2
+    autoscrollBars y $w.header_info $w.header_info.text
+
+    ttk::frame $w.main
+    ttk::panedwindow $w.pane
     ttk::frame $w.config
     ::enginecfg::createConfigFrame $id $w.config
     ttk::frame $w.display
     ::enginewin::createDisplayFrame $id $w.display
-    autoscrollText y $w.debug $w.debug.lines Treeview
-    $w.debug.lines configure -state normal
-
-    grid $w.config -in $w.main -sticky news
+    $w.pane add $w.display -weight 1
+    ttk::frame $w.debug
+    ttk_text $w.debug.lines -state disabled
+    autoscrollBars y $w.debug $w.debug.lines
+    grid $w.pane -row 0 -column 0 -in $w.main -sticky news
+    grid $w.config -row 0 -column 1 -in $w.main -sticky news -padx {10 0}
+    grid rowconfigure $w.main 0 -weight 1
+    grid columnconfigure $w.main 0 -weight 1000
+    grid columnconfigure $w.main 1 -weight 1
 
     ttk::frame $w.btn
-    ttk::button $w.btn.startStop -image [list tb_eng_on pressed tb_eng_off] -style Toolbutton \
-        -command "::enginewin::toggleStartStop $id"
-    #TODO: change the tooltip to "Start/stop engine"
-    ::utils::tooltip::Set $w.btn.startStop [tr StartEngine]
-    ttk::button $w.btn.lock -image tb_eng_lock -style Toolbutton -command "
-        if {\$::enginewin::engState($id) eq {locked}} {
-            ::enginewin::changeState $id run
-            ::enginewin::onPosChanged $id
-        } else {
-            ::enginewin::changeState $id locked
-        }
-    "
-    bind $w.btn.lock <Any-Enter> [list apply {{id} {
-        if {"pressed" in [%W state]} {
-            ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] ""] %X %Y above
-        }
-    }} $id]
-    bind $w.btn.lock <Any-Leave> {
-        catch { wm withdraw .enginewinBoard }
-    }
-    ::utils::tooltip::Set $w.btn.lock [tr LockEngine]
-    ttk::button $w.btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
-        -command "::enginewin::exportMoves $w.display.pv.lines 1.0"
-    ::utils::tooltip::Set $w.btn.addbestmove [tr AddMove]
-    ttk::button $w.btn.addbestline -image tb_eng_addbestline -style Toolbutton \
-        -command "::enginewin::exportMoves $w.display.pv.lines 1.end"
-    ::utils::tooltip::Set $w.btn.addbestline [tr AddVariation]
-    ttk::button $w.btn.addlines -image tb_eng_addlines -style Toolbutton \
-        -command "::enginewin::exportLines $w.display.pv.lines"
-    ::utils::tooltip::Set $w.btn.addlines [tr AddAllVariations]
-    ttk::spinbox $w.btn.multipv -increment 1 -width 4
-    ::utils::tooltip::Set $w.btn.multipv [tr Lines]
-    ttk::button $w.btn.config -image tb_eng_config -style Toolbutton \
-        -command "::enginewin::changeState $id toggleConfig"
-    $w.btn.config state pressed
-    grid $w.btn.startStop $w.btn.lock $w.btn.addbestmove $w.btn.addbestline \
-         $w.btn.addlines $w.btn.multipv x $w.btn.config -sticky ew
-    grid columnconfigure $w.btn 6 -weight 1
+    ::enginewin::createButtonsBar $id $w.btn $w.display
 
+    grid $w.header_info -sticky news
+    grid $w.main -sticky news
     grid $w.btn -sticky news
+    grid rowconfigure $w 0 -weight 0
+    grid rowconfigure $w 1 -weight 1
+    grid rowconfigure $w 2 -weight 0
+    grid columnconfigure $w 0 -weight 1
 
     # The engine should be closed before the debug .text is destroyed
     bind $w.config <Destroy> "
@@ -179,6 +161,84 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     return $id
 }
 
+# Creates $w.display, where the pv lines sent by the engine would be shown.
+proc ::enginewin::createDisplayFrame {id display} {
+    ttk_text $display.pv_lines -exportselection true -padx 4 -state disabled
+    autoscrollBars both $display $display.pv_lines
+    set tab [font measure font_Regular "xxxxxxx"]
+    $display.pv_lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
+    $display.pv_lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
+    $display.pv_lines tag configure markmove -underline 1
+    $display.pv_lines tag bind moves <ButtonRelease-1> {
+        if {[%W tag ranges sel] eq ""} {
+            ::enginewin::exportMoves %W @%x,%y
+        }
+    }
+    $display.pv_lines tag bind moves <Motion> [list apply {{id} {
+        %W tag remove markmove 1.0 end
+        if {[%W tag ranges sel] eq "" && ![catch {
+                # An exception will be thrown if the engine sent an illegal pv
+                sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
+            # TODO:
+            # Using wordstart and wordend would be a lot more efficient.
+            # However they do not consider the [+.-] chars as part of the word.
+            # set movestart [%W index "@%x,%y wordstart"]
+            # %W tag add markmove $movestart "$movestart wordend"
+            set movestart "[%W search -backwards -regexp {\s} "@%x,%y"] +1chars"
+            %W tag add markmove $movestart [%W search " " $movestart]
+            ::board::popup .enginewinBoard $pos %X %Y
+        } else {
+            catch { wm withdraw .enginewinBoard }
+        }
+    }} $id]
+    $display.pv_lines tag bind moves <Any-Leave> {
+        %W tag remove markmove 1.0 end
+        catch { wm withdraw .enginewinBoard }
+    }
+}
+
+# Creates the buttons bar
+proc ::enginewin::createButtonsBar {id btn display} {
+    ttk::button $btn.startStop -image [list tb_eng_on pressed tb_eng_off] -style Toolbutton \
+        -command "::enginewin::toggleStartStop $id"
+    #TODO: change the tooltip to "Start/stop engine"
+    ::utils::tooltip::Set $btn.startStop [tr StartEngine]
+    ttk::button $btn.lock -image tb_eng_lock -style Toolbutton -command "
+        if {\$::enginewin::engState($id) eq {locked}} {
+            ::enginewin::changeState $id run
+            ::enginewin::onPosChanged $id
+        } else {
+            ::enginewin::changeState $id locked
+        }
+    "
+    bind $btn.lock <Any-Enter> [list apply {{id} {
+        if {"pressed" in [%W state]} {
+            ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] ""] %X %Y above
+        }
+    }} $id]
+    bind $btn.lock <Any-Leave> {
+        catch { wm withdraw .enginewinBoard }
+    }
+    ::utils::tooltip::Set $btn.lock [tr LockEngine]
+    ttk::button $btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
+        -command "::enginewin::exportMoves $display.pv_lines 1.0"
+    ::utils::tooltip::Set $btn.addbestmove [tr AddMove]
+    ttk::button $btn.addbestline -image tb_eng_addbestline -style Toolbutton \
+        -command "::enginewin::exportMoves $display.pv_lines 1.end"
+    ::utils::tooltip::Set $btn.addbestline [tr AddVariation]
+    ttk::button $btn.addlines -image tb_eng_addlines -style Toolbutton \
+        -command "::enginewin::exportLines $display.pv_lines"
+    ::utils::tooltip::Set $btn.addlines [tr AddAllVariations]
+    ttk::spinbox $btn.multipv -increment 1 -width 4
+    ::utils::tooltip::Set $btn.multipv [tr Lines]
+    ttk::button $btn.config -image tb_eng_config -style Toolbutton \
+        -command "::enginewin::changeState $id toggleConfig"
+    $btn.config state pressed
+    grid $btn.startStop $btn.lock $btn.addbestmove $btn.addbestline \
+         $btn.addlines $btn.multipv x $btn.config -sticky ew
+    grid columnconfigure $btn 6 -weight 1
+}
+
 # Inform the engine that there is a new game
 proc ::enginewin::newGame { {ids ""} } {
     foreach {id state} [array get ::enginewin::engState] {
@@ -196,17 +256,19 @@ proc ::enginewin::newGame { {ids ""} } {
 # locked -> The engine is analyzing a fixed position.
 proc ::enginewin::changeState {id newState} {
     set w .engineWin$id
-    if {$newState in "run toggleConfig"} {
+    if {$newState eq "run"} {
+        $w.btn.config state !pressed
+        grid remove $w.config
+    }
+    if {$newState eq "toggleConfig"} {
         if {[grid info $w.config] ne ""} {
             $w.btn.config state !pressed
-            grid forget $w.config
-            grid $w.display -in $w.main -sticky news
-        } elseif {$newState eq "toggleConfig"} {
+            grid remove $w.config
+        } else {
             $w.btn.config state pressed
-            grid forget $w.display
-            grid $w.config -in $w.main -sticky news
+            grid $w.config
         }
-        if {$newState eq "toggleConfig"} { return }
+        return
     }
 
     if {$::enginewin::engState($id) eq $newState} { return }
@@ -245,9 +307,10 @@ proc ::enginewin::changeState {id newState} {
 
 proc ::enginewin::logEngine {id on} {
     catch { .engineWin$id.pane forget .engineWin$id.debug }
+    .engineWin$id.debug.lines configure -state normal
+    .engineWin$id.debug.lines delete 1.0 end
+    .engineWin$id.debug.lines configure -state disabled
     if {$on} {
-        .engineWin$id.pane forget .engineWin$id.main
-        .engineWin$id.pane add .engineWin$id.main -weight 1
         .engineWin$id.pane add .engineWin$id.debug -weight 1
         ::engine::setLogCmd $id \
             [list ::enginewin::logHandler $id .engineWin$id.debug.lines "" ""]\
@@ -262,8 +325,10 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
     upvar ::enginewin::startTime_$id startTime_
     set t [format "(%.3f) " \
         [expr {( [clock milliseconds] - $startTime_ ) / 1000.0}]]
+    $widget configure -state normal
     $widget insert end "$t[set prefix]$msg\n" $tag
     $widget see end
+    $widget configure -state disabled
 }
 
 # If any, closes the connection with the current engine.
@@ -286,11 +351,11 @@ proc ::enginewin::connectEngine {id enginename} {
 
     ::enginecfg::clearConfigFrame $id .engineWin$id.config
 
-    .engineWin$id.debug.lines delete 1.0 end
     ::enginewin::updateDisplay $id ""
 
     if {$config eq ""} {
         ::setTitle .engineWin$id "Engine Window"
+        ::enginewin::logEngine $id false
         return
     }
 
@@ -364,53 +429,6 @@ proc ::enginewin::callback {id msg} {
     }
 }
 
-proc ::enginewin::createDisplayFrame {id w} {
-    ttk::frame $w.header
-    autoscrollText y $w.header.info $w.header.info.text Toolbutton
-    $w.header.info.text configure -wrap word -height 1
-    grid $w.header.info -sticky news -pady 2
-    grid columnconfigure $w.header 0 -weight 1
-
-    set tab [font measure font_Regular "xxxxxxx"]
-    autoscrollText both $w.pv $w.pv.lines Treeview
-    $w.pv.lines configure -exportselection true
-    $w.pv.lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
-    $w.pv.lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
-    $w.pv.lines tag configure markmove -underline 1
-    $w.pv.lines tag bind moves <ButtonRelease-1> {
-        if {[%W tag ranges sel] eq ""} {
-            ::enginewin::exportMoves %W @%x,%y
-        }
-    }
-    $w.pv.lines tag bind moves <Motion> [list apply {{id} {
-        %W tag remove markmove 1.0 end
-        if {[%W tag ranges sel] eq "" && ![catch {
-                # An exception will be thrown if the engine sent an illegal pv
-                sc_pos board [set ::enginewin::position_$id] [::enginewin::getMoves %W @%x,%y] } pos]} {
-            # TODO:
-            # Using wordstart and wordend would be a lot more efficient.
-            # However they do not consider the [+.-] chars as part of the word.
-            # set movestart [%W index "@%x,%y wordstart"]
-            # %W tag add markmove $movestart "$movestart wordend"
-            set movestart "[%W search -backwards -regexp {\s} "@%x,%y"] +1chars"
-            %W tag add markmove $movestart [%W search " " $movestart]
-            ::board::popup .enginewinBoard $pos %X %Y
-        } else {
-            catch { wm withdraw .enginewinBoard }
-        }
-    }} $id]
-    $w.pv.lines tag bind moves <Any-Leave> {
-        %W tag remove markmove 1.0 end
-        catch { wm withdraw .enginewinBoard }
-    }
-
-    grid $w.header -sticky news
-    grid $w.pv -sticky news
-
-    grid columnconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 1
-}
-
 proc ::enginewin::changeDisplayLayout {id param value} {
     upvar ::enginewin::engConfig_$id engConfig_
     set w .engineWin$id
@@ -433,7 +451,7 @@ proc ::enginewin::changeDisplayLayout {id param value} {
         }
         "wrap" {
             set idx 2
-            $w.display.pv.lines configure -wrap $value
+            $w.display.pv_lines configure -wrap $value
         }
         "multipv" {
             if {$value eq ""} {
@@ -470,23 +488,24 @@ proc ::enginewin::updateDisplay {id msgData} {
     if {$hashfull eq ""} { set hashfull 0 }
     if {$tbhits eq ""} { set tbhits 0 }
 
-    set w .engineWin$id.display
-    $w.header.info.text configure -state normal
-    $w.header.info.text delete 1.0 end
-    $w.header.info.text insert end "[tr Time]: " header
-    $w.header.info.text insert end [format "%.2f s" [expr {$time / 1000.0}]]
-    $w.header.info.text insert end "   [tr Nodes]: " header
-    $w.header.info.text insert end [format "%.2f Kn/s" [expr {$nps / 1000.0}]]
-    $w.header.info.text insert end "   Hash: " header
-    $w.header.info.text insert end [format "%.1f%%" [expr {$hashfull / 10.0}]]
-    $w.header.info.text insert end "   TB Hits: " header
-    $w.header.info.text insert end $tbhits
-    $w.header.info.text configure -state disabled
+    set w .engineWin$id
+    $w.header_info.text configure -state normal
+    $w.header_info.text delete 1.0 end
+    $w.header_info.text insert end "[tr Time]: " header
+    $w.header_info.text insert end [format "%.2f s" [expr {$time / 1000.0}]]
+    $w.header_info.text insert end "   [tr Nodes]: " header
+    $w.header_info.text insert end [format "%.2f Kn/s" [expr {$nps / 1000.0}]]
+    $w.header_info.text insert end "   Hash: " header
+    $w.header_info.text insert end [format "%.1f%%" [expr {$hashfull / 10.0}]]
+    $w.header_info.text insert end "   TB Hits: " header
+    $w.header_info.text insert end $tbhits
+    $w.header_info.text configure -state disabled
 
-    $w.pv.lines configure -state normal
+    set w .engineWin$id.display
+    $w.pv_lines configure -state normal
     if {$msgData eq ""} {
-        $w.pv.lines delete 1.0 end
-        $w.pv.lines configure -state disabled
+        $w.pv_lines delete 1.0 end
+        $w.pv_lines configure -state disabled
         return
     }
 
@@ -549,25 +568,25 @@ proc ::enginewin::updateDisplay {id msgData} {
     set line $multipv
     if {$multipv == 1} {
         # Previous line nr. 1 is now obsolete
-        $w.pv.lines tag remove header 1.0 1.end
+        $w.pv_lines tag remove header 1.0 1.end
     }
     # If the engine has repeatedly sent multipv 1, do not delete the obsolete lines
-    catch { $w.pv.lines tag nextrange header 2.0 } multilines
+    catch { $w.pv_lines tag nextrange header 2.0 } multilines
     if {$line > 1 || $multilines ne ""} {
         # Multipv lines >= than the current one are now obsolete and deleted.
-        $w.pv.lines delete $line.0 end
+        $w.pv_lines delete $line.0 end
     }
-    $w.pv.lines insert $line.0 "\n"
-    $w.pv.lines insert $line.end "$depth\t"
-    $w.pv.lines insert $line.end "$score" header
-    $w.pv.lines insert $line.end "\t"
-    $w.pv.lines insert $line.end "$pv" [list header moves]
-    $w.pv.lines insert $line.end "$pvline" [list lmargin moves]
+    $w.pv_lines insert $line.0 "\n"
+    $w.pv_lines insert $line.end "$depth\t"
+    $w.pv_lines insert $line.end "$score" header
+    $w.pv_lines insert $line.end "\t"
+    $w.pv_lines insert $line.end "$pv" [list header moves]
+    $w.pv_lines insert $line.end "$pvline" [list lmargin moves]
     if {[info exists extraInfo]} {
-        $w.pv.lines insert $line.end "  ([join $extraInfo {  }])" lmargin
+        $w.pv_lines insert $line.end "  ([join $extraInfo {  }])" lmargin
     }
 
-    $w.pv.lines configure -state disabled
+    $w.pv_lines configure -state disabled
     if {$line == 1 && $::enginewin::engState($id) ne "locked"} {
         if {$scoreside eq "engine" && [sc_pos side] eq "black" && $score ne ""} {
             set sign_reversed [expr { [string index $score 0] eq "+" ? "-" : "+" }]
