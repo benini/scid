@@ -8,8 +8,7 @@ command: scid
 finish-args:
   - --filesystem=home        # for accessing files in the user's home folder
   - --share=network          # access the network
-  - --socket=wayland         # show windows with wayland
-  - --socket=fallback-x11    # show windows using X11, if wayland is not available
+  - --socket=x11             # show windows with x11
   - --share=ipc              # share IPC namespace with the host (necessary for X11)
   - --device=dri             # OpenGL rendering
   - --socket=pulseaudio      # play sound with PulseAudio
