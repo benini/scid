@@ -339,12 +339,11 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w.wrap set $pvwrap
 
     $w insert end "\nShow debug frame:\t"
-    ttk::combobox $w.debug -state readonly -width 12 -values [list false true]
-    bind $w.debug <<ComboboxSelected>> "
-        ::enginewin::logEngine $id \[ $w.debug get \]
+    ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
+        ::enginewin::logEngine $id \[::update_switch_btn $w.debug\]
     "
+    ::update_switch_btn $w.debug $debugframe
     $w window create end -window $w.debug
-    $w.debug set $debugframe
 
     if {[catch {::engine::pid $id} enginePid]} {
         return false
