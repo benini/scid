@@ -1074,6 +1074,17 @@ if { [tk windowingsystem] == "win32" } {
     }
 }
 
+# Forward MouseWheel events catched by ttk widgets
+foreach class {TCombobox TSpinbox TEntry TLabel TButton TCheckbutton TRadiobutton} {
+    if {[tk windowingsystem] eq "x11"} {
+        bind $class <Button-4> { event generate [winfo parent %W] <Button-4> -rootx %X -rooty %Y }
+        bind $class <Button-5> { event generate [winfo parent %W] <Button-5> -rootx %X -rooty %Y }
+    } elseif {[tk windowingsystem] eq "win32"} {
+        bind $class <MouseWheel> { event generate [winfo parent %W] <<MWheel>> -rootx %X -rooty %Y -data %D }
+    } else {
+        bind $class <MouseWheel> { event generate [winfo parent %W] <MouseWheel> -rootx %X -rooty %Y -delta %D }
+    }
+}
 
 #################
 # Open files and databases:
