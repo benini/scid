@@ -3,7 +3,7 @@ branch: stable
 runtime: org.freedesktop.Platform
 runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
-command: scid
+command: /app/scid/scid
 
 finish-args:
   - --filesystem=home        # for accessing files in the user's home folder

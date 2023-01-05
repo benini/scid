@@ -15,7 +15,7 @@ contains all the build tools among other things)
 This has to be done only once.
 Then in order to build the flatpak and create a user installation of it run
 
-    flatpak-builder --user --install --force-clean build-dir com.github.benini.scid.yml
+    flatpak-builder --user --install --force-clean build-dir flatpak/com.github.benini.scid.yml
 
 from inside the repository root folder (containing the flatpak manifest).
 Here build-dir is the name of a temporary build folder and can be changed if wanted.
