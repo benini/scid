@@ -493,6 +493,8 @@ proc configure_style {} {
 
   ttk::style configure fieldbg.TLabel -background [ttk::style lookup . -fieldbackground "" white]
 
+  ttk::style configure Switch.Toolbutton -padding 0
+
   # Some themes (e.g. vista and xpnative) use custom field elements and ignore -fieldbackground
   if {[regexp {(Combobox|Entry|Spinbox)\.(field|background)} [ttk::style element names]]} {
       ttk::style configure Error.TCombobox -foreground #b80f0a
@@ -521,6 +523,27 @@ bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
 
 catch { ttk::style theme use $::lookTheme }
 configure_menus
+
+
+# Uses the circle and full circle unicode characters to simulate a switch button.
+# Based on a ttk::checkbutton, update -text to reflect its state.
+# Example:
+#     ttk::checkbutton widget_name -style Switch.Toolbutton \
+#         -command "::update_switch_btn widget_name"
+#     ::update_switch_btn widget_name initial_value
+# Return 1 if the button is selected (on) or 0.
+proc ::update_switch_btn {widget {set_value ""}} {
+    if {$set_value ne ""} {
+        set ::$widget [expr $set_value ? 1 : 0]
+    }
+    if { [set ::$widget] } {
+        set full_circle [expr $::windowsOS ?"\u2B24":"\u25CF"]
+        $widget configure -text "       $full_circle"
+        return 1
+    }
+    $widget configure -text "\u25EF       "
+    return 0
+}
 
 proc autoscrollText {bars frame widget style} {
   ttk::frame $frame

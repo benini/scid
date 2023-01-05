@@ -106,8 +106,7 @@ namespace eval ttk::theme::dark {
         ;
         ttk::style map Toolbutton \
             -relief [list \
-                selected raised \
-                active raised] \
+                {active !selected} raised] \
             -bordercolor $borders \
             -foreground [list \
                 disabled $colors(disabledfg)] \
