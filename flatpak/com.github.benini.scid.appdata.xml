@@ -30,11 +30,11 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main window</caption>
-	    <image>https://scid.sourceforge.net/img-screenshot.jpg</image>
+	    <image>https://scid.sourceforge.io/screenshot1.png</image>
     </screenshot>
     <screenshot>
-	    <caption>Add a chess engine window</caption>
-	    <image>https://github.com/benini/scid/wiki/images/engine_add.png</image>
+	    <caption>Chess engine window</caption>
+	    <image>https://scid.sourceforge.io/screenshot2.png</image>
     </screenshot>
   </screenshots>
 
