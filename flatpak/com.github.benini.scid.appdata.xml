@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>scid.desktop</id>
+  <name>SCID</name>
+  <summary>A chess database application</summary>
+  <description>
+SCID (Shane's Chess Information Database) is a chess database application that allows users to store, organize, and search through large collections of chess games. It also includes a chess engine for playing against the computer and analyzing positions.
+</description>
+  <screenshots>
+    <screenshot type="default">
+	    <image>https://scid.sourceforge.net/img-screenshot.jpg</image>
+      <caption>SCID main window</caption>
+    </screenshot>
+    <screenshot>
+	    <image>https://github.com/benini/scid/wiki/images/engine_add.png</image>
+	    <caption>Add a chess engine window</caption>
+    </screenshot>
+  </screenshots>
+  <project_group>Chess</project_group>
+  <url type="homepage">https://scid.sourceforge.io/</url>
+</component>
