@@ -1,12 +1,17 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Hidden=false
-Terminal=false
-Icon=/usr/share/pixmaps/scid.xpm
+
 Name=Scid
-Exec=scid %f
-Keywords=Chess;PGN;convert
-Categories=Game;BoardGame;
-MimeType=application/pgn;application/x-chess-pgn;application/x-pgn
 Comment=Free chess database application
+Keywords=Chess;PGN;convert
+
+TryExec=scid
+Exec=/app/scid/scid %f
+StartupWMClass=scid
+Terminal=false
+Hidden=false
+Icon=com.github.benini.scid
+MimeType=application/x-chess-pgn;application/x-chess-scid3;application/x-chess-scid4
+StartupNotify=true
+Categories=Game;BoardGame;StrategyGame
