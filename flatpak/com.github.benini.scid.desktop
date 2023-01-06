@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Hidden=false
+Terminal=false
+Icon=/usr/share/pixmaps/scid.xpm
+Name=Scid
+Exec=scid %f
+Keywords=Chess;PGN;convert
+Categories=Game;BoardGame;
+MimeType=application/pgn;application/x-chess-pgn;application/x-pgn
+Comment=Free chess database application
