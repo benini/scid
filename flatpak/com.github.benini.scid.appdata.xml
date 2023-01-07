@@ -30,15 +30,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main window</caption>
-	    <image>https://scid.sourceforge.io/screenshot1.png</image>
+	    <image>https://scid.sourceforge.net/screenshot1.png</image>
     </screenshot>
     <screenshot>
 	    <caption>Chess engine window</caption>
-	    <image>https://scid.sourceforge.io/screenshot2.png</image>
+	    <image>https://scid.sourceforge.net/screenshot2.png</image>
     </screenshot>
   </screenshots>
 
-  <url type="homepage">https://scid.sourceforge.io/</url>
+  <url type="homepage">https://scid.sourceforge.net/</url>
 
   <provides>
     <id>scid.desktop</id>
