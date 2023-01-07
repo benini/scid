@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (C) 2020-2022 Fulvio Benini
+# Copyright (C) 2020-2023 Fulvio Benini
 #
 # This file is part of SCID (Shane's Chess Information Database).
 # SCID is free software: you can redistribute it and/or modify
@@ -40,10 +40,12 @@ proc ::enginecfg::rename {oldname newname} {
     }
     set newname [::enginecfg::uniquename $newname]
     lset ::engines(list) $idx 0 $newname
-    ::enginelist::write
+    ::enginecfg::write
     return $newname
 }
 
+# Append a number, or increments it, to the name of an engine to make it unique.
+# Return the unique name.
 proc ::enginecfg::uniquename {name} {
     set copyn 0
     while {[lsearch -exact -index 0 $::engines(list) $name] >= 0} {
@@ -76,7 +78,7 @@ proc ::enginecfg::remove {name} {
     if {$answer ne "yes"} { return false }
 
     set ::engines(list) [lreplace $::engines(list) $idx $idx]
-    ::enginelist::write
+    ::enginecfg::write
     return true
 }
 
@@ -96,9 +98,34 @@ proc ::enginecfg::save {enginecfg {force_write false}} {
     }]
     if {$force_write || [lindex $::engines(list) $idx] ne $enginecfg} {
         lset ::engines(list) $idx $enginecfg
-        ::enginelist::write
+        ::enginecfg::write
     }
     return $enginename
+}
+
+# Writes the "Engine list" file.
+# Throw an exception on error.
+proc ::enginecfg::write {} {
+    set enginesFile [scidConfigFile engines]
+    set f [open $enginesFile w]
+    puts $f "\# Analysis engines list file for Scid $::scidVersion with UCI support"
+    puts $f ""
+    foreach e $::engines(list) {
+        lassign $e name cmd args dir elo time url uci opt
+        puts $f "engine {"
+            puts $f "  Name [list $name]"
+            puts $f "  Cmd  [list $cmd]"
+            puts $f "  Args [list $args]"
+            puts $f "  Dir  [list $dir]"
+            puts $f "  Elo  [list $elo]"
+            puts $f "  Time [list $time]"
+            puts $f "  URL  [list $url]"
+            puts $f "  UCI [list $uci]"
+            puts $f "  UCIoptions [list $opt]"
+            puts $f "}"
+        puts $f ""
+    }
+    close $f
 }
 
 # Pop up a dialog box for the user to select the cmd file referring to a local engine
