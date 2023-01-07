@@ -378,7 +378,6 @@ proc ::createMainEvalBarMenu {w} {
             set ::mainEvalBarCheckbutton 1
             $w.evalbar_menu add checkbutton -variable ::mainEvalBarCheckbutton -label $engName -command {
                 ::enginewin::stop $::mainEvalBarEngineID_
-                unset ::mainEvalBarEngineID_
             }
         } else {
             $w.evalbar_menu add command -label $engName \
