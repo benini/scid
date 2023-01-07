@@ -14,10 +14,7 @@ namespace eval uci {
     set optList {}
     set oldOptions ""
     array set check ""
-    
-    set autoSaveOptions 0 ; # UCI options are saved as soon as the options dialog is closed
-    set autoSaveOptionsIndex -1
-    
+
     # The list of token that comes with info
     set infoToken { depth seldepth time nodes pv multipv score cp mate lowerbound upperbound \
                 currmove currmovenumber hashfull nps tbhits sbhits cpuload string refutation currline }
@@ -628,21 +625,6 @@ namespace eval uci {
             }
             incr optnbr
         }
-        if { $::uci::autoSaveOptions } {
-            writeOptions
-            set ::uci::autoSaveOptions 0
-        }
-    }
-    ################################################################################
-    # If the config window is called outside the engine dialog, save UCI options
-    # (only the UCI options dialog box is called
-    ################################################################################
-    proc writeOptions {} {
-        set elt [lindex $::engines(list) $::uci::autoSaveOptionsIndex]
-        set elt [ lreplace $elt 8 8 $::uci::newOptions]
-        set ::engines(list) [lreplace $::engines(list) $::uci::autoSaveOptionsIndex $::uci::autoSaveOptionsIndex $elt]
-        
-        ::enginelist::write
     }
 
     # Send the options in the array ::uciOptions$n to the engine.
