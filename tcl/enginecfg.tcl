@@ -138,6 +138,7 @@ proc ::enginecfg::dlgNewLocal {} {
     lappend ftype [list "All files" *]
     set fName [tk_getOpenFile -initialdir $::scidEnginesDir -filetypes $ftype]
     if {$fName eq ""} { return "" }
+    set ::scidEnginesDir [file dirname $fName]
     return [::enginecfg::add [list $fName $fName {} {} {} 0 {} {} {}]]
 }
 
