@@ -255,6 +255,9 @@ proc ::engine::init_ {id channel callback} {
 
 proc ::engine::destroy_ {id {localReply ""}} {
     after cancel "::engine::done_ $id"
+    if {[info exists ::engconn(nextHandshake_$id)]} {
+        after cancel $::engconn(nextHandshake_$id)
+    }
 
     chan close $::engconn(channel_$id)
     ::engine::closeServer_ $id
