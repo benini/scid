@@ -256,10 +256,6 @@ proc ::enginewin::newGame { {ids ""} } {
 # locked -> The engine is analyzing a fixed position.
 proc ::enginewin::changeState {id newState} {
     set w .engineWin$id
-    if {$newState eq "run"} {
-        $w.btn.config state !pressed
-        grid remove $w.config
-    }
     if {$newState eq "toggleConfig"} {
         if {[grid info $w.config] ne ""} {
             $w.btn.config state !pressed
@@ -272,6 +268,12 @@ proc ::enginewin::changeState {id newState} {
     }
 
     if {$::enginewin::engState($id) eq $newState} { return }
+
+    # Hide the config frame
+    if {$newState eq "run"} {
+        $w.btn.config state !pressed
+        grid remove $w.config
+    }
 
     lappend btnDisabledStates [list config.header.reload closed]
     lappend btnDisabledStates [list config.header.clone closed]
