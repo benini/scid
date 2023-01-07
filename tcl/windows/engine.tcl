@@ -404,7 +404,11 @@ proc ::enginewin::callback {id msg} {
     lassign $msg msgType msgData
     switch $msgType {
         "InfoConfig" {
-            ::enginecfg::updateConfigFrame $id .engineWin$id.config $msgData
+            set renamed [::enginecfg::updateConfigFrame $id .engineWin$id.config $msgData]
+            if {$renamed ne ""} {
+                set ::enginewin_lastengine($id) $renamed
+                ::setTitle .engineWin$id "[tr Engine]: $renamed"
+            }
             ::enginewin::changeState $id idle
         }
         "InfoGo" {

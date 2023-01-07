@@ -231,6 +231,8 @@ proc ::enginecfg::clearConfigFrame {id configFrame} {
 }
 
 # Update or recreate the config and option widgets
+# If it is a new engine added with auto-config, return the new name
+# otherwise return an empty "" string
 proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     upvar ::enginewin::engConfig_$id engConfig_
     set w $configFrame.options.text
@@ -240,6 +242,7 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     set oldOptions [lindex $engConfig_ 8]
     lset engConfig_ 8 $options
 
+    set renamed ""
     set recreate_widgets 1
     if {$msgInfoConfig eq ""} {
         # An emtpy message -> recreate all the widgets
@@ -248,11 +251,8 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
         # and recreate all the widgets
         lassign $engConfig_ currname
         if {[set idx [lsearch -index 0 $options "myname"]] >=0} {
-            set name [::enginecfg::rename $currname [lindex $options $idx 1]]
-            lset engConfig_ 0 $name
-
-            set ::enginewin_lastengine($id) $name
-            ::setTitle .engineWin$id "[tr Engine]: $name"
+            set renamed [::enginecfg::rename $currname [lindex $options $idx 1]]
+            lset engConfig_ 0 $renamed
         }
         lset engConfig_ 7 [expr { $protocol eq "uci" }]
 
@@ -268,13 +268,14 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
         if {![::enginecfg::createConfigWidgets $id $configFrame $engConfig_]} {
             # The option widgets are not created if the engine is not open
             $w configure -state disabled
-            return
+            return $renamed
         }
         ::enginecfg::createOptionWidgets $id $configFrame $options
     }
     ::enginecfg::updateOptionWidgets $id $configFrame $options $oldOptions
     ::enginecfg::updateNetClients $configFrame $netclients
     $w configure -state disabled
+    return $renamed
 }
 
 # Creates the widgets for engine configuration, like the engine path, command
