@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.github.benini.scid</id>
+  <id>io.github.benini.scid</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0</project_license>
   <name>SCID</name>
@@ -12,8 +12,8 @@
       and search through large collections of chess games. It also includes chess engines for playing against the
       computer and analyzing positions. Any Xboard or UCI compatible engine is supported.
     </p>
-    <p> 
-      SCID displays graphical trends and produces printable reports on players and openings. Using Scid you can also 
+    <p>
+      SCID displays graphical trends and produces printable reports on players and openings. Using Scid you can also
       play online on FICS, and even study endings with endgame tablebases.
     </p>
     <p>
@@ -25,7 +25,7 @@
     </ul>
   </description>
 
-  <launchable type="desktop-id">com.github.benini.scid.desktop</launchable>
+  <launchable type="desktop-id">io.github.benini.scid.desktop</launchable>
 
   <screenshots>
     <screenshot type="default">

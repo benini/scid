@@ -15,14 +15,14 @@ contains all the build tools among other things)
 This has to be done only once.
 Then in order to build the flatpak and create a user installation of it run
 
-    flatpak-builder --user --install --force-clean build-dir flatpak/com.github.benini.scid.yml
+    flatpak-builder --user --install --force-clean build-dir io.github.benini.scid.yml
 
-from inside the repository root folder (containing the flatpak manifest).
+from inside the repository flatpak folder (containing the flatpak manifest).
 Here build-dir is the name of a temporary build folder and can be changed if wanted.
 This will take a while, but should run without issues.
 
 If everything goes well, you can run the flatpak via
 
-    flatpak run com.github.benini.scid
+    flatpak run io.github.benini.scid
 
 According to my tests, both engines run fine and using FICS works fine as well.
