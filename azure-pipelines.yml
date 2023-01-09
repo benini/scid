@@ -198,7 +198,7 @@ jobs:
 
 - job: linux_static
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'ubuntu-20.04'
   steps:
   - script: |
       mkdir tcltk && cd tcltk
@@ -302,9 +302,9 @@ jobs:
       artifactName: scid_macOS_latest_64_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
 
-- job: macOS_catalina_static
+- job: macOS_11_static
   pool:
-    vmImage: 'macOS-10.15'
+    vmImage: 'macOS-11'
   steps:
   - script: |
       mkdir tcltk && cd tcltk
@@ -325,7 +325,7 @@ jobs:
       export LDFLAGS="-lz -framework CoreFoundation"
       cmake -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fno-exceptions -fno-rtti" \
-            -DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/scid_macos \
+            -DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/scid.app \
             -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)/tcltk/include \
             -DTCL_LIBRARY=$(Build.SourcesDirectory)/tcltk/lib/libtcl8.6.a \
              $(Build.SourcesDirectory)
@@ -333,7 +333,16 @@ jobs:
       make install
     displayName: Generate SCID
   - script: |
-      cd scid_macos
+      git clone --depth=1 https://github.com/official-stockfish/Stockfish.git stockfish
+      cd stockfish/src
+      make build
+      cp stockfish $(Build.SourcesDirectory)/scid.app/bin
+    displayName: Generate stockfish
+  - script: |
+      cd scid.app
+      mkdir Contents
+      cp -R $(Build.SourcesDirectory)/resources/macos Contents/Resources
+      mv Contents/Resources/Info.plist Contents
       mv bin engines
       mkdir lib
       cp $(Build.SourcesDirectory)/tcltk/lib/*.dylib lib/
@@ -341,10 +350,11 @@ jobs:
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tcl8.6 lib/
       cp -R $(Build.SourcesDirectory)/tcltk/lib/tk8.6 lib/
       cd ..
-      tar -zcvf '$(build.artifactstagingdirectory)/scid_macOS-10.15.tar.gz' scid_macos
+      zip -r '$(build.artifactstagingdirectory)/scid_macos11.zip' scid.app
+      hdiutil create -fs "HFS+" -volname scid -srcfolder scid.app '$(build.artifactstagingdirectory)/scid.dmg'
     displayName: Add the tcl/tk library to the package
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: macOS-10.15 static x64'
+    displayName: 'Publish Artifact: macOS-11 static x64'
     inputs:
-      artifactName: scid_macOS_10_15_x64_static_tcl
+      artifactName: scid_macOS_11_static_tcl
       PathtoPublish: '$(build.artifactstagingdirectory)'
