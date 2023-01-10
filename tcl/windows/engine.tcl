@@ -81,6 +81,14 @@ proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
     return [::enginewin::start $id $enginename]
 }
 
+# Invoke ::enginecfg::changeOption and restart the engine if it was running
+proc ::enginewin::changeOption {id name widget} {
+    set prev_state $::enginewin::engState($id)
+    if {[::enginecfg::changeOption $id multipv $widget] && $prev_state in {run}} {
+        ::enginewin::sendPosition $id [set ::enginewin::position_$id]
+    }
+}
+
 proc ::enginewin::Open { {id ""} {enginename ""} } {
     if {$id == ""} {
         set id 1
@@ -229,7 +237,11 @@ proc ::enginewin::createButtonsBar {id btn display} {
     ttk::button $btn.addlines -image tb_eng_addlines -style Toolbutton \
         -command "::enginewin::exportLines $display.pv_lines"
     ::utils::tooltip::Set $btn.addlines [tr AddAllVariations]
-    ttk::spinbox $btn.multipv -increment 1 -width 4
+    ttk::spinbox $btn.multipv -increment 1 -width 4 -state disabled \
+        -validate key -validatecommand { string is integer %P } \
+        -command "after idle \[bind $btn.multipv <FocusOut>\]"
+    bind $btn.multipv <Return> { {*}[bind %W <FocusOut>] }
+    bind $btn.multipv <FocusOut> "::enginewin::changeOption $id multipv $btn.multipv"
     ::utils::tooltip::Set $btn.multipv [tr Lines]
     ttk::button $btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
@@ -284,7 +296,6 @@ proc ::enginewin::changeState {id newState} {
     lappend btnDisabledStates [list btn.addbestmove [list closed disconnected]]
     lappend btnDisabledStates [list btn.addbestline [list closed disconnected]]
     lappend btnDisabledStates [list btn.addlines [list closed disconnected]]
-    lappend btnDisabledStates [list btn.multipv [list closed disconnected locked]]
     lappend btnDisabledStates [list btn.startStop [list closed disconnected] [list locked run]]
     lappend btnDisabledStates [list btn.lock [list closed disconnected idle] locked]
     foreach {elem} $btnDisabledStates {
@@ -367,7 +378,7 @@ proc ::enginewin::connectEngine {id enginename} {
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
-    ::enginewin::changeDisplayLayout $id multipv ""
+    ::enginewin::updateOptions $id ""
     ::enginewin::logEngine $id $debugframe
 
     update idletasks
@@ -406,6 +417,7 @@ proc ::enginewin::callback {id msg} {
     lassign $msg msgType msgData
     switch $msgType {
         "InfoConfig" {
+            ::enginewin::updateOptions $id $msgData
             set renamed [::enginecfg::updateConfigFrame $id .engineWin$id.config $msgData]
             if {$renamed ne ""} {
                 set ::enginewin_lastengine($id) $renamed
@@ -459,32 +471,28 @@ proc ::enginewin::changeDisplayLayout {id param value} {
             set idx 2
             $w.display.pv_lines configure -wrap $value
         }
-        "multipv" {
-            if {$value eq ""} {
-                $w.btn.multipv set ""
-                $w.btn.multipv configure -state disabled
-            } else {
-                lassign $value idx value min max
-                $w.btn.multipv configure -state normal -from $min -to $max \
-                    -validate key -validatecommand { string is integer %P } \
-                    -command "after idle \[bind $w.btn.multipv <FocusOut>\]"
-                bind $w.btn.multipv <Return> { {*}[bind %W <FocusOut>] }
-                bind $w.btn.multipv <FocusOut> [list apply {{id idx widget} {
-                    set prev_state $::enginewin::engState($id)
-                    ::enginecfg::onSubmitOption $id $idx $widget
-                    if {$prev_state in {run lock}} {
-                        #TODO: enginewin::start does not work because the
-                        # state is updated asynchronously
-                        ::enginewin::sendPosition $id [sc_game UCI_currentPos]
-                    }
-                }} $id $idx $w.btn.multipv]
-            }
-            $w.btn.multipv set $value
-            return
-        }
         default { error "changeDisplayLayout unknown $param" }
     }
     lset engConfig_ 6 $idx $value
+}
+
+proc ::enginewin::updateOptions {id msgData} {
+    set w .engineWin$id
+    if {$msgData eq ""} {
+        $w.btn.multipv set ""
+        $w.btn.multipv configure -state disabled
+        return
+    }
+    lassign $msgData protocol netclients options
+    for {set i 0} {$i < [llength $options]} {incr i} {
+        lassign [lindex $options $i] name value type default min max var_list internal
+        if {$internal || $type in [list button save reset]} { continue }
+
+        if {[string equal -nocase $name "multipv"] && $min ne "" && $max ne ""} {
+            $w.btn.multipv configure -state normal -from $min -to $max
+            $w.btn.multipv set $value
+        }
+    }
 }
 
 proc ::enginewin::updateDisplay {id msgData} {

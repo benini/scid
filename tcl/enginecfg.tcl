@@ -278,6 +278,20 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     return $renamed
 }
 
+# Read an option's value from a widget and if it has changed sends a SetOptions
+# message to the engine.
+# Return true if a message was sent to the engine.
+proc ::enginecfg::changeOption {id name widget} {
+    set options [lindex [set ::enginewin::engConfig_$id] 8]
+    for {set idx 0} {$idx < [llength $options]} {incr idx} {
+        lassign [lindex $options $idx] option_name
+        if {[string equal -nocase $name $option_name]} {
+            return [::enginecfg::onSubmitOption $id $idx $widget]
+        }
+    }
+    return false
+}
+
 # Creates the widgets for engine configuration, like the engine path, command
 # line parameters, uci/xboard protocol, etc...
 # It also sets the header.engine combobox to the engine's name.
@@ -510,10 +524,6 @@ proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
             $w.value$i delete 0 end
             $w.value$i insert 0 $value
         }
-
-        if {[string equal -nocase $name "multipv"]} {
-            ::enginewin::changeDisplayLayout $id multipv [list $i $value $min $max]
-        }
     }
     if {$disableReset && [winfo exists $w.reset]} {
         $w.reset configure -state disabled
@@ -608,30 +618,32 @@ proc ::enginecfg::onSubmitButton {id idx} {
 
 # Read an option's value from widget and if it has changed sends a SetOptions
 # message to the engine.
+# Return true if a message was sent to the engine.
 proc ::enginecfg::onSubmitOption {id idx widget} {
     lassign [lindex [set ::enginewin::engConfig_$id] 8 $idx] \
         name oldValue type default min max
 
     $widget configure -style {}
     set value [$widget get]
-    if {$value eq $oldValue} { return }
+    if {$value eq $oldValue} { return false }
 
     if {$value eq ""} {
         set value $default
     } elseif {$min != "" && $max != ""} {
         if {$value < $min || $value > $max} {
             $widget configure -style Error.TSpinbox
-            return
+            return false
         }
     } elseif {![catch { set values [$widget cget -values] }]} {
         if {[set idx [lsearch -exact -nocase $values $value]] != -1} {
             set value [lindex $values $idx]
         } else {
             $widget configure -style Error.TCombobox
-            return
+            return false
         }
     }
     ::engine::send $id SetOptions [list [list $name $value]]
+    return true
 }
 
 # Invoke ::engine::netserver to start/stop listening to remote connection.
