@@ -81,10 +81,16 @@ proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
     return [::enginewin::start $id $enginename]
 }
 
-# Invoke ::enginecfg::changeOption and restart the engine if it was running
-proc ::enginewin::changeOption {id name widget} {
+# Sends a SetOptions message to the engine if an option's value is different.
+proc ::enginewin::changeOption {id name widget_or_value} {
     set prev_state $::enginewin::engState($id)
-    if {[::enginecfg::changeOption $id multipv $widget] && $prev_state in {run}} {
+    set idx [::enginecfg::findOption $id $name]
+    if {[winfo exists $widget_or_value]} {
+        set changed [::enginecfg::onSubmitOption $id $idx $widget_or_value]
+    } else {
+        set changed [::enginecfg::setOption $id $idx $widget_or_value]
+    }
+    if {$changed && $prev_state in {run}} {
         ::enginewin::sendPosition $id [set ::enginewin::position_$id]
     }
 }
@@ -243,12 +249,46 @@ proc ::enginewin::createButtonsBar {id btn display} {
     bind $btn.multipv <Return> { {*}[bind %W <FocusOut>] }
     bind $btn.multipv <FocusOut> "::enginewin::changeOption $id multipv $btn.multipv"
     ::utils::tooltip::Set $btn.multipv [tr Lines]
+    menu $btn.threads_menu
+    $btn.threads_menu add command -label "1 CPU" -command \
+        "::enginewin::changeOption $id threads 1"
+    $btn.threads_menu add command -label "2 CPU" -command \
+        "::enginewin::changeOption $id threads 2"
+    $btn.threads_menu add command -label "4 CPU" -command \
+        "::enginewin::changeOption $id threads 4"
+    $btn.threads_menu add command -label "8 CPU" -command \
+        "::enginewin::changeOption $id threads 8"
+    $btn.threads_menu add command -label "16 CPU" -command \
+        "::enginewin::changeOption $id threads 16"
+    $btn.threads_menu add command -label "32 CPU" -command \
+        "::enginewin::changeOption $id threads 32"
+    $btn.threads_menu add command -label "64 CPU" -command \
+        "::enginewin::changeOption $id threads 64"
+    ttk::menubutton $btn.threads -text "1 CPU" -state disabled \
+        -style Toolbutton -direction above -menu $btn.threads_menu
+    menu $btn.hash_menu
+    $btn.hash_menu add command -label "16 MB" -command \
+        "::enginewin::changeOption $id hash 16"
+    $btn.hash_menu add command -label "64 MB" -command \
+        "::enginewin::changeOption $id hash 64"
+    $btn.hash_menu add command -label "256 MB" -command \
+        "::enginewin::changeOption $id hash 256"
+    $btn.hash_menu add command -label "1024 MB" -command \
+        "::enginewin::changeOption $id hash 1024"
+    $btn.hash_menu add command -label "2048 MB" -command \
+        "::enginewin::changeOption $id hash 2048"
+    $btn.hash_menu add command -label "4096 MB" -command \
+        "::enginewin::changeOption $id hash 4096"
+    $btn.hash_menu add command -label "8192 MB" -command \
+        "::enginewin::changeOption $id hash 8192"
+    ttk::menubutton $btn.hash -text "?? MB" -state disabled \
+        -style Toolbutton -direction above -menu $btn.hash_menu
     ttk::button $btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
     $btn.config state pressed
     grid $btn.startStop $btn.lock $btn.addbestmove $btn.addbestline \
-         $btn.addlines $btn.multipv x $btn.config -sticky ew
-    grid columnconfigure $btn 6 -weight 1
+         $btn.addlines $btn.multipv $btn.threads $btn.hash x $btn.config -sticky ew
+    grid columnconfigure $btn 8 -weight 1
 }
 
 # Inform the engine that there is a new game
@@ -441,6 +481,7 @@ proc ::enginewin::callback {id msg} {
                 set errorMsg "The connection with the engine terminated unexpectedly."
             }
             tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+            ::enginewin::updateOptions $id ""
             ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
             ::enginewin::changeState $id disconnected
         }
@@ -481,6 +522,8 @@ proc ::enginewin::updateOptions {id msgData} {
     if {$msgData eq ""} {
         $w.btn.multipv set ""
         $w.btn.multipv configure -state disabled
+        $w.btn.threads configure -state disabled -text "1 CPU"
+        $w.btn.hash configure -state disabled -text "?? MB"
         return
     }
     lassign $msgData protocol netclients options
@@ -491,6 +534,10 @@ proc ::enginewin::updateOptions {id msgData} {
         if {[string equal -nocase $name "multipv"] && $min ne "" && $max ne ""} {
             $w.btn.multipv configure -state normal -from $min -to $max -style {}
             $w.btn.multipv set $value
+        } elseif {[string equal -nocase $name "threads"]} {
+            $w.btn.threads configure -state normal -text "$value CPU"
+        } elseif {[string equal -nocase $name "hash"]} {
+            $w.btn.hash configure -state normal -text "$value MB"
         }
     }
 }

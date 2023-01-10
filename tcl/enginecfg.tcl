@@ -320,8 +320,7 @@ proc ::enginecfg::setOption {id idx value} {
 # Read an option's value from a widget and if it has changed sends a SetOptions
 # message to the engine.
 # Return true if a message was sent to the engine.
-proc ::enginecfg::changeOption {id name widget} {
-    set idx [::enginecfg::findOption $id $name]
+proc ::enginecfg::changeOption {id idx widget} {
     return [::enginecfg::onSubmitOption $id $idx $widget]
 }
 
