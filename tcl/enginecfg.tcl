@@ -278,18 +278,51 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     return $renamed
 }
 
-# Read an option's value from a widget and if it has changed sends a SetOptions
-# message to the engine.
-# Return true if a message was sent to the engine.
-proc ::enginecfg::changeOption {id name widget} {
+# Find an option by name (case insensitive).
+# Return the index of options or throw an exception if the option do not exists.
+proc ::enginecfg::findOption {id name} {
     set options [lindex [set ::enginewin::engConfig_$id] 8]
     for {set idx 0} {$idx < [llength $options]} {incr idx} {
         lassign [lindex $options $idx] option_name
         if {[string equal -nocase $name $option_name]} {
-            return [::enginecfg::onSubmitOption $id $idx $widget]
+            return $idx
         }
     }
-    return false
+    error "wrong option"
+}
+
+# Sends a SetOptions message to the engine if an option's value is different.
+# Return true if a message was sent to the engine.
+# Throw an exception in case of error.
+proc ::enginecfg::setOption {id idx value} {
+    lassign [lindex [set ::enginewin::engConfig_$id] 8 $idx] \
+        name oldValue type default min max
+
+    if {$value eq $oldValue} { return false }
+
+    if {$value eq ""} {
+        set value $default
+    } elseif {$min != "" && $max != ""} {
+        if {$value < $min || $value > $max} {
+            error "wrong value"
+        }
+    } elseif {![catch { set values [$widget cget -values] }]} {
+        if {[set idx [lsearch -exact -nocase $values $value]] != -1} {
+            set value [lindex $values $idx]
+        } else {
+            error "wrong value"
+        }
+    }
+    ::engine::send $id SetOptions [list [list $name $value]]
+    return true
+}
+
+# Read an option's value from a widget and if it has changed sends a SetOptions
+# message to the engine.
+# Return true if a message was sent to the engine.
+proc ::enginecfg::changeOption {id name widget} {
+    set idx [::enginecfg::findOption $id $name]
+    return [::enginecfg::onSubmitOption $id $idx $widget]
 }
 
 # Creates the widgets for engine configuration, like the engine path, command
@@ -521,6 +554,7 @@ proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
         if {$type in {combo check}} {
             $w.value$i set $value
         } else {
+            $w.value$i configure -style {}
             $w.value$i delete 0 end
             $w.value$i insert 0 $value
         }
@@ -615,35 +649,17 @@ proc ::enginecfg::onSubmitButton {id idx} {
     ::engine::send $id SetOptions [list [list $name $value]]
 }
 
-
 # Read an option's value from widget and if it has changed sends a SetOptions
 # message to the engine.
 # Return true if a message was sent to the engine.
 proc ::enginecfg::onSubmitOption {id idx widget} {
-    lassign [lindex [set ::enginewin::engConfig_$id] 8 $idx] \
-        name oldValue type default min max
-
-    $widget configure -style {}
     set value [$widget get]
-    if {$value eq $oldValue} { return false }
-
-    if {$value eq ""} {
-        set value $default
-    } elseif {$min != "" && $max != ""} {
-        if {$value < $min || $value > $max} {
-            $widget configure -style Error.TSpinbox
-            return false
-        }
-    } elseif {![catch { set values [$widget cget -values] }]} {
-        if {[set idx [lsearch -exact -nocase $values $value]] != -1} {
-            set value [lindex $values $idx]
-        } else {
-            $widget configure -style Error.TCombobox
-            return false
-        }
+    if {[catch {::enginecfg::setOption $id $idx $value} res]} {
+        $widget configure -style Error.[winfo class $widget]
+        return false
     }
-    ::engine::send $id SetOptions [list [list $name $value]]
-    return true
+    $widget configure -style {}
+    return $res
 }
 
 # Invoke ::engine::netserver to start/stop listening to remote connection.

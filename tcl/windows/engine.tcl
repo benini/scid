@@ -489,7 +489,7 @@ proc ::enginewin::updateOptions {id msgData} {
         if {$internal || $type in [list button save reset]} { continue }
 
         if {[string equal -nocase $name "multipv"] && $min ne "" && $max ne ""} {
-            $w.btn.multipv configure -state normal -from $min -to $max
+            $w.btn.multipv configure -state normal -from $min -to $max -style {}
             $w.btn.multipv set $value
         }
     }
