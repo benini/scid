@@ -424,14 +424,19 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         return false
     }
     if {$enginePid != ""} {
-        $w insert end "\nEngine process priority:\t"
-        ttk::combobox $w.priority -state readonly -width 12 -values {normal idle}
-        bind $w.priority <<ComboboxSelected>> "
-            catch { sc_info priority $enginePid \[ $w.priority get \] }
-            lset ::enginewin::engConfig_$id 6 4 \[ $w.priority get \]
-        "
+        $w insert end "\n[tr LowPriority]:\t"
+        ttk::checkbutton $w.priority -style Switch.Toolbutton \
+            -command [list apply {{id enginePid widget} {
+                if {[::update_switch_btn $widget]} {
+                    catch { sc_info priority $enginePid idle }
+                    lset ::enginewin::engConfig_$id 6 4 idle
+                } else {
+                    catch { sc_info priority $enginePid normal }
+                    lset ::enginewin::engConfig_$id 6 4 normal
+                }
+            }} $id $enginePid $w.priority]
+        ::update_switch_btn $w.priority [expr {$priority eq "idle"}]
         $w window create end -window $w.priority
-        $w.priority set $priority
         $w insert end "  pid: $enginePid"
         if {$priority eq "idle"} {
             catch { sc_info priority $enginePid idle }
