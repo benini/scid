@@ -264,6 +264,9 @@ proc ::enginewin::createButtonsBar {id btn display} {
         "::enginewin::changeOption $id threads 32"
     $btn.threads_menu add command -label "64 CPU" -command \
         "::enginewin::changeOption $id threads 64"
+    #TODO: change keyboard focus to the threads widget
+    $btn.threads_menu add command -label "..." -command \
+        "::enginewin::changeState $id showConfig"
     ttk::menubutton $btn.threads -text "1 CPU" -state disabled \
         -style Toolbutton -direction above -menu $btn.threads_menu
     menu $btn.hash_menu
@@ -281,6 +284,9 @@ proc ::enginewin::createButtonsBar {id btn display} {
         "::enginewin::changeOption $id hash 4096"
     $btn.hash_menu add command -label "8192 MB" -command \
         "::enginewin::changeOption $id hash 8192"
+    #TODO: change keyboard focus to the hash widget
+    $btn.hash_menu add command -label "..." -command \
+        "::enginewin::changeState $id showConfig"
     ttk::menubutton $btn.hash -text "?? MB" -state disabled \
         -style Toolbutton -direction above -menu $btn.hash_menu
     ttk::button $btn.config -image tb_eng_config -style Toolbutton \
@@ -308,13 +314,13 @@ proc ::enginewin::newGame { {ids ""} } {
 # locked -> The engine is analyzing a fixed position.
 proc ::enginewin::changeState {id newState} {
     set w .engineWin$id
-    if {$newState eq "toggleConfig"} {
-        if {[grid info $w.config] ne ""} {
-            $w.btn.config state !pressed
-            grid remove $w.config
-        } else {
+    if {$newState in {showConfig toggleConfig}} {
+        if {[grid info $w.config] eq ""} {
             $w.btn.config state pressed
             grid $w.config
+        } elseif {$newState eq "toggleConfig"} {
+            $w.btn.config state !pressed
+            grid remove $w.config
         }
         return
     }
