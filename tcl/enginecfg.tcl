@@ -334,7 +334,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     set w $configFrame.options.text
 
     $w delete 1.0 end
-    $w configure -tabs [font measure font_Regular "Accept Network Connections:XXXXX"]
+    $w configure -tabs [font measure font_Regular -displayof $w "Accept Network Connections:XXXXX"]
 
     if {$name == ""} {
         ::enginecfg::clearConfigFrame $configFrame

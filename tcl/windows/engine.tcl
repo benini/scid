@@ -179,7 +179,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
 proc ::enginewin::createDisplayFrame {id display} {
     ttk_text $display.pv_lines -exportselection true -padx 4 -state disabled
     autoscrollBars both $display $display.pv_lines
-    set tab [font measure font_Regular "xxxxxxx"]
+    set tab [font measure font_Regular -displayof $display "xxxxxxx"]
     $display.pv_lines configure -tabs [list [expr {$tab * 2}] right [expr {int($tab * 2.2)}]]
     $display.pv_lines tag configure lmargin -lmargin2 [expr {$tab * 3}]
     $display.pv_lines tag configure markmove -underline 1
