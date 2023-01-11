@@ -344,7 +344,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     set fn_create_entry {{w widget label value} {
         $w insert end "$label:\t"
         ttk::entry $w.$widget
-        $w window create end -window $w.$widget
+        $w window create end -window $w.$widget -pady 2
         $w.$widget insert end "$value"
         set wd [string length $value]
         if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
@@ -367,7 +367,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     bind $w.cmd <Return> [bind $w.cmd <FocusOut>]
     ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... \
         -command "::enginecfg::onSubmitParam $id cmd {} 1"
-    $w window create end -window $w.cmdbtn
+    $w window create end -window $w.cmdbtn -pady 2 -padx 2
 
     apply $fn_create_entry $w args "\n[tr EngineArgs]" $args
     bind $w.args <FocusOut> "::enginecfg::onSubmitParam $id args \[ %W get \]"
@@ -378,13 +378,13 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     bind $w.wdir <Return> [bind $w.wdir <FocusOut>]
     ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... \
         -command "::enginecfg::onSubmitParam $id wdir {} 2"
-    $w window create end -window $w.wdirbtn
+    $w window create end -window $w.wdirbtn -pady 2 -padx 2
 
     if {$uci == 0 || $uci == 1} {
         $w insert end "\nProtocol:\t"
         ttk::combobox $w.protocol -state readonly -width 12 -values {xboard uci}
         bind $w.protocol <<ComboboxSelected>> "::enginecfg::onSubmitParam $id protocol \[ %W current \]"
-        $w window create end -window $w.protocol
+        $w window create end -window $w.protocol -pady 2
         $w.protocol set [expr { $uci == 0 ? "xboard" : "uci" }]
     }
 
@@ -393,7 +393,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     bind $w.notation <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id notation \[ $w.notation current \]
     "
-    $w window create end -window $w.notation
+    $w window create end -window $w.notation -pady 2
     $w.notation current [expr { $notation < 0 ? 0 - $notation : $notation }]
     ::enginewin::changeDisplayLayout $id notation $notation
 
@@ -402,7 +402,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     bind $w.wrap <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id wrap \[ $w.wrap get \]
     "
-    $w window create end -window $w.wrap
+    $w window create end -window $w.wrap -pady 2
     $w.wrap set $pvwrap
 
     $w insert end "\nEvaluate from engine's POV:\t"
@@ -411,14 +411,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
             \[expr {\[::update_switch_btn $w.scoreside\] ? {engine} : {white}} \]
     "
     ::update_switch_btn $w.scoreside [expr {$scoreside eq "engine"}]
-    $w window create end -window $w.scoreside
+    $w window create end -window $w.scoreside -pady 2
 
     $w insert end "\nShow debug frame:\t"
     ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
         ::enginewin::logEngine $id \[::update_switch_btn $w.debug\]
     "
     ::update_switch_btn $w.debug $debugframe
-    $w window create end -window $w.debug
+    $w window create end -window $w.debug -pady 2
 
     if {[catch {::engine::pid $id} enginePid]} {
         return false
@@ -436,7 +436,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
                 }
             }} $id $enginePid $w.priority]
         ::update_switch_btn $w.priority [expr {$priority eq "idle"}]
-        $w window create end -window $w.priority
+        $w window create end -window $w.priority -pady 2
         $w insert end "  pid: $enginePid"
         if {$priority eq "idle"} {
             catch { sc_info priority $enginePid idle }
@@ -445,10 +445,10 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
 
     $w insert end "\nAccept network connections:\t"
     ttk::combobox $w.netd -state readonly -width 12 -values {off on auto_port}
-    $w window create end -window $w.netd
+    $w window create end -window $w.netd -pady 2
     $w insert end "  port: "
     ttk::entry $w.netport -width 6 -validate key -validatecommand { string is integer %P }
-    $w window create end -window $w.netport
+    $w window create end -window $w.netport -pady 2
     bind $w.netd <<ComboboxSelected>> "::enginecfg::onSubmitNetd $id $w"
     bind $w.netport <FocusOut> "if {\"readonly\" ni \[$w.netport state\]} {
         ::enginecfg::onSubmitNetd $id $w
