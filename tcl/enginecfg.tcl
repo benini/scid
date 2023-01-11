@@ -491,8 +491,8 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
                 ttk::combobox $w.value$i -width [incr maxlen] -values $var_list -state readonly
                 bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
             } elseif {$type eq "check"} {
-                ttk::combobox $w.value$i -width 6 -values {false true} -state readonly
-                bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
+                ttk::checkbutton $w.value$i -style Switch.Toolbutton -command \
+                    "::enginecfg::setOption $id $i \[expr \[::update_switch_btn $w.value$i \] ? true : false \]"
             } else {
                 if {$type eq "spin" || $type eq "slider"} {
                     ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1 \
@@ -536,9 +536,15 @@ proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
             $w.reset configure -state normal
             set disableReset 0
         }
-        if {$oldOptions ne "" && \
-            $value eq [lindex $oldOptions $i 1] && \
-            $value eq [$w.value$i get]} { continue }
+
+        if {$oldOptions ne "" && $value eq [lindex $oldOptions $i 1]} {
+            if {$type eq "check"} {
+                set widget_value [::update_switch_btn $w.value$i]
+            } else {
+                set widget_value [$w.value$i get]
+            }
+            if {$value eq $widget_value} { continue }
+        }
 
         if {$value eq $default} {
             $w tag remove header "$w.value$i linestart" $w.value$i
@@ -550,8 +556,10 @@ proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
             if {$wd < 24} { set wd 24 } elseif {$wd > 60} { set wd 60 }
             $w.value$i configure -width $wd
         }
-        if {$type in {combo check}} {
+        if {$type eq "combo"} {
             $w.value$i set $value
+        } elseif {$type eq "check"} {
+            ::update_switch_btn $w.value$i $value
         } else {
             $w.value$i configure -style {}
             $w.value$i delete 0 end
