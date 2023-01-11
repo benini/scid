@@ -99,11 +99,16 @@ proc InitDefaultFonts {} {
     set fontOptions(Tiny)    {}
     set fontOptions(Fixed)   [list Monaco              10 normal roman]
   } else {
-    set fontOptions(Regular) [list {DejaVu Sans}       10 normal roman]
-    set fontOptions(Menu)    [list {DejaVu Sans}       10 normal roman]
-    set fontOptions(Small)   [list {DejaVu Sans}        9 normal roman]
-    set fontOptions(Tiny)    [list {DejaVu Sans}        8 normal roman]
-    set fontOptions(Fixed)   [list {DejaVu Sans Mono}  10 normal roman]
+    set family [lsearch -inline -nocase [font families] "droid sans"]
+    if {$family eq ""} {
+        set family [font actual TkDefaultFont -family]
+    }
+    set fixed [font actual TkFixedFont -family]
+    set fontOptions(Regular) [list $family 11 normal roman]
+    set fontOptions(Menu)    [list $family 11 normal roman]
+    set fontOptions(Small)   [list $family  9 normal roman]
+    set fontOptions(Tiny)    [list $family  8 normal roman]
+    set fontOptions(Fixed)   [list $fixed  10 normal roman]
   }
 }
 
