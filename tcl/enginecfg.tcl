@@ -397,14 +397,6 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w.notation current [expr { $notation < 0 ? 0 - $notation : $notation }]
     ::enginewin::changeDisplayLayout $id notation $notation
 
-    $w insert end "\nScore perspective:\t"
-    ttk::combobox $w.scoreside -state readonly -width 12 -values [list engine white]
-    bind $w.scoreside <<ComboboxSelected>> "
-        ::enginewin::changeDisplayLayout $id scoreside \[ $w.scoreside get \]
-    "
-    $w window create end -window $w.scoreside
-    $w.scoreside set $scoreside
-
     $w insert end "\nWrap move lines:\t"
     ttk::combobox $w.wrap -state readonly -width 12 -values [list word char none]
     bind $w.wrap <<ComboboxSelected>> "
@@ -412,6 +404,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     "
     $w window create end -window $w.wrap
     $w.wrap set $pvwrap
+
+    $w insert end "\nEvaluate from engine's POV:\t"
+    ttk::checkbutton $w.scoreside -style Switch.Toolbutton -command "
+        ::enginewin::changeDisplayLayout $id scoreside \
+            \[expr {\[::update_switch_btn $w.scoreside\] ? {engine} : {white}} \]
+    "
+    ::update_switch_btn $w.scoreside [expr {$scoreside eq "engine"}]
+    $w window create end -window $w.scoreside
 
     $w insert end "\nShow debug frame:\t"
     ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
