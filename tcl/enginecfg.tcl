@@ -397,13 +397,10 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w.notation current [expr { $notation < 0 ? 0 - $notation : $notation }]
     ::enginewin::changeDisplayLayout $id notation $notation
 
-    $w insert end "\nWrap move lines:\t"
-    ttk::combobox $w.wrap -state readonly -width 12 -values [list word char none]
-    bind $w.wrap <<ComboboxSelected>> "
-        ::enginewin::changeDisplayLayout $id wrap \[ $w.wrap get \]
-    "
-    $w window create end -window $w.wrap -pady 2
-    $w.wrap set $pvwrap
+    ttk::checkbutton $w.wrap -text [tr GInfoWrap] -onvalue word -offvalue none -style Toolbutton \
+        -command "::enginewin::changeDisplayLayout $id wrap \[ set ::$w.wrap \]"
+    $w window create end -window $w.wrap -pady 2 -padx 6
+    set ::$w.wrap $pvwrap
 
     $w insert end "\nEvaluate from engine's POV:\t"
     ttk::checkbutton $w.scoreside -style Switch.Toolbutton -onvalue engine -offvalue white -command "
