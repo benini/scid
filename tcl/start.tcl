@@ -531,18 +531,19 @@ configure_menus
 #     ttk::checkbutton widget_name -style Switch.Toolbutton \
 #         -command "::update_switch_btn widget_name"
 #     ::update_switch_btn widget_name initial_value
-# Return 1 if the button is selected (on) or 0.
+# Return the value of the variable associated with the widget.
 proc ::update_switch_btn {widget {set_value ""}} {
+    set varname [$widget cget -variable]
     if {$set_value ne ""} {
-        set ::$widget [expr $set_value ? 1 : 0]
+        set ::$varname $set_value
     }
-    if { [set ::$widget] } {
+    if {[$widget instate selected]} {
         set full_circle [expr $::windowsOS ?"\u2B24":"\u25CF"]
         $widget configure -text "       $full_circle"
-        return 1
+    } else {
+        $widget configure -text "\u25EF       "
     }
-    $widget configure -text "\u25EF       "
-    return 0
+    return [set ::$varname]
 }
 
 proc autoscrollText {bars frame widget style} {

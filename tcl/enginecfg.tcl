@@ -406,11 +406,10 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w.wrap set $pvwrap
 
     $w insert end "\nEvaluate from engine's POV:\t"
-    ttk::checkbutton $w.scoreside -style Switch.Toolbutton -command "
-        ::enginewin::changeDisplayLayout $id scoreside \
-            \[expr {\[::update_switch_btn $w.scoreside\] ? {engine} : {white}} \]
+    ttk::checkbutton $w.scoreside -style Switch.Toolbutton -onvalue engine -offvalue white -command "
+        ::enginewin::changeDisplayLayout $id scoreside \[::update_switch_btn $w.scoreside \]
     "
-    ::update_switch_btn $w.scoreside [expr {$scoreside eq "engine"}]
+    ::update_switch_btn $w.scoreside $scoreside
     $w window create end -window $w.scoreside -pady 2
 
     $w insert end "\nShow debug frame:\t"
@@ -425,17 +424,12 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     }
     if {$enginePid != ""} {
         $w insert end "\n[tr LowPriority]:\t"
-        ttk::checkbutton $w.priority -style Switch.Toolbutton \
-            -command [list apply {{id enginePid widget} {
-                if {[::update_switch_btn $widget]} {
-                    catch { sc_info priority $enginePid idle }
-                    lset ::enginewin::engConfig_$id 6 4 idle
-                } else {
-                    catch { sc_info priority $enginePid normal }
-                    lset ::enginewin::engConfig_$id 6 4 normal
-                }
-            }} $id $enginePid $w.priority]
-        ::update_switch_btn $w.priority [expr {$priority eq "idle"}]
+        ttk::checkbutton $w.priority -onvalue idle -offvalue normal \
+            -style Switch.Toolbutton -command "
+                catch { sc_info priority $enginePid \[ ::update_switch_btn $w.priority \] }
+                lset ::enginewin::engConfig_$id 6 4 \[ ::update_switch_btn $w.priority \]
+            "
+        ::update_switch_btn $w.priority $priority
         $w window create end -window $w.priority -pady 2
         $w insert end "  pid: $enginePid"
         if {$priority eq "idle"} {
@@ -496,8 +490,8 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
                 ttk::combobox $w.value$i -width [incr maxlen] -values $var_list -state readonly
                 bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
             } elseif {$type eq "check"} {
-                ttk::checkbutton $w.value$i -style Switch.Toolbutton -command \
-                    "::enginecfg::setOption $id $i \[expr \[::update_switch_btn $w.value$i \] ? true : false \]"
+                ttk::checkbutton $w.value$i -onvalue true -offvalue false -style Switch.Toolbutton -command \
+                    "::enginecfg::setOption $id $i \[::update_switch_btn $w.value$i \]"
             } else {
                 if {$type eq "spin" || $type eq "slider"} {
                     ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1 \
