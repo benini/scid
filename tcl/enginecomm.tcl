@@ -335,7 +335,10 @@ proc ::engine::handshake_ {id protocols} {
         set ::engconn(nextHandshake_$id) [after 2000 ::engine::handshake_ $id $next]
     } else {
         unset -nocomplain ::engconn(nextHandshake_$id)
-        after 2000 "::engine::done_ $id"
+        if {$::engconn(protocol_$id) eq "xboard"} {
+            # TODO: this hack is necessary for old engines like phalanx
+            after 2000 "::engine::done_ $id"
+        }
     }
 }
 

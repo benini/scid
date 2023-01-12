@@ -55,8 +55,10 @@ proc ::enginewin::sendPosition {id position} {
 proc ::enginewin::start { {id ""} {enginename ""} } {
     if {$id eq "" || ![winfo exists .engineWin$id]} {
         set id [::enginewin::Open $id $enginename]
-    }
-    if {$::enginewin::engState($id) eq "idle"} {
+        catch {
+           ::enginewin::sendPosition $id [sc_game UCI_currentPos]
+        }
+    } elseif {$::enginewin::engState($id) eq "idle"} {
         ::enginewin::sendPosition $id [sc_game UCI_currentPos]
     }
     return $id
@@ -175,7 +177,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     return $id
 }
 
-# Creates $w.display, where the pv lines sent by the engine would be shown.
+# Creates $w.display, where the pv lines sent by the engine will be shown.
 proc ::enginewin::createDisplayFrame {id display} {
     ttk_text $display.pv_lines -exportselection true -padx 4 -state disabled
     autoscrollBars both $display $display.pv_lines
@@ -328,6 +330,7 @@ proc ::enginewin::changeState {id newState} {
     if {$::enginewin::engState($id) eq $newState} { return }
 
     # Hide the config frame
+    # TODO: hide only the first time or if $w.display is hidden or very small
     if {$newState eq "run"} {
         $w.btn.config state !pressed
         grid remove $w.config
@@ -455,10 +458,10 @@ proc ::enginewin::connectEngine {id enginename} {
     if {[llength $options]} {
         ::engine::send $id SetOptions $options
     }
-    ::enginewin::changeState $id idle
     ::enginewin::newGame $id
 }
 
+# Receive the engine's messages
 proc ::enginewin::callback {id msg} {
     lassign $msg msgType msgData
     switch $msgType {
@@ -482,14 +485,14 @@ proc ::enginewin::callback {id msg} {
             ::enginewin::changeState $id idle
         }
         "InfoDisconnected" {
+            ::enginewin::updateOptions $id ""
+            ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
+            ::enginewin::changeState $id disconnected
             lassign $msgData errorMsg
             if {$errorMsg eq ""} {
                 set errorMsg "The connection with the engine terminated unexpectedly."
             }
             tk_messageBox -icon warning -type ok -parent . -message $errorMsg
-            ::enginewin::updateOptions $id ""
-            ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
-            ::enginewin::changeState $id disconnected
         }
     }
 }
