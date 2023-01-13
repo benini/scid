@@ -213,10 +213,6 @@ proc ::enginecfg::createConfigFrame {id w msg name} {
     $w.header.engine set $name
     $w.options.text insert end $msg
     $w.options.text configure -state disabled
-
-    bind $w.options.text <Destroy> "
-        ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
-    "
 }
 
 # Update or recreate the config and option widgets
@@ -265,6 +261,18 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     ::enginecfg::updateNetClients $configFrame $netclients
     $w configure -state disabled
     return $renamed
+}
+
+# If enabled will automatically write the "Engine list" file when
+# the configFrame is destroyed.
+proc ::enginecfg::autoSaveConfig {id configFrame {autosave false}} {
+    if {$autosave} {
+        bind $configFrame.options.text <Destroy> "
+            ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
+        "
+    } else {
+        bind $configFrame.options.text <Destroy> {}
+    }
 }
 
 # Find an option by name (case insensitive).

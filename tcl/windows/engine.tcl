@@ -459,6 +459,9 @@ proc ::enginewin::connectEngine {id enginename} {
     if {[llength $options]} {
         ::engine::send $id SetOptions $options
     }
+    # Send a NewGame message to receive InfoReady when the engine completes the initialization.
+    ::engine::send $id NewGame [list {}]
+    # But also schedule a NewGame message, that depends on the position, when the engine starts.
     ::enginewin::newGame $id
 }
 
@@ -483,10 +486,12 @@ proc ::enginewin::callback {id msg} {
             ::enginewin::updateDisplay $id $msgData
         }
         "InfoReady" {
+            ::enginecfg::autoSaveConfig $id .engineWin$id.config true
             ::enginewin::changeState $id idle
         }
         "InfoDisconnected" {
             ::enginewin::updateOptions $id ""
+            ::enginecfg::autoSaveConfig $id .engineWin$id.config false
             ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
             ::enginewin::changeState $id disconnected
             lassign $msgData errorMsg
