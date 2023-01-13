@@ -37,7 +37,7 @@ package require Tk  8.6
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
-set scidVersionExpected "4.8.0"
+set scidVersionExpected "5.0.0"
 
 # Check that the version of c++ code matches the version of tcl code
 #
