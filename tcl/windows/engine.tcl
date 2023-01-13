@@ -380,7 +380,6 @@ proc ::enginewin::logEngine {id on} {
     } else {
         ::engine::setLogCmd $id "" ""
     }
-    lset ::enginewin::engConfig_$id 6 3 $on
 }
 
 proc ::enginewin::logHandler {id widget tag prefix msg} {

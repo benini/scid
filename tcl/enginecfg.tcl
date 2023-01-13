@@ -411,6 +411,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
 
     $w insert end "\nShow debug frame:\t"
     ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
+        lset ::enginewin::engConfig_$id 6 3 \[::update_switch_btn $w.debug\]
         ::enginewin::logEngine $id \[::update_switch_btn $w.debug\]
     "
     ::update_switch_btn $w.debug $debugframe
