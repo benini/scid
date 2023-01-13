@@ -15,6 +15,14 @@ finish-args:
 modules:
 - name: stockfish # Stockfish engine, put into /app/engines/stockfish/
   buildsystem: simple
+  build-options:
+    arch:
+      x86_64:
+        env:
+          ARCH: x86-64
+      aarch64:
+        env:
+          ARCH: armv8
   build-commands:
   - cp nn-ad9b42354671.nnue ./src
   - cd src; make -j build
