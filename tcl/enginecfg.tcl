@@ -169,7 +169,7 @@ proc ::enginecfg::dlgNewRemote {} {
 # change its configuration.
 # It also creates the buttons used to manage the configured engines:
 # add a new local or remote engine; reload, clone or delete an existing engine.
-proc ::enginecfg::createConfigFrame {id w} {
+proc ::enginecfg::createConfigFrame {id w msg name} {
     ttk::frame $w.header
     ttk::combobox $w.header.engine -state readonly -postcommand "
         $w.header.engine configure -values \[::enginecfg::names \]
@@ -209,25 +209,10 @@ proc ::enginecfg::createConfigFrame {id w} {
     grid rowconfigure $w 1 -weight 1
     grid $w.header
     grid $w.options -sticky news
-}
 
-# Remove all the widgets and display a message in the configFrame
-proc ::enginecfg::clearConfigFrame {id configFrame} {
-    upvar ::enginewin::engConfig_$id engConfig_
-    lassign $engConfig_ name cmd args
-
-    set w $configFrame.options.text
-    if {$name eq ""} {
-        $configFrame.header.engine set "[tr Engine]:"
-        set msg "No engine open: select or add one."
-    } else {
-        $configFrame.header.engine set $name
-        set msg "$cmd $args\nConnecting..."
-    }
-    $w configure -state normal
-    $w delete 1.0 end
-    $w insert end $msg
-    $w configure -state disabled
+    $w.header.engine set $name
+    $w.options.text insert end $msg
+    $w.options.text configure -state disabled
 }
 
 # Update or recreate the config and option widgets

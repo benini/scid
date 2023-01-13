@@ -127,7 +127,6 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     ttk::frame $w.main
     ttk::panedwindow $w.pane
     ttk::frame $w.config
-    ::enginecfg::createConfigFrame $id $w.config
     ttk::frame $w.display
     ::enginewin::createDisplayFrame $id $w.display
     $w.pane add $w.display -weight 1
@@ -398,11 +397,12 @@ proc ::enginewin::connectEngine {id enginename} {
     upvar ::enginewin::engConfig_$id engConfig_
     ::enginecfg::save $engConfig_
 
-    set config [::enginecfg::get $enginename]
+    set configFrame .engineWin$id.config
+    foreach wchild [winfo children $configFrame] { destroy $wchild }
 
     ::engine::close $id
-    ::enginewin::changeState $id closed
 
+    set config [::enginecfg::get $enginename]
     lassign $config name cmd args wdir elo time url uci options
     set engConfig_ [list $name $cmd $args $wdir $elo $time $url $uci {}]
     # Update engine's last used time.
@@ -410,17 +410,23 @@ proc ::enginewin::connectEngine {id enginename} {
 
     set ::enginewin_lastengine($id) $name
 
-    ::enginecfg::clearConfigFrame $id .engineWin$id.config
-
     ::enginewin::updateDisplay $id ""
 
     if {$config eq ""} {
         ::setTitle .engineWin$id "Engine Window"
         ::enginewin::logEngine $id false
+        ::enginecfg::createConfigFrame $id $configFrame \
+            "No engine open: select or add one." "[tr Engine]:"
+        #TODO: move the button in the configFrame to enginewin
+        ::enginewin::changeState $id closed
         return
     }
 
     ::setTitle .engineWin$id "[tr Engine]: $name"
+    ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..." $name
+
+    #TODO: move the button in the configFrame to enginewin
+    ::enginewin::changeState $id closed
 
     lassign $url scoreside notation pvwrap debugframe priority netport
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
