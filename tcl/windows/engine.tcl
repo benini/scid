@@ -582,11 +582,13 @@ proc ::enginewin::updateDisplay {id msgData} {
     lassign [lindex [set ::enginewin::engConfig_$id] 6] scoreside notation
     if {[catch {
 
+    set translated untranslated
     if {$notation > 0} {
         set pv [sc_pos coordToSAN [set ::enginewin::position_$id] $pv]
     }
     if {$notation == 1 || $notation == -1} {
         set pv [::trans $pv]
+        set translated translated
     } elseif {$notation == 3 || $notation == -3} {
         # Figurine
         set pv [string map {K "\u2654" Q "\u2655" R "\u2656" B "\u2657" N "\u2658"} $pv]
@@ -650,7 +652,7 @@ proc ::enginewin::updateDisplay {id msgData} {
     $w.pv_lines insert $line.end "$depth\t"
     $w.pv_lines insert $line.end "$score" header
     $w.pv_lines insert $line.end "\t"
-    $w.pv_lines insert $line.end "$pv" [list header moves]
+    $w.pv_lines insert $line.end "$pv" [list header moves $translated]
     $w.pv_lines insert $line.end "$pvline" [list lmargin moves]
     if {[info exists extraInfo]} {
         $w.pv_lines insert $line.end "  ([join $extraInfo {  }])" lmargin
@@ -682,7 +684,11 @@ proc ::enginewin::getMoves {w index} {
     } elseif {![regexp {^\d+\.end$} $index]} {
         set end [$w search " " $index]
     }
-    set moves [::untrans [$w get $begin $end]]
+    if {[$w tag nextrange translated $begin $end] eq ""} {
+        set moves [$w get $begin $end]
+    } else {
+        set moves [::untrans [$w get $begin $end]]
+    }
     return [string map {"\u2654" K "\u2655" Q "\u2656" R "\u2657" B "\u2658" N} $moves]
 }
 
