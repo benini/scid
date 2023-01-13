@@ -154,7 +154,6 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     bind $w.config <Destroy> "
         unset ::enginewin::engState($id)
         ::engine::close $id
-        ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
         unset ::enginewin::engConfig_$id
         unset ::enginewin::position_$id
         unset ::enginewin::newgame_$id
@@ -394,9 +393,6 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
 # If any, closes the connection with the current engine.
 # If "config" is not "" opens a connection with a new engine.
 proc ::enginewin::connectEngine {id enginename} {
-    upvar ::enginewin::engConfig_$id engConfig_
-    ::enginecfg::save $engConfig_
-
     set configFrame .engineWin$id.config
     foreach wchild [winfo children $configFrame] { destroy $wchild }
 
@@ -404,9 +400,9 @@ proc ::enginewin::connectEngine {id enginename} {
 
     set config [::enginecfg::get $enginename]
     lassign $config name cmd args wdir elo time url uci options
-    set engConfig_ [list $name $cmd $args $wdir $elo $time $url $uci {}]
     # Update engine's last used time.
-    lset engConfig_ 5 [clock seconds]
+    set time [clock seconds]
+    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
 
     set ::enginewin_lastengine($id) $name
 

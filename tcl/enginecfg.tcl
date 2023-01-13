@@ -213,6 +213,10 @@ proc ::enginecfg::createConfigFrame {id w msg name} {
     $w.header.engine set $name
     $w.options.text insert end $msg
     $w.options.text configure -state disabled
+
+    bind $w.options.text <Destroy> "
+        ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
+    "
 }
 
 # Update or recreate the config and option widgets
