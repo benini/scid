@@ -523,11 +523,11 @@ proc showVars {} {
         set cur [.variations.lbVar selection]
         destroy .variations
         if {$cur == 0} {
-            ::move::Forward
+            sc_move forward
         } else  {
             sc_var moveInto [expr $cur - 1]
-            ::notify::PosChanged "" -animate
         }
+        ::notify::PosChanged "" -animate
     }
     bind .variations <Up> { set cur [.variations.lbVar selection]
         set sel [expr $cur - 1]
