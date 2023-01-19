@@ -165,54 +165,12 @@ proc ::enginecfg::dlgNewRemote {} {
 
 # TODO: no references to ::enginewin should exists in this file
 
-# Creates the frame with the widgets necessary to select the desired engine and
-# change its configuration.
-# It also creates the buttons used to manage the configured engines:
-# add a new local or remote engine; reload, clone or delete an existing engine.
-proc ::enginecfg::createConfigFrame {id w msg name} {
-    ttk::frame $w.header
-    ttk::combobox $w.header.engine -state readonly -postcommand "
-        $w.header.engine configure -values \[::enginecfg::names \]
-    "
-    bind $w.header.engine <<ComboboxSelected>> [list apply {{id} {
-        ::enginewin::connectEngine $id [%W get]
-    }} $id]
-    ttk::button $w.header.addpipe -image tb_eng_add -command [list apply {{id} {
-        if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
-            ::enginewin::connectEngine $id $newEngine
-        }
-    }} $id]
-    ttk::button $w.header.addremote -image tb_eng_network -command [list apply {{id} {
-        if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
-            ::enginewin::connectEngine $id $newEngine
-        }
-    }} $id]
-    ttk::button $w.header.reload -image tb_eng_reload \
-        -command "event generate $w.header.engine <<ComboboxSelected>>"
-    ttk::button $w.header.clone -image tb_eng_clone -command "
-        ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
-    "
-    ttk::button $w.header.delete -image tb_eng_delete -command [list apply {{id} {
-        lassign [set ::enginewin::engConfig_$id] name
-        if {[::enginecfg::remove $name]} {
-            ::enginewin::connectEngine $id {}
-        }
-    }} $id]
-    grid $w.header.engine $w.header.addpipe $w.header.addremote \
-         $w.header.reload $w.header.clone $w.header.delete -sticky news
-
-    ttk::frame $w.options
-    ttk_text $w.options.text -wrap none
-    autoscrollBars both $w.options $w.options.text
-
-    grid columnconfigure $w 0 -weight 1
-    grid rowconfigure $w 1 -weight 1
-    grid $w.header
-    grid $w.options -sticky news
-
-    $w.header.engine set $name
-    $w.options.text insert end $msg
-    $w.options.text configure -state disabled
+# Creates the frame with the widgets necessary to change an engine's configuration.
+proc ::enginecfg::createConfigFrame {id configFrame msg} {
+    ttk_text $configFrame.text -wrap none -padx 4
+    autoscrollBars both $configFrame $configFrame.text
+    $configFrame.text insert end $msg
+    $configFrame.text configure -state disabled
 }
 
 # Update or recreate the config and option widgets
@@ -220,7 +178,7 @@ proc ::enginecfg::createConfigFrame {id w msg name} {
 # otherwise return an empty "" string
 proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
     upvar ::enginewin::engConfig_$id engConfig_
-    set w $configFrame.options.text
+    set w $configFrame.text
     lassign $msgInfoConfig protocol netclients options
 
     # Replace the engine's available options
@@ -267,11 +225,11 @@ proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
 # the configFrame is destroyed.
 proc ::enginecfg::autoSaveConfig {id configFrame {autosave false}} {
     if {$autosave} {
-        bind $configFrame.options.text <Destroy> "
+        bind $configFrame.text <Destroy> "
             ::enginecfg::save \[ set ::enginewin::engConfig_$id \]
         "
     } else {
-        bind $configFrame.options.text <Destroy> {}
+        bind $configFrame.text <Destroy> {}
     }
 }
 
@@ -323,12 +281,11 @@ proc ::enginecfg::changeOption {id idx widget} {
 
 # Creates the widgets for engine configuration, like the engine path, command
 # line parameters, uci/xboard protocol, etc...
-# It also sets the header.engine combobox to the engine's name.
 proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     lassign $engCfg name cmd args wdir elo time url uci
     lassign $url scoreside notation pvwrap debugframe priority netport
 
-    set w $configFrame.options.text
+    set w $configFrame.text
 
     $w delete 1.0 end
     $w configure -tabs [font measure font_Regular -displayof $w "Accept Network Connections:XXXXX"]
@@ -348,7 +305,6 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         $w.$widget configure -width $wd
     }}
 
-    $configFrame.header.engine set "$name"
     apply $fn_create_entry $w name "Engine name" $name
     bind $w.name <FocusOut> [list apply {{id} {
         lassign [set ::enginewin::engConfig_$id] old
@@ -461,7 +417,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
 
 # Creates the widgets used to show/change the engine's specific options
 proc ::enginecfg::createOptionWidgets {id configFrame options} {
-    set w $configFrame.options.text
+    set w $configFrame.text
 
     set disableReset 1
     for {set i 0} {$i < [llength $options]} {incr i} {
@@ -519,7 +475,7 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
 
 # Update the widgets with the engine's specific options
 proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
-    set w $configFrame.options.text
+    set w $configFrame.text
 
     set disableReset 1
     for {set i 0} {$i < [llength $options]} {incr i} {
@@ -566,7 +522,7 @@ proc ::enginecfg::updateOptionWidgets {id configFrame options oldOptions} {
 }
 
 proc ::enginecfg::updateNetClients {configFrame netclients} {
-    set w $configFrame.options.text
+    set w $configFrame.text
 
     set strclients "\n"
     if {[llength $netclients]} {
@@ -606,15 +562,8 @@ proc ::enginecfg::onSubmitParam {id connectParam newValue {opendlg 0}} {
 # Reset all the engine's options to their default values.
 proc ::enginecfg::onSubmitReset {id w} {
     upvar ::enginewin::engConfig_$id engConfig_
-    if {[lindex $engConfig_ 7] != 2} {
-        # Local engine: reset options and re-open
-        lset engConfig_ 8 {}
-        $w.header.reload invoke
-        return
-    }
-
     set options {}
-    foreach option [lindex engConfig_ 8] {
+    foreach option [lindex $engConfig_ 8] {
         lassign $option name value type default min max var_list internal
         if {! $internal && $value ne $default} {
             lappend options [list $name $default]

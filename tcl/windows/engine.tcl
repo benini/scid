@@ -139,6 +139,14 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     grid columnconfigure $w.main 0 -weight 1000
     grid columnconfigure $w.main 1 -weight 1
 
+    ttk::frame $w.config.btn
+    ::enginewin::createConfigButtons $id $w.config.btn
+    ttk::frame $w.config.options
+    grid columnconfigure $w.config 0 -weight 1
+    grid rowconfigure $w.config 1 -weight 1
+    grid $w.config.btn
+    grid $w.config.options -sticky news
+
     ttk::frame $w.btn
     ::enginewin::createButtonsBar $id $w.btn $w.display
 
@@ -209,6 +217,40 @@ proc ::enginewin::createDisplayFrame {id display} {
         %W tag remove markmove 1.0 end
         catch { wm withdraw .enginewinBoard }
     }
+}
+
+# Create the buttons used to select an engine and manage the configured engines:
+# add a new local or remote engine; reload, clone or delete an existing engine.
+proc ::enginewin::createConfigButtons {id w} {
+    ttk::combobox $w.engine -width 30 -state readonly -postcommand "
+        $w.engine configure -values \[::enginecfg::names \]
+    "
+    bind $w.engine <<ComboboxSelected>> [list apply {{id} {
+        ::enginewin::connectEngine $id [%W get]
+    }} $id]
+    ttk::button $w.addpipe -image tb_eng_add -command [list apply {{id} {
+        if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
+            ::enginewin::connectEngine $id $newEngine
+        }
+    }} $id]
+    ttk::button $w.addremote -image tb_eng_network -command [list apply {{id} {
+        if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
+            ::enginewin::connectEngine $id $newEngine
+        }
+    }} $id]
+    ttk::button $w.reload -image tb_eng_reload \
+        -command "event generate $w.engine <<ComboboxSelected>>"
+    ttk::button $w.clone -image tb_eng_clone -command "
+        ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
+    "
+    ttk::button $w.delete -image tb_eng_delete -command [list apply {{id} {
+        lassign [set ::enginewin::engConfig_$id] name
+        if {[::enginecfg::remove $name]} {
+            ::enginewin::connectEngine $id {}
+        }
+    }} $id]
+    grid $w.engine $w.addpipe $w.addremote \
+         $w.reload $w.clone $w.delete -sticky news
 }
 
 # Creates the buttons bar
@@ -334,9 +376,9 @@ proc ::enginewin::changeState {id newState} {
         grid remove $w.config
     }
 
-    lappend btnDisabledStates [list config.header.reload closed]
-    lappend btnDisabledStates [list config.header.clone closed]
-    lappend btnDisabledStates [list config.header.delete closed]
+    lappend btnDisabledStates [list config.btn.reload closed]
+    lappend btnDisabledStates [list config.btn.clone closed]
+    lappend btnDisabledStates [list config.btn.delete closed]
     # Buttons that add moves are not disabled when the engine is locked.
     # This allow the user to later add the lines. And if the board position
     # will be different, only the valid moves will be added to the game.
@@ -393,7 +435,7 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
 # If any, closes the connection with the current engine.
 # If "config" is not "" opens a connection with a new engine.
 proc ::enginewin::connectEngine {id enginename} {
-    set configFrame .engineWin$id.config
+    set configFrame .engineWin$id.config.options
     foreach wchild [winfo children $configFrame] { destroy $wchild }
 
     ::engine::close $id
@@ -407,22 +449,20 @@ proc ::enginewin::connectEngine {id enginename} {
     set ::enginewin_lastengine($id) $name
 
     ::enginewin::updateDisplay $id ""
+    ::enginewin::changeState $id closed
 
     if {$config eq ""} {
-        ::setTitle .engineWin$id "Engine Window"
         ::enginewin::logEngine $id false
+        ::setTitle .engineWin$id "Engine Window"
+        .engineWin$id.config.btn.engine set "[tr Engine]:"
         ::enginecfg::createConfigFrame $id $configFrame \
-            "No engine open: select or add one." "[tr Engine]:"
-        #TODO: move the button in the configFrame to enginewin
-        ::enginewin::changeState $id closed
+            "No engine open: select or add one."
         return
     }
 
     ::setTitle .engineWin$id "[tr Engine]: $name"
-    ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..." $name
-
-    #TODO: move the button in the configFrame to enginewin
-    ::enginewin::changeState $id closed
+    .engineWin$id.config.btn.engine set $name
+    ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..."
 
     lassign $url scoreside notation pvwrap debugframe priority netport
     ::enginewin::changeDisplayLayout $id scoreside $scoreside
@@ -467,14 +507,16 @@ proc ::enginewin::connectEngine {id enginename} {
 
 # Receive the engine's messages
 proc ::enginewin::callback {id msg} {
+    set configFrame .engineWin$id.config.options
     lassign $msg msgType msgData
     switch $msgType {
         "InfoConfig" {
             ::enginewin::updateOptions $id $msgData
-            set renamed [::enginecfg::updateConfigFrame $id .engineWin$id.config $msgData]
+            set renamed [::enginecfg::updateConfigFrame $id $configFrame $msgData]
             if {$renamed ne ""} {
                 set ::enginewin_lastengine($id) $renamed
                 ::setTitle .engineWin$id "[tr Engine]: $renamed"
+                .engineWin$id.config.btn.engine set $renamed
             }
             ::enginewin::changeState $id idle
         }
@@ -486,13 +528,13 @@ proc ::enginewin::callback {id msg} {
             ::enginewin::updateDisplay $id $msgData
         }
         "InfoReady" {
-            ::enginecfg::autoSaveConfig $id .engineWin$id.config true
+            ::enginecfg::autoSaveConfig $id $configFrame true
             ::enginewin::changeState $id idle
         }
         "InfoDisconnected" {
             ::enginewin::updateOptions $id ""
-            ::enginecfg::autoSaveConfig $id .engineWin$id.config false
-            ::enginecfg::updateConfigFrame $id .engineWin$id.config {}
+            ::enginecfg::autoSaveConfig $id $configFrame false
+            ::enginecfg::updateConfigFrame $id $configFrame {}
             ::enginewin::changeState $id disconnected
             lassign $msgData errorMsg
             if {$errorMsg eq ""} {
