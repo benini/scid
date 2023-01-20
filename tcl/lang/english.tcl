@@ -89,7 +89,7 @@ menuText E FileSwitch "Switch to Database" 0 \
   {Switch to a different opened database}
 menuText E FileExit "Exit" 1 {Exit Scid}
 menuText E FileMaintFixBase "Repair base" 0 {Try to repair a corrupted base}
-  
+
 # Edit menu:
 menuText E Edit "Edit" 0
 menuText E EditAdd "Add Variation" 0 {Add a variation at this move in the game}
@@ -221,7 +221,7 @@ menuText E ToolsExpCurrentPGN "Export Game to PGN File..." 15 \
   {Write current game to a PGN file}
 menuText E ToolsExpCurrentHTML "Export Game to HTML File..." 15 \
   {Write current game to a HTML file}
-menuText E ToolsExpCurrentHTMLJS "Export Game to HTML and JavaScript File..." 15 {Write current game to a HTML and JavaScript file}  
+menuText E ToolsExpCurrentHTMLJS "Export Game to HTML and JavaScript File..." 15 {Write current game to a HTML and JavaScript file}
 menuText E ToolsExpCurrentLaTeX "Export Game to LaTeX File..." 15 \
   {Write current game to a LaTeX file}
 menuText E ToolsExpFilter "Export All Filter Games" 1 \
@@ -230,7 +230,7 @@ menuText E ToolsExpFilterPGN "Export Filter to PGN File..." 17 \
   {Write all filtered games to a PGN file}
 menuText E ToolsExpFilterHTML "Export Filter to HTML File..." 17 \
   {Write all filtered games to a HTML file}
-menuText E ToolsExpFilterHTMLJS "Export Filter to HTML and JavaScript File..." 17 {Write all filtered games to a HTML and JavaScript file}  
+menuText E ToolsExpFilterHTMLJS "Export Filter to HTML and JavaScript File..." 17 {Write all filtered games to a HTML and JavaScript file}
 menuText E ToolsExpFilterLaTeX "Export Filter to LaTeX File..." 17 \
   {Write all filtered games to a LaTeX file}
 menuText E ToolsImportOne "Import One PGN Game..." 0 \
@@ -281,8 +281,8 @@ menuText E OptionsMovesCoord "Coordinate Move Entry" 0 \
   {Accept coordinate-style move entry (e.g. "g1f3")}
 menuText E OptionsMovesSuggest "Show Suggested Moves" 0 \
   {Turn on/off move suggestion}
-menuText E OptionsShowVarPopup "Show variations window" 0 {Turn on/off the display of a variations window}  
-menuText E OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
+menuText E OptionsShowVarPopup "Show variations window" 0 {Turn on/off the display of a variations window}
+menuText E OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}
 menuText E OptionsMovesKey "Keyboard Completion" 0 \
   {Turn on/off keyboard move auto-completion}
 menuText E OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
@@ -595,7 +595,7 @@ translate E FinderCtxBackup {Backup}
 translate E FinderCtxCopy {Copy}
 translate E FinderCtxMove {Move}
 translate E FinderCtxDelete {Delete}
- 
+
 # Player finder:
 menuText E PListFile "File" 0
 menuText E PListFileUpdate "Update" 0
@@ -675,7 +675,7 @@ translate E Informant+= {White has a slight advantage}
 translate E Informant+/- {White has a clear advantage}
 translate E Informant+- {White has a decisive advantage}
 translate E Informant+-- {White has a crushing advantage}
-  
+
 # Book window
 translate E Book {Book}
 translate E OtherBookMoves {Opponent's book}
@@ -873,13 +873,13 @@ translate E GsortAdd {Add}
 translate E GsortStore {Store}
 translate E GsortLoad {Load}
 
-# menu shown with right mouse button down on game list. 
+# menu shown with right mouse button down on game list.
 translate E GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 translate E GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
 translate E GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) from Filter}
-translate E GlistDeleteGame {(Un)Delete this game} 
-translate E GlistDeleteAllGames {Delete all games in filter} 
-translate E GlistUndeleteAllGames {Undelete all games in filter}  
+translate E GlistDeleteGame {(Un)Delete this game}
+translate E GlistDeleteAllGames {Delete all games in filter}
+translate E GlistUndeleteAllGames {Undelete all games in filter}
 translate E GlistMergeGameInBase {Merge Game in}
 
 # Maintenance window:
@@ -1455,7 +1455,7 @@ translate E StartFromCurrentPosition {Start from current position}
 translate E FixedDepth {Fixed depth}
 translate E Nodes {Nodes}
 translate E Depth {Depth}
-translate E Time {Time} 
+translate E Time {Time}
 translate E SecondsPerMove {Seconds per move}
 translate E Engine {Engine}
 translate E TimeMode {Time mode}
