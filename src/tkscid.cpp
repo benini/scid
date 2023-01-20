@@ -327,7 +327,7 @@ void
 exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
 {
     char old_language = language;
- 
+
     g->ResetPgnStyle (pgnStyle);
     g->SetPgnFormat (format);
 
@@ -2966,7 +2966,7 @@ sc_game_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     db->gameAlterations.clear();
-    
+
     uint gnum = strGetUnsigned (argv[2]);
 
     // Check the game number is valid::
@@ -3454,7 +3454,7 @@ int
 sc_game_push (ClientData, Tcl_Interp*, int argc, const char ** argv)
 {
     bool copy = false;
-    
+
     if ( argc > 2 && !strcmp( argv[2], "copy" ) ) {
         copy = true;
     }
@@ -4656,9 +4656,13 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
-    case POS_GETPREVCOMMENT:
-        return UI_Result(ti, OK, db->game->GetPreviousMoveComment());
-
+    case POS_GETPREVCOMMENT: {
+        auto comments = db->game->previousComments();
+        UI_List res(2);
+        res.push_back(comments.first);
+        res.push_back(comments.second);
+        return UI_Result(ti, OK, res);
+    }
     case POS_GETNAGS:
         return sc_pos_getNags (cd, ti, argc, argv);
 
@@ -6531,7 +6535,7 @@ UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecke
     enum {
         OPT_MAX, OPT_SURNAMES, OPT_AMBIGUOUS
     };
-    
+
     int arg = 2;
     while (arg+1 < argc) {
         const char * option = argv[arg];
@@ -6568,7 +6572,7 @@ UI_res_t sc_name_spellcheck (UI_handle_t ti, scidBaseT& dbase, const SpellChecke
     std::vector<std::string> tmpRes;
     char tempStr[1024];
     uint correctionCount = 0;
-    
+
     Progress progress = UI_CreateProgress(ti);
     // Check every name of the specified type:
     for (idNumberT id=0, n=nb->GetNumNames(nt); id < n; id++) {
@@ -7441,7 +7445,7 @@ int sc_search_board(Tcl_Interp* ti, const scidBaseT* dbase, HFilter filter,
     flip = strGetBoolean (argv[5]);
 
     Position * pos = db->game->GetCurrentPos();
-    
+
     Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
     Position * posFlip =  NULL;
@@ -8513,7 +8517,7 @@ sc_book_load (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc != 4) {
         return errorResult (ti, "Usage: sc_book load bookfile slot");
     }
- 
+
     uint slot = strGetUnsigned (argv[3]);
 
 	 int bookstate = polyglot_open(argv[2], slot);

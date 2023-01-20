@@ -108,6 +108,7 @@ proc updateMainGame {} {
     set gamePlayers(eloB)   [expr {$eloB == 0 ? "" : "($eloB)"}]
     set gamePlayers(clockW) ""
     set gamePlayers(clockB) ""
+    set gamePlayers(movetime) ""
 }
 
 # updateTitle:
@@ -166,14 +167,20 @@ proc updateStatusBar {} {
     if { ![gameclock::isRunning] } {
         set ::gamePlayers(clockW) ""
         set ::gamePlayers(clockB) ""
+        set ::gamePlayers(movetime) ""
         set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
-        set prevCom [sc_pos getPrevComment]
+        lassign [sc_pos getPrevComment] prevCom movetime
+        regexp $clkExp $comment -> ::gamePlayers(clockW)
+        regexp $clkExp $prevCom -> ::gamePlayers(clockB)
+        regexp $clkExp $movetime -> movetime
+        catch { set ::gamePlayers(movetime) [expr {
+            [clock scan $movetime -format {%H:%M:%S}] - \
+            [clock scan $::gamePlayers(clockW) -format {%H:%M:%S}]
+        }]}
         if {$toMove == "white"} {
-            regexp $clkExp $comment -> ::gamePlayers(clockB)
-            regexp $clkExp $prevCom -> ::gamePlayers(clockW)
-        } else {
-            regexp $clkExp $comment -> ::gamePlayers(clockW)
-            regexp $clkExp $prevCom -> ::gamePlayers(clockB)
+            set temp_swap $::gamePlayers(clockW)
+            set ::gamePlayers(clockW) $::gamePlayers(clockB)
+            set ::gamePlayers(clockB) $temp_swap
         }
     }
 
@@ -220,6 +227,15 @@ proc updateStatusBar {} {
       append statusBar [tr LastMove]
       if {[sc_var level] != 0} { append statusBar " (var)" }
       append statusBar ": $number.$move"
+      if {$::gamePlayers(movetime) ne ""} {
+        if {$::gamePlayers(movetime) > 60} {
+            append statusBar " ([format {%02d:%02d} \
+                [expr {$::gamePlayers(movetime) / 60}] \
+                [expr {$::gamePlayers(movetime) % 60}]])"
+        } else {
+            append statusBar " ($::gamePlayers(movetime)s)"
+        }
+      }
       ::board::setInfo .main.board "$statusBar"
     } else {
       set msg "[sc_game info date] - [sc_game info event]"

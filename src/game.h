@@ -102,7 +102,7 @@ const byte
     NAG_UnitedPawns = 193, // new
     NAG_Diagram = 201,  // Scid-specific NAGs start at 201.
     NAG_See = 210,  // new
-    NAG_Mate = 211, // new 
+    NAG_Mate = 211, // new
     NAG_PassedPawn = 212, // new
     NAG_MorePawns = 213, //new
     NAG_With = 214, // new
@@ -373,16 +373,21 @@ public:
     byte* GetNags() const { return CurrentMove->prev->nags; }
     byte* GetNextNags() const { return CurrentMove->nags; }
 
-    /**
-     * Return the comment on the move previously played by CurrentPos->ToMove
-     * If there are no previous moves, return an empty comment.
-     */
-    const char* GetPreviousMoveComment() const {
-        const moveT* move = CurrentMove->getPrevMove();
+    /// Return the comments of the previous 2 moves (useful to compute clocks).
+    /// If there are no previous moves, return an empty comment.
+    std::pair<const char*, const char*> previousComments() const {
+        std::pair<const char*, const char*> res = {"", ""};
+        auto move = CurrentMove->getPrevMove();
         if (move)
             move = move->getPrevMove();
+        if (move) {
+            res.first = move->comment.c_str();
+            move = move->getPrevMove();
+        }
+        if (move)
+            res.second = move->comment.c_str();
 
-        return (move) ? move->comment.c_str() : "";
+        return res;
     }
     const char* GetMoveComment() const {
         return CurrentMove->prev->comment.c_str();
