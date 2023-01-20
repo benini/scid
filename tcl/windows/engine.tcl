@@ -407,6 +407,18 @@ proc ::enginewin::changeState {id newState} {
     }
 }
 
+# Invoked when the engine's name changes.
+# Update the window's title and ::enginewin_lastengine accordingly.
+proc ::enginewin::updateEngineName {id name} {
+    set ::enginewin_lastengine($id) $name
+    ::setTitle .engineWin$id "[tr Engine]: $name"
+    if {$name eq ""} {
+        .engineWin$id.config.btn.engine set "[tr Engine]:"
+    } else {
+        .engineWin$id.config.btn.engine set $name
+    }
+}
+
 proc ::enginewin::logEngine {id on} {
     catch { .engineWin$id.pane forget .engineWin$id.debug }
     .engineWin$id.debug.lines configure -state normal
@@ -439,6 +451,7 @@ proc ::enginewin::connectEngine {id enginename} {
     foreach wchild [winfo children $configFrame] { destroy $wchild }
 
     ::engine::close $id
+    ::enginewin::logEngine $id false
 
     set config [::enginecfg::get $enginename]
     lassign $config name cmd args wdir elo time url uci options
@@ -446,22 +459,16 @@ proc ::enginewin::connectEngine {id enginename} {
     set time [clock seconds]
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
 
-    set ::enginewin_lastengine($id) $name
-
     ::enginewin::updateDisplay $id ""
     ::enginewin::changeState $id closed
+    ::enginewin::updateEngineName $id $name
 
     if {$config eq ""} {
-        ::enginewin::logEngine $id false
-        ::setTitle .engineWin$id "Engine Window"
-        .engineWin$id.config.btn.engine set "[tr Engine]:"
         ::enginecfg::createConfigFrame $id $configFrame \
             "No engine open: select or add one."
         return
     }
 
-    ::setTitle .engineWin$id "[tr Engine]: $name"
-    .engineWin$id.config.btn.engine set $name
     ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..."
 
     lassign $url scoreside notation pvwrap debugframe priority netport
@@ -514,9 +521,7 @@ proc ::enginewin::callback {id msg} {
             ::enginewin::updateOptions $id $msgData
             set renamed [::enginecfg::updateConfigFrame $id $configFrame $msgData]
             if {$renamed ne ""} {
-                set ::enginewin_lastengine($id) $renamed
-                ::setTitle .engineWin$id "[tr Engine]: $renamed"
-                .engineWin$id.config.btn.engine set $renamed
+                ::enginewin::updateEngineName $id $renamed
             }
             ::enginewin::changeState $id idle
         }
