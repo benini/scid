@@ -811,6 +811,10 @@ translate O EngineTime {Dato}
 translate O EngineNew {Ny}
 translate O EngineEdit {Rediger}
 translate O EngineRequired {Fete felter er nødvendige, de øvrige er valgfrie}
+# ====== TODO To be translated ======
+translate O EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate O EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText O PgnFile "Fil" 0

@@ -723,6 +723,10 @@ translate S EngineTime {Fecha}
 translate S EngineNew {Nuevo}
 translate S EngineEdit {Editar}
 translate S EngineRequired {Los campos en negrita son obligatorios; los demás opcionales}
+# ====== TODO To be translated ======
+translate S EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate S EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText S PgnFile "Archivo" 0

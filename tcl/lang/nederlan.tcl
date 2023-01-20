@@ -701,6 +701,10 @@ translate N EngineTime {Datum}
 translate N EngineNew {Nieuw}
 translate N EngineEdit {Bewerk}
 translate N EngineRequired {Velden in <b>vet</b> zijn vereist; de andere facultatief}
+# ====== TODO To be translated ======
+translate N EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate N EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText N PgnFile "Bestand" 0

@@ -709,6 +709,10 @@ translate G EngineTime {Ημερομηνία}
 translate G EngineNew {Νέα}
 translate G EngineEdit {Επεξεργασία}
 translate G EngineRequired {Τα παιδία με έντονη γραμματοσειρά είναι απαραίτητα, τα άλλα είναι προαιρετικά}
+# ====== TODO To be translated ======
+translate G EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate G EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText G PgnFile "Αρχείο" 0

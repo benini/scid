@@ -713,6 +713,10 @@ translate U EngineTime {Pvm}
 translate U EngineNew {Uusi}
 translate U EngineEdit {Muokkaa}
 translate U EngineRequired {Lihavoidut kentät ovat pakollisia}
+# ====== TODO To be translated ======
+translate U EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate U EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText U PgnFile "Tiedosto" 0

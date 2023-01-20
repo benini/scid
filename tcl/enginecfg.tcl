@@ -305,7 +305,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         $w.$widget configure -width $wd
     }}
 
-    apply $fn_create_entry $w name "Engine name" $name
+    apply $fn_create_entry $w name [tr EngineName] $name
     bind $w.name <FocusOut> [list apply {{id} {
         lassign [set ::enginewin::engConfig_$id] old
         if {$old ne [set name [%W get]]} {
@@ -334,14 +334,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w window create end -window $w.wdirbtn -pady 2 -padx 2
 
     if {$uci == 0 || $uci == 1} {
-        $w insert end "\nProtocol:\t"
+        $w insert end "\n[tr EngineProtocol]:\t"
         ttk::combobox $w.protocol -state readonly -width 12 -values {xboard uci}
         bind $w.protocol <<ComboboxSelected>> "::enginecfg::onSubmitParam $id protocol \[ %W current \]"
         $w window create end -window $w.protocol -pady 2
         $w.protocol set [expr { $uci == 0 ? "xboard" : "uci" }]
     }
 
-    $w insert end "\nMove lines notation:\t"
+    $w insert end "\n[tr EngineNotation]:\t"
     ttk::combobox $w.notation -state readonly -width 12 -values [list engine SAN "English SAN" figurine]
     bind $w.notation <<ComboboxSelected>> "
         ::enginewin::changeDisplayLayout $id notation \[ $w.notation current \]

@@ -670,6 +670,10 @@ translate C EngineTime {Datum}
 translate C EngineNew {Nový}
 translate C EngineEdit {Editace}
 translate C EngineRequired {Tuènì vyznaèené polo¾ky jsou povinné; ostatní jsou volitelné}
+# ====== TODO To be translated ======
+translate C EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate C EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText C PgnFile "Soubor" 0

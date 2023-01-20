@@ -674,6 +674,9 @@ translate I EngineTime {Data}
 translate I EngineNew {Nuovo}
 translate I EngineEdit {Modifica}
 translate I EngineRequired {I campi in grassetto sono obbligatori; gli altri sono opzionali}
+translate I EngineProtocol {Protocollo di comunicazione}
+translate I EngineNotation {Notazione delle mosse}
+
 
 # PGN window menus:
 menuText I PgnFile "File" 0

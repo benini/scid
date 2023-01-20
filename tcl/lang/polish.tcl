@@ -815,6 +815,10 @@ translate P EngineTime {Data}
 translate P EngineNew {Dodaj}
 translate P EngineEdit {Edytuj}
 translate P EngineRequired {Pola wyt³uszczone s± konieczne; reszta opcjonalna} 
+# ====== TODO To be translated ======
+translate P EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate P EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText P PgnFile "Plik" 0

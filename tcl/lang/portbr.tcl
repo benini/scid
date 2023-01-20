@@ -655,6 +655,10 @@ translate B EngineTime {Data}
 translate B EngineNew {Novo}
 translate B EngineEdit {Editar}
 translate B EngineRequired {Campos em negrito são obrigatórios; os demais são opcionais}
+# ====== TODO To be translated ======
+translate B EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate B EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText B PgnFile "Arquivo" 0

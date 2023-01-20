@@ -664,6 +664,10 @@ translate R EngineTime {Дата}
 translate R EngineNew {Новый}
 translate R EngineEdit {Редактор}
 translate R EngineRequired {Поля, отмеченные жирным шрифтом, заполнять обязательно, остальные - по желанию}
+# ====== TODO To be translated ======
+translate R EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate R EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText R PgnFile "Файл" 0

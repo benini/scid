@@ -692,6 +692,8 @@ translate E EngineTime {Date}
 translate E EngineNew {New}
 translate E EngineEdit {Edit}
 translate E EngineRequired {Fields in bold are required; others are optional}
+translate E EngineProtocol {Communication protocol}
+translate E EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText E PgnFile "File" 0

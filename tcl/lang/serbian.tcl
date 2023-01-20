@@ -809,6 +809,10 @@ translate Y EngineTime {Datum}
 translate Y EngineNew {New} ;# ***
 translate Y EngineEdit {Edit} ;# ***
 translate Y EngineRequired {Fields in bold are required; others are optional} ;# ***
+# ====== TODO To be translated ======
+translate Y EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate Y EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText Y PgnFile "Fajl" 0

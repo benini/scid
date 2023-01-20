@@ -709,6 +709,10 @@ translate K EngineTime {Data}
 translate K EngineNew {Nova}
 translate K EngineEdit {Editar}
 translate K EngineRequired {Els camps en negreta son obligatoris; la resta opcionals}
+# ====== TODO To be translated ======
+translate K EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate K EngineNotation {Notation of the moves}
 
 # PGN window menús:
 menuText K PgnFile "Arxiu" 0

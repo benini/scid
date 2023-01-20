@@ -676,6 +676,10 @@ translate W EngineTime {Datum}
 translate W EngineNew {Ny}
 translate W EngineEdit {Redigera}
 translate W EngineRequired {Fet stil indikerar obligatoriska fält; övriga fält är frivilliga} 
+# ====== TODO To be translated ======
+translate W EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate W EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText W PgnFile "Fil" 0

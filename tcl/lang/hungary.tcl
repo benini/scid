@@ -688,6 +688,10 @@ translate H EngineTime {Dátum}
 translate H EngineNew {Új}
 translate H EngineEdit {Szerkesztés}
 translate H EngineRequired {A vastagbetûs mezõk szükségesek, a többiek kihagyhatók.}
+# ====== TODO To be translated ======
+translate H EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate H EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText H PgnFile "Fájl" 0

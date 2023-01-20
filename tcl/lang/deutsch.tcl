@@ -684,6 +684,10 @@ translate D EngineTime {Datum}
 translate D EngineNew {Neu}
 translate D EngineEdit {Bearbeiten}
 translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
+# ====== TODO To be translated ======
+translate D EngineProtocol {Communication protocol}
+# ====== TODO To be translated ======
+translate D EngineNotation {Notation of the moves}
 
 # PGN window menus:
 menuText D PgnFile "Datei" 0
