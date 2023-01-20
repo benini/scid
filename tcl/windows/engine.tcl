@@ -472,7 +472,6 @@ proc ::enginewin::connectEngine {id enginename} {
     ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..."
 
     lassign $url scoreside notation pvwrap debugframe priority netport
-    ::enginewin::changeDisplayLayout $id scoreside $scoreside
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
     ::enginewin::updateOptions $id ""
@@ -554,9 +553,6 @@ proc ::enginewin::changeDisplayLayout {id param value} {
     upvar ::enginewin::engConfig_$id engConfig_
     set w .engineWin$id
     switch $param {
-        "scoreside" {
-            set idx 0
-        }
         "notation" {
             set idx 1
             if {$value < 0} {

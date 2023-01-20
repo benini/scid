@@ -357,7 +357,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
 
     $w insert end "\nEvaluate from engine's POV:\t"
     ttk::checkbutton $w.scoreside -style Switch.Toolbutton -onvalue engine -offvalue white -command "
-        ::enginewin::changeDisplayLayout $id scoreside \[::update_switch_btn $w.scoreside \]
+        lset ::enginewin::engConfig_$id 6 0 \[::update_switch_btn $w.scoreside \]
     "
     ::update_switch_btn $w.scoreside $scoreside
     $w window create end -window $w.scoreside -pady 2
