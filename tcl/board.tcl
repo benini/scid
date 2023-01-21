@@ -511,7 +511,7 @@ proc ::board::addNamesBar {w {varname}} {
   ttk_canvas $w.playerW.tomove -borderwidth 0 -highlightthickness 0 -width 9 -height 9
   ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
-  ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Small -style fieldbg.TLabel
+  ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Regular -style fieldbg.TLabel
   grid $w.playerW.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerW.name -row 0 -column 1 -sticky w
   grid $w.playerW.elo -row 0 -column 2 -sticky w
@@ -525,7 +525,7 @@ proc ::board::addNamesBar {w {varname}} {
   ttk_canvas $w.playerB.tomove -borderwidth 0 -highlightthickness 0 -width 9 -height 9
   ttk::label $w.playerB.name -textvariable ${varname}(nameB) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerB.elo -textvariable ${varname}(eloB) -font font_Small -style fieldbg.TLabel
-  ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Small -style fieldbg.TLabel
+  ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Regular -style fieldbg.TLabel
   grid $w.playerB.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerB.name -row 0 -column 1 -sticky w
   grid $w.playerB.elo -row 0 -column 2 -sticky w
@@ -772,10 +772,14 @@ proc ::board::sideToMove_ { {w} {side} } {
   if {![winfo exist $w.playerW] } { return }
   if {$side == "w"} {
     $w.playerB.tomove delete -tag tomove
-	$w.playerW.tomove create rectangle 0 0 100 100 -fill blue -tag tomove
+    $w.playerW.tomove create rectangle 0 0 100 100 -fill blue -tag tomove
+    $w.playerW.clock configure -font font_Bold
+    $w.playerB.clock configure -font font_Regular
   } elseif {$side == "b"} {
     $w.playerW.tomove delete -tag tomove
     $w.playerB.tomove create rectangle 0 0 100 100 -fill blue -tag tomove
+    $w.playerB.clock configure -font font_Bold
+    $w.playerW.clock configure -font font_Regular
   }
 }
 
