@@ -78,8 +78,8 @@ jobs:
       mkdir tcltk & cd tcltk
       git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
       cd tcl & cd win
-      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
-      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc release OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc install OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
     displayName: Generate tcl library
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
@@ -89,8 +89,8 @@ jobs:
       cd tcltk
       git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
       cd tk & cd win
-      nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir
-      nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc release OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      nmake -f makefile.vc install OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
     displayName: Generate tk library
   - task: CMake@1
     inputs:
