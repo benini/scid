@@ -480,6 +480,27 @@ proc storeEvalComment { value } {
     }
   }
 
+# Format a string that represents a time in the format 0:00:00 by removing the
+# unnecessary leading zeros.
+# Always show the minutes even if they are zero: 0:00:05 --> 0:05
+proc format_clock {clk} {
+    return "[string trimleft [string range $clk 0 end-4] {0:}][string range $clk end-3 end]"
+}
+
+# Convert seconds to hours, minutes and seconds and return a string in the format 0:00:00
+proc format_clock_from_seconds {seconds} {
+    set res ""
+    if { $seconds < 0 } {
+        set res "-"
+        set seconds [expr abs($seconds)]
+    }
+    append res [format_clock [format "%d:%02d:%02d" \
+        [expr {$seconds / 3600}] \
+        [expr {($seconds / 60) % 60}] \
+        [expr {$seconds % 60}] ]]
+    return $res
+}
+
 ################################################################################
 # clock widget
 ################################################################################

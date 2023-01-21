@@ -173,15 +173,19 @@ proc updateStatusBar {} {
         regexp $clkExp $comment -> ::gamePlayers(clockW)
         regexp $clkExp $prevCom -> ::gamePlayers(clockB)
         regexp $clkExp $movetime -> movetime
-        catch { set ::gamePlayers(movetime) [expr {
-            [clock scan $movetime -format {%H:%M:%S}] - \
-            [clock scan $::gamePlayers(clockW) -format {%H:%M:%S}]
-        }]}
+        catch {
+            set movetime [expr {
+                [clock scan $movetime -format {%H:%M:%S}] - \
+                [clock scan $::gamePlayers(clockW) -format {%H:%M:%S}] }]
+            set ::gamePlayers(movetime) [format_clock_from_seconds $movetime]
+        }
         if {$toMove == "white"} {
             set temp_swap $::gamePlayers(clockW)
             set ::gamePlayers(clockW) $::gamePlayers(clockB)
             set ::gamePlayers(clockB) $temp_swap
         }
+        set ::gamePlayers(clockW) [format_clock $::gamePlayers(clockW)]
+        set ::gamePlayers(clockB) [format_clock $::gamePlayers(clockB)]
     }
 
     if {[info exists ::guessedAddMove]} {
@@ -228,13 +232,7 @@ proc updateStatusBar {} {
       if {[sc_var level] != 0} { append statusBar " (var)" }
       append statusBar ": $number.$move"
       if {$::gamePlayers(movetime) ne ""} {
-        if {$::gamePlayers(movetime) > 60} {
-            append statusBar " ([format {%02d:%02d} \
-                [expr {$::gamePlayers(movetime) / 60}] \
-                [expr {$::gamePlayers(movetime) % 60}]])"
-        } else {
-            append statusBar " ($::gamePlayers(movetime)s)"
-        }
+        append statusBar "   $::gamePlayers(movetime)"
       }
       ::board::setInfo .main.board "$statusBar"
     } else {
