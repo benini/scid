@@ -578,7 +578,9 @@ proc ::board::addInfo {{w} {msg}} {
 proc ::board::setInfo {{w} {msg}} {
   $w.bar.info.t configure -state normal
   $w.bar.info.t delete 1.0 end
-  $w.bar.info.t insert end "$msg"
+  foreach {elem tag} $msg {
+    $w.bar.info.t insert end $elem $tag
+  }
   $w.bar.info.t configure -state disabled
 }
 

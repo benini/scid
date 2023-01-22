@@ -231,10 +231,11 @@ proc updateStatusBar {} {
       append statusBar [tr LastMove]
       if {[sc_var level] != 0} { append statusBar " (var)" }
       append statusBar ": $number.$move"
+      set statusBar [list $statusBar {}]
       if {$::gamePlayers(movetime) ne ""} {
-        append statusBar "   $::gamePlayers(movetime)"
+        lappend statusBar "   $::gamePlayers(movetime)" header
       }
-      ::board::setInfo .main.board "$statusBar"
+      ::board::setInfo .main.board $statusBar
     } else {
       set msg "[sc_game info date] - [sc_game info event]"
       ::board::setInfoAlert .main.board "[tr Event]:" $msg "DodgerBlue3" "::crosstab::Open"
