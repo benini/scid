@@ -584,10 +584,16 @@ proc ::board::setInfo {{w} {msg}} {
   $w.bar.info.t configure -state disabled
 }
 
+# Show an alert message in the infobar.
+# If @e header is empty, append the message at the current infobar.
 proc ::board::setInfoAlert {{w} {header} {msg} {msgcolor} {cmd}} {
   $w.bar.info.t configure -state normal
-  $w.bar.info.t delete 1.0 end
-  $w.bar.info.t insert end "$header " {header click}
+  if {$header ne ""} {
+    $w.bar.info.t delete 1.0 end
+    $w.bar.info.t insert end "$header " {header click}
+  } else {
+    $w.bar.info.t insert end "\n"
+  }
   $w.bar.info.t insert end "$msg" {color click}
   $w.bar.info.t configure -state disabled
   $w.bar.info.t tag configure color -foreground $msgcolor

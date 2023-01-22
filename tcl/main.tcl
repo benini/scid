@@ -208,13 +208,6 @@ proc updateStatusBar {} {
     # remove technical comments, notify only human readable ones
     regsub -all {\[%.*\]} $comment {} comment
 
-    if {$comment != ""} {
-        ::board::setInfoAlert .main.board "[tr Comment]" "$comment" "green" "::makeCommentWin"
-        ::board::addInfo .main.board [sc_game info ECO]
-        return
-    }
-
-
     set statusBar ""
     set move [sc_game info previousMoveNT]
     if {$move != ""} {
@@ -240,7 +233,17 @@ proc updateStatusBar {} {
       set msg "[sc_game info date] - [sc_game info event]"
       ::board::setInfoAlert .main.board "[tr Event]:" $msg "DodgerBlue3" "::crosstab::Open"
     }
-    ::board::addInfo .main.board [sc_game info ECO]
+    set eco [sc_game info ECO]
+    ::board::addInfo .main.board $eco
+    if {$comment != ""} {
+        set headermsg ""
+        # If this is the first move, or both movetime and eco are empty,
+        # show only the comment.
+        if {$move eq "" || ($::gamePlayers(movetime) eq "" && $eco eq "")} {
+            set headermsg "[tr Comment]"
+        }
+        ::board::setInfoAlert .main.board $headermsg "$comment" "green" "::makeCommentWin"
+    }
 }
 
 proc updateMainToolbar {} {
