@@ -815,6 +815,22 @@ translate O EngineRequired {Fete felter er nødvendige, de øvrige er valgfrie}
 translate O EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate O EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate O EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate O EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate O EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate O EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate O EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate O EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate O EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate O EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText O PgnFile "Fil" 0

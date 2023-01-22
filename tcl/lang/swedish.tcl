@@ -680,6 +680,22 @@ translate W EngineRequired {Fet stil indikerar obligatoriska fält; övriga fält ä
 translate W EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate W EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate W EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate W EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate W EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate W EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate W EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate W EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate W EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate W EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText W PgnFile "Fil" 0

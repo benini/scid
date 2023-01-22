@@ -355,14 +355,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w window create end -window $w.wrap -pady 2 -padx 6
     set ::$w.wrap $pvwrap
 
-    $w insert end "\nEvaluate from engine's POV:\t"
+    $w insert end "\n[tr EngineFlipEvaluation]:\t"
     ttk::checkbutton $w.scoreside -style Switch.Toolbutton -onvalue engine -offvalue white -command "
         lset ::enginewin::engConfig_$id 6 0 \[::update_switch_btn $w.scoreside \]
     "
     ::update_switch_btn $w.scoreside $scoreside
     $w window create end -window $w.scoreside -pady 2
 
-    $w insert end "\nShow debug frame:\t"
+    $w insert end "\n[tr EngineShowLog]:\t"
     ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
         lset ::enginewin::engConfig_$id 6 3 \[::update_switch_btn $w.debug\]
         ::enginewin::logEngine $id \[::update_switch_btn $w.debug\]

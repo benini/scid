@@ -688,6 +688,22 @@ translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere option
 translate D EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate D EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate D EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate D EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate D EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate D EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate D EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate D EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate D EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate D EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText D PgnFile "Datei" 0

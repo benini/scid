@@ -674,6 +674,22 @@ translate C EngineRequired {Tuènì vyznaèené polo¾ky jsou povinné; ostatní jsou v
 translate C EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate C EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate C EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate C EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate C EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate C EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate C EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate C EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate C EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate C EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText C PgnFile "Soubor" 0

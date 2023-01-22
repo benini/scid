@@ -713,6 +713,22 @@ translate K EngineRequired {Els camps en negreta son obligatoris; la resta opcio
 translate K EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate K EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate K EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate K EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate K EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate K EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate K EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate K EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate K EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate K EngineDelete {Delete the current engine}
 
 # PGN window menús:
 menuText K PgnFile "Arxiu" 0

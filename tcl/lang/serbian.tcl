@@ -813,6 +813,22 @@ translate Y EngineRequired {Fields in bold are required; others are optional} ;#
 translate Y EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate Y EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate Y EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate Y EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate Y EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate Y EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate Y EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate Y EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate Y EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate Y EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText Y PgnFile "Fajl" 0

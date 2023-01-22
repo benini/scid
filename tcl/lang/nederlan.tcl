@@ -705,6 +705,22 @@ translate N EngineRequired {Velden in <b>vet</b> zijn vereist; de andere faculta
 translate N EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate N EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate N EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate N EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate N EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate N EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate N EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate N EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate N EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate N EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText N PgnFile "Bestand" 0

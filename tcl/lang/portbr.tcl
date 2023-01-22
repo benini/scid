@@ -659,6 +659,22 @@ translate B EngineRequired {Campos em negrito são obrigatórios; os demais são op
 translate B EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate B EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate B EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate B EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate B EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate B EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate B EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate B EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate B EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate B EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText B PgnFile "Arquivo" 0

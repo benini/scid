@@ -668,6 +668,22 @@ translate R EngineRequired {Поля, отмеченные жирным шриф
 translate R EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate R EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate R EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate R EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate R EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate R EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate R EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate R EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate R EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate R EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText R PgnFile "Файл" 0

@@ -676,7 +676,14 @@ translate I EngineEdit {Modifica}
 translate I EngineRequired {I campi in grassetto sono obbligatori; gli altri sono opzionali}
 translate I EngineProtocol {Protocollo di comunicazione}
 translate I EngineNotation {Notazione delle mosse}
-
+translate I EngineFlipEvaluation {Cambia la prospettiva di valutazione}
+translate I EngineShowLog {Mostra registro di comunicazione}
+translate I EngineSelect {Seleziona il motore corrente}
+translate I EngineAddLocal {Aggiunge un motore locale}
+translate I EngineAddRemote {Aggiunge un motore remoto}
+translate I EngineReload {Ricarica il motore corrente}
+translate I EngineClone {Crea una copia del motore corrente}
+translate I EngineDelete {Elimina il motore corrente}
 
 # PGN window menus:
 menuText I PgnFile "File" 0

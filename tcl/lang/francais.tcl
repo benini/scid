@@ -674,6 +674,22 @@ translate F EngineRequired {Les champs en gras sont requis; les autres sont opti
 translate F EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate F EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate F EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate F EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate F EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate F EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate F EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate F EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate F EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate F EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText F PgnFile "Fichier" 0

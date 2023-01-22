@@ -692,6 +692,22 @@ translate H EngineRequired {A vastagbetûs mezõk szükségesek, a többiek kihagyhat
 translate H EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate H EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate H EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate H EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate H EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate H EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate H EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate H EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate H EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate H EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText H PgnFile "Fájl" 0

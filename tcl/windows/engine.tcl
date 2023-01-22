@@ -228,27 +228,39 @@ proc ::enginewin::createConfigButtons {id w} {
     bind $w.engine <<ComboboxSelected>> [list apply {{id} {
         ::enginewin::connectEngine $id [%W get]
     }} $id]
+    ::utils::tooltip::Set $w.engine [tr EngineSelect]
+
     ttk::button $w.addpipe -image tb_eng_add -command [list apply {{id} {
         if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
             ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
+    ::utils::tooltip::Set $w.addpipe [tr EngineAddLocal]
+
     ttk::button $w.addremote -image tb_eng_network -command [list apply {{id} {
         if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
             ::enginewin::connectEngine $id $newEngine
         }
     }} $id]
+    ::utils::tooltip::Set $w.addremote [tr EngineAddRemote]
+
     ttk::button $w.reload -image tb_eng_reload \
         -command "event generate $w.engine <<ComboboxSelected>>"
+    ::utils::tooltip::Set $w.reload [tr EngineReload]
+
     ttk::button $w.clone -image tb_eng_clone -command "
         ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
     "
+    ::utils::tooltip::Set $w.clone [tr EngineClone]
+
     ttk::button $w.delete -image tb_eng_delete -command [list apply {{id} {
         lassign [set ::enginewin::engConfig_$id] name
         if {[::enginecfg::remove $name]} {
             ::enginewin::connectEngine $id {}
         }
     }} $id]
+    ::utils::tooltip::Set $w.delete [tr EngineDelete]
+
     grid $w.engine $w.addpipe $w.addremote \
          $w.reload $w.clone $w.delete -sticky news
 }

@@ -694,6 +694,14 @@ translate E EngineEdit {Edit}
 translate E EngineRequired {Fields in bold are required; others are optional}
 translate E EngineProtocol {Communication protocol}
 translate E EngineNotation {Notation of the moves}
+translate E EngineFlipEvaluation {Flip evaluation perspective}
+translate E EngineShowLog {Show communication log}
+translate E EngineSelect {Select the current engine}
+translate E EngineAddLocal {Add a local engine}
+translate E EngineAddRemote {Add a remote engine}
+translate E EngineReload {Reload the current engine}
+translate E EngineClone {Create a copy of the current engine}
+translate E EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText E PgnFile "File" 0

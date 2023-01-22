@@ -717,6 +717,22 @@ translate U EngineRequired {Lihavoidut kentät ovat pakollisia}
 translate U EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate U EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate U EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate U EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate U EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate U EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate U EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate U EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate U EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate U EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText U PgnFile "Tiedosto" 0

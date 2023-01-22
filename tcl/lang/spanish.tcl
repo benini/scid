@@ -727,6 +727,22 @@ translate S EngineRequired {Los campos en negrita son obligatorios; los demás op
 translate S EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate S EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate S EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate S EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate S EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate S EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate S EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate S EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate S EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate S EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText S PgnFile "Archivo" 0

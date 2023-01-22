@@ -819,6 +819,22 @@ translate P EngineRequired {Pola wyt³uszczone s± konieczne; reszta opcjonalna}
 translate P EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate P EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate P EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate P EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate P EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate P EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate P EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate P EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate P EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate P EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText P PgnFile "Plik" 0

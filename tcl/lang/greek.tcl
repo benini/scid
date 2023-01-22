@@ -713,6 +713,22 @@ translate G EngineRequired {Τα παιδία με έντονη γραμματο
 translate G EngineProtocol {Communication protocol}
 # ====== TODO To be translated ======
 translate G EngineNotation {Notation of the moves}
+# ====== TODO To be translated ======
+translate G EngineFlipEvaluation {Flip evaluation perspective}
+# ====== TODO To be translated ======
+translate G EngineShowLog {Show communication log}
+# ====== TODO To be translated ======
+translate G EngineSelect {Select the current engine}
+# ====== TODO To be translated ======
+translate G EngineAddLocal {Add a local engine}
+# ====== TODO To be translated ======
+translate G EngineAddRemote {Add a remote engine}
+# ====== TODO To be translated ======
+translate G EngineReload {Reload the current engine}
+# ====== TODO To be translated ======
+translate G EngineClone {Create a copy of the current engine}
+# ====== TODO To be translated ======
+translate G EngineDelete {Delete the current engine}
 
 # PGN window menus:
 menuText G PgnFile "Αρχείο" 0
