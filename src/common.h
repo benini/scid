@@ -29,7 +29,7 @@
 typedef unsigned short versionT;
 const versionT SCID_VERSION = 400;     // Current file format version = 4.0
 
-const char SCID_VERSION_STRING[] = "4.8.0";     // Current Scid version
+const char SCID_VERSION_STRING[] = "5.0.0";     // Current Scid version
 
 
 
