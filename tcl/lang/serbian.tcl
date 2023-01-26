@@ -818,6 +818,8 @@ translate Y EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate Y EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate Y EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate Y EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate Y EngineAddLocal {Add a local engine}

@@ -678,6 +678,7 @@ translate I EngineProtocol {Protocollo di comunicazione}
 translate I EngineNotation {Notazione delle mosse}
 translate I EngineFlipEvaluation {Cambia la prospettiva di valutazione}
 translate I EngineShowLog {Mostra registro di comunicazione}
+translate I EngineNetworkd {Accetta connessioni remote}
 translate I EngineSelect {Seleziona il motore corrente}
 translate I EngineAddLocal {Aggiunge un motore locale}
 translate I EngineAddRemote {Aggiunge un motore remoto}

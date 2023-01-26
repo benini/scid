@@ -673,6 +673,8 @@ translate R EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate R EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate R EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate R EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate R EngineAddLocal {Add a local engine}

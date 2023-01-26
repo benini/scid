@@ -718,6 +718,8 @@ translate G EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate G EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate G EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate G EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate G EngineAddLocal {Add a local engine}

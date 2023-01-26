@@ -820,6 +820,8 @@ translate O EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate O EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate O EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate O EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate O EngineAddLocal {Add a local engine}

@@ -679,6 +679,8 @@ translate C EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate C EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate C EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate C EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate C EngineAddLocal {Add a local engine}

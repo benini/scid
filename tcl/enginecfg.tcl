@@ -292,7 +292,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     # Use the last element from the sorted list of the labels' width.
     $w configure -tabs [lindex [lsort -integer [lmap elem [list \
         EngineCmd EngineArgs EngineDir EngineProtocol EngineNotation \
-        EngineFlipEvaluation EngineShowLog LowPriority] {
+        EngineFlipEvaluation EngineShowLog LowPriority EngineNetworkd] {
              font measure font_Regular -displayof $w "[tr $elem]: "
         }]] end]
 
@@ -394,7 +394,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         }
     }
 
-    $w insert end "\nAccept network connections:\t"
+    $w insert end "\n[tr EngineNetworkd]:\t"
     ttk::combobox $w.netd -state readonly -width 12 -values {off on auto_port}
     $w window create end -window $w.netd -pady 2
     $w insert end "  port: "

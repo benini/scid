@@ -696,6 +696,7 @@ translate E EngineProtocol {Communication protocol}
 translate E EngineNotation {Notation of the moves}
 translate E EngineFlipEvaluation {Flip evaluation perspective}
 translate E EngineShowLog {Show communication log}
+translate E EngineNetworkd {Accept remote connections}
 translate E EngineSelect {Select the current engine}
 translate E EngineAddLocal {Add a local engine}
 translate E EngineAddRemote {Add a remote engine}

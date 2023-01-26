@@ -718,6 +718,8 @@ translate K EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate K EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate K EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate K EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate K EngineAddLocal {Add a local engine}

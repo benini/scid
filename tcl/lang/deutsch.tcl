@@ -693,6 +693,8 @@ translate D EngineFlipEvaluation {Flip evaluation perspective}
 # ====== TODO To be translated ======
 translate D EngineShowLog {Show communication log}
 # ====== TODO To be translated ======
+translate D EngineNetworkd {Accept remote connections}
+# ====== TODO To be translated ======
 translate D EngineSelect {Select the current engine}
 # ====== TODO To be translated ======
 translate D EngineAddLocal {Add a local engine}
