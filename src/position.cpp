@@ -2344,6 +2344,11 @@ errorT Position::ReadFromFEN(const char* str) {
     if (!str)
         return ERROR_InvalidFEN;
 
+    // Allow an extra '/' char at the end (just ignore it).
+    if (*str == '/') {
+        ++str;
+    }
+
     // Now the side to move:
     skip_spaces();
     switch (*str++) {
