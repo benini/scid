@@ -288,7 +288,13 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     set w $configFrame.text
 
     $w delete 1.0 end
-    $w configure -tabs [font measure font_Regular -displayof $w "Accept Network Connections:XXXXX"]
+
+    # Use the last element from the sorted list of the labels' width.
+    $w configure -tabs [lindex [lsort -integer [lmap elem [list \
+        EngineCmd EngineArgs EngineDir EngineProtocol EngineNotation \
+        EngineFlipEvaluation EngineShowLog LowPriority] {
+             font measure font_Regular -displayof $w "[tr $elem]: "
+        }]] end]
 
     if {$name == ""} {
         ::enginecfg::clearConfigFrame $configFrame
