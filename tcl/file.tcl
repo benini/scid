@@ -54,20 +54,24 @@ proc ::file::Exit {}  {
 #
 proc ::file::New {} {
   set ftype {
-    { "Scid databases" {".si4"} }
+    { "Scid5 databases" {".si5"} }
     { "PGN files" {".pgn" ".PGN"} }
+    { "Scid4 databases" {".si4"} }
   }
 
   set fName [tk_getSaveFile \
              -initialdir $::initialDir(base) \
              -filetypes $ftype \
-             -defaultextension ".si4" \
+             -defaultextension ".si5" \
              -title "Create a Scid database"]
 
   if {$fName == ""} { return }
   set file_extension [string tolower [file extension $fName]]
   set dbName $fName
-  if {$file_extension == ".si4"} {
+  if {$file_extension == ".si5"} {
+    set dbType "SCID5"
+    set dbName [file rootname $fName]
+  } elseif {$file_extension == ".si4"} {
     set dbType "SCID4"
   } elseif {$file_extension == ".pgn"} {
     set dbType "PGN"
@@ -123,9 +127,8 @@ proc ::file::openBaseAsTree { { fName "" } } {
 proc ::file::Open_ {{fName ""} } {
   if {$fName == ""} {
       set ftype {
-        { "All Scid files" {".si4" ".si3" ".pgn" ".epd"} }
-        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
-        { "Scid databases" {".si4" ".si3"} }
+        { "All Scid files" {".si5" ".si4" ".si3" ".pgn" ".epd"} }
+        { "Scid databases" {".si5" ".si4" ".si3"} }
         { "PGN files" {".pgn" ".PGN"} }
         { "EPD files" {".epd" ".EPD"} }
       }
@@ -136,6 +139,7 @@ proc ::file::Open_ {{fName ""} } {
 
   set ext [string tolower [file extension "$fName"] ]
   set dbName $fName
+  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
   if {[sc_base slot $dbName] != 0} {
     tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
     return 1
@@ -169,7 +173,9 @@ proc ::file::Open_ {{fName ""} } {
       ::recentFiles::add "$fName"
     }
   } else {
-    if {$ext == ".si4" || $ext eq ""} {
+    if {$ext == ".si5"} {
+      set dbType "SCID5"
+    } elseif {$ext == ".si4" || $ext eq ""} {
       set dbType "SCID4"
     } else {
       tk_messageBox -title "Scid: opening file" -message "Unsupported database format:  $ext"
