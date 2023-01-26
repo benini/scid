@@ -425,6 +425,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
 proc ::enginecfg::createOptionWidgets {id configFrame options} {
     set w $configFrame.text
 
+    set tab_width 0
     set disableReset 1
     for {set i 0} {$i < [llength $options]} {incr i} {
         lassign [lindex $options $i] name value type default min max var_list internal
@@ -437,7 +438,12 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
                 -command "::enginecfg::onSubmitReset $id $configFrame"
             $w window create end -window $w.reset
         }
-        $w insert end "\n$name\t"
+        $w insert end "\n$name:" opt_label "\t"
+        set label_width [font measure font_Regular -displayof $w "$name: "]
+        if {$label_width > $tab_width} {
+            set tab_width $label_width
+            $w tag configure opt_label -tabs $tab_width
+        }
         set btn ""
         if {$type eq "button" || $type eq "save" || $type eq "reset"} {
             set btn $name
@@ -467,12 +473,12 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
                 bind $w.value$i <FocusOut> "::enginecfg::onSubmitOption $id $i $w.value$i"
                 bind $w.value$i <Return> [bind $w.value$i <FocusOut>]
             }
-            $w window create end -window $w.value$i
+            $w window create end -window $w.value$i -pady 2
         }
         if {$btn ne ""} {
             ttk::button $w.button$i -style Pad0.Small.TButton -text $btn \
                 -command "::enginecfg::onSubmitButton $id $i"
-            $w window create end -window $w.button$i
+            $w window create end -window $w.button$i -padx 2 -pady 2
         } elseif {$type eq "spin" || $type eq "slider"} {
             $w insert end " (Range: $min ... $max)"
         }
