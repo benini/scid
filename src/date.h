@@ -167,17 +167,21 @@ date_EncodeFromString (const char * str)
  * @returns the dateT object corresponding to @e str.
  */
 inline dateT date_parsePGNTag(const char* str, size_t len) {
-	char tmp[10] = {0};
-	std::transform(str, str + std::min<size_t>(len, 10), tmp, [](char ch) {
-		return (ch >= '0' && ch <= '9') ? ch - '0' : 0;
-	});
+	int tmp[10] = {0};
+	std::transform(str, str + std::min<size_t>(len, 10), tmp,
+	               [](unsigned char ch) { return ch - '0'; });
+	tmp[4] = 0;
+	tmp[7] = 0;
+	if (len < 4 ||
+	    std::any_of(tmp, tmp + 10, [](auto v) { return v < 0 || v > 9; }))
+		return {};
 
 	uint32_t year = tmp[0] * 1000 + tmp[1] * 100 + tmp[2] * 10 + tmp[3];
 	uint32_t month = tmp[5] * 10 + tmp[6];
 	uint32_t day = tmp[8] * 10 + tmp[9];
 
 	if (year > YEAR_MAX)
-		year = 0;
+		return {};
 
 	if (month > 12)
 		month = 0;
