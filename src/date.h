@@ -167,30 +167,44 @@ date_EncodeFromString (const char * str)
  * @returns the dateT object corresponding to @e str.
  */
 inline dateT date_parsePGNTag(const char* str, size_t len) {
-	int tmp[10] = {0};
-	std::transform(str, str + std::min<size_t>(len, 10), tmp,
-	               [](unsigned char ch) { return ch - '0'; });
-	tmp[4] = 0;
-	tmp[7] = 0;
-	if (len < 4 ||
-	    std::any_of(tmp, tmp + 10, [](auto v) { return v < 0 || v > 9; }))
+	auto to_int = [](unsigned char ch) {
+		return ch - static_cast<unsigned char>('0');
+	};
+	auto is_digit = [](auto v) { return v >= 0 && v <= 9; };
+
+	if (len < 4)
 		return {};
 
+	int tmp[4];
+	std::transform(str, str + 4, tmp, to_int);
 	uint32_t year = tmp[0] * 1000 + tmp[1] * 100 + tmp[2] * 10 + tmp[3];
-	uint32_t month = tmp[5] * 10 + tmp[6];
-	uint32_t day = tmp[8] * 10 + tmp[9];
-
-	if (year > YEAR_MAX)
+	if (!std::all_of(tmp, tmp + 4, is_digit) || year > YEAR_MAX)
 		return {};
 
-	if (month > 12)
-		month = 0;
+	uint32_t month = 0;
+	if (len > 6) {
+		auto d1 = to_int(str[5]);
+		auto d2 = to_int(str[6]);
+		if (is_digit(d1) && is_digit(d2)) {
+			month = d1 * 10 + d2;
+			if (month > 12)
+				month = 0;
+		}
+	}
 
-	constexpr unsigned char days[] = {31, 31, 28, 31, 30, 31, 30,
-	                                  31, 31, 30, 31, 30, 31};
-	if (day > days[month]) {
-		if (day != 29 || year % 4 || (year % 100 == 0 && year % 400)) {
-			day = 0;
+	uint32_t day = 0;
+	if (len > 9) {
+		auto d1 = to_int(str[8]);
+		auto d2 = to_int(str[9]);
+		if (is_digit(d1) && is_digit(d2)) {
+			day = d1 * 10 + d2;
+			constexpr unsigned char days[] = {31, 31, 28, 31, 30, 31, 30,
+			                                  31, 31, 30, 31, 30, 31};
+			if (day > days[month]) {
+				if (day != 29 || year % 4 || (year % 100 == 0 && year % 400)) {
+					day = 0;
+				}
+			}
 		}
 	}
 
