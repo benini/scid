@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 project(scid)
 set(CPACK_PACKAGE_VERSION 5.0.0)
 set(
@@ -41,6 +41,48 @@ endif()
 
 find_package(Threads)
 find_package(TCL)
+# find_package(RocksDB)
+include(FetchContent)
+FetchContent_Declare(
+  lz4
+  GIT_REPOSITORY https://github.com/lz4/lz4.git
+  GIT_TAG        v1.9.3
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
+  SOURCE_SUBDIR  build/cmake
+)
+FetchContent_MakeAvailable(lz4)
+FetchContent_Declare(
+  zstd
+  GIT_REPOSITORY https://github.com/facebook/zstd.git
+  GIT_TAG        v1.5.1
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
+  SOURCE_SUBDIR  build/cmake
+)
+FetchContent_MakeAvailable(zstd)
+FetchContent_Declare(
+  rocksdb
+  GIT_REPOSITORY https://github.com/facebook/rocksdb.git
+  GIT_TAG        v6.20.3
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
+)
+FetchContent_GetProperties(rocksdb)
+if(NOT rocksdb_POPULATED)
+  FetchContent_Populate(rocksdb)
+  set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+  set(ROCKSDB_BUILD_SHARED OFF)
+  add_subdirectory(${rocksdb_SOURCE_DIR} ${rocksdb_BINARY_DIR} EXCLUDE_FROM_ALL)
+  target_include_directories(rocksdb INTERFACE ${rocksdb_SOURCE_DIR}/include)
+  target_compile_definitions(rocksdb PRIVATE -DLZ4)
+  target_include_directories(rocksdb PRIVATE ${lz4_SOURCE_DIR}/lib)
+  target_link_libraries(rocksdb PRIVATE lz4_static)
+  target_compile_definitions(rocksdb PRIVATE -DZSTD -DZSTD_STATIC_LINKING_ONLY)
+  target_include_directories(rocksdb PRIVATE ${zstd_SOURCE_DIR}/lib)
+  target_link_libraries(rocksdb PRIVATE libzstd_static)
+endif()
+
 
 # polyglot
 file(GLOB POLYGLOT_SRC src/polyglot/*.cpp)

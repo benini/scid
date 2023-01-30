@@ -1,7 +1,7 @@
 lassign $argv codec basename srccodec srcbasename
 
 if {$codec eq "" || $basename eq ""} {
-    puts "Usage: scid benchmark_codec.tcl <SCID5|SCID4|PGN> basename ?SRC_CODEC SRC_BASE?"
+    puts "Usage: scid benchmark_codec.tcl <SCID5|SCID4|PGN|ROCKSDB> basename ?SRC_CODEC SRC_BASE?"
     exit 1
 }
 

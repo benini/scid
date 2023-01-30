@@ -1,0 +1,19 @@
+Benchmark using the 88+ million games of 2021-11 lichess database (https://database.lichess.org/standard/lichess_db_standard_rated_2021-11.pgn.bz2)
+
+lichess_db_standard_rated_2021-11.pgn.bz2 - 22.1 GB
+lichess_db_standard_rated_2021-11.pgn - 187 GB
+Windows 10 - Ryzen 3600 - 16GB RAM - SSD Samsung 970 EVO Plus
+
+Load (319 ms) 3000000 games: C:\Users\user\Downloads\test (SCID4)
+Imported (24079 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
+Open (236 ms) 3000000 games: C:\Users\user\Downloads\test_rocks (ROCKSDB)
+Search pos (913 ms): 69718 games - r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq
+Search pos (73 ms): 0 games - r4rk1/p2n1ppp/1p3n2/2p5/2PP4/4BN2/P4PPP/R3R1K1 w
+Search pos (52 ms): 0 games - 5k2/2R2p1p/3p2p1/p7/8/r5P1/4KP1P/8 w
+Search pos (508 ms): 204 games - r2qkb1r/pp2pppp/2bp1n2/6B1/3QP3/2N2N2/PPP2PPP/R3K2R b KQkq
+Search pos (34 ms): 0 games - k6r/1pQ2pp1/pBq1p2p/8/3R1P1P/bPK5/2P5/8 w
+Search pos (154 ms): 32767 games - r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq
+Search pos (32 ms): 0 games - r2nr1k1/pp2B2p/q3bQp1/4p1N1/4P3/7P/2P3P1/1R3RK1 w
+Search pos (73 ms): 801 games - rnbqk1nr/ppp1ppbp/3p2p1/8/3PPP2/2N5/PPP3PP/R1BQKBNR b KQkq
+Collect tags (17778 ms): C:\Users\user\Downloads\test_rocks (ROCKSDB)
+BlackRatingDiff 2991447 BlackTitle 17051 Opening 3000000 Termination 3000000 TimeControl 3000000 UTCDate 3000000 UTCTime 3000000 WhiteRatingDiff 2991447 WhiteTitle 16750
