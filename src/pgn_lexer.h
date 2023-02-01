@@ -152,7 +152,8 @@ template <typename TView> char is_PGNtermination(TView tok) {
  * @param input:   the input to get data from.
  * @param parser:  will receive the tokens via visitPGN_* functions.
  * @param section: -1 pregame, 0 for tag pair section, 1 for movetext section.
- * @returns the result of the invoked parser's function.
+ * @return: false if it parsed the last token of the game, otherwise return the
+ *          result of the parser's invoked function.
  */
 template <typename TInput, typename TVisitor>
 bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
@@ -176,7 +177,8 @@ bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
 		return true;
 
 	case '*': // self terminating
-		return parser.visitPGN_ResultFinal('*');
+		parser.visitPGN_ResultFinal('*');
+		return false;
 
 	case '(': // self terminating
 		return parser.visitPGN_VariationStart();
@@ -277,8 +279,10 @@ bool parse_token(char ch, TInput& input, TVisitor& parser, int& section) {
 	if (notdigit == tok.second)
 		return parser.visitPGN_MoveNum(tok);
 
-	if (auto result = is_PGNtermination(tok))
-		return parser.visitPGN_ResultFinal(result);
+	if (auto result = is_PGNtermination(tok)) {
+		parser.visitPGN_ResultFinal(result);
+		return false;
+	}
 
 	return parser.visitPGN_Unknown(tok);
 }

@@ -47,19 +47,15 @@ class PgnVisitor {
 public:
 	explicit PgnVisitor(Game& g) : game(g) {}
 
-	bool visitPGN_inputEOF() {
-		if (nErrorsAllowed_ < 0) // Skip until the end of the game
-			return true;
-
-		return logErr("Unexpected end of input (result missing ?).");
+	void visitPGN_inputEOF() {
+		if (nErrorsAllowed_)
+			logErr("Unexpected end of input (result missing ?).");
 	}
 
-	bool visitPGN_inputUnexpectedPGNHeader() {
-		if (nErrorsAllowed_ < 0) // Skip until the end of the game
-			return true;
-
-		return logErr("Unexpected end of game: PGN header '[' seen "
-		              "inside game (result missing ?).");
+	void visitPGN_inputUnexpectedPGNHeader() {
+		if (nErrorsAllowed_)
+			logErr("Unexpected end of game: PGN header '[' seen "
+			       "inside game (result missing ?).");
 	}
 
 	bool visitPGN_Comment(TView comment) {
@@ -81,17 +77,18 @@ public:
 		return true;
 	}
 
-	bool visitPGN_EPD(TView line) {
+	void visitPGN_EPD(TView line) {
 		ASSERT(nErrorsAllowed_ >= 0);
 		std::string tmp(line.first, line.second);
-		if (game.SetStartFen(tmp.c_str()) != OK)
-			return logErr("Failed to parse EPD record: ", line);
-
-		int spaces = 0;
-		auto opcode = std::find_if(line.first, line.second, [&](char ch) {
-			return (ch == ' ') ? spaces++ == 4 : spaces == 4;
-		});
-		return visitPGN_Comment(std::make_pair(opcode, line.second));
+		if (game.SetStartFen(tmp.c_str()) == OK) {
+			auto opcode = std::find_if(
+			    line.first, line.second, [spaces = 0](char ch) mutable {
+				    return (ch == ' ') ? spaces++ == 4 : spaces == 4;
+			    });
+			visitPGN_Comment(std::make_pair(opcode, line.second));
+		} else {
+			logFatalErr("Failed to parse EPD record: ", line);
+		}
 	}
 
 	bool visitPGN_Escape(TView) { return true; }
@@ -109,7 +106,7 @@ public:
 		return true;
 	}
 
-	bool visitPGN_ResultFinal(char resultCh) {
+	void visitPGN_ResultFinal(char resultCh) {
 		auto result = RESULT_None;
 		switch (resultCh) {
 		case '0':
@@ -132,7 +129,6 @@ public:
 			if (prev_result != RESULT_None && nErrorsAllowed_ >= 0)
 				logErr("Final result did not match the header tag.");
 		}
-		return false;
 	}
 
 	bool visitPGN_SANMove(TView tok) {
@@ -371,7 +367,7 @@ inline bool pgnParseGame(const char* input, size_t inputLen, Game& game,
                          PgnParseLog& log) {
 	struct VisitorNoEOF : public PgnVisitor {
 		explicit VisitorNoEOF(Game& g) : PgnVisitor(g) {}
-		bool visitPGN_inputEOF() { return true; }
+		void visitPGN_inputEOF() {}
 	} visitor(game);
 
 	auto parse = pgn::parse_game({input, input + inputLen}, visitor);
