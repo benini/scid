@@ -167,45 +167,38 @@ date_EncodeFromString (const char * str)
  * @returns the dateT object corresponding to @e str.
  */
 inline dateT date_parsePGNTag(const char* str, size_t len) {
-	auto to_int = [](unsigned char ch) {
-		return ch - static_cast<unsigned char>('0');
-	};
 	auto is_digit = [](auto v) { return v >= 0 && v <= 9; };
 
-	if (len < 4)
+	if (len < 4 || len > 10)
 		return {};
 
-	int tmp[4];
-	std::transform(str, str + 4, tmp, to_int);
+	int tmp[10];
+	std::transform(str, str + len, tmp, [](unsigned char ch) {
+		return ch - static_cast<unsigned char>('0');
+	});
+	std::fill(tmp + len, tmp + 10, -1);
+
 	uint32_t year = tmp[0] * 1000 + tmp[1] * 100 + tmp[2] * 10 + tmp[3];
 	if (!std::all_of(tmp, tmp + 4, is_digit) || year > YEAR_MAX)
 		return {};
 
 	uint32_t month = 0;
-	if (len > 6) {
-		auto d1 = to_int(str[5]);
-		auto d2 = to_int(str[6]);
-		if (is_digit(d1) && is_digit(d2)) {
-			month = d1 * 10 + d2;
-			if (month > 12)
-				month = 0;
+	if (!is_digit(tmp[4]) && is_digit(tmp[5])) {
+		if (!is_digit(tmp[6])) {
+			// Accept the format YYYY.M.DD or YYYY.M.D
+			std::rotate(tmp + 5, tmp + 9, tmp + 10);
+			tmp[5] = 0;
 		}
+		month = tmp[5] * 10 + tmp[6];
+		if (month > 12)
+			month = 0;
 	}
 
 	uint32_t day = 0;
-	if (len > 9) {
-		auto d1 = to_int(str[8]);
-		auto d2 = to_int(str[9]);
-		if (is_digit(d1) && is_digit(d2)) {
-			day = d1 * 10 + d2;
-			constexpr unsigned char days[] = {31, 31, 28, 31, 30, 31, 30,
-			                                  31, 31, 30, 31, 30, 31};
-			if (day > days[month]) {
-				if (day != 29 || year % 4 || (year % 100 == 0 && year % 400)) {
-					day = 0;
-				}
-			}
-		}
+	if (!is_digit(tmp[7]) && is_digit(tmp[8])) {
+		day = is_digit(tmp[9]) ? tmp[8] * 10 + tmp[9] : tmp[8];
+		if (day > 31)
+			day = 0;
 	}
 
 	return (year << YEAR_SHIFT) | (month << MONTH_SHIFT) | (day << DAY_SHIFT);
