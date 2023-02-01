@@ -75,13 +75,10 @@ date_GetDay (dateT date)
     return (uint32_t) (date & 31);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//### date_GetMonthDay():
-//      Get the month and day; used to check for year-only dates. S.A
-inline uint32_t
-date_GetMonthDay (dateT date)
-{
-    return (uint32_t) (date & 511);
+// Return true if the date does not include the year, the month or the day.
+inline bool date_isPartial(dateT date) {
+	return date_GetYear(date) == 0 || date_GetMonth(date) == 0 ||
+	       date_GetDay(date) == 0;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

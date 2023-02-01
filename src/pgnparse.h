@@ -27,6 +27,7 @@
 #include "game.h"
 #include "pgn_lexer.h"
 #include <string>
+#include <string_view>
 #include <vector>
 
 /**
@@ -160,12 +161,28 @@ public:
 		if (tagLen == 0 || tagLen + valueLen > 240 ||
 		    !parseTagPair(tag.first, tagLen, value)) // Failure
 		{
-			std::string err(tag.first, tag.second);
-			err.append(" \"");
-			err.append(value.first, value.second);
-			err.push_back('"');
-			logErr("Error parsing the tag pair: ",
-			       {err.c_str(), err.c_str() + err.size()});
+			const auto tag_sv = std::string_view(tag.first, tagLen);
+			const auto value_sv = std::string_view(value.first, valueLen);
+			std::string tag_parsed;
+			std::string value_parsed;
+			game.viewTagPairs([&](auto game_tag, auto game_value) {
+				if (tag_sv == game_tag) {
+					tag_parsed = game_tag;
+					value_parsed = game_value;
+				}
+			});
+			if (tag_sv != tag_parsed || value_sv != value_parsed) {
+				std::string err(tag_sv);
+				err.append(" \"");
+				err.append(value_sv);
+				err.append("\" ==> ");
+				err.append(tag_parsed);
+				err.append(" \"");
+				err.append(value_parsed);
+				err.push_back('"');
+				logWarning("Error parsing the tag pair: ",
+				           {err.c_str(), err.c_str() + err.size()});
+			}
 		}
 		return true;
 	}
@@ -268,8 +285,9 @@ private:
 			break;
 		case 4:
 			if (std::equal(tag, tag + 4, "Date")) {
-				game.SetDate(date_parsePGNTag(value));
-				return true;
+				const auto date = date_parsePGNTag(value);
+				game.SetDate(date);
+				return !date_isPartial(date);
 			}
 			break;
 		case 6:
@@ -280,13 +298,16 @@ private:
 			if (std::equal(tag, tag + 7, "UTCDate") &&
 			    game.GetDate() == ZERO_DATE) {
 				// Add two tags: "UTCDate" and the standard "Date".
-				game.SetDate(date_parsePGNTag(value));
+				const auto date = date_parsePGNTag(value);
+				if (!date_isPartial(date))
+					game.SetDate(date);
 			}
 			break;
 		case 9:
 			if (std::equal(tag, tag + 9, "EventDate")) {
-				game.SetEventDate(date_parsePGNTag(value));
-				return true;
+				const auto date = date_parsePGNTag(value);
+				game.SetEventDate(date);
+				return !date_isPartial(date);
 			}
 			if (std::equal(tag, tag + 9, "ScidFlags")) {
 				game.SetScidFlags(value.first,
