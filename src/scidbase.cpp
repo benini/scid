@@ -290,8 +290,13 @@ errorT scidBaseT::setFlag(bool value, uint flag, uint gNum) {
 	if (auto errModify = beginTransaction())
 		return errModify;
 
+	// Preserve the duplicate list when just a single flag is changed.
+	auto keep_duplicates = extractDuplicates();
+
 	const auto res = codec_->saveIndexEntry(ie, gNum);
 	const auto err = endTransaction(gNum);
+
+	setDuplicates(std::move(keep_duplicates));
 	return res != OK ? res : err;
 }
 
