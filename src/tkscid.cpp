@@ -1844,6 +1844,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc >= 7 && argc <=9) {
             FILE* exportFile = fopen(argv[5], "wb");
             if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
+            auto old_language = language;
             Game g;
             if (strCompare("LaTeX", argv[6]) == 0) {
                 g.SetPgnFormat (PGN_FORMAT_LaTeX);
@@ -1851,6 +1852,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             } else { //Default to PGN
                 g.SetPgnFormat (PGN_FORMAT_Plain);
                 g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS);
+                language = 0;
             }
             if (argc > 7) fprintf(exportFile, "%s", argv[7]);
             Progress progress = UI_CreateProgress(ti);
@@ -1875,6 +1877,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             if (err == OK && argc > 8)
                 fprintf(exportFile, "%s", argv[8]);
+            language = old_language;
             fclose (exportFile);
             delete[] idxList;
             return UI_Result(ti, err);
