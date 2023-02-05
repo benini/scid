@@ -21,8 +21,7 @@ if { $macOS } {
   $m add separator
 
   # To Quit
-  bind all <Command-q> "exit"
-  bind all <Command-Q> "exit"
+  proc ::tk::mac::Quit { ::file::Exit }
 
   ## To get Help
   bind all <Command-?> {helpWindow Contents}
