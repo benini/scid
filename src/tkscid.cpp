@@ -894,11 +894,6 @@ UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
     }
     const gamenumT numGames = dbase->numGames();
 
-    Filter tmp_filter(numGames);
-    HFilter filter = setFilterToDups ? dbase->getFilter("dbfilter")
-                                     : HFilter(&tmp_filter);
-    filter.clear();
-
     // Setup duplicates array:
     auto duplicates = std::make_unique<gamenumT[]>(numGames);
 
@@ -932,6 +927,10 @@ UI_res_t sc_base_duplicates(scidBaseT* dbase, UI_handle_t ti, int argc,
     hash.resize(n_hash);
     std::sort(hash.begin(), hash.end());
 
+    Filter tmp_filter(numGames);
+    HFilter filter = setFilterToDups ? dbase->getFilter("dbfilter")
+                                     : HFilter(&tmp_filter);
+    filter.clear();
     Progress progress = UI_CreateProgress(ti);
     // Now check same-hash games for duplicates:
     for (size_t i=0; i < n_hash; i++) {

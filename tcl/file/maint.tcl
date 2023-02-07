@@ -416,7 +416,7 @@ proc markTwins {{parent .}} {
       focus .
       destroy .twinSettings
       if {$result > 0} {
-        ::notify::DatabaseChanged
+        ::notify::DatabaseModified [sc_base current]
         set gn [sc_filter first]
         ::game::Load $gn
         updateTwinChecker
