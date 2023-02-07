@@ -173,9 +173,9 @@ proc ::file::Open_ {{fName ""} } {
       ::recentFiles::add "$fName"
     }
   } else {
-    if {$ext == ".si5"} {
+    if {$ext == ".si5" || $ext eq ""} {
       set dbType "SCID5"
-    } elseif {$ext == ".si4" || $ext eq ""} {
+    } elseif {$ext == ".si4"} {
       set dbType "SCID4"
     } else {
       tk_messageBox -title "Scid: opening file" -message "Unsupported database format:  $ext"
