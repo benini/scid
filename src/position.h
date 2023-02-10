@@ -221,6 +221,7 @@ public:
         return Castling & (1u << castlingIdx(c, dir));
     }
     byte GetCastlingFlags() const { return Castling; }
+    bool validCastlingFlag(colorT color, bool king_side) const;
 
     // Hashing
     inline uint HashValue (void) { return Hash; }

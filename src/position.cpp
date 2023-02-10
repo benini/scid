@@ -283,6 +283,20 @@ bool Position::under_attack(squareT target_sq) const {
 	                    [&](auto sq) { return GetPiece(sq) != EMPTY; });
 }
 
+// Sanity checks for castling flags.
+// Return true if the corresponding castling flag is set, there is a rook in the
+// expected square, and the king is in the same first rank of the rook.
+bool Position::validCastlingFlag(colorT color, bool king_side) const {
+	if (!GetCastling(color, king_side ? KSIDE : QSIDE))
+		return false;
+
+	const auto kingFrom = GetKingSquare(color);
+	const auto rookFrom = castleRookSq(color, king_side);
+	return Board[rookFrom] == piece_Make(color, ROOK) &&
+	       square_Rank(kingFrom) == square_Rank(rookFrom) &&
+	       square_Rank(kingFrom) == rank_Relative(color, RANK_1);
+}
+
 template <bool check_legal> bool Position::canCastle(bool king_side) const {
 	if (check_legal && !GetCastling(ToMove, king_side ? KSIDE : QSIDE))
 		return false;
@@ -319,6 +333,7 @@ template <bool check_legal> bool Position::canCastle(bool king_side) const {
 	return true;
 }
 template bool Position::canCastle<false>(bool king_side) const;
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::GenCastling():
@@ -422,16 +437,16 @@ Position::IsValidEnPassant (squareT from, squareT to)
     ASSERT (Board[from] == ownPawn);
     ASSERT (Board[enemyPawnSq] == enemyPawn);
     Board[from] = EMPTY;
-    
+
     // PG
     Board[to] = ownPawn;
-    
+
     Board[enemyPawnSq] = EMPTY;
     bool isValid = ! IsKingInCheck();
-    
+
     //PG
     Board[to] = EMPTY;
-    
+
     Board[from] = ownPawn;
     Board[enemyPawnSq] = enemyPawn;
     return isValid;
@@ -2547,33 +2562,33 @@ void Position::PrintFEN(char* str) const {
 
     // Add the castling flags and EP flag as well:
     *str++ = ' ';
-    if (Castling == 0) {
+    const auto no_flags = str;
+    if (validCastlingFlag(WHITE, true)) {
+        auto rook_sq = castleRookSq(WHITE, true);
+        *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, H1)
+                     ? toupper(square_FyleChar(rook_sq))
+                     : 'K';
+    }
+    if (validCastlingFlag(WHITE, false)) {
+        auto rook_sq = castleRookSq(WHITE, false);
+        *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, A1)
+                     ? toupper(square_FyleChar(rook_sq))
+                     : 'Q';
+    }
+    if (validCastlingFlag(BLACK, true)) {
+        auto rook_sq = castleRookSq(BLACK, true);
+        *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, H8)
+                     ? square_FyleChar(rook_sq)
+                     : 'k';
+    }
+    if (validCastlingFlag(BLACK, false)) {
+        auto rook_sq = castleRookSq(BLACK, false);
+        *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, A8)
+                     ? square_FyleChar(rook_sq)
+                     : 'q';
+    }
+    if (str == no_flags) {
         *str++ = '-';
-    } else {
-        if (GetCastling(WHITE, KSIDE)) {
-            auto rook_sq = castleRookSq(WHITE, true);
-            *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, H1)
-                         ? toupper(square_FyleChar(rook_sq))
-                         : 'K';
-        }
-        if (GetCastling(WHITE, QSIDE)) {
-            auto rook_sq = castleRookSq(WHITE, false);
-            *str++ = isChess960() && rook_sq != find_castle_rook(WHITE, A1)
-                         ? toupper(square_FyleChar(rook_sq))
-                         : 'Q';
-        }
-        if (GetCastling(BLACK, KSIDE)) {
-            auto rook_sq = castleRookSq(BLACK, true);
-            *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, H8)
-                         ? square_FyleChar(rook_sq)
-                         : 'k';
-        }
-        if (GetCastling(BLACK, QSIDE)) {
-            auto rook_sq = castleRookSq(BLACK, false);
-            *str++ = isChess960() && rook_sq != find_castle_rook(BLACK, A8)
-                         ? square_FyleChar(rook_sq)
-                         : 'q';
-        }
     }
     *str++ = ' ';
 

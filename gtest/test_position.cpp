@@ -20,6 +20,7 @@
 #include "searchpos.h"
 #include <cstring>
 #include <gtest/gtest.h>
+#include <unordered_set>
 
 TEST(Test_movegen, attack) {
 	const int empty = 1234;
@@ -772,5 +773,79 @@ TEST(Test_PrintFen, castling_flag_qside) {
 		game.currentPos()->PrintFEN(buf);
 		EXPECT_STREQ(buf, expected);
 		game.MoveForwardInPGN();
+	}
+}
+
+TEST(Test_PrintFen, illegal_castling_flag) {
+	std::unordered_set<std::string> flags;
+	flags.insert("KQkq");
+	std::string str = "KQkq";
+	for (int len = 1; len <= 3; len++) {
+		for (int i = 0; i <= str.length() - len; i++) {
+			flags.insert(str.substr(i, len));
+		}
+	}
+
+	// Any flag is valid
+	for (auto color : {'w', 'b'}) {
+		for (auto const& flag : flags) {
+			std::string fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR ";
+			fen.append(1, color).append(1, ' ').append(flag).append(" - 0 1");
+			Position pos;
+			pos.ReadFromFEN(fen.c_str());
+			char buf[1024];
+			pos.PrintFEN(buf);
+			EXPECT_STREQ(buf, fen.c_str());
+		}
+	}
+
+	// No valid flags
+	for (auto color : {'w', 'b'}) {
+		for (auto const& flag : flags) {
+			std::string fen = "1nbqkbn1/pppppppp/8/8/4P3/8/PPPP1PPP/1NBQKBN1 ";
+			fen.append(1, color).append(1, ' ');
+			auto expected = fen;
+			expected.append("-").append(" - 0 1");
+			fen.append(flag).append(" - 0 1");
+			Position pos;
+			pos.ReadFromFEN(fen.c_str());
+			char buf[1024];
+			pos.PrintFEN(buf);
+			EXPECT_STREQ(buf, expected.c_str());
+		}
+	}
+
+	// Only white short castle (K) is valid
+	for (auto color : {'w', 'b'}) {
+		for (auto const& flag : flags) {
+			std::string fen = "4k3/8/8/8/8/8/8/4K2R ";
+			fen.append(1, color).append(1, ' ');
+			auto expected = fen;
+			expected.append(flag.find('K') != std::string::npos ? "K" : "-");
+			expected.append(" - 0 1");
+			fen.append(flag).append(" - 0 1");
+			Position pos;
+			pos.ReadFromFEN(fen.c_str());
+			char buf[1024];
+			pos.PrintFEN(buf);
+			EXPECT_STREQ(buf, expected.c_str());
+		}
+	}
+
+	// Only black long castle (q) is valid
+	for (auto color : {'w', 'b'}) {
+		for (auto const& flag : flags) {
+			std::string fen = "rn1qkb1R/pp2pp2/3p1n2/2p5/8/2P1QN2/5KPP/R1B2B2 ";
+			fen.append(1, color).append(1, ' ');
+			auto expected = fen;
+			expected.append(flag.find('q') != std::string::npos ? "q" : "-");
+			expected.append(" - 0 1");
+			fen.append(flag).append(" - 0 1");
+			Position pos;
+			pos.ReadFromFEN(fen.c_str());
+			char buf[1024];
+			pos.PrintFEN(buf);
+			EXPECT_STREQ(buf, expected.c_str());
+		}
 	}
 }
