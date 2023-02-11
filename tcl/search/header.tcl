@@ -34,10 +34,10 @@ proc checkDates {} {
   if {[string length $sDateMax] == 4} { append sDateMax ".12.31" }
   if {[string length $sDateMin] == 7} { append sDateMin ".??" }
   if {[string length $sDateMax] == 7} { append sDateMax ".31" }
-  if {[string length $sEventDateMin] == 4} { append sDateMin ".??.??" }
-  if {[string length $sEventDateMax] == 4} { append sDateMax ".12.31" }
-  if {[string length $sEventDateMin] == 7} { append sDateMin ".??" }
-  if {[string length $sEventDateMax] == 7} { append sDateMax ".31" }
+  if {[string length $sEventDateMin] == 4} { append sEventDateMin ".??.??" }
+  if {[string length $sEventDateMax] == 4} { append sEventDateMax ".12.31" }
+  if {[string length $sEventDateMin] == 7} { append sEventDateMin ".??" }
+  if {[string length $sEventDateMax] == 7} { append sEventDateMax ".31" }
 }
 
 proc ::search::header::defaults {} {
