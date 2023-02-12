@@ -39,10 +39,12 @@ proc importPgnGame {} {
   $pane.err.text insert end $::tr(ImportHelp2)
   $pane.err.text configure -state disabled
   pack $pane.err.f -side left -expand true -fill both
-  
+
   ttk::button $w.b.paste -text "$::tr(PasteCurrentGame) (Alt-P)" -command {
     .importWin.pane.edit.text delete 1.0 end
+    setLanguageTemp E
     .importWin.pane.edit.text insert end [sc_game pgn -width 70]
+    setLanguageTemp $::language
     .importWin.pane.err.text configure -state normal
     .importWin.pane.err.text delete 1.0 end
     .importWin.pane.err.text configure -state disabled
