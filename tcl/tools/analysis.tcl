@@ -1001,7 +1001,6 @@ proc markExercise { prevscore score nag} {
     
     # The best move is much better than others.
     if { [llength $::analysis(multiPV1)] < 2 } {
-        puts "error, not enough PV"
         return 0
     }
     set sc2 [lindex [ lindex $::analysis(multiPV1) 1 ] 1]
@@ -1025,7 +1024,6 @@ proc markExercise { prevscore score nag} {
         set bm$depth [lindex $res 1]
     }
     if { $bm0 == $bm1 && $bm0 == $bm2 && $bm0 == $bm3 } {
-        puts "obvious move"
         return 0
     }
     
