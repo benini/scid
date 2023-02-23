@@ -388,9 +388,9 @@ proc ::tree::dorefresh { baseNumber } {
 
   ::tree::restoreButtons $w
   ::tree::status "" $baseNumber
-  if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
-
   displayLines $baseNumber $moves
+
+  if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
 
   if {$::tree::trainingBase != 0 && $::tree::trainingColor == [sc_pos side]} {
     ::tree::doTraining
