@@ -20,12 +20,39 @@ set spellcheckAmbiguous 0
 #
 set spellstate idle
 
-# readSpellCheckFile:
+# loadSpellCheckFile:
 #    Presents a File Open dialog box for a Scid spellcheck file,
 #    then tries to read the file. If the parameter "message" is true
 #    (which is the default), a message box indicating the results
 #    is displayed.
 #
+proc loadSpellCheckFile {{message 1}} {
+  global spellCheckFile
+  set ftype { { "Scid Spellcheck files" {".ssp"} } }
+  set fullname [tk_getOpenFile -initialdir [file dirname $spellCheckFile] -filetypes $ftype -title "Open Spellcheck file"]
+  if {![string compare $fullname ""]} { return "" }
+
+  progressWindow "Scid - [tr Spellcheking]" "Loading $fullname ..."
+  set err [catch {sc_name read $fullname} result]
+  closeProgressWindow
+  if {$err} {
+      if {$message} {
+        tk_messageBox -title "ERROR: Unable to read file" -type ok \
+          -icon error -message "Scid could not correctly read the spellcheck file you selected:\n\n$result"
+      }
+    return ""
+  }
+  set spellCheckFile $fullname
+  if {$message} {
+    tk_messageBox -title "Spellcheck file loaded." -type ok -icon info \
+      -message "Spellcheck file [file tail $fullname] loaded:\n[lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds.\n\nTo have this file automatically loaded every time you start Scid, select the \"Save Options\" from the Options menu before exiting."
+  }
+  return $fullname
+}
+
+# TODO: remove getSpellCheckFile
+# - change loadSpellCheckFile {message 1} to {dlg_parent ""} and use it for tk_getOpenFile
+# - move $widget delete and insert to the caller
 proc getSpellCheckFile { widget } {
     global spellCheckFile
     set ftype { { "Scid Spellcheck files" {".ssp"} } }
@@ -36,6 +63,9 @@ proc getSpellCheckFile { widget } {
     }
 }
 
+# TODO: remove readSpellCheckFile
+# - add {fn_fullname ""} to loadSpellCheckFile and if ne "" use it instead of tk_getOpenFile
+# - use loadSpellCheckFile's dlg_parent instead of hardcoding .resDialog
 proc readSpellCheckFile { fullname {message 1}} {
   global spellCheckFile
 
@@ -64,11 +94,11 @@ proc readSpellCheckFile { fullname {message 1}} {
 proc startScanning {} {
     global spellstate
     global spellcheckType
-    
+
     # Remember that we are scanning
     #
     set spellstate scanning
-    
+
     # Disable all buttons except the cancel button that we
     # transfer into a stop button
     #
@@ -86,11 +116,11 @@ proc startScanning {} {
 proc stopScanning {} {
     global spellstate
     global spellcheckType
-    
+
     # Remember that we are not scanning
     #
     set spellstate idle
-    
+
     # Enable all buttons and set the cancel button back
     #
     .spellcheckWin.buttons.ambig  configure -state enabled
@@ -108,11 +138,11 @@ proc stopScanning {} {
 proc startCorrecting {} {
     global spellstate
     global spellcheckType
-    
+
     # Remember that we are correcting
     #
     set spellstate correcting
-    
+
     # Disable all buttons
     #
     .spellcheckWin.buttons.ambig  configure -state disabled
@@ -179,7 +209,7 @@ proc openSpellCheckWin {type {parent .}} {
 
     if {[lindex [sc_name read] 0] == 0} {
         # No spellcheck file loaded, so try to open one:
-        if {![readSpellCheckFile]} {
+        if {[loadSpellCheckFile] eq ""} {
             return
         }
     }
@@ -203,7 +233,7 @@ proc openSpellCheckWin {type {parent .}} {
 
     grid rowconfig $w.text 0 -weight 1 -minsize 0
     grid columnconfig $w.text 0 -weight 1 -minsize 0
-  
+
     focus $f.text
     # Draw a canvas ("progress") to hold the progress bar
     # and put it above the buttons at the bottom of the window
