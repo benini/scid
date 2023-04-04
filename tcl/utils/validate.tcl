@@ -65,6 +65,7 @@ proc ::utils::validate::Date {name el op} {
   global $name ${name}_old
   set old ${name}_old
   if {![sc_info validDate [set $name]]} {
+    if {![info exist $old]} { set $old "" }
     set $name [set $old]
     bell
     return
@@ -81,6 +82,7 @@ proc ::utils::validate::Result {name el op} {
   global $name ${name}_old
   set old ${name}_old
   if {![regexp {^[1|0|=|\*]?$} [set $name]]} {
+    if {![info exist $old]} { set $old "" }
     set $name [set $old]
     bell
     return
@@ -96,6 +98,7 @@ proc ::utils::validate::Alpha {name el op} {
   global $name ${name}_old
   set old ${name}_old
   if {![regexp {^[A-Za-z]*$} [set $name]]} {
+    if {![info exist $old]} { set $old "" }
     set $name [set $old]
     bell
     return
@@ -113,6 +116,7 @@ proc ::utils::validate::Regexp {expression name el op} {
   global $name ${name}_old
   set old ${name}_old
   if {![regexp $expression [set $name]]} {
+    if {![info exist $old]} { set $old "" }
     set $name [set $old]
     bell
     return
