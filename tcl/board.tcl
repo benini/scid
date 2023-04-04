@@ -492,7 +492,7 @@ proc ::board::new {w {psize 40} } {
     grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
 
-  canvas $w.score -width 8
+  canvas $w.score -width 8 -cursor hand2
   grid $w.score -row 6 -column 12 -rowspan 8 -sticky ew
   grid remove $w.score
   canvas $w.mat -width 20 -height $bsize -highlightthickness 0
