@@ -104,7 +104,7 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label PgnOptStripMarks \
         -variable ::pgn::stripMarks -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptBoldMainLine \
-        -variable ::pgn::boldMainLine -command {updateBoard -pgn}
+        -variable ::pgn::boldMainLine -command {::pgn::Refresh 1}
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
 
@@ -124,9 +124,6 @@ namespace eval pgn {
     ttk::frame $w.frame
     ttk_text $w.text -wrap word -tabs {1c right 2c 4c}
     autoscrollBars y $w.frame $w.text
-    if { $::pgn::boldMainLine } {
-        $w.text configure -font font_Bold
-    }
 
     grid $w.frame -sticky news
     grid rowconfigure $w 0 -weight 1
@@ -295,6 +292,11 @@ namespace eval pgn {
 
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
+      if { $::pgn::boldMainLine } {
+          .pgnWin.text configure -font font_Bold
+      } else {
+          .pgnWin.text configure -font font_Small
+      }
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
 
