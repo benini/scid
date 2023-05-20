@@ -4,6 +4,11 @@
 
 namespace eval ::gbrowser {}
 
+proc ::gbrowser::resizeBoard { n s } {
+    set w .gb$n
+    set ::gbrowser::size [::board::resize $w.bd $s]
+}
+
 proc ::gbrowser::new {base gnum {ply -1}} {
   if {! [info exists ::gbrowser::size] } { set ::gbrowser::size 65 }
   options.save ::gbrowser::size
@@ -56,10 +61,10 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Right> "::gbrowser::update $n +1"
   bind $w <Up> "::gbrowser::update $n -10"
   bind $w <Down> "::gbrowser::update $n +10"
-  bind $w <minus> {set ::gbrowser::size [::board::resize %W.bd -1]}
-  bind $w <Control-Shift-Left> {set ::gbrowser::size [::board::resize %W.bd -1]}
-  bind $w <plus> {set ::gbrowser::size [::board::resize %W.bd +1]}
-  bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize %W.bd +1]}
+  bind $w <minus> "::gbrowser::resizeBoard $n -1"
+  bind $w <Control-Shift-Left> "::gbrowser::resizeBoard $n -1"
+  bind $w <plus> "::gbrowser::resizeBoard $n +1"
+  bind $w <Control-Shift-Right> "::gbrowser::resizeBoard $n +1"
   bindMouseWheel $w "::gbrowser::mousewheelHandler $n"
 
   ttk::button $w.b.start -image tb_start -command "::gbrowser::update $n start"
