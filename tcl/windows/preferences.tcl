@@ -185,7 +185,7 @@ proc ::preferences::moves { t } {
     ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
     ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
     ttk::label $t.high.tl -text [tr OptionsMovesHighlightLastMoveWidth]
-    ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
+    ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 0 -to 5 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
     grid $t.high.hlm -row 0 -column 0 -sticky w
