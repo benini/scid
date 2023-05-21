@@ -295,7 +295,7 @@ namespace eval pgn {
       if { $::pgn::boldMainLine } {
           .pgnWin.text configure -font font_Bold
       } else {
-          .pgnWin.text configure -font font_Small
+          .pgnWin.text configure -font font_Regular
       }
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
