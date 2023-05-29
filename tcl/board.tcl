@@ -1762,7 +1762,7 @@ proc ::board::material {w} {
 
   $f delete material
 
-  set fen [lindex [sc_pos fen] 0]
+  set fen [string range $::board::_data($w) 0 63]
   set p 0
   set n 0
   set b 0
