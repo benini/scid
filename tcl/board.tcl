@@ -1041,7 +1041,7 @@ namespace eval ::board::mark {
   # ChessBase' syntax for markers and arrows
   variable CBSquare    {csl}
   variable CBarrow     {cal}
-  variable CBColor     {[GRY]}
+  variable CBColor     {[BGRY]}
   variable Square      {[a-h][1-8]\M}
   variable sqintern    {[a-h][1-8]}
 
@@ -1060,6 +1060,24 @@ namespace eval ::board::mark {
      ($CBColor)
      ($sqintern)
      ($sqintern)
+     $EndTag
+     "
+  variable CBArrowRegexM \
+     "$StartTag
+     ($CBarrow)\\\ +
+     ($CBColor
+     $sqintern
+     $sqintern,)+
+     ($CBColor$sqintern
+     $sqintern,?)*
+     $EndTag
+     "
+  variable CBSquareRegexM \
+     "$StartTag
+     ($CBSquare)\\\ +
+     ($CBColor
+     $Square,)+
+     ($CBColor$Square,?)*
      $EndTag
      "
 }
@@ -1091,10 +1109,20 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   variable StdCmdRegex
   variable CBSquareRegex
   variable CBArrowRegex
+  variable CBArrowRegexM
+  variable CBSquareRegexM
   set result {}
 
   # Build regex and search script for embedded commands:
   set regex  ""
+  # handle lichess commands: change [%cal Ra2a4,Yd4d5] to [%cal Ra2a4][%cal Yd4d5] 
+  foreach { r s } [list $CBArrowRegexM "]\[%cal " $CBSquareRegexM "]\[%csl " ] {
+    set match ""
+    regexp -expanded $r $comment match
+    if { $match ne "" } {
+      set comment [regsub -expanded $r $comment [regsub -expanded -all "," $match $s]]
+    }
+  }
   foreach r [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
     if {[string equal $regex ""]} {set regex $r} else {append regex "|$r"}
   }
@@ -1124,6 +1152,7 @@ proc ::board::mark::getEmbeddedCmds {comment} {
          if {[string equal $color "R"]}  {set color "red"   }
          if {[string equal $color "G"]}  {set color "green" }
          if {[string equal $color "Y"]}  {set color "yellow"}
+         if {[string equal $color "B"]}  {set color "blue"}
       }
       # Settings of (default) type and arguments:
       if {[string equal $color ""]}   { set color "red" }
