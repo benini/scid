@@ -238,13 +238,13 @@ menuText H OptionsMovesTranslatePieces "Figurák nevének lefordítása" 0 {Lefordít
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 # ====== TODO To be translated ======
-menuText H OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+menuText H OptionsMovesHighlightLastMoveDisplay "Show Square" 0 {Display last move Highlight}
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
-menuText H OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText H OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Include Arrow with Highlight}
 menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
 menuText H OptionsMovesAnimate "Megelevenítés ideje" 0 \
   {Beállítja az idõt lépések megelevenítéséhez.}

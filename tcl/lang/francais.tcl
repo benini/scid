@@ -245,10 +245,10 @@ menuText F OptionsGInfo "Informations de la partie" 7 {Options d'information de 
 menuText F OptionsLanguage "Langue" 0 {Sélectionner la langue utilisée}
 menuText F OptionsMovesTranslatePieces "Traduction des pièces" 0 {Convertir la première lettre des noms des pièces en français}
 menuText F OptionsMovesHighlightLastMove "Surbrillance dernier coup" 2 {Surbrillance du dernier coup}
-menuText F OptionsMovesHighlightLastMoveDisplay "Afficher" 0 {Afficher la surbrillance du dernier coup}
+menuText F OptionsMovesHighlightLastMoveDisplay "Afficher Cases" 0 {Afficher la surbrillance du dernier coup}
 menuText F OptionsMovesHighlightLastMoveWidth "Epaisseur" 0 {Epaisseur de la ligne}
 menuText F OptionsMovesHighlightLastMoveColor "Couleur" 0 {Couleur de la ligne}
-menuText F OptionsMovesHighlightLastMoveArrow "inclure Flèche" 0 {Afficher la flèche de déplacement du dernier coup}
+menuText F OptionsMovesHighlightLastMoveArrow "Afficher Flèche" 0 {Afficher la flèche de déplacement du dernier coup}
 menuText F OptionsMoves "Coups" 2 {Gestion des coups}
 menuText F OptionsMovesAnimate "Temps d'animation" 1 \
   {Régler le temps utilisé pour l'animation des coups}

@@ -253,11 +253,11 @@ menuText N OptionsGInfo "Partij Informatie" 0 {Parij-informatie opties}
 menuText N OptionsLanguage "Kies taal" 5 {Kies taal}
 menuText N OptionsMovesTranslatePieces "Vertaal stukken" 0 {Vertaal de eerste letters van de stukken}
 menuText N OptionsMovesHighlightLastMove "Markeer de laatste zet" 0 {Markeer de laatste zet}
-menuText N OptionsMovesHighlightLastMoveDisplay "Toon" 0 {Toon de laatste zet markering}
+menuText N OptionsMovesHighlightLastMoveDisplay "Toon Vakken" 0 {Toon de laatste zet markering}
 menuText N OptionsMovesHighlightLastMoveWidth "Breedte" 0 {Variantdikte}
 menuText N OptionsMovesHighlightLastMoveColor "Kleur" 0 {Varinatkleur}
 # ====== TODO To be translated ======
-menuText N OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText N OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
 menuText N OptionsMovesAnimate "Stuk Animatietijd " 1 \
   {Zet animatietijd van de stukkenbewegingen} ;

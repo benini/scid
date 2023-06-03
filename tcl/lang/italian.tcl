@@ -232,10 +232,10 @@ menuText I OptionsGInfo "Informazioni sulla partita" 0 {Opzioni sulle informazio
 menuText I OptionsLanguage "Lingua" 0 {Sceglie una nuova lingua di menu}
 menuText I OptionsMovesTranslatePieces "Traduci i pezzi" 0 {Traduce la prima lettera dei pezzi}
 menuText I OptionsMovesHighlightLastMove "Evidenzia l'ultima mossa" 0 {Evidenzia l'ultima mossa}
-menuText I OptionsMovesHighlightLastMoveDisplay "Mostra" 0 {Mostra in evidenza l'ultima mossa}
+menuText I OptionsMovesHighlightLastMoveDisplay "Mostra Caselle" 0 {Mostra in evidenza l'ultima mossa}
 menuText I OptionsMovesHighlightLastMoveWidth "Larghezza" 0 {Spessore della linea}
 menuText I OptionsMovesHighlightLastMoveColor "Colore" 0 {Colore della linea}
-menuText I OptionsMovesHighlightLastMoveArrow "Includi freccia" 0 {Include una freccia}
+menuText I OptionsMovesHighlightLastMoveArrow "Mostra freccia" 0 {Mostra una freccia}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione delle mosse}
 menuText I OptionsMovesAnimate "Intervallo di tempo per l'animazione delle mosse" 4 \
   {Definisce l'intervallo di tempo per l'animazione delle mosse}

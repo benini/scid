@@ -251,12 +251,12 @@ menuText S OptionsMovesTranslatePieces "Traducir piezas" 0 \
   {Traduce la primera letra de las piezas}
 menuText S OptionsMovesHighlightLastMove "Iluminar última jugada" 0 \
   {Ilumina la última jugada}
-menuText S OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 \
+menuText S OptionsMovesHighlightLastMoveDisplay "Mostrar Escaques" 0 \
   {Muestra la última jugada iluminada}
 menuText S OptionsMovesHighlightLastMoveWidth "Ancho" 0 {Espesor de la línea}
 menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color de línea}
 # ====== TODO To be translated ======
-menuText S OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText S OptionsMovesHighlightLastMoveArrow "Mostrar Flechas" 0 {Show Arrow with Highlight}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAnimate "Velocidad de la animación" 1 \
   {Pone el tiempo usado para animar las jugadas}
