@@ -1,10 +1,12 @@
 #!/usr/bin/wish
-# filterssp.tcl:
+# filter_spellcheck_file.tcl:
 #     Filter players from a spellcheck file (ssp)
 #     Filter parameters: ELO Range and Nationality
+#     Optional: Remove ELO History
 #
 # Usage:  filter_spellcheck_file.tcl source destinaton
 # Example: filter_spellcheck_file.tcl ratings.ssp filterdata.ssp
+# Copyright (C) 2023 Uwe Klimmek
 
 package require Tcl 8.5
 package require Tk  8.5
@@ -41,9 +43,9 @@ proc OpenFile { filename {type "" } mode } {
     set workFile($filename) $fullname
 }
 
-## Filter aus einer ssp datei alle Spieler mit einer ELO von bis und der Nationalität
-## Nationalität leer : alle Nationalitäten
-proc dofilterData { source destination fromElo toElo Countries } {
+## Filter from a ssp file all players with ELO range from to and nationality
+## if natonality is empty: do not filter natonality
+proc dofilterData { source destination fromElo toElo Countries removeHist} {
     if { $fromElo == "" } { set fromElo 0 }
     if { $toElo == "" } { set toElo 4000 }
     set nat [split $Countries ";"]
@@ -71,7 +73,9 @@ proc dofilterData { source destination fromElo toElo Countries } {
                     set line "#        and players from $Countries"
                 }
             }
-            puts $of $line
+            if { ! $removeHist || [string first "%Elo" $line] == -1 } {
+                puts $of $line
+            }
             continue;
         }
         set state 0
@@ -93,7 +97,9 @@ proc dofilterData { source destination fromElo toElo Countries } {
                 }
             }
         }
-        if { $state == 0 } { puts $of $line }
+        if { $state == 0 } {
+            puts $of $line
+        }
         updateProgress [tell $fd]
      }
     close $of
@@ -104,7 +110,7 @@ proc dofilterData { source destination fromElo toElo Countries } {
 }
 
 proc filterData { source destination } {
-    global workFile fromElo toElo Countries
+    global workFile fromElo toElo Countries removeHist
 
     set w ""
     wm title . "Filter Spellcheck File"
@@ -120,20 +126,23 @@ proc filterData { source destination } {
     ttk::frame $w.b
     ttk::frame $w.elo
     ttk::button $w.b.cancel -text "Close" -command "exit 0"
-    ttk::button $w.b.ok -text "Filter" -command { dofilterData $workFile(source) $workFile(destination) $fromElo $toElo $Countries }
+    ttk::button $w.b.ok -text "Filter" -command { dofilterData $workFile(source) $workFile(destination) $fromElo $toElo $Countries $removeHist }
     ttk::entry $w.elo.fromelo -width 5 -textvariable fromElo
     ttk::entry $w.elo.toelo -width 5 -textvariable toElo
     ttk::entry $w.elo.countries -width 20 -textvariable Countries
     ttk::label $w.elo.from -text "Elo from:"
     ttk::label $w.elo.to -text "to:"
+    ttk::checkbutton $w.rh -text "Remove ELO history" -variable removeHist
     ttk::label $w.elo.country -text "Nationality:\ne.q.: GER;ITA"
     ttk::progressbar $w.progress  -orient horizontal -length 120  -mode determinate -variable vProgress
     ttk::label $w.progresstext -textvar tProgress
 
-    pack $w.elo.from $w.elo.fromelo $w.elo.to $w.elo.toelo $w.elo.country $w.elo.countries -padx 5 -fill x -side left
+    pack $w.elo.from $w.elo.fromelo $w.elo.to $w.elo.toelo $w.elo.country $w.elo.countries -padx 5 -side left
     pack $w.progress $w.progresstext -side bottom -fill x -pady "10 0"
     pack $w.b.cancel $w.b.ok -side right -padx 5 -pady "5 0" -fill both
-    pack $w.elo $w.b -side top -anchor e -pady 5
+    pack $w.elo $w.rh -side top -anchor w -padx 5
+    pack $w.rh -side left -anchor w -padx 5
+    pack $w.b -side right -anchor e
 
     wm resizable . 1 1
     grab .
@@ -145,6 +154,7 @@ set tProgress ""
 set fromElo ""
 set toElo ""
 set Countries ""
+set removeHist 0
 set fTypes { "txt" "ssp" "ssp" "ssp" "ssp" "txt"  }
 set fMode {  "r" "r" "w" "w" "r" "w"}
 set wFiles { source destination }
