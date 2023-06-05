@@ -1583,7 +1583,7 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
   #}
 }
 
-# Highlight last move played by drawing a red rectangle around the two squares
+# Highlight last move played by drawing a rectangle around the two squares and/or an arrow
 proc  ::board::lastMoveHighlight {w moveuci} {
   $w.bd delete highlightLastMove
   if { ! $::highlightLastMove && ! $::arrowLastMove } {return}
