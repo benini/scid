@@ -700,8 +700,10 @@ proc ::board::updateEvalBar { w score } {
             && [set sign [string index $score 0]] in {- +}} {
             if {$sign eq "+"} {
                 set midY 0
+                if { $::board::_flip($w) } { set midY [expr $h + 1] }
             } else {
                 set midY [expr $h + 1]
+                if { $::board::_flip($w) } { set midY 0 }
             }
         } else {
             set midY [expr $h / 2 + $score * $::board::_evalbarScale($w)]
