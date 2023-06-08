@@ -1169,8 +1169,6 @@ proc setPlayMode { callback } {
 ################################################################################
 # In docked mode, resize board automatically
 ################################################################################
-set ::mainboardWidth 0
-set ::mainboardHigh 0
 proc resizeMainBoard {} {
   if { $::autoResizeBoard } {
     update idletasks
@@ -1182,12 +1180,6 @@ proc resizeMainBoard {} {
     if { [llength [pack slaves .main.tb]] != 0 } {
       set availh [expr $availh - [winfo height .main.tb] ]
     }
-    # ignore resize if size has not changed
-    if { $availw == $::mainboardWidth && $availh == $::mainboardHigh } {
-        return
-    }
-    set ::mainboardWidth $availw
-    set ::mainboardHigh $availh
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
   }
 }
@@ -1269,7 +1261,7 @@ proc CreateMainBoard { {w} } {
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
-  bind $w <Configure> {+::resizeMainBoard }
+  bind $w.board.bd <Configure> {+::resizeMainBoard}
 
   bindMouseWheel $w "main_mousewheelHandler"
 
