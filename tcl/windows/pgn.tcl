@@ -126,6 +126,9 @@ namespace eval pgn {
     ttk::frame $w.frame
     ttk_text $w.text -wrap word -tabs {1c right 2c 4c}
     autoscrollBars y $w.frame $w.text
+    if { $::pgn::boldMainLine } {
+        $w.text configure -font font_Bold
+    }
 
     grid $w.frame -sticky news
     grid rowconfigure $w 0 -weight 1
@@ -294,11 +297,6 @@ namespace eval pgn {
 
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
-      if { $::pgn::boldMainLine } {
-          .pgnWin.text configure -font font_Bold
-      } else {
-          .pgnWin.text configure -font font_Regular
-      }
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
 
