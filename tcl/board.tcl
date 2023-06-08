@@ -1762,14 +1762,14 @@ proc ::board::material {w} {
 
   $f delete material
 
-  set fen [string range $::board::_data($w) 0 63]
+  set board [string range $::board::_data($w) 0 63]
   set p 0
   set n 0
   set b 0
   set r 0
   set q 0
-  for {set i 0} {$i < [string length $fen]} {incr i} {
-    set ch [string index $fen $i]
+  for {set i 0} {$i < [string length $board]} {incr i} {
+    set ch [string index $board $i]
     switch -- $ch {
       p {incr p -1}
       P {incr p}
