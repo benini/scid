@@ -405,11 +405,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         # Check if it is a comment tag:
         set commentTag $tagName
         set tagName "c"
-        if { $::pgn::boldMainLine } {
-          $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
-        } else {
-          $w tag configure $commentTag -foreground $::pgnColor(Comment)
-        }
+        $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
         $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::makeCommentWin"
         $w tag bind $commentTag <Any-Enter> "$w tag configure $commentTag -underline 1
         $w configure -cursor hand2"

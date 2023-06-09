@@ -104,7 +104,9 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label PgnOptStripMarks \
         -variable ::pgn::stripMarks -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptBoldMainLine \
-        -variable ::pgn::boldMainLine -command {updateBoard -pgn}
+        -variable ::pgn::boldMainLine -command {if { $::pgn::boldMainLine } { \
+                                                     .pgnWin.text configure -font font_Bold } \
+                                                else { .pgnWin.text configure -font font_Regular} }
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
 
