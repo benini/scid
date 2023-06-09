@@ -238,10 +238,10 @@ menuText R OptionsGInfo "Информация о партии" 0 {Настрой
 menuText R OptionsLanguage "Язык" 0 {Меню выбора языка}
 menuText R OptionsMovesTranslatePieces "Перевод фигур" 0 {Перевести первый символ фигуры}
 menuText R OptionsMovesHighlightLastMove "Подсветить последний ход" 0 {Подсветить последний ход}
-menuText R OptionsMovesHighlightLastMoveDisplay "Показать" 0 {Показать  последние подсвеченные ходы}
+menuText R OptionsMovesHighlightLastMoveDisplay "Показать Поле" 0 {Показать  последние подсвеченные ходы}
 menuText R OptionsMovesHighlightLastMoveWidth "Толщина" 0 {Толщина линии}
 menuText R OptionsMovesHighlightLastMoveColor "Цвет" 0 {Цвет линии}
-menuText R OptionsMovesHighlightLastMoveArrow "Включить стрелки" 0 {Включить стрелки с подсветкой}
+menuText R OptionsMovesHighlightLastMoveArrow "Показать стрелку" 0 {Включить стрелки с подсветкой}
 menuText R OptionsMoves "Ходы" 0 {Установки для ходов}
 menuText R OptionsMovesAnimate "Время анимации" 1 \
   {Установить количество времени, используемое для анимации ходов}

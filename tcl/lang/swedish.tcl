@@ -232,12 +232,12 @@ menuText W OptionsFontsFixed "Fixerad" 0 {Ändra det fixerade typsnittet}
 menuText W OptionsGInfo "Partiinformation" 0 {Alternativ för partiinformation}
 menuText W OptionsLanguage "Språk" 0 {Välj språk}
 menuText W OptionsMovesTranslatePieces "Översätt pjäser" 0 {Översätt första bokstaven för pjäser}
-menuText W OptionsMovesHighlightLastMove "Markera senaste draget" 0 {Markera senaste draget}
+menuText W OptionsMovesHighlightLastMove "Visa Rutor" 0 {Markera senaste draget}
 menuText W OptionsMovesHighlightLastMoveDisplay "Visa" 0 {Visa senaste markerade draget}
 menuText W OptionsMovesHighlightLastMoveWidth "Bredd" 0 {Tjockhet på rad}
 menuText W OptionsMovesHighlightLastMoveColor "Färg" 0 {Färg på rad}
 # ====== TODO To be translated ======
-menuText W OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText W OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
 menuText W OptionsMovesAnimate "Fördröjning vid manuellt spel" 1 \
   {Ange tid mellan varje drag när dragen görs automatiskt}

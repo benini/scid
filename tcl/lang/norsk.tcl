@@ -269,13 +269,13 @@ menuText O OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first let
 # ====== TODO To be translated ======
 menuText O OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 # ====== TODO To be translated ======
-menuText O OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+menuText O OptionsMovesHighlightLastMoveDisplay "Show Square" 0 {Display last move Highlight}
 # ====== TODO To be translated ======
 menuText O OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText O OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
-menuText O OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText O OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
 menuText O OptionsMoves "Trekk" 0 {Innstillinger for hvordan trekk angis}
 menuText O OptionsMovesAnimate "Animation time" 1 \
   {Set the amount of time used to animate moves} ;# ***

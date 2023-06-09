@@ -254,10 +254,10 @@ menuText D OptionsGInfo "Partieinformation" 0 {Optionen für Informationsbereich}
 menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
 menuText D OptionsMovesTranslatePieces "Figurennamen übersetzen" 0 {Übersetze den ersten Buchstaben der Figurenbezeichnung}
 menuText D OptionsMovesHighlightLastMove "Letzen Zug hervorheben" 0 {Rahmt Start- und Zielfeld des letzten Zuges farbig ein}
-menuText D OptionsMovesHighlightLastMoveDisplay "Anzeigen" 0 {Hervorhebung des letzen Zuges anzeigen}
+menuText D OptionsMovesHighlightLastMoveDisplay "Felder anzeigen" 0 {Hervorhebung des letzen Zuges anzeigen}
 menuText D OptionsMovesHighlightLastMoveWidth "Dicke" 0 {Dicke der Linie}
 menuText D OptionsMovesHighlightLastMoveColor "Farbe" 0 {Farbe der Linie}
-menuText D OptionsMovesHighlightLastMoveArrow "inklusive Pfeil" 0 {Pfeil ebenfalls hervorheben}
+menuText D OptionsMovesHighlightLastMoveArrow "Pfeil anzeigen" 0 {mit einem Pfeil hervorheben}
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
 menuText D OptionsMovesAnimate "Animation" 0 \
   {Zeit für Zuganimation einstellen}

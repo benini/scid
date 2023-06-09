@@ -272,13 +272,13 @@ menuText P OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first let
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 # ====== TODO To be translated ======
-menuText P OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+menuText P OptionsMovesHighlightLastMoveDisplay "Show Square" 0 {Display last move Highlight}
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
-menuText P OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText P OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
 menuText P OptionsMovesAnimate "Szybko¶æ animacji" 1 \
   {Ustaw czas przeznaczony na animacjê jednego posuniêcia} 

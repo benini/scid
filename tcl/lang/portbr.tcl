@@ -227,10 +227,10 @@ menuText B OptionsGInfo "Informacoes do Jogo" 0 {Opcoes de informacao do jogo}
 menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
 menuText B OptionsMovesTranslatePieces "Traduzir Peças" 0 {Traduz a primeira letra do nome das peças}
 menuText B OptionsMovesHighlightLastMove "Destacar último movimento" 0 {Destaca o último movimento}
-menuText B OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 {Mostra o destaque do último movimento}
+menuText B OptionsMovesHighlightLastMoveDisplay "Mostrar Casas" 0 {Mostra o destaque do último movimento}
 menuText B OptionsMovesHighlightLastMoveWidth "Espessura" 0 {Espessura da linha}
 menuText B OptionsMovesHighlightLastMoveColor "Cor" 0 {Cor da linha}
-menuText B OptionsMovesHighlightLastMoveArrow "seta de inclusao" 0 {Seta de Inclusao Destacada}
+menuText B OptionsMovesHighlightLastMoveArrow "Mostrar Seta" 0 {Seta de Inclusao Destacada}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAnimate "Tempo de animação" 1 \
   {Define a quantidade de tempo usada para animar os movimentos} 

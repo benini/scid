@@ -1580,18 +1580,21 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
   #}
 }
 
-# Highlight last move played by drawing a red rectangle around the two squares
+# Highlight last move played by drawing a rectangle around the two squares and/or an arrow
 proc  ::board::lastMoveHighlight {w moveuci} {
   $w.bd delete highlightLastMove
-  if { ! $::highlightLastMove } {return}
+  if { ! $::highlightLastMove && ! $::arrowLastMove } {return}
   if {[string length $moveuci] >= 4} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
     set square2 [ ::board::sq [string range $moveuci 2 3 ] ]
-    ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor $::highlightLastMovePattern
-    ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor $::highlightLastMovePattern
-    if { ! $::arrowLastMove } {return}
-    ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
+    if { $::highlightLastMove } {
+        ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor $::highlightLastMovePattern
+        ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor $::highlightLastMovePattern
+    }
+    if { $::arrowLastMove } {
+        ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
+    }
   }
 }
 
