@@ -1606,7 +1606,8 @@ proc  ::board::lastMoveHighlight {w moveuci} {
 #
 proc ::board::update {w {boardValues "" } {animate 0}} {
   set oldboard $::board::_data($w)
-  # boardValues are all infos about the the board, no need to look elsewhere
+  # boardValues are a list of all infos about the the board, no need to look elsewhere
+  # board: board string; lastmove as uci; attacks: list of attacked squares like [sc_pos attacks] 
   lassign $boardValues board lastmove attacks
   if {$board == ""} {
     set board $::board::_data($w)
