@@ -398,11 +398,7 @@ proc ::board::popup {w positionLongStr xc yc {above ""}} {
     }
 
     lassign $positionLongStr pos lastmove
-    ::board::update $w.bd $pos
-
-    if {$lastmove ne ""} {
-      ::board::lastMoveHighlight $w.bd $lastmove
-    }
+    ::board::update $w.bd [list $pos $lastmove]
 
     # Make sure the popup window can fit on the screen:
     set screenwidth [winfo screenwidth $w]
@@ -442,7 +438,9 @@ proc ::board::new {w {psize 40} } {
   set ::board::_border($w) $::borderwidth
   set ::board::_coords($w) 4
   set ::board::_flip($w) 0
-  set ::board::_data($w) [sc_pos board]
+  set ::board::_data($w) "RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr w"
+  set ::board::_lastmove($w) ""
+  set ::board::_attacks($w) {}
   set ::board::_showMarks($w) 0
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
@@ -939,7 +937,7 @@ proc ::board::colorSquare {w i {color ""}} {
     set color [::board::defaultColor $i]
     set brstate "normal"
     if { $::glossOfDanger } {
-      array set attacks [sc_pos attacks]
+      array set attacks $::board::_attacks($w)
       if {[info exists attacks($i)]} {
         set color $attacks($i)
       }
@@ -1606,12 +1604,18 @@ proc  ::board::lastMoveHighlight {w moveuci} {
 #   the previous board state appear to be a valid chess move, the
 #   move is animated.
 #
-proc ::board::update {w {board ""} {animate 0}} {
+proc ::board::update {w {boardValues "" } {animate 0}} {
   set oldboard $::board::_data($w)
+  # boardValues are all infos about the the board, no need to look elsewhere
+  lassign $boardValues board lastmove attacks
   if {$board == ""} {
     set board $::board::_data($w)
+    set lastmove $::board::_lastmove($w)
+    set attacks $::board::_attacks($w)
   } else {
     set ::board::_data($w) $board
+    set ::board::_lastmove($w) $lastmove
+    set ::board::_attacks($w) $attacks
   }
   set psize $::board::_size($w)
 
@@ -1650,7 +1654,7 @@ proc ::board::update {w {board ""} {animate 0}} {
 
   # Gloss Of Danger:
   if { $::glossOfDanger } {
-    foreach {sq col} [sc_pos attacks] {
+    foreach {sq col} $attacks {
       ::board::colorSquare $w $sq $col
     }
   }
@@ -1672,9 +1676,7 @@ proc ::board::update {w {board ""} {animate 0}} {
   }
 
   # Redraw last move highlight if mainboard
-  if { $w == ".main.board"} {
-    ::board::lastMoveHighlight $w [sc_game info previousMoveUCI]
-  }
+  ::board::lastMoveHighlight $w $lastmove
 
   # Redraw material values
   if {$::board::_showmat($w)} {

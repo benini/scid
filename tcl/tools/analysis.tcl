@@ -2900,7 +2900,7 @@ proc updateAnalysisBoard {n moves} {
     
     # Make the engine moves and update the board:
     sc_move_add $moves $n
-    ::board::update $bd [sc_pos board]
+    ::board::update $bd [list [sc_pos board] [string range $moves end-3 end] ""]
     if { $::analysis(score$n) ne "" } {
         ::board::updateEvalBar $bd $::analysis(score$n)
     }

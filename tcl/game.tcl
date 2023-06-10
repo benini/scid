@@ -328,7 +328,7 @@ namespace eval ::notify {
     }
 
     ::board::setmarks .main.board [sc_pos getComment]
-    ::board::update .main.board [sc_pos board] [expr {$animate ne ""}]
+    ::board::update .main.board [list [sc_pos board] [sc_game info previousMoveUCI] [sc_pos attacks]] [expr {$animate ne ""}]
 
     after cancel ::notify::privPosChanged
     update idletasks
