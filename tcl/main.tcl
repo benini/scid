@@ -1183,7 +1183,7 @@ proc resizeMainBoard {} {
       set availh [expr $availh - [winfo height .main.tb] ]
     }
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
-    bind .main <Configure> {if { "%W" eq ".main" } {::resizeMainBoard} }
+    bind .main <Configure> {::resizeMainBoard}
   }
 }
 ################################################################################
@@ -1264,7 +1264,7 @@ proc CreateMainBoard { {w} } {
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
-  bind $w <Configure> {if { "%W" eq ".main" } {::resizeMainBoard} }
+  bind $w <Configure> {::resizeMainBoard}
 
   bindMouseWheel $w "main_mousewheelHandler"
 
