@@ -1169,8 +1169,15 @@ proc setPlayMode { callback } {
 ################################################################################
 # In docked mode, resize board automatically
 ################################################################################
-proc resizeMainBoard {} {
+set ::resizeMainBoardActiv 0
+proc resizeMainBoard {{w ".main"}} {
   if { $::autoResizeBoard } {
+    if { $w ne ".main" || $::resizeMainBoardActiv } {
+        return
+    }
+    #Disable Resize/Configure events when resizing is active
+    bind .main <Configure> ""
+    set ::resizeMainBoardActiv 1
     update idletasks
     set availw [winfo width .fdockmain]
     set availh [winfo height .fdockmain]
@@ -1181,7 +1188,9 @@ proc resizeMainBoard {} {
       set availh [expr $availh - [winfo height .main.tb] ]
     }
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
+    bind .main <Configure> {::resizeMainBoard %W}
   }
+  set ::resizeMainBoardActiv 0
 }
 ################################################################################
 # sets visibility of gameInfo panel at the bottom of main board
@@ -1261,7 +1270,7 @@ proc CreateMainBoard { {w} } {
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
-  bind $w.board.bd <Configure> {+::resizeMainBoard}
+  bind $w <Configure> {::resizeMainBoard %W}
 
   bindMouseWheel $w "main_mousewheelHandler"
 
