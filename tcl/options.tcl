@@ -214,6 +214,7 @@ set translatePieces 1
 # Highlight the last move played
 set arrowLastMove 0
 set arrowWidth 2
+set highlightArrowWidth 2
 set highlightLastMove 1
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"

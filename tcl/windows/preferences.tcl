@@ -177,6 +177,10 @@ proc ::preferences::moves { t } {
     ttk::checkbutton $t.sva -variable showVarArrows -text [tr OptionsMovesShowVarArrows]
     ttk::checkbutton $t.god -variable glossOfDanger -text [tr OptionsMovesGlossOfDanger] -command updateBoard
 
+    ttk::frame $t.arrow
+    ttk::label $t.arrow.label -text "Width of Arrows for\nVariations and comments"
+    ttk::spinbox $t.arrow.thick -width 2 -textvariable ::arrowWidth -from 1 -to 6 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
     ttk::frame $t.auto
     ttk::label $t.auto.label -text "[tr OptionsMovesDelay]\n$::tr(AnnotateTime:)"
     ttk::spinbox $t.auto.spDelay -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
@@ -188,7 +192,7 @@ proc ::preferences::moves { t } {
     ttk::label $t.high.tla -text [tr OptionsMovesHighlightLastMoveWidth]
     ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
-    ttk::spinbox $t.high.athick -width 2 -textvariable ::arrowWidth -from 1 -to 6 -increment 1 \
+    ttk::spinbox $t.high.athick -width 2 -textvariable ::highlightArrowWidth -from 1 -to 6 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
     grid $t.high.hlm -row 0 -column 0 -sticky w
@@ -199,7 +203,8 @@ proc ::preferences::moves { t } {
     grid $t.high.tla -row 1 -column 1 -padx "10 5"
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
-    pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
+    pack $t.arrow.label $t.arrow.thick  -side left -padx "0 10" -anchor w
+    pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.arrow $t.god -side top -anchor w
     pack $t.high -side top -anchor w -pady "5 0"
 }
 
