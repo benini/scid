@@ -185,13 +185,18 @@ proc ::preferences::moves { t } {
     ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
     ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
     ttk::label $t.high.tl -text [tr OptionsMovesHighlightLastMoveWidth]
+    ttk::label $t.high.tla -text [tr OptionsMovesHighlightLastMoveWidth]
     ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
+    ttk::spinbox $t.high.athick -width 2 -textvariable ::arrowWidth -from 1 -to 6 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
     grid $t.high.hlm -row 0 -column 0 -sticky w
     grid $t.high.tl -row 0 -column 1 -padx "10 5"
     grid $t.high.thick -row 0 -column 2
-    grid $t.high.color -row 1 -column 2 -pady "2 0"
+    grid $t.high.athick -row 1 -column 2
+    grid $t.high.color -row 2 -column 2 -pady "2 0"
+    grid $t.high.tla -row 1 -column 1 -padx "10 5"
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
     pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w

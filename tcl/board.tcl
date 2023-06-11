@@ -1307,9 +1307,11 @@ proc ::board::mark::DrawArrow {pathName from to color} {
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
   set coord [GetArrowCoords $pathName $from $to]
+  set s1 [expr 3 * $::arrowWidth]
+  set shape [list $s1 $s1 [expr 1.5 * $::arrowWidth]]
   eval $pathName \
       {create line $coord} \
-      -fill $color -arrow last -width 2 \
+      -fill $color -arrow last -width $::arrowWidth {-arrowshape $shape} \
       {-tag [list mark arrows "mark${from}:${to}"]}
 }
 
