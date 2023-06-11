@@ -644,7 +644,8 @@ proc options.write {} {
           ecoFile suggestMoves showVarPopup showVarArrows \
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces arrowLastMove arrowWidth highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
+          translatePieces arrowLastMove arrowWidth highlightArrowWidth \
+          highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           glossOfDanger locale(numeric) \
           spellCheckFile autoRaise windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
