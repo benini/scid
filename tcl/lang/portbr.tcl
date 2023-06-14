@@ -231,6 +231,8 @@ menuText B OptionsMovesHighlightLastMoveDisplay "Mostrar Casas" 0 {Mostra o dest
 menuText B OptionsMovesHighlightLastMoveWidth "Espessura" 0 {Espessura da linha}
 menuText B OptionsMovesHighlightLastMoveColor "Cor" 0 {Cor da linha}
 menuText B OptionsMovesHighlightLastMoveArrow "Mostrar Seta" 0 {Seta de Inclusao Destacada}
+# ====== TODO To be translated ======
+menuText B OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAnimate "Tempo de animação" 1 \
   {Define a quantidade de tempo usada para animar os movimentos} 

@@ -279,6 +279,8 @@ menuText P OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 menuText P OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
+# ====== TODO To be translated ======
+menuText P OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
 menuText P OptionsMovesAnimate "Szybko¶æ animacji" 1 \
   {Ustaw czas przeznaczony na animacjê jednego posuniêcia} 

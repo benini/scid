@@ -178,7 +178,7 @@ proc ::preferences::moves { t } {
     ttk::checkbutton $t.god -variable glossOfDanger -text [tr OptionsMovesGlossOfDanger] -command updateBoard
 
     ttk::frame $t.arrow
-    ttk::label $t.arrow.label -text "Width of Arrows for\nVariations and comments"
+    ttk::label $t.arrow.label -text [tr OptionsMovesArrowWidth]
     ttk::spinbox $t.arrow.thick -width 2 -textvariable ::arrowWidth -from 1 -to 6 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::frame $t.auto

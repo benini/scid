@@ -271,6 +271,8 @@ menuText G OptionsMovesHighlightLastMoveWidth "Πλάτος" 0 {Το πάχος 
 menuText G OptionsMovesHighlightLastMoveColor "Χρώμα" 0 {Το χρώμα τηςη γραμμής}
 # ====== TODO To be translated ======
 menuText G OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
+# ====== TODO To be translated ======
+menuText G OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
 menuText G OptionsMoves "Κινήσεις" 0 {Επιλογές εισαγωγής κίνησης}
 menuText G OptionsMovesAnimate "Χρόνος απεικόνισης κίνησης" 1 \
   {Καθορίστε την διάρκεια απεικόνισης της κίνησης}
