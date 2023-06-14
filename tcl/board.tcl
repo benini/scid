@@ -1303,6 +1303,7 @@ proc ::board::mark::DrawText {pathName square char color {size 0} {shadowColor "
 
 # ::board::mark::DrawArrow --
 #
+# Draw a arrow for last move with specfic line width
 proc ::board::mark::DrawArrowLastMove {pathName from to color} {
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
