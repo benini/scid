@@ -477,11 +477,12 @@ proc getNagVariation { } {
     set count 0
     set nag ""
     set tmp [sc_pos getNags]
+    set posnag "\[-/~=+\]+"
     #use position NAG only
-    regexp \[-/~=+\]+ $tmp nag
+    regexp $posnag $tmp nag
     while { [sc_move forward] } {
         set tmp [sc_pos getNags]
-        regexp \[-/~=+\]+ $tmp nag
+        regexp $posnag $tmp nag
         incr count
     }
     sc_move back $count
