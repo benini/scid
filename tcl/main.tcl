@@ -473,6 +473,20 @@ proc getNextMoves { {num 4} } {
     sc_move back $count
     return $tmp
 }
+proc getNagVariation { } {
+    set count 0
+    set nag ""
+    set tmp [sc_pos getNags]
+    #use position NAG only
+    regexp \[-/~=+\]+ $tmp nag
+    while { [sc_move forward] } {
+        set tmp [sc_pos getNags]
+        regexp \[-/~=+\]+ $tmp nag
+        incr count
+    }
+    sc_move back $count
+    return $nag
+}
 ################################################################################
 # displays a box with main line and variations for easy selection with keyboard
 ################################################################################
@@ -503,9 +517,10 @@ proc showVars {} {
     setWinLocation $w
     set h [expr $numVars + 1]
     if { $h> 19} { set h 19 }
-    ttk::treeview $w.lbVar -columns {0} -show {} -selectmode browse
+    ttk::treeview $w.lbVar -columns {0 1} -show {} -selectmode browse
     $w.lbVar configure -height $h
     $w.lbVar column 0 -width 250
+    $w.lbVar column 1 -width [font measure font_Regular "+++"]
     pack $w.lbVar -side left -fill both -expand 1
 
     #insert main line
@@ -514,7 +529,8 @@ proc showVars {} {
     if {$move == ""} {
         set move "($::tr(empty))"
     } else  {
-        $w.lbVar insert {} end -id $j -values [list "0: [getNextMoves 5]"]
+        #Do not show NAG for the mainline
+        $w.lbVar insert {} end -id $j -values [list "0: [getNextMoves 5]" ""]
         incr j
     }
 
@@ -523,13 +539,15 @@ proc showVars {} {
         set move [::trans [lindex $varList $i]]
         if {$move == ""} {
             set move "($::tr(empty))"
+            set nag ""
         } else  {
             sc_var moveInto $i
             append move [getNextMoves 5]
+            set nag [getNagVariation]
             sc_var exit
         }
         set str "[expr {$i + 1}]: $move"
-        $w.lbVar insert {} end -id $j -values [list "$str"]
+        $w.lbVar insert {} end -id $j -values [list $str $nag]
         incr j
     }
     $w.lbVar selection set 0
