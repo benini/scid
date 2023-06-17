@@ -473,7 +473,11 @@ proc getNextMoves { {num 4} } {
     sc_move back $count
     return $tmp
 }
-proc getNagVariation { } {
+
+##################################################
+# returns the last last postion NAG in a variation
+##################################################
+proc getLastNagVariation { } {
     set count 0
     set nag ""
     set tmp [sc_pos getNags]
@@ -544,7 +548,7 @@ proc showVars {} {
         } else  {
             sc_var moveInto $i
             append move [getNextMoves 5]
-            set nag [getNagVariation]
+            set nag [getLastNagVariation]
             sc_var exit
         }
         set str "[expr {$i + 1}]: $move"
