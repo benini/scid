@@ -474,9 +474,9 @@ proc getNextMoves { {num 4} } {
     return $tmp
 }
 
-##################################################
-# returns the last last postion NAG in a variation
-##################################################
+#############################################
+# returns the last postion NAG in a variation
+#############################################
 proc getLastNagVariation { } {
     set count 0
     set nag ""
