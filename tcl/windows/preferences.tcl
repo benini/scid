@@ -179,7 +179,7 @@ proc ::preferences::moves { t } {
 
     ttk::frame $t.arrow
     ttk::label $t.arrow.label -text [tr OptionsMovesArrowWidth]
-    ttk::spinbox $t.arrow.thick -width 2 -textvariable ::arrowWidth -from 1 -to 6 -increment 1 \
+    ttk::spinbox $t.arrow.thick -width 2 -textvariable ::boardArrowWidth -from 1 -to 6 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::frame $t.auto
     ttk::label $t.auto.label -text "[tr OptionsMovesDelay]\n$::tr(AnnotateTime:)"
@@ -187,12 +187,12 @@ proc ::preferences::moves { t } {
         -validate all -validatecommand { ::preferences::validateautoplay }
     ttk::labelframe $t.high -text [tr OptionsMovesHighlightLastMove]
     ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
-    ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
+    ttk::checkbutton $t.high.arrow -variable ::lastMoveShowArrow -text [tr OptionsMovesHighlightLastMoveArrow]
     ttk::label $t.high.tl -text [tr OptionsMovesHighlightLastMoveWidth]
     ttk::label $t.high.tla -text [tr OptionsMovesHighlightLastMoveWidth]
     ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
-    ttk::spinbox $t.high.athick -width 2 -textvariable ::highlightArrowWidth -from 1 -to 6 -increment 1 \
+    ttk::spinbox $t.high.athick -width 2 -textvariable ::lastMoveArrowWidth -from 1 -to 6 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
     grid $t.high.hlm -row 0 -column 0 -sticky w

@@ -1304,26 +1304,26 @@ proc ::board::mark::DrawText {pathName square char color {size 0} {shadowColor "
 # ::board::mark::DrawArrow --
 #
 # Draw a arrow for last move with specfic line width
-proc ::board::mark::DrawArrowLastMove {pathName from to color} {
+proc ::board::mark::DrawArrowLastMove {pathName from to color width} {
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
   set coord [GetArrowCoords $pathName $from $to]
-  set s1 [expr 3 * $::highlightArrowWidth]
-  set shape [list $s1 $s1 [expr 1.5 * $::highlightArrowWidth]]
+  set s1 [expr 3 * $width]
+  set shape [list $s1 $s1 [expr 1.5 * $width]]
   eval $pathName \
       {create line $coord} \
-      -fill $color -arrow last -width $::highlightArrowWidth {-arrowshape $shape} \
+      -fill $color -arrow last -width $width {-arrowshape $shape} \
       {-tag [list mark arrows "mark${from}:${to}"]}
 }
 proc ::board::mark::DrawArrow {pathName from to color} {
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
   set coord [GetArrowCoords $pathName $from $to]
-  set s1 [expr 3 * $::arrowWidth]
-  set shape [list $s1 $s1 [expr 1.5 * $::arrowWidth]]
+  set s1 [expr 3 * $::boardArrowWidth]
+  set shape [list $s1 $s1 [expr 1.5 * $::boardArrowWidth]]
   eval $pathName \
       {create line $coord} \
-      -fill $color -arrow last -width $::arrowWidth {-arrowshape $shape} \
+      -fill $color -arrow last -width $::boardArrowWidth {-arrowshape $shape} \
       {-tag [list mark arrows "mark${from}:${to}"]}
 }
 
@@ -1597,7 +1597,7 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
 # Highlight last move played by drawing a rectangle around the two squares and/or an arrow
 proc  ::board::lastMoveHighlight {w moveuci} {
   $w.bd delete highlightLastMove
-  if { ! $::highlightLastMove && ! $::arrowLastMove } {return}
+  if { ! $::highlightLastMove && ! $::lastMoveShowArrow } {return}
   if {[string length $moveuci] >= 4} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
@@ -1606,8 +1606,8 @@ proc  ::board::lastMoveHighlight {w moveuci} {
         ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor $::highlightLastMovePattern
         ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor $::highlightLastMovePattern
     }
-    if { $::arrowLastMove } {
-        ::board::mark::DrawArrowLastMove $w.bd $square1 $square2 $::highlightLastMoveColor
+    if { $::lastMoveShowArrow } {
+        ::board::mark::DrawArrowLastMove $w.bd $square1 $square2 $::highlightLastMoveColor $::lastMoveArrowWidth
     }
   }
 }

@@ -212,13 +212,15 @@ set locale(numeric) ".,"
 set translatePieces 1
 
 # Highlight the last move played
-set arrowLastMove 0
-set arrowWidth 2
-set highlightArrowWidth 2
+set lastMoveShowArrow 0
+set lastMoveArrowWidth 2
 set highlightLastMove 1
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"
 set highlightLastMovePattern {} ; # this option is not saved
+
+# Default size for the board's arrows.
+set boardArrowWidth 2
 
 # Gloss Of Danger
 set glossOfDanger 0
@@ -644,7 +646,7 @@ proc options.write {} {
           ecoFile suggestMoves showVarPopup showVarArrows \
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces arrowLastMove arrowWidth highlightArrowWidth \
+          translatePieces lastMoveShowArrow boardArrowWidth lastMoveArrowWidth \
           highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           glossOfDanger locale(numeric) \
           spellCheckFile autoRaise windowsDock showGameInfo \
