@@ -100,7 +100,7 @@ menuText E EditMain "Promote Variation to Main Line" 21 \
   {Promote a variation to be the main line}
 menuText E EditTrial "Try Variation" 0 \
   {Start/stop trial mode, for testing an idea on the board}
-menuText E EditStrip "Strip" 2 {Strip comments or variations from this game}
+menuText E EditStrip "Strip" 3 {Strip comments or variations from this game}
 menuText E EditUndo "Undo" 0 {Undo last game change}
 menuText E EditRedo "Redo" 0 {Redo last game change}
 menuText E EditStripComments "Comments" 0 \
