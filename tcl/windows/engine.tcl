@@ -683,9 +683,9 @@ proc ::enginewin::updateDisplay {id msgData} {
         lassign $score_wdl win draw lose
         if {$draw eq ""} { set draw 0 }
         if {$lose eq ""} { set lose 0 }
-        lappend extraInfo [format "w%.1f%%" [expr {$win / 10.0}]]
-        lappend extraInfo [format "d%.1f%%" [expr {$draw / 10.0}]]
-        lappend extraInfo [format "l%.1f%%" [expr {$lose / 10.0}]]
+        lappend extraInfo [format "W: %.1f%%" [expr {$win / 10.0}]]
+        lappend extraInfo [format "D: %.1f%%" [expr {$draw / 10.0}]]
+        lappend extraInfo [format "L: %.1f%%" [expr {$lose / 10.0}]]
     }
     if {$nodes ne ""} {
         if {$nodes > 100000000} {
