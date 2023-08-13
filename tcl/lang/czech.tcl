@@ -232,7 +232,7 @@ menuText C OptionsMovesHighlightLastMoveColor "Barva" 0 {Barva èáry}
 # ====== TODO To be translated ======
 menuText C OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 # ====== TODO To be translated ======
-menuText C OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText C OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText C OptionsMoves "Tahy" 0 {Volby pro zadávání tahù}
 menuText C OptionsMovesAnimate "Èas animace" 4 \
   {Nastavit èas pou¾itý na animaci tahù}

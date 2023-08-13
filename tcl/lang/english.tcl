@@ -272,7 +272,7 @@ menuText E OptionsMovesHighlightLastMoveDisplay "Show Square" 0 {Display last mo
 menuText E OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 menuText E OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText E OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show a Arrow with Highlight}
-menuText E OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText E OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText E OptionsMoves "Moves" 0 {Move entry options}
 menuText E OptionsMovesAnimate "Animation Time" 1 \
   {Set the amount of time used to animate moves}

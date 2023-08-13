@@ -249,7 +249,7 @@ menuText F OptionsMovesHighlightLastMoveDisplay "Afficher Cases" 0 {Afficher la 
 menuText F OptionsMovesHighlightLastMoveWidth "Epaisseur" 0 {Epaisseur de la ligne}
 menuText F OptionsMovesHighlightLastMoveColor "Couleur" 0 {Couleur de la ligne}
 menuText F OptionsMovesHighlightLastMoveArrow "Afficher Flèche" 0 {Afficher la flèche de déplacement du dernier coup}
-menuText F OptionsMovesArrowWidth "Largeur des flèches pour\nVariations et commentaires" 0 {Sélectionner la largeur de ligne de la flèche}
+menuText F OptionsMovesArrowWidth "Largeur des flèches" 0 {Sélectionner la largeur de ligne de la flèche}
 menuText F OptionsMoves "Coups" 2 {Gestion des coups}
 menuText F OptionsMovesAnimate "Temps d'animation" 1 \
   {Régler le temps utilisé pour l'animation des coups}

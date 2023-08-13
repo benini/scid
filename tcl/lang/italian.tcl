@@ -236,7 +236,7 @@ menuText I OptionsMovesHighlightLastMoveDisplay "Mostra Caselle" 0 {Mostra in ev
 menuText I OptionsMovesHighlightLastMoveWidth "Larghezza" 0 {Spessore della linea}
 menuText I OptionsMovesHighlightLastMoveColor "Colore" 0 {Colore della linea}
 menuText I OptionsMovesHighlightLastMoveArrow "Mostra freccia" 0 {Mostra una freccia}
-menuText I OptionsMovesArrowWidth "Larghezza delle frecce per Variazioni e commenti" 0 {Selezionare la larghezza della linea della freccia}
+menuText I OptionsMovesArrowWidth "Larghezza delle frecce" 0 {Selezionare la larghezza della linea della freccia}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione delle mosse}
 menuText I OptionsMovesAnimate "Intervallo di tempo per l'animazione delle mosse" 4 \
   {Definisce l'intervallo di tempo per l'animazione delle mosse}

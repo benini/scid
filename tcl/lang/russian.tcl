@@ -243,7 +243,7 @@ menuText R OptionsMovesHighlightLastMoveWidth "Толщина" 0 {Толщина
 menuText R OptionsMovesHighlightLastMoveColor "Цвет" 0 {Цвет линии}
 menuText R OptionsMovesHighlightLastMoveArrow "Показать стрелку" 0 {Включить стрелки с подсветкой}
 # ====== TODO To be translated ======
-menuText R OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText R OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText R OptionsMoves "Ходы" 0 {Установки для ходов}
 menuText R OptionsMovesAnimate "Время анимации" 1 \
   {Установить количество времени, используемое для анимации ходов}

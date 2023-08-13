@@ -258,7 +258,7 @@ menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color de línea}
 # ====== TODO To be translated ======
 menuText S OptionsMovesHighlightLastMoveArrow "Mostrar Flechas" 0 {Show Arrow with Highlight}
 # ====== TODO To be translated ======
-menuText S OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText S OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAnimate "Velocidad de la animación" 1 \
   {Pone el tiempo usado para animar las jugadas}

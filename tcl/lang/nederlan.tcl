@@ -259,7 +259,7 @@ menuText N OptionsMovesHighlightLastMoveColor "Kleur" 0 {Varinatkleur}
 # ====== TODO To be translated ======
 menuText N OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
 # ====== TODO To be translated ======
-menuText N OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText N OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
 menuText N OptionsMovesAnimate "Stuk Animatietijd " 1 \
   {Zet animatietijd van de stukkenbewegingen} ;

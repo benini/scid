@@ -246,7 +246,7 @@ menuText H OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Include Arrow with Highlight}
 # ====== TODO To be translated ======
-menuText H OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText H OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
 menuText H OptionsMovesAnimate "Megelevenítés ideje" 0 \
   {Beállítja az idõt lépések megelevenítéséhez.}

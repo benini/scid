@@ -260,7 +260,7 @@ menuText K OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText K OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Include Arrow with Highlight}
 # ====== TODO To be translated ======
-menuText K OptionsMovesArrowWidth "Width of Arrows for\nVariations and Comments" 0 {Select line width of Arrow}
+menuText K OptionsMovesArrowWidth "Width of Arrows" 0 {Select line width of Arrow}
 menuText K OptionsMoves "Jugades" 0 {Opcions d'entrada de jugades}
 menuText K OptionsMovesAnimate "Velocitat d'animació" 1 \
   {Posa el temps d'animació entre jugades}
