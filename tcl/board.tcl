@@ -1050,7 +1050,7 @@ namespace eval ::board::mark {
      ($CBSquare)\\\ +
      ($CBColor)
      ($Square)
-     (?:,($CBColor)($Square))?
+     (?:,($CBColor)($Square))*
      $EndTag
      "
 
@@ -1060,24 +1060,7 @@ namespace eval ::board::mark {
      ($CBColor)
      ($sqintern)
      ($sqintern)
-     $EndTag
-     "
-  variable CBArrowRegexM \
-     "$StartTag
-     ($CBarrow)\\\ +
-     ($CBColor
-     $sqintern
-     $sqintern,)+
-     ($CBColor$sqintern
-     $sqintern,?)*
-     $EndTag
-     "
-  variable CBSquareRegexM \
-     "$StartTag
-     ($CBSquare)\\\ +
-     ($CBColor
-     $Square,)+
-     ($CBColor$Square,?)*
+     (?:,($CBColor)($sqintern)($sqintern))*
      $EndTag
      "
 }
@@ -1109,20 +1092,10 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   variable StdCmdRegex
   variable CBSquareRegex
   variable CBArrowRegex
-  variable CBArrowRegexM
-  variable CBSquareRegexM
   set result {}
 
   # Build regex and search script for embedded commands:
   set regex  ""
-  # handle lichess commands: change [%cal Ra2a4,Yd4d5] to [%cal Ra2a4][%cal Yd4d5] 
-  foreach { r s } [list $CBArrowRegexM "]\[%cal " $CBSquareRegexM "]\[%csl " ] {
-    set match ""
-    regexp -expanded $r $comment match
-    if { $match ne "" } {
-      set comment [regsub -expanded $r $comment [regsub -expanded -all "," $match $s]]
-    }
-  }
   foreach r [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
     if {[string equal $regex ""]} {set regex $r} else {append regex "|$r"}
   }
@@ -1130,42 +1103,53 @@ proc ::board::mark::getEmbeddedCmds {comment} {
         $regex $comment indices}
 
   # Loop over all embedded commands contained in comment string:
-
   for {set start 0} {[eval $locateScript]} {incr start} {
     foreach {first last} $indices {}	;# just a multi-assign
-    foreach re [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
+      foreach re [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
       # Passing matching subexpressions to variables:
       if {![regexp -expanded $re [string range $comment $first $last] \
             match type arg1 arg2 color]} {
         continue
       }
-      # CB uses rotated arguments. Bring them in order
+      # CB and lichess can use multiple squares and arrows in one expression
       if {[string equal $type "csl"] || [string equal $type "cal"]} {
-         set dummy1 $arg1
-         set dummy2 $arg2
-         set dummy3 $color
-         set color $dummy1
-         set arg1  $dummy2
-         set arg2  $dummy3
-         if {[string equal $type "csl"]} {set type  "full"  }
-         if {[string equal $type "cal"]} {set type  "arrow" }
-         if {[string equal $color "R"]}  {set color "red"   }
-         if {[string equal $color "G"]}  {set color "green" }
-         if {[string equal $color "Y"]}  {set color "yellow"}
-         if {[string equal $color "B"]}  {set color "blue"}
+          # syntax check was done by regexp, so assign stupid
+          set i 5
+          while { [string index $match $i] ne "]" } {
+              incr i
+              set color [string index $match $i]
+              set arg1 [string range $match [expr $i+1] [expr $i+2]]
+              incr i 3
+              if {[string equal $type "cal"]} {
+                  set arg2 [string range $match [expr $i] [expr $i+1]]
+                  incr i 2
+                  set stype  "arrow"
+              } else {
+                  set arg2  ""
+                  set stype  "full"
+              }
+              switch $color {
+                  "R" {set color "red"   }
+                  "G" {set color "green" }
+                  "Y" {set color "yellow"}
+                  "B" {set color "blue"  }
+              }
+              lappend result [list $stype $arg1 $arg2 $color]
+              lappend result $indices
+          }
+      } else { # Settings of (default) type and arguments:
+          if {[string equal $color ""]}   { set color "red" }
+          switch -glob -- $type {
+              ""   {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
+              mark {set type "fu"}
+                  ?    {if {[string length $arg2]} break else {
+                      set arg2 $type; set type "text"}
+                  }
+              }
+          # Construct result list:
+          lappend result [list $type $arg1 $arg2 $color]
+          lappend result $indices
       }
-      # Settings of (default) type and arguments:
-      if {[string equal $color ""]}   { set color "red" }
-      switch -glob -- $type {
-        ""   {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
-        mark {set type "fu"	;# new syntax}
-        ?    {if {[string length $arg2]} break else {
-            set arg2 $type; set type "text"}
-        }
-      }
-      # Construct result list:
-      lappend result [list $type $arg1 $arg2 $color]
-      lappend result $indices
       set start $last	;# +1 by for-loop
     }
   }
