@@ -1047,7 +1047,7 @@ namespace eval ::board::mark {
 
   variable CBSquareRegex \
      "$StartTag
-     ($CBSquare)\\\ +
+     ($CBSquare)\\\ {1}
      ($CBColor)
      ($Square)
      (?:,($CBColor)($Square))*
@@ -1056,7 +1056,7 @@ namespace eval ::board::mark {
 
   variable CBArrowRegex \
      "$StartTag
-     ($CBarrow)\\\ +
+     ($CBarrow)\\\ {1}
      ($CBColor)
      ($sqintern)
      ($sqintern)
@@ -1077,6 +1077,9 @@ namespace eval ::board::mark {
 #	            	[%arrow c4 f7],
 #	            	[%draw e4],
 #	            	[%draw circle,f7,blue].
+#                   and Chessbase, lichess commands, e.g.:
+#                       [%csl Ra1,Yd4]
+#                       [%cal Ra1a8.Yd4h8]
 # Results:
 #	Returns a list of embedded Scid commands,
 #		{command indices ?command indices...?},
@@ -1113,39 +1116,39 @@ proc ::board::mark::getEmbeddedCmds {comment} {
       }
       # CB and lichess can use multiple squares and arrows in one expression
       if {[string equal $type "csl"] || [string equal $type "cal"]} {
-          # syntax check was done by regexp, so assign stupid
+          # syntax check was done by regexp, so assign stupid [%cal Ra1a8.Yd4h8] or [%csl Ra1,Yd4]
           set i 5
-          while { [string index $match $i] ne "]" } {
+          set len [expr [string length $match] - 1]
+          while { $i < $len } {
               incr i
-              set color [string index $match $i]
-              set arg1 [string range $match [expr $i+1] [expr $i+2]]
-              incr i 3
-              if {[string equal $type "cal"]} {
-                  set arg2 [string range $match [expr $i] [expr $i+1]]
-                  incr i 2
-                  set stype  "arrow"
-              } else {
-                  set arg2  ""
-                  set stype  "full"
-              }
-              switch $color {
+              switch [string index $match $i] {
                   "R" {set color "red"   }
                   "G" {set color "green" }
                   "Y" {set color "yellow"}
                   "B" {set color "blue"  }
               }
+              set arg1 [string range $match [expr $i+1] [expr $i+2]]
+              incr i 3
+              if {[string equal $type "cal"]} {
+                  set arg2 [string range $match [expr $i] [expr $i+1]]
+                  set stype  "arrow"
+                  incr i 2
+              } else {
+                  set arg2  ""
+                  set stype  "full"
+              }
               lappend result [list $stype $arg1 $arg2 $color]
               lappend result $indices
           }
       } else { # Settings of (default) type and arguments:
-          if {[string equal $color ""]}   { set color "red" }
+          if {[string equal $color ""]} { set color "red" }
           switch -glob -- $type {
               ""   {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
               mark {set type "fu"}
-                  ?    {if {[string length $arg2]} break else {
+              ?    {if {[string length $arg2]} break else {
                       set arg2 $type; set type "text"}
-                  }
-              }
+                   }
+          }
           # Construct result list:
           lappend result [list $type $arg1 $arg2 $color]
           lappend result $indices
