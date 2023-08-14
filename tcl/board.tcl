@@ -989,17 +989,22 @@ proc ::board::setmarks {w cmds} {
   set ::board::_mark($w) {}
   if {$cmds eq ""} { return }
 
-  # Normalize the marks list
   set ::board::_mark($w) [lmap elem [mark::getEmbeddedCmds $cmds] {
     lassign $elem type arg1 arg2 color
+
+    # Normalize the mark type
     switch -glob $type {
         ""     {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
         "mark" {set type "full"}
         ?      {set arg2 $type ; set type "text" }
     }
+
+    # Normalize square coordinates
     set arg1 [::board::sq $arg1]
     set sq2 [::board::sq $arg2]
     if {$sq2 != -1} { set arg2 $sq2 }
+
+    # Map color codes to color names
     switch -nocase $color {
       "" -
       "R" {set color "red"   }

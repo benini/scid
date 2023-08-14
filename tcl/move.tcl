@@ -24,30 +24,7 @@ proc ::move::drawVarArrows {} {
 		([info exists ::playMode] && [eval "$::playMode drawVarArrows"] == 0)} {
 		return 0
 	}
-
-	set bDrawArrow 0
-	set varList [sc_var list UCI]
-
-	if {$varList != ""} {
-		set move [sc_game info nextMoveUCI]
-		if {$move != ""} { set varList [linsert $varList 0 $move] }
-		foreach { move } $varList {
-			set bDrawn 0
-			set sq_start [ ::board::sq [ string range $move 0 1 ] ]
-			set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-			foreach mark $::board::_mark(.main.board) {
-				if { [lindex $mark 0] == "arrow" } {
-					if {[lindex $mark 1] == $sq_start && [lindex $mark 2] == $sq_end} {
-						set bDrawn 1
-						break
-					}
-				}
-			}
-			if {! $bDrawn } { set bDrawArrow 1; break }
-		}
-	}
-
-	return $bDrawArrow
+	return [expr { [sc_var list UCI] != "" }]
 }
 
 proc ::move::showVarArrows {} {
