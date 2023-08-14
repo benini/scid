@@ -206,7 +206,7 @@ proc updateStatusBar {} {
     }
 
     # remove technical comments, notify only human readable ones
-    regsub -all {\[%.*\]} $comment {} comment
+    regsub -all {\[%.*?\]} $comment {} comment
 
     set statusBar ""
     set move [sc_game info previousMoveNT]
