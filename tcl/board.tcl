@@ -987,12 +987,28 @@ proc ::board::midSquare {w sq} {
 #
 proc ::board::setmarks {w cmds} {
   set ::board::_mark($w) {}
-  foreach {cmd discard} [mark::getEmbeddedCmds $cmds] {
-    lset cmd 1 [::board::sq [lindex $cmd 1]]
-    set dest [::board::sq [lindex $cmd 2]]
-    if {$dest != -1} {lset cmd 2 $dest}
-    lappend ::board::_mark($w) $cmd
-  }
+  if {$cmds eq ""} { return }
+
+  # Normalize the marks list
+  set ::board::_mark($w) [lmap elem [mark::getEmbeddedCmds $cmds] {
+    lassign $elem type arg1 arg2 color
+    switch -glob $type {
+        ""     {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
+        "mark" {set type "full"}
+        ?      {set arg2 $type ; set type "text" }
+    }
+    set arg1 [::board::sq $arg1]
+    set sq2 [::board::sq $arg2]
+    if {$sq2 != -1} { set arg2 $sq2 }
+    switch -nocase $color {
+      "" -
+      "R" {set color "red"   }
+      "G" {set color "green" }
+      "Y" {set color "yellow"}
+      "B" {set color "blue"  }
+    }
+    list $type $arg1 $arg2 $color
+  }]
 }
 
 ### Namespace ::board::mark
@@ -1003,138 +1019,91 @@ namespace eval ::board::mark {
   # Regular expression constants for
   # matching Scid's embedded commands in PGN files.
 
-  variable StartTag {\[%}
   variable ScidKey  {mark|arrow}
   variable Command  {draw}
   variable Type     {full|square|arrow|circle|disk|tux}
   variable Text     {[-+=?!A-Za-z0-9]}
   variable Square   {[a-h][1-8]\M}
   variable Color    {[\w#][^]]*\M}	;# FIXME: too lax for #nnnnnn!
-  variable EndTag   {\]}
+
+  variable regex
 
   # Current (non-standard) version:
-  variable ScidCmdRegex \
-      "$StartTag              # leading tag
-  ($ScidKey)\\\ +        # (old) command name + space chars
+  set regex(mark) \
+  "(?:($ScidKey)\\\ +)?  # (old) command name + space chars (may be omitted)
   ($Square)              # mandatory square (e.g. 'a4')
   (?:\\ +($Square))?     # optional: another (destination) square
   (?:\\ *($Color))?      # optional: color name
-  $EndTag                # closing tag
   "
+  set regex(arrow) $regex(mark)
+
   # Proposed new version, according to the
   # PGN Specification and Implementation Guide (Supplement):
-  variable StdCmdRegex \
-      "${StartTag}            # leading tag
-  ${Command}             # command name
-  \\                     # a space character
-  (?:(${Type}|$Text),)?  # keyword, e.g. 'arrow' (may be omitted)
-  # or single char (indicating type 'text')
+  set regex($Command) \
+  "(?:(${Type}|$Text),)? # keyword, e.g. 'arrow' (may be omitted)
+                         # or single char (indicating type 'text')
   ($Square)              # mandatory square (e.g. 'a4')
   (?:,($Square))?        # optional: (destination) square
   (?:,($Color))?         # optional: color name
-  $EndTag                # closing tag
   "
 
   # ChessBase' syntax for markers and arrows
   variable CBSquare    {csl}
   variable CBarrow     {cal}
-  variable CBColor     {[GRY]}
+  variable CBColor     {[BGRY]}
   variable Square      {[a-h][1-8]\M}
   variable sqintern    {[a-h][1-8]}
 
-  variable CBSquareRegex \
-     "$StartTag
-     ($CBSquare)\\\ +
-     ($CBColor)
-     ($Square)
-     (?:,($CBColor)($Square))?
-     $EndTag
-     "
-
-  variable CBArrowRegex \
-     "$StartTag
-     ($CBarrow)\\\ +
-     ($CBColor)
-     ($sqintern)
-     ($sqintern)
-     $EndTag
-     "
+  # A sequence of color and square separated by commas, allowing for optional whitespace at the beginning and end.
+  # e.g. "Rd4" " Rd4 , Gc3 "
+  set regex($CBSquare) "^(\\s*$CBColor$Square\\s*,?)+$"
+  set regex($CBarrow)  "^(\\s*$CBColor$sqintern$sqintern\\s*,?)+$"
 }
 
 # ::board::mark::getEmbeddedCmds --
 #
-#	Scans a game comment string and extracts embedded commands
-#	used by Scid to mark squares or draw arrows.
+#  Scans a game comment string and extracts embedded commands
+#  used by Scid to mark squares or draw arrows.
 #
 # Arguments:
-#	comment     The game comment string, containing
-#	            embedded commands, e.g.:
-#	            	[%mark e4 green],
-#	            	[%arrow c4 f7],
-#	            	[%draw e4],
-#	            	[%draw circle,f7,blue].
+#   comment     The game comment string, containing
+#               embedded commands, e.g.:
+#                   [%mark e4 green],
+#                   [%arrow c4 f7],
+#                   [%draw h4],
+#                   [%draw circle,f7,blue],
+#                   [%draw X,d5,green],
+#                   [%csl Rd4 , Gc3,Yh8 ],
+#                   [%cal Rd4c7 , Ya1b5 ].
 # Results:
-#	Returns a list of embedded Scid commands,
-#		{command indices ?command indices...?},
-#	where 'command' is a list representing the embedded command:
-#		'{type square ?arg? color}',
-#		e.g. '{circle f7 red}' or '{arrow c4 f7 green}',
-#	and 'indices' is a list containing start and end position
-#	of the command string within the comment.
+#    Returns a list of embedded Scid commands:
+#        '{type square ?arg? color}',
+#        e.g. '{circle f7 red}' or '{arrow c4 f7 green}',
 #
 proc ::board::mark::getEmbeddedCmds {comment} {
-  if {$comment == ""} {return}
-  variable ScidCmdRegex
-  variable StdCmdRegex
-  variable CBSquareRegex
-  variable CBArrowRegex
   set result {}
-
-  # Build regex and search script for embedded commands:
-  set regex  ""
-  foreach r [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
-    if {[string equal $regex ""]} {set regex $r} else {append regex "|$r"}
-  }
-  set locateScript  {regexp -expanded -indices -start $start \
-        $regex $comment indices}
-
-  # Loop over all embedded commands contained in comment string:
-
-  for {set start 0} {[eval $locateScript]} {incr start} {
-    foreach {first last} $indices {}	;# just a multi-assign
-    foreach re [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
-      # Passing matching subexpressions to variables:
-      if {![regexp -expanded $re [string range $comment $first $last] \
-            match type arg1 arg2 color]} {
-        continue
+  # Extracts embedded commands with the [%command args] syntax.
+  # Without the weird {1,1}? the non-greedy (.*?) does not work (see re_syntax tcl documentation).
+  # TODO: there are other function that extract the embedded commands with a similar regex.
+  #       It would be better to receive the list {{cmd args} ... } instead of re-running the regex on the full comment.
+  foreach {fullcmd cmd args} [regexp -all -inline {\[%([A-Za-z]+){1,1}?\s+(.*?)\s*\]} $comment] {
+    set cmd [string tolower $cmd]
+    if {$cmd in {draw arrow mark}} {
+      if {[regexp -expanded $::board::mark::regex($cmd) $args -> type arg1 arg2 color]} {
+        lappend result [list $type $arg1 $arg2 $color]
       }
-      # CB uses rotated arguments. Bring them in order
-      if {[string equal $type "csl"] || [string equal $type "cal"]} {
-         set dummy1 $arg1
-         set dummy2 $arg2
-         set dummy3 $color
-         set color $dummy1
-         set arg1  $dummy2
-         set arg2  $dummy3
-         if {[string equal $type "csl"]} {set type  "full"  }
-         if {[string equal $type "cal"]} {set type  "arrow" }
-         if {[string equal $color "R"]}  {set color "red"   }
-         if {[string equal $color "G"]}  {set color "green" }
-         if {[string equal $color "Y"]}  {set color "yellow"}
-      }
-      # Settings of (default) type and arguments:
-      if {[string equal $color ""]}   { set color "red" }
-      switch -glob -- $type {
-        ""   {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
-        mark {set type "fu"	;# new syntax}
-        ?    {if {[string length $arg2]} break else {
-            set arg2 $type; set type "text"}
+    } elseif {$cmd in [list $::board::mark::CBSquare $::board::mark::CBarrow]} {
+      if {[regexp $::board::mark::regex($cmd) $args]} {
+        # Convert the string to a list of embedded commands.
+        # e.g. Rd4,Gc3e4,Ya2 -> {"" d4 "" R} {"" c3 e4 G} {"" a2 "" Y}
+        foreach {mark} [split $args ","] {
+          set mark [string trim $mark]
+          set color [string index $mark 0]
+          set sq1 [string range $mark 1 2]
+          set sq2 [string range $mark 3 end]
+          lappend result [list "" $sq1 $sq2 $color]
         }
       }
-      # Construct result list:
-      lappend result [list $type $arg1 $arg2 $color]
-      lappend result $indices
-      set start $last	;# +1 by for-loop
     }
   }
   return $result
