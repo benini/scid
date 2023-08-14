@@ -1047,7 +1047,7 @@ namespace eval ::board::mark {
 
   variable CBSquareRegex \
      "$StartTag
-     ($CBSquare)\\\ {1}
+     ($CBSquare)\\\ +
      ($CBColor)
      ($Square)
      (?:,($CBColor)($Square))*
@@ -1056,7 +1056,7 @@ namespace eval ::board::mark {
 
   variable CBArrowRegex \
      "$StartTag
-     ($CBarrow)\\\ {1}
+     ($CBarrow)\\\ +
      ($CBColor)
      ($sqintern)
      ($sqintern)
@@ -1117,7 +1117,7 @@ proc ::board::mark::getEmbeddedCmds {comment} {
       # CB and lichess can use multiple squares and arrows in one expression
       if {[string equal $type "csl"] || [string equal $type "cal"]} {
           # syntax check was done by regexp, so assign stupid [%cal Ra1a8.Yd4h8] or [%csl Ra1,Yd4]
-          set i 5
+          set i [string last " " $match]
           set len [expr [string length $match] - 1]
           while { $i < $len } {
               incr i
