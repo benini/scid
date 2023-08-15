@@ -1275,18 +1275,47 @@ proc ::board::mark::DrawText {pathName square char color {size 0} {shadowColor "
       {-tag  [list mark text text$square mark$square p$square]}
 }
 
+# Draw an arrow with a custom thickness, shape and associated tag.
 # thickness: if >= 1 it represent the arrow thickness in pixels.
 #            Otherwise it is interpreted as a percentage of the square width (default 0.1).
 #
-proc ::board::mark::DrawArrowEx {pathName from to color thickness arrowshape tag} {
+proc ::board::mark::DrawArrowEx {w from to color thickness arrowshape tag} {
+  set pathName $w.bd
   $pathName delete $tag
 
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
-  set coord [GetArrowCoords $pathName $from $to]
+
+  lassign [GetBox $pathName $from] left top right bottom length x0 y0
+  lassign [lrange [GetBox $pathName $to] 5 6] x1 y1
+
+  # Drawing from middle point to middle point is confusing when there are multiple arrows.
+  # Solve equation: "midpoint + (lambda * vector) = edge point":
+  set dX [expr {$x1 - $x0}]
+  set dY [expr {$y1 - $y0}]
+  if {abs($dX) > abs($dY)} {
+    set edge [expr {($dX > 0) ? $right : $left}]
+    set offX [expr {($edge - $x0) * 0.1}]
+    set offY [expr {$offX * $dY / $dX}]
+  } else {
+    set edge [expr {($dY > 0) ? $bottom : $top}]
+    set offY [expr {($edge - $y0) * 0.1}]
+    set offX [expr {$offY * $dX / $dY}]
+  }
+  set coord [list [expr {$x0 + $offX}] [expr {$y0 + $offY}] [expr {$x1 - $offX}] [expr {$y1 - $offY}]]
+
+  # If the squares are occupied, apply a bigger offset.
+  if {[string index $::board::_data($w) $from] ne "."} {
+    lset coord 0 [expr {$x0 + $offX * 5}]
+    lset coord 1 [expr {$y0 + $offY * 5}]
+  }
+  if {[string index $::board::_data($w) $to] ne "."} {
+    lset coord 2 [expr {$x1 - $offX * 5}]
+    lset coord 3 [expr {$y1 - $offY * 5}]
+  }
+
   if {$thickness < 1} {
-    set box [GetBox $pathName $from $thickness]
-    set thickness [lindex $box 4]
+    set thickness [expr {$length * $thickness}]
   }
   $pathName create line $coord -fill $color -arrow last -width $thickness \
     -arrowshape [lmap elem $arrowshape { expr {$elem * $thickness} }] \
@@ -1294,17 +1323,17 @@ proc ::board::mark::DrawArrowEx {pathName from to color thickness arrowshape tag
 }
 
 proc ::board::mark::DrawArrow {pathName from to color} {
-  ::board::mark::DrawArrowEx $pathName $from $to $color 0.1 {3.5 3.5 1.5} "mark${from}:${to}"
+  ::board::mark::DrawArrowEx [winfo parent $pathName] $from $to $color 0.1 {3.3 3.3 1.0} "mark${from}:${to}"
 }
 
 # Draw an arrow to indicate the best move.
 # It also eliminate any existing best move arrow.
 # So, if moveUCI == "", it just deletes any existing best move arrow.
 # TODO: draw a better arrow that has the alpha channel.
-proc ::board::mark::DrawBestMove {pathName moveUCI} {
+proc ::board::mark::DrawBestMove {w moveUCI} {
   set from [ ::board::sq [ string range $moveUCI 0 1 ] ]
   set to [ ::board::sq [ string range $moveUCI 2 3 ] ]
-  ::board::mark::DrawArrowEx $pathName.bd $from $to "#FF5E0E" 0.066 {3.6 4.8 2.0} "bestmove"
+  ::board::mark::DrawArrowEx $w $from $to "#FF5E0E" 0.066 {3.6 4.8 2.0} "bestmove"
 }
 
 # ::board::mark::DrawRectangle --
@@ -1373,63 +1402,6 @@ proc ::board::mark::DrawTux {pathName square discard} {
   $pathName create image [lrange $box 5 6] \
       -image tux${len}x${len} \
       -tag [list mark "mark$square" tux]
-}
-
-# ::board::mark::GetArrowCoords --
-#
-#	Auxiliary function:
-#	Similar to '::board::midSquare', but this function returns
-#	coordinates of two (optional adjusted) squares.
-#
-# Arguments:
-#	board	A board canvas ('win.bd' for a frame 'win').
-#	from	Source square number (0-63).
-#	to	Destination square number (0-63).
-#	shrink	Optional shrink factor (0.0 - 1.0):
-#		  0.0 = no shrink, i.e. just return midpoint coordinates,
-#		  1.0 = start and end at edge (unless adjacent squares).
-# Results:
-#	Returns a list of coordinates {x1 y1 x2 y2} for drawing
-#	an arrow "from" --> "to".
-#
-proc ::board::mark::GetArrowCoords {board from to {shrink 0.5}} {
-  # Get left, top, right, bottom, length, midpoint_x, midpoint_y:
-  set fromXY [GetBox $board $from]
-  set toXY   [GetBox $board $to]
-  # Get vector (dX,dY) = to(x,y) - from(x,y)
-  lassign [lrange $fromXY 5 6] x0 y0
-  lassign [lrange $toXY 5 6] x1 y1
-  set dX [expr {$x1 - $x0}]
-  set dY [expr {$y1 - $y0}]
-
-  # Check if we have good coordinates and shrink factor:
-  if {($shrink == 0.0) || ($dX == 0.0 && $dY == 0.0)} {
-    return [list $x0 $y0 $x1 $y1]
-  }
-
-  # Solve equation: "midpoint + (lambda * vector) = edge point":
-  if {abs($dX) > abs($dY)} {
-    set edge [expr {($dX > 0) ? [lindex $fromXY 2] : [lindex $fromXY 0]}]
-    set lambda [expr {($edge - $x0) / $dX}]
-  } else {
-    set edge [expr {($dY > 0) ? [lindex $fromXY 3] : [lindex $fromXY 1]}]
-    set lambda [expr {($edge - $y0) / $dY}]
-  }
-
-  # Check and adjust shrink factor for adjacent squares
-  # (i.e. don't make arrows too short):
-  set maxShrinkForAdjacent 0.667
-  if {$shrink > $maxShrinkForAdjacent} {
-    set dFile [expr {($to % 8) - ($from % 8)}]
-    set dRank [expr {($from / 8) - ($to / 8)}]
-    if {(abs($dFile) <= 1) && (abs($dRank) <= 1)} {
-      set shrink $maxShrinkForAdjacent
-    }
-  }
-
-  # Return shrinked line coordinates {x0', y0', x1', y1'}:
-  set shrink [expr {$shrink * $lambda}]
-  return [list [expr {$x0 + $shrink * $dX}] [expr {$y0 + $shrink * $dY}] $x1 $y1]
 }
 
 # ::board::mark::GetBox --
