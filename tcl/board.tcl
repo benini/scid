@@ -1275,11 +1275,12 @@ proc ::board::mark::DrawText {pathName square char color {size 0} {shadowColor "
       {-tag  [list mark text text$square mark$square p$square]}
 }
 
-# ::board::mark::DrawArrow --
 # thickness: if >= 1 it represent the arrow thickness in pixels.
 #            Otherwise it is interpreted as a percentage of the square width (default 0.1).
 #
-proc ::board::mark::DrawArrow {pathName from to color {thickness 0.1}} {
+proc ::board::mark::DrawArrowEx {pathName from to color thickness arrowshape tag} {
+  $pathName delete $tag
+
   if {$from < 0  ||  $from > 63} { return }
   if {$to   < 0  ||  $to   > 63} { return }
   set coord [GetArrowCoords $pathName $from $to]
@@ -1287,9 +1288,13 @@ proc ::board::mark::DrawArrow {pathName from to color {thickness 0.1}} {
     set box [GetBox $pathName $from $thickness]
     set thickness [lindex $box 4]
   }
-  {*}$pathName create line $coord -fill $color -arrow last -width $thickness \
-    -arrowshape [lmap elem {3.5 3.5 1.5} { expr {$elem * $thickness} }] \
-    -tag [list mark arrows "mark${from}:${to}"]
+  $pathName create line $coord -fill $color -arrow last -width $thickness \
+    -arrowshape [lmap elem $arrowshape { expr {$elem * $thickness} }] \
+    -tag [list mark arrows $tag]
+}
+
+proc ::board::mark::DrawArrow {pathName from to color} {
+  ::board::mark::DrawArrowEx $pathName $from $to $color 0.1 {3.5 3.5 1.5} "mark${from}:${to}"
 }
 
 # Draw an arrow to indicate the best move.
@@ -1297,17 +1302,9 @@ proc ::board::mark::DrawArrow {pathName from to color {thickness 0.1}} {
 # So, if moveUCI == "", it just deletes any existing best move arrow.
 # TODO: draw a better arrow that has the alpha channel.
 proc ::board::mark::DrawBestMove {pathName moveUCI} {
-  {*}$pathName.bd delete bestmove
-  if {$moveUCI eq ""} { return }
-
   set from [ ::board::sq [ string range $moveUCI 0 1 ] ]
   set to [ ::board::sq [ string range $moveUCI 2 3 ] ]
-  set coord [GetArrowCoords $pathName.bd $from $to 0.2]
-  set box [GetBox $pathName.bd $from 0.066]
-  set thickness [lindex $box 4]
-  {*}$pathName.bd create line $coord -fill #FF5E0E -arrow last -width $thickness \
-    -arrowshape [lmap elem {3.6 4.8 2.0} { expr {$elem * $thickness} }] \
-    -tag [list mark arrows bestmove]
+  ::board::mark::DrawArrowEx $pathName.bd $from $to "#FF5E0E" 0.066 {3.6 4.8 2.0} "bestmove"
 }
 
 # ::board::mark::DrawRectangle --
