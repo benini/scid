@@ -1395,16 +1395,13 @@ proc ::board::mark::DrawTux {pathName square discard} {
 #	Returns a list of coordinates {x1 y1 x2 y2} for drawing
 #	an arrow "from" --> "to".
 #
-proc ::board::mark::GetArrowCoords {board from to {shrink 0.6}} {
-  if {$shrink < 0.0} {set shrink 0.0}
-  if {$shrink > 1.0} {set shrink 1.0}
-
+proc ::board::mark::GetArrowCoords {board from to {shrink 0.5}} {
   # Get left, top, right, bottom, length, midpoint_x, midpoint_y:
   set fromXY [GetBox $board $from]
   set toXY   [GetBox $board $to]
   # Get vector (dX,dY) = to(x,y) - from(x,y)
-  # (yes, misusing the foreach multiple features)
-  foreach {x0 y0} [lrange $fromXY 5 6] {x1 y1} [lrange $toXY 5 6] {break}
+  lassign [lrange $fromXY 5 6] x0 y0
+  lassign [lrange $toXY 5 6] x1 y1
   set dX [expr {$x1 - $x0}]
   set dY [expr {$y1 - $y0}]
 
@@ -1435,8 +1432,7 @@ proc ::board::mark::GetArrowCoords {board from to {shrink 0.6}} {
 
   # Return shrinked line coordinates {x0', y0', x1', y1'}:
   set shrink [expr {$shrink * $lambda}]
-  return [list [expr {$x0 + $shrink * $dX}] [expr {$y0 + $shrink * $dY}]\
-      [expr {$x1 - $shrink * $dX}] [expr {$y1 - $shrink * $dY}]]
+  return [list [expr {$x0 + $shrink * $dX}] [expr {$y0 + $shrink * $dY}] $x1 $y1]
 }
 
 # ::board::mark::GetBox --
