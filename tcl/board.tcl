@@ -1345,6 +1345,33 @@ proc ::board::mark::DrawRectangle { pathName square color pattern } {
       -outline $color -width $::highlightLastMoveWidth -dash $pattern -tag highlightLastMove
 }
 
+# ::board::mark::DrawNag --
+# Display Nag/Text at the upper right corner of a square
+proc ::board::mark::DrawNag { pathName square nag color} {
+  if {$square < 0  ||  $square > 63} { return }
+  set box [::board::mark::GetBox $pathName.bd $square]
+  set bsize $::board::_size($pathName)
+  set size [expr  $bsize / 5]
+  set p(0) [expr [lindex $box 2] - $size]
+  set p(1) [expr [lindex $box 1] - $size]
+  set p(2) [expr $p(0) + 2 * $size]
+  set p(3) [expr $p(1) + 2 * $size]
+  set offsetX 0
+  set offsetY 0
+  if { $p(2) > [expr 8 * $bsize] } {
+      set p(0) [expr $p(0) - $size]
+      set p(2) [expr $p(2) - $size]
+      set offsetX $size
+  }
+  if { $p(1) < 0 } {
+      set p(1) [expr $p(1) + $size]
+      set p(3) [expr $p(3) + $size]
+      set offsetY $size
+  }
+  $pathName.bd create oval $p(0) $p(1) $p(2) $p(3) -fill $color -tag highlightLastMove
+  $pathName.bd create text [expr [lindex $box 2] - $offsetX]  [expr [lindex $box 1] + $offsetY] -text $nag -tag highlightLastMove -fill white -font [list font_Bold $size bold]
+}
+
 # ::board::mark::DrawTux --
 #
 image create photo tux16x16 -data \
@@ -1528,7 +1555,7 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
 }
 
 # Highlight last move played by drawing a rectangle around the two squares and/or an arrow
-proc  ::board::lastMoveHighlight {w moveuci} {
+proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
   $w.bd delete highlightLastMove
   if { ! $::highlightLastMove && ! $::arrowLastMove } {return}
   if {[string length $moveuci] >= 4} {
@@ -1541,6 +1568,13 @@ proc  ::board::lastMoveHighlight {w moveuci} {
     }
     if { $::arrowLastMove } {
         ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
+    }
+    set s ""
+    regexp \[!\?]+ $nag s
+    if { $s ne "" && $::highlightLastMoveNag  } {
+        # green background for ! !! !?  red background for ? ?? ?! 
+        set color [expr {[string index $s 0] eq "!" ? "#30c030" : "#ff3030"}]
+        ::board::mark::DrawNag $w $square2 $s $color
     }
   }
 }
@@ -1620,7 +1654,7 @@ proc ::board::update {w {board ""} {animate 0}} {
 
   # Redraw last move highlight if mainboard
   if { $w == ".main.board"} {
-    ::board::lastMoveHighlight $w [sc_game info previousMoveUCI]
+    ::board::lastMoveHighlight $w [sc_game info previousMoveUCI] [sc_pos getNags]
   }
 
   # Redraw material values
