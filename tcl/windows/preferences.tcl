@@ -188,11 +188,14 @@ proc ::preferences::moves { t } {
     ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
         -validate key -validatecommand { return [string is digit %S] }
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
+    # TODO translate text
+    ttk::checkbutton $t.high.nag -variable ::highlightLastMoveNag -text "Show NAG"
     grid $t.high.hlm -row 0 -column 0 -sticky w
     grid $t.high.tl -row 0 -column 1 -padx "10 5"
     grid $t.high.thick -row 0 -column 2
     grid $t.high.color -row 1 -column 2 -pady "2 0"
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
+    grid $t.high.nag -row 2 -column 0 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
     pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
     pack $t.high -side top -anchor w -pady "5 0"

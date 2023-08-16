@@ -1358,6 +1358,7 @@ proc ::board::mark::DrawNag { pathName square nag color} {
   set p(3) [expr $p(1) + 2 * $size]
   set offsetX 0
   set offsetY 0
+  #check for outside board
   if { $p(2) > [expr 8 * $bsize] } {
       set p(0) [expr $p(0) - $size]
       set p(2) [expr $p(2) - $size]
@@ -1368,8 +1369,9 @@ proc ::board::mark::DrawNag { pathName square nag color} {
       set p(3) [expr $p(3) + $size]
       set offsetY $size
   }
-  $pathName.bd create oval $p(0) $p(1) $p(2) $p(3) -fill $color -tag highlightLastMove
-  $pathName.bd create text [expr [lindex $box 2] - $offsetX]  [expr [lindex $box 1] + $offsetY] -text $nag -tag highlightLastMove -fill white -font [list font_Bold $size bold]
+  $pathName.bd create oval $p(0) $p(1) $p(2) $p(3) -outline $color -fill $color -tag highlightLastMove
+  $pathName.bd create text [expr [lindex $box 2] - $offsetX] [expr [lindex $box 1] + $offsetY] -text $nag \
+      -tag highlightLastMove -fill white -font [list font_Bold $size bold]
 }
 
 # ::board::mark::DrawTux --
