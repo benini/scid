@@ -182,14 +182,13 @@ proc ::preferences::moves { t } {
     ttk::spinbox $t.auto.spDelay -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
         -validate all -validatecommand { ::preferences::validateautoplay }
     ttk::labelframe $t.high -text [tr OptionsMovesHighlightLastMove]
-    ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay]
-    ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow]
+    ttk::checkbutton $t.high.hlm -variable ::highlightLastMove -text [tr OptionsMovesHighlightLastMoveDisplay] -command "updateBoard"
+    ttk::checkbutton $t.high.arrow -variable ::arrowLastMove -text [tr OptionsMovesHighlightLastMoveArrow] -command "updateBoard"
     ttk::label $t.high.tl -text [tr OptionsMovesHighlightLastMoveWidth]
     ttk::spinbox $t.high.thick -width 2 -textvariable ::highlightLastMoveWidth -from 1 -to 5 -increment 1 \
-        -validate key -validatecommand { return [string is digit %S] }
+        -validate key -validatecommand { return [string is digit %S] } -command "updateBoard"
     ttk::button $t.high.color -text $::tr(ColorMarker) -command chooseHighlightColor
-    # TODO translate text
-    ttk::checkbutton $t.high.nag -variable ::highlightLastMoveNag -text "Show NAG"
+    ttk::checkbutton $t.high.nag -variable ::highlightLastMoveNag -text "Show evaluation symbols" -command "updateBoard"
     grid $t.high.hlm -row 0 -column 0 -sticky w
     grid $t.high.tl -row 0 -column 1 -padx "10 5"
     grid $t.high.thick -row 0 -column 2

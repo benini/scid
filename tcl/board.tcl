@@ -1559,7 +1559,6 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
 # Highlight last move played by drawing a rectangle around the two squares and/or an arrow
 proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
   $w.bd delete highlightLastMove
-  if { ! $::highlightLastMove && ! $::arrowLastMove } {return}
   if {[string length $moveuci] >= 4} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
@@ -1571,12 +1570,10 @@ proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
     if { $::arrowLastMove } {
         ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
     }
-    set s ""
-    regexp \[!\?]+ $nag s
-    if { $s ne "" && $::highlightLastMoveNag  } {
+    if { $::highlightLastMoveNag && [regexp {[!?]+} $nag nag] } {
         # green background for ! !! !?  red background for ? ?? ?! 
-        set color [expr {[string index $s 0] eq "!" ? "#30c030" : "#ff3030"}]
-        ::board::mark::DrawNag $w $square2 $s $color
+        set color [expr {[string index $nag 0] eq "!" ? "#30c030" : "#ff3030"}]
+        ::board::mark::DrawNag $w $square2 $nag $color
     }
   }
 }
