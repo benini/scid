@@ -258,6 +258,7 @@ menuText D OptionsMovesHighlightLastMoveDisplay "Felder anzeigen" 0 {Hervorhebun
 menuText D OptionsMovesHighlightLastMoveWidth "Dicke" 0 {Dicke der Linie}
 menuText D OptionsMovesHighlightLastMoveColor "Farbe" 0 {Farbe der Linie}
 menuText D OptionsMovesHighlightLastMoveArrow "Pfeil anzeigen" 0 {mit einem Pfeil hervorheben}
+menuText D OptionsMovesHighlightLastMoveNag "Bewertungssymbole anzeigen" 0
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
 menuText D OptionsMovesAnimate "Animation" 0 \
   {Zeit für Zuganimation einstellen}

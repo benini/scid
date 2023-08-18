@@ -231,6 +231,8 @@ menuText C OptionsMovesHighlightLastMoveWidth "©íøka" 0 {Tlou¹»ka èáry}
 menuText C OptionsMovesHighlightLastMoveColor "Barva" 0 {Barva èáry}
 # ====== TODO To be translated ======
 menuText C OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMoveNag "Show evaluation symbols" 0
 menuText C OptionsMoves "Tahy" 0 {Volby pro zadávání tahù}
 menuText C OptionsMovesAnimate "Èas animace" 4 \
   {Nastavit èas pou¾itý na animaci tahù}

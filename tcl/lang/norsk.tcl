@@ -276,6 +276,8 @@ menuText O OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 menuText O OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 # ====== TODO To be translated ======
 menuText O OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
+# ====== TODO To be translated ======
+menuText O OptionsMovesHighlightLastMoveNag "Show evaluation symbols" 0
 menuText O OptionsMoves "Trekk" 0 {Innstillinger for hvordan trekk angis}
 menuText O OptionsMovesAnimate "Animation time" 1 \
   {Set the amount of time used to animate moves} ;# ***
