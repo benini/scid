@@ -214,7 +214,7 @@ set translatePieces 1
 # Highlight the last move played
 set arrowLastMove 0
 set highlightLastMove 1
-set highlightLastMoveNag 0
+set highlightLastMoveNag 1
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"
 set highlightLastMovePattern {} ; # this option is not saved
