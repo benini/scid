@@ -238,6 +238,8 @@ menuText W OptionsMovesHighlightLastMoveWidth "Bredd" 0 {Tjockhet på rad}
 menuText W OptionsMovesHighlightLastMoveColor "Färg" 0 {Färg på rad}
 # ====== TODO To be translated ======
 menuText W OptionsMovesHighlightLastMoveArrow "Show Arrow" 0 {Show Arrow with Highlight}
+# ====== TODO To be translated ======
+menuText W OptionsMovesHighlightLastMoveNag "Show evaluation symbols" 0
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
 menuText W OptionsMovesAnimate "Fördröjning vid manuellt spel" 1 \
   {Ange tid mellan varje drag när dragen görs automatiskt}

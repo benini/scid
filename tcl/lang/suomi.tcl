@@ -275,6 +275,8 @@ menuText U OptionsMovesHighlightLastMoveDisplay "Näytä" 0 {Näytä viimeisin siirt
 menuText U OptionsMovesHighlightLastMoveWidth "Viiva" 0 {Laudalla näytettävän viivan paksuus}
 menuText U OptionsMovesHighlightLastMoveColor "Väri" 0 {Laudalla näytettävän viivan väri}
 menuText U OptionsMovesHighlightLastMoveArrow "Sis. nuoli" 0 {Korostettuun siirtoon sisällytetään nuoli}
+# ====== TODO To be translated ======
+menuText U OptionsMovesHighlightLastMoveNag "Show evaluation symbols" 0
 menuText U OptionsMoves "Siirrot" 0 {Siirtojen syöttämiseen liittyvät asetukset}
 menuText U OptionsMovesAnimate "Animaation nopeus" 1 \
   {Siirtojen animoinnin nopeus}

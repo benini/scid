@@ -255,8 +255,8 @@ menuText S OptionsMovesHighlightLastMoveDisplay "Mostrar Escaques" 0 \
   {Muestra la última jugada iluminada}
 menuText S OptionsMovesHighlightLastMoveWidth "Ancho" 0 {Espesor de la línea}
 menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color de línea}
-# ====== TODO To be translated ======
 menuText S OptionsMovesHighlightLastMoveArrow "Mostrar Flechas" 0 {Show Arrow with Highlight}
+menuText S OptionsMovesHighlightLastMoveNag "Mostrar símbolos de evaluación" 0
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAnimate "Velocidad de la animación" 1 \
   {Pone el tiempo usado para animar las jugadas}

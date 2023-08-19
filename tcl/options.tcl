@@ -214,6 +214,7 @@ set translatePieces 1
 # Highlight the last move played
 set arrowLastMove 0
 set highlightLastMove 1
+set highlightLastMoveNag 0
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"
 set highlightLastMovePattern {} ; # this option is not saved
@@ -642,7 +643,8 @@ proc options.write {} {
           ecoFile suggestMoves showVarPopup showVarArrows \
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
+          translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth \
+          highlightLastMoveColor highlightLastMoveNag \
           glossOfDanger locale(numeric) \
           spellCheckFile autoRaise windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
