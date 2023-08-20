@@ -440,7 +440,7 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 
 proc ::windows::gamelist::createMenu_ {w} {
 	ttk::frame $w.buttons -padding {5 5 2 5}
-	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
+	ttk::button $w.buttons.database -image tb_database -command "::windows::gamelist::menu_ $w database"
 	ttk::button $w.buttons.filter -image tb_search_on -command "::windows::gamelist::menu_ $w filter"
 	ttk::button $w.buttons.layout -image tb_Layout -command "::windows::gamelist::menu_ $w layout"
 	ttk::button $w.buttons.stats -image tb_Stats -command "::windows::gamelist::menu_ $w stats; ::windows::gamelist::updateStats_ $w"
@@ -731,7 +731,7 @@ namespace eval ::glist_Ly {
 		for {set i 0} {$i < [llength $::glist_Layouts]} {incr i} {
 			set name [lindex $::glist_Layouts $i]
 			ttk::button $w.layout.b.c.f.layout$i -text $name -width 12 -command "::glist_Ly::Change_ $w $i"
-			ttk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del_ $w $i"
+			ttk::button $w.layout.b.c.f.layoutDel$i -image tb_trashcan -command "::glist_Ly::Del_ $w $i"
 			grid $w.layout.b.c.f.layout$i $w.layout.b.c.f.layoutDel$i -sticky we
 		}
 		after idle "::glist_Ly::AdjScrollbar_ $w.layout.b.c"
