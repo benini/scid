@@ -881,10 +881,10 @@ proc addNullMove {} {
 
 proc addMove { sq1 sq2 {animate "-animate"}} {
     global EMPTY
-    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
     set nullmove 0
     if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
     if {!$nullmove  &&  [sc_pos isLegal $sq1 $sq2] == 0} {
+        if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] } { return } ;# not player's turn
         # Illegal move, but if it is King takes king then treat it as
         # entering a null move:
         set board [sc_pos board]
@@ -915,6 +915,7 @@ proc addSanMove { {san} } {
 proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
     set sq1 [::board::sq [string range $moveUCI 0 1] ]
     set sq2 [::board::sq [string range $moveUCI 2 3] ]
+    if { ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
 
     if { [string length $moveUCI] == 4 && $sq1 != $sq2 && [sc_pos isPromotion $sq1 $sq2] } {
         switch -- [getPromoPiece] {
