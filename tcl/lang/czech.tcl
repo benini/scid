@@ -2231,7 +2231,6 @@ Navigaèní tlaèítka nad ¹achovnicí mají tyto významy, zleva doprava:
 <li> <button tb_addvar> Pøidej variantu k tomuto tahu v partii. </li>
 <li> <button tb_play> Spus»/Ukonèi automatické pøehrávání tahù (viz
  ní¾e). </li>
-<li> <button tb_trial> Spus»/Ukonèi <a Moves Trial>zku¹ební mód</a>. </li>
 <li> <button tb_flip> Otoè ¹achovnici. </li>
 <li> <button tb_coords>  Zapni/Vypni zobrazování souøadnic ¹achovnice. </li>
 </ul>
