@@ -6012,18 +6012,6 @@ databas av denna typ då Scid inte då kan avgöra vilken som ska användas.
 <p>
 Om allting är korrekt konfigurerat kan användningen av korrespondens-
 schackfunktionerna lätt nås med följande knappar:
-<ul>
-   <li><button tb_CC_Retrieve> Hämtar korrespondensschackpartier.
-   För detta startas ett externt hämtningsverktyg och alla partier hämtas
-   så likväl som andra partier som lagras i Scids Inkorg
-   (se nedan) är synkroniserade till den aktuella korrespondensschack-
-   databasen.
-   </li>
-   <li><button tb_CC_Send> Skickar ditt drag till motståndaren genom att antingen
-   skapa ett nytt eMail-meddelande i dett föredragna email-program eller genom att
-   skicka ett drag till en schackserver om Xfcc används.
-   </li>
-</ul>
 </p>
 
 <h3>Konfiguration</h3>
@@ -6114,18 +6102,6 @@ servern vilket kan vara användbart för kommunikationen med motståndaren. I
 eMail-schack kan detta göras med det normala email-meddelandet, så där tas alla
 kommmentarer bort.
 </p>
-<p>
-Genom att trycka på Sändknappen <button tb_CC_Send> kommer Scid att måsta
-bestämma den typ av korrespondensschackparti som visas (eMail eller
-ett serverparti) och starta antingen ditt eMail-program eller det externa skicka-
-verktyget för att skicka ditt drag. Att använda <menu>Skicka drag</menu> är motsvarande
-till denna knapp. Alternativt, kan <menu>eMail drag</menu> användas för att
-skicka det aktuella draget via eMail. Om det är ett eMail-parti är denna
-funktion motsvarande till <menu>Skicka drag</menu>. Om det är ett server-
-baserat parti genereras ett eMail-meddelande. Notera dock, att detta kommer
-inte nödvändigtvis att innehålla en riktig mottagare då eMail-addresser inte byts ut
-i serverbaserad korrespondensschack.
-</p>
 
 <p><footer>(Uppdaterat: Scid 3.6.23, Februari 2008)</footer></p>
 }
@@ -6176,18 +6152,6 @@ Notera:
    </li>
 </ul>
 <p>
-Xfcc hämtar alltid omedelbart alla partier som finns på en specificerad server för ditt
-användarnamn. För att hämta partierna klicka bara på <button tb_CC_Retrieve>
-ikonen eller välj <menu>Hämta Partier</menu> från
-<menu>Korrespondensschack</menu>-menyn. Då en serveranslutning
-krävs för att hämta nya partier var säker på att systemet har tillgång till nätverket.
-Scid kommer att starta hämtningsverktyget som är konfigurerat i 
-<a CCSetupDialog>Konfiguration</a>-dialogen vilket kommer att placera
-partierna i PGN-format i Scids inkorg. Det kan ta lite tid att hämta
-svaret, så vat tålmodig. Efter att partierna är hämtade uppdateras
-korrespondensschackdatabasen med dem.
-</p>
-<p>
 När partierna är hämtade söks deras motståndare i
 korrespondensschackdatabasen och nya drag läggs till där. Då Xfcc
 servrar kan erbjuda olika sätt att infoga drag (via Internet eller mobil eller
@@ -6198,15 +6162,6 @@ partiet från början då etta kan ta bort all din analys.
 Därför är det <b>viktigt att notera</b> att du inte får infoga drag till
 huvudvarianten bortom ditt sista drag! För att lägga till fortsättningar var god
 och använd variationer!
-</p>
-<p>
-Notera att om andra källor har placerat partier i din inkorg (t.ex. från
-din eMail-korrespondensschack) synkroniseras de också i
-hämtningen till databasen då hela Inkorgen också bearbetas.
-Detta tillåter att eMail-partier läggs till i Inkorgen, sedan kan du växla till Scid,
-klicka på <button tb_CC_Retrieve> och alla partier är uppdaterade.Partier som inte
-ännu finns i datasen behandlas som nya partier och läggs till
-databasen.
 </p>
 <p>
 <b>Notering för programmerare</b>: hämtningsverktyget startas med Inkorgssökvägen som
@@ -6307,36 +6262,9 @@ det beskrivs nedan.
 <h3>Hämta partier</h3>
 
 <p>
-Scid hanterar inte din emailkorg automatiskt. Detta skulle,
-med tanke på den stora variationen på möjliga email-program idag, involvera
-en stor mängd programkod. Av denna anledning använder Scid ditt normala
-eMail-program som är mycket mer lämpligt för detta syfte än Scid
-kan någonsin bli. För att hämta ett parti till Scid spara bara den bifogade PGN-filen
-i Scids inkorg och bearbeta inkorgen genom antingen <menu>Hämta
-Partier</menu> eller  <button tb_CC_Retrieve> knappen eller
-<menu>Bearbeta Inkorgen</menu>. Skillnaden mellan de två är att
-den första också startar det externa hämtningsverktyget och fyller
-Inkorgen ytterliggare med partier från andra källor (som Xfcc). Därför är
-<button tb_CC_Retrieve> det mest bekväma sättet om du använder båda
-typerna av korrespondensschackpartier.
-</p>
-<p>
-<b>Notera</b> att <menu>Hämta Partier</menu> menyn eller  <button
-tb_CC_Retrieve> knappen <b>inte</b> hämtar dina eMail-meddelanden! Du
-måste spara dina PGN-filer i Scids Inkorg för hand. Troligtvis kan detta
-bli automatiserat av ditt eMail-program (på Un*x system är det enkelt att sätta upp en
-mime-hanterare genom <term>.mailcap</term>).
-</p>
 
 <h3>Skicka svaret</h3>
 
-<p>
-Efter att du har gjort ditt drag skicka det antingen med <menu>eMail drag</menu>
-funktionen från menyn via <menu>Skicka drag</menu> vilket är motsvarande till
-<button tb_CC_Send>. För det senare  måste Scid känna igen partiet
-som eMail-korrespondens och skicka det med email medan den föregående metoden
-kommer att få Scid att generera ett eMail-meddelande.
-</p>
 <p>
 Givetvis tar Scid bort alla kommentarer och variationer
 innan det bifogas i det utgående eMailet då du inte vill skicka med
