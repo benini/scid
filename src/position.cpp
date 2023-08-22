@@ -2176,7 +2176,7 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str,
 		    (length == 4 && std::equal(str, str + 4, "null"))) {
 			const auto king_sq = GetKingSquare(ToMove);
 			makeMove(king_sq, king_sq, PAWN, *sm);
-			return OK;
+			return under_attack(king_sq) ? ERROR_InvalidMove : OK;
 		}
 		return ERROR_InvalidMove;
 	case PAWN:

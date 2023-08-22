@@ -333,7 +333,7 @@ TEST(Test_Game, illegalPGN_KingCapture) {
 	game.MoveToEnd();
 	game.currentPos()->PrintFEN(fen);
 	EXPECT_STREQ(
-	    fen, "rnbqk1nr/pppp1ppp/4p3/8/1b1PP3/8/PPP2PPP/RNBQKBNR b KQkq - 2 3");
+	    fen, "rnbqk1nr/pppp1ppp/4p3/8/1b1PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3");
 }
 
 namespace {

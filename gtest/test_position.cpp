@@ -716,6 +716,23 @@ TEST(Test_PositionIsKingInCheck, last_move_optimization) {
 	}
 }
 
+TEST(Test_PositionIsKingInCheck, null_move) {
+	{ // No Check
+		auto pos = Position{};
+		auto sm = simpleMoveT{};
+		EXPECT_EQ(OK, pos.ReadFromFENorUCI(
+		                  "position startpos moves d2d4 e7e6 b1c3 f8b4"));
+		EXPECT_EQ(OK, pos.ParseMove(&sm, "null"));
+	}
+	{ // Direct attack
+		auto pos = Position{};
+		auto sm = simpleMoveT{};
+		EXPECT_EQ(OK, pos.ReadFromFENorUCI(
+		                  "position startpos moves d2d4 e7e6 e2e4 f8b4"));
+		EXPECT_NE(OK, pos.ParseMove(&sm, "null"));
+	}
+}
+
 TEST(Test_PrintFen, castling_flag_kside) {
 	// clang-format off
 	std::string_view pgn =
