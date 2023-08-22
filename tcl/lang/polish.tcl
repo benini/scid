@@ -147,8 +147,6 @@ menuText P WindowsECO "Przegl±darka kodów debiutowych" 0 \
 menuText P WindowsStats "Statystyka" 0 \
   {Otwórz/zamknij statystykê}
 menuText P WindowsTree "Drzewo wariantów" 0 {Otwórz/zamknij drzewo wariantów}
-menuText P WindowsTB "Tablica koñcówek" 8 \
-  {Otwórz/zamknij okno tablicy koñcówek}
 # ====== TODO To be translated ======
 menuText P WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======

@@ -135,7 +135,6 @@ menuText C WindowsMaint "Okno údr¾by" 6 {Otevøít/zavøít okno údr¾by}
 menuText C WindowsECO "ECO prohlí¾eè" 1 {Otevøít/zavøít okno ECO prohlí¾eèe}
 menuText C WindowsStats "Statistické okno" 0 {Otevøít/zavøít statistické okno filtru}
 menuText C WindowsTree "Stromové okno" 4 {Otevøít/zavøít stromové okno}
-menuText C WindowsTB "Okno tabulky koncovek" 13 {Otevøít/zavøít okno tabulek koncovek}
 menuText C WindowsBook "Okno knihovny zahájení" 0 {Otevøít/zavøít okno knihovny zahájení}
 menuText C WindowsCorrChess "Korespondenèní okno" 0 {Otevøít/zavøít okno knihovny zahájení}
 
@@ -2226,13 +2225,6 @@ Navigaèní tlaèítka nad ¹achovnicí mají tyto významy, zleva doprava:
 <li> <button tb_prev> Jdi o jeden tah nazpìt. </li>
 <li> <button tb_next> Jdi o jeden tah dopøedu. </li>
 <li> <button tb_end> Jdi na konec partie. </li>
-<li> <button tb_invar> Skoè do varianty. </li>
-<li> <button tb_outvar> Opus» aktuální variantu. </li>
-<li> <button tb_addvar> Pøidej variantu k tomuto tahu v partii. </li>
-<li> <button tb_play> Spus»/Ukonèi automatické pøehrávání tahù (viz
- ní¾e). </li>
-<li> <button tb_flip> Otoè ¹achovnici. </li>
-<li> <button tb_coords>  Zapni/Vypni zobrazování souøadnic ¹achovnice. </li>
 </ul>
 
 <h4><name Autoplay>Automatické pøehrávání</name></h4>
@@ -2273,14 +2265,6 @@ Pravým tlaèítkem mù¾ete v informaèní zónì partie aktivovat menu, kde lze napø.
 skrýt následující tah (u¾iteèné pøi tréninku, kdy¾ hádáte jednotlivé tahy
 partie) a smazat nebo obnovit aktuální partii. Toto menu lze aktivovat i bez
 my¹i stisknutím funkèní klávesy <b>[F9]</b>.
-</p>
-
-<h4>Tabulky koncovek (tablebases)</h4>
-<p>
-Kdykoliv aktuální pozice dosáhne materiální konfiguraci nalezenou v databázovém
-souboru tabulek koncovek, informaèní zóna partie rovnì¾ zobrazuje její
-hodnocení podle této tabulky. Detaily hledejte na stránce nápovìdy o
-<a TB>tabulkách koncovek</a>.
 </p>
 
 <h3>Stavová li¹ta</h3>
@@ -4605,131 +4589,6 @@ stránce nápovìdy <a Tree Graph>stromu</a>.
 </p>
 
 <p><footer>(Aktualizováno: Scid 3.3, Duben 2002)</footer></p>
-}
-
-####################
-### Tablebases help:
-
-set helpTitle(C,TB) "Tabulky koncovek"
-set helpText(C,TB) {<h1>Tabulky koncovek</h1>
-
-<p>
-<term>Tabulka koncovek</term> (tablebase) je soubor obsahující  pøesné informace
-o výsledku v¹ech pozic s urèitým materiálem, jako napø. král a vì¾ proti králi a
-pì¹ci. Byly generovány tabulky v¹ech koncovek s materiálem a¾ do pìti kamenù
-(bráno i s králi) a jsou rovnì¾ k dispozici i nìkteré ¹estikamenové tabulky
-koncovek.
-</p>
-<p>
-Scid mù¾e pou¾ívat tabulky koncovek v Nalimovovì formátu, které vyu¾ívají mnohé
-moderních ¹achové motory. Tyto tabulky vìt¹inou konèí pøíponou <b>.nbw.emd</b>
-nebo <b>.nbb.emd</b>. Ve Scidu mohou být pou¾ity v¹echny 3, 4 a 5 kamenové
-Nalimovovy tabulky koncovek.
-</p>
-
-<h3>Pou¾ití tabulek koncovek ve Scidu</h3>
-<p>
-Chcete-li pou¾ívat ve Scidu tabulky koncovek, staèí nastavit jejich adresáø
-výbìrem <b>Adresáø pro tabulky koncovek ...</b> z menu <menu>Volby</menu>.
-Mù¾ete vybrat a¾ 4 adresáøe, kde jsou va¹e tabulky koncovek ulo¾eny.
-Stiskem tlaèítka <b>...</b> napravo mù¾ete vybrat soubor a tím urèit, ¾e má být
-pou¾it adresáø tohoto souboru.
-</p>
-<p>
-Kdy¾ dosáhnete pozice, která je nalezená v souboru tabulky koncovek, informaèní
-zóna partie (pod ¹achovnicí) zobrazí informace z tabulky. Mno¾ství zobrazených
-informací mù¾ete konfigurovat kliknutím pravého tlaèítka my¹i v této zónì nebo
-výbìrem <b>Informace o partii</b> z menu <menu>Volby</menu>. Volba "výsledek a
-nejlep¹í tahy" dává neju¾iteènìj¹í informace, ale je velmi èasto pomalej¹í ne¾
-volba "jen výsledek".
-</p>
-
-<h3>Okno tabulky koncovek</h3>
-<p>
-Z tabulky koncovek mù¾ete získat je¹tì více informací o aktuální pozici
-otevøením <term>okna tabulky koncovek</term> (menu <menu>Okna</menu>, klávesová
-zkratka: Ctrl+=). Toto okno zobrazuje výsledek s precizní hrou na v¹echny mo¾né
-tahy v aktuální pozici.
-</p>
-<p>
-Toto okno má dvì hlavní èásti. Souhrnný rámec (nalevo) zobrazuje, které tabulky
-koncovek Scid nalezl na va¹em poèítaèi a pøehled pro ka¾dou tabulku. Výsledkový
-rámec (napravo) zobrazuje optimální výsledky pro v¹echny tahy v aktuální pozici
-v hlavním oknì.
-</p>
-
-<h4>Souhrnný rámec</h4>
-<p>
-Horní èást souhrnného rámce vám umo¾òuje výbìr konkrétní tabulky koncovek.
-Tabulky, které máte k dispozici, jsou zobrazeny modøe a ty, které jsou
-nedostupné, jsou zobrazeny ¹edì, ale mù¾ete vybrat libovolnou tabulku.
-Dolní èást souhrnného rámce zobrazuje pøehled informací pro zvolenou tabulku
-koncovek. (Je¹tì ne v¹echny tabulky mají ve Scidu ulo¾en pøehled).
-</p>
-<p>
-Pøehled zahrnuje frekvenci (poèet partií na milión, které dosáhly pozice s tímto
-materiálem, spoèteno z databáze témìø 600,000 mistrovských partií), nejdel¹í mat
-za obì strany a poèet vzájemných (nebo "reciproèních") zugzwangù. Vzájemný
-zugwang je taková pozice, kde bílý pøi svém tahu remizuje a èerný pøi svém tahu
-prohraje nebo kde ta strana, která je na tahu, prohrává.
-</p>
-<p>
-Pro nìkteré tabulky koncovek se vzájemnými zugzwangy pøehled zahrnuje také výèet
-v¹ech zugzwangových pozic nebo jejich výbìr. Úplný výèet pro ka¾dou tabulku
-koncovek není proveditelný, proto¾e nìkteré tabulky mají tisíce vzájemných
-zugzwangù.
-</p>
-<p>
-Stiskem tlaèítka <b>Random</b> mù¾ete nastavit náhodnou pozici ze zvolené
-tabulky koncovek.
-</p>
-
-<h4>Výsledkový rámec</h4>
-<p>
-Výsledkový rámec je aktualizován kdykoliv se zmìní pozice na ¹achovnici v
-hlavním oknì. První øádek ukazuje kolik tahù vyhrává (+), remizuje (=), prohrává
-(-) nebo má neznámý výsledek(?). Zbytek rámce udává podrobnìj¹í seznam výsledkù,
-v poøadí od nejkrat¹ích k nejdel¹ím výhrám, potom remízy a  nakonec od
-nejdel¹ích k nejkrat¹ím prohrám. V¹echny vzdálenosti jsou poèítány k matu.
-</p>
-
-<h4>Výsledková ¹achovnice</h4>
-<p>
-V pozici obsa¾ené v tabulkách koncovek je èasto u¾iteèné, jaký by byl výsledek,
-kdyby v¹echny kameny v aktuální pozici byly na svých souèasných místech, ale
-pozice jedné urèité figury by byla jiná.
-Napø. mù¾ete chtít rozhodnout, jak blízko musí být král k volnému pì¹ci, aby
-urèitá pozice byla vyhraná nebo remízová. V knihách koncovek je tato informace
-èasto nazývána jako <i>vítìzná zóna</i> nebo <i>remízová zóna</i> figury v
-pozici.
-</p>
-<p>
-Tuto informaci mù¾ete zjistit ve Scidu stiskem tlaèítka s obrázkem
-¹achovnice, v oknì tabulky koncovek se poté zobrazí
-<term>výsledková ¹achovnice</term>.
-Stisknete-li levé tlaèítko my¹i na kterékoliv figuøe na této ¹achovnici, na
-ka¾dém prázdném poli se nakreslí symbol urèující jaký by byl výsledek (pøi tahu
-stejné strany jako v pozici v hlavním oknì), kdyby vybraná figura byla na
-takovém poli.
-</p>
-<p>
-Je pìt druhù symbolù, které pole mù¾e mít:
-bílý <b>#</b> znamená výhru bílého;
-èerný <b>#</b> znamená výhru èerného;
-modrý <b>=</b> znamená, ¾e pozice je remízová;
-èervený <b>X</b> znamená, ¾e pozice je ilegální (kvùli sousedícím králùm nebo
-proto¾e strana na tahu dává ¹ach); a
-èervený <b>?</b> znamená, ¾e výsledek není znám, proto¾e potøebný soubor tabulek
-koncovek není k dispozici.
-</p>
-
-<h3>Obstarání souborù tabulek koncovek</h3>
-<p>
-Pro pomoc ohlednì vyhledání souborù tabulek koncovek na internetu ètìte
-<a Author Related>pøíbuzné odkazy</a>.
-</p>
-
-<p><footer>(Aktualizováno: Scid 3.4, Záøí 2002)</footer></p>
 }
 
 ###################

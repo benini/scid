@@ -143,8 +143,6 @@ menuText O WindowsECO "ECO-oversikt" 0 {Åpne/lukk ECO-oversikten}
 menuText O WindowsStats "Statistikkvindu" 0 \
   {Åpne/lukk statistikk for filteret}
 menuText O WindowsTree "Trevindu" 0 {Åpne/lukk trevinduet}
-menuText O WindowsTB "Sluttspilltabellvindu" 0 \
-  {Åpne/lukk sluttspilltabellen}
 # ====== TODO To be translated ======
 menuText O WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======

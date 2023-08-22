@@ -153,8 +153,6 @@ menuText K WindowsECO "Cercador ECO" 0 {Obre/tanca la finestra del cercador ECO}
 menuText K WindowsStats "Finestra d'estadístiques" 12 \
   {Obre/tanca la finestra d'estadístiques del filtre}
 menuText K WindowsTree "Finestra de l'Àrbre d'Obertures" 6 {Obre/tanca la finestra de l'Àrbre d'Obertures (Book)}
-menuText K WindowsTB "Finestra de Taules de Finals (TBs)" 8 \
-  {Obre/tanca la finestra de TBs}
 menuText K WindowsBook "Finestra de Llibres d'Obertures" 0 {Obrir/Tancar la finestra de Llibres d'Obertures (Book)}
 menuText K WindowsCorrChess "Finestra d'Escacs Postal" 0 {Obrir/Tancar la Finestra d'Escacs Postal}
 

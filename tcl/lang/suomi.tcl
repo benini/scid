@@ -174,7 +174,6 @@ menuText U WindowsECO "ECO-selain" 1 {Avaa/sulje ECO-avauskirjaston selain}
 menuText U WindowsStats "Tilastot" 6 \
   {Avaa/sulje tilastoikkuna}
 menuText U WindowsTree "Puunäkymä" 3 {Avaa/sulje puunäkymä}
-menuText U WindowsTB "Loppupelitietokanta" 15 {Avaa/sulje loppupelitietokanta}
 menuText U WindowsBook "Avauskirja" 8 {Avaa/sulje avauskirja}
 menuText U WindowsCorrChess "Kirjeshakki" 6 {Avaa/sulje kirjeshakki-ikkuna}
 

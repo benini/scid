@@ -154,8 +154,6 @@ menuText S WindowsECO "Buscador ECO" 0 {Abre/cierra la ventana del buscador ECO}
 menuText S WindowsStats "Ventana de estadísticas" 12 \
   {Abre/cierra la ventana de estadísticas del filtro}
 menuText S WindowsTree "Ventana de árbol de aperturas" 6 {Abre/cierra la ventana de árbol de aperturas (Book)}
-menuText S WindowsTB "Ventana de tablas de finales (TBs)" 8 \
-  {Abre/cierra la ventana de TBs}
 menuText S WindowsBook "Ventana de libros de aperturas (Book)" 0 {Abrir/Cerrar la ventana de libros de aperturas (Book)}
 menuText S WindowsCorrChess "Ventana de Correo" 0 {Abrir/Cerrar la ventra de Correo}
 

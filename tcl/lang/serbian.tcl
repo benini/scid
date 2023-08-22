@@ -141,8 +141,6 @@ menuText Y WindowsECO "E©O prikazivaè" 0 {Otvori/zatvori E©O prikazivaè}
 menuText Y WindowsStats "Statistièki prozor" 0 \
   {Otvori/zatvori prozor statistika filtera}
 menuText Y WindowsTree "Stablo varijanata" 0 {Otvori/zatvori stablo varijanata}
-menuText Y WindowsTB "Tabela zavr¹nica" 1 \
-  {Otvori/zatvori tabelu zavr¹nica}
 # ====== TODO To be translated ======
 menuText Y WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======

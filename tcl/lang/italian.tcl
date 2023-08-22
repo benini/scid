@@ -138,8 +138,6 @@ menuText I WindowsMaint "Finestra di gestione" 12 {Apre/chiude la finestra per l
 menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazione ECO}
 menuText I WindowsStats "Finestra di statistica" 12 {Apre/chiude la finestra di filtro statistico}
 menuText I WindowsTree "Finestra di albero" 12 {Apre/chiude la finestra di albero}
-menuText I WindowsTB "Finestra di tablebase" 12 \
-  {Apre/chiude la finestra Tablebase}
 menuText I WindowsBook "Libro di aperture" 2 {Apre/chiude la finestra del libro delle aperture}
 menuText I WindowsCorrChess "Gioco per corrispondenza" 10 {Apre/chiude la finestra per il gioco per corrispondenza}
 

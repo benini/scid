@@ -147,8 +147,6 @@ menuText F WindowsStats "Statistiques des parties filtrées" 0 \
   {Ouvrir/fermer la fenêtre des statistiques des parties filtrées}
 menuText F WindowsTree "Fenêtre d'arbre" 10 \
   {Ouvrir/fermer la fenêtre d'arbre}
-menuText F WindowsTB "Fenêtre de tables de finales" 0 \
-  {Ouvrir/fermer la fenêtre de tables de finales}
 menuText F WindowsBook "Bibliothèque d'ouvertures" 0 {Ouvrir/Fermer la bibliothèque d'ouverture}
 menuText F WindowsCorrChess "Jeu par correspondance" 0 {Ouvrir/Fermer la fenêtre de jeu par correspondance}
 

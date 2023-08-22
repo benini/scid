@@ -174,7 +174,6 @@ menuText E WindowsECO "ECO Browser" 0 {Open/close the ECO Browser window}
 menuText E WindowsStats "Statistics Window" 0 \
   {Open/close the filter statistics window}
 menuText E WindowsTree "Tree Window" 0 {Open/close the Tree window}
-menuText E WindowsTB "Endgame Tablebase Window" 1 {Open/close the Tablebase window}
 menuText E WindowsBook "Book Window" 0 {Open/close the Book window}
 menuText E WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
 

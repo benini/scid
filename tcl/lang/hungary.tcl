@@ -140,8 +140,6 @@ menuText H WindowsECO "ECO-böngészõ" 0 {Kinyitja/becsukja az ECO-böngészõ ablako
 menuText H WindowsStats "Statisztika" 0 \
   {Kinyitja/becsukja a szûrési statisztika ablakát.}
 menuText H WindowsTree "Faszerkezet" 0 {Kinyitja/becsukja a faszerkezet-ablakot.}
-menuText H WindowsTB "Végjátéktáblázatok" 8 \
-  {Kinyitja/becsukja a végjátéktáblázatok ablakát.}
 menuText H WindowsBook "Megnyitástárablak" 3 {Kinyitja/becsukja a megnyitástárablakot.}
 menuText H WindowsCorrChess "Levelezési sakk" 14 {Open/close the Correspondence window}
 

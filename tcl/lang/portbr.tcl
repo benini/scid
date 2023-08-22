@@ -138,8 +138,6 @@ menuText B WindowsECO "Listagem ECO" 0 {Abre/fecha a janela de listagem de codig
 menuText B WindowsStats "Estatisticas" 0 \
   {Abre/fecha a janela de estatisticas}
 menuText B WindowsTree "Arvore" 0 {Abre/fecha a janela da Arvore de pesquisa}
-menuText B WindowsTB "Tabela base de Finais" 1 \
-  {Abre/fecha a janela da tabela base de finais}
 menuText B WindowsBook "Janela do Livro de Aberturas" 0 {Abre/Fecha  a janela do livro de aberturas}
 menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela de correspondencia}
 
