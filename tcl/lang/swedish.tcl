@@ -2572,12 +2572,6 @@ Navigationsknapparna vid brädet har följande funktioner (från vänster till höger
 <li> <button tb_prev> Gå tillbaka ett drag. </li>
 <li> <button tb_next> Gå framåt ett drag. </li>
 <li> <button tb_end> Gå till slutställningen. </li>
-<li> <button tb_invar> Gå in i varianten. </li>
-<li> <button tb_outvar> Gå ur varianten. </li>
-<li> <button tb_addvar> Lägg till ny variant. </li>
-<li> <button tb_play> Start/stopp för autospelsläge (se nedan). </li>
-<li> <button tb_flip> Rotera brädet 180 grader. </li>
-<li> <button tb_coords> Visa/dölj koordinater. </li>
 </ul>
 
 <h4><name Autoplay>Autospelsläge</name></h4>
