@@ -436,37 +436,11 @@ translate H PInfoEloFile {File}
 
 # Tablebase information:
 translate H Draw {Döntetlen}
-translate H stalemate {patt}
-translate H withAllMoves {az összes lépéssel}
-translate H withAllButOneMove {egy híján az összes lépéssel}
 translate H with {with}
 translate H only {csak}
 translate H lose {veszítenek}
 translate H loses {veszít}
-translate H allOthersLose {minden más veszít}
-translate H matesIn {mates in}
-translate H hasCheckmated {mattot adott}
-translate H longest {leghosszabb}
-translate H WinningMoves {Nyerõ lépés}
-translate H DrawingMoves {Döntetlenre vezetõ lépés}
-translate H LosingMoves {Vesztõ lépés}
-translate H UnknownMoves {Bizonytalan kimenetelû lépés}
 # ====== TODO To be translated ======
-translate H SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate H toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate H NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate H MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate H SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate H WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate H BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate H AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate H Tip {Tipp}

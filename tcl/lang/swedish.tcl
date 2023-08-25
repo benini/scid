@@ -428,37 +428,11 @@ translate W PInfoEloFile {File}
 
 # Tablebase information:
 translate W Draw {Remi}
-translate W stalemate {patt}
-translate W withAllMoves {med alla drag}
-translate W withAllButOneMove {med alla drag utom ett}
 translate W with {med}
 translate W only {bara}
 translate W lose {förlust}
 translate W loses {förluster}
-translate W allOthersLose {alla andra drag förlorar}
-translate W matesIn {med matt i}
-translate W hasCheckmated {har satt matt}
-translate W longest {längst}
-translate W WinningMoves {Vinstdrag} 
-translate W DrawingMoves {Remidrag} 
-translate W LosingMoves {Förlustdrag} 
-translate W UnknownMoves {Okänt resultat} 
 # ====== TODO To be translated ======
-translate W SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate W toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate W NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate W MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate W SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate W WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate W BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate W AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate W Tip {Tips}

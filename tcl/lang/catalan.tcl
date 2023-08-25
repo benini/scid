@@ -452,37 +452,11 @@ translate K PInfoEloFile {File}
 
 # Tablebase information:
 translate K Draw {Taules}
-translate K stalemate {Ofegat}
-translate K withAllMoves {amb totes les jugades}
-translate K withAllButOneMove {amb totes les jugades menys una}
 translate K with {amb}
 translate K only {només}
 translate K lose {maneres de perdre}
 translate K loses {fa perdre}
-translate K allOthersLose {tots les demés perden}
-translate K matesIn {mat a}
-translate K hasCheckmated {escac i mat}
-translate K longest {el mat més llarg}
-translate K WinningMoves {Jugades guanyadores}
-translate K DrawingMoves {Jugades per taules}
-translate K LosingMoves {Jugades perdedores}
-translate K UnknownMoves {Jugades de resultat desconegut}
 # ====== TODO To be translated ======
-translate K SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate K toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate K NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate K MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate K SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate K WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate K BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate K AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate K Tip {Suggeriment}

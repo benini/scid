@@ -464,37 +464,11 @@ translate U PInfoEloFile {File}
 
 # Tablebase information:
 translate U Draw {Tasapeli}
-translate U stalemate {patti}
-translate U withAllMoves {kaikilla siirroilla}
-translate U withAllButOneMove {yht‰ vaille kaikilla siirroilla}
 translate U with {kanssa}
 translate U only {vain}
 translate U lose {h‰vi‰‰}
 translate U loses {h‰vi‰‰}
-translate U allOthersLose {kaikki muut h‰vi‰v‰t}
-translate U matesIn {matti}
-translate U hasCheckmated {on matti}
-translate U longest {pisin}
-translate U WinningMoves {Voittavat siirrot}
-translate U DrawingMoves {Tasapeliin viev‰t siirrot}
-translate U LosingMoves {H‰vi‰v‰t siirrot}
-translate U UnknownMoves {Ep‰varma tulos}
 # ====== TODO To be translated ======
-translate U SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate U toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate U NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate U MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate U SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate U WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate U BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate U AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate U Tip {Vihje}

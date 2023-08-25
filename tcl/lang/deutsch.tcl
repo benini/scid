@@ -443,29 +443,10 @@ translate D PInfoEloFile {Datei}
 
 # Tablebase information:
 translate D Draw {Remis}
-translate D stalemate {Patt}
-translate D withAllMoves {mit allen Zügen}
-translate D withAllButOneMove {mit allen außer einem Zug}
 translate D with {mit}
 translate D only {nur}
 translate D lose {verlieren}
 translate D loses {verliert}
-translate D allOthersLose {alle anderen verlieren}
-translate D matesIn {setzt Matt in}
-translate D hasCheckmated {hat Matt gesetzt}
-translate D longest {längste}
-translate D WinningMoves {Gewinnzüge}
-translate D DrawingMoves {Remiszüge}
-translate D LosingMoves {Verlustzüge}
-translate D UnknownMoves {Züge mit unbekanntem Resultat}
-translate D SideLongest {Seite   Längstes  %     %     %\n}
-translate D toNoveMate  {am Zug    Matt   Gew. Remis Verlust\n}
-translate D NoSummary {\nKeine Zusammenfassung für diese Tablebase.}
-translate D MutualZugzwang {Gegenseitiger Zugzwang: }
-translate D SelectetZugzwang {\nAusgewählte Zugzwangpositionen:}
-translate D WdrawBloss {Weiß remis,Schwarz verliert:}
-translate D BdrawWloss {Schwarz remis, Weiß verliert: }
-translate D AllLoss {" Wer zieht verliert:     " }
 
 # Tip of the day:
 translate D Tip {Tip}

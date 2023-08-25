@@ -422,37 +422,11 @@ translate C PInfoEloFile {File}
 
 # Tablebase information:
 translate C Draw {Remíza}
-translate C stalemate {pat}
-translate C withAllMoves {se v¹emi tahy}
-translate C withAllButOneMove {se v¹emi tahy kromì posledního}
 translate C with {s}
 translate C only {jen}
 translate C lose {prohrát}
 translate C loses {prohrává}
-translate C allOthersLose {v¹echny ostatní prohrávají}
-translate C matesIn {matuje bìhem}
-translate C hasCheckmated {zmatoval}
-translate C longest {nejdel¹í}
-translate C WinningMoves {vyhrávající tahy}
-translate C DrawingMoves {remizující tahy}
-translate C LosingMoves {prohrávající tahy}
-translate C UnknownMoves {tahy s neznámým výsledkem}
 # ====== TODO To be translated ======
-translate C SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate C toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate C NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate C MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate C SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate C WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate C BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate C AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate C Tip {Tip}

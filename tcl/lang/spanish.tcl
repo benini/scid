@@ -457,37 +457,11 @@ translate S PInfoEloFile {File}
 
 # Tablebase information:
 translate S Draw {Tablas}
-translate S stalemate {rey ahogado}
-translate S withAllMoves {con todos los movimientos}
-translate S withAllButOneMove {con todos los movimientos excepto uno}
 translate S with {con}
 translate S only {sólo}
 translate S lose {formas de perder}
 translate S loses {hace perder}
-translate S allOthersLose {todos los demás hacen perder}
-translate S matesIn {mate en}
-translate S hasCheckmated {jaque mate}
-translate S longest {el mate más largo}
-translate S WinningMoves {Movimientos ganadores}
-translate S DrawingMoves {Movimientos para tablas}
-translate S LosingMoves {Movimientos perdedores}
-translate S UnknownMoves {Movimientos de resultado desconocido}
 # ====== TODO To be translated ======
-translate S SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate S toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate S NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate S MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate S SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate S WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate S BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate S AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate S Tip {Sugerencia}

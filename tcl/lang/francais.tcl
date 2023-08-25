@@ -432,29 +432,10 @@ translate F PInfoEloFile {Fichier}
 
 # Tablebase information:
 translate F Draw {Nulle}
-translate F stalemate {pat}
-translate F withAllMoves {avec tous les coups}
-translate F withAllButOneMove {avec tous les coups sauf le dernier}
 translate F with {avec}
 translate F only {seulement}
 translate F lose {perte}
 translate F loses {pertes}
-translate F allOthersLose {toutes les autres pertes}
-translate F matesIn {mat en}
-translate F hasCheckmated {a maté}
-translate F longest {le plus long}
-translate F WinningMoves {Coups gagnants}
-translate F DrawingMoves {Coups faisant nulle}
-translate F LosingMoves {Coups perdants}
-translate F UnknownMoves {Coups dont le résultat est inconnu}
-translate F SideLongest {Joueur    +long    %     %     %\n}
-translate F toNoveMate {au trait   mat    Gain  Nul  Perte\n}
-translate F NoSummary {\nPas de résumé pour cette table de finales.}
-translate F MutualZugzwang {Zugzwangs mutuels : }
-translate F SelectetZugzwang {\nPositions de zugzwang choisies :}
-translate F WdrawBloss {Blanc annule, Noir perd :}
-translate F BdrawWloss {Noir annule, Blanc perd :}
-translate F AllLoss {" Celui au trait perd:     " }
 
 # Tip of the day:
 translate F Tip {Conseil}

@@ -425,29 +425,10 @@ translate R PInfoEloFile {Файл}
 
 # Tablebase information:
 translate R Draw {Ничья}
-translate R stalemate {пат}
-translate R withAllMoves {со всеми ходами}
-translate R withAllButOneMove {со всеми, кроме одного хода}
 translate R with {с}
 translate R only {только}
 translate R lose {проиграно}
 translate R loses {проиграли}
-translate R allOthersLose {все остальные проиграны}
-translate R matesIn {мат за}
-translate R hasCheckmated {шах и мат}
-translate R longest {самый длинный}
-translate R WinningMoves {Выигрышные ходы}
-translate R DrawingMoves {Ничейные ходы}
-translate R LosingMoves {Проигрышные ходы}
-translate R UnknownMoves {Ходы, приводящие к неизвестному результату}
-translate R SideLongest {Сторона    Самый длинный    %     %     %\n}
-translate R toNoveMate {право хода   мат    Победа  Ничья  Поражение\n}
-translate R NoSummary {\nНет отчета для этой таблицы.}
-translate R MutualZugzwang {Взаимный цугцванг: }
-translate R SelectetZugzwang {\nВыбранные позиции цугцванга:}
-translate R WdrawBloss {Белыми ничья, Черные проигрывают:}
-translate R BdrawWloss {Черными ничья, Белые проигрывают:}
-translate R AllLoss {" Прогрывает любой ход:     " }
 
 # Tip of the day:
 translate R Tip {Совет}

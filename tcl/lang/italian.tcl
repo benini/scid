@@ -423,37 +423,11 @@ translate I PInfoEloFile {File}
 
 # Tablebase information:
 translate I Draw {Patta}
-translate I stalemate {stallo}
-translate I withAllMoves {con tutte le mosse}
-translate I withAllButOneMove {con tutte le mosse tranne una}
 translate I with {con}
 translate I only {solo}
 translate I lose {persa}
 translate I loses {perde}
-translate I allOthersLose {tutte le altre perse}
-translate I matesIn {matto in}
-translate I hasCheckmated {è mattato}
-translate I longest {la più lunga}
-translate I WinningMoves {Mosse vincenti}
-translate I DrawingMoves {Mosse pattanti}
-translate I LosingMoves {Mosse perdenti}
-translate I UnknownMoves {Mosse senza risultato noto}
 # ====== TODO To be translated ======
-translate I SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate I toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate I NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate I MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate I SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate I WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate I BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate I AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate I Tip {Suggerimento}
