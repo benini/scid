@@ -1929,7 +1929,6 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a GameList><b>Partieliste</b>-Fenster</a></li>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
-<li><a Repertoire><b>Repertoire-Editor</b></a></li>
 <li><a PList><b>Spielersuche</b></a></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
 <li><a TacticalGame><b>Trainingspartie</b>-Fenster</a></li>
@@ -2093,7 +2092,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>R</h3>
 <ul>
-<li><a Repertoire>Repertoire-Editor</a></li>
 </ul>
 
 <h3>S</h3>
@@ -2104,7 +2102,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a Reports Player>Spielerbericht</a></li>
 <li><a PInfo>Spielerinformation</a></li>
 <li><a PList>Spielersuche</a></li>
-<li><a CCIcons><b>Statusanzeigen im Fernschachfenster</b></a></li>
 <li><a Searches>Suchen</a></li>
 <li><a Menus Search>Suchen-Menü</a></li>
 <li><a Searches Filter>Such-Filter</a></li>
@@ -2112,7 +2109,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>T</h3>
 <ul>
-<li><a Moves Trial>Testmodus</a></li>
 <li><a Tmt>Turniersuche</a></li>
 <li>Training</li>
 <ul>
@@ -2475,8 +2471,6 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     ersten Variante des aktuellen Zuges.</li>
 <li><menu>Variante als Hauptvariante setzen</menu>: Tauscht eine Variante
     mit der Partiefolge aus.</li>
-<li><menu>Variante testen</menu>: Schaltet in den <a Moves Trial>Testmodus</a>,
-    um eine Variante auszuprobieren, ohne die aktuelle Partie zu verändern.</li>
 <li><menu>Entfernen</menu>: Entfernt alle Kommentare oder Varianten
     aus der aktuellen Partie.</li>
 <br>
@@ -2532,6 +2526,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <li><menu>Material/Muster</menu>: Sucht nach
     <a Searches Material>Material</a> oder Stellungsmustern</a>.</li>
 <br>
+<li><menu>Turniersuche</menu>: Öffnet/schließt den
+    <a Tmt>Turniersuche</a>.</li>
 <li><menu>Mit Suchoptionsdatei</menu>: Sucht mit Hilfe von
     <a Searches Settings>Einstellungen</a> aus einer Suchoptionsdatei.</li>
 </ul>
@@ -2540,23 +2536,18 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <ul>
 <li><menu>Kommentareditor</menu>: Öffnet/schließt das
     <a Comment>Kommentareditor</a>-Fenster.</li>
-<li><menu>Partieliste</menu>: Öffnet/schließt das
-    <a GameList>Partielistenfenster</a>.</li>
 <li><menu>PGN-Fenster</menu>: Öffnet/schließt das
     <a PGN>PGN-Fenster</a>.</li>
-<li><menu>Turniersuche</menu>: Öffnet/schließt den
-    <a Tmt>Turniersuche</a>.</li>
 <br>
+<li><menu>Partieliste</menu>: Öffnet/schließt das
+    <a GameList>Partielistenfenster</a>.</li>
 <li><menu>Datenbank-Umschalter</menu>: Öffnet/schließt den
     <a Switcher>Datenbank-Umschalter</a>, mit dem man auf einfache Weise zu einer
     anderen Datenbank wechseln oder Partien zwischen Datenbanken kopieren kann.</li>
-<li><menu>Wartungsfenster</menu>: Öffnet/schließt das
-    Datenbank-<a Maintenance>Wartungs</a>-Fenster.</li>
-<br>
+<li><menu>Turniertabelle</menu>: Erstellt eine
+    Turnier-<a Crosstable>Turniertabelle</a> für die aktuelle Partie. </li>
 <li><menu>ECO-Auswertung</menu>: Öffnet/schließt das Fenster
     <a ECO browser>ECO-Auswertung</a>.</li>
-<li><menu>Repertoire-Editor</menu>: Öffnet/schließt den
-    <a Repertoire>Repertoire-Editor</a>.</li>
 <li><menu>Statistik</menu>: Öffnet/schließt das
     <term>Filter-Statistikfenster</term>, welches eine Gewinn/Verlust-Zusammenstellung
     aller Partien im <a Searches Filter>Filter</a> liefert.</li>
@@ -2570,8 +2561,6 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     im <a Analysis>Analysefenster</a> darstellt.</li>
 <li><menu>Analyse-Engine #2</menu>: Startet/beendet eine zweite
     "Schachanlyse-Engine".</li>
-<li><menu>Turniertabelle</menu>: Erstellt eine
-    Turnier-<a Crosstable>Turniertabelle</a> für die aktuelle Partie. </li>
 <li><menu>E-Mail-Manager</menu>: Öffnet/schließt den <a Email>E-Mail-Manager</a>
     für Fernschachpartien.</li>
 <br>
@@ -3991,137 +3980,6 @@ entsprechenden Partien enthält.
 </p>
 
 <p><footer>(Aktualisiert: Scid 4.7, November 2018)</footer></p>
-}
-
-
-###########################
-### Repertoire editor help:
-
-set helpTitle(D,Repertoire) "Repertoire-Editor"
-set helpText(D,Repertoire) {<h1>Der Repertoire-Editor</h1>
-<p>
-Mit dem Repertoire-Editor können Sie <term>Repertoire</term>-Dateien
-erstellen, lesen oder bearbeiten. Eine Repertoiredatei ist eine Liste
-der Eröffnungspositionen, die Sie erreichen wollen oder zu vermeiden
-suchen; Sie können sie zur Organisation Ihrer Eröffnungspräferenzen
-und zur Datenbanksuche in Scid verwenden.
-</p>
-
-<h3>Repertoire-Gruppen und -Varianten</h3>
-<p>
-Ein Repertoire enthält zwei Elementtypen: <term>Gruppen</term> und
-<term>Varianten</term>. Gruppen sind nicht tatsächlich Teil Ihres
-Repertoires; sie werden nur zur Strukturierung verwendet, so wie
-Verzeichnisse Dateien auf einem Datenträger strukturieren.
-</p>
-<p>
-In einem Repertoire gibt es in zwei Arten von Varianten:
-<term>eingeschlossene</term> Varianten repräsentieren Eröffnungspositionen,
-an denen Sie interessiert sind und die Sie erreichen wollen, und
-<term>ausgeschlossene</term> Varianten, die Sie nicht spielen wollen
-und zu vermeiden suchen.
-Wenn Sie z.B. Angenommenes Damengambit (1.d4 d5 2.c4 dxc4) mit Schwarz
-spielen und nach 3.e4 alle Züge <i>außer </i> 3...Sf6 spielen, hätten
-Sie 1.d4 d5 2.c4 dxc4 3.e4 als eingeschlossene Variante und 1.d4 d5 2.c4
-dxc4 3.e4 Sf6 als ausgeschlossene Variante.
-</p>
-
-<h3>Kommentare und Anmerkungen</h3>
-<p>
-Jede Gruppe oder Variante kann Kommentare enthalten. Es gibt zwei Typen:
-kurze (einzeilige) Kommentare erscheinen (in Rot) in der
-Repertoire-Hierarchie neben den Zügen der Gruppe oder Variante, während
-ein langer (mehrzeiliger) Kommentar nur angezeigt wird, wenn die Gruppe
-oder Variante ausgewählt wird.
-</p>
-
-<h3>Das Fenster des Repertoire-Editors</h3>
-<p>
-Die <b>linke</b> Seite des Fensters zeigt die Repertoire-Hierarchie.
-Sie können die Gruppendarstellung mit einem Klick auf den Ordner auf-
-bzw. zuklappen, und mit einem Klick auf die Züge der Gruppen oder
-Varianten wählen Sie diese aus und sehen ihre Kommentare.
-Eingeschlossene Varianten werden mit einem blauen Haken angezeigt,
-ausgeschlossene Varianten haben ein rotes Kreuz.
-</p>
-<p>
-Wenn eine Variante oder Gruppe einen Kurzkommentar hat, wird er hinter
-den Zügen angezeigt. Wenn sie einen langen Kommentar hat, wird dies mit
-<b><red>**</red></b> nach den Zügen angezeigt. Bei den Gruppen steht
-nach den Zügen eine Zahl in Klammern, die die Anzahl der (ein- und
-ausgeschlossenen) Varianten anzeigt, die sie jeweils enthalten.
-</p>
-<p>
-Nach einem Rechtsklick auf eine Gruppe oder Variante erscheint ein Menü
-mit den verfügbaren Funktionen wie Löschen oder Statusänderung.
-</p>
-<p>
-Die <b>rechte</b> Seite des Fensters besteht aus drei Bereichen. Der
-erste enthält die Züge der gerade ausgewählten Variante oder Gruppe. Sie
-können ihn mit der linken Maustaste anklicken, womit Sie die Züge in das
-<a Import>Import</a>-Fenster einfügen, was recht nützlich ist, um die
-aktuelle Partie mit einer Variante des Repertoires beginnen zu lassen.
-Der zweite Bereich enthält den Kurzkommentar der Variante oder Gruppe,
-der dritte Bereich ihren langen Kommentar.
-</p>
-
-<h3>Gruppen und Varianten dem Repertoire hinzufügen</h3>
-<p>
-Um eine Variante oder Gruppe hinzuzufügen, führen Sie einfach ihre Züge
-auf dem Schachbrett im Hauptfenster aus, wählen dann das Menü
-<menu>Bearbeiten</menu> im Repertoire-Editor und fügen sie als Gruppe,
-eingeschlossene Variante oder ausgeschlossene Variante hinzu.
-</p>
-<p>
-Um eine Gruppe oder Variante zu löschen, klicken Sie sie mit der rechten
-Maustaste an und wählen im erschienenen Menü das entsprechende Kommando.
-</p>
-
-<h3><name Search>Datenbanksuche mit Repertoire-Dateien</name></h3>
-<p>
-Das Menü <menu>Suchen</menu> des Repertoire-Editors ermöglicht es Ihnen,
-mit dem Repertoire in der aktuellen Datenbank zu suchen. Jede Partie
-wird mit den Positionen im Repertoire verglichen und nur dann erkannt,
-wenn die <i>weitestverzweigte</i> Repertoire-Position für eine
-<i>eingeschlossene</i> Variante gefunden wurde.
-</p>
-<p>
-Sie können wählen, ob Sie nach dem gesamten Repertoire oder nur nach den
-ausgegebenen Varianten suchen wollen. Die Suche nach den ausgegebenen
-Varianten ist nur dann sinnvoll, wenn Sie nur nach einigen Varianten
-des Repertoires suchen. Beispiel: Ein Repertoire habe zwei Hauptgruppen
-auf der obersten Ebene, eine für 1.e4 und eine für 1.d4. Wenn Sie nur
-an den e4-Varianten interessiert sind, klappen Sie einfach die Gruppe
-1.d4 zu und suchen dann nur nach den ausgegebenen Varianten.
-</p>
-
-<h3>Weitere Hinweise</h3>
-<p>
-Eine Repertoire-Datei eignet sich sehr gut zum Finden neuer Partien in
-Ihrem Eröffnungssystem. Beispiel: Jedesmal, wenn Sie eine PGN-Datei
-erhalten und sie Ihrer Haupt-Datenbank hinzufügen (wie etwa
-die ausgezeichneten wöchentlichen PGN-Dateien von
-<url http://www.chesscenter.com/twic/>The Week In Chess</url>),
-öffnen Sie einfach die PGN-Datei in Scid und führen eine Repertoire-Suche
-durch. Dann können Sie die gefilterten Partien betrachten und haben
-alle Partien, die in Ihrem Repertoire enthalten sind.
-</p>
-<p>
-Sie sollten vielleicht zwei Repertoire-Dateien anlegen: eine für Schwarz
-und eine für Weiß, so dass Sie mit jeder Datei getrennt suchen können.
-</p>
-<p>
-Eine Repertoire-Datei kann von der Kommanozeile aus geöffnet werden,
-zum Beispiel:<br>
-<b>scid datenbank weiss.sor</b>
-</p>
-<p>
-Sie können eine Repertoire-Datei (.sor) mit jedem Editor bearbeiten,
-aber passen Sie auf, dass Sie nicht ihr Format verändern, sonst kann
-sie von Scid nicht geladen oder gesucht werden.
-</p>
-
-<p><footer>(Aktualisiert: Scid 2.6, August 2001)</footer></p>
 }
 
 
