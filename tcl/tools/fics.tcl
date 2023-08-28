@@ -706,8 +706,6 @@ namespace eval fics {
       set line [string map {"\a" ""} $line]
       readparse $line
     }
-
-    ::fics::makePremove
   }
 
   ################################################################################
@@ -1351,6 +1349,7 @@ namespace eval fics {
       }
       ::notify::GameChanged
     }
+    ::fics::makePremove
   }
   ################################################################################
   #
