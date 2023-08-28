@@ -156,8 +156,6 @@ menuText N WindowsECO "ECO Browser" 0 {Open/sluit het ECO browser venster}
 menuText N WindowsStats "Statistiek" 0 \
   {Open/sluit het filter statieken-venster}
 menuText N WindowsTree "Openingoverzicht" 0 {Open/sluit het Openingsoverzichtvenster}
-menuText N WindowsTB "Tablebase venster" 1 \
-  {Open/sluit het Tablebase venster}
 menuText N WindowsBook "Boek Venster" 0 {Open/sluit het Boek venster}
 menuText N WindowsCorrChess "Correspondentieschaak venster" 0 \
     {Open/sluit het correspondentieschaak venster}
@@ -451,37 +449,11 @@ translate N PInfoEloFile {File}
 
 # Tablebase information:
 translate N Draw {Remise}
-translate N stalemate {Pat}
-translate N withAllMoves {met alle zetten}
-translate N withAllButOneMove {alle zetten behalve één}
 translate N with {met}
 translate N only {alleen}
 translate N lose {verliezen}
 translate N loses {verliest}
-translate N allOthersLose {alle overigen verliezen}
-translate N matesIn {Mat in}
-translate N hasCheckmated {geeft mat}
-translate N longest {langste}
-translate N WinningMoves {Winnende zetten} ;
-translate N DrawingMoves {Remise zetten} ;
-translate N LosingMoves {Verliezende zetten} ;
-translate N UnknownMoves {Onbekend resultaat zetten} ;
 # ====== TODO To be translated ======
-translate N SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate N toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate N NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate N MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate N SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate N WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate N BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate N AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate N Tip {Tip}

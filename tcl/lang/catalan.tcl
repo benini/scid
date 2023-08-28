@@ -153,8 +153,6 @@ menuText K WindowsECO "Cercador ECO" 0 {Obre/tanca la finestra del cercador ECO}
 menuText K WindowsStats "Finestra d'estadístiques" 12 \
   {Obre/tanca la finestra d'estadístiques del filtre}
 menuText K WindowsTree "Finestra de l'Àrbre d'Obertures" 6 {Obre/tanca la finestra de l'Àrbre d'Obertures (Book)}
-menuText K WindowsTB "Finestra de Taules de Finals (TBs)" 8 \
-  {Obre/tanca la finestra de TBs}
 menuText K WindowsBook "Finestra de Llibres d'Obertures" 0 {Obrir/Tancar la finestra de Llibres d'Obertures (Book)}
 menuText K WindowsCorrChess "Finestra d'Escacs Postal" 0 {Obrir/Tancar la Finestra d'Escacs Postal}
 
@@ -454,37 +452,11 @@ translate K PInfoEloFile {File}
 
 # Tablebase information:
 translate K Draw {Taules}
-translate K stalemate {Ofegat}
-translate K withAllMoves {amb totes les jugades}
-translate K withAllButOneMove {amb totes les jugades menys una}
 translate K with {amb}
 translate K only {només}
 translate K lose {maneres de perdre}
 translate K loses {fa perdre}
-translate K allOthersLose {tots les demés perden}
-translate K matesIn {mat a}
-translate K hasCheckmated {escac i mat}
-translate K longest {el mat més llarg}
-translate K WinningMoves {Jugades guanyadores}
-translate K DrawingMoves {Jugades per taules}
-translate K LosingMoves {Jugades perdedores}
-translate K UnknownMoves {Jugades de resultat desconegut}
 # ====== TODO To be translated ======
-translate K SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate K toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate K NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate K MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate K SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate K WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate K BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate K AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate K Tip {Suggeriment}

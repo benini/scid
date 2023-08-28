@@ -161,7 +161,6 @@ menuText D WindowsMaint "Wartungsfenster" 0 {(Datenbank-)Wartungsfenster öffnen/
 menuText D WindowsECO "ECO-Auswertung" 0 {ECO-Auswertung öffnen/schließen}
 menuText D WindowsStats "Statistik" 4 {Filterstatistik öffnen/schließen}
 menuText D WindowsTree "Zugbaum" 0 {Zugbaum öffnen/schließen}
-menuText D WindowsTB "Endspieltabellen..." 1 {Endspieltabellen öffnen/schließen}
 menuText D WindowsBook "Buchfenster" 0 {Buchfenster öffnen/schließen}
 menuText D WindowsCorrChess "Fernschachfenster" 0 {Öffnet/schließt das Fernschachfenster}
 
@@ -444,29 +443,10 @@ translate D PInfoEloFile {Datei}
 
 # Tablebase information:
 translate D Draw {Remis}
-translate D stalemate {Patt}
-translate D withAllMoves {mit allen Zügen}
-translate D withAllButOneMove {mit allen außer einem Zug}
 translate D with {mit}
 translate D only {nur}
 translate D lose {verlieren}
 translate D loses {verliert}
-translate D allOthersLose {alle anderen verlieren}
-translate D matesIn {setzt Matt in}
-translate D hasCheckmated {hat Matt gesetzt}
-translate D longest {längste}
-translate D WinningMoves {Gewinnzüge}
-translate D DrawingMoves {Remiszüge}
-translate D LosingMoves {Verlustzüge}
-translate D UnknownMoves {Züge mit unbekanntem Resultat}
-translate D SideLongest {Seite   Längstes  %     %     %\n}
-translate D toNoveMate  {am Zug    Matt   Gew. Remis Verlust\n}
-translate D NoSummary {\nKeine Zusammenfassung für diese Tablebase.}
-translate D MutualZugzwang {Gegenseitiger Zugzwang: }
-translate D SelectetZugzwang {\nAusgewählte Zugzwangpositionen:}
-translate D WdrawBloss {Weiß remis,Schwarz verliert:}
-translate D BdrawWloss {Schwarz remis, Weiß verliert: }
-translate D AllLoss {" Wer zieht verliert:     " }
 
 # Tip of the day:
 translate D Tip {Tip}
@@ -945,7 +925,7 @@ Ist der Bereiniger einmal gestartet, kann er nicht mehr unterbrochen werden!
 Dies kann lange dauern, speziell bei großen Datenbanken, abhängig von den
 ausgewählten Funktionen und deren Einstellungen.
 
-Sind Sie sicher, daß Sie die ausgewählten Wartungsarbeiten starten möchten?
+Sind Sie sicher, dass Sie die ausgewählten Wartungsarbeiten starten möchten?
 }
 # Twinchecker
 translate D TwinCheckUndelete { umdrehen; "u" beide wiederherstellen)}
@@ -1942,7 +1922,6 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Book><b>Buch</b>-Fenster</a></li>
 <li><a Finder><b>Dateisuche</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
-<li><a TB><b>Endspieltabellen</b> in Scid verwenden</a> </li>
 <li><a PTracker><b>Figurenverteilung</b></a></li>
 <li><a Graphs><b>Grafik</b>-Fenster</a></li>
 <li><a Comment><b>Kommentareditor</b></a></li>
@@ -1950,7 +1929,6 @@ set helpText(D,Contents) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a GameList><b>Partieliste</b>-Fenster</a></li>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
-<li><a Repertoire><b>Repertoire-Editor</b></a></li>
 <li><a PList><b>Spielersuche</b></a></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
 <li><a TacticalGame><b>Trainingspartie</b>-Fenster</a></li>
@@ -2027,7 +2005,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a ECO Browser>ECO-Auswertung</a></li>
 <li><a ECO Codes>ECO-Codesystem</a></li>
 <li><a ECO>ECO-Eröffnungsklassifikation</a></li>
-<li><a TB>Endspieltabellen</a></li>
 <li><a EPD>EPD-Dateien</a></li>
 <li><a SeriousGame>Ernste Partie spielen</a></li>
 <li><a Reports Opening>Eröffnungsbericht</a></li>
@@ -2115,7 +2092,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>R</h3>
 <ul>
-<li><a Repertoire>Repertoire-Editor</a></li>
 </ul>
 
 <h3>S</h3>
@@ -2126,7 +2102,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a Reports Player>Spielerbericht</a></li>
 <li><a PInfo>Spielerinformation</a></li>
 <li><a PList>Spielersuche</a></li>
-<li><a CCIcons><b>Statusanzeigen im Fernschachfenster</b></a></li>
 <li><a Searches>Suchen</a></li>
 <li><a Menus Search>Suchen-Menü</a></li>
 <li><a Searches Filter>Such-Filter</a></li>
@@ -2134,7 +2109,6 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 
 <h3>T</h3>
 <ul>
-<li><a Moves Trial>Testmodus</a></li>
 <li><a Tmt>Turniersuche</a></li>
 <li>Training</li>
 <ul>
@@ -2264,7 +2238,7 @@ und <b>Control+Shift+RightArrow</b> das Brett verkleinern bzw. vergrößern.
 </p>
 
 <h4>Wenn ich trainiere, indem ich eine Partie nachspiele, möchte ich
-nicht, daß Scid den nächsten Zug im Informationsbereich anzeigt.
+nicht, dass Scid den nächsten Zug im Informationsbereich anzeigt.
 Kann ich ihn verstecken?</h4>
 <p>
 Sie können den nächsten Zug verstecken, indem Sie die <b>rechte</b>
@@ -2279,12 +2253,12 @@ Der ECO-Schlüssel wird in der letzten Zeile des Informationsbereichs
 angezeigt, unterhalb des Schachbretts im <a MainWindow>Hauptfenster</a>,
 wenn Sie die ECO-Datei (<b>scid.eco</b>) geladen haben.<br>
 Auf der <a ECO>ECO-Code</a> Hilfeseite wird erklärt, wie man die ECO-Datei
-lädt und die Optionen so einstellt, daß sie jedesmal beim Programmstart
+lädt und die Optionen so einstellt, dass sie jedesmal beim Programmstart
 geladen wird.
 </p>
 
 <h4>Beim Eingeben einer Partie bin ich gerade beim 30. Zug, als ich
-bemerke, daß der 10. Zug falsch eingegeben wurde. Wie kann ich ihn
+bemerke, dass der 10. Zug falsch eingegeben wurde. Wie kann ich ihn
 korrigieren und dabei alle nachfolgenden Züge erhalten?</h4>
 <p>
 Sie können das im <a Import>Import</a>-Fenster tun; siehe die Hilfeseite
@@ -2318,7 +2292,7 @@ rechten Maustaste an und wählen Sie <b>Konfigurieren</b>.
 für eine Auswahl von Partien nutzen?</h4>
 <p>
 Nutzen Sie die <a Clipbase>Ablage-Datenbank</a>. Wählen Sie den
-Datenbank-Filter so, daß er die von Ihnen gewünschten Partien enthält,
+Datenbank-Filter so, dass er die von Ihnen gewünschten Partien enthält,
 dann kopieren Sie diese über den <a Switcher>Datenbank-Umschalter</a>
 in die Ablage-Datenbank. Danach brauchen Sie nur noch das Zugbaumfenster
 in der Ablage-Datenbank zu öffnen.
@@ -2378,19 +2352,13 @@ Separate Hilfeseiten beschreiben die <a Menus>Menüs</a> und die
 
 <h3>Symbolleiste: Navigieren durch die Partie</h3>
 <p>
-Die direkt über dem Schachbrett angebracht Symbole haben die
+Die direkt unter dem Schachbrett angebracht Symbole haben die
 folgende Bedeutung (von links nach rechts):
 <ul>
 <li> <button tb_start> Gehe zum Beginn der Partie. </li>
 <li> <button tb_prev> Gehe einen Zug zurück. </li>
 <li> <button tb_next> Gehe einen Zug vor. </li>
 <li> <button tb_end> Gehe zum Ende der Partie. </li>
-<li> <button tb_invar> Gehe in Variante. </li>
-<li> <button tb_outvar> Verlasse die Variante. </li>
-<li> <button tb_addvar> Neue Variante hinzufügen. </li>
-<li> <button tb_play> Starte/beende automatisches Vorspielen (siehe unten). </li>
-<li> <button tb_flip> Brett drehen. </li>
-<li> <button tb_coords> Zeige/Verdecke/Zeige unten und links/ die Brettkoordinaten. </li>
 </ul>
 
 <h4><name Autoplay>Automatisches Vorspielen</name></h4>
@@ -2433,20 +2401,13 @@ für die aktuelle Partie setzten und löschen. Man kann das
 Menü auch über die <b>[F9]</b> Funktionstaste erreichen.
 </p>
 
-<h4>Endspieltabellen</h4>
-<p>
-Der Informationsbereich zeigt auch Ergebnisse aus den
-Endspieltabellen zur aktuellen Stellung, wenn diese darin enthalten
-ist. Mehr dazu in den Hilfeseiten zu <a TB>Endspieltabellen</a>.
-</p>
-
 <h3>Die Statusanzeige</h3>
 <p>
 Die Statusanzeige zeigt Information über die aktuelle
 Datenbank. Das erste Feld zeigt den Partiestatus an: <b>XX</b>
 bedeutet, die Partie wurde geändert, aber noch nicht
 gespeichert, während <b>--</b> bedeutet, es gibt keine
-Änderungen, und <b>%%</b> zeigt an, daß die Datenbank
+Änderungen, und <b>%%</b> zeigt an, dass die Datenbank
 schreibgeschützt geöffnet wurde.
 </p>
 <p>
@@ -2463,7 +2424,7 @@ Die Statusanzeige zeigt auch, wieviel Spiele im aktuellen
 sind.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.1, Dezember 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 5.0.2, August 2023)</footer></p>
 }
 
 
@@ -2510,8 +2471,6 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     ersten Variante des aktuellen Zuges.</li>
 <li><menu>Variante als Hauptvariante setzen</menu>: Tauscht eine Variante
     mit der Partiefolge aus.</li>
-<li><menu>Variante testen</menu>: Schaltet in den <a Moves Trial>Testmodus</a>,
-    um eine Variante auszuprobieren, ohne die aktuelle Partie zu verändern.</li>
 <li><menu>Entfernen</menu>: Entfernt alle Kommentare oder Varianten
     aus der aktuellen Partie.</li>
 <br>
@@ -2556,8 +2515,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <h3><name Search>Suchen</name></h3>
 <ul>
 <li><menu>Filter zurücksetzen</menu>: Setzt den <a Searches Filter>Filter</a>
-    zurück, so daß er alle Partien enthält.</li>
-<li><menu>Filter negieren</menu>: Invertiert den Filter, so daß er alle
+    zurück, so dass er alle Partien enthält.</li>
+<li><menu>Filter negieren</menu>: Invertiert den Filter, so dass er alle
     vorher ausgeschlossenen Partien enthält.</li>
 <br>
 <li><menu>Brett</menu>: Sucht die
@@ -2567,6 +2526,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <li><menu>Material/Muster</menu>: Sucht nach
     <a Searches Material>Material</a> oder Stellungsmustern</a>.</li>
 <br>
+<li><menu>Turniersuche</menu>: Öffnet/schließt den
+    <a Tmt>Turniersuche</a>.</li>
 <li><menu>Mit Suchoptionsdatei</menu>: Sucht mit Hilfe von
     <a Searches Settings>Einstellungen</a> aus einer Suchoptionsdatei.</li>
 </ul>
@@ -2575,29 +2536,22 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <ul>
 <li><menu>Kommentareditor</menu>: Öffnet/schließt das
     <a Comment>Kommentareditor</a>-Fenster.</li>
-<li><menu>Partieliste</menu>: Öffnet/schließt das
-    <a GameList>Partielistenfenster</a>.</li>
 <li><menu>PGN-Fenster</menu>: Öffnet/schließt das
     <a PGN>PGN-Fenster</a>.</li>
-<li><menu>Turniersuche</menu>: Öffnet/schließt den
-    <a Tmt>Turniersuche</a>.</li>
 <br>
+<li><menu>Partieliste</menu>: Öffnet/schließt das
+    <a GameList>Partielistenfenster</a>.</li>
 <li><menu>Datenbank-Umschalter</menu>: Öffnet/schließt den
     <a Switcher>Datenbank-Umschalter</a>, mit dem man auf einfache Weise zu einer
     anderen Datenbank wechseln oder Partien zwischen Datenbanken kopieren kann.</li>
-<li><menu>Wartungsfenster</menu>: Öffnet/schließt das
-    Datenbank-<a Maintenance>Wartungs</a>-Fenster.</li>
-<br>
+<li><menu>Turniertabelle</menu>: Erstellt eine
+    Turnier-<a Crosstable>Turniertabelle</a> für die aktuelle Partie. </li>
 <li><menu>ECO-Auswertung</menu>: Öffnet/schließt das Fenster
     <a ECO browser>ECO-Auswertung</a>.</li>
-<li><menu>Repertoire-Editor</menu>: Öffnet/schließt den
-    <a Repertoire>Repertoire-Editor</a>.</li>
 <li><menu>Statistik</menu>: Öffnet/schließt das
     <term>Filter-Statistikfenster</term>, welches eine Gewinn/Verlust-Zusammenstellung
     aller Partien im <a Searches Filter>Filter</a> liefert.</li>
 <li><menu>Zugbaum</menu>: Öffnet/schließt das <a Tree>Zugbaumfenster</a>.</li>
-<li><menu>Endspieltabellen</menu>: Öffnet/schließt das Fenster, das
-    die <a TB>Endspieltabellen</a>-Informationen ausgibt.</li>
 </ul>
 
 <h3><name Tools>Werkzeuge</name></h3>
@@ -2607,8 +2561,6 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
     im <a Analysis>Analysefenster</a> darstellt.</li>
 <li><menu>Analyse-Engine #2</menu>: Startet/beendet eine zweite
     "Schachanlyse-Engine".</li>
-<li><menu>Turniertabelle</menu>: Erstellt eine
-    Turnier-<a Crosstable>Turniertabelle</a> für die aktuelle Partie. </li>
 <li><menu>E-Mail-Manager</menu>: Öffnet/schließt den <a Email>E-Mail-Manager</a>
     für Fernschachpartien.</li>
 <br>
@@ -2737,7 +2689,7 @@ beispielsweise [n][f][3] anstelle von Nf3 eingeben  -- beachten Sie
 aber die Anmerkung weiter unten zu den Konflikten bei Bauernzügen.
 </p>
 <p>
-Um sicherzustellen, daß kein Zug in einem anderen enthalten ist,
+Um sicherzustellen, dass kein Zug in einem anderen enthalten ist,
 lautet die Eingabe für die kurze und lange Rochade [0][K] resp. [0][Q]
 anstelle der üblichen Notation 0-0 bzw. 0-0-0.
 </p>
@@ -2748,7 +2700,7 @@ den ersten möglichen Zug der Liste als Eingabe auszuwählen.
 Um ein Zeichen zu löschen, drücken Sie [Rück] oder [Entf].
 </p>
 <p>
-<b>Beachten</b> Sie, daß ein Kleinbuchstabe zuerst als Bauer
+<b>Beachten</b> Sie, dass ein Kleinbuchstabe zuerst als Bauer
 interpretiert wird; mit [b] kann also ein Bauer oder Läufer ("Bishop")
 gemeint sein, im Zweifelsfall müssen Sie daher ein großes [B] für den
 Läufer verwenden.
@@ -2842,7 +2794,7 @@ jeder passenden Partie gespeichert; wenn Sie also jede dieser Partien
 laden, wird automatisch die passende Stellung angezeigt.
 </p>
 <p>
-<b>Beachten</b> Sie, daß beim Suchen nur mit den Partiezügen
+<b>Beachten</b> Sie, dass beim Suchen nur mit den Partiezügen
 verglichen wird, nicht mit den Zügen der Varianten.
 </p>
 
@@ -2973,7 +2925,7 @@ suchen, wählen Sie <menu>Öffnen</menu> im Menü <menu>Suchen</menu>.
 Die meisten Suchen liefern eine Nachricht, die die benötigte Zeit und
 die Anzahl der <term>übergangenen</term> Partien angibt. Eine übergangene
 Partie ist eine, die aufgrund der im Index gespeicherten Informationen
-von der Suche ausgeschlossen werden kann, ohne daß ihre Züge dekodiert
+von der Suche ausgeschlossen werden kann, ohne dass ihre Züge dekodiert
 werden müssen. Siehe die Hilfeseite über
 <a Formats>Dateiformate</a> für weitergehende Informationen.
 </p>
@@ -2990,7 +2942,7 @@ set helpText(D,Clipbase) {<h1>Die Ablage-Datenbank</h1>
 <p>
 Zusätzlich zu den geöffneten Datenbanken stellt Scid eine
 <term>Ablage-Datenbank</term> (als Datenbank 5) zur Verfügung, welche
-sich wie eine normale Datenbank verhält, mit der Ausnahme, daß sie
+sich wie eine normale Datenbank verhält, mit der Ausnahme, dass sie
 nur im RAM-Speicher existiert und keine Dateien zur Speicherung auf
 der Festplatte besitzt.
 </p>
@@ -3003,7 +2955,7 @@ eigenständige Datenbank.
 <p>
 Angenommen, zum Beispiel, man will sich auf einen Gegner vorbereiten, und
 hat eine Datenbank auf alle Partien des Gegners mit Weiß durchsucht,
-so daß diese Partien im <a Searches Filter>Filter</a> sind.
+so dass diese Partien im <a Searches Filter>Filter</a> sind.
 Man kann nun diese Partien in die Ablage kopieren (durch Ziehen mit der
 rechten Maustaste von der Originaldatenbank zur Ablage, im Fenster
 <a Switcher>Datenbank-Umschalter</a>), danach im Datei-Menü die Ablage
@@ -3052,7 +3004,7 @@ kann. Zur Eingabe von Symbolen und Kommentaren benutzen Sie den
 der die <a NAGs>Standard-Symbolwerte</a> aufgelistet sind.
 </p>
 <p>
-Beachten Sie, daß jeder Zug mehr als ein Anmerkungssymbol haben kann,
+Beachten Sie, dass jeder Zug mehr als ein Anmerkungssymbol haben kann,
 aber nur einen Kommentar. Ein Kommentar vor dem ersten Partiezug wird
 als Text vor dem Beginn der Partie ausgegeben.
 </p>
@@ -3081,7 +3033,7 @@ Mit der Taste "<b>z</b>" verlassen Sie die Variante wieder.
 <p>
 Gelegentlich kann es in einer Variante nützlich sein, den Zug einer
 Seite auszulassen. Beispiel: Sie wollen den Zug 14.Ld3 als Variante
-hinzufügen und möchten darauf hinweisen, daß er 15.Lxh7+ Kxh7 16.Sg5+
+hinzufügen und möchten darauf hinweisen, dass er 15.Lxh7+ Kxh7 16.Sg5+
 mit Angriff droht. Das können Sie erreichen, indem Sie im obigen
 Beispiel einen <term>Nullzug</term> zwischen 14.Ld3 und 15.Bxh7+
 ausführen. Ein Nullzug wird als "<b>--</b>" dargestellt und kann
@@ -3090,7 +3042,7 @@ schlägt König" ausführen oder mit der Tastatur "<b>--</b>" (zwei
 Minuszeichen) eingeben.
 </p>
 <p>
-Beachten Sie, daß Nullzüge nicht zum PGN-Standard gehören, wenn Sie
+Beachten Sie, dass Nullzüge nicht zum PGN-Standard gehören, wenn Sie
 also Partien mit Nullzügen in eine PGN-Datei exportieren, wird Scid
 (neben einigen anderen Exportoptionen) eine Option anbieten,
 Nullzüge zu erhalten oder sie in Kommentare umzuwandeln, damit
@@ -3115,7 +3067,7 @@ Position an die Engine, und die zeigt ihre Einschätzung dieser Stellung.
 </p>
 <p>
 Die Bewertung im Analysefenster erfolgt immer aus der Perspektive
-von Weiß, eine negative Bewertung heißt also, daß Schwarz besser steht.
+von Weiß, eine negative Bewertung heißt also, dass Schwarz besser steht.
 Der untere Fensterbereich (mit dem Rollbalken) zeigt den Verlauf der
 Auswertungen der aktuellen Stellung durch die Engine, Sie können also
 sehen, wie sich die Einschätzung verändert hat.
@@ -3159,7 +3111,7 @@ einfach im aktuellen Verzeichnis starten.
 <p>
 Wenn also eine Engine, die in Scid laufen sollte, nicht startet,
 versuchen Sie es mit anderen Verzeichniseinstellungen. Um zu vermeiden,
-daß Engines Logdateien in vielen verschiedenen Verzeichnissen erstellen,
+dass Engines Logdateien in vielen verschiedenen Verzeichnissen erstellen,
 empfehle ich, Engines im Verzeichnis der Scid-Benutzerdateien zu starten
 (da, wo sich die Datei <b>scid.exe</b> bei Windows befindet bzw.
 <b>~/.scid/</b> bei Unix); in der Dialogbox für die Engine-Einstellungen
@@ -3189,7 +3141,7 @@ Wenn der Autoplay-Modus aktiviert und das Analysefenster geöffnet ist,
 wird die beste Variante mit Stellungsbewertung zu jeder Position
 hinzugefügt, da sich der Autoplay-Modus durch die Partie bewegt.
 Nur Stellungen von der aktuellen Stellung bis zum Partieende (oder bis
-zum Abbruch des Autoplay-Modus) werden kommentiert, so daß Sie Kommentare
+zum Abbruch des Autoplay-Modus) werden kommentiert, so dass Sie Kommentare
 zu Eröffungszügen unterdrücken können, indem Sie vor Aktivierung des
 Autoplay-Modus zu einer Mittelspielstellung gehen.
 </p>
@@ -3231,7 +3183,7 @@ welches das <term>UCI</term> oder <term>WinBoard/Xboard</term>-Protokoll unterst
 Bei Winboard-Engines sendet Scid beim Programmstart die Befehle <b>xboard</b>, <b>post</b> und
 <b>protover 2</b> zur Engine, und nutzt die Befehle <b>setboard</b>
 und <b>analyze</b> zur effizienteren Kommunikation, wenn die Engine in
-ihrer Antwort anzeigt, daß sie diese unterstützt.
+ihrer Antwort anzeigt, dass sie diese unterstützt.
 Wenn die Engine den Befehl <b>setboard</b> nicht unterstützt, wird sie
 für Partien, die nicht mit der Standard-Ausgangsstellung beginnen, keine
 Analysen liefern können.
@@ -3418,7 +3370,7 @@ kann bis zu 200 Spieler und 20 Runden ausgeben. Die Standardeinstellung
 ist <b>Automatisch</b>, was für jedes Turnier das beste Format auswählt.
 </p>
 <p>
-Beachten Sie, daß Scid den <b>Runden</b>-Eintrag jeder Partie verwendet,
+Beachten Sie, dass Scid den <b>Runden</b>-Eintrag jeder Partie verwendet,
 um eine Turniertabelle nach Schweizer System zu erstellen, Sie werden daher
 keine Partien in der Schweizer-System-Tabelle sehen, wenn sie keine
 numerischen Runden-Angaben haben:  1, 2, 3, etc.
@@ -3575,7 +3527,7 @@ nachsehen will.
 <p>
 Die rechte Maustaste produziert ein Menü für die ausgewählte Partie,
 in dem Sie die Partie löschen (oder "entlöschen") oder aus dem Filter
-ausschließen können. Beachten Sie, daß das Löschen einer Datei lediglich
+ausschließen können. Beachten Sie, dass das Löschen einer Datei lediglich
 ihre Löschmarkierung setzt; sie verbleibt solange in der Datenbank,
 bis Sie diese <a Compact>komprimieren</a>.
 </p>
@@ -3599,7 +3551,7 @@ Maustaste, wird sie breiter.
 <p>
 Die Größe der Partieliste wird jedesmal in der Optionsdatei gespeichert,
 wenn Sie Ihre Einstellungen sichern.
-Wenn Sie also wollen, daß die Dateiliste standardmäßig 10 Partien anzeigt,
+Wenn Sie also wollen, dass die Dateiliste standardmäßig 10 Partien anzeigt,
 verändern Sie einfach die Größe des Partielistenfensters und wählen
 dann <b>Optionen speichern</b> im <menu>Optionen</menu>-Menü.
 </p>
@@ -3705,7 +3657,7 @@ kann zwei Berichtstypen erstellen: Eröffnungsberichte und Spielerberichte.
 <p>
 Scid kann einen <term>Eröffnungsbericht</term> erstellen, der interessante
 Informationen über die aktuelle Eröffnungsposition ausgibt. Um den
-Eröffnungsbericht zu erstellen, vergewissern Sie sich als erstes, daß die
+Eröffnungsbericht zu erstellen, vergewissern Sie sich als erstes, dass die
 dargestellte Position auch die ist, für die Sie den Bericht haben wollen,
 dann wählen Sie <b>Eröffnungsbericht</b> im Menü <menu>Werkzeuge</menu>.
 </p>
@@ -3729,7 +3681,7 @@ die ersten 20 Züge (also die ersten 40 Positionen ab Ausgangsstellung)
 jeder Partie untersucht. Um als eine Partie eingestuft zu werden, die
 ein bestimmtes Thema enthält, muß dieses Thema mindestens viermal
 innerhalb der ersten 20 Züge der Partie vorkommen. Damit wird vermieden,
-daß durch kurzzeitiges Auftreten eines Themas (wie etwa ein isolierter
+dass durch kurzzeitiges Auftreten eines Themas (wie etwa ein isolierter
 Damenbauer, der sofort geschlagen wird) die Ergebnisse verfälscht werden.
 </p>
 <p>
@@ -3741,14 +3693,14 @@ den gesamten Bericht sichern wollen.
 <p>
 Fast alle Abschnitte des Berichts können mit den Eröffnungsberichts-Optionen
 eingestellt oder ein- und ausgeschaltet werden, Sie können also den
-Bericht so anpassen, daß er nur die für Sie interesanten Informationen
+Bericht so anpassen, dass er nur die für Sie interesanten Informationen
 enthält.
 </p>
 <p>
 Bei den meisten Informationen im Berichtsfenster, die farbig dargestellt
 sind, führt ein linker Mausklick zu einer Aktion. Zum Beispiel können Sie
 eine angeführte Partie durch Anklicken laden oder den Filter durch
-Klicken auf ein Positionsthema so einstellen, daß er nur die
+Klicken auf ein Positionsthema so einstellen, dass er nur die
 Berichtspartien mit diesem Thema enthält.
 </p>
 
@@ -3880,7 +3832,7 @@ des aktuellen Filters nachzuvollziehen und ein Bewegungsmuster (eine
 Figur besetzt wurde.
 </p>
 <p>
-Um die Figurenverteilung zu benutzen, vergewissern Sie sich zuerst, daß
+Um die Figurenverteilung zu benutzen, vergewissern Sie sich zuerst, dass
 der Filter die Partien enthält, die Sie interessieren, z.B. Partien mit
 einer bestimmten Eröffnungsposition oder alle Weiß-Partien eines
 bestimmten Spielers. Dann wählen Sie die Figur, deren Bewegung Sie
@@ -3935,7 +3887,7 @@ Figuren nachvollziehen, können Sie Entwicklungen in der aktuellen
 Eröffnung erkennen, beispielsweise übliche Bauernvorstöße,
 Springervorposten und die häufigsten Läuferplazierungen. Dabei ist es
 hilfreich, den Zugbereich nach dem aktuellen Partiezug beginnen zu
-lassen, so daß die Züge, die zur aktuellen Stellung führten, nicht in
+lassen, so dass die Züge, die zur aktuellen Stellung führten, nicht in
 die Statistik einfließen.
 </p>
 <p>
@@ -4023,142 +3975,11 @@ sehen, wenn Sie die Taste <a Graphs Rating>ELO-Zahl-Verlauf</a> anklicken.
 </p>
 <p>
 Jede rot dargestellte Zahl können Sie mit der linken Maustaste anklicken,
-um den <a Searches Filter>Filter</a> so einzustellen, daß er die
+um den <a Searches Filter>Filter</a> so einzustellen, dass er die
 entsprechenden Partien enthält.
 </p>
 
 <p><footer>(Aktualisiert: Scid 4.7, November 2018)</footer></p>
-}
-
-
-###########################
-### Repertoire editor help:
-
-set helpTitle(D,Repertoire) "Repertoire-Editor"
-set helpText(D,Repertoire) {<h1>Der Repertoire-Editor</h1>
-<p>
-Mit dem Repertoire-Editor können Sie <term>Repertoire</term>-Dateien
-erstellen, lesen oder bearbeiten. Eine Repertoiredatei ist eine Liste
-der Eröffnungspositionen, die Sie erreichen wollen oder zu vermeiden
-suchen; Sie können sie zur Organisation Ihrer Eröffnungspräferenzen
-und zur Datenbanksuche in Scid verwenden.
-</p>
-
-<h3>Repertoire-Gruppen und -Varianten</h3>
-<p>
-Ein Repertoire enthält zwei Elementtypen: <term>Gruppen</term> und
-<term>Varianten</term>. Gruppen sind nicht tatsächlich Teil Ihres
-Repertoires; sie werden nur zur Strukturierung verwendet, so wie
-Verzeichnisse Dateien auf einem Datenträger strukturieren.
-</p>
-<p>
-In einem Repertoire gibt es in zwei Arten von Varianten:
-<term>eingeschlossene</term> Varianten repräsentieren Eröffnungspositionen,
-an denen Sie interessiert sind und die Sie erreichen wollen, und
-<term>ausgeschlossene</term> Varianten, die Sie nicht spielen wollen
-und zu vermeiden suchen.
-Wenn Sie z.B. Angenommenes Damengambit (1.d4 d5 2.c4 dxc4) mit Schwarz
-spielen und nach 3.e4 alle Züge <i>außer </i> 3...Sf6 spielen, hätten
-Sie 1.d4 d5 2.c4 dxc4 3.e4 als eingeschlossene Variante und 1.d4 d5 2.c4
-dxc4 3.e4 Sf6 als ausgeschlossene Variante.
-</p>
-
-<h3>Kommentare und Anmerkungen</h3>
-<p>
-Jede Gruppe oder Variante kann Kommentare enthalten. Es gibt zwei Typen:
-kurze (einzeilige) Kommentare erscheinen (in Rot) in der
-Repertoire-Hierarchie neben den Zügen der Gruppe oder Variante, während
-ein langer (mehrzeiliger) Kommentar nur angezeigt wird, wenn die Gruppe
-oder Variante ausgewählt wird.
-</p>
-
-<h3>Das Fenster des Repertoire-Editors</h3>
-<p>
-Die <b>linke</b> Seite des Fensters zeigt die Repertoire-Hierarchie.
-Sie können die Gruppendarstellung mit einem Klick auf den Ordner auf-
-bzw. zuklappen, und mit einem Klick auf die Züge der Gruppen oder
-Varianten wählen Sie diese aus und sehen ihre Kommentare.
-Eingeschlossene Varianten werden mit einem blauen Haken angezeigt,
-ausgeschlossene Varianten haben ein rotes Kreuz.
-</p>
-<p>
-Wenn eine Variante oder Gruppe einen Kurzkommentar hat, wird er hinter
-den Zügen angezeigt. Wenn sie einen langen Kommentar hat, wird dies mit
-<b><red>**</red></b> nach den Zügen angezeigt. Bei den Gruppen steht
-nach den Zügen eine Zahl in Klammern, die die Anzahl der (ein- und
-ausgeschlossenen) Varianten anzeigt, die sie jeweils enthalten.
-</p>
-<p>
-Nach einem Rechtsklick auf eine Gruppe oder Variante erscheint ein Menü
-mit den verfügbaren Funktionen wie Löschen oder Statusänderung.
-</p>
-<p>
-Die <b>rechte</b> Seite des Fensters besteht aus drei Bereichen. Der
-erste enthält die Züge der gerade ausgewählten Variante oder Gruppe. Sie
-können ihn mit der linken Maustaste anklicken, womit Sie die Züge in das
-<a Import>Import</a>-Fenster einfügen, was recht nützlich ist, um die
-aktuelle Partie mit einer Variante des Repertoires beginnen zu lassen.
-Der zweite Bereich enthält den Kurzkommentar der Variante oder Gruppe,
-der dritte Bereich ihren langen Kommentar.
-</p>
-
-<h3>Gruppen und Varianten dem Repertoire hinzufügen</h3>
-<p>
-Um eine Variante oder Gruppe hinzuzufügen, führen Sie einfach ihre Züge
-auf dem Schachbrett im Hauptfenster aus, wählen dann das Menü
-<menu>Bearbeiten</menu> im Repertoire-Editor und fügen sie als Gruppe,
-eingeschlossene Variante oder ausgeschlossene Variante hinzu.
-</p>
-<p>
-Um eine Gruppe oder Variante zu löschen, klicken Sie sie mit der rechten
-Maustaste an und wählen im erschienenen Menü das entsprechende Kommando.
-</p>
-
-<h3><name Search>Datenbanksuche mit Repertoire-Dateien</name></h3>
-<p>
-Das Menü <menu>Suchen</menu> des Repertoire-Editors ermöglicht es Ihnen,
-mit dem Repertoire in der aktuellen Datenbank zu suchen. Jede Partie
-wird mit den Positionen im Repertoire verglichen und nur dann erkannt,
-wenn die <i>weitestverzweigte</i> Repertoire-Position für eine
-<i>eingeschlossene</i> Variante gefunden wurde.
-</p>
-<p>
-Sie können wählen, ob Sie nach dem gesamten Repertoire oder nur nach den
-ausgegebenen Varianten suchen wollen. Die Suche nach den ausgegebenen
-Varianten ist nur dann sinnvoll, wenn Sie nur nach einigen Varianten
-des Repertoires suchen. Beispiel: Ein Repertoire habe zwei Hauptgruppen
-auf der obersten Ebene, eine für 1.e4 und eine für 1.d4. Wenn Sie nur
-an den e4-Varianten interessiert sind, klappen Sie einfach die Gruppe
-1.d4 zu und suchen dann nur nach den ausgegebenen Varianten.
-</p>
-
-<h3>Weitere Hinweise</h3>
-<p>
-Eine Repertoire-Datei eignet sich sehr gut zum Finden neuer Partien in
-Ihrem Eröffnungssystem. Beispiel: Jedesmal, wenn Sie eine PGN-Datei
-erhalten und sie Ihrer Haupt-Datenbank hinzufügen (wie etwa
-die ausgezeichneten wöchentlichen PGN-Dateien von
-<url http://www.chesscenter.com/twic/>The Week In Chess</url>),
-öffnen Sie einfach die PGN-Datei in Scid und führen eine Repertoire-Suche
-durch. Dann können Sie die gefilterten Partien betrachten und haben
-alle Partien, die in Ihrem Repertoire enthalten sind.
-</p>
-<p>
-Sie sollten vielleicht zwei Repertoire-Dateien anlegen: eine für Schwarz
-und eine für Weiß, so daß Sie mit jeder Datei getrennt suchen können.
-</p>
-<p>
-Eine Repertoire-Datei kann von der Kommanozeile aus geöffnet werden,
-zum Beispiel:<br>
-<b>scid datenbank weiss.sor</b>
-</p>
-<p>
-Sie können eine Repertoire-Datei (.sor) mit jedem Editor bearbeiten,
-aber passen Sie auf, daß Sie nicht ihr Format verändern, sonst kann
-sie von Scid nicht geladen oder gesucht werden.
-</p>
-
-<p><footer>(Aktualisiert: Scid 2.6, August 2001)</footer></p>
 }
 
 
@@ -4169,7 +3990,7 @@ set helpTitle(D,Tmt) "Turniersuche"
 set helpText(D,Tmt) {<h1>Die Turniersuche</h1>
 <p>
 Die <term>Turniersuche</term> ermöglicht es, Turniere in der
-aktuellen Datenbank zu finden. Es wird angenommen, daß
+aktuellen Datenbank zu finden. Es wird angenommen, dass
 zwei Partien zum selben Turnier gehören, wenn sie denselben Turnier-
 und Ortseintrag haben und innerhalb von drei Monaten gespielt wurden.
 </p>
@@ -4348,7 +4169,7 @@ aktueller Partie füllen</term> bzw. <term>Mit Datenbank Füllen</term>
 Scid nutzt für die am häufigsten vorkommenden Positionen einen
 Cachespeicher für die Ergebnisse der Zugbaumsuche. Wenn Sie sich im
 Zugbaum-Modus in einer Partie vorwärts und rückwärts bewegen, werden
-Sie bemerken, daß das Zugbaumfenster praktisch sofort aktualisiert
+Sie bemerken, dass das Zugbaumfenster praktisch sofort aktualisiert
 wird, wenn die gesuchte Stellung im Cachespeicher ist.
 </p>
 <p>
@@ -4377,7 +4198,7 @@ zu erreichen aber trotzdem ein genaues ergenbis zu erziehlen dient die
 Option <term>Schneller und Gründlicher Modus</term>
 </p>
 <p>
-Beachten Sie, daß eine Zugbaum-Cache-Datei (.stc) völlig redundant ist;
+Beachten Sie, dass eine Zugbaum-Cache-Datei (.stc) völlig redundant ist;
 Sie können sie ohne Auswirkungen auf die Datenbank löschen, und
 tatsächlich wird sie jedesmal von Scid gelöscht, wenn sie nach
 irgendeiner Aktion veraltet sein könnte -- zum Beispiel nach Hinzufügen
@@ -4429,7 +4250,7 @@ Wenn die Filtergrafik nach Elo-Zahl ausgegeben wird, verwendet Scid
 für jede Partie die durchschnittliche (mittlere) Wertung. Geschätzte
 Elo-Zahlen (wie z.B. aus der Schreibkorrekturdatei) werden nicht verwendet.
 Falls in einer Partie nur einer der beiden Spieler eine Elo-Zahl hat,
-wird angenommen, daß der Gegner die gleiche Elo-Zahl besitzt bis zu
+wird angenommen, dass der Gegner die gleiche Elo-Zahl besitzt bis zu
 einer Höchstgrenze von 2200. Wenn also beispielsweise ein Spieler eine
 Elo-Zahl von 2500 hat und sein Gegner keine Elo-Zahl, ist die mittlere
 Wertungszahl (2500+2200)/2 = 2350.
@@ -4488,144 +4309,6 @@ aktuellen Position. Weitere Informationen finden Sie auf der
 }
 
 
-####################
-### Tablebases help:
-
-set helpTitle(D,TB) "Endspieltabellen"
-set helpText(D,TB) {<h1>Endspieltabellen</h1>
-
-<p>
-Eine <term>Endspieltabelle</term> ist eine Datei, die die vollständige
-Ergebnisinformation über alle Positionen einer bestimmten
-Materialkonstellation enthält, wie z.B. König und Turm gegen König und
-Bauer. Es gibt Endspieltabellen für alle Materialkonstellation mit bis
-zu 5 Steinen (inkl. Könige), und einige einfache 6-Steine-Tabellen
-sind ebenfalls verfügbar.
-</p>
-<p>
-Scid kann Endspieltabellen im Nalimov-Format verwenden, die von vielen
-modernen Schachprogrammen genutzt werden. Sie haben oftmals die
-Dateiendung <b>.nbw.emd</b>  oder <b>.nbb.emd</b>.
-</p>
-
-<h3>Endspieltabellen in Scid verwenden</h3>
-<p>
-Um die Endspieltabellendateien in Scid zu verwenden, bestimmen Sie
-einfach ihre Verzeichnisse mit <b>Endspieltabellen-Verzeichnis...</b>
-im <menu>Optionen</menu>-Menü. Sie können bis zu 4 Verzeichnisse
-angeben, wo Ihre Endspieltabellendateien gespeichert sind. Mit dem
-Schalter <b>...</b> rechts nebem dem Datei-Eingabefeld können Sie
-eine Datei suchen, deren Verzeichnis verwendet werden soll.
-</p>
-<p>
-Wenn eine in der Endspieltabelle gefundene Stellung erreicht wurde, zeigt
-der Informationsbereich (unterhalb des Schachbretts)
-Endspieltabellen-Informationen an. Sie können den Umfang der angezeigten
-Information konfigurieren, indem Sie mit der rechten Maustaste diesen
-Bereich anklicken oder im <menu>Optionen</menu>-Menü den Menüpunkt
-<b>Partieinformation</b> wählen. Die Option "Ergebnis und bester Zug"
-liefert die nützlichste Information, ist aber oftmals sehr viel
-langsamer als die Option "nur Ergebnis".
-</p>
-
-<h3>Das Endspieltabellenfenster</h3>
-<p>
-Sie können sogar noch mehr Endspieltabellen-Informationen zur aktuellen
-Position erhalten, indem Sie das <term>Endspieltabellenfenster</term>
-öffnen (<menu>Fenster</menu>-Menü, Tastenkombination Strg+Umschalt+[=]).
-Dieses Fenster zeigt das Ergebnis jedes zulässigen Zuges in der aktuellen
-Stellung bei perfektem Spiel.
-</p>
-<p>
-Das Fenster enthält zwei Bereiche. Der Übersichtsbereich (links) zeigt
-die Endspieltabellen, die Scid auf Ihrem Rechner gefunden hat, mit einer
-Inhaltsangabe jeder Tabelle. Der Ergebnisbereich (rechts) zeigt die
-optimalen Ergebnisse aller Züge in der aktuellen, im Haupfenster
-dargestellten Position.
-</p>
-
-<h4>Der Übersichtsbereich</h4>
-<p>
-Im oberen Teil des Übersichtsbereichs können Sie eine bestimmte
-Endspieltabelle auswählen. Die verfügbaren Tabellen werden blau
-angezeigt, die übrigen grau, aber Sie können jede Tabelle auswählen.
-Der untere Teil des Übersichtsbereichs zeigt eine Inhaltsangabe
-der Informationen der ausgewählten Endspieltabelle. (Noch haben nicht
-alle Endspieltabellen einen entsprechenden Datensatz in Scid.)
-</p>
-<p>
-Diese Inhaltsangabe enthält die Häufigkeit (wie viele Partien von
-einer Million haben eine Stellung mit diesem Material erreicht,
-errechnet anhand einer Datenbank mit über 600.000 Meisterpartien),
-das späteste Matt einer Seite sowie Anzahl wechselseitiger ("umgekehrter")
-Zugzwangpositionen. Eine wechselseitige Zugzwangposition liegt dann vor,
-wenn Weiß am Zug zum Remis führt und Schwarz am Zug verliert, wenn
-Weiß am Zug verliert und Schwarz am Zug Remis ergibt oder wenn derjenige
-am Zug verliert.
-</p>
-<p>
-Bei einigen Tabellen mit wechselseitigem Zugzwang enthält die Übersicht
-eine Liste aller Zugzwangpositionen oder eine Auswahl davon. Eine
-vollständige Liste für jede Endspieltabelle ist nicht machbar, da einige
-Tabellen tausende von Zugzwangstellungen enthalten.
-</p>
-<p>
-Mit dem Schalter <b>Random</b> können Sie eine zufällige Position aus
-der ausgewählten Endspieltabelle aufbauen.
-</p>
-
-<h4>Der Ergebnisbereich</h4>
-<p>
-Der Ergebnisbereich wird immer dann aktualisiert, wenn sich die
-Brettstellung im Hauptfenster ändert. Die erste Zeile zeigt an, wie viele
-Züge gewinnen (+), zum Remis führen (=), verlieren (-) oder ein nicht
-bekanntes Ergebnis (?) haben. Der übrige Teil liefert Ihnen eine
-detailliertere Ergebnisliste, mit der Reihenfolge kürzeste bis längste
-Matts, danach Remis, dann längste bis kürzeste Verluste. Länge jeweils
-bis zum Matt.
-</p>
-
-<h4>Das Ergebnisbrett</h4>
-<p>
-In einer Endspieltabellenstellung ist es oft nützlich zu wissen,
-wie die Ergebnisse aussähen, wenn alle Steine in ihrer gegenwärtigen
-blieben, aber ein bestimmter Stein woanders stünde. Zum Beispiel
-wenn Sie feststellen möchten, wie nah ein König einem Freibauern sein
-muß, um eine bestimmte Stellung zu gewinnen oder Remis zu machen.
-In Endspielbüchern wird diese Information oft die <i>Gewinnzone</i>
-bzw. <i>Remiszone</i> eines Steins in einer bestimmten Stellung
-genannt.
-</p>
-<p>
-Mit Hilfe von Scid können Sie diese Information erhalten, wenn Sie
-den Schalter mit dem Schachbrett anklicken, um das
-<term>Ergebnisbrett</term> im Endspieltabellenfenster zu zeigen.
-Wenn Sie mit der linken Maustaste irgendeinen Stein auf dem Brett
-anklicken, erscheint auf jedem freien Feld ein Symbol mit dem Resultat
-der Endspieltabelle, wenn der Stein auf diesem Feld stünde (mit derselben
-Seite am Zug wie in der aktuellen Position des Hauptfensters).
-</p>
-<p>
-Ein Feld kann fünf mögliche Symbole haben:
-ein weißes "<b>#</b>" bedeutet, Weiß gewinnt;
-ein schwarzes "<b>#</b>" bedeutet, Schwarz gewinnt;
-ein blaues "<b>=</b>" bedeutet, die Stellung ist remis;
-ein rotes "<b>X</b>" bedeutet, die Position ist illegal (weil die Könige
-nebeneinander stehen oder die Seite am Zug Schach bietet); und
-ein rotes "<b>?</b>" heißt, das Result ist unbekannt, weil die nötige
-Endspieltabellendatei nicht zur Verfügung steht.
-</p>
-
-<h3>Endspieltabellen-Quellen</h3>
-<p>
-Zur Hilfe beim Auffinden von Endspieltabellendateien im Internet
-siehe die entsprechenden <a Author Related>Links</a>.
-</p>
-
-<p><footer>(Aktualisiert: Scid 3.4, September 2002)</footer></p>
-}
-
-
 ###################
 ### Bookmarks help:
 
@@ -4653,7 +4336,7 @@ passiert, durchsucht Scid die Datenbank nach der passendsten Partie
 (vergleicht Spielernamen, Ort etc.), wenn das Lesezeichen ausgewählt
 wird, die markierte Datei sollte also immer noch geladen werden. Wenn
 sich allerdings Daten der markierten Partie ändern, ist es möglich,
-daß eine andere Partie besser auf die Lesezeichendaten paßt und statt
+dass eine andere Partie besser auf die Lesezeichendaten paßt und statt
 dessen geladen wird. Es ist also eine gute Idee, eine Partie erneut zu
 markieren, wenn Sie ihre Spieler-, Orts-, Ergebnis-, Runden- oder
 Jahresdaten bearbeiten.
@@ -4702,18 +4385,16 @@ PGN-Datei "partien.pgn".
 </p>
 <p>
 Außerdem gibt es optionale Argumente, die kontrollieren, welche Dateien
-Scid suchen und beim Start verwenden soll. Sie können die Benutzung
-von <a TB>Endspieltabellen</a>  mit der Option <b>-xtb</b> (oder
-<b>-xt</b>) ausschalten, das Laden der Datei zur
+Scid suchen und beim Start verwenden soll. Sie können das Laden der Datei zur
 <a ECO>ECO-Eröffnungsklassifikation</a> mit <b>-xeco</b> oder
 <b>-xe</b> verhindern und mit <b>-xspell</b> oder <b>-xs</b> vermeiden,
-daß die Datei zur <a Maintenance Spellcheck>Schreibkorrektur</a>
+dass die Datei zur <a Maintenance Spellcheck>Schreibkorrektur</a>
 geladen wird. Die Option <b>-fast</b> oder <b>-f</b> bewirkt das in
 einem, d.h. <b>scid -f</b> ist äquivalent zu
 <b>scid -xeco -xspell -xtb</b>.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.1, November 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 5.0.2, August 2023)</footer></p>
 }
 
 
@@ -4733,7 +4414,7 @@ Es gibt zwei Arten: Namens- und Partiendatenbank-Komprimierung.
 
 <h3>Namendatenbank-Komprimierung</h3>
 <p>
-Nach einer gewissen Zeit werden Sie evtl. feststellen, daß die Datenbank
+Nach einer gewissen Zeit werden Sie evtl. feststellen, dass die Datenbank
 eine Reihe von Spieler-, Turnier- oder Rundennamen enthält, die in keiner
 Partie mehr verwendet werden. Das wird regelmäßig nach Namenskorrekturen
 der Fall sein. Die unbenutzten Namen verschwenden Speicherplatz in der
@@ -4748,7 +4429,7 @@ Immer, wenn eine Partie ersetzt oder gelöscht wird, verbleibt
 ungenutzter Platz in der Partiendatei (die größte der drei Dateien
 einer Scid-Datenbank). Partiendatenbank-Komprimierung löscht jeden
 ungenutzten Speicher, keine gelöschte Datei bleibt in der Datenbank.
-Beachten Sie, daß diese Operation unumkehrbar ist: nach der
+Beachten Sie, dass diese Operation unumkehrbar ist: nach der
 Komprimierung sind die gelöschten Dateien für immer verschwunden!
 </p>
 <p>
@@ -4813,7 +4494,7 @@ haben. Der Filter wird dann alle gelöschten Partien enthalten. Sie können
 sie mit dem <term>Dublettenprüfer</term> (erreichbar aus dem
 Wartungsmenü oder mit der Tastenkombination <b>Strg+Umsch+T</b>)
 betrachten (blättern mit den Tasten <b>p</b> und <b>n</b>), um zu
-verifizieren, daß jede Partie deshalb gelöscht wurde, weil sie
+verifizieren, dass jede Partie deshalb gelöscht wurde, weil sie
 tatsächlich die Dublette einer anderen Partie ist.
 </p>
 
@@ -4918,7 +4599,7 @@ set helpText(D,ECO) {<h1>ECO-Eröffnungsklassifikation</h1>
 Scid kann Schachpartien gemäß der <b>ECO</b>- (Enzyklopädie der
 Schacheröffnungen) -Eröffnungsklassifikation einordnen. Ein
 Standard-ECO-Code besteht aus einem Buchstaben (A..E) gefolgt von
-zwei Ziffern, so daß es 500 verschiedene Standard-ECO-Codes gibt.
+zwei Ziffern, so dass es 500 verschiedene Standard-ECO-Codes gibt.
 </p>
 
 <h3>Scids Erweiterung des ECO-Systems</h3>
@@ -5125,7 +4806,7 @@ Standard-EPD-Opcodes sind u.a.:
 eingestufte Züge.</li>
 <li> <b>ce</b> Stellungsbeurteilung: Beurteilung in Hundertstel Bauern
 [ce = "centipawn evaluation"] aus Sicht der <b>am Zug</b>
-befindlichen Seite -- beachten Sie, daß sich dies vom Analysefenster
+befindlichen Seite -- beachten Sie, dass sich dies vom Analysefenster
 unterscheidet, welches die Einschätzung in Bauerneinheiten aus der
 Sicht von Weiß zeigt. </li>
 <li> <b>cX</b> Kommentar (wobei <b>X</b> eine Ziffer ist, 0-9).</li>
@@ -5380,7 +5061,7 @@ Unix-Betriebssystemen (wie Solaris oder Linux) ist die Datei
 
 <h3><name MyPlayerNames>Ihre Spielernamen festlegen</name></h3>
 <p>
-Es kann sein, daß Sie für einen (oder mehrere) Spieler das Brett im
+Es kann sein, dass Sie für einen (oder mehrere) Spieler das Brett im
 Haupfenster aus der Sicht dieses Spielers aufgestellt haben möchten,
 wenn eine seiner Partien geladen wird. Sie können eine Liste solcher
 Namen mit <b>Meine Spielernamen...</b> im Menü <menu>Optionen/Schachbrett</menu>
@@ -5428,7 +5109,7 @@ Fehlermeldungen oder Warnungen werden in die Datei <i>partien.err</i>
 geschrieben.
 </p>
 <p>
-Wenn Sie wollen, daß die Datenbank in einem anderen Verzeichnis oder
+Wenn Sie wollen, dass die Datenbank in einem anderen Verzeichnis oder
 mit einem anderen Namen erstellt wird, können Sie den Datenbanknamen
 in der Kommandozeile mit angeben, zum Beispiel erstellt
 <ul>
@@ -5438,7 +5119,7 @@ eine Datenbank bestehend aus den Dateien <i>datenbank.si3</i>,
 <i>datenbank.sg3</i> und <i>datenbank.sn3</i>.
 </p>
 <p>
-Beachten Sie, daß pgnscid (und auch scid) mit gzip komprimierte
+Beachten Sie, dass pgnscid (und auch scid) mit gzip komprimierte
 PGN-Dateien (z.B. <b>datenbank.pgn.gz</b>) direkt lesen kann, wenn Sie
 also eine große PGN-Datei mit gzip komprimiert haben, um Speicherplatz
 zu sparen, müssen Sie sie nicht zuerst dekomprimieren.
@@ -5470,7 +5151,7 @@ durchgeführt. Zum Beispiel wird die Anzahl der Leerzeichen nach einem
 Komma auf eins gesetzt, Leerzeichen am Anfang oder Ende eines Namens
 werden ebenso wie ein Punkt am Namensende entfernt.
 Holländische Namenszusätze wie "van den" und "Van Der" werden ebenfalls
-normalisiert, so daß sie ein großes "V" und kleines "d" haben.
+normalisiert, so dass sie ein großes "V" und kleines "d" haben.
 </p>
 <p>
 Sie können Spieler-, Turnier-, Orts- und Rundenbezeichnungen in Scid
@@ -5516,7 +5197,7 @@ Die verfügbaren Sortierkriterien sind:
 <h3>Sortierergebnis</h3>
 <p>
 Wenn Sie eine nicht schreibgeschützte Scid-Datenbank sortieren, wird das
-Sortierergebnis gesichert, so daß die Reihenfolge der Datenbankpartien
+Sortierergebnis gesichert, so dass die Reihenfolge der Datenbankpartien
 dauerhaft geändert ist. Falls Sie nur eine temporäre Sortierung wollen,
 schützen Sie die Datenbank zuerst gegen Überschreiben mit dem Menüpunkt
 <menu>Datei: Schreibschutz</menu>.
@@ -5524,11 +5205,11 @@ schützen Sie die Datenbank zuerst gegen Überschreiben mit dem Menüpunkt
 <p>
 Wenn Sie eine Datenbank sortieren, die schreibgeschützt ist oder aus
 einer PGN-Datei besteht, kann das Sortierergebnis nicht gesichert werden,
-so daß die sortierte Partiereihenfolge verloren geht, wenn die Datei
+so dass die sortierte Partiereihenfolge verloren geht, wenn die Datei
 geschlossen wird.
 </p>
 <p>
-Beachten Sie, daß das Sortieren einer Datenbank den
+Beachten Sie, dass das Sortieren einer Datenbank den
 <a Searches Filter>Suchfilter</a> zurücksetzt auf alle Partien.
 </p>
 
@@ -5796,7 +5477,7 @@ nur ein Byte.
 </p>
 <p>
 Wenn eine Partie ersetzt wird, wird ihre neue Version am <i>Ende</i>
-der Datei gespeichert, so daß sich über die Zeit nicht genutzter
+der Datei gespeichert, so dass sich über die Zeit nicht genutzter
 Speicherplatz ansammelt. Sie können durch <a Compact>Komprimieren</a>
 die minimale Größe einer Datenbank wiederherstellen.
 </p>
@@ -6042,7 +5723,7 @@ set tips(D) {
     Mit dem Fenster <a PInfo>Spielerinformation</a> (um es zu öffnen,
     klicken Sie einfach auf einen Spielernamen im Informationsbereich
     unter dem Hauptfenster-Schachbrett) können Sie auf einfache Weise
-    den <a Searches Filter>Filter</a> so einstellen, daß er alle Partien
+    den <a Searches Filter>Filter</a> so einstellen, dass er alle Partien
     eines bestimmten Spielers mit einem bestimmten Ergebnis enthält,
     indem Sie auf irgendeinen <red>in Rot</red> dargestellten Wert
     klicken.
@@ -6072,7 +5753,7 @@ set tips(D) {
     sortiert haben, erwägen Sie ein <a Sorting>Sortieren</a> nach
     Turnierdatum und Turnier anstatt nach Datum und Turnier, da
     Ihnen das hilft, Partien desselben Turniers mit unterschiedlichen
-    Daten zusammen zu halten (natürlich unter der Voraussetzung, daß
+    Daten zusammen zu halten (natürlich unter der Voraussetzung, dass
     sie alle dasselbe Turnierdatum haben).
   }
   {

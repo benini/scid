@@ -168,7 +168,6 @@ menuText G WindowsECO "Φυλλομετρητής ECO" 0 {Άνοιγμα/κλε�
 menuText G WindowsStats "Παράθυρο στατιστικών" 0 \
   {Άνοιγμα/κλείσιμο του παραθύρου φιλτραρίσματος στατιστικών}
 menuText G WindowsTree "Παράθυρο δένδρου" 0 {Άνοιγμα/κλείσιμο του παραθύρου δένδρου}
-menuText G WindowsTB "Παράθυρο βάσης δεδομένων φινάλε" 1 {Άνοιγμα/κλείσιμο του παραθύρου βάσης δεδομένων φινάλε}
 menuText G WindowsBook "Παράθυρο βιβλίου" 0 {Άνοιγμα/κλείσιμο του παραθύρου του βιβλίου}
 menuText G WindowsCorrChess "Παράθυρο αλληλογραφίας" 0 {Άνοιγμα/κλείσιμο του παραθύρου αλληλογραφίας}
 
@@ -461,37 +460,11 @@ translate G PInfoEloFile {File}
 
 # Tablebase information:
 translate G Draw {Ισοπαλία}
-translate G stalemate {πατ}
-translate G withAllMoves {με όλες τις κινήσεις}
-translate G withAllButOneMove {με όλες τις κινήσεις εκτός μιας}
 translate G with {με}
 translate G only {μόνο}
 translate G lose {απώλεια}
 translate G loses {χάνει}
-translate G allOthersLose {όλες οι άλλες χάνουν}
-translate G matesIn {ματ σε}
-translate G hasCheckmated {έκανε ματ}
-translate G longest {μεγαλύτερη}
-translate G WinningMoves {Κινήσεις που κερδίζουν}
-translate G DrawingMoves {Κινήσεις που οδηγούν σε ισοπαλία}
-translate G LosingMoves {Κινήσεις που χάνουν}
-translate G UnknownMoves {Κινήσεις αγνώστου αποτελέσματος}
 # ====== TODO To be translated ======
-translate G SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate G toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate G NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate G MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate G SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate G WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate G BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate G AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate G Tip {Συμβουλή}

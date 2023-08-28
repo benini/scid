@@ -141,8 +141,6 @@ menuText Y WindowsECO "E©O prikazivaè" 0 {Otvori/zatvori E©O prikazivaè}
 menuText Y WindowsStats "Statistièki prozor" 0 \
   {Otvori/zatvori prozor statistika filtera}
 menuText Y WindowsTree "Stablo varijanata" 0 {Otvori/zatvori stablo varijanata}
-menuText Y WindowsTB "Tabela zavr¹nica" 1 \
-  {Otvori/zatvori tabelu zavr¹nica}
 # ====== TODO To be translated ======
 menuText Y WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======
@@ -480,37 +478,11 @@ translate Y PInfoEloFile {File}
 
 # Tablebase information:
 translate Y Draw {Remi}
-translate Y stalemate {pat}
-translate Y withAllMoves {sa svim potezima}
-translate Y withAllButOneMove {sa svim osim jednog poteza}
 translate Y with {sa}
 translate Y only {samo}
 translate Y lose {gubi}
 translate Y loses {gubi}
-translate Y allOthersLose {svi ostali gube}
-translate Y matesIn {matira u}
-translate Y hasCheckmated {je matirao}
-translate Y longest {najdu¾i}
-translate Y WinningMoves {Winning moves} ;# ***
-translate Y DrawingMoves {Drawing moves} ;# ***
-translate Y LosingMoves {Losing moves} ;# ***
-translate Y UnknownMoves {Unknown-result moves} ;# ***
 # ====== TODO To be translated ======
-translate Y SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate Y toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate Y NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate Y MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate Y SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate Y WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate Y BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate Y AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate Y Tip {Tip} ;# ***

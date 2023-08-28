@@ -147,8 +147,6 @@ menuText P WindowsECO "Przegl±darka kodów debiutowych" 0 \
 menuText P WindowsStats "Statystyka" 0 \
   {Otwórz/zamknij statystykê}
 menuText P WindowsTree "Drzewo wariantów" 0 {Otwórz/zamknij drzewo wariantów}
-menuText P WindowsTB "Tablica koñcówek" 8 \
-  {Otwórz/zamknij okno tablicy koñcówek}
 # ====== TODO To be translated ======
 menuText P WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======
@@ -486,37 +484,11 @@ translate P PInfoEloFile {File}
 
 # Tablebase information:
 translate P Draw {remis}
-translate P stalemate {pat}
-translate P withAllMoves {po dowolnym posuniêciu}
-translate P withAllButOneMove {po dowolnym posuniêciu oprócz}
 translate P with {po}
 translate P only {tylko}
 translate P lose {przegrywaj±}
 translate P loses {przegrywa}
-translate P allOthersLose {inne posuniêcia przegrywaj±}
-translate P matesIn {matuj± w}
-translate P hasCheckmated {matuj±}
-translate P longest {najlepsze}
-translate P WinningMoves {Wygrywaj±ce posuniêcia}
-translate P DrawingMoves {Remisuj±ce posuniêcia} 
-translate P LosingMoves {Przegrywaj±ce posuniêcia} 
-translate P UnknownMoves {Posuniêcia o nieznanej ocenie} 
 # ====== TODO To be translated ======
-translate P SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate P toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate P NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate P MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate P SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate P WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate P BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate P AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate P Tip {Porada}

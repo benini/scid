@@ -143,8 +143,6 @@ menuText O WindowsECO "ECO-oversikt" 0 {Åpne/lukk ECO-oversikten}
 menuText O WindowsStats "Statistikkvindu" 0 \
   {Åpne/lukk statistikk for filteret}
 menuText O WindowsTree "Trevindu" 0 {Åpne/lukk trevinduet}
-menuText O WindowsTB "Sluttspilltabellvindu" 0 \
-  {Åpne/lukk sluttspilltabellen}
 # ====== TODO To be translated ======
 menuText O WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======
@@ -482,37 +480,11 @@ translate O PInfoEloFile {File}
 
 # Tablebase information:
 translate O Draw {Uavgjort}
-translate O stalemate {patt}
-translate O withAllMoves {med alle trekk}
-translate O withAllButOneMove {med alle trekk unntatt ett}
 translate O with {med}
 translate O only {kun}
 translate O lose {taper} ;# tap?
 translate O loses {taper}
-translate O allOthersLose {alle andre taper}
-translate O matesIn {setter matt i}
-translate O hasCheckmated {har satt matt}
-translate O longest {lengste}
-translate O WinningMoves {Winning moves} ;# ***
-translate O DrawingMoves {Drawing moves} ;# ***
-translate O LosingMoves {Losing moves} ;# ***
-translate O UnknownMoves {Unknown-result moves} ;# ***
 # ====== TODO To be translated ======
-translate O SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate O toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate O NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate O MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate O SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate O WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate O BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate O AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate O Tip {Tips}

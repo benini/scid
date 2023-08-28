@@ -154,8 +154,6 @@ menuText S WindowsECO "Buscador ECO" 0 {Abre/cierra la ventana del buscador ECO}
 menuText S WindowsStats "Ventana de estadísticas" 12 \
   {Abre/cierra la ventana de estadísticas del filtro}
 menuText S WindowsTree "Ventana de árbol de aperturas" 6 {Abre/cierra la ventana de árbol de aperturas (Book)}
-menuText S WindowsTB "Ventana de tablas de finales (TBs)" 8 \
-  {Abre/cierra la ventana de TBs}
 menuText S WindowsBook "Ventana de libros de aperturas (Book)" 0 {Abrir/Cerrar la ventana de libros de aperturas (Book)}
 menuText S WindowsCorrChess "Ventana de Correo" 0 {Abrir/Cerrar la ventra de Correo}
 
@@ -459,37 +457,11 @@ translate S PInfoEloFile {File}
 
 # Tablebase information:
 translate S Draw {Tablas}
-translate S stalemate {rey ahogado}
-translate S withAllMoves {con todos los movimientos}
-translate S withAllButOneMove {con todos los movimientos excepto uno}
 translate S with {con}
 translate S only {sólo}
 translate S lose {formas de perder}
 translate S loses {hace perder}
-translate S allOthersLose {todos los demás hacen perder}
-translate S matesIn {mate en}
-translate S hasCheckmated {jaque mate}
-translate S longest {el mate más largo}
-translate S WinningMoves {Movimientos ganadores}
-translate S DrawingMoves {Movimientos para tablas}
-translate S LosingMoves {Movimientos perdedores}
-translate S UnknownMoves {Movimientos de resultado desconocido}
 # ====== TODO To be translated ======
-translate S SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate S toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate S NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate S MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate S SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate S WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate S BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate S AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate S Tip {Sugerencia}

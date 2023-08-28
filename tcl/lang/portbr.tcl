@@ -138,8 +138,6 @@ menuText B WindowsECO "Listagem ECO" 0 {Abre/fecha a janela de listagem de codig
 menuText B WindowsStats "Estatisticas" 0 \
   {Abre/fecha a janela de estatisticas}
 menuText B WindowsTree "Arvore" 0 {Abre/fecha a janela da Arvore de pesquisa}
-menuText B WindowsTB "Tabela base de Finais" 1 \
-  {Abre/fecha a janela da tabela base de finais}
 menuText B WindowsBook "Janela do Livro de Aberturas" 0 {Abre/Fecha  a janela do livro de aberturas}
 menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela de correspondencia}
 
@@ -416,29 +414,10 @@ translate B PInfoEloFile {Arquivo}
 
 # Tablebase information:
 translate B Draw {Empate}
-translate B stalemate {mate afogado}
-translate B withAllMoves {com todos os movimentos}
-translate B withAllButOneMove {com um movimento a menos}
 translate B with {com}
 translate B only {apenas}
 translate B lose {derrota}
 translate B loses {derrotas}
-translate B allOthersLose {qualquer outro perde}
-translate B matesIn {mate em}
-translate B hasCheckmated {recebeu xeque-mate}
-translate B longest {mais longo}
-translate B WinningMoves {Movimentos vencedores} 
-translate B DrawingMoves {Movimentos para empate} 
-translate B LosingMoves {Movimentos perdedores} 
-translate B UnknownMoves {Movimentos com resultado desconhecido} 
-translate B SideLongest {Lado    Mov. p/    %     %     %\n}
-translate B toNoveMate {a mover   mate      V     E     D\n}
-translate B NoSummary {\nSem resumo para esta tablebase.}
-translate B MutualZugzwang {Zugzwangs Nutuos: }
-translate B SelectetZugzwang {\nPosicoes de zugzwang selecionadas:}
-translate B WdrawBloss {Branca empata, Preta perde:}
-translate B BdrawWloss {Preta empata, Branca perde:}
-translate B AllLoss {" Quem mover perde   :     " }
 
 # Tip of the day:
 translate B Tip {Dica}

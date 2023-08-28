@@ -174,7 +174,6 @@ menuText E WindowsECO "ECO Browser" 0 {Open/close the ECO Browser window}
 menuText E WindowsStats "Statistics Window" 0 \
   {Open/close the filter statistics window}
 menuText E WindowsTree "Tree Window" 0 {Open/close the Tree window}
-menuText E WindowsTB "Endgame Tablebase Window" 1 {Open/close the Tablebase window}
 menuText E WindowsBook "Book Window" 0 {Open/close the Book window}
 menuText E WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
 
@@ -454,29 +453,10 @@ translate E PInfoEloFile {File}
 
 # Tablebase information:
 translate E Draw {Draw}
-translate E stalemate {stalemate}
-translate E withAllMoves {with all moves}
-translate E withAllButOneMove {with all but one move}
 translate E with {with}
 translate E only {only}
 translate E lose {lose}
 translate E loses {loses}
-translate E allOthersLose {all others lose}
-translate E matesIn {mates in}
-translate E hasCheckmated {has checkmated}
-translate E longest {longest}
-translate E WinningMoves {Winning moves}
-translate E DrawingMoves {Drawing moves}
-translate E LosingMoves {Losing moves}
-translate E UnknownMoves {Unknown-result moves}
-translate E SideLongest {Side    Longest    %     %     %\n}
-translate E toNoveMate {to move   mate    Win  Draw  Loss\n}
-translate E NoSummary {\nNo summary for this tablebase.}
-translate E MutualZugzwang {Mutual zugzwangs: }
-translate E SelectetZugzwang {\nSelected zugzwang positions:}
-translate E WdrawBloss {White draws, Black loses:}
-translate E BdrawWloss {Black draws, White loses:}
-translate E AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate E Tip {Tip}

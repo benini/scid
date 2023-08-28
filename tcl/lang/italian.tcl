@@ -138,8 +138,6 @@ menuText I WindowsMaint "Finestra di gestione" 12 {Apre/chiude la finestra per l
 menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazione ECO}
 menuText I WindowsStats "Finestra di statistica" 12 {Apre/chiude la finestra di filtro statistico}
 menuText I WindowsTree "Finestra di albero" 12 {Apre/chiude la finestra di albero}
-menuText I WindowsTB "Finestra di tablebase" 12 \
-  {Apre/chiude la finestra Tablebase}
 menuText I WindowsBook "Libro di aperture" 2 {Apre/chiude la finestra del libro delle aperture}
 menuText I WindowsCorrChess "Gioco per corrispondenza" 10 {Apre/chiude la finestra per il gioco per corrispondenza}
 
@@ -425,37 +423,11 @@ translate I PInfoEloFile {File}
 
 # Tablebase information:
 translate I Draw {Patta}
-translate I stalemate {stallo}
-translate I withAllMoves {con tutte le mosse}
-translate I withAllButOneMove {con tutte le mosse tranne una}
 translate I with {con}
 translate I only {solo}
 translate I lose {persa}
 translate I loses {perde}
-translate I allOthersLose {tutte le altre perse}
-translate I matesIn {matto in}
-translate I hasCheckmated {è mattato}
-translate I longest {la più lunga}
-translate I WinningMoves {Mosse vincenti}
-translate I DrawingMoves {Mosse pattanti}
-translate I LosingMoves {Mosse perdenti}
-translate I UnknownMoves {Mosse senza risultato noto}
 # ====== TODO To be translated ======
-translate I SideLongest {Side    Longest    %     %     %\n}
-# ====== TODO To be translated ======
-translate I toNoveMate {to move   mate    Win  Draw  Loss\n}
-# ====== TODO To be translated ======
-translate I NoSummary {\nNo summary for this tablebase.}
-# ====== TODO To be translated ======
-translate I MutualZugzwang {Mutual zugzwangs: }
-# ====== TODO To be translated ======
-translate I SelectetZugzwang {\nSelected zugzwang positions:}
-# ====== TODO To be translated ======
-translate I WdrawBloss {White draws, Black loses:}
-# ====== TODO To be translated ======
-translate I BdrawWloss {Black draws, White loses:}
-# ====== TODO To be translated ======
-translate I AllLoss {" Whoever moves loses:     " }
 
 # Tip of the day:
 translate I Tip {Suggerimento}
