@@ -4343,11 +4343,11 @@ int
 sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "add", "addSan", "addUCI", "back", "end", "endVar", "forward",
+        "add", "addSan", "back", "end", "endVar", "forward",
         "pgn", "ply", "start", NULL
     };
     enum {
-        MOVE_ADD, MOVE_ADDSAN, MOVE_ADDUCI, MOVE_BACK, MOVE_END, MOVE_ENDVAR,
+        MOVE_ADD, MOVE_ADDSAN, MOVE_BACK, MOVE_END, MOVE_ENDVAR,
         MOVE_FORWARD, MOVE_PGN, MOVE_PLY, MOVE_START
     };
     int index = -1;
@@ -4360,9 +4360,6 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case MOVE_ADDSAN:
         return sc_move_addSan (cd, ti, argc, argv);
-
-    case MOVE_ADDUCI:
-        return sc_move_addUCI (cd, ti, argc, argv);
 
     case MOVE_BACK:
         return sc_move_back (cd, ti, argc, argv);
@@ -4454,57 +4451,6 @@ int sc_move_addSan(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 			return UI_Result(ti, ERROR_InvalidMove, argv[i]);
 	}
 	return UI_Result(ti, OK);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_move_addUCI:
-//    Takes moves in engine UCI format (e.g. "g1f3") and adds them
-//    to the game. The result is translated.
-//    In case of an error, return the moves that could be converted.
-int
-sc_move_addUCI (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    char s[8], tmp[10];
-    if (argc < 3) { return TCL_OK; }
-    char * ptr = (char *) argv[2];
-
-    while (*ptr != 0) {
-      s[0] = ptr[0];
-      s[1] = ptr[1];
-      s[2] = ptr[2];
-      s[3] = ptr[3];
-      if (ptr[4] == ' ') {
-        s[4] = 0;
-        ptr += 5;
-      } else if (ptr[4] == 0) {
-        s[4] = 0;
-        ptr += 4;        
-      } else {
-        s[4] = ptr[4];
-        s[5] = 0;
-        ptr += 6;
-      }
-      simpleMoveT sm;
-      Position * pos = db->game->GetCurrentPos();
-      errorT err = pos->ReadCoordMove(&sm, s, s[4] == 0 ? 4 : 5, true);
-      if (err == OK) {
-        err = db->game->AddMove(sm);
-        if (err == OK) {
-            db->gameAltered = true;
-            db->game->GetPrevSAN (tmp);
-            transPieces(tmp);
-            Tcl_AppendResult (ti, tmp, " ", NULL);
-        } else {
-            //Tcl_AppendResult (ti, "Error reading move(s): ", ptr, NULL);
-            break;
-        }
-      } else {
-        //Tcl_AppendResult (ti, "Error reading move(s): ", ptr, NULL);
-        break;
-      }
-    }
-
-    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
