@@ -339,7 +339,7 @@ namespace eval sergame {
 
     set ::sergame::waitPlayerMove 0
     set ::sergame::wentOutOfBook 0
-    set ::playMode "::sergame::callback"
+    ::setPlayMode "::sergame::callback"
     ::notify::GameChanged
 
     clocks init $n
@@ -348,15 +348,18 @@ namespace eval sergame {
     ::sergame::engineGo $n
   }
 
-  proc callback {cmd} {
+  proc callback {cmd args} {
     switch $cmd {
+        premove { # TODO: currently we just return true if it is the engine turn.
+            return [expr { ! $::sergame::waitPlayerMove }]
+        }
         stop { ::sergame::abortGame }
     }
     return 0
   }
 
   proc abortGame { { n 3 } } {
-    unset ::playMode
+    ::setPlayMode ""
     after cancel ::sergame::engineGo $n
     clocks stop
     set ::sergame::lFen {}

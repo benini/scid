@@ -314,11 +314,14 @@ namespace eval tactics {
         createToplevelFinalize $w
         
         setInfoEngine "---"
-        set ::playMode "::tactics::callback"
+        ::setPlayMode "::tactics::callback"
         ::tactics::loadNextGame
     }
-    proc callback {cmd} {
+    proc callback {cmd args} {
         switch $cmd {
+            premove { # TODO: currently we just return true if it is the engine turn.
+                return [expr { ! [::tactics::isPlayerTurn] }]
+            }
             stop { destroy .tacticsWin }
         }
         return 0
@@ -334,7 +337,7 @@ namespace eval tactics {
         sc_filter reset $::tactics::baseId dbfilter full
         catch { ::uci::closeUCIengine $::tactics::engineSlot }
 
-        unset ::playMode
+        ::setPlayMode ""
         ::board::flipAuto .main.board
         updateStatusBar
         updateTitle

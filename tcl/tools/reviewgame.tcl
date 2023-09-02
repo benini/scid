@@ -144,8 +144,11 @@ proc ::reviewgame::start {} {
   
 }
 
-proc ::reviewgame::callback {cmd} {
+proc ::reviewgame::callback {cmd args} {
   switch $cmd {
+      premove { # TODO: currently we just return true if it is the engine turn.
+        return [expr { $::reviewgame::sequence != 2 || ![::reviewgame::isPlayerTurn] }]
+      }
       stop { destroy $::reviewgame::window }
   }
   return 0
@@ -555,21 +558,6 @@ proc ::reviewgame::checkConsistency {} {
     return 0
   }
   return 1
-}
-
-################################################################################
-#   returns 1 if the player is allowed to enter a move (pondering is done)
-################################################################################
-proc ::reviewgame::playerCanMove {} {
-  if { ! [winfo exists $::reviewgame::window] } { return 1 }
-  
-  if { !  [::reviewgame::isPlayerTurn]  } {
-    return 0
-  } elseif { $::reviewgame::sequence == 2 } {
-    return 1
-  }
-  
-  return 0
 }
 
 ###

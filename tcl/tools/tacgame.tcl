@@ -371,12 +371,15 @@ namespace eval tacgame {
     wm minsize $w 45 0
     createToplevelFinalize $w
 
-    set ::playMode "::tacgame::callback"
+    ::setPlayMode "::tacgame::callback"
     ::tacgame::phalanxGo
   }
 
-  proc callback {cmd} {
+  proc callback {cmd args} {
     switch $cmd {
+        premove { # TODO: currently we just return true if it is the engine turn.
+            return [expr { [getPhalanxColor] == [sc_pos side] }]
+        }
         stop { destroy .coachWin }
     }
     return 0
@@ -398,7 +401,7 @@ namespace eval tacgame {
   #
   ################################################################################
   proc abortGame { { destroyWin 1 } } {
-    catch { unset ::playMode }
+    ::setPlayMode ""
     after cancel ::tacgame::phalanxGo
     stopAnalyze
     ::tacgame::closeEngine 1

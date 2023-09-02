@@ -947,7 +947,9 @@ proc addMoveUCI {{moveUCI} {animate "-animate"}} {
         if {$k1 == "k"  &&  $k2 == "k"} { set moveUCI "null" }
     }
 
-    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return 0 } ;# not player's turn
+    if {[info exists ::playMode] && [eval "$::playMode premove {$moveUCI}"]} { return 0 } ;# not player's turn
+
+    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove]} { return 0 } ;# not player's turn
 
     if {! [::move::Follow $moveUCI] && ! [addMoveEx $moveUCI]} {
         return 0
@@ -1023,7 +1025,7 @@ proc leaveSquare { square } {
 proc pressSquare { square } {
     global selectedSq highcolor
 
-    if { ![::fics::playerCanMove] || ![::reviewgame::playerCanMove] } { return } ;# not player's turn
+    if { ![::fics::playerCanMove] } { return } ;# not player's turn
 
     # if training with calculations of var is on, just log the event
     if { [winfo exists .calvarWin] } {
