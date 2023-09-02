@@ -157,7 +157,7 @@ proc ::move::Forward {{count 1}} {
 }
 
 #Follow the main line or enter a variation
-#Return 0 for main line, 1 for 1st variation, etc...
+#Return true if moveUCI is one of the next moves.
 proc ::move::Follow {{moveUCI}} {
 	if {$moveUCI != "null"} {
 		set moveUCI2 "[string range $moveUCI 2 3][string range $moveUCI 0 1][string range $moveUCI 4 end]"
@@ -175,6 +175,7 @@ proc ::move::Follow {{moveUCI}} {
 			} else {
 				sc_var moveInto $i
 			}
+			::notify::PosChanged "" -animate
 			return 1
 		}
 		incr i

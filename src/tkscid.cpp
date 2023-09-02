@@ -4442,8 +4442,8 @@ sc_move_add (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_move_addSan:
-//    Takes moves in regular SAN (e.g. "e4" or "Nbd2") and adds them
-//    to the game. The moves can be in one large string, separate
+//    Takes moves in regular SAN (e.g. "e4" or "Nbd2") or UCI (e.g. "e2e4")
+//    and adds them to the game. The moves can be in one large string, separate
 //    list elements, or a mixture of both. Move numbers are ignored
 //    but variations/comments/annotations are parsed and added.
 int sc_move_addSan(ClientData, Tcl_Interp* ti, int argc, const char** argv) {

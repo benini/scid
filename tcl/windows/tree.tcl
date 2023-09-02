@@ -305,7 +305,7 @@ proc ::tree::select { move baseNumber } {
 
   if {! [winfo exists .treeWin$baseNumber]} { return }
 
-  catch { addSanMove $move }
+  addSanMove $move
 }
 
 ################################################################################

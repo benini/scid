@@ -875,46 +875,60 @@ proc confirmReplaceMove {} {
     return "cancel"
 }
 
-proc addNullMove {} {
-    addMove null null
+# Add a move to the current game.
+# If the current position is not the end of the game, the default action is to add the move as a new variant.
+# The move notation can be SAN or UCI.
+# Return true if the move is both legal and has been successfully added.
+proc addMoveEx {{move} {action "var"}} {
+    undoFeature save
+    if {[catch {
+        if {![sc_pos isAt vend]} {
+            switch -- $action {
+                mainline { sc_var create; set ::guessedAddMove [list "New Main Line"]}
+                var      { sc_var create; set ::guessedAddMove [list "New Variation"]}
+                replace  { set ::guessedAddMove [list "Replaced Main Line"]}
+            }
+            lappend ::guessedAddMove $move
+        }
+
+        sc_move addSan $move
+
+        if {$action == "mainline"} {
+            sc_var promote
+            sc_move forward 1
+        }
+    }]} {
+        # On error:
+        undoFeature undo
+        return 0
+    }
+
+    ::notify::PosChanged -pgn -animate
+    return 1
 }
 
 proc addMove { sq1 sq2 {animate "-animate"}} {
-    global EMPTY
-    set nullmove 0
-    if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
-    if {!$nullmove  &&  [sc_pos isLegal $sq1 $sq2] == 0} {
-        # Illegal move, but if it is King takes king then treat it as
-        # entering a null move:
-        set board [sc_pos board]
-        set k1 [string tolower [string index $board $sq1]]
-        set k2 [string tolower [string index $board $sq2]]
-        if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
-    }
-    if {$nullmove} {
-        if {[sc_pos isCheck]} { return }
-        set moveUCI "0000"
-    } else {
-        set moveUCI [::board::san $sq2][::board::san $sq1]
-    }
-    addMoveUCI $moveUCI "var" $animate
+    set moveUCI [::board::san $sq2][::board::san $sq1]
+    return [addMoveUCI $moveUCI $animate]
 }
 
+# Return true if the move is legal and has been successfully added.
 proc addSanMove { {san} } {
-    set err [catch { sc_game SANtoUCI $san } moveUCI ]
-    if {! $err} { addMoveUCI $moveUCI }
-    return $err
+    if {[catch {sc_game SANtoUCI $san} moveUCI]} {
+        return 0
+    }
+    return [addMoveUCI $moveUCI]
 }
 
 # addMoveUCI:
 #   Adds the move indicated if it is legal.
 #   If the move is a promotion, getPromoPiece will be called
 #   to get the promotion piece from the user.
+#   Return true if the move is legal and has been successfully added.
 #
-proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
+proc addMoveUCI {{moveUCI} {animate "-animate"}} {
     set sq1 [::board::sq [string range $moveUCI 0 1] ]
     set sq2 [::board::sq [string range $moveUCI 2 3] ]
-    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
 
     if { [string length $moveUCI] == 4 && $sq1 != $sq2 && [sc_pos isPromotion $sq1 $sq2] } {
         switch -- [getPromoPiece] {
@@ -925,41 +939,21 @@ proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
             default {set promoLetter ""}
         }
         append moveUCI $promoLetter
-    }
-
-    if {! $::annotateMode} {
-        if {[::move::Follow $moveUCI]} {
-            ::notify::PosChanged "" $animate
-            return
-        }
-    }
-
-    if {![sc_pos isAt vend]} {
-        switch -- $action {
-            mainline { set ::guessedAddMove [list "New Main Line"]}
-            var      { set ::guessedAddMove [list "New Variation"]}
-            replace  { set ::guessedAddMove [list "Replaced Main Line"]}
-        }
-        lappend ::guessedAddMove $moveUCI
-    }
-
-    undoFeature save
-    if {($action == "mainline" || $action == "var") && ![sc_pos isAt vend]} {
-        sc_var create
-    }
-
-    if {$moveUCI == "0000"} {
-        sc_move addSan null
     } else {
-        sc_move addUCI $moveUCI
-    }
-    if {$action == "mainline"} {
-        sc_var promote
-        sc_move forward 1
+        # If it is King takes king then treat it as entering a null move:
+        set board [sc_pos board]
+        set k1 [string tolower [string index $board $sq1]]
+        set k2 [string tolower [string index $board $sq2]]
+        if {$k1 == "k"  &&  $k2 == "k"} { set moveUCI "null" }
     }
 
-    set ::sergame::lastPlayerMoveUci "$moveUCI"
+    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return 0 } ;# not player's turn
 
+    if {! [::move::Follow $moveUCI] && ! [addMoveEx $moveUCI]} {
+        return 0
+    }
+
+    # TODO: move this to fics.tcl
     if {[winfo exists .fics]} {
         if { [::fics::playerCanMove] } {
             if { [string length $moveUCI] == 5 } {
@@ -978,7 +972,7 @@ proc addMoveUCI {{moveUCI} {action "var"} {animate "-animate"}} {
     set san [sc_game info previous]
     after idle [list ::utils::sound::AnnounceNewMove $san]
 
-    ::notify::PosChanged -pgn $animate
+    return 1
 }
 
 proc suggestMove {} {
@@ -1227,11 +1221,11 @@ proc CreateMainBoard { {w} } {
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
       -command {undoFeature undo}
   .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
-      -command {sc_game undo; addMoveUCI $::gameLastMove replace}
+      -command {sc_game undo; addMoveEx $::gameLastMove replace}
   .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
-      -command {sc_game undo; addMoveUCI $::gameLastMove mainline}
+      -command {sc_game undo; addMoveEx $::gameLastMove mainline}
   .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
-      -command {sc_game undo; addMoveUCI $::gameLastMove var}
+      -command {sc_game undo; addMoveEx $::gameLastMove var}
 
   InitToolbar .main.tb
 

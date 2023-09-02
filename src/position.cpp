@@ -1958,7 +1958,7 @@ errorT Position::ReadMovePawn(simpleMoveT* sm, const char* str, size_t slen,
 
 	if (slen >= 4 && // Check if it is a coordinates-style move ("e2e4")
 	    is_digit(str[1]) && is_lower(str[2]) && is_digit(str[3])) {
-		return ReadCoordMove(sm, str, slen, false);
+		return ReadCoordMove(sm, str, slen, true);
 	}
 
 	MoveList mlist;
@@ -2135,10 +2135,8 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
 	return ParseMove(sm, begin, str);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ParseMove():
-//      Parse a single move from SAN-style notation.
-//
+// Parse a single move from SAN-style (Nf3) or UCI (g1f3) notation.
+// If the move is legal, it stores the result in @e sm.
 errorT Position::ParseMove(simpleMoveT* sm, const char* str,
                            const char* strEnd) {
 	ASSERT(str != NULL);

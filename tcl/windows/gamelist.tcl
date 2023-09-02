@@ -648,7 +648,7 @@ proc ::windows::gamelist::updateStats_ { {w} } {
 		$w.stats.b.c bind perf$i_add <ButtonPress-1> "$perfCmd"
 
 		$w.stats.b.c bind add$i_add <ButtonPress-1> "
-			if {\[addSanMove \{$moveSAN\}\] && \$::gamelistPosMask($w) == 0} {
+			if {! \[addSanMove \{$moveSAN\}\] && \$::gamelistPosMask($w) == 0} {
 				$w.buttons.boardFilter invoke
 			}
 		"

@@ -23,7 +23,6 @@ namespace eval sergame {
 
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
-  set lastPlayerMoveUci ""
   
   ################################################################################
   #
@@ -539,7 +538,7 @@ namespace eval sergame {
     # -------------------------------------------------------------
     # check if the engine pondered on the right move
     
-    if { $::sergame::ponder && $::uci::uciInfo(ponder$n) == $::sergame::lastPlayerMoveUci} {
+    if { $::sergame::ponder && $::uci::uciInfo(ponder$n) == [sc_game info previousMoveUCI]} {
       ::sergame::sendToEngine $n "ponderhit"
     } else {
       
