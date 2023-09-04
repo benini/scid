@@ -1674,13 +1674,9 @@ translate E Ambiguous {Ambiguous}
 #Preferences Dialog
 translate E OptionsToolbar "Toolbar"
 translate E OptionsBoard "Chessboard"
-translate E OptionsMenuColor "Menu colors"
 translate E OptionsBoardSize "Board size"
 translate E OptionsBoardPieces "Piece Style"
 translate E OptionsInternationalization "Internationalization"
-translate E MenuColorForeground "Textcolor"
-translate E MenuColorBackground "Background"
-translate E MenuColorSelect "Select"
 translate E OptionsTablebaseDir "Select up to 4 table base folders:"
 
 # Evaluation bar

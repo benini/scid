@@ -1769,18 +1769,10 @@ translate H Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
 translate H OptionsToolbar "Eszköztár"
 translate H OptionsBoard "Sakktábla"
-# ====== TODO To be translated ======
-translate H OptionsMenuColor "Menu colors"
 translate H OptionsBoardSize "Táblaméret"
 translate H OptionsBoardPieces "Figurák stílusa"
 # ====== TODO To be translated ======
 translate H OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate H MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate H MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate H MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate H OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

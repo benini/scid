@@ -1785,18 +1785,10 @@ translate G Ambiguous {Ambiguous}
 # ====== TODO To be translated ======
 translate G OptionsToolbar "Γραμμή εργαλειών"
 translate G OptionsBoard "Σκακιέρα"
-# ====== TODO To be translated ======
-translate G OptionsMenuColor "Menu colors"
 translate G OptionsBoardSize "Μέγεθος"
 translate G OptionsBoardPieces "Είδος κομματιών"
 # ====== TODO To be translated ======
 translate G OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate G MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate G MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate G MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate G OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

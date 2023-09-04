@@ -1783,18 +1783,10 @@ translate K Surnames {Surnames}
 translate K Ambiguous {Ambiguous}
 translate K OptionsToolbar "Barra d'eines de la finestra principal"
 translate K OptionsBoard "Escaquer"
-# ====== TODO To be translated ======
-translate K OptionsMenuColor "Menu colors"
 translate K OptionsBoardSize "Tamany de l'escaquer"
 translate K OptionsBoardPieces "Estil de peces"
 # ====== TODO To be translated ======
 translate K OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate K MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate K MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate K MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate K OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

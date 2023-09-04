@@ -1620,13 +1620,9 @@ translate B Surnames {Sobrenomes}
 translate B Ambiguous {Ambiguo}
 translate B OptionsToolbar "Barra de Ferramentas da Janela Principal"
 translate B OptionsBoard "Tabuleiro"
-translate B OptionsMenuColor "Define Cores dos Menus"
 translate B OptionsBoardSize "Tamanho do Tabuleiro"
 translate B OptionsBoardPieces "Estilo de Pecas no Tabuleiro"
 translate B OptionsInternationalization "Internacionalizacao"
-translate B MenuColorForeground "Cor do Texto"
-translate B MenuColorBackground "Cor de Fundo"
-translate B MenuColorSelect "Selecionar"
 translate B OptionsTablebaseDir "Selecione até 4 pastas tabela base de finais:"
 translate B BestMoveArrow "Seta de melhor movimento"
 translate B NewLocalEngine "+ Novo engine ..."

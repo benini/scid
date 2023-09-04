@@ -1758,18 +1758,10 @@ translate S Surnames {Surnames}
 translate S Ambiguous {Ambiguous}
 translate S OptionsToolbar "Barra de herramientas ventana principal"
 translate S OptionsBoard "Tablero"
-# ====== TODO To be translated ======
-translate S OptionsMenuColor "Menu colors"
 translate S OptionsBoardSize "Tamaño del tablero"
 translate S OptionsBoardPieces "Estilo de piezas"
 # ====== TODO To be translated ======
 translate S OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate S MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate S MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate S MenuColorSelect "Select"
 translate S OptionsTablebaseDir "Seleccione hasta 4 carpetas de la tablas de finales:"
 # ====== TODO To be translated ======
 translate S BestMoveArrow "Best move arrow"

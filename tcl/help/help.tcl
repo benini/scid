@@ -5307,16 +5307,6 @@ set helpText(Appearance) {<h1>Customize Scid-GUI</h1>
     <li>Select theme: Using the menu item <b>Options - Theme - "Theme name"</b>, e.g. scidblue scidmint scidpurple scidpurple scidpurple scidsand scidpink,
     select the theme to use.</li>
     <li><b>Note:</b> pkgIndex.tcl are files that load additional tcl packages. Use only pkgIndex.tcl files that contain TTK-Themes.</li>
-    </p>
-  <h3><name MenuColors>Set menu colors</name></h3>
-  <p>
-    TTK-Themes have technically no adapted properties and colours for menus. The colors for menus must therefore be adjusted separately and matched to the colors of themes.<br>
-    Under <b>Options - Setup menu colors</b> you can configure the colors for the menu:<br>
-    <li>Background color of the main menu</li>
-    <li>Foreground and background color of all menus</li>
-    <li>Foreground and background color of the selected menu item</li>
-    <li>Color of a selected option in the menu</li>
-    <li><b>Note:</b> WINDOWS and MACOS ignore the configured colors for the main menu bar and use the system settings.</li>
   </p>
   <p>
   After configuring the theme and menu colors, save the settings with <b>Options - Save options</b>.

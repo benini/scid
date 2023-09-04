@@ -1747,18 +1747,10 @@ translate U Surnames {Surnames}
 translate U Ambiguous {Ambiguous}
 translate U OptionsToolbar "Työkalupalkki"
 translate U OptionsBoard "Shakkilauta"
-# ====== TODO To be translated ======
-translate U OptionsMenuColor "Menu colors"
 translate U OptionsBoardSize "Koko"
 translate U OptionsBoardPieces "Nappulat"
 # ====== TODO To be translated ======
 translate U OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate U MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate U MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate U MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate U OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

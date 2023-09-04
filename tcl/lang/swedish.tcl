@@ -1686,17 +1686,10 @@ translate W Ambiguous {Ambiguous}
 translate W OptionsToolbar "Verktygsfält"
 translate W OptionsBoard "Brädet"
 # ====== TODO To be translated ======
-translate W OptionsMenuColor "Menu colors"
 translate W OptionsBoardSize "Brädstorlek"
 translate W OptionsBoardPieces "Pjäsutseende"
 # ====== TODO To be translated ======
 translate W OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate W MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate W MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate W MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate W OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

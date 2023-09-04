@@ -2150,19 +2150,11 @@ translate Y Ambiguous {Ambiguous}
 translate Y OptionsToolbar "Toolbar glavnog prozora"
 # ====== TODO To be translated ======
 translate Y OptionsBoard "Chessboard"
-# ====== TODO To be translated ======
-translate Y OptionsMenuColor "Menu colors"
 translate Y OptionsBoardSize "Velièina table"
 # ====== TODO To be translated ======
 translate Y OptionsBoardPieces "Piece Style"
 # ====== TODO To be translated ======
 translate Y OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate Y MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate Y MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate Y MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate Y OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

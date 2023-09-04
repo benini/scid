@@ -1673,16 +1673,11 @@ translate F Ambiguous {Ambigus}
 #Preferences Dialog
 translate F OptionsToolbar "Barre d'outils de la fenêtre principale"
 translate F OptionsBoard "Échiquier"
-# ====== TODO To be translated ======
-translate F OptionsMenuColor "Couleurs des menus..."
 translate F OptionsBoardSize "Taille d'échiquier"
 translate F OptionsBoardPieces "Style des pièces"
 # ====== TODO To be translated ======
 translate F OptionsInternationalization "Internationalization"
 #menuText F OptionsBoardColors "Couleurs..." 0 {Changer les couleurs}
-translate F MenuColorForeground "Texte"
-translate F MenuColorBackground "Fond"
-translate F MenuColorSelect "Sélection"
 translate F OptionsTablebaseDir "Sélectionnez jusqu'à 4 dossiers de tables de finales:"
 # ====== TODO To be translated ======
 translate F BestMoveArrow "Best move arrow"

@@ -1734,18 +1734,10 @@ translate C Surnames {Surnames}
 translate C Ambiguous {Ambiguous}
 translate C OptionsToolbar "Nástrojová li¨ta"
 translate C OptionsBoard "©achovnice"
-# ====== TODO To be translated ======
-translate C OptionsMenuColor "Menu colors"
 translate C OptionsBoardSize "Velikost ¹achovnice"
 translate C OptionsBoardPieces "Styl figur"
 # ====== TODO To be translated ======
 translate C OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate C MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate C MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate C MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate C OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

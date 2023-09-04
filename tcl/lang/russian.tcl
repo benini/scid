@@ -1678,13 +1678,9 @@ translate R Surnames {Отчества}
 translate R Ambiguous {Неясный}
 translate R OptionsToolbar "Инструментальная панель"
 translate R OptionsBoard "Шахматная доска"
-translate R OptionsMenuColor "Цвета меню"
 translate R OptionsBoardSize "Размер доски"
 translate R OptionsBoardPieces "Стиль фигур"
 translate R OptionsInternationalization "Локализация"
-translate R MenuColorForeground "Цвет текста"
-translate R MenuColorBackground "Фон"
-translate R MenuColorSelect "Выбрать"
 translate R OptionsTablebaseDir "Выберите до 4 директорий с базами таблиц:"
 # ====== TODO To be translated ======
 translate R BestMoveArrow "Best move arrow"

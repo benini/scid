@@ -1664,20 +1664,11 @@ translate I Surnames {Surnames}
 translate I Ambiguous {Ambiguous}
 translate I OptionsToolbar "Barra degli strumenti"
 translate I OptionsBoard "Scacchiera"
-# ====== TODO To be translated ======
-translate I OptionsMenuColor "Menu colors"
-# ====== TODO To be translated ======
 translate I OptionsBoardSize "Dimensione della scacchiera"
 # ====== TODO To be translated ======
 translate I OptionsBoardPieces "Stile dei pezzi"
 # ====== TODO To be translated ======
 translate I OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate I MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate I MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate I MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate I OptionsTablebaseDir "Select up to 4 table base folders:"
 translate I BestMoveArrow "Indica mossa migliore"

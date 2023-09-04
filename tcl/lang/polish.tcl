@@ -2156,18 +2156,10 @@ translate P Surnames {Surnames}
 translate P Ambiguous {Ambiguous}
 translate P OptionsToolbar "Pasek narzêdziowy"
 translate P OptionsBoard "Szachownica"
-# ====== TODO To be translated ======
-translate P OptionsMenuColor "Menu colors"
 translate P OptionsBoardSize "Wielko¶æe"
 translate P OptionsBoardPieces "Typ figur"
 # ====== TODO To be translated ======
 translate P OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate P MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate P MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate P MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate P OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

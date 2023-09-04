@@ -1873,17 +1873,13 @@ translate N OptionsToolbar "Gereedschappenbalk"
 # ====== TODO To be translated ======
 translate N OptionsBoard "Bord"
 # ====== TODO To be translated ======
-translate N OptionsMenuColor "Menu colors"
 translate N OptionsBoardSize "Grootte van bord"
 translate N OptionsBoardPieces "Bord Stukken Stijl"
 # ====== TODO To be translated ======
 translate N OptionsInternationalization "Internationalization"
 # ====== TODO To be translated ======
-translate N MenuColorForeground "Textcolor"
 # ====== TODO To be translated ======
-translate N MenuColorBackground "Background"
 # ====== TODO To be translated ======
-translate N MenuColorSelect "Select"
 translate N OptionsTablebaseDir "Selecteer tot 4 tabelbasismappen:"
 # ====== TODO To be translated ======
 translate N BestMoveArrow "Best move arrow"

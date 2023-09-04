@@ -676,12 +676,6 @@ proc options.write {} {
       puts $optionF "set $i [list [set $i]]"
     }
 
-    foreach i [lsort [array names menuColor]] {
-      puts $optionF "set menuColor($i) [list $menuColor($i)]"
-    }
-    foreach i [lsort [array names menuBarColor]] {
-      puts $optionF "set menuBarColor($i) [list $menuBarColor($i)]"
-    }
     puts $optionF ""
     foreach i [lsort [array names winWidth]] {
       puts $optionF "set winWidth($i)  [expr $winWidth($i)]"

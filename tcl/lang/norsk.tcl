@@ -2144,18 +2144,10 @@ translate O Surnames {Surnames}
 translate O Ambiguous {Ambiguous}
 translate O OptionsToolbar "Verktøylinje i hovedvindu"
 translate O OptionsBoard "Brett"
-# ====== TODO To be translated ======
-translate O OptionsMenuColor "Menu colors"
 translate O OptionsBoardSize "Brettstørrelse"
 translate O OptionsBoardPieces "Brikkeutseende"
 # ====== TODO To be translated ======
 translate O OptionsInternationalization "Internationalization"
-# ====== TODO To be translated ======
-translate O MenuColorForeground "Textcolor"
-# ====== TODO To be translated ======
-translate O MenuColorBackground "Background"
-# ====== TODO To be translated ======
-translate O MenuColorSelect "Select"
 # ====== TODO To be translated ======
 translate O OptionsTablebaseDir "Select up to 4 table base folders:"
 # ====== TODO To be translated ======

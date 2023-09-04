@@ -466,10 +466,6 @@ proc configure_menus {} {
     option add *Menu.activeForeground [ttk::style lookup . -foreground active] startupFile
     option add *Menu.disabledForeground [ttk::style lookup . -foreground disabled] startupFile
   }
-
-  foreach col [array names ::menuColor] {
-    option add *Menu.$col $::menuColor($col)
-  }
 }
 
 proc configure_style {} {
@@ -699,7 +695,6 @@ tools/graphs.tcl
 tools/ptracker.tcl
 help/help.tcl
 help/tips.tcl
-appearance.tcl
 keyboard.tcl
 menus.tcl
 board.tcl

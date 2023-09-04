@@ -1677,13 +1677,9 @@ translate D Ambiguous {Mehrdeutig}
 #Preferences Dialog
 translate D OptionsToolbar "Werkzeugleiste"
 translate D OptionsBoard "Schachbrett"
-translate D OptionsMenuColor "Menüfarben"
 translate D OptionsBoardSize "Brettgröße"
 translate D OptionsBoardPieces "Figurensatz"
 translate D OptionsInternationalization "Sprachumgebung"
-translate D MenuColorForeground "Text"
-translate D MenuColorBackground "Hintergrund"
-translate D MenuColorSelect "Auswahl"
 translate D OptionsTablebaseDir "Bis zu 4 Verzeichnisse der Endspieltabellen auswählen:"
 translate D BestMoveArrow "Besten Zug anzeigen"
 translate D NewLocalEngine "+ Neue Engine ..."
