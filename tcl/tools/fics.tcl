@@ -706,8 +706,6 @@ namespace eval fics {
       set line [string map {"\a" ""} $line]
       readparse $line
     }
-
-    ::fics::makePremove
   }
 
   ################################################################################
@@ -1351,6 +1349,7 @@ namespace eval fics {
       }
       ::notify::GameChanged
     }
+    ::fics::makePremove
   }
   ################################################################################
   #
@@ -1676,7 +1675,7 @@ namespace eval fics {
       if { $::fics::premoveEnabled && $::fics::playing == -1 && $sq2 != -1 } {
           set ::fics::premoveSq1 $sq1
           set ::fics::premoveSq2 $sq2
-          ::board::mark::DrawArrow .main.board.bd $sq2 $sq1 $::highlightLastMoveColor
+          ::board::mark::DrawArrow .main.board.bd $sq1 $sq2 $::highlightLastMoveColor
           return 1
       }
       return 0
