@@ -16,8 +16,8 @@ namespace eval reviewgame {
   set prevFen ""
   set engineSlot 6
   set window ".reviewgame"
-  set timeShort 5
-  set timeExtended 1
+  set timeShort 3
+  set timeExtended 15
   set margin 0.3
   set moveOfGameIsBest 0
   # The score of the move really played
@@ -68,7 +68,7 @@ proc ::reviewgame::start {} {
   ttk::label $w.fparam.ltime1 -text "[::tr Time] ([::tr sec])"
   ttk::spinbox $w.fparam.time1 -values { 5 10 15 30 45 60 90 120 } -command { set ::reviewgame::timeShort [$::reviewgame::window.fparam.time1 get] } -width 7
   $w.fparam.time1 set $::reviewgame::timeShort
-  ttk::label $w.fparam.ltime2 -text "[::tr GameReviewTimeExtended] ([ ::tr min])"
+  ttk::label $w.fparam.ltime2 -text "[::tr GameReviewTimeExtended] ([::tr sec])"
   ttk::spinbox $w.fparam.time2 -values { 1 2 3 4 5} -command { set ::reviewgame::timeExtended [$::reviewgame::window.fparam.time1 get] } -width 7
   $w.fparam.time2 set $::reviewgame::timeExtended
   ttk::label $w.fparam.lmargin -text "[::tr GameReviewMargin]"
@@ -218,7 +218,7 @@ proc ::reviewgame::mainLoop {} {
   if { ! [ checkConsistency ] } { puts "ERROR checkConsistency returns false" ; return }
   
   if { $useExtendedTime } {
-    set ::reviewgame::thinkingTime [expr $::reviewgame::timeExtended * 60 ]
+    set ::reviewgame::thinkingTime $::reviewgame::timeExtended
   } else {
     set ::reviewgame::thinkingTime $::reviewgame::timeShort
   }
