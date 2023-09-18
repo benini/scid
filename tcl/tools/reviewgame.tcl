@@ -102,9 +102,9 @@ proc ::reviewgame::start {} {
   ttk::button $w.finfo.extended -text "[::tr GameReviewReCalculate]" -command ::reviewgame::extendedTime
   
   set row 0
-  grid $w.finfo.pb -column 0 -row $row -sticky nw
+  grid $w.finfo.pb -column 0 -row $row -sticky we -columnspan 3
   incr row
-  grid $w.finfo.pblabel -column 0 -row $row -sticky nw
+  grid $w.finfo.pblabel -column 0 -row $row -sticky we -columnspan 3
   incr row
   grid $w.finfo.proceed -column 0 -row $row -sticky nw
   grid $w.finfo.extended -column 1 -row $row -sticky nw
