@@ -149,7 +149,7 @@ proc ::reviewgame::callback {cmd args} {
       premove { # TODO: currently we just return true if it is the engine turn.
         return [expr { $::reviewgame::sequence != 2 || ![::reviewgame::isPlayerTurn] }]
       }
-      stop { destroy $::reviewgame::window }
+      stop { ::reviewgame::endTraining }
   }
   return 0
 }
