@@ -66,14 +66,11 @@ proc ::reviewgame::start {} {
   
   ttk::frame $w.fparam
   ttk::label $w.fparam.ltime1 -text "[::tr Time] ([::tr sec])"
-  ttk::spinbox $w.fparam.time1 -from 1 -to 120 -command { set ::reviewgame::timeShort [$::reviewgame::window.fparam.time1 get] } -width 7
-  $w.fparam.time1 set $::reviewgame::timeShort
+  ttk::spinbox $w.fparam.time1 -from 1 -to 120 -textvariable ::reviewgame::timeShort -width 7
   ttk::label $w.fparam.ltime2 -text "[::tr GameReviewTimeExtended] ([::tr sec])"
-  ttk::spinbox $w.fparam.time2 -from 5 -to 300 -command { set ::reviewgame::timeExtended [$::reviewgame::window.fparam.time1 get] } -width 7
-  $w.fparam.time2 set $::reviewgame::timeExtended
+  ttk::spinbox $w.fparam.time2 -from 3 -to 300 -textvariable ::reviewgame::timeExtended -width 7
   ttk::label $w.fparam.lmargin -text "[::tr GameReviewMargin]"
-  ttk::spinbox $w.fparam.margin -from 0.1 -to 1.0 -increment 0.1 -command { set ::reviewgame::margin [$::reviewgame::window.fparam.time1 get] } -width 7
-  $w.fparam.margin set $::reviewgame::margin
+  ttk::spinbox $w.fparam.margin -from 0.1 -to 1.0 -increment 0.1 -textvariable ::reviewgame::margin -width 7
   
   set row 0
   grid $w.fparam.ltime1 -column 0 -row $row -sticky nw
