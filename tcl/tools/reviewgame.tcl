@@ -97,7 +97,7 @@ proc ::reviewgame::start {} {
   ttk::label $w.finfo.pblabel -image tb_stop -compound left
   ttk::label $w.finfo.sc1 -text "-"
   ttk::label $w.finfo.sc2 -text "-"
-  ttk::label $w.finfo.sc3 -foreground blue -text "-"
+  ttk::label $w.finfo.sc3 -foreground dodgerblue3 -text "-"
   ttk::button $w.finfo.proceed -textvar ::tr(Continue) -command ::reviewgame::proceed
   ttk::button $w.finfo.extended -text "[::tr GameReviewReCalculate]" -command ::reviewgame::extendedTime
   
@@ -330,7 +330,7 @@ proc ::reviewgame::checkPlayerMove {} {
       incr ::reviewgame::movesLikeEngine
       
     } else  {
-      $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove] : [::trans $user_move] ($analysisEngine(score,3))" -foreground blue
+      $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove] : [::trans $user_move] ($analysisEngine(score,3))" -foreground dodgerblue3
     }
     sc_var exit
     sc_move forward
