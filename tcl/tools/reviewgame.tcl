@@ -232,8 +232,6 @@ proc ::reviewgame::mainLoop {} {
   
   # Phase 1 : analyze the move really played during the game
   if {$sequence == 0} {
-    $w.finfo.sc1 configure -text ""
-    $w.finfo.sc2 configure -text ""
     set ::reviewgame::movePlayed [ sc_game info nextMoveNT ]
     if {$::reviewgame::movePlayed == ""} {
       return
@@ -263,6 +261,9 @@ proc ::reviewgame::mainLoop {} {
   
   $w.finfo.sol configure -text "[::tr ShowSolution]"
   
+  $w.finfo.sc1 configure -text ""
+  $w.finfo.sc2 configure -text ""
+  $w.finfo.sc3 configure -text ""
   checkPlayerMove
   
   $w.finfo.proceed configure -state normal
