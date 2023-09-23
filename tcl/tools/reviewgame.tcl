@@ -87,25 +87,31 @@ proc ::reviewgame::start {} {
   pack $w.finfo -expand 1 -fill both
   ttk::progressbar $w.finfo.pb -orient horizontal -length 100 -value 0 -mode determinate
   ttk::label $w.finfo.pblabel -image tb_stop -compound left
-  ttk::label $w.finfo.sc1 -text "-"
-  ttk::label $w.finfo.sc2 -text "-"
-  ttk::label $w.finfo.sc3 -foreground dodgerblue3 -text "-"
+  ttk::label $w.finfo.sc1 -text "[::tr GameReviewEngineScore]"
+  ttk::label $w.finfo.sc2 -text "[::tr GameReviewGameMoveScore]"
+  ttk::label $w.finfo.sc3 -foreground dodgerblue3 -text ""
+  ttk::label $w.finfo.eval1 -text ""
+  ttk::label $w.finfo.eval2 -text ""
+  ttk::label $w.finfo.eval3 -text ""
   ttk::button $w.finfo.proceed -textvar ::tr(Continue) -command ::reviewgame::proceed
   ttk::button $w.finfo.extended -text "[::tr GameReviewReCalculate]" -command ::reviewgame::extendedTime
   
   set row 0
-  grid $w.finfo.pb -column 0 -row $row -sticky we -columnspan 3
+  grid $w.finfo.pb -column 0 -row $row -sticky we -columnspan 2
   incr row
-  grid $w.finfo.pblabel -column 0 -row $row -sticky we -columnspan 3
+  grid $w.finfo.pblabel -column 0 -row $row -sticky we -columnspan 2
   incr row
   grid $w.finfo.proceed -column 0 -row $row -sticky nw
   grid $w.finfo.extended -column 1 -row $row -sticky nw
   incr row
-  grid $w.finfo.sc1 -column 0 -row $row  -columnspan 2 -sticky nw
+  grid $w.finfo.sc1 -column 0 -row $row -sticky nw
+  grid $w.finfo.eval1 -column 1 -row $row -sticky nw -padx 10
   incr row
-  grid $w.finfo.sc2 -column 0 -row $row  -columnspan 2 -sticky nw
+  grid $w.finfo.sc2 -column 0 -row $row -sticky nw
+  grid $w.finfo.eval2 -column 1 -row $row -sticky nw -padx 10
   incr row
-  grid $w.finfo.sc3 -column 0 -row $row  -columnspan 2 -sticky nw
+  grid $w.finfo.sc3 -column 0 -row $row -sticky nw
+  grid $w.finfo.eval3 -column 1 -row $row -sticky nw -padx 10
   incr row
   
   ttk::button $w.finfo.sol -text [::tr ShowSolution ] -command ::reviewgame::showSolution
@@ -114,7 +120,8 @@ proc ::reviewgame::start {} {
   
   # Display statistics
   ttk::label $w.finfo.stats -text ""
-  grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 3
+  grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 2
+  incr row
 
   ttk::frame $w.fbuttons
   pack $w.fbuttons -fill x
@@ -134,6 +141,15 @@ proc ::reviewgame::start {} {
   ::reviewgame::resetValues
   ::reviewgame::mainLoop
   
+}
+
+proc ::reviewgame::resetResults {} {
+  set w $::reviewgame::window
+  $w.finfo.sol configure -text "[::tr ShowSolution]"
+  $w.finfo.eval1 configure -text ""
+  $w.finfo.eval2 configure -text ""
+  $w.finfo.eval3 configure -text ""
+  $w.finfo.sc3 configure -text ""
 }
 
 proc ::reviewgame::callback {cmd args} {
@@ -255,11 +271,7 @@ proc ::reviewgame::mainLoop {} {
     return
   }
   
-  $w.finfo.sol configure -text "[::tr ShowSolution]"
-  
-  $w.finfo.sc1 configure -text ""
-  $w.finfo.sc2 configure -text ""
-  $w.finfo.sc3 configure -text ""
+  ::reviewgame::resetResults
   checkPlayerMove
   
   $w.finfo.extended configure -state normal
@@ -285,13 +297,12 @@ proc ::reviewgame::checkPlayerMove {} {
   # ponder on user's move if he did not play the same move as in match
   if {$user_move != $::reviewgame::movePlayed} {
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewCheckingYourMove]"
-    $w.finfo.sc3 configure -text ""
     ::reviewgame::startAnalyze $::reviewgame::thinkingTime ;#$user_move
     vwait ::reviewgame::sequence
     if { $::reviewgame::bailout } { return }
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewYourMoveWasAnalyzed]"
     # display user's score
-    $w.finfo.sc3 configure -text "[::tr GameReviewScoreOfYourMove] : $analysisEngine(score,2)"
+    $w.finfo.eval3 configure -text "$analysisEngine(score,2)\t[::trans $user_move]"
     set moveForward 1
   }
   
@@ -301,14 +312,16 @@ proc ::reviewgame::checkPlayerMove {} {
     set  ::reviewgame::sequence 0
     
     $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground "sea green"
+    set result "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed]"
+    $w.finfo.eval3 configure -text $result
     if {  ! $::reviewgame::solutionDisplayed } {
       incr ::reviewgame::movesLikePlayer
     }
     
     # display played move score
-    $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
+    $w.finfo.eval2 configure -text $result
     # display engine's score
-    $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] : $analysisEngine(score,2) [::trans [lindex $analysisEngine(moves,2) 0]]"
+    $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
     $w.finfo.pblabel configure -image tb_play -text ""
     set sequence 0
     set moveForward 1
@@ -322,22 +335,24 @@ proc ::reviewgame::checkPlayerMove {} {
       incr ::reviewgame::movesLikeEngine
       
     } else  {
-      $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove] : [::trans $user_move] ($analysisEngine(score,3))" -foreground dodgerblue3
+      $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove]" -foreground dodgerblue3
+      $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]"
     }
     sc_var exit
     sc_move forward
     updateBoard -pgn -animate
     # display played move score
-    $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
+    $w.finfo.eval2 configure -text "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed]"
     # display engine's score
-    $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] $analysisEngine(score,2) [::trans [lindex $analysisEngine(moves,2) 0]]"
+    $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
   } else  {
     
     # user played a bad move : comment it and restart the process
     
     set  ::reviewgame::sequence 2
     
-    $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood] $analysisEngine(score,3) [::trans $user_move]\n([::trans $analysisEngine(moves,3)])" -foreground red
+    $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood]" -foreground red
+    $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]\n([::trans $analysisEngine(moves,3)])"
     sc_pos addNag "?"
     
     # Instead of adding info in comments, add real variations
@@ -356,9 +371,9 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.extended configure -state normal
     
     # display played move score
-    $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1)"
+    $w.finfo.eval2 configure -text "$analysisEngine(score,1)"
     # display engine's score
-    $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] $analysisEngine(score,2)"
+    $w.finfo.eval1 configure -text "$analysisEngine(score,2)"
     set  ::reviewgame::sequence 2
     # after 1000 ::reviewgame::mainLoop
     # return
@@ -518,8 +533,7 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
 ################################################################################
 proc ::reviewgame::proceed {} {
   # skip this move, go to next cycle
-  set w $::reviewgame::window
-  $w.finfo.sol configure -text "[::tr ShowSolution]"
+  ::reviewgame::resetResults
   sc_var exit
   sc_move forward
   sc_move forward
