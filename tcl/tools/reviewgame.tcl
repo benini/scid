@@ -234,7 +234,9 @@ proc ::reviewgame::mainLoop {} {
   # in start position, it must be user's turn
   if { ! [::reviewgame::isPlayerTurn] && $sequence == 0} {
     if { [ sc_game info nextMoveNT ] != ""} {
-      ::move::Forward
+      # "wrong" side to move, make the next game move to sychronize "board" and game 
+      sc_move forward
+      updateBoard -pgn -animate
     }
   }
   
