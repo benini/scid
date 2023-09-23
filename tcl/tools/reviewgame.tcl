@@ -346,7 +346,7 @@ proc ::reviewgame::checkPlayerMove {} {
     
     set  ::reviewgame::sequence 2
     
-    $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood] $analysisEngine(score,3) \n([::trans $analysisEngine(moves,3)])" -foreground red
+    $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood] $analysisEngine(score,3) [::trans $user_move]\n([::trans $analysisEngine(moves,3)])" -foreground red
     sc_pos addNag "?"
     
     # Instead of adding info in comments, add real variations
