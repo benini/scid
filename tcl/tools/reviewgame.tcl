@@ -279,6 +279,7 @@ proc ::reviewgame::checkPlayerMove {} {
   global ::reviewgame::prevScore ::reviewgame::prevLine ::reviewgame::analysisEngine ::reviewgame::nextEngineMove
   global ::reviewgame::sequence ::reviewgame::useExtendedTime
   set w $::reviewgame::window
+  set moveForward 0
   
   incr ::reviewgame::numberMovesPlayed
   
@@ -296,6 +297,7 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewYourMoveWasAnalyzed]"
     # display user's score
     $w.finfo.sc3 configure -text "[::tr GameReviewScoreOfYourMove] : $analysisEngine(score,2)"
+    set moveForward 1
   }
   
   # User guessed the correct move played in game
@@ -318,6 +320,7 @@ proc ::reviewgame::checkPlayerMove {} {
     }
     $w.finfo.pblabel configure -image tb_play -text ""
     set sequence 0
+    set moveForward 1
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
     
     set  ::reviewgame::sequence 0
@@ -356,6 +359,7 @@ proc ::reviewgame::checkPlayerMove {} {
     sc_move addSan $analysisEngine(moves,2)
     sc_var exit
     updateBoard -pgn
+    set moveForward 0
     
     # allows a re-calculation
     $w.finfo.extended configure -state normal
@@ -368,7 +372,11 @@ proc ::reviewgame::checkPlayerMove {} {
     # after 1000 ::reviewgame::mainLoop
     # return
   }
-  
+  if { $moveForward } {
+      sc_var exit
+      sc_move forward
+      updateBoard -pgn -animate
+  }
 }
 ################################################################################
 #
@@ -506,6 +514,9 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   incr ::reviewgame::sequence
   set pv [lindex $::analysis(multiPV$::reviewgame::engineSlot) 0]
   set analysisEngine(score,$sequence) [lindex $pv 1]
+  if { $sequence == 1 } { ;# change score to white perspective
+      set analysisEngine(score,$sequence) [expr 0 - $analysisEngine(score,$sequence)]
+  }
   set analysisEngine(moves,$sequence) [lindex $pv 2]
   
   set analysisEngine(analyzeMode) 0
