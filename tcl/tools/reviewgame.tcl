@@ -33,7 +33,6 @@ namespace eval reviewgame {
   
   set progressBarStep 1
   set progressBarTimer 0
-  set autoProceed 0
 }
 
 ################################################################################
@@ -81,10 +80,6 @@ proc ::reviewgame::start {} {
   incr row
   grid $w.fparam.lmargin -column 0 -row $row -sticky nw
   grid $w.fparam.margin -column 1 -row $row -sticky nw
-  incr row
-  
-  ttk::checkbutton $w.fparam.cbproceed -text "[::tr GameReviewAutoContinue]" -variable ::reviewgame::autoProceed
-  grid $w.fparam.cbproceed -column 0 -row $row  -columnspan 2 -sticky nw
   
   pack $w.fparam -expand 1 -fill both
   
@@ -314,10 +309,6 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
     # display engine's score
     $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] : $analysisEngine(score,2) [::trans [lindex $analysisEngine(moves,2) 0]]"
-    if { $::reviewgame::autoProceed } {
-      # guessed the correct move played during the game, so continue directly
-      proceed
-    }
     $w.finfo.pblabel configure -image tb_play -text ""
     set sequence 0
     set moveForward 1
