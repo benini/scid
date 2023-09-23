@@ -247,6 +247,7 @@ proc ::reviewgame::mainLoop {} {
   
   $w.finfo.pblabel configure -image tb_play -text "[::tr GameReviewEnterYourMove]"
   $w.finfo.sol configure -state normal
+  $w.finfo.proceed configure -state normal
   
   # is this player's turn (which always plays from bottom of the board) ?
   if { [::reviewgame::isPlayerTurn] } {
@@ -261,7 +262,6 @@ proc ::reviewgame::mainLoop {} {
   $w.finfo.sc3 configure -text ""
   checkPlayerMove
   
-  $w.finfo.proceed configure -state normal
   $w.finfo.extended configure -state normal
   updateStats
   set ::reviewgame::useExtendedTime 0
@@ -517,8 +517,13 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
 #
 ################################################################################
 proc ::reviewgame::proceed {} {
-  # next cycle
-  ::move::Forward
+  # skip this move, go to next cycle
+  set w $::reviewgame::window
+  $w.finfo.sol configure -text "[::tr ShowSolution]"
+  sc_var exit
+  sc_move forward
+  sc_move forward
+  updateBoard -pgn -animate
   ::reviewgame::resetValues
   set ::reviewgame::prevFen [sc_pos fen]
   after 1000 ::reviewgame::mainLoop
