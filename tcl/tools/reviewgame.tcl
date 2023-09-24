@@ -9,7 +9,6 @@
 # - permettre tourner l'échiquier après le démarrage
 
 namespace eval reviewgame {
-  
   set prevScore 0
   set prevLine ""
   set nextEngineMove ""
@@ -140,10 +139,9 @@ proc ::reviewgame::start {} {
   ::setPlayMode "::reviewgame::callback"
   ::reviewgame::resetValues
   ::reviewgame::mainLoop
-  
 }
 
-proc ::reviewgame::resetResults {} {
+proc ::reviewgame::clearEvaluation {} {
   set w $::reviewgame::window
   $w.finfo.sol configure -text "[::tr ShowSolution]"
   $w.finfo.eval1 configure -text ""
@@ -269,17 +267,17 @@ proc ::reviewgame::mainLoop {} {
   
   # is this player's turn (which always plays from bottom of the board) ?
   if { [::reviewgame::isPlayerTurn] } {
-    after 1000  ::reviewgame::mainLoop
+    after 1000 ::reviewgame::mainLoop
     return
   }
   
-  ::reviewgame::resetResults
+  ::reviewgame::clearEvaluation
   checkPlayerMove
   
   $w.finfo.extended configure -state normal
   updateStats
   set ::reviewgame::useExtendedTime 0
-  after 1000  ::reviewgame::mainLoop
+  after 1000 ::reviewgame::mainLoop
 }
 ################################################################################
 #
@@ -310,7 +308,6 @@ proc ::reviewgame::checkPlayerMove {} {
   
   # User guessed the correct move played in game
   if {$user_move == $::reviewgame::movePlayed } {
-    
     set  ::reviewgame::sequence 0
     
     $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground "sea green"
@@ -328,7 +325,6 @@ proc ::reviewgame::checkPlayerMove {} {
     set sequence 0
     set moveForward 1
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
-    
     set  ::reviewgame::sequence 0
     
     # User guessed engine's move
@@ -348,9 +344,7 @@ proc ::reviewgame::checkPlayerMove {} {
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
   } else  {
-    
     # user played a bad move : comment it and restart the process
-    
     set  ::reviewgame::sequence 2
     
     $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood]" -foreground red
@@ -390,7 +384,6 @@ proc ::reviewgame::checkPlayerMove {} {
 #
 ################################################################################
 proc ::reviewgame::updateStats {} {
-  
   set l $::reviewgame::window.finfo.stats
   if { ![::board::isFlipped .main.board] } {
     set player [sc_game info white]
@@ -441,7 +434,6 @@ proc ::reviewgame::launchengine {} {
   global ::reviewgame::analysisEngine
   
   ::uci::resetUciInfo $::reviewgame::engineSlot
-  
   set analysisEngine(analyzeMode) 0
   
   # find engine
@@ -528,14 +520,14 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   set analysisEngine(moves,$sequence) [lindex $pv 2]
   
   set analysisEngine(analyzeMode) 0
-  ::reviewgame::sendToEngine  "stop"
+  ::reviewgame::sendToEngine "stop"
 }
 ################################################################################
 #
 ################################################################################
 proc ::reviewgame::proceed {} {
   # skip this move, go to next cycle
-  ::reviewgame::resetResults
+  ::reviewgame::clearEvaluation
   sc_var exit
   sc_move forward
   sc_move forward
@@ -548,7 +540,6 @@ proc ::reviewgame::proceed {} {
 # Rethink on the position with extended time
 ################################################################################
 proc ::reviewgame::extendedTime {} {
-  
   # if already calculating, do nothing
   if { $::reviewgame::analysisEngine(analyzeMode)} {
     return
@@ -561,7 +552,6 @@ proc ::reviewgame::extendedTime {} {
   set ::reviewgame::useExtendedTime 1
   set ::reviewgame::sequence 0
   ::reviewgame::mainLoop
-  
 }
 ################################################################################
 #
