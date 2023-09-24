@@ -321,6 +321,7 @@ proc ::reviewgame::checkPlayerMove {} {
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
     set  ::reviewgame::sequence 0
     
+    # ToDo: Check if position has changed
     # User guessed engine's move
     if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
       $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground "sea green"
@@ -349,10 +350,16 @@ proc ::reviewgame::checkPlayerMove {} {
     # sc_pos setComment "($analysisEngine(score,3)) $analysisEngine(moves,3) Engine : ($analysisEngine(score,2)) \n[::trans $analysisEngine(moves,2)]"
     sc_pos setComment "($analysisEngine(score,3))"
     sc_move addSan $analysisEngine(moves,3)
+    set ::reviewgame::sequence 2
     sc_var exit
     sc_var create
     sc_pos setComment "Engine : ($analysisEngine(score,2))"
-    sc_move addSan $analysisEngine(moves,2)
+    if { [catch { sc_move addSan $analysisEngine(moves,2) } ] } {
+        ::reviewgame::clearEvaluation
+        tk_messageBox -type ok -icon warning -title "Scid" -message "Position changed. New evaluation required!"
+        ::reviewgame::resetValues
+        set ::reviewgame::sequence 0
+    }
     sc_var exit
     updateBoard -pgn
     set moveForward 0
@@ -364,7 +371,6 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.eval2 configure -text "$analysisEngine(score,1)"
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)"
-    set  ::reviewgame::sequence 2
     # after 1000 ::reviewgame::mainLoop
     # return
   }
