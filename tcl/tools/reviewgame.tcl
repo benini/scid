@@ -5,9 +5,6 @@
 ### Try to guess the moves of a game
 #
 
-# TODO :
-# - permettre tourner l'échiquier après le démarrage
-
 namespace eval reviewgame {
   set prevScore 0
   set prevLine ""
@@ -221,21 +218,18 @@ proc ::reviewgame::mainLoop {} {
   
   after cancel ::reviewgame::mainLoop
   
-  if { ! [ checkConsistency ] } { puts "ERROR checkConsistency returns false" ; return }
-  
   if { $useExtendedTime } {
     set ::reviewgame::thinkingTime $::reviewgame::timeExtended
   } else {
     set ::reviewgame::thinkingTime $::reviewgame::timeShort
   }
   
-  # in start position, it must be user's turn
-  if { ! [::reviewgame::isPlayerTurn] && $sequence == 0} {
-    if { [ sc_game info nextMoveNT ] != ""} {
-      # "wrong" side to move, make the next game move to sychronize "board" and game 
-      sc_move forward
+  # check player side, if  not at bottom, flip the board
+  if { ((! [::reviewgame::isPlayerTurn] && $sequence == 0) || ! [ checkConsistency ]) && \
+       [ sc_game info nextMoveNT ] != "" } {
+      ::board::flip .main.board
+      set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
       updateBoard -pgn -animate
-    }
   }
   
   $w.finfo.proceed configure -state disabled
@@ -565,7 +559,7 @@ proc ::reviewgame::updateProgressBar {} {
 ################################################################################
 proc ::reviewgame::checkConsistency {} {
   if { $::reviewgame::boardFlipped != [::board::isFlipped .main.board] } {
-    tk_messageBox -type ok -icon warning -title "Scid" -message "Choose the side BEFORE starting the exercise"
+    tk_messageBox -type ok -icon warning -title "Scid" -message "Player side is not at bottom. Flipping board!"
     return 0
   }
   return 1
