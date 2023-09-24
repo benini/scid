@@ -6,22 +6,11 @@
 #
 
 namespace eval reviewgame {
-  set prevScore 0
-  set prevLine ""
-  set nextEngineMove ""
-  set prevFen ""
   set engineSlot 6
   set window ".reviewgame"
   set timeShort 3
   set timeExtended 15
   set margin 0.3
-  set moveOfGameIsBest 0
-  # The score of the move really played
-  set scoreGame 0.0
-  # The score of the user's move
-  set scorePlayed 0.0
-  # Score of the engine
-  set scoreEngine 0.0
   
   set sequence 0
   
@@ -129,7 +118,6 @@ proc ::reviewgame::start {} {
   bind $w <Destroy> "if {\[string equal $w %W\]} {::reviewgame::endTraining}"
   bind $w <F1> { helpWindow ReviewGame }
   ::createToplevelFinalize $w
-  set ::reviewgame::prevFen [sc_pos fen]
   set ::reviewgame::movesLikePlayer 0
   set ::reviewgame::movesLikeEngine 0
   set ::reviewgame::numberMovesPlayed 0
@@ -193,27 +181,10 @@ proc ::reviewgame::isPlayerTurn {} {
   return 0
 }
 ################################################################################
-# Handle the case where position was changed not during normal play but certainly with
-# move back / forward / rewind commands
-################################################################################
-proc ::reviewgame::abnormalContinuation {} {
-  ::reviewgame::stopAnalyze
-  ::reviewgame::resetValues
-  ::windows::stats::Refresh
-  updateBoard -pgn
-  if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
-    ::board::flip .main.board
-  }
-  set ::reviewgame::prevFen [sc_pos fen]
-  ::reviewgame::startAnalyze
-  ::reviewgame::mainLoop
-}
-################################################################################
 # waits for the user to play and check the move played
 ################################################################################
 proc ::reviewgame::mainLoop {} {
-  global ::reviewgame::prevScore ::reviewgame::prevLine ::reviewgame::analysisEngine ::reviewgame::nextEngineMove
-  global ::reviewgame::sequence ::reviewgame::useExtendedTime
+  global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine
   set w $::reviewgame::window
   
   after cancel ::reviewgame::mainLoop
@@ -277,8 +248,7 @@ proc ::reviewgame::mainLoop {} {
 #
 ################################################################################
 proc ::reviewgame::checkPlayerMove {} {
-  global ::reviewgame::prevScore ::reviewgame::prevLine ::reviewgame::analysisEngine ::reviewgame::nextEngineMove
-  global ::reviewgame::sequence ::reviewgame::useExtendedTime
+  global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine
   set w $::reviewgame::window
   set moveForward 0
   
@@ -302,12 +272,12 @@ proc ::reviewgame::checkPlayerMove {} {
   
   # User guessed the correct move played in game
   if {$user_move == $::reviewgame::movePlayed } {
-    set  ::reviewgame::sequence 0
+    set ::reviewgame::sequence 0
     
     $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground "sea green"
     set result "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed]"
     $w.finfo.eval3 configure -text $result
-    if {  ! $::reviewgame::solutionDisplayed } {
+    if { ! $::reviewgame::solutionDisplayed } {
       incr ::reviewgame::movesLikePlayer
     }
     
@@ -326,7 +296,6 @@ proc ::reviewgame::checkPlayerMove {} {
     if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
       $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground "sea green"
       incr ::reviewgame::movesLikeEngine
-      
     } else  {
       $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove]" -foreground dodgerblue3
       $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]"
@@ -371,8 +340,6 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.eval2 configure -text "$analysisEngine(score,1)"
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)"
-    # after 1000 ::reviewgame::mainLoop
-    # return
   }
   if { $moveForward } {
       sc_var exit
@@ -415,10 +382,6 @@ proc ::reviewgame::isGoodScore {engine player} {
 #   Resets global data.
 ################################################################################
 proc ::reviewgame::resetValues {} {
-  set ::reviewgame::prevScore 0
-  set ::reviewgame::prevLine ""
-  set ::reviewgame::nextEngineMove ""
-  set ::reviewgame::prevFen ""
   set ::reviewgame::sequence 0
   set ::reviewgame::analysisEngine(analyzeMode) 0
   set ::reviewgame::bailout 0
@@ -533,7 +496,6 @@ proc ::reviewgame::proceed {} {
   sc_move forward
   updateBoard -pgn -animate
   ::reviewgame::resetValues
-  set ::reviewgame::prevFen [sc_pos fen]
   after 1000 ::reviewgame::mainLoop
 }
 ################################################################################
