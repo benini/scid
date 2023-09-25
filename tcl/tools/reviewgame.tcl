@@ -11,7 +11,7 @@ namespace eval reviewgame {
   set timeShort 3
   set timeExtended 15
   set margin 0.3
-  
+  set prevFen ""
   set sequence 0
   
   array set analysisEngine {}
@@ -208,6 +208,7 @@ proc ::reviewgame::mainLoop {} {
   
   # Phase 1 : analyze the move really played during the game
   if {$sequence == 0} {
+    set ::reviewgame::prevFen [sc_pos fen]
     set ::reviewgame::movePlayed [ sc_game info nextMoveNT ]
     if {$::reviewgame::movePlayed == ""} {
       return
@@ -252,8 +253,20 @@ proc ::reviewgame::checkPlayerMove {} {
   set w $::reviewgame::window
   set moveForward 0
   
-  incr ::reviewgame::numberMovesPlayed
+  # check for position change
+  sc_move back
+  set actFen [sc_pos fen]
+  sc_move forward
+  if { $actFen != $::reviewgame::prevFen } {
+      tk_messageBox -type ok -icon warning -title "Scid" -message "Position changed. New evaluation required!"
+      ::reviewgame::resetValues
+      set ::reviewgame::sequence 0
+      sc_var exit
+      updateBoard -pgn -animate
+      return
+  }
   
+  incr ::reviewgame::numberMovesPlayed
   # Phase 3 : ponder on user's move if different of best engine move and move played
   # We know user has played
   set user_move [sc_game info previousMoveNT]
@@ -323,12 +336,7 @@ proc ::reviewgame::checkPlayerMove {} {
     sc_var exit
     sc_var create
     sc_pos setComment "Engine : ($analysisEngine(score,2))"
-    if { [catch { sc_move addSan $analysisEngine(moves,2) } ] } {
-        ::reviewgame::clearEvaluation
-        tk_messageBox -type ok -icon warning -title "Scid" -message "Position changed. New evaluation required!"
-        ::reviewgame::resetValues
-        set ::reviewgame::sequence 0
-    }
+    sc_move addSan $analysisEngine(moves,2)
     sc_var exit
     updateBoard -pgn
     set moveForward 0
