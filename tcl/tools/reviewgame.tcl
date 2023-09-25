@@ -184,7 +184,7 @@ proc ::reviewgame::isPlayerTurn {} {
 # waits for the user to play and check the move played
 ################################################################################
 proc ::reviewgame::mainLoop {} {
-  global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine
+  global ::reviewgame::sequence ::reviewgame::useExtendedTime
   set w $::reviewgame::window
   
   after cancel ::reviewgame::mainLoop
@@ -302,9 +302,8 @@ proc ::reviewgame::checkPlayerMove {} {
     set sequence 0
     set moveForward 1
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
-    set  ::reviewgame::sequence 0
+    set ::reviewgame::sequence 0
     
-    # ToDo: Check if position has changed
     # User guessed engine's move
     if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
       $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground "sea green"
@@ -315,14 +314,13 @@ proc ::reviewgame::checkPlayerMove {} {
     }
     sc_var exit
     sc_move forward
-    updateBoard -pgn -animate
     # display played move score
     $w.finfo.eval2 configure -text "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed]"
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
   } else  {
     # user played a bad move : comment it and restart the process
-    set  ::reviewgame::sequence 2
+    set ::reviewgame::sequence 2
     
     $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood]" -foreground red
     $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]\n([::trans $analysisEngine(moves,3)])"
@@ -447,7 +445,7 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   
   # Check that the engine has not already had analyze mode started:
   if {$analysisEngine(analyzeMode)} {
-    ::reviewgame::sendToEngine  "exit"
+    ::reviewgame::sendToEngine "exit"
   }
   set analysisEngine(analyzeMode) 1
   after cancel ::reviewgame::stopAnalyze
@@ -535,7 +533,7 @@ proc ::reviewgame::updateProgressBar {} {
 ################################################################################
 proc ::reviewgame::checkConsistency {} {
   if { $::reviewgame::boardFlipped != [::board::isFlipped .main.board] } {
-    tk_messageBox -type ok -icon warning -title "Scid" -message "Player side is not at bottom. Flipping board!"
+    tk_messageBox -type ok -icon warning -title "Scid" -message "Player side is not at bottom. Board is rotated!"
     return 0
   }
   return 1
