@@ -195,7 +195,7 @@ proc ::reviewgame::mainLoop {} {
     set ::reviewgame::thinkingTime $::reviewgame::timeShort
   }
   
-  # check player side, if  not at bottom, flip the board
+  # check player side, if not at bottom, flip the board
   if { ((! [::reviewgame::isPlayerTurn] && $sequence == 0) || ! [ checkConsistency ]) && \
        [ sc_game info nextMoveNT ] != "" } {
       ::board::flip .main.board
@@ -232,7 +232,7 @@ proc ::reviewgame::mainLoop {} {
   $w.finfo.proceed configure -state normal
   
   # is this player's turn (which always plays from bottom of the board) ?
-  if { [::reviewgame::isPlayerTurn] } {
+  if { [sc_pos fen] == $::reviewgame::prevFen } {
     after 1000 ::reviewgame::mainLoop
     return
   }
@@ -251,7 +251,7 @@ proc ::reviewgame::mainLoop {} {
 proc ::reviewgame::checkPlayerMove {} {
   global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine
   set w $::reviewgame::window
-  set moveForward 0
+  set moveForward 1
   
   # check for position change
   sc_move back
@@ -270,9 +270,10 @@ proc ::reviewgame::checkPlayerMove {} {
   # Phase 3 : ponder on user's move if different of best engine move and move played
   # We know user has played
   set user_move [sc_game info previousMoveNT]
-  
-  # ponder on user's move if he did not play the same move as in match
-  if {$user_move != $::reviewgame::movePlayed} {
+  set engine_move [ lindex $analysisEngine(moves,2) 0]
+
+  # ponder on user's move if he did not play the same move as in match or the engine
+  if {$user_move != $::reviewgame::movePlayed && $user_move != $engine_move} {
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewCheckingYourMove]"
     ::reviewgame::startAnalyze $::reviewgame::thinkingTime ;#$user_move
     vwait ::reviewgame::sequence
@@ -280,7 +281,6 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewYourMoveWasAnalyzed]"
     # display user's score
     $w.finfo.eval3 configure -text "$analysisEngine(score,2)\t[::trans $user_move]"
-    set moveForward 1
   }
   
   # User guessed the correct move played in game
@@ -300,13 +300,13 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
     $w.finfo.pblabel configure -image tb_play -text ""
     set sequence 0
-    set moveForward 1
-  } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
+  } elseif { $user_move == $engine_move || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
     set ::reviewgame::sequence 0
     
     # User guessed engine's move
-    if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
+    if {$user_move == $engine_move} {
       $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground "sea green"
+      $w.finfo.eval3 configure -text "$analysisEngine(score,2)\t[::trans $engine_move]"
       incr ::reviewgame::movesLikeEngine
     } else  {
       $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove]" -foreground dodgerblue3
