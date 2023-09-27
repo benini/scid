@@ -1160,7 +1160,7 @@ proc ::board::mark::add {win args} {
     set args [linsert [lrange $args 1 end] 2 [lindex $args 0]]
   }
   # Add default arguments:
-  if {![regexp true|false|1|0 [lindex $args end]]} {
+  if {[lindex $args end] ni [list "true" "false" "1" "0"]} {
     lappend args "true"
   }
   if {[llength $args] == 4} { set args [linsert $args 2 ""]}

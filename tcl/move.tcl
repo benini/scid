@@ -55,13 +55,13 @@ proc ::move::showVarArrows {} {
 	if {$move != ""} {
 		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "green"
+		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#0000ff"
 	}
 	set varList [sc_var list UCI]
 	foreach { move } $varList {
 		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "blue"
+		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#00aaff"
 	}
 }
 
