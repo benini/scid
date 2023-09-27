@@ -189,10 +189,22 @@ public:
 	: SearchRange<dateT>(base, f) {
 		// Extract two whitespace-separated dates:
 		const char* v = strFirstWord(range);
-		min_ = date_EncodeFromString (v);
+		min_ = date_EncodeFromString(v);
 		const char* next = strNextWord(v);
-		max_ = (*next == 0) ? min_ : date_EncodeFromString (next);
-		if (min_ > max_) std::swap(min_, max_);
+		if (*next == 0) {
+			auto year = date_GetYear(min_);
+			auto month = date_GetMonth(min_);
+			auto day = date_GetDay(min_);
+			if (month == 0)
+				month = 12;
+			if (day == 0)
+				day = 31;
+			max_ = DATE_MAKE(year, month, day);
+		} else {
+			max_ = date_EncodeFromString(next);
+		}
+		if (min_ > max_)
+			std::swap(min_, max_);
 	}
 };
 
