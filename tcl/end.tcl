@@ -1171,23 +1171,6 @@ if {$loadAtStart(eco)} {
   }
 }
 
-################################################################################
-# returns a list of all toplevel windows, except some that are utilities
-################################################################################
-proc getTopLevel {} {
-
-  set topl {}
-  set exclude { ".glistExtra" ".menu" "." ".pgnPopup" }
-  foreach c [winfo children .] {
-    if { $c != [winfo toplevel $c] } { continue }
-    # Tk report .__tk_filedialog as toplevel window even if the window has been closed
-    if { [ lsearch $topl $c ] == -1 && [ lsearch $exclude $c ] == -1 && ![string match "\.__tk*" $c] } {
-      lappend topl $c
-    }
-  }
-  return $topl
-}
-
 # Disable ttk default left/right key bindings (they invoke ttk::notebook::CycleTab)
 bind TNotebook <Key-Right> {}
 bind TNotebook <Key-Left>  {}
