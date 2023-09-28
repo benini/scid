@@ -24,10 +24,7 @@ proc ::enginewin::listEngines {} {
 }
 
 # Sends the updated position to the active engines
-proc ::enginewin::onPosChanged { {ids ""} {newgame ""}} {
-    if {$newgame ne ""} {
-        ::enginewin::newGame $ids
-    }
+proc ::enginewin::onPosChanged { {ids ""}} {
     set position ""
     foreach {id state} [array get ::enginewin::engState] {
         if {$state ne "run"} { continue }
@@ -143,6 +140,8 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     grid rowconfigure $w 1 -weight 1
     grid rowconfigure $w 2 -weight 0
     grid columnconfigure $w 0 -weight 1
+
+    bind $w <<NewGame>> "set ::enginewin::newgame_$id true"
 
     # The engine should be closed before the debug .text is destroyed
     bind $w.config <Destroy> "
@@ -336,14 +335,6 @@ proc ::enginewin::changeOption {id name widget_or_value} {
     }
 }
 
-# Inform the engine that there is a new game
-proc ::enginewin::newGame { {ids ""} } {
-    foreach {id state} [array get ::enginewin::engState] {
-        if {$ids ne "" && $id ni $ids} { continue }
-        set ::enginewin::newgame_$id true
-    }
-}
-
 # Sets the current state of the engine and updates the relevant buttons.
 # The states are:
 # closed -> No engine is open.
@@ -505,7 +496,7 @@ proc ::enginewin::connectEngine {id enginename} {
     # Send a NewGame message to receive InfoReady when the engine completes the initialization.
     ::engine::send $id NewGame [list {}]
     # But also schedule a NewGame message, that depends on the position, when the engine starts.
-    ::enginewin::newGame $id
+    set ::enginewin::newgame_$id true
 }
 
 # Receive the engine's messages

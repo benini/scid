@@ -338,8 +338,12 @@ namespace eval ::notify {
     if {$pgn ne "pgnonly"} {
       # During the idle loop the engines can send Info messages for
       # the old position. Send now the new position to avoid that.
-      if {$pgn ne "newgame"} { set pgn "" }
-      ::enginewin::onPosChanged "" $pgn
+      if {$pgn eq "newgame"} {
+        foreach wnd [::win::getWindows] {
+          event generate $wnd <<NewGame>>
+        }
+      }
+      ::enginewin::onPosChanged
 
       # TODO: Move here the function in privPosChanged that don't care about
       #       the game text and are not slow.
