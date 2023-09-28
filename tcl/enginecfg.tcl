@@ -275,8 +275,15 @@ proc ::enginecfg::setOption {id idx value} {
 # Read an option's value from a widget and if it has changed sends a SetOptions
 # message to the engine.
 # Return true if a message was sent to the engine.
-proc ::enginecfg::changeOption {id idx widget} {
-    return [::enginecfg::onSubmitOption $id $idx $widget]
+# On error the widget style is set to Error.WidgetType
+proc ::enginecfg::setOptionFromWidget {id idx widget} {
+    set value [$widget get]
+    if {[catch {::enginecfg::setOption $id $idx $value} res]} {
+        $widget configure -style Error.[winfo class $widget]
+        return false
+    }
+    $widget configure -style {}
+    return $res
 }
 
 # Creates the widgets for engine configuration, like the engine path, command
@@ -451,7 +458,7 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
             if {$type eq "combo"} {
                 lassign [lsort -decreasing -integer [lmap elem $var_list { string length $elem }]] maxlen
                 ttk::combobox $w.value$i -width [incr maxlen] -values $var_list -state readonly
-                bind $w.value$i <<ComboboxSelected>> "::enginecfg::onSubmitOption $id $i %W"
+                bind $w.value$i <<ComboboxSelected>> "::enginecfg::setOptionFromWidget $id $i %W"
             } elseif {$type eq "check"} {
                 ttk::checkbutton $w.value$i -onvalue true -offvalue false -style Switch.Toolbutton -command \
                     "::enginecfg::setOption $id $i \[::update_switch_btn $w.value$i \]"
@@ -470,7 +477,7 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
                 }
                 # Special vars like %W cannot be used in <FocusOut> because the
                 # other events are forwarded to it
-                bind $w.value$i <FocusOut> "::enginecfg::onSubmitOption $id $i $w.value$i"
+                bind $w.value$i <FocusOut> "::enginecfg::setOptionFromWidget $id $i $w.value$i"
                 bind $w.value$i <Return> [bind $w.value$i <FocusOut>]
             }
             $w window create end -window $w.value$i -pady 2
@@ -609,19 +616,6 @@ proc ::enginecfg::onSubmitButton {id idx} {
         set value ""
     }
     ::engine::send $id SetOptions [list [list $name $value]]
-}
-
-# Read an option's value from widget and if it has changed sends a SetOptions
-# message to the engine.
-# Return true if a message was sent to the engine.
-proc ::enginecfg::onSubmitOption {id idx widget} {
-    set value [$widget get]
-    if {[catch {::enginecfg::setOption $id $idx $value} res]} {
-        $widget configure -style Error.[winfo class $widget]
-        return false
-    }
-    $widget configure -style {}
-    return $res
 }
 
 # Invoke ::engine::netserver to start/stop listening to remote connection.

@@ -88,7 +88,7 @@ proc ::enginewin::changeOption {id name widget_or_value} {
     set prev_state $::enginewin::engState($id)
     set idx [::enginecfg::findOption $id $name]
     if {[winfo exists $widget_or_value]} {
-        set changed [::enginecfg::onSubmitOption $id $idx $widget_or_value]
+        set changed [::enginecfg::setOptionFromWidget $id $idx $widget_or_value]
     } else {
         set changed [::enginecfg::setOption $id $idx $widget_or_value]
     }
