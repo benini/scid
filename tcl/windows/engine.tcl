@@ -83,20 +83,6 @@ proc ::enginewin::toggleStartStop { {id ""} {enginename ""} } {
     return [::enginewin::start $id $enginename]
 }
 
-# Sends a SetOptions message to the engine if an option's value is different.
-proc ::enginewin::changeOption {id name widget_or_value} {
-    set prev_state $::enginewin::engState($id)
-    set idx [::enginecfg::findOption $id $name]
-    if {[winfo exists $widget_or_value]} {
-        set changed [::enginecfg::setOptionFromWidget $id $idx $widget_or_value]
-    } else {
-        set changed [::enginecfg::setOption $id $idx $widget_or_value]
-    }
-    if {$changed && $prev_state in {run}} {
-        ::enginewin::sendPosition $id [set ::enginewin::position_$id]
-    }
-}
-
 proc ::enginewin::Open { {id ""} {enginename ""} } {
     if {$id == ""} {
         set id 1
@@ -271,6 +257,7 @@ proc ::enginewin::createButtonsBar {id btn display} {
         -command "::enginewin::toggleStartStop $id"
     #TODO: change the tooltip to "Start/stop engine"
     ::utils::tooltip::Set $btn.startStop [tr StartEngine]
+
     ttk::button $btn.lock -image tb_eng_lock -style Toolbutton -command "
         if {\$::enginewin::engState($id) eq {locked}} {
             ::enginewin::changeState $id run
@@ -288,6 +275,7 @@ proc ::enginewin::createButtonsBar {id btn display} {
         catch { wm withdraw .enginewinBoard }
     }
     ::utils::tooltip::Set $btn.lock [tr LockEngine]
+
     ttk::button $btn.addbestmove -image tb_eng_addbestmove -style Toolbutton \
         -command "::enginewin::exportMoves $display.pv_lines 1.0"
     ::utils::tooltip::Set $btn.addbestmove [tr AddMove]
@@ -297,47 +285,30 @@ proc ::enginewin::createButtonsBar {id btn display} {
     ttk::button $btn.addlines -image tb_eng_addlines -style Toolbutton \
         -command "::enginewin::exportLines $display.pv_lines"
     ::utils::tooltip::Set $btn.addlines [tr AddAllVariations]
+
     ttk::spinbox $btn.multipv -increment 1 -width 4 -state disabled \
         -validate key -validatecommand { string is integer %P } \
         -command "after idle \[bind $btn.multipv <FocusOut>\]"
     bind $btn.multipv <Return> { {*}[bind %W <FocusOut>] }
     bind $btn.multipv <FocusOut> "::enginewin::changeOption $id multipv $btn.multipv"
     ::utils::tooltip::Set $btn.multipv [tr Lines]
+
     menu $btn.threads_menu
-    $btn.threads_menu add command -label "1 CPU" -command \
-        "::enginewin::changeOption $id threads 1"
-    $btn.threads_menu add command -label "2 CPU" -command \
-        "::enginewin::changeOption $id threads 2"
-    $btn.threads_menu add command -label "4 CPU" -command \
-        "::enginewin::changeOption $id threads 4"
-    $btn.threads_menu add command -label "8 CPU" -command \
-        "::enginewin::changeOption $id threads 8"
-    $btn.threads_menu add command -label "16 CPU" -command \
-        "::enginewin::changeOption $id threads 16"
-    $btn.threads_menu add command -label "32 CPU" -command \
-        "::enginewin::changeOption $id threads 32"
-    $btn.threads_menu add command -label "64 CPU" -command \
-        "::enginewin::changeOption $id threads 64"
+    foreach {threads_value} {1 2 4 8 16 32 64} {
+        $btn.threads_menu add command -label "$threads_value CPU" -command \
+            "::enginewin::changeOption $id threads $threads_value"
+    }
     #TODO: change keyboard focus to the threads widget
     $btn.threads_menu add command -label "..." -command \
         "::enginewin::changeState $id showConfig"
     ttk::menubutton $btn.threads -text "1 CPU" -state disabled \
         -style Toolbutton -direction above -menu $btn.threads_menu
+
     menu $btn.hash_menu
-    $btn.hash_menu add command -label "16 MB" -command \
-        "::enginewin::changeOption $id hash 16"
-    $btn.hash_menu add command -label "64 MB" -command \
-        "::enginewin::changeOption $id hash 64"
-    $btn.hash_menu add command -label "256 MB" -command \
-        "::enginewin::changeOption $id hash 256"
-    $btn.hash_menu add command -label "1024 MB" -command \
-        "::enginewin::changeOption $id hash 1024"
-    $btn.hash_menu add command -label "2048 MB" -command \
-        "::enginewin::changeOption $id hash 2048"
-    $btn.hash_menu add command -label "4096 MB" -command \
-        "::enginewin::changeOption $id hash 4096"
-    $btn.hash_menu add command -label "8192 MB" -command \
-        "::enginewin::changeOption $id hash 8192"
+    foreach {hash_value} {16 64 256 1024 2048 4096 8192} {
+        $btn.hash_menu add command -label "$hash_value MB" -command \
+            "::enginewin::changeOption $id hash $hash_value"
+    }
     #TODO: change keyboard focus to the hash widget
     $btn.hash_menu add command -label "..." -command \
         "::enginewin::changeState $id showConfig"
@@ -349,6 +320,20 @@ proc ::enginewin::createButtonsBar {id btn display} {
     grid $btn.startStop $btn.lock $btn.addbestmove $btn.addbestline \
          $btn.addlines $btn.multipv $btn.threads $btn.hash x $btn.config -sticky ew
     grid columnconfigure $btn 8 -weight 1
+}
+
+# Sends a SetOptions message to the engine if an option's value is different.
+proc ::enginewin::changeOption {id name widget_or_value} {
+    set prev_state $::enginewin::engState($id)
+    set idx [::enginecfg::findOption $id $name]
+    if {[winfo exists $widget_or_value]} {
+        set changed [::enginecfg::setOptionFromWidget $id $idx $widget_or_value]
+    } else {
+        set changed [::enginecfg::setOption $id $idx $widget_or_value]
+    }
+    if {$changed && $prev_state in {run}} {
+        ::enginewin::sendPosition $id [set ::enginewin::position_$id]
+    }
 }
 
 # Inform the engine that there is a new game
