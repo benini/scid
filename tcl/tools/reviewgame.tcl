@@ -70,25 +70,19 @@ proc ::reviewgame::start {} {
   
   ttk::frame $w.finfo
   pack $w.finfo -expand 1 -fill both
-  ttk::progressbar $w.finfo.pb -orient horizontal -length 100 -value 0 -mode determinate
+  ttk::progressbar $w.finfo.pb -orient horizontal -length 300 -value 0 -mode determinate
   ttk::label $w.finfo.pblabel -image tb_stop -compound left
   ttk::label $w.finfo.sc1 -text "[::tr GameReviewEngineScore]"
   ttk::label $w.finfo.sc2 -text "[::tr GameReviewGameMoveScore]"
   ttk::label $w.finfo.sc3 -foreground dodgerblue3 -text ""
   ttk::label $w.finfo.eval1 -text ""
   ttk::label $w.finfo.eval2 -text ""
-  ttk::label $w.finfo.eval3 -text ""
+  ttk::label $w.finfo.eval3 -text "" -wraplength 400
   ttk::button $w.finfo.proceed -textvar ::tr(Continue) -command ::reviewgame::proceed
   ttk::button $w.finfo.extended -text "[::tr GameReviewReCalculate]" -command ::reviewgame::extendedTime
-  
+  ttk::button $w.finfo.sol -text [::tr ShowSolution ] -command ::reviewgame::showSolution
+
   set row 0
-  grid $w.finfo.pb -column 0 -row $row -sticky we -columnspan 2
-  incr row
-  grid $w.finfo.pblabel -column 0 -row $row -sticky we -columnspan 2
-  incr row
-  grid $w.finfo.proceed -column 0 -row $row -sticky nw
-  grid $w.finfo.extended -column 1 -row $row -sticky nw
-  incr row
   grid $w.finfo.sc1 -column 0 -row $row -sticky nw
   grid $w.finfo.eval1 -column 1 -row $row -sticky nw -padx 10
   incr row
@@ -98,15 +92,19 @@ proc ::reviewgame::start {} {
   grid $w.finfo.sc3 -column 0 -row $row -sticky nw
   grid $w.finfo.eval3 -column 1 -row $row -sticky nw -padx 10
   incr row
-  
-  ttk::button $w.finfo.sol -text [::tr ShowSolution ] -command ::reviewgame::showSolution
+  grid $w.finfo.pb -column 0 -row $row -sticky w -columnspan 2 -pady { 10 0 }
+  incr row
+  grid $w.finfo.pblabel -column 0 -row $row -sticky we -columnspan 2
+  incr row
+  grid $w.finfo.proceed -column 0 -row $row -sticky nw
+  grid $w.finfo.extended -column 1 -row $row -sticky nw
+  incr row
   grid $w.finfo.sol -column 0 -row $row  -sticky nw
   incr row
-  
+
   # Display statistics
   ttk::label $w.finfo.stats -text ""
-  grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 2
-  incr row
+  grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 2 -pady { 10 0 }
 
   ttk::frame $w.fbuttons
   pack $w.fbuttons -fill x
