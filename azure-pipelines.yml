@@ -167,10 +167,10 @@ jobs:
   - script: |
       mkdir build_tidy && cd build_tidy
       cmake -DCMAKE_CXX_FLAGS="-g -Wall -Wextra -Werror -pedantic" -DSPELLCHKVALIDATE=ON \
-            -DCMAKE_CXX_COMPILER=clang++-12 \
+            -DCMAKE_CXX_COMPILER=clang++ \
              $(Build.SourcesDirectory)
       make VERBOSE=1
-      run-clang-tidy-12 -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
+      run-clang-tidy -header-filter=.* -checks=performance-*,clang-*,-clang-analyzer-security.insecureAPI.strcpy ../src 2> /dev/null
     displayName: clang-tidy
   - script: |
       mkdir build && cd build
@@ -181,7 +181,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS="-fno-exceptions -fno-rtti" \
             -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" \
-            -DCMAKE_CXX_COMPILER=g++-10 \
              $(Build.SourcesDirectory)
       make package
     displayName: Generate SCID
