@@ -209,6 +209,7 @@ proc ::reviewgame::mainLoop {} {
     set ::reviewgame::prevFen [sc_pos fen]
     set ::reviewgame::movePlayed [ sc_game info nextMoveNT ]
     if {$::reviewgame::movePlayed == ""} {
+      $w.finfo.pblabel configure -image tb_stop -text ""
       return
     }
     sc_move forward
@@ -299,7 +300,6 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.eval2 configure -text $result
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
-    $w.finfo.pblabel configure -image tb_play -text ""
     set sequence 0
   } elseif { $user_move == $engine_move || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
     set ::reviewgame::sequence 0
