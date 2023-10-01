@@ -211,6 +211,9 @@ proc ::reviewgame::mainLoop {} {
     if {$::reviewgame::movePlayed == ""} {
       return
     }
+    sc_move forward
+    set ::reviewgame::nextGameMove [ sc_game info nextMove ]
+    sc_move back
     $w.finfo.pblabel configure -image tb_stop -text "[::tr GameReviewAnalyzingMovePlayedDuringTheGame]"
     ::reviewgame::startAnalyze $::reviewgame::thinkingTime $::reviewgame::movePlayed
     vwait ::reviewgame::sequence
@@ -247,10 +250,10 @@ proc ::reviewgame::mainLoop {} {
 #
 ################################################################################
 proc ::reviewgame::checkPlayerMove {} {
-  global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine
+  global ::reviewgame::sequence ::reviewgame::useExtendedTime ::reviewgame::analysisEngine ::animateDelay
   set w $::reviewgame::window
   set moveForward 1
-  
+
   # check for position change
   sc_move back
   set actFen [sc_pos fen]
@@ -311,9 +314,18 @@ proc ::reviewgame::checkPlayerMove {} {
       $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]"
     }
     sc_var exit
+    # animate one move backward and one forward to show the changes to the user
+    # without animation it may be confusion what happend
+    # maybe an other then the global variable should be used, but this make sure the animation is finished
+    after $animateDelay set continueNextMove 1
+    updateBoard -pgn -animate
+    vwait continueNextMove
     sc_move forward
-    # display played move score
-    $w.finfo.eval2 configure -text "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed]"
+    updateBoard -pgn -animate
+    after $animateDelay set continueNextMove 1
+    vwait continueNextMove
+    # display played move score and two next game move. User can look what happend
+    $w.finfo.eval2 configure -text "$analysisEngine(score,1)\t[::trans $::reviewgame::movePlayed] $::reviewgame::nextGameMove"
     # display engine's score
     $w.finfo.eval1 configure -text "$analysisEngine(score,2)\t[::trans [lindex $analysisEngine(moves,2) 0]]"
   } else  {
@@ -334,7 +346,7 @@ proc ::reviewgame::checkPlayerMove {} {
     sc_pos setComment "Engine : ($analysisEngine(score,2))"
     sc_move addSan $analysisEngine(moves,2)
     sc_var exit
-    updateBoard -pgn
+    updateBoard -pgn -animate
     set moveForward 0
     
     # allows a re-calculation
