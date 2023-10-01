@@ -336,15 +336,15 @@ proc ::reviewgame::checkPlayerMove {} {
     $w.finfo.eval3 configure -text "$analysisEngine(score,3)\t[::trans $user_move]\n([::trans $analysisEngine(moves,3)])"
     sc_pos addNag "?"
     
-    # Instead of adding info in comments, add real variations
-    # sc_pos setComment "($analysisEngine(score,3)) $analysisEngine(moves,3) Engine : ($analysisEngine(score,2)) \n[::trans $analysisEngine(moves,2)]"
-    sc_pos setComment "($analysisEngine(score,3))"
+    # Add variations for the bad move and the engine move
+    sc_pos setComment "$analysisEngine(score,3)"
     sc_move addSan $analysisEngine(moves,3)
     set ::reviewgame::sequence 2
     sc_var exit
     sc_var create
-    sc_pos setComment "Engine : ($analysisEngine(score,2))"
-    sc_move addSan $analysisEngine(moves,2)
+    sc_move addSan [lindex $analysisEngine(moves,2) 0]
+    sc_pos setComment "Engine: $analysisEngine(score,2)"
+    sc_move addSan [lrange $analysisEngine(moves,2) 1 end]
     sc_var exit
     updateBoard -pgn -animate
     set moveForward 0
