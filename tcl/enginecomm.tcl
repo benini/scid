@@ -67,6 +67,7 @@
 #
 # message InfoGo {
 #   string position = 1;
+#   repeated Limit limits = 2;
 # }
 #
 # message InfoPV {

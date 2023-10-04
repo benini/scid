@@ -44,7 +44,7 @@ proc ::enginewin::sendPosition {id position} {
         set ::enginewin::newgame_$id false
         ::engine::send $id NewGame [list analysis post_pv post_wdl [sc_game variant]]
     }
-    ::engine::send $id Go [list $position]
+    ::engine::send $id Go [list $position [set ::enginewin::limits_$id]]
 }
 
 # Start an engine (if necessary it will opens a new enginewin window).
@@ -148,6 +148,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
         unset ::enginewin::engState($id)
         ::engine::close $id
         unset ::enginewin::engConfig_$id
+        unset ::enginewin::limits_$id
         unset ::enginewin::position_$id
         unset ::enginewin::newgame_$id
         unset ::enginewin::startTime_$id
@@ -157,6 +158,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     options.persistent ::enginewin_lastengine($id) ""
     set ::enginewin::engState($id) {}
     set ::enginewin::engConfig_$id {}
+    set ::enginewin::limits_$id {}
     set ::enginewin::position_$id ""
     set ::enginewin::newgame_$id true
     set ::enginewin::startTime_$id [clock milliseconds]
@@ -313,22 +315,45 @@ proc ::enginewin::createButtonsBar {id btn display} {
         "::enginewin::changeState $id showConfig"
     ttk::menubutton $btn.hash -text "?? MB" -state disabled \
         -style Toolbutton -direction above -menu $btn.hash_menu
+
+    menu $btn.limits_menu
+    foreach {depth_value} {16 20 24 28 32 36 40} {
+        $btn.limits_menu add command -label "[tr Depth]: $depth_value" -command \
+            "::enginewin::changeOption $id _go_limits \[list \[list depth $depth_value \] \]"
+    }
+    $btn.limits_menu add command -label "[tr Depth]: ∞" -command \
+        "::enginewin::changeOption $id _go_limits {}"
+    ttk::menubutton $btn.limits -style Toolbutton -direction above -menu $btn.limits_menu
+    trace add variable ::enginewin::limits_$id write [list apply {{btn varname args} {
+        set value [set $varname]
+        if {$value eq ""} {
+            $btn configure -text "[tr Depth]: ∞"
+        } else {
+            $btn configure -text [string map [list depth "[tr Depth]:"] [join $value]]
+        }
+    }} $btn.limits]
+
     ttk::button $btn.config -image tb_eng_config -style Toolbutton \
         -command "::enginewin::changeState $id toggleConfig"
     $btn.config state pressed
     grid $btn.startStop $btn.lock $btn.addbestmove $btn.addbestline \
-         $btn.addlines $btn.multipv $btn.threads $btn.hash x $btn.config -sticky ew
-    grid columnconfigure $btn 8 -weight 1
+         $btn.addlines $btn.multipv $btn.threads $btn.hash $btn.limits x $btn.config -sticky ew
+    grid columnconfigure $btn 9 -weight 1
 }
 
 # Sends a SetOptions message to the engine if an option's value is different.
 proc ::enginewin::changeOption {id name widget_or_value} {
     set prev_state $::enginewin::engState($id)
-    set idx [::enginecfg::findOption $id $name]
-    if {[winfo exists $widget_or_value]} {
-        set changed [::enginecfg::setOptionFromWidget $id $idx $widget_or_value]
+    if {$name eq "_go_limits"} {
+        set ::enginewin::limits_$id $widget_or_value
+        set changed true
     } else {
-        set changed [::enginecfg::setOption $id $idx $widget_or_value]
+        set idx [::enginecfg::findOption $id $name]
+        if {[winfo exists $widget_or_value]} {
+            set changed [::enginecfg::setOptionFromWidget $id $idx $widget_or_value]
+        } else {
+            set changed [::enginecfg::setOption $id $idx $widget_or_value]
+        }
     }
     if {$changed && $prev_state in {run}} {
         ::enginewin::sendPosition $id [set ::enginewin::position_$id]
@@ -513,7 +538,7 @@ proc ::enginewin::callback {id msg} {
             ::enginewin::changeState $id idle
         }
         "InfoGo" {
-            lassign $msgData ::enginewin::position_$id
+            lassign $msgData ::enginewin::position_$id ::enginewin::limits_$id
             ::enginewin::changeState $id run
         }
         "InfoPV" {
