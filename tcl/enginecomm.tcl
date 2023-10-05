@@ -568,7 +568,16 @@ proc ::uci::sendGo {id msgData} {
 }
 
 proc ::xboard::sendGo {id msgData} {
-    lassign $msgData position
+    lassign $msgData position limits
+    #TODO: we need to reset the limits, but some engines, such as Crafty, do no support "new".
+    ::engine::rawsend $id "new"
+    foreach {limit} $limits {
+        lassign $limit limit_type limit_value
+        switch $limit_type {
+            "depth" { ::engine::rawsend $id "sd $limit_value" }
+            "movetime" { ::engine::rawsend $id "st $limit_value" }
+        }
+    }
     regexp {^position(?: fen)? (.*?) moves(.*)$} $position -> fen moves
     if {$fen eq "startpos"} {
         set fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
