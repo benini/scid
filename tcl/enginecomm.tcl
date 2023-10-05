@@ -20,8 +20,9 @@
 # NewGame    >> InfoReady
 # StopGo     >> InfoReady
 # Go         >> InfoGo
-#            >> the engine will repeatedly send InfoPV replies until a new
+#            >> InfoPV replies will be sent repeatedly by the engine until a new
 #               message is received or one of the Go's limits is reached.
+#            >> InfoBestMove if a limit has been reached.
 #
 # message InfoConfig {
 #   enum Protocol {
@@ -94,6 +95,10 @@
 #   }
 #   ScoreWDL score_wdl = 11;
 #   string pv = 12;
+# }
+#
+# message InfoBestMove {
+#   string best_move = 1;
 # }
 #
 # Sent to the engine to change the value of one or more options.
@@ -272,6 +277,7 @@ proc ::engine::destroy_ {id {localReply ""}} {
     # When the engine's output is parsed its options and PV infos are stored in this vars:
     unset ::engconn(options_$id)
     unset -nocomplain ::engconn(InfoPV_$id)
+    unset -nocomplain ::engconn(InfoBestMove_$id)
 
     unset -nocomplain ::engconn(nextHandshake_$id)
 
@@ -388,6 +394,12 @@ proc ::engine::onMessages_ {id channel} {
         if {$::engconn(protocol_$id) eq "network"} {
             ::engine::reply $id $line
         } elseif {[$::engconn(parseline$id) $id $line]} {
+            if {[info exists ::engconn(InfoBestMove_$id)]} {
+                if {$::engconn(waitReply_$id) ne "StopGo"} {
+                    ::engine::reply $id [list InfoBestMove $::engconn(InfoBestMove_$id)]
+                }
+                unset ::engconn(InfoBestMove_$id)
+            }
             ::engine::done_ $id
         }
         if {[info exists ::engconn(InfoPV_$id)]} {
@@ -591,7 +603,7 @@ proc ::xboard::sendGo {id msgData} {
     foreach move $moves {
         ::engine::rawsend $id "$usermove$move"
     }
-    ::engine::rawsend $id "analyze"
+    ::engine::rawsend $id [expr {$limits eq "" ? "analyze" : "go"}]
 }
 
 proc ::xboard::sendStopGo {id} {
@@ -611,6 +623,11 @@ proc ::xboard::parseline {id line} {
         }
         set ::engconn(InfoPV_$id) [list 1 $depth {} $nodes {} {} {} $time $score $scoreType {} $pv]
         return 0
+    }
+
+    if {[string match "move *" $line]} {
+        lassign [split $line] -> ::engconn(InfoBestMove_$id)
+        return 1
     }
 
     if {[string match "pong *" $line]} {
@@ -743,10 +760,11 @@ proc ::uci::parseline {id line} {
         return 0
     }
 
-    if {[string match "bestmove*" $line]} {
+    if {[string match "bestmove *" $line]} {
+        lassign [split $line] -> ::engconn(InfoBestMove_$id) ponder ponder_move
         #TODO:
-        # lassign [lsearch -inline -index 0 $::engconn(options_$id) "Ponder"] -> ponder
-        # if {$ponder eq "true"}
+        # lassign [lsearch -inline -index 0 $::engconn(options_$id) "Ponder"] -> do_ponder
+        # if {$do_ponder eq "true" && $ponder eq "ponder"}
         #   set ::engconn(waitReply_$id) "Go?"
         #   ::engine::rawsend $id position ...
         #   ::engine::rawsend $id go ponder ...
