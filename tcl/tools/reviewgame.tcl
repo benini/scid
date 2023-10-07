@@ -199,7 +199,7 @@ proc ::reviewgame::mainLoop {} {
        [ sc_game info nextMoveNT ] != "" } {
       ::board::flip .main.board
       set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
-      ::notify::PosChanged -pgn -animate
+#      ::notify::PosChanged "" -animate
   }
   
   $w.finfo.proceed configure -state disabled
@@ -265,7 +265,7 @@ proc ::reviewgame::checkPlayerMove {} {
       ::reviewgame::resetValues
       set ::reviewgame::sequence 0
       sc_var exit
-      ::notify::PosChanged -pgn -animate
+      ::notify::PosChanged "" -animate
       return
   }
   
@@ -319,7 +319,7 @@ proc ::reviewgame::checkPlayerMove {} {
     # without animation it may be confusion what happend
     # maybe an other then the global variable should be used, but this make sure the animation is finished
     after $animateDelay set continueNextMove 1
-    ::notify::PosChanged -pgn -animate
+    ::notify::PosChanged "" -animate
     vwait continueNextMove
     ::move::Forward
     after $animateDelay set continueNextMove 1
@@ -346,7 +346,7 @@ proc ::reviewgame::checkPlayerMove {} {
     sc_pos setComment "Engine: $analysisEngine(score,2)"
     sc_move addSan [lrange $analysisEngine(moves,2) 1 end]
     sc_var exit
-    ::notify::PosChanged -pgn -animate
+    ::notify::PosChanged "" -animate
     set moveForward 0
     
     # allows a re-calculation
