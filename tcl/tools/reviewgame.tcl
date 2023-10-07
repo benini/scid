@@ -139,6 +139,7 @@ proc ::reviewgame::callback {cmd args} {
         return [expr { $::reviewgame::sequence != 2 || ![::reviewgame::isPlayerTurn] }]
       }
       stop { ::reviewgame::endTraining }
+      moveForward { return 1 }
   }
   return 0
 }
@@ -198,7 +199,7 @@ proc ::reviewgame::mainLoop {} {
        [ sc_game info nextMoveNT ] != "" } {
       ::board::flip .main.board
       set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
-      updateBoard -pgn -animate
+      ::notify::PosChanged -pgn -animate
   }
   
   $w.finfo.proceed configure -state disabled
@@ -264,7 +265,7 @@ proc ::reviewgame::checkPlayerMove {} {
       ::reviewgame::resetValues
       set ::reviewgame::sequence 0
       sc_var exit
-      updateBoard -pgn -animate
+      ::notify::PosChanged -pgn -animate
       return
   }
   
@@ -318,10 +319,9 @@ proc ::reviewgame::checkPlayerMove {} {
     # without animation it may be confusion what happend
     # maybe an other then the global variable should be used, but this make sure the animation is finished
     after $animateDelay set continueNextMove 1
-    updateBoard -pgn -animate
+    ::notify::PosChanged -pgn -animate
     vwait continueNextMove
-    sc_move forward
-    updateBoard -pgn -animate
+    ::move::Forward
     after $animateDelay set continueNextMove 1
     vwait continueNextMove
     # display played move score and two next game move. User can look what happend
@@ -346,7 +346,7 @@ proc ::reviewgame::checkPlayerMove {} {
     sc_pos setComment "Engine: $analysisEngine(score,2)"
     sc_move addSan [lrange $analysisEngine(moves,2) 1 end]
     sc_var exit
-    updateBoard -pgn -animate
+    ::notify::PosChanged -pgn -animate
     set moveForward 0
     
     # allows a re-calculation
@@ -359,8 +359,7 @@ proc ::reviewgame::checkPlayerMove {} {
   }
   if { $moveForward } {
       sc_var exit
-      sc_move forward
-      updateBoard -pgn -animate
+      ::move::Forward
   }
 }
 ################################################################################
@@ -508,9 +507,8 @@ proc ::reviewgame::proceed {} {
   # skip this move, go to next cycle
   ::reviewgame::clearEvaluation
   sc_var exit
-  sc_move forward
-  sc_move forward
-  updateBoard -pgn -animate
+  ::move::Forward
+  ::move::Forward
   ::reviewgame::resetValues
   after 1000 ::reviewgame::mainLoop
 }
