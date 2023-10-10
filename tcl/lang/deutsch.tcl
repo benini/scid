@@ -1589,22 +1589,22 @@ translate D FICSNetError {Netzwerkfehler\nKeine Verbindung zu }
 translate D GameReview {Partieanalyse}
 translate D GameReviewTimeExtended {Lange Bedenkzeit}
 translate D GameReviewMargin {Fehlergrenze}
-translate D GameReviewAutoContinue {Bei korrektem Zug Automatisch weiter}
+translate D GameReviewAutoContinue {Bei korrektem Zug automatisch weiter}
 translate D GameReviewReCalculate {Verwende lange Bedenkzeit}
 translate D GameReviewAnalyzingMovePlayedDuringTheGame {Analysiere den Partiezug}
 translate D GameReviewAnalyzingThePosition {Analysiere Stellung}
 translate D GameReviewEnterYourMove {Zug eingeben}
 translate D GameReviewCheckingYourMove {Überprüfe Antwort}
 translate D GameReviewYourMoveWasAnalyzed {Antwort wurde analysiert}
-translate D GameReviewYouPlayedSameMove {Identischer Zug zur Partie}
-translate D GameReviewScoreOfYourMove {Wertung des Antwortzuges}
-translate D GameReviewGameMoveScore {Wertung des Partiezuges}
+translate D GameReviewYouPlayedSameMove {Gleicher Zug wie in der Partie}
+translate D GameReviewScoreOfYourMove {BeWertung des Antwortzuges}
+translate D GameReviewGameMoveScore {Bewertung des Partiezuges}
 translate D GameReviewEngineScore {Bewertung der Engine}
-translate D GameReviewYouPlayedLikeTheEngine {Antworzug wie Engine}
-translate D GameReviewNotEngineMoveButGoodMove {Nicht der Computerzug, aber ebenfalls ein guter Zug!}
-translate D GameReviewMoveNotGood {Dieser Zug ist nicht gut. Bewertung:}
-translate D GameReviewMovesPlayedLike {Züge gespielt wie Partie}
-translate D GameReviewMovesPlayedEngine {Züge wie Computer gespielt}
+translate D GameReviewYouPlayedLikeTheEngine {Gleicher Zug wie die Engine}
+translate D GameReviewNotEngineMoveButGoodMove {Auch ein guter Zug}
+translate D GameReviewMoveNotGood {Der Zug ist nicht gut}
+translate D GameReviewMovesPlayedLike {Züge gespielt wie}
+translate D GameReviewMovesPlayedEngine {Züge gespielt wie die Engine}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgCGeneraloptions {Allgemeine Einstellungen}
