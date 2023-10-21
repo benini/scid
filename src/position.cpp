@@ -1114,29 +1114,49 @@ Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
 // Position::TreeCalcAttacks():
 //      Calculate attack score for a side on a square,
 //      using a recursive tree search.
-int
-Position::TreeCalcAttacks(colorT side, squareT target)
+bool
+Position::TreeCalcAttacks(int* dResult, squareT target)
 {
-  int maxScore = -2;
-  uint moveCount = 0, zeroCount = 0;
+  int worstScore = PV_KING;
+  bool hasCaptures = false;
   MoveList moveList;
   GenerateCaptures(&moveList);
-  for (uint i=0; i < moveList.Size(); i++) {
-    simpleMoveT *smPtr = moveList.Get(i);
+
+  for (auto smPtr = moveList.begin(); smPtr < moveList.end(); smPtr++) {
     if (smPtr->to == target) {
-      if (piece_IsKing(Board[target])) return -1;
-      moveCount++;
+      int score = 0;
+      pieceT piece = smPtr->capturedPiece;
+      hasCaptures = true;
+      if (piece_IsKing(piece)) {
+        worstScore = -PV_KING;
+        break;
+      }
       DoSimpleMove(*smPtr);
-      int score = TreeCalcAttacks(color_Flip(side), target);
+      TreeCalcAttacks(&score, target);
+      switch (piece_Type(piece)) {
+        case QUEEN:
+          score = -score - PV_QUEEN;
+          break;
+        case ROOK:
+          score = -score - PV_ROOK;
+          break;
+        case KNIGHT:
+          score = -score - PV_KNIGHT;
+          break;
+        case BISHOP:
+          score = -score - PV_BISHOP;
+          break;
+        case PAWN:
+          score = -score - PV_PAWN;
+          break;
+      }
       UndoSimpleMove(smPtr);
-      if (!score && ++zeroCount > 1) return -2;
-      if (score > maxScore) maxScore = score;
+      if (score < worstScore) worstScore = score;
     }
   }
-
- if (!moveCount) return 0;
- if (!maxScore) return -1;
- return -maxScore;
+  
+  if (hasCaptures) *dResult = worstScore;
+  return hasCaptures;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

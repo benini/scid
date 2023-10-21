@@ -4677,13 +4677,13 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             Position pos(*db->game->GetCurrentPos());
             for (colorT c = WHITE; c <= BLACK; c++) {
                 for (uint i = 0; i < pos.GetCount(c); i++) {
+                    int att;
                     squareT sq = pos.GetList(c)[i];
                     pos.SetToMove(color_Flip(c));
-                    int att = pos.TreeCalcAttacks(color_Flip(c), sq);
-                    if (att) {
+                    if (pos.TreeCalcAttacks(&att, sq)) {
                       appendUintElement(ti, sq);
-                      if (att > 1) Tcl_AppendElement(ti, "green");
-                      else if (att > 0) Tcl_AppendElement(ti, "yellow");
+                      if (att > 0) Tcl_AppendElement(ti, "green");
+                      else if (att == 0) Tcl_AppendElement(ti, "yellow");
                       else Tcl_AppendElement(ti, "red");
                     }
                 }

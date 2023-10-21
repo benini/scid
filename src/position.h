@@ -18,6 +18,7 @@
 
 #include "common.h"
 #include "movelist.h"
+#include <climits>
 #include <stdio.h>
 #include <string>
 #include <string_view>
@@ -50,6 +51,16 @@ const genMovesT
     GEN_CAPTURES = 1,
     GEN_NON_CAPS = 2,
     GEN_ALL_MOVES = (GEN_CAPTURES | GEN_NON_CAPS);
+
+// Piece values for Position::CalcTreeAttacks()
+typedef int8_t pieceValueT;
+const pieceValueT
+    PV_PAWN = 1,
+    PV_KNIGHT = 3,
+    PV_BISHOP = 3,
+    PV_ROOK = 5,
+    PV_QUEEN = 9,
+    PV_KING = INT8_MAX;
 
 
 // SANList: list of legal move strings in SAN.
@@ -248,7 +259,7 @@ public:
     template <bool check_legal = true> bool canCastle(bool king_side) const;
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares) const;
-    int         TreeCalcAttacks (colorT toMove, squareT target);
+    bool        TreeCalcAttacks (int* dResult, squareT target);
     uint        CalcNumChecks () const {
                     return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }
@@ -322,4 +333,3 @@ private:
 //////////////////////////////////////////////////////////////////////
 //  EOF: position.h
 //////////////////////////////////////////////////////////////////////
-
