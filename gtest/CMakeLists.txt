@@ -14,7 +14,7 @@
 # along with Scid. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 
 # googletest
 if(NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/googletest")
