@@ -451,9 +451,9 @@ private:
 			f_.open(spellfile + std::string(".validate"));
 		}
 		void ignoredLine(const char* line) {
-			f_ << "Ignored line:" << std::endl;
-			f_ << line << std::endl;
-			f_ << std::endl;
+			f_ << "Ignored line:" << '\n';
+			f_ << line << '\n';
+			f_ << '\n';
 		}
 		static bool cmpIdxAlias(const Idx& a, const Idx& b) {
 			return a.alias == b.alias;
@@ -466,12 +466,12 @@ private:
 				if (it == it_end) return;
 
 				IdxIt it_endDuplicates = std::upper_bound(it, it_end, *it);
-				f_ << "Duplicate hash: " << it->alias << std::endl;
+				f_ << "Duplicate hash: " << it->alias << '\n';
 				for(; it != it_endDuplicates; it++) {
 					f_ << spell_.names_[nt][it->idx];
-					f_ << " - Idx:" << it->idx << std::endl;
+					f_ << " - Idx:" << it->idx << '\n';
 				}
-				f_ << std::endl;
+				f_ << '\n';
 			}
 		}
 		void checkEloData() {
@@ -479,7 +479,7 @@ private:
 				std::string s = spell_.pElo_[i].isValid();
 				if (! s.empty()) {
 					f_ << "Elo error: " << s << " --- ";
-					f_ << spell_.names_[NAME_PLAYER][i] << std::endl;
+					f_ << spell_.names_[NAME_PLAYER][i] << '\n';
 				}
 			}
 		}
