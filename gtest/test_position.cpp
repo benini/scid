@@ -866,3 +866,62 @@ TEST(Test_PrintFen, illegal_castling_flag) {
 		}
 	}
 }
+
+struct treeCalcAttacksTestCaseT {
+  const char*   position;
+  const squareT square;
+  const int     expectedScore;
+  const bool    hasCaptures;
+};
+
+TEST(Test_TreeCalcAttacks, positions) {
+  // clang-format off
+  static const treeCalcAttacksTestCaseT cases[] = {
+    { "r2qkbnr/pppb1ppp/2n1p3/3p4/3P4/1QP3P1/PP2PPBP/RNB1K1NR w KQkq - 0 1",  D5,
+      1, true },
+    { "r2qkbnr/pppb1ppp/2n1p3/3p4/3P1B2/1QP3P1/PP2PPBP/RN2K1NR b KQkq - 1 1",  D4,
+      2, true },
+    { "rnbqk1nr/ppp1ppbp/3p2p1/4P3/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4", D6,
+      0, true },
+    { "rnbqk1nr/ppp1ppbp/3p2p1/4P3/3P1P2/8/PPP3PP/RNBQKBNR b KQkq - 0 4", E5,
+      2, true },
+    { "3rk1nr/pp2ppbp/1q4p1/4P3/3n4/1P2BB2/P5PP/RN1QK2R w KQk - 0 13", D4,
+      4, true },
+    { "rnb1k2r/ppp2ppp/5n2/2b2N2/2p1P3/4B3/PP3PPP/RN1qKB1R w KQkq - 0 8", D1,
+      -9, true },
+    { "rnb1k2r/ppp2ppp/5n2/2b2N2/2p1P3/4B3/PP3PPP/RN1qKB1R w KQkq - 0 8", C5,
+      0, false },
+    { "rnQqkb1r/pp2pBpp/2p5/6B1/3P4/2P2N2/P1b3PP/R3K2R b KQkq - 0 12", C8,
+      0, false },
+    { "2r1kb1r/1b3ppp/p3pP2/7n/Np1p4/4B2N/PP2QP1q/1K1R1BR1 b k - 2 20", H3,
+      6, true },
+    { "2r1kb1r/1b3ppp/p3pP2/7n/Np1p4/4B2N/PP2QP1q/1K1R1BR1 b k - 2 20", G1,
+      4, true },
+    { "2r1kb1r/1b3ppp/p3pP2/7n/Np1p4/4B2N/PP2QP1q/1K1R1BR1 b k - 2 20", F2,
+      8, true },
+    { "2r1kb1r/1b3ppp/p3pP2/7n/Np1p4/4B2N/PP2QP1q/1K1R1BR1 b k - 2 20", E3,
+      -2, true },
+    { "r3kb1r/pp1nqppp/2p1p1b1/6N1/2BP1BP1/2P2Q2/P6P/4RRK1 w kq - 4 14", E6,
+      -5, true }
+  };
+  // clang-format on
+
+  Position pos;
+  char buf[64];
+  auto it = std::begin(cases);
+  for (; it != std::end(cases); ++it) {
+    int score = 0;
+    bool result;
+    colorT toMove;
+    pieceT pieceUnderCapture;
+
+    pos.ReadFromFEN(it->position);
+    toMove = pos.GetToMove();
+    pieceUnderCapture = pos.GetPiece(it->square);
+    ASSERT_TRUE(pieceUnderCapture == EMPTY || piece_Color(pieceUnderCapture) == color_Flip(toMove));
+
+    result = pos.TreeCalcAttacks(&score, it->square);
+    EXPECT_EQ(result, it->hasCaptures);
+    EXPECT_EQ(score,  it->expectedScore);
+  }
+}
