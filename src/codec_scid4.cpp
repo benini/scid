@@ -24,6 +24,7 @@
 
 #include "codec_scid4.h"
 #include <algorithm>
+#include <limits>
 #include <string_view>
 
 namespace {
@@ -506,7 +507,10 @@ void encodeIndexEntry(const IndexEntry* ie, char* buf_it) {
 	WriteTwoBytes(bElo);
 
 	ASSERT(ie->GetFinalMatSig() < (1ULL << 24));
-	ASSERT(ie->GetStoredLineCode() < (1ULL << 8));
+	static_assert(
+	    !std::numeric_limits<decltype(ie->GetStoredLineCode())>::is_signed &&
+	    std::numeric_limits<decltype(ie->GetStoredLineCode())>::max() <
+	        (1ULL << 8));
 	uint32_t FinalMatSig = ie->GetFinalMatSig();
 	FinalMatSig |= static_cast<uint32_t>(ie->GetStoredLineCode()) << 24;
 	WriteFourBytes(FinalMatSig);
