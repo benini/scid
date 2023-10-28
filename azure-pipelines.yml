@@ -147,6 +147,16 @@ jobs:
       sudo apt-get -y install tcl-dev cloc
     displayName: download tclk
   - script: |
+      wget https://apt.llvm.org/llvm.sh
+      chmod +x ./llvm.sh
+      sudo ./llvm.sh 17 all
+      sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 200
+      sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 200
+      sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 200
+      sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 200
+      sudo update-alternatives --install /usr/bin/run-clang-tidy run-clang-tidy /usr/bin/run-clang-tidy-17 200
+    displayName: Install Clang 17
+  - script: |
       cloc src --exclude-dir=egtb,mtbgen,polyglot
       cloc tcl --exclude-dir=lang
     displayName: count line of code
