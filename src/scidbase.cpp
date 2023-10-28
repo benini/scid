@@ -619,11 +619,9 @@ errorT scidBaseT::compact(const Progress& progress) {
 
 	// 2) Create the list of games to be copied
 	std::vector<std::pair<uint64_t, gamenumT>> sort;
-	uint n_deleted = 0;
 	for (gamenumT i = 0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry(i);
 		if (ie->GetDeleteFlag()) {
-			n_deleted++;
 			continue;
 		}
 		uint64_t order = static_cast<uint64_t>(ie->GetStoredLineCode()) << 56;
