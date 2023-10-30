@@ -931,7 +931,7 @@ Engine::DoMove (ScoredMove * sm) {
 inline void
 Engine::UndoMove (ScoredMove * sm) {
     PopRepeat();
-    Pos.UndoSimpleMove(sm);
+    Pos.UndoSimpleMove(*sm);
     Ply--;
 }
 
@@ -2223,7 +2223,7 @@ Engine::PrintPV (uint depth, int score, const char * note)
     Output ("\n");
     // Undo each PV move that was made:
     for (; i > 0; i--) {
-        Pos.UndoSimpleMove (&(pv->move[i-1]));
+        Pos.UndoSimpleMove (pv->move[i-1]);
     }
 }
 
@@ -2270,7 +2270,7 @@ Engine::PerfTest (uint depth)
         auto sm = mlist.Get(i);
         Pos.DoSimpleMove (*sm);
         nmoves += PerfTest (depth-1);
-        Pos.UndoSimpleMove (sm);
+        Pos.UndoSimpleMove (*sm);
     }
     return nmoves;
 }

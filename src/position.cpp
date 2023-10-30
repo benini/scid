@@ -1131,7 +1131,7 @@ int Position::TreeCalcAttacks(squareT target) {
 	for (auto const& sm : moves) {
 		DoSimpleMove(sm);
 		int score = TreeCalcAttacks(target);
-		UndoSimpleMove(&sm);
+		UndoSimpleMove(sm);
 		if (score == 0 && ++zeroCount > 1)
 			return -2;
 		if (score > maxScore)
@@ -1624,22 +1624,19 @@ void Position::DoSimpleMove(simpleMoveT const& sm) {
 // Position::UndoSimpleMove():
 //      Take back a simple move that has been made with DoSimpleMove().
 //
-void
-Position::UndoSimpleMove (simpleMoveT const* m)
-{
-    ASSERT (m != NULL);
-    const squareT from = m->from;
-    const squareT to = m->to;
+void Position::UndoSimpleMove(simpleMoveT const& sm) {
+    const squareT from = sm.from;
+    const squareT to = sm.to;
     const auto pieceNum = ListPos[to];
     pieceT p = Board[to];
-    EPTarget = m->epSquare;
-    Castling = m->castleFlags;
-    HalfMoveClock = m->oldHalfMoveClock;
+    EPTarget = sm.epSquare;
+    Castling = sm.castleFlags;
+    HalfMoveClock = sm.oldHalfMoveClock;
     PlyCounter--;
     ToMove = color_Flip(ToMove);
 
     // Check for a null move:
-    if (m->isNullMove()) {
+    if (sm.isNullMove()) {
         return;
     }
 
@@ -1650,7 +1647,7 @@ Position::UndoSimpleMove (simpleMoveT const* m)
 	};
 
 	// handle Castling:
-		if (auto castleSide = m->isCastle()) {
+		if (auto castleSide = sm.isCastle()) {
 			const auto kingSq = GetKingSquare(ToMove);
 			squareT rookfrom, rookto;
 			if (castleSide > 0) {
@@ -1677,18 +1674,18 @@ Position::UndoSimpleMove (simpleMoveT const* m)
     // piece is in the "capturedSquare" field rather than assuming the
     // value of the "to" field. The only time these two fields are
     // different is for an en passant move.
-    if (m->capturedPiece != EMPTY) {
+    if (sm.capturedPiece != EMPTY) {
         colorT c = color_Flip(ToMove);
-        ListPos[List[c][m->capturedNum]] = Count[c];
-        ListPos[m->capturedSquare] = m->capturedNum;
-        List[c][Count[c]] = List[c][m->capturedNum];
-        List[c][m->capturedNum] = m->capturedSquare;
-        Material[m->capturedPiece]++;
+        ListPos[List[c][sm.capturedNum]] = Count[c];
+        ListPos[sm.capturedSquare] = sm.capturedNum;
+        List[c][Count[c]] = List[c][sm.capturedNum];
+        List[c][sm.capturedNum] = sm.capturedSquare;
+        Material[sm.capturedPiece]++;
         Count[c]++;
     }
 
     // handle promotion:
-    if (m->promote != EMPTY) {
+    if (sm.promote != EMPTY) {
         Material[p]--;
         RemoveFromBoard (p, to);
         p = piece_Make(ToMove, PAWN);
@@ -1701,8 +1698,8 @@ Position::UndoSimpleMove (simpleMoveT const* m)
     ListPos[from] = pieceNum;
     RemoveFromBoard (p, to);
     AddToBoard (p, from);
-    if (m->capturedPiece != EMPTY) {
-        AddToBoard (m->capturedPiece, m->capturedSquare);
+    if (sm.capturedPiece != EMPTY) {
+        AddToBoard (sm.capturedPiece, sm.capturedSquare);
     }
 
     ASSERT(valid_sqlist(List[WHITE], Count[WHITE], Board));
@@ -1844,7 +1841,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
             }
             *c++ = ch;
         }
-        UndoSimpleMove (m);
+        UndoSimpleMove (*m);
     }
     *c = 0;
 }

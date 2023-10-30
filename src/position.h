@@ -271,7 +271,7 @@ public:
     void        fillMove(simpleMoveT& sm) const;
     void        DoSimpleMove(simpleMoveT const& sm);
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
-    void        UndoSimpleMove (simpleMoveT const* sm);  // ... and taking back
+    void        UndoSimpleMove(simpleMoveT const& sm);  // ... and taking back
 
     errorT      RelocatePiece (squareT fromSq, squareT toSq);
 

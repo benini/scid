@@ -4891,7 +4891,7 @@ sc_pos_bestSquare (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             for (uint i=0; i < mlist.Size(); i++) {
                 pos->DoSimpleMove(*mlist.Get(i));
                 ecoT eco = ecoBook->findECO(pos);
-                pos->UndoSimpleMove (mlist.Get(i));
+                pos->UndoSimpleMove (*mlist.Get(i));
                 if (eco >= bestEco) {
                     secondBestEco = bestEco;
                     bestEco = eco;
@@ -7155,7 +7155,7 @@ sc_tree_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             }
             searchPos.DoSimpleMove(sm);
             eco = ecoBook->findECO(&searchPos);
-            searchPos.UndoSimpleMove(&sm);
+            searchPos.UndoSimpleMove(sm);
         }
         return eco;
     };

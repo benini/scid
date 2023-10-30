@@ -681,7 +681,7 @@ errorT Game::MoveBackup(void) {
 		return ERROR_StartOfMoveList;
 
 	CurrentMove = CurrentMove->prev;
-	CurrentPos->UndoSimpleMove(&CurrentMove->moveData);
+	CurrentPos->UndoSimpleMove(CurrentMove->moveData);
 
 	// Invariants
 	ASSERT(CurrentMove && CurrentMove->prev);
@@ -814,7 +814,7 @@ std::string Game::currentPosUCI() const {
 		if (move->moveData.isNullMove()) {
 			Position lastValidPos = *currentPos();
 			for (const moveT* m : moves) {
-				lastValidPos.UndoSimpleMove(&m->moveData);
+				lastValidPos.UndoSimpleMove(m->moveData);
 			}
 			lastValidPos.PrintFEN(FEN);
 			break;

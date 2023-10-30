@@ -148,7 +148,7 @@ TEST(Test_movegen, UCItoSAN) {
 				fullmove = FullMove(BLACK, E8, (castle > 0) ? H8 : A8);
 		}
 		FastBoard fastboard(pos);
-		pos.UndoSimpleMove(&sm);
+		pos.UndoSimpleMove(sm);
 		fastboard.fillSANInfo(fullmove);
 		EXPECT_STREQ(*it, fullmove.getSAN().c_str());
 	}
@@ -544,19 +544,19 @@ TEST(Test_PositionDoSimpleMove, castling_flags) {
 
 	// UndoSimpleMove
 	auto it = sm.crbegin();
-	pos.UndoSimpleMove(&(*it++));
+	pos.UndoSimpleMove(*it++);
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
 
-	pos.UndoSimpleMove(&(*it++));
+	pos.UndoSimpleMove(*it++);
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
 
-	pos.UndoSimpleMove(&(*it++));
+	pos.UndoSimpleMove(*it++);
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
 
-	pos.UndoSimpleMove(&(*it++));
+	pos.UndoSimpleMove(*it++);
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1");
 }
