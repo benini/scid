@@ -248,7 +248,7 @@ public:
     template <bool check_legal = true> bool canCastle(bool king_side) const;
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares) const;
-    int         TreeCalcAttacks (colorT toMove, squareT target);
+    int         TreeCalcAttacks (squareT target);
     uint        CalcNumChecks () const {
                     return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }

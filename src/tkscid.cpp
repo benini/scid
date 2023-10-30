@@ -4679,7 +4679,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 for (uint i = 0; i < pos.GetCount(c); i++) {
                     squareT sq = pos.GetList(c)[i];
                     pos.SetToMove(color_Flip(c));
-                    int att = pos.TreeCalcAttacks(color_Flip(c), sq);
+                    int att = pos.TreeCalcAttacks(sq);
                     if (att) {
                       appendUintElement(ti, sq);
                       if (att > 1) Tcl_AppendElement(ti, "green");
