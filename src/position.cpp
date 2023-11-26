@@ -1115,12 +1115,13 @@ Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
 //      Calculate attack score for a side on a square,
 //      using a recursive tree search.
 int Position::TreeCalcAttacks(squareT target) {
-	MoveList moveList;
-	GenerateCaptures(&moveList);
-	auto moves = std::ranges::partition(
-	    moveList, [&](auto const& sm) { return sm.to != target; });
+	MoveList moves;
+	GenerateCaptures(&moves);
+	auto it = std::partition(moves.begin(), moves.end(),
+	                         [&](auto const& sm) { return sm.to == target; });
+	moves.resize(std::distance(moves.begin(), it));
 
-	if (moves.size() == 0)
+	if (moves.Size() == 0)
 		return 0;
 
 	if (piece_IsKing(Board[target]))
