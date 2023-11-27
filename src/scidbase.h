@@ -146,14 +146,6 @@ struct scidBaseT {
 		return peakEloCache_[playerID];
 	}
 
-	eloT peakElo(const char* player) const {
-		idNumberT playerID;
-		if (getNameBase()->FindExactName(NAME_PLAYER, player, &playerID) == OK)
-			return peakElo(playerID);
-
-		return 0;
-	}
-
 	GameView getGame(const IndexEntry* ie) const {
 		auto data = codec_->getGameMoves(*ie);
 		if (data) {

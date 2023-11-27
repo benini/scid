@@ -2645,13 +2645,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     Tcl_AppendResult (ti, temp, NULL);
     eloT elo = db->game->GetWhiteElo();
-    bool eloEstimated = false;
-    if (elo == 0) {
-        elo = db->peakElo(db->game->GetWhiteStr());
-        eloEstimated = true;
-    }
     if (elo != 0) {
-        sprintf (temp, " <red>%u%s</red>", elo, eloEstimated ? "*" : "");
+        sprintf (temp, " <red>%u</red>", elo);
         Tcl_AppendResult (ti, temp, NULL);
     }
     sprintf (temp, "  --  <pi %s>%s</pi>",
@@ -2661,13 +2656,8 @@ sc_game_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
     Tcl_AppendResult (ti, temp, NULL);
     elo = db->game->GetBlackElo();
-    eloEstimated = false;
-    if (elo == 0) {
-        elo = db->peakElo(db->game->GetBlackStr());
-        eloEstimated = true;
-    }
     if (elo != 0) {
-        sprintf (temp, " <red>%u%s</red>", elo, eloEstimated ? "*" : "");
+        sprintf (temp, " <red>%u</red>", elo);
         Tcl_AppendResult (ti, temp, NULL);
     }
 
