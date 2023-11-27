@@ -46,6 +46,7 @@
 #include <cstring>
 #include <numeric>
 #include <set>
+#include <unordered_map>
 
 //TODO: delete
 #include "tkscid.h"
@@ -5246,8 +5247,13 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     const NameBase* nb = dbase->getNameBase();
     std::vector<idNumberT> oldIDs;
     std::vector<std::string> newNames;
-    std::vector<std::pair<dateT, dateT> > dates(nb->namebase_size(nt),
-                                                {ZERO_DATE, ZERO_DATE});
+    struct Entry {
+        idNumberT new_id;
+        dateT birth;
+        dateT death;
+    };
+    std::unordered_map<idNumberT, Entry> corrections;
+
     while (*str != 0) {
         uint length = 0;
         while (*str != 0  &&  *str != '\n') {
@@ -5279,43 +5285,38 @@ sc_name_correct (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 
         oldIDs.emplace_back(oldID);
         newNames.emplace_back(newName);
-        dates[oldID] = {date_EncodeFromString(birth),
-                        date_EncodeFromString(death)};
+        corrections[oldID] = {oldID, date_EncodeFromString(birth),
+                              date_EncodeFromString(death)};
     }
 
-    std::vector<idNumberT> newIDs;
-    auto initNewIDs = [&](const std::vector<idNumberT>& v_ids) {
-        newIDs.resize(nb->namebase_size(nt));
-        std::iota(newIDs.begin(), newIDs.end(), idNumberT(0));
-        auto it = v_ids.begin();
-        for (auto& id : oldIDs) {
-            newIDs[id] = *it++;
+    auto initNewIDs = [&](auto const& v_ids) {
+        ASSERT(v_ids.size() == oldIDs.size());
+        const auto size = std::min(v_ids.size(), oldIDs.size());
+        for (size_t i = 0; i < size; ++i) {
+            const auto oldID = oldIDs[i];
+            corrections[oldID].new_id = v_ids[i];
         }
-        dates.resize(newIDs.size(), {ZERO_DATE, ZERO_DATE});
     };
 
     auto entry_op = [&](idNumberT oldID, const IndexEntry& ie) {
-        auto newID = newIDs[oldID];
-        if (oldID == newID)
+        auto it = corrections.find(oldID);
+        if (it == corrections.end())
             return oldID;
 
+        auto const& el = it->second;
         dateT date = ie.GetDate();
         if (date != ZERO_DATE) {
-            auto range = dates[oldID];
-            if (date < range.first ||
-                (range.second != ZERO_DATE && date > range.second)) {
+            if (date < el.birth || (el.death != ZERO_DATE && date > el.death)) {
                 ++badDateCount;
                 return oldID;
             }
         }
-        return newID;
+        return el.new_id;
     };
 
     Progress progress = UI_CreateProgress(ti);
-    auto filter = dbase->newFilter();
-    auto changes = dbase->transformNames(nt, dbase->getFilter(filter), progress,
+    auto changes = dbase->transformNames(nt, dbase->getFilter("all"), progress,
                                          newNames, initNewIDs, entry_op);
-    dbase->deleteFilter(filter.c_str());
 
     UI_List res(4);
     res.push_back(correctionCount);
