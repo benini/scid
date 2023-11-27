@@ -59,8 +59,6 @@ int polyglot_open(const char * BookFile, const int BookNumber) {
 
    hash_init();
 
-   my_random_init();
-
    // opening book
   book_clear(BookNumber);
   res = scid_book_open(BookFile, BookNumber);

@@ -80,8 +80,6 @@ void scid_Exit(void*) {
  * Link to <a href="../gcov/index.html">code coverage</a>
  */
 int main(int argc, char* argv[]) {
-	srand(time(NULL));
-
 	scratchGame = new Game;
 	DBasePool::init();
 

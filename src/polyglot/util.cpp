@@ -45,39 +45,6 @@ void util_init() {
 #endif
 }
 
-// my_random_init()
-
-void my_random_init() {
-
-   srand(time(NULL));
-}
-
-// my_random_int()
-
-int my_random_int(int n) {
-
-   int r;
-
-   ASSERT(n>0);
-   double x = my_random_double()*double(n);
-   r = int(floor(x));
-   ASSERT(r>=0&&r<n);
-
-   return r;
-}
-
-// my_random_double()
-
-double my_random_double() {
-
-   double r;
-
-   r = double(rand()) / (double(RAND_MAX) + 1.0);
-   ASSERT(r>=0.0&&r<1.0);
-
-   return r;
-}
-
 // my_atoll()
 
 sint64 my_atoll(const char string[]) {

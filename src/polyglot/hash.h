@@ -27,8 +27,6 @@ extern uint64 hash_castle_key (int flags);
 extern uint64 hash_ep_key     (int square);
 extern uint64 hash_turn_key   (int colour);
 
-extern uint64 hash_random_64  (int index);
-
 #endif // !defined HASH_H
 
 // end of hash.h

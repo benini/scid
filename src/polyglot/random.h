@@ -22,7 +22,6 @@ extern const uint64 Random64[RandomNb];
 
 // functions
 
-extern void   random_init ();
 extern uint64 random_64   (int n);
 
 #endif // !defined RANDOM_H

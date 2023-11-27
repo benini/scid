@@ -81,10 +81,6 @@ struct my_timer_t {
 
 extern void   util_init             ();
 
-extern void   my_random_init        ();
-extern int    my_random_int         (int n);
-extern double my_random_double      ();
-
 extern sint64 my_atoll              (const char string[]);
 
 //extern int    my_round              (double x);

@@ -209,15 +209,6 @@ const uint64 Random64[RandomNb] = {
 
 // functions
 
-// random_init()
-
-void random_init() {
-
-   if ((Random64[RandomNb-1] >> 32) != 0xF8D626AA) { // upper half of the last element of the array
-      my_fatal("random_init(): broken 64-bit types\n");
-   }
-}
-
 // random_64()
 
 uint64 random_64(int n) {
