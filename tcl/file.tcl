@@ -101,7 +101,7 @@ proc ::file::Open {{fName ""}} {
     ::notify::DatabaseChanged
     set gamenum 1
     foreach {tagname tagvalue} [sc_base extra $::curr_db] {
-      if {$tagname eq "autoload" && $tagvalue != 0} {
+      if {$tagname eq "autoload" && [string is integer -strict $tagvalue] && $tagvalue > 0} {
         set gamenum $tagvalue
         break
       }
