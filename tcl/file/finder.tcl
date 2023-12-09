@@ -299,8 +299,9 @@ proc ::file::finder::backup { f } {
   set r [file rootname $f]
   set d [clock format [clock seconds] -format "-%Y.%m.%d-%H%M" ]
   set ext [string tolower [file extension $f]]
-  if { $ext == ".si4" } {
-    if { [catch { file copy "$r.sg4" "$r$d.sg4" ; file copy "$r.sn4" "$r$d.sn4" } err ] } {
+  if { $ext == ".si4" || $ext == ".si5"} {
+    set ver [string index $ext 3]
+    if { [catch { file copy "$r.sg$ver" "$r$d.sg$ver" ; file copy "$r.sn$ver" "$r$d.sn$ver" } err ] } {
       tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
       return
     }
@@ -324,8 +325,10 @@ proc ::file::finder::copy { f } {
   }
   set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
   if {$dir != ""} {
-    if { [string tolower [file extension $f]] == ".si4" } {
-      if { [catch { file copy "[file rootname $f].sg4" "[file rootname $f].sn4" $dir } err ] } {
+    set ext [string tolower [file extension $f]]
+    if { $ext == ".si4" || $ext == ".si5"} {
+      set ver [string index $ext 3]
+      if { [catch { file copy "[file rootname $f].sg$ver" "[file rootname $f].sn$ver" $dir } err ] } {
         tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
         return
       }
@@ -350,9 +353,10 @@ proc ::file::finder::move { f } {
   }
   set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
   if {$dir != ""} {
-    if { [string tolower [file extension $f]] == ".si4" } {
-      
-      if { [catch { file rename "[file rootname $f].sg4" "[file rootname $f].sn4" $dir } err ] } {
+    set ext [string tolower [file extension $f]]
+    if { $ext == ".si4" || $ext == ".si5"} {
+      set ver [string index $ext 3]
+      if { [catch { file rename "[file rootname $f].sg$ver" "[file rootname $f].sn$ver" $dir } err ] } {
         tk_messageBox -title Scid -icon error -type ok -message "File rename error $err"
         return
       }
@@ -376,8 +380,10 @@ proc ::file::finder::delete { f } {
   }
   set answer [tk_messageBox -title Scid -icon warning -type yesno -message "Are you sure you want to permanently delete $f ?"]
   if {$answer == "yes"} {
-    if { [string tolower [file extension $f]] == ".si4" } {
-      file delete "[file rootname $f].sg4" "[file rootname $f].sn4" "[file rootname $f].stc"
+    set ext [string tolower [file extension $f]]
+    if { $ext == ".si4" || $ext == ".si5"} {
+      set ver [string index $ext 3]
+      file delete "[file rootname $f].sg$ver" "[file rootname $f].sn$ver" "[file rootname $f].stc"
     }
     file delete $f
   }
@@ -408,6 +414,10 @@ proc ::file::finder::GetFiles {dir {len -1}} {
       if {$ext == ".si4"} {
         set showFile 1
         set size [expr {($fsize - 182)/47}]
+        set type Scid
+      } elseif {$ext == ".si5"} {
+        set showFile 1
+        set size [expr {$fsize/56}]
         set type Scid
       } elseif {$ext == ".si3"} {
         set showFile 1
