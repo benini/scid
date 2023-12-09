@@ -52,12 +52,12 @@ proc ::file::finder::Open {} {
   autoscrollText both $w.t $w.t.text Treeview
   $w.t.text configure -width 65 -height 25 -font font_Small -wrap none \
       -setgrid 1 -cursor top_left_arrow
-  $w.t.text tag configure Dir -foreground brown
+  $w.t.text tag configure Dir -foreground forestgreen
   $w.t.text tag configure Vol -foreground gray25
-  $w.t.text tag configure PGN -foreground blue
-  $w.t.text tag configure Scid -foreground red
-  $w.t.text tag configure Old -foreground black
-  $w.t.text tag configure Rep -foreground darkGreen
+  $w.t.text tag configure PGN -foreground dodgerblue3
+  $w.t.text tag configure Scid -foreground seagreen
+  $w.t.text tag configure Old -foreground grey50
+  $w.t.text tag configure Rep -foreground indianred
   $w.t.text tag configure EPD -foreground orange
   $w.t.text tag configure bold -font font_SmallBold
   $w.t.text tag configure center -justify center
@@ -241,10 +241,10 @@ proc ::file::finder::Refresh {{newdir ""}} {
     if {$dir == "."} {
       set fullpath "$data(dir)/$tail"
     } else {
-      $t tag configure p$path -foreground darkblue
+      $t tag configure p$path -foreground cornflowerblue
       $t insert end "$dir/" [list p$path f$path]
     }
-    $t tag configure t$path -foreground blue
+    $t tag configure t$path -foreground dodgerblue2
     $t insert end $tail [list t$path f$path]
   }
   $t configure -state disabled
