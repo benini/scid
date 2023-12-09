@@ -1,7 +1,29 @@
              Changelog
             ===========
 
-[tdb ??? ????]
+[tbd ??? ????]
+scid-5.?.?
+==========
+- New features:
+	* Options for highlight last move: arrow and/or square, show NAGs on the board
+	* Update translation: catalan
+- Fixes :
+	* Fix: Bug #205: the evaluation bar shows the wrong color for +M12 or -M5 notations when the board is flipped. Thanks to Elo Tron and Uwe.
+	* Fix: Bug #209: premove only executed after receiving a move from fics and show correct direction of premove arrow.
+	* Fix: Review game: redesign UI and move evaluation
+
+[March 2023]
+scid-5.0.2
+==========
+- New features:
+	* New database format SCID5
+- Fixes :
+	* Fix: Bug #192: allow partial dates. Thanks to Elo TronBug
+	* Fix: Bug #193: Delete twin games only in the filter doesn't work as expected. Thanks to Elo Tron.
+	* Fix: Bug #195: check illegal castling flags. Thanks to Jimis Hol.
+	* Fix: Bug #196: wrong variable in header's checkDates. Thanks to Elo Tron.
+
+[January 2023]
 scid-5.0
 ==========
 - New features:
@@ -13,6 +35,7 @@ scid-5.0
 	* Main board's toolbar
 		- Add the option to open preference dialog
 		- Rearrange buttons in main board's toolbar
+	* New scripts: filter spellcheck files, download lichess' broadcasts
 
 - Removed features:
 	* Nalimov Endgame Tables no more supported. Window Endgame Tablebases removed.
@@ -24,6 +47,8 @@ scid-5.0
 	* Fix: Fixed bug that calender chooser shows allways 31 day per month.
 	* Fix: Bug #167: Preferences Menu vs Comment Editor Annotations. Thanks to rsarson
 	* Fix: Fixed a endless loop when tactic game include variations
+	* Fix: Bug #188: variation popup dialog doesn't work with item #0. Thanks to Denis Jeanneret.
+	* Fix: Bug #181: Undocumented variable functionality changed in tooltip 1.5.
 
 [July 2022]
 scid-4.7.4
