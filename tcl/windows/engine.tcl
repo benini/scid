@@ -195,6 +195,7 @@ proc ::enginewin::createDisplayFrame {id display} {
             # %W tag add markmove $movestart "$movestart wordend"
             set movestart "[%W search -backwards -regexp {\s} "@%x,%y"] +1chars"
             %W tag add markmove $movestart [%W search " " $movestart]
+            if {[::board::isFlipped .main.board]} {set pos [string reverse [lindex [lindex $pos 0] 0]]}
             ::board::popup .enginewinBoard $pos %X %Y
         } else {
             catch { wm withdraw .enginewinBoard }
@@ -269,7 +270,9 @@ proc ::enginewin::createButtonsBar {id btn display} {
     "
     bind $btn.lock <Any-Enter> [list apply {{id} {
         if {"pressed" in [%W state]} {
-            ::board::popup .enginewinBoard [sc_pos board [set ::enginewin::position_$id] ""] %X %Y above
+            set pos [sc_pos board [set ::enginewin::position_$id] ""]
+            if {[::board::isFlipped .main.board]} {set pos [string reverse [lindex [lindex $pos 0] 0]]}
+            ::board::popup .enginewinBoard $pos %X %Y above
         }
     }} $id]
     bind $btn.lock <Any-Leave> {
