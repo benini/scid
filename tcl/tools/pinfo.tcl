@@ -231,10 +231,10 @@ proc ::pinfo::splitName { playerName } {
     set countlen 1
   }
   if { $count > 0 } {
-    # create names "firstname lastname" and "lastname,firstname"
+    # create names "firstname lastname" and "lastname firstname"
     set fname "[string range $playerName [expr $count + $countlen] end] [string range $playerName 0 [expr $count - 1]]"
     regsub -all "\[0-9\]" $fname "" fname
-    set lname "[string range $playerName 0 [expr $count - 1]],[string range $playerName [expr $count + $countlen] end]"
+    set lname "[string range $playerName 0 [expr $count - 1]] [string range $playerName [expr $count + $countlen] end]"
     regsub -all "\[0-9\]" $lname "" lname
   }
   return [list $fname $lname]
