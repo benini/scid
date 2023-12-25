@@ -343,7 +343,6 @@ proc playerInfo {{player ""}} {
   }
 
   set playerInfoName $player
-  set ::rgraph(player) $player
   set w .playerInfoWin
   if {! [winfo exists $w]} {
     ::createToplevel $w
