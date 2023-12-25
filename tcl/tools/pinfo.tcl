@@ -285,7 +285,12 @@ proc ::pinfo::ReplaceIDTags { pinfo } {
       if { $searchterm == "useFIDEID" && $fideid != ""} {
         regsub -all "%ID%" $url $fideid url
       } elseif { [string range $searchterm 0 6] == "useNAME" } {
-        if {![info exists fname]} { lassign [splitName $::playerInfoName] fname lname }
+        set pname $::playerInfoName
+        catch {
+            set spell_name [sc_name retrievename $pname]
+            if {$spell_name != ""} { set pname $spell_name }
+        }
+        lassign [splitName $pname] fname lname
         if { [string index $searchterm 7] eq "L" } { set psname $lname } else { set psname $fname }
         regsub -all " " $psname [string index $searchterm 8] psname
         regsub -all " " $psname "%%20" psname
