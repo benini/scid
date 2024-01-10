@@ -1684,7 +1684,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
         (PgnStyle & PGN_STYLE_COMMENTS)) {
         const char* comment = CurrentMove->prev->comment.c_str();
         if (*comment && (PgnStyle & PGN_STYLE_STRIP_MARKS)) {
-            strippedComment = CurrentMove->prev->comment.c_str();
+            strippedComment = comment;
             strTrimMarkCodes(strippedComment.data());
             comment = strippedComment.data();
         }
