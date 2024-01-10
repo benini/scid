@@ -18,7 +18,7 @@ scid-5.0.2
 - New features:
 	* New database format SCID5
 - Fixes :
-	* Fix: Bug #192: allow partial dates. Thanks to Elo TronBug
+	* Fix: Bug #192: allow partial dates. Thanks to Elo Tron
 	* Fix: Bug #193: Delete twin games only in the filter doesn't work as expected. Thanks to Elo Tron.
 	* Fix: Bug #195: check illegal castling flags. Thanks to Jimis Hol.
 	* Fix: Bug #196: wrong variable in header's checkDates. Thanks to Elo Tron.
