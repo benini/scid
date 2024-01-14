@@ -143,12 +143,11 @@ proc ::move::Forward {{count 1}} {
 			showVars
 			set bArrows $::showVarArrows
 		} else {
-			if {! $bArrows} { sc_move forward }
+			if {! $bArrows} { sc_move forward ; ::utils::sound::AnnounceForward $move }
 		}
 
-		# Animate and speak this move:
+		# Animate
 		::notify::PosChanged "" -animate
-		::utils::sound::AnnounceForward $move
 	} else {
 		if {! $bArrows} { sc_move forward $count }
 		updateBoard

@@ -545,6 +545,7 @@ proc showVars {} {
         } else  {
             sc_var moveInto [expr $cur - 1]
         }
+        ::utils::sound::AnnounceForward [sc_game info previous]
         ::notify::PosChanged "" -animate
     }
     bind .variations <Up> { set cur [.variations.lbVar selection]
