@@ -115,9 +115,11 @@ jobs:
       copy stockfish.exe $(Build.SourcesDirectory)\install\bin
     displayName: Generate stockfish
   - bash: |
-      nnue=$(egrep -o "nn-[a-z0-9]+.nnue" stockfish/src/evaluate.h)
-      echo "https://data.stockfishchess.org/nn/$nnue ==> install/bin/$nnue"
-      curl -o install/bin/$nnue https://data.stockfishchess.org/nn/$nnue
+      networks=$(egrep -o "nn-[a-z0-9]+.nnue" stockfish/src/evaluate.h)
+      for nnue in $networks; do
+        echo "https://data.stockfishchess.org/nn/$nnue ==> install/bin/$nnue"
+        curl -o install/bin/$nnue https://data.stockfishchess.org/nn/$nnue
+      done
     displayName: Download stockfish nnue
   - script: |
       move bin engines
