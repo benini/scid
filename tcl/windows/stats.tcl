@@ -267,7 +267,7 @@ proc ::windows::stats::refresh_wnd {} {
 #  for {set i 2} {$i <= $lastLineNum} {incr i 2} {
 #    $w tag add bgGray $i.0 "$i.0 lineend +1c"
 #  }
-  $w tag configure blue -foreground darkBlue
+  $w tag configure blue -foreground dodgerblue3
   $w tag configure red -foreground red
   $w tag add blue 1.0 2.0
   $w tag add red 2.0 3.0
