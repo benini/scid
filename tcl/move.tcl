@@ -137,9 +137,9 @@ proc ::move::Forward {{count 1}} {
 
 	set announceMove ""
 	set bArrows [::move::drawVarArrows]
-	set bVarPopup [eval {[sc_var count] != 0 && ! $::autoplayMode && $::showVarPopup}]
+	set bVarPopup [expr ([sc_var count] != 0 && ! $::autoplayMode && $::showVarPopup) ? 1 : 0 ]
 
-	if {! $bArrows && ! bVarPopup} {
+	if {! $bArrows && ! $bVarPopup} {
 		if {$count == 1} {
 			set announceMove [sc_game info next]
 		}
@@ -148,7 +148,7 @@ proc ::move::Forward {{count 1}} {
 	}
 
 	if {$bArrows} { ::move::showVarArrows }
-	if {$bVarPopup} { showVars }		
+	if {$bVarPopup} { showVars }
 	if {$announceMove ne ""} { ::utils::sound::AnnounceForward $announceMove }
 }
 
