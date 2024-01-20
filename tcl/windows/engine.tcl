@@ -781,5 +781,5 @@ proc ::enginewin::exportLines {w} {
         sc_move pgn $location
         incr i_line
     }
-    ::notify::GameChanged
+    ::notify::PosChanged pgnonly
 }
