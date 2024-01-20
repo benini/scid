@@ -764,7 +764,7 @@ proc ::enginewin::exportMoves {w index} {
     }
     ::undoFeature save
     sc_game import $line
-    ::notify::GameChanged
+    ::notify::PosChanged -pgn
     return true
 }
 
