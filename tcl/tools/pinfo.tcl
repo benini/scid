@@ -221,9 +221,8 @@ proc setupDefaultResolvers { } {
    }
 }
 
+# function description
 proc ::pinfo::splitName { playerName } {
-  set fname $playerName
-  set lname $playerName
   set countlen 2
   set count [string first ", " $playerName ]
   if { $count < 0 } {
@@ -231,17 +230,20 @@ proc ::pinfo::splitName { playerName } {
     set countlen 1
   }
   if { $count > 0 } {
-    # create names "firstname lastname" and "lastname firstname"
-    set fname "[string range $playerName [expr $count + $countlen] end] [string range $playerName 0 [expr $count - 1]]"
-    regsub -all "\[0-9\]" $fname "" fname
-    set lname "[string range $playerName 0 [expr $count - 1]] [string range $playerName [expr $count + $countlen] end]"
-    regsub -all "\[0-9\]" $lname "" lname
+    set fname [string range $playerName [expr $count + $countlen] end]
+    set lname [string range $playerName 0 [expr $count - 1]]
+    return [list $fname $lname]
   }
-  return [list $fname $lname]
+  return [list $playerName ""]
+}
+
+# function description
+proc ::pinfo::formatName { fname lname format_args } {
+# something
 }
 
 # Replace the ID-Tags by proper links
-proc ::pinfo::ReplaceIDTags { pinfo } {
+proc ::pinfo::ReplaceIDTags { pinfo pname } {
   switch $::language {
     B {set wplanguage pt}
     C {set wplanguage cs}
@@ -285,13 +287,8 @@ proc ::pinfo::ReplaceIDTags { pinfo } {
       if { $searchterm == "useFIDEID" && $fideid != ""} {
         regsub -all "%ID%" $url $fideid url
       } elseif { [string range $searchterm 0 6] == "useNAME" } {
-        set pname $::playerInfoName
-        catch {
-            set spell_name [sc_name retrievename $pname]
-            if {$spell_name != ""} { set pname $spell_name }
-        }
-        lassign [splitName $pname] fname lname
-        if { [string index $searchterm 7] eq "L" } { set psname $lname } else { set psname $fname }
+        lassign [::pinfo::splitName $pname] fname lname
+        set psname [::pinfo::formatName $fname $lname [expr { [string index $searchterm 7] eq "L" }]]
         regsub -all " " $psname [string index $searchterm 8] psname
         regsub -all " " $psname "%%20" psname
         regsub -all "%ID%" $url $psname url
@@ -395,7 +392,7 @@ proc playerInfo {{player ""}} {
   $w.text configure -state normal
   $w.text delete 1.0 end
 
-  set pinfo [::pinfo::ReplaceIDTags $pinfo]
+  set pinfo [::pinfo::ReplaceIDTags $pinfo $player]
 
   # Display the player info
   ::htext::display $w.text $pinfo
