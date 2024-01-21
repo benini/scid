@@ -137,7 +137,7 @@ proc ::move::Forward {{count 1}} {
 
 	set announceMove ""
 	set bArrows [::move::drawVarArrows]
-	set bVarPopup [expr ([sc_var count] != 0 && ! $::autoplayMode && $::showVarPopup) ? 1 : 0 ]
+	set bVarPopup [expr {$::showVarPopup && ! $::autoplayMode && [sc_var count] != 0}]
 
 	if {! $bArrows && ! $bVarPopup} {
 		if {$count == 1} {
