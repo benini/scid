@@ -136,24 +136,18 @@ proc ::move::Forward {{count 1}} {
 	}
 
 	set bArrows [::move::drawVarArrows]
+	set bVarPopup [expr {$::showVarPopup && ! $::autoplayMode && [sc_var count] != 0}]
 
-	set move [sc_game info next]
-	if {$count == 1} {
-		if {[sc_var count] != 0 && ! $::autoplayMode && $::showVarPopup} {
-			showVars
-			set bArrows $::showVarArrows
-		} else {
-			if {! $bArrows} { sc_move forward }
-		}
-
-		# Animate and speak this move:
-		::notify::PosChanged "" -animate
-		::utils::sound::AnnounceForward $move
+	if {$bArrows || $bVarPopup} {
+		if {$bArrows} { ::move::showVarArrows }
+		if {$bVarPopup} { showVars }
 	} else {
-		if {! $bArrows} { sc_move forward $count }
-		updateBoard
+		sc_move forward $count
+		::notify::PosChanged "" -animate
+		if {$count == 1} {
+			::utils::sound::AnnounceForward [sc_game info previous]
+		}
 	}
-	if {$bArrows} { ::move::showVarArrows }
 }
 
 #Follow the main line or enter a variation
