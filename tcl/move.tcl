@@ -92,6 +92,16 @@ proc ::move::EndVar {} {
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
 }
 
+proc ::move::EnterVar {var_num} {
+	if {$var_num == 0} {
+		sc_move forward
+	} else {
+		sc_var moveInto [expr {$var_num - 1}]
+	}
+	::notify::PosChanged "" -animate
+	::utils::sound::AnnounceForward [sc_game info previous]
+}
+
 proc ::move::ExitVar {} {
 	if {[sc_var level] == 0 } { return 0; }
 	if {[info exists ::playMode] && [eval "$::playMode moveExitVar"] == 0} {
@@ -160,16 +170,11 @@ proc ::move::Follow {{moveUCI}} {
 	}
 	set varList [sc_var list UCI]
 	set varList [linsert $varList 0 "[sc_game info nextMoveUCI]" ]
-	set i -1
+	set i 0
 	foreach {move} $varList {
 		if { [ string compare -nocase $moveUCI $move] == 0 || \
 			 [ string compare -nocase $moveUCI2 $move] == 0 } {
-			if {$i == -1} {
-				sc_move forward
-			} else {
-				sc_var moveInto $i
-			}
-			::notify::PosChanged "" -animate
+			::move::EnterVar $i
 			return 1
 		}
 		incr i
