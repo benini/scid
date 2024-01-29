@@ -811,11 +811,9 @@ proc glist.create {{w} {layout}} {
   menu $w.glist.header_menu.addcol
   menu $w.glist.game_menu
   bind $w.glist <Configure> {
-    set hWin [winfo height %W]
-    set hHeading 18
-    set space [expr double($hWin - $hHeading)]
-    set ::glistVisibleLn(%W) [expr int(ceil($space / $::glistRowHeight)) ]
-    after 100 "glist.loadvalues_ %W"
+    set ::glistVisibleLn(%W) [expr int([winfo height %W] / $::glistRowHeight)]
+    after cancel "glist.loadvalues_ %W"
+    after idle "glist.loadvalues_ %W"
   }
   if {$::windowsOS} {
     bind $w.glist <App> "glist.popupmenu_ %W %x %y %X %Y $layout"
@@ -1333,13 +1331,13 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
       set ::glistFirst($w) [expr int(ceil($n * $::glistTotal($w)))]
     } else {
       if {$units == "pages"} {
-        set ::glistFirst($w) [expr $::glistFirst($w) + $n * ($::glistVisibleLn($w) -1)]
+        set ::glistFirst($w) [expr $::glistFirst($w) + $n * ($::glistVisibleLn($w))]
       } else {
         set ::glistFirst($w) [expr $::glistFirst($w) + $n]
       }
     }
 
-    set d [expr $::glistTotal($w) - $::glistVisibleLn($w) +1]
+    set d [expr $::glistTotal($w) - $::glistVisibleLn($w)]
     if {$::glistFirst($w) > $d } { set ::glistFirst($w) $d }
     if { $::glistFirst($w) < 0 } { set ::glistFirst($w) 0 }
 
@@ -1349,11 +1347,15 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
 }
 
 proc glist.ybarupdate_ {w} {
-  if { $::glistLoaded($w) != $::glistTotal($w) } {
+  if {$::glistTotal($w) == 0} {
+    set first 0.0
+    set last 1.0
+  } else {
+    set ::glistVisibleLn($w) [expr int($::glistVisibleLn($w) * [lindex [$w yview] 1])]
     set first [expr double($::glistFirst($w)) / $::glistTotal($w)]
     set last [expr double($::glistFirst($w) + $::glistVisibleLn($w)) / $::glistTotal($w)]
-    eval $::glistYScroll($w) $first $last
   }
+  {*}$::glistYScroll($w) $first $last
 }
 
 proc glist.yscroll_ {w first last} {
