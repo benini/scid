@@ -209,7 +209,7 @@ proc ::utils::sound::GetDialogChooseFolder { widget } {
     if {$newFolder != "" && $newFolder != $::utils::sound::soundFolder } {
         if { [::utils::sound::OptionsDialogChooseFolder $newFolder] } {
             $widget delete 0 end
-            $widget insert end $newFolder
+            $widget insert end "$newFolder"
         }
     }
 }
