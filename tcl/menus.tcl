@@ -593,7 +593,7 @@ proc configInformant { w } {
 
 proc getBooksDir { widget } {
   global scidBooksDir
-  set dir [tk_chooseDirectory -initialdir $scidBooksDir -parent [winfo toplevel $widget] -mustexist 1]
+  if { [catch { tk_chooseDirectory -initialdir $scidBooksDir -parent [winfo toplevel $widget] -mustexist 1 } dir] } { return }
   if {$dir != ""} {
       setBooksDir $dir
       $widget delete 0 end
@@ -608,7 +608,7 @@ proc setBooksDir { dir } {
 
 proc getTacticsBasesDir { widget } {
   global scidBasesDir
-  set dir [tk_chooseDirectory -initialdir $scidBasesDir -parent [winfo toplevel $widget] -mustexist 1]
+  if { [catch { tk_chooseDirectory -initialdir $scidBasesDir -parent [winfo toplevel $widget] -mustexist 1 } dir] } { return }
   if {$dir != ""} {
       setTacticsBasesDir $dir
       $widget delete 0 end
@@ -624,9 +624,10 @@ proc setTacticsBasesDir { dir } {
 proc getPhotoDir { widget } {
   set idir [pwd]
   if { [info exists ::scidPhotoDir] } { set idir $::scidPhotoDir }
-  set dir [tk_chooseDirectory -initialdir $idir -parent [winfo toplevel $widget] -mustexist 1]
+  if { [catch { tk_chooseDirectory -initialdir $idir -parent [winfo toplevel $widget] -mustexist 1 } dir] } { return }
   if {$dir != ""} {
       if { [setPhotoDir $dir] } {
+          if {! [winfo exists widget] } { return }
           $widget delete 0 end
           $widget insert end $dir
       }
@@ -645,9 +646,10 @@ proc setPhotoDir { dir } {
 
 proc getThemePkgFile { widget} {
   global initialDir
-  set fullname [tk_getOpenFile -parent [winfo toplevel $widget] -title "Select a pkgIndex.tcl file for themes" -initialdir [file dirname $::ThemePackageFile] -initialfile $::ThemePackageFile \
-	       -filetypes { {Theme "pkgIndex.tcl"} }]
+  if { [catch { tk_getOpenFile -parent [winfo toplevel $widget] -title "Select a pkgIndex.tcl file for themes" -initialdir [file dirname $::ThemePackageFile] -initialfile $::ThemePackageFile \
+	       -filetypes { {Theme "pkgIndex.tcl"} } } fullname] } { return }
   if { $fullname != "" && $fullname != $::ThemePackageFile && ! [readThemePkgFile $fullname] } {
+      if {! [winfo exists widget] } { return }
       $widget delete 0 end
       $widget insert end $fullname
   }
@@ -674,8 +676,9 @@ proc readThemePkgFile { fullname } {
 proc getECOFile { widget } {
   global ecoFile
   set ftype { { "Scid ECO files" {".eco"} } }
-  set fullname [tk_getOpenFile -parent [winfo toplevel $widget] -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file"]
+  if { [catch { tk_getOpenFile -parent [winfo toplevel $widget] -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file" } fullname] } { return }
   if { [readECOFile $fullname] } {
+      if {! [winfo exists widget] } { return }
       $widget delete 0 end
       $widget insert end $fullname
   }
