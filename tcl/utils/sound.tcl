@@ -201,14 +201,13 @@ proc ::utils::sound::OptionsDialog { w } {
 }
 
 proc ::utils::sound::GetDialogChooseFolder { widget } {
-    if { [catch { tk_chooseDirectory \
+    set newFolder [tk_chooseDirectory \
                        -initialdir $::utils::sound::soundFolder \
-                       -title "Scid: $::tr(SoundsFolder)" -parent [winfo toplevel $widget] } newFolder] } { return }
+                       -title "Scid: $::tr(SoundsFolder)" -parent [winfo toplevel $widget] ]
     # If the user selected a different folder to look in, read it
     # and tell the user how many sound files were found there.
     if {$newFolder != "" && $newFolder != $::utils::sound::soundFolder } {
         if { [::utils::sound::OptionsDialogChooseFolder $newFolder] } {
-            if {! [winfo exists widget] } { return }
             $widget delete 0 end
             $widget insert end $newFolder
         }

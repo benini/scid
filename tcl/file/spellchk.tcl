@@ -56,9 +56,8 @@ proc loadSpellCheckFile {{message 1}} {
 proc getSpellCheckFile { widget } {
     global spellCheckFile
     set ftype { { "Scid Spellcheck files" {".ssp"} } }
-    if { [catch { tk_getOpenFile -initialdir [file dirname $spellCheckFile] -filetypes $ftype -title "Open Spellcheck file" -parent [winfo toplevel $widget] } fullname] } { return }
+    set fullname [tk_getOpenFile -initialdir [file dirname $spellCheckFile] -filetypes $ftype -title "Open Spellcheck file" -parent [winfo toplevel $widget]]
     if { $fullname != "" && [readSpellCheckFile $fullname] } {
-        if {! [winfo exists widget] } { return }
         $widget delete 0 end
         $widget insert end $fullname
     }
