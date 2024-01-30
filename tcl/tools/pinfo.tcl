@@ -221,13 +221,12 @@ proc setupDefaultResolvers { } {
    }
 }
 
-# function description
+# split player name in firstname lastname
 proc ::pinfo::splitName { playerName } {
-  set countlen 2
-  set count [string first ", " $playerName ]
+  set countlen 1
+  set count [string first "," $playerName ]
   if { $count < 0 } {
     set count [string first " " $playerName ]
-    set countlen 1
   }
   if { $count > 0 } {
     set fname [string range $playerName [expr $count + $countlen] end]
@@ -237,9 +236,15 @@ proc ::pinfo::splitName { playerName } {
   return [list $playerName ""]
 }
 
-# function description
-proc ::pinfo::formatName { fname lname format_args } {
-# something
+# format firstname lastname in order with delimiter
+# swap order F: firstname_lastname L: lastname_firstname
+proc ::pinfo::formatName { fname lname swap_order delimiter } {
+    if { $swap_order eq "L" } {
+        set first $fname
+        set fname $lname
+        set lname $first
+    }
+    return "[string totitle $fname]$delimiter[string totitle $lname]"
 }
 
 # Replace the ID-Tags by proper links
@@ -288,8 +293,7 @@ proc ::pinfo::ReplaceIDTags { pinfo pname } {
         regsub -all "%ID%" $url $fideid url
       } elseif { [string range $searchterm 0 6] == "useNAME" } {
         lassign [::pinfo::splitName $pname] fname lname
-        set psname [::pinfo::formatName $fname $lname [expr { [string index $searchterm 7] eq "L" }]]
-        regsub -all " " $psname [string index $searchterm 8] psname
+        set psname [::pinfo::formatName $fname $lname [string index $searchterm 7] [string index $searchterm 8]]
         regsub -all " " $psname "%%20" psname
         regsub -all "%ID%" $url $psname url
         regsub -all "%LANG%" $url $wplanguage url
