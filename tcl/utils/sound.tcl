@@ -216,6 +216,11 @@ proc ::utils::sound::GetDialogChooseFolder { widget } {
 
 proc ::utils::sound::OptionsDialogChooseFolder { newFolder } {
     set ::utils::sound::soundFolder [file nativename $newFolder]
+    if {! $::utils::sound::hasSound} {
+        tk_messageBox -title "Scid: Sound Files" -type ok -icon info -parent .resDialog \
+            -message [tr SoundsSoundDisabled]
+        return 0
+    }
     set numSoundFiles [::utils::sound::ReadFolder]
     tk_messageBox -title "Scid: Sound Files" -type ok -icon info -parent .resDialog \
         -message "Found $numSoundFiles of [llength $::utils::sound::soundFiles] sound files in $::utils::sound::soundFolder"
@@ -233,6 +238,12 @@ proc ::utils::sound::OptionsDialogOK {} {
   set isNewSoundFolder 0
   if {$soundFolder != $::utils::sound::soundFolder_temp} {
     set isNewSoundFolder 1
+  }
+
+  if {! $::utils::sound::hasSound} {
+    tk_messageBox -title "Scid: Sound Files" -type ok -icon info -parent .resDialog \
+        -message [tr SoundsSoundDisabled]
+    return 0
   }
   
   # Update the user-settable sound variables:
