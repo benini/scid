@@ -807,7 +807,7 @@ proc updatePlayerPhotos {{force ""}} {
         set spellname $::gamePlayers($name)
         if {$::gamePlayers($img) != $spellname} {
             set ::gamePlayers($img) $spellname
-            catch { set spellname [trimEngineName $spellname] }
+            lassign [normalizePlayerName $spellname] spellname
             image create photo $img -data [getphoto $spellname]
         }
     }
