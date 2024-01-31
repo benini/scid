@@ -165,6 +165,67 @@ proc ::enginecfg::dlgNewRemote {} {
 
 # TODO: no references to ::enginewin should exists in this file
 
+# Creates buttons used for selecting an engine and managing configured engines:
+# Adds a new local or remote engine; reloads, clones, or deletes an existing engine.
+# fn_connect: Callback function invoked upon engine selection.
+# In response to the virtual event <<UpdateEngineName>>, it updates the name of the
+# selected engine and the state of the reload, clone, and delete buttons.
+proc ::enginecfg::createConfigButtons {id w fn_connect} {
+    ttk::combobox $w.engine -width 30 -state readonly -postcommand [list apply {{w} {
+        $w.engine configure -values [::enginecfg::names ]
+    }} $w]
+    bind $w.engine <<ComboboxSelected>> [list apply {{fn_connect} {
+        {*}$fn_connect [%W get]
+    }} $fn_connect]
+    ::utils::tooltip::Set $w.engine [tr EngineSelect]
+
+    ttk::button $w.addpipe -image tb_eng_add -command [list apply {{fn_connect} {
+        if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
+            {*}$fn_connect $newEngine
+        }
+    }} $fn_connect]
+    ::utils::tooltip::Set $w.addpipe [tr EngineAddLocal]
+
+    ttk::button $w.addremote -image tb_eng_network -command [list apply {{fn_connect} {
+        if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
+            {*}$fn_connect $newEngine
+        }
+    }} $fn_connect]
+    ::utils::tooltip::Set $w.addremote [tr EngineAddRemote]
+
+    ttk::button $w.reload -image tb_eng_reload \
+        -command "event generate $w.engine <<ComboboxSelected>>"
+    ::utils::tooltip::Set $w.reload [tr EngineReload]
+
+    ttk::button $w.clone -image tb_eng_clone -command [list apply {{id fn_connect} {
+        {*}$fn_connect [::enginecfg::add [set ::enginewin::engConfig_$id]]
+    }} $id $fn_connect]
+    ::utils::tooltip::Set $w.clone [tr EngineClone]
+
+    ttk::button $w.delete -image tb_eng_delete -command [list apply {{w fn_connect} {
+        if {[::enginecfg::remove [$w.engine get]]} {
+            {*}$fn_connect {}
+        }
+    }} $w $fn_connect]
+    ::utils::tooltip::Set $w.delete [tr EngineDelete]
+
+    grid $w.engine $w.addpipe $w.addremote \
+         $w.reload $w.clone $w.delete -sticky news
+
+    bind $w <<UpdateEngineName>> [list apply {{w} {
+        lassign %d name
+        set state "normal"
+        if {$name eq ""} {
+            set name "[tr Engine]:"
+            set state "disabled"
+        }
+        $w.engine set $name
+        $w.reload configure -state $state
+        $w.clone configure -state $state
+        $w.delete configure -state $state
+    }} $w]
+}
+
 # Creates the frame with the widgets necessary to change an engine's configuration.
 proc ::enginecfg::createConfigFrame {id configFrame msg} {
     ttk_text $configFrame.text -wrap none -padx 4

@@ -122,7 +122,7 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     grid columnconfigure $w.main 1 -weight 1
 
     ttk::frame $w.config.btn
-    ::enginewin::createConfigButtons $id $w.config.btn
+    ::enginecfg::createConfigButtons $id $w.config.btn [list ::enginewin::connectEngine $id]
     ttk::frame $w.config.options
     grid columnconfigure $w.config 0 -weight 1
     grid rowconfigure $w.config 1 -weight 1
@@ -203,52 +203,6 @@ proc ::enginewin::createDisplayFrame {id display} {
         %W tag remove markmove 1.0 end
         catch { wm withdraw .enginewinBoard }
     }
-}
-
-# Create the buttons used to select an engine and manage the configured engines:
-# add a new local or remote engine; reload, clone or delete an existing engine.
-proc ::enginewin::createConfigButtons {id w} {
-    ttk::combobox $w.engine -width 30 -state readonly -postcommand "
-        $w.engine configure -values \[::enginecfg::names \]
-    "
-    bind $w.engine <<ComboboxSelected>> [list apply {{id} {
-        ::enginewin::connectEngine $id [%W get]
-    }} $id]
-    ::utils::tooltip::Set $w.engine [tr EngineSelect]
-
-    ttk::button $w.addpipe -image tb_eng_add -command [list apply {{id} {
-        if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
-            ::enginewin::connectEngine $id $newEngine
-        }
-    }} $id]
-    ::utils::tooltip::Set $w.addpipe [tr EngineAddLocal]
-
-    ttk::button $w.addremote -image tb_eng_network -command [list apply {{id} {
-        if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
-            ::enginewin::connectEngine $id $newEngine
-        }
-    }} $id]
-    ::utils::tooltip::Set $w.addremote [tr EngineAddRemote]
-
-    ttk::button $w.reload -image tb_eng_reload \
-        -command "event generate $w.engine <<ComboboxSelected>>"
-    ::utils::tooltip::Set $w.reload [tr EngineReload]
-
-    ttk::button $w.clone -image tb_eng_clone -command "
-        ::enginewin::connectEngine $id \[::enginecfg::add \$::enginewin::engConfig_$id \]
-    "
-    ::utils::tooltip::Set $w.clone [tr EngineClone]
-
-    ttk::button $w.delete -image tb_eng_delete -command [list apply {{id} {
-        lassign [set ::enginewin::engConfig_$id] name
-        if {[::enginecfg::remove $name]} {
-            ::enginewin::connectEngine $id {}
-        }
-    }} $id]
-    ::utils::tooltip::Set $w.delete [tr EngineDelete]
-
-    grid $w.engine $w.addpipe $w.addremote \
-         $w.reload $w.clone $w.delete -sticky news
 }
 
 # Creates the buttons bar
@@ -388,9 +342,6 @@ proc ::enginewin::changeState {id newState} {
         grid remove $w.config
     }
 
-    lappend btnDisabledStates [list config.btn.reload closed]
-    lappend btnDisabledStates [list config.btn.clone closed]
-    lappend btnDisabledStates [list config.btn.delete closed]
     # Buttons that add moves are not disabled when the engine is locked.
     # This allow the user to later add the lines. And if the board position
     # will be different, only the valid moves will be added to the game.
@@ -424,11 +375,7 @@ proc ::enginewin::changeState {id newState} {
 proc ::enginewin::updateEngineName {id name} {
     set ::enginewin_lastengine($id) $name
     ::setTitle .engineWin$id "[tr Engine]: $name"
-    if {$name eq ""} {
-        .engineWin$id.config.btn.engine set "[tr Engine]:"
-    } else {
-        .engineWin$id.config.btn.engine set $name
-    }
+    event generate .engineWin$id.config.btn <<UpdateEngineName>> -data [list $name]
 }
 
 proc ::enginewin::logEngine {id on} {
