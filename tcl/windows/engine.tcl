@@ -17,8 +17,7 @@ proc ::enginewin::listEngines {} {
     set result {}
     foreach {id state} [array get ::enginewin::engState] {
         if {$state ni {idle run}} { continue }
-        lassign [set ::enginewin::engConfig_$id] name
-        lappend result [list $id $name [expr { $state eq "run" ? 1 : 0 }] ]
+        lappend result [list $id $::enginewin_lastengine($id) [expr {$state eq "run"}] ]
     }
     return $result
 }
