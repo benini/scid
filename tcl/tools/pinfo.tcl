@@ -384,7 +384,7 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     ::createToplevelFinalize $w
   }
-  lassign [normalizePlayerName $player] -> player
+  lassign [normalizePlayerName $player] player spellname
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
@@ -396,7 +396,7 @@ proc playerInfo {{player ""}} {
   $w.text configure -state normal
   $w.text delete 1.0 end
 
-  set pinfo [::pinfo::ReplaceIDTags $pinfo $player]
+  set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
   # Display the player info
   ::htext::display $w.text $pinfo
