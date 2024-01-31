@@ -137,6 +137,11 @@ proc ::preferences::resources { } {
     dialogbutton $w.b.ok -text "OK" -command "destroy $w"
     packbuttons right $w.b.ok
 
+    wm protocol $w WM_DELETE_WINDOW [list apply {{w} {
+        if {[grab current $w] eq $w} {
+            destroy $w
+        }
+    }} $w]
     wm resizable $w 1 0
     grab $w
 }
