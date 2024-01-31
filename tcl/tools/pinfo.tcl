@@ -384,7 +384,7 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     ::createToplevelFinalize $w
   }
-  set player [trimEngineName $player]
+  lassign [trimEngineName $player] -> player
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
