@@ -755,12 +755,18 @@ proc loadPlayersPhoto {} {
 }
 loadPlayersPhoto
 
-# Try to change the engine name: ignore version number, try to ignore blanks
-# TODO: rename this function (spellcheck playernames, converts to lower case and remove spaces)
-proc trimEngineName { engine } {
+# Normalizes player or game engine names by standardizing case, removing 
+# specific prefixes ('deep '), and eliminating excess whitespace.
+# Returns:
+#     A list with two elements: the normalized engine name and the spell name.
+proc normalizePlayerName { engine } {
+    set spelled $engine
     catch {
         set spell_name [sc_name retrievename $engine]
-        if {$spell_name != ""} { set engine $spell_name }
+        if {$spell_name != ""} {
+            set engine $spell_name
+            set spelled $spell_name
+        }
     }
     set engine [string tolower $engine]
 
@@ -784,7 +790,7 @@ proc trimEngineName { engine } {
                     && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
         set engine [string range $engine 0 $strindex]
     }
-    return $engine
+    return [list $engine $spelled]
 }
 
 
@@ -796,7 +802,7 @@ proc updatePlayerPhotos {{force ""}} {
         set spellname $::gamePlayers($name)
         if {$::gamePlayers($img) != $spellname} {
             set ::gamePlayers($img) $spellname
-            catch { set spellname [trimEngineName $spellname] }
+            lassign [normalizePlayerName $spellname] spellname
             image create photo $img -data [getphoto $spellname]
         }
     }

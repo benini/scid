@@ -221,27 +221,34 @@ proc setupDefaultResolvers { } {
    }
 }
 
+# split player name in firstname lastname
 proc ::pinfo::splitName { playerName } {
-  set fname $playerName
-  set lname $playerName
-  set countlen 2
-  set count [string first ", " $playerName ]
+  set countlen 1
+  set count [string first "," $playerName ]
   if { $count < 0 } {
     set count [string first " " $playerName ]
-    set countlen 1
   }
   if { $count > 0 } {
-    # create names "firstname lastname" and "lastname,firstname"
-    set fname "[string range $playerName [expr $count + $countlen] end] [string range $playerName 0 [expr $count - 1]]"
-    regsub -all "\[0-9\]" $fname "" fname
-    set lname "[string range $playerName 0 [expr $count - 1]],[string range $playerName [expr $count + $countlen] end]"
-    regsub -all "\[0-9\]" $lname "" lname
+    set fname [string range $playerName [expr $count + $countlen] end]
+    set lname [string range $playerName 0 [expr $count - 1]]
+    return [list $fname $lname]
   }
-  return [list $fname $lname]
+  return [list $playerName ""]
+}
+
+# format firstname lastname in order with delimiter
+# swap order F: firstname_lastname L: lastname_firstname
+proc ::pinfo::formatName { fname lname swap_order delimiter } {
+    if { $swap_order eq "L" } {
+        set first $fname
+        set fname $lname
+        set lname $first
+    }
+    return "[string totitle $fname]$delimiter[string totitle $lname]"
 }
 
 # Replace the ID-Tags by proper links
-proc ::pinfo::ReplaceIDTags { pinfo } {
+proc ::pinfo::ReplaceIDTags { pinfo pname } {
   switch $::language {
     B {set wplanguage pt}
     C {set wplanguage cs}
@@ -285,9 +292,8 @@ proc ::pinfo::ReplaceIDTags { pinfo } {
       if { $searchterm == "useFIDEID" && $fideid != ""} {
         regsub -all "%ID%" $url $fideid url
       } elseif { [string range $searchterm 0 6] == "useNAME" } {
-        if {![info exists fname]} { lassign [splitName $::playerInfoName] fname lname }
-        if { [string index $searchterm 7] eq "L" } { set psname $lname } else { set psname $fname }
-        regsub -all " " $psname [string index $searchterm 8] psname
+        lassign [::pinfo::splitName $pname] fname lname
+        set psname [::pinfo::formatName $fname $lname [string index $searchterm 7] [string index $searchterm 8]]
         regsub -all " " $psname "%%20" psname
         regsub -all "%ID%" $url $psname url
         regsub -all "%LANG%" $url $wplanguage url
@@ -338,7 +344,6 @@ proc playerInfo {{player ""}} {
   }
 
   set playerInfoName $player
-  set ::rgraph(player) $player
   set w .playerInfoWin
   if {! [winfo exists $w]} {
     ::createToplevel $w
@@ -379,7 +384,7 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     ::createToplevelFinalize $w
   }
-  set player [trimEngineName $player]
+  lassign [normalizePlayerName $player] player spellname
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
@@ -391,7 +396,7 @@ proc playerInfo {{player ""}} {
   $w.text configure -state normal
   $w.text delete 1.0 end
 
-  set pinfo [::pinfo::ReplaceIDTags $pinfo]
+  set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
   # Display the player info
   ::htext::display $w.text $pinfo
