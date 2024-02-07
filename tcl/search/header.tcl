@@ -482,7 +482,9 @@ proc ::search::getSearchOptions {dest_list} {
 
 	if {$::sAnnotated} { lappend search "-annotated" $::sAnnotated }
 
-	if {$::sAnnotator ne ""} { lappend search "-annotator" $::sAnnotator }
+	if {$::sAnnotator ne ""} {
+		lappend search [list "-tag_pair" "Annotator" "*$::sAnnotator*"]
+	}
 
     if {! $::sVariantStd} { lappend search "-variant!" "std"}
     if {! $::sVariant960} { lappend search "-variant!" "960"}

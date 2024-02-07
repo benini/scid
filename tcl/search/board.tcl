@@ -190,7 +190,16 @@ proc ::search::do_search_ {dbase filter filter_op options} {
 		}
 	}
 
+	set tag_pairs [lsearch -all -inline -index 0 -exact $options "-tag_pair"]
+	if {[llength tag_pairs] > 0} {
+		set options [lsearch -all -inline -index 0 -not -exact $options "-tag_pair"]
+	}
+
 	sc_filter search $dbase $filter {*}$options -filter AND
+	foreach {elem} $tag_pairs {
+		lassign $elem -> tagName tagValue
+		sc_filter search $dbase $filter tags $tagName $tagValue
+	}
 
 	if {[info exists or_filter]} {
 		sc_filter or $dbase $filter $or_filter

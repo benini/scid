@@ -8022,8 +8022,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     //TODO: the old options that follows do not work with FILTEROP_OR
     //      at the moment there is no tcl code that use them with FILTEROP_OR
 
-	std::string sAnnotator;
-
 	bool bAnnotated = false;
 
 	bool * wTitles = NULL;
@@ -8036,12 +8034,12 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     char ** sPgnText = NULL;
 
     const char * options[] = {
-        "annotator", "annotated",
+        "annotated",
         "wtitles", "btitles", "toMove",
         "pgn", NULL
     };
     enum {
-        OPT_ANNOTATOR, OPT_ANNOTATED,
+        OPT_ANNOTATED,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
         OPT_PGN
     };
@@ -8057,10 +8055,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         }
 
         switch (index) {
-		case OPT_ANNOTATOR:
-			sAnnotator = value;
-			break;
-
 		case OPT_ANNOTATED:
 			bAnnotated = strGetBoolean(value);
 			break;
@@ -8163,7 +8157,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     }
 
     bool skipSearch = false;
-    if (sAnnotator.empty() && mWhite.empty() && mBlack.empty() &&
+    if (mWhite.empty() && mBlack.empty() &&
         bAnnotated == false && wToMove == true && bToMove == true &&
         pgnTextCount == 0) {
         skipSearch = true;
@@ -8209,10 +8203,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 				                ie->GetVariationsFlag() || ie->GetNagsFlag()))
 				return false;
 
-			if (!sAnnotator.empty() && !ie->GetCommentsFlag() &&
-				!ie->GetVariationsFlag())
-				return false;
-
 			// If we reach here, this game matches all criteria.
 			return true;
 		};
@@ -8223,17 +8213,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         // algorithm like Boyer-Moore or Knuth-Morris-Pratt since
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
-
-		if (match && !sAnnotator.empty()) {
-			match = false;
-			base->getGame(*ie).decodeTags(
-				[&](auto const& tag, auto const& value) {
-					if (tag == "Annotator") {
-						match = strAlphaContains(std::string(value).c_str(),
-						                         sAnnotator.c_str());
-					}
-				});
-		}
 
 		if (match && pgnTextCount > 0) {
 			if (base->getGame(*ie, *scratchGame) != OK) {
