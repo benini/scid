@@ -1435,7 +1435,6 @@ sc_filter_freq (scidBaseT* dbase, const HFilter& filter, Tcl_Interp * ti, int ar
     if (argc == 8) {
         guessElo = strGetUnsigned (argv[7]);
     }
-    //Klimmek: define _NoEloGuess_: Do not guess Elo, else old behavior    
     if ( guessElo ) {
     // Double min/max Elos to avoid halving every mean Elo:
         minElo = minElo + minElo;
@@ -1613,7 +1612,7 @@ sc_filter_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (filter.get(i)) {
-            if ( max == 0 ) { //Old Statistic : 
+            if ( max == 0 ) { //Old Statistic :
                 if (statType == STATS_ELO  &&
                     (ie->GetWhiteElo() < min  ||  ie->GetBlackElo() < min)) {
                     continue;
@@ -1623,7 +1622,7 @@ sc_filter_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     continue;
                 }
             } else { //Klimmek:  new statistic: evaluation in intervals
-                //count all games where player with highest Elo is in the specific range      
+                //count all games where player with highest Elo is in the specific range
                 if (statType == STATS_ELO ) {
                     if (inv_max) {
                         uint maxi = ie->GetWhiteElo();
@@ -1632,7 +1631,7 @@ sc_filter_stats (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                             continue;
                     }
                     else {
-                //count all games where player with lowest Elo is in the specific range      
+                //count all games where player with lowest Elo is in the specific range
                         uint mini = ie->GetWhiteElo();
                         if ( mini > ie->GetBlackElo() ) mini = ie->GetBlackElo();
                         if (mini < min  ||  mini >= max)
@@ -3896,7 +3895,7 @@ sc_game_tags_set (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     for (int i=0; i < largc; i++) {
                         char tagStr [1024];
                         char valueStr [1024];
-                        //if ( 	sscanf (largv[i], "%s", tagStr ) == 1 &&  
+                        //if ( 	sscanf (largv[i], "%s", tagStr ) == 1 &&
                         //			sscanf (largv[i+1], "%s", valueStr) == 1) {
                         // Usage :: sc_game tags set -extra [ list "Annotator \"boob [sc_pos moveNumber]\"\n" ]
                         if (sscanf (largv[i], "%s \"%[^\"]\"\n", tagStr, valueStr) == 2) {
@@ -5178,7 +5177,7 @@ sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
         return errorResult (ti, "Usage: sc_pos moves");
     }
     Position * p = db->game->GetCurrentPos();
-    sanListT sanList; 
+    sanListT sanList;
     p->CalcSANStrings (&sanList, SAN_CHECKTEST);
 
     for (uint i=0; i < sanList.num; i++) {
@@ -8426,18 +8425,18 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BOOK_CLOSE:
         return sc_book_close (cd, ti, argc, argv);
 
-    case BOOK_MOVE:  
+    case BOOK_MOVE:
         return sc_book_moves (cd, ti, argc, argv);
 
-    case BOOK_POSITIONS:  
+    case BOOK_POSITIONS:
         return sc_book_positions (cd, ti, argc, argv);
 
-    case BOOK_UPDATE:  
+    case BOOK_UPDATE:
         return sc_book_update (cd, ti, argc, argv);
 
-    case BOOK_MOVES_UPDATE:  
+    case BOOK_MOVES_UPDATE:
         return sc_book_movesupdate (cd, ti, argc, argv);
-        
+
     default:
         return InvalidCommand (ti, "sc_book", options);
     }
