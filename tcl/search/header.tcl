@@ -480,7 +480,11 @@ proc ::search::getSearchOptions {dest_list} {
 		lappend search -toMove "$::sSideToMoveW$::sSideToMoveB"
 	}
 
-	if {$::sAnnotated} { lappend search "-annotated" $::sAnnotated }
+	if {$::sAnnotated} {
+		lappend search "-n_comments" "1 9999"
+		lappend search "-n_nags|" "1 9999"
+		lappend search "-n_variations|" "1 9999"
+	}
 
 	if {$::sAnnotator ne ""} {
 		lappend search [list "-tag_pair" "Annotator" "*$::sAnnotator*"]

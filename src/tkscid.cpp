@@ -8022,8 +8022,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     //TODO: the old options that follows do not work with FILTEROP_OR
     //      at the moment there is no tcl code that use them with FILTEROP_OR
 
-	bool bAnnotated = false;
-
 	bool * wTitles = NULL;
     bool * bTitles = NULL;
 
@@ -8034,12 +8032,10 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
     char ** sPgnText = NULL;
 
     const char * options[] = {
-        "annotated",
         "wtitles", "btitles", "toMove",
         "pgn", NULL
     };
     enum {
-        OPT_ANNOTATED,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
         OPT_PGN
     };
@@ -8055,10 +8051,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         }
 
         switch (index) {
-		case OPT_ANNOTATED:
-			bAnnotated = strGetBoolean(value);
-			break;
-
         case OPT_WTITLES:
             delete[] wTitles;
             wTitles = parseTitles (value);
@@ -8158,7 +8150,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 
     bool skipSearch = false;
     if (mWhite.empty() && mBlack.empty() &&
-        bAnnotated == false && wToMove == true && bToMove == true &&
+        wToMove == true && bToMove == true &&
         pgnTextCount == 0) {
         skipSearch = true;
     }
@@ -8198,10 +8190,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			if (!mBlack.empty() && !mBlack[ie->GetBlack()]) {
 				return false;
 			}
-
-			if (bAnnotated && !(ie->GetCommentsFlag() ||
-				                ie->GetVariationsFlag() || ie->GetNagsFlag()))
-				return false;
 
 			// If we reach here, this game matches all criteria.
 			return true;
