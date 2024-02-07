@@ -19,6 +19,7 @@
 #include "dbasepool.h"
 #include "scidbase.h"
 #include "ui.h"
+#include <algorithm>
 
 namespace {
 /*
@@ -150,6 +151,68 @@ UI_res_t sc_filter_reset(UI_handle_t ti, HFilter& filter, int argc,
 }
 
 /**
+ * Checks if a needle is found within a haystack, supporting wildcards.
+ * Wildcards at the start (*) or end (*) of the needle adjust the match criteria:
+ * - A leading '*' allows the match to occur at any position towards the end.
+ * - A trailing '*' allows the match to start anywhere from the beginning.
+ * The search is case-insensitive.
+ * Return True if the needle (considering wildcards) is found.
+ */
+bool strMatch(std::string_view haystack, std::string_view needle) {
+	bool flex_end = !needle.empty() && needle.back() == '*';
+	if (flex_end)
+		needle.remove_suffix(1);
+
+	bool flex_start = !needle.empty() && needle.front() == '*';
+	if (flex_start)
+		needle.remove_prefix(1);
+
+	auto it = std::search(
+	    haystack.begin(), haystack.end(), needle.begin(), needle.end(),
+	    [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+
+	return it != haystack.end() &&
+	       (flex_start || std::distance(haystack.begin(), it) == 0) &&
+	       (flex_end || std::distance(it + needle.size(), haystack.end()) == 0);
+}
+
+/**
+ * Restricts @e filter to include only the games with a tag-value pair matching
+ * the specified criteria.
+ * Wildcard characters (*) at the beginning or at the end are permitted:
+ * - *tagValue matches all values that end with tagValue.
+ * - tagValue* matches all values that start with tagValue.
+ * - *tagValue* matches all values that include tagValue.
+ */
+UI_res_t sc_filter_search_tags(UI_handle_t ti, const scidBaseT& dbase,
+                               HFilter& filter, int argc, const char** argv,
+                               Progress const& progress = {}) {
+	const char* usage =
+	    "Usage: sc_filter search baseId filterId tags tagName tagValue";
+	if (argc != 7)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	std::string_view tagName = argv[5];
+	std::string_view tagValue = argv[6];
+	auto iProgress = 0;
+	auto filterSz = filter.size();
+	for (auto gnum : filter) {
+		if (++iProgress % 8192 == 0 && !progress.report(iProgress, filterSz))
+			return UI_Result(ti, ERROR_UserCancel);
+
+		bool remove = true;
+		auto ie = dbase.getIndexEntry(gnum);
+		dbase.getGame(*ie).decodeTags([&](auto const& tag, auto const& value) {
+			if (strMatch(tag, tagName) && strMatch(value, tagValue))
+				remove = false;
+		});
+		if (remove)
+			filter.erase(gnum);
+	}
+	return UI_Result(ti, OK);
+}
+
+/**
  * sc_filter_sizes() - get the sizes of a filter
  *
  * Return a list containing:
@@ -174,35 +237,35 @@ int sc_filter_old(ClientData cd, Tcl_Interp* ti, int argc, const char** argv);
 
 UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	const char* usage = "Usage: sc_filter <cmd> baseId filterId [args]";
-	if (argc < 2) return UI_Result(ti, ERROR_BadArg, usage);
-
-	static const char* options[] = {"components", "compose", "remove", "reset", "sizes", NULL};
-	if (strUniqueMatch(argv[1], options) == - 1)
-		return sc_filter_old(cd, ti, argc, argv);
-
-	if (argc < 3)
+	if (argc < 2)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
-	if (!dbase)
-		return UI_Result(ti, ERROR_BadArg, usage);
+	if (argc > 3) {
+		auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
+		if (!dbase)
+			return UI_Result(ti, ERROR_BadArg, usage);
 
-	HFilter filter = dbase->getFilter(argv[3]);
-	if (filter == nullptr)
-		return UI_Result(ti, ERROR_BadArg, usage);
+		HFilter filter = dbase->getFilter(argv[3]);
+		if (filter == nullptr)
+			return UI_Result(ti, ERROR_BadArg, usage);
 
-	const char* cmd = argv[1];
-	if (strcmp("components", cmd) == 0)
-		return sc_filter_components(ti, *dbase, argc, argv);
-	if (strcmp("compose", cmd) == 0)
-		return sc_filter_compose(ti, *dbase, argc, argv);
-	if (strcmp("remove", cmd) == 0)
-		return sc_filter_remove(ti, *dbase, filter, argc, argv);
-	if (strcmp("reset", cmd) == 0)
-		return sc_filter_reset(ti, filter, argc, argv);
-	if (strcmp("sizes", cmd) == 0)
-		return sc_filter_sizes(ti, *dbase, filter);
-
-	std::string err = "sc_filter\nInvalid minor command: ";
-	return UI_Result(ti, ERROR_BadArg, err + cmd);
+		const std::string_view cmd = argv[1];
+		if (cmd == "components")
+			return sc_filter_components(ti, *dbase, argc, argv);
+		if (cmd == "compose")
+			return sc_filter_compose(ti, *dbase, argc, argv);
+		if (cmd == "remove")
+			return sc_filter_remove(ti, *dbase, filter, argc, argv);
+		if (cmd == "reset")
+			return sc_filter_reset(ti, filter, argc, argv);
+		if (cmd == "search" && argc > 4) {
+			const std::string_view subcmd = argv[4];
+			if (subcmd == "tags")
+				return sc_filter_search_tags(ti, *dbase, filter, argc, argv,
+				                             UI_CreateProgress(ti));
+		}
+		if (cmd == "sizes")
+			return sc_filter_sizes(ti, *dbase, filter);
+	}
+	return sc_filter_old(cd, ti, argc, argv);
 }

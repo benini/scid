@@ -1816,7 +1816,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             }
         }
-        return errorResult (ti, "Usage: sc_filter search baseId filterName <header|board> [args]");
+        return errorResult (ti, "Usage: sc_filter search baseId filterName <header|board|tags> [args]");
 
     case FILTER_TREESTATS: {
             const auto stats = dbase->getTreeStat(filter);
