@@ -769,6 +769,12 @@ translate K BrilliancyFlag {Genialitat}
 translate K BlunderFlag {Error}
 translate K UserFlag {Usuari}
 translate K PgnContains {PGN conté text}
+# ====== TODO To be translated ======
+translate K PgnTag {Tag}
+# ====== TODO To be translated ======
+translate K TagContains {contains}
+# ====== TODO To be translated ======
+translate K Variant {Variant}
 translate K Annotator {Comentarista}
 translate K Cmnts {Només partides comentades}
 

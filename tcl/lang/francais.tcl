@@ -781,6 +781,12 @@ translate F BrilliancyFlag {Spectaculaire}
 translate F BlunderFlag {Gaffe}
 translate F UserFlag {Utilisateur}
 translate F PgnContains {PGN contient le texte}
+# ====== TODO To be translated ======
+translate F PgnTag {Tag}
+# ====== TODO To be translated ======
+translate F TagContains {contains}
+# ====== TODO To be translated ======
+translate F Variant {Variant}
 translate F Annotator {Annotateur}
 translate F Cmnts {Jeux annotés uniquement}
 

@@ -918,6 +918,12 @@ translate O BlunderFlag {Tabbe}
 translate O UserFlag {Bruker}
 translate O PgnContains {PGN inneholder tekst}
 # ====== TODO To be translated ======
+translate O PgnTag {Tag}
+# ====== TODO To be translated ======
+translate O TagContains {contains}
+# ====== TODO To be translated ======
+translate O Variant {Variant}
+# ====== TODO To be translated ======
 translate O Annotator {Annotator}
 # ====== TODO To be translated ======
 translate O Cmnts {Annotated games only}

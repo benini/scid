@@ -780,6 +780,12 @@ translate W BrilliancyFlag {Utmärkt parti}
 translate W BlunderFlag {Bortsättningar}
 translate W UserFlag {Användare}
 translate W PgnContains {PGN innehåller text}
+# ====== TODO To be translated ======
+translate W PgnTag {Tag}
+# ====== TODO To be translated ======
+translate W TagContains {contains}
+# ====== TODO To be translated ======
+translate W Variant {Variant}
 translate W Annotator {Kommentator}
 translate W Cmnts {Bara kommenterade partier}
 

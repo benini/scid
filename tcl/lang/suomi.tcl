@@ -818,6 +818,12 @@ translate U BrilliancyFlag {Loistosiirto}
 translate U BlunderFlag {Virhe (Blunder)}
 translate U UserFlag {K‰ytt‰j‰}
 translate U PgnContains {PGN sis‰lt‰‰ teksti‰}
+# ====== TODO To be translated ======
+translate U PgnTag {Tag}
+# ====== TODO To be translated ======
+translate U TagContains {contains}
+# ====== TODO To be translated ======
+translate U Variant {Variant}
 translate U Annotator {Annotoija}
 translate U Cmnts {Vain annotoidut pelit}
 

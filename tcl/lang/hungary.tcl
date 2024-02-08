@@ -793,6 +793,12 @@ translate H BlunderFlag {Elnézés}
 translate H UserFlag {Felhasználó}
 translate H PgnContains {Szöveg a PGN-ben}
 # ====== TODO To be translated ======
+translate H PgnTag {Tag}
+# ====== TODO To be translated ======
+translate H TagContains {contains}
+# ====== TODO To be translated ======
+translate H Variant {Variant}
+# ====== TODO To be translated ======
 translate H Annotator {Annotator}
 # ====== TODO To be translated ======
 translate H Cmnts {Annotated games only}

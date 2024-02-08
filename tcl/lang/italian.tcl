@@ -769,6 +769,12 @@ translate I BrilliancyFlag {Brillantezza}
 translate I BlunderFlag {Svista}
 translate I UserFlag {Utente}
 translate I PgnContains {Testo nel PGN}
+# ====== TODO To be translated ======
+translate I PgnTag {Tag}
+# ====== TODO To be translated ======
+translate I TagContains {contains}
+# ====== TODO To be translated ======
+translate I Variant {Variant}
 translate I Annotator {Commentatore}
 translate I Cmnts {Solo partite annotate}
 

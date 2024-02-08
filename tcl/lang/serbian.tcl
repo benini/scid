@@ -916,6 +916,12 @@ translate Y BlunderFlag {Gre¹ka}
 translate Y UserFlag {Korisnik}
 translate Y PgnContains {PGN contains text} ;# ***
 # ====== TODO To be translated ======
+translate Y PgnTag {Tag}
+# ====== TODO To be translated ======
+translate Y TagContains {contains}
+# ====== TODO To be translated ======
+translate Y Variant {Variant}
+# ====== TODO To be translated ======
 translate Y Annotator {Annotator}
 # ====== TODO To be translated ======
 translate Y Cmnts {Annotated games only}

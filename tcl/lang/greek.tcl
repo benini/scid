@@ -814,6 +814,12 @@ translate G BrilliancyFlag {Ευφυές}
 translate G BlunderFlag {Σφάλμα}
 translate G UserFlag {Χρήστης}
 translate G PgnContains {Το PGN περιέχει κείμενο}
+# ====== TODO To be translated ======
+translate G PgnTag {Tag}
+# ====== TODO To be translated ======
+translate G TagContains {contains}
+# ====== TODO To be translated ======
+translate G Variant {Variant}
 translate G Annotator {Υπομνηματιστής}
 translate G Cmnts {Μόνον υπομνηματισμένες παρτίδες}
 

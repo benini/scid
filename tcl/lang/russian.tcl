@@ -776,6 +776,12 @@ translate R BrilliancyFlag {Великолепно}
 translate R BlunderFlag {Ошибка}
 translate R UserFlag {Пользователь}
 translate R PgnContains {Текст PGN}
+# ====== TODO To be translated ======
+translate R PgnTag {Tag}
+# ====== TODO To be translated ======
+translate R TagContains {contains}
+# ====== TODO To be translated ======
+translate R Variant {Variant}
 translate R Annotator {Комментатор}
 translate R Cmnts {Только комментированные партии}
 

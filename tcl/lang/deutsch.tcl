@@ -796,6 +796,12 @@ translate D BrilliancyFlag {Glänzend}
 translate D BlunderFlag {Grober Fehler}
 translate D UserFlag {Benutzer}
 translate D PgnContains {PGN enthält Text}
+# ====== TODO To be translated ======
+translate D PgnTag {Tag}
+# ====== TODO To be translated ======
+translate D TagContains {contains}
+# ====== TODO To be translated ======
+translate D Variant {Variant}
 translate D Annotator {Kommentator}
 translate D Cmnts {Nur kommentierte Partien}
 

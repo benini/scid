@@ -922,6 +922,12 @@ translate P BlunderFlag {Podstawka}
 translate P UserFlag {Inne}
 translate P PgnContains {PGN zawiera tekst}
 # ====== TODO To be translated ======
+translate P PgnTag {Tag}
+# ====== TODO To be translated ======
+translate P TagContains {contains}
+# ====== TODO To be translated ======
+translate P Variant {Variant}
+# ====== TODO To be translated ======
 translate P Annotator {Annotator}
 # ====== TODO To be translated ======
 translate P Cmnts {Annotated games only}

@@ -807,6 +807,12 @@ translate N BlunderFlag {Blunder}
 translate N UserFlag {Gebruiker}
 translate N PgnContains {PGN bevat tekst}
 # ====== TODO To be translated ======
+translate N PgnTag {Tag}
+# ====== TODO To be translated ======
+translate N TagContains {contains}
+# ====== TODO To be translated ======
+translate N Variant {Variant}
+# ====== TODO To be translated ======
 translate N Annotator {Annotator}
 # ====== TODO To be translated ======
 translate N Cmnts {Annotated games only}

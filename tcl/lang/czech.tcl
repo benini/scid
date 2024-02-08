@@ -776,6 +776,12 @@ translate C BlunderFlag {Hrubá chyba}
 translate C UserFlag {U¾ivatel}
 translate C PgnContains {PGN obsahuje text}
 # ====== TODO To be translated ======
+translate C PgnTag {Tag}
+# ====== TODO To be translated ======
+translate C TagContains {contains}
+# ====== TODO To be translated ======
+translate C Variant {Variant}
+# ====== TODO To be translated ======
 translate C Annotator {Annotator}
 # ====== TODO To be translated ======
 translate C Cmnts {Annotated games only}

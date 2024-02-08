@@ -825,6 +825,12 @@ translate S BrilliancyFlag {Genialidad}
 translate S BlunderFlag {Error}
 translate S UserFlag {Usuario}
 translate S PgnContains {PGN contiene texto}
+# ====== TODO To be translated ======
+translate S PgnTag {Tag}
+# ====== TODO To be translated ======
+translate S TagContains {contains}
+# ====== TODO To be translated ======
+translate S Variant {Variant}
 translate S Annotator {Comentarista}
 translate S Cmnts {Sólo partidas comentadas}
 
