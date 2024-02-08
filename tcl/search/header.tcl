@@ -435,8 +435,12 @@ proc ::search::getSearchOptions {dest_list} {
 
 	if {$::sTagName ne "" && $::sTagValue ne ""} {
 		set value $::sTagValue
-		if {[string index $value 0] ne "*"} { set value "*$value" }
-		if {[string index $value end] ne "*"} { append value "*" }
+		if {[string match {"*"} $value] || [string match {'*'} $value]} {
+			set value [string range $value 1 end-1]
+		} else {
+			if {[string index $value 0] ne "*"} { set value "*$value" }
+			if {[string index $value end] ne "*"} { append value "*" }
+		}
 		lappend search [list "-tag_pair" $::sTagName $value]
 	}
 
