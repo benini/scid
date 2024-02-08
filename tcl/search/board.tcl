@@ -147,16 +147,14 @@ proc ::search::start_ {new_filter w options_cmd} {
 		sc_filter copy $dbase $filter_hack $dest_filter
 	}
 
-	::search::progressbar_ $w show
-	set err [catch {::search::do_search_ $dbase $dest_filter $src_op $options}]
+	set err [catch {::search::do_search_ $dbase $dest_filter $src_op $options "::search::progressbar_ $w show"}]
 	::search::progressbar_ $w hide
 	if {$err} {
 		if {$::errorCode != $::ERROR::UserCancel} { ERROR::MessageBox }
 	}
 
 	if {!$err && $ignore_color_hack ne ""} {
-		::search::progressbar_ $w show
-		set err [catch {::search::do_search_ $dbase $filter_hack $src_op $ignore_color_hack}]
+		set err [catch {::search::do_search_ $dbase $filter_hack $src_op $ignore_color_hack "::search::progressbar_ $w show"}]
 		::search::progressbar_ $w hide
 		if {$err} {
 			if {$::errorCode != $::ERROR::UserCancel} { ERROR::MessageBox }
@@ -176,7 +174,7 @@ proc ::search::start_ {new_filter w options_cmd} {
 	}
 }
 
-proc ::search::do_search_ {dbase filter filter_op options} {
+proc ::search::do_search_ {dbase filter filter_op options reset_progressbar} {
 	switch $filter_op {
 		reset {
 			sc_filter reset $dbase $filter full
@@ -195,8 +193,10 @@ proc ::search::do_search_ {dbase filter filter_op options} {
 		set options [lsearch -all -inline -index 0 -not -exact $options "-tag_pair"]
 	}
 
+	{*}$reset_progressbar
 	sc_filter search $dbase $filter {*}$options -filter AND
 	foreach {elem} $tag_pairs {
+		{*}$reset_progressbar
 		lassign $elem -> tagName tagValue
 		sc_filter search $dbase $filter tags $tagName $tagValue
 	}

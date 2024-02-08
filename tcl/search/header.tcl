@@ -42,7 +42,9 @@ proc checkDates {} {
 
 proc ::search::header::defaults {} {
   set ::sWhite "";  set ::sBlack ""
-  set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotator ""; set ::sAnnotated 0
+  set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotated 0
+  set ::sTagName "Annotator";
+  set ::sTagValue "";
   set ::sWhiteEloMin ""; set ::sWhiteEloMax ""
   set ::sBlackEloMin ""; set ::sBlackEloMax ""
   set ::sEloDiffMin ""; set ::sEloDiffMax ""
@@ -99,13 +101,13 @@ proc ::search::header {{ref_base ""} {ref_filter "dbfilter"}} {
 }
 
 proc search::headerCreateFrame { w } {
-  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sEventDateMin sEventDateMax sIgnoreCol
+  global sWhite sBlack sEvent sSite sRound sAnnotated sEventDateMin sEventDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMoveW sSideToMoveB
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res ano gl ends eco} {
+  foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res gl ends eco} {
     ttk::frame $w.$frame
   }
 
@@ -260,16 +262,6 @@ proc search::headerCreateFrame { w } {
   pack $w.ends.label $w.ends.white $w.ends.black -side left -padx "0 5"
   pack $w.ends -side top -fill x -in $w.result
 
-  pack $w.ano -side top -fill x
-  ttk::label $w.ano.a1 -textvar ::tr(Annotations:)
-  ttk::label $w.ano.a2 -textvar ::tr(Annotator:)
-  ttk::checkbutton $w.ano.an -textvar ::tr(Cmnts) -variable sAnnotated -offvalue 0 -onvalue 1
-  ttk::entry $w.ano.aname -textvariable sAnnotator -width 20
-  pack $w.ano.a1 $w.ano.an -side left -padx "0 5"
-  pack $w.ano.aname $w.ano.a2 -side right -padx "5 0"
-
-  addHorizontalRule $w
-
   ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
   ttk::label $w.eco.l2 -text "-"
   ttk::label $w.eco.l3 -text " "
@@ -284,13 +276,13 @@ proc search::headerCreateFrame { w } {
     unset tempResult
   }
   ttk::checkbutton $w.eco.yes -variable sEco -onvalue Yes -offvalue No -textvar ::tr(GamesWithNoECO)
-  pack $w.eco -side top -fill x -pady "5 0"
+  pack $w.eco -side top -fill x -pady "5"
   pack $w.eco.l1 $w.eco.emin $w.eco.l2 $w.eco.emax -side left
   pack $w.eco.range -side left -padx "5 10"
   pack $w.eco.l3 $w.eco.yes -side left
 
   set f [ttk::frame $w.gnum]
-  pack $f -side top -fill x
+  pack $f -side top -fill x -pady "0 5"
   ttk::label $f.l1 -textvar ::tr(GlistGameNumber:)
   ttk::entry $f.emin -textvariable sGnumMin -width 8 -justify right
   ttk::label $f.l2 -text "-" -font $regular
@@ -310,12 +302,22 @@ proc search::headerCreateFrame { w } {
   }
   pack $f.l3 $f.all $f.first $f.last -side left -padx 2
 
-  pack [ttk::frame $w.variant] -side top -fill x
-  ttk::label $w.variant.label -text "Variant:"
+  pack [set f [ttk::frame $w.variant]] -side top -fill x -pady "0 5"
+  ttk::label $w.variant.label -text "[tr Variant]:"
   ttk::checkbutton $w.variant.std -text "standard" -variable sVariantStd -offvalue 0 -onvalue 1
   ttk::checkbutton $w.variant.960 -text "960" -variable sVariant960 -offvalue 0 -onvalue 1
-  pack $w.variant.label -side left -pady "0 5" -padx "0 5"
-  pack $w.variant.std $w.variant.960 -side left -pady "0 5" -padx 5
+  pack $w.variant.label -side left
+  pack $w.variant.std $w.variant.960 -side left -padx "5 0"
+  ttk::checkbutton $f.annotated -textvar ::tr(Cmnts) -variable sAnnotated -offvalue 0 -onvalue 1
+  pack $f.annotated -side right
+
+  pack [set f [ttk::frame $w.tagpair]] -side top -fill x -pady "0 5"
+  ttk::label $f.label1 -text "[tr PgnTag]:"
+  ttk::entry $f.tagname -textvariable sTagName -width 20
+  ttk::label $f.label2 -text "[tr TagContains]"
+  ttk::entry $f.tagvalue -textvariable sTagValue
+  pack $f.label1 $f.tagname $f.label2 -side left -padx "0 5"
+  pack $f.tagvalue -fill x
 
   set f [ttk::frame $w.pgntext]
   pack $f -side top -fill x
@@ -326,8 +328,6 @@ proc search::headerCreateFrame { w } {
   ttk::label $f.l3 -text "+" -font $regular
   ttk::entry $f.e3 -textvariable sPgntext(3) -width 15
   pack $f.l1 $f.e1 $f.l2 $f.e2 $f.l3 $f.e3 -side left -pady "0 5"
-
-  addHorizontalRule $w
 
   ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command "
     if {\$::sHeaderFlagFrame} {
@@ -433,6 +433,13 @@ proc ::search::headerPlayerOptions {dest_list white welo black belo} {
 proc ::search::getSearchOptions {dest_list} {
 	upvar $dest_list search
 
+	if {$::sTagName ne "" && $::sTagValue ne ""} {
+		set value $::sTagValue
+		if {[string index $value 0] ne "*"} { set value "*$value" }
+		if {[string index $value end] ne "*"} { append value "*" }
+		lappend search [list "-tag_pair" $::sTagName $value]
+	}
+
 	if {$::sEvent ne ""} { lappend search "-event" $::sEvent }
 
 	if {$::sSite ne ""} { lappend search "-site" $::sSite }
@@ -481,13 +488,9 @@ proc ::search::getSearchOptions {dest_list} {
 	}
 
 	if {$::sAnnotated} {
-		lappend search "-n_comments" "1 9999"
-		lappend search "-n_nags|" "1 9999"
-		lappend search "-n_variations|" "1 9999"
-	}
-
-	if {$::sAnnotator ne ""} {
-		lappend search [list "-tag_pair" "Annotator" "*$::sAnnotator*"]
+		lappend search "-n_comments!" "0"
+		lappend search "-n_nags!|" "0"
+		lappend search "-n_variations!|" "0"
 	}
 
     if {! $::sVariantStd} { lappend search "-variant!" "std"}
@@ -544,7 +547,7 @@ proc ::search::getSearchOptions {dest_list} {
 }
 
 proc ::search::header::save {} {
-  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
+  global sWhite sBlack sEvent sSite sRound sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sGlMin sGlMax
   global sEco sEcoMin sEcoMax sHeaderFlags sSideToMoveW sSideToMoveB
@@ -568,7 +571,7 @@ proc ::search::header::save {} {
   getSearchEntries
 
   # First write the regular variables:
-  foreach i {sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sResWin
+  foreach i {sWhite sBlack sEvent sSite sRound sAnnotated sDateMin sDateMax sResWin
     sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
     sBlackEloMax sEcoMin sEcoMax sEloDiffMin sEloDiffMax
     sIgnoreCol sSideToMoveW sSideToMoveB sGlMin sGlMax ::search::filter::operation} {

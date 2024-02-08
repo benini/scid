@@ -792,6 +792,9 @@ translate E BrilliancyFlag {Brilliancy}
 translate E BlunderFlag {Blunder}
 translate E UserFlag {User}
 translate E PgnContains {PGN contains text}
+translate E PgnTag {Tag}
+translate E TagContains {contains}
+translate E Variant {Variant}
 translate E Annotator {Annotator}
 translate E Cmnts {Annotated games only}
 
