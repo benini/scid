@@ -186,6 +186,7 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 	ttk::frame $w_.mf.markers
 	set i 0
 	foreach {marker lbl} {
+        square ☐
 		full █
 		circle ◯
 		disk ⬤
