@@ -201,7 +201,6 @@ proc ::windows::commenteditor::createWin { {focus_if_exists 1} } {
 		C C
 		D D
 		E E
-		F F
 		0 0
 		1 1
 		2 2
