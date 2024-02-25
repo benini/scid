@@ -249,6 +249,10 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 		return UI_Result(ti, ERROR_BadArg, usage);
 
 	if (argc > 3) {
+		const std::string_view cmd = argv[1];
+		if (cmd == "stats")
+			return sc_filter_old(cd, ti, argc, argv);
+
 		auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
 		if (!dbase)
 			return UI_Result(ti, ERROR_BadArg, usage);
@@ -257,7 +261,6 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 		if (filter == nullptr)
 			return UI_Result(ti, ERROR_BadArg, usage);
 
-		const std::string_view cmd = argv[1];
 		if (cmd == "components")
 			return sc_filter_components(ti, *dbase, argc, argv);
 		if (cmd == "compose")
