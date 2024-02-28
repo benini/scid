@@ -1127,7 +1127,7 @@ proc addMarker {w x y} {
     }
 
     sc_pos setComment $newComment
-    ::notify::PosChanged -pgn
+    ::notify::PosChanged pgnonly
 }
 
 # addNag:
@@ -1136,7 +1136,7 @@ proc addMarker {w x y} {
 proc addNag {nag} {
     undoFeature save
     sc_pos addNag "$nag"
-    ::notify::PosChanged -pgn
+    ::notify::PosChanged pgnonly
 }
 
 ################################################################################
