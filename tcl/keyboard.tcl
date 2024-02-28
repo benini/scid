@@ -139,7 +139,12 @@ proc keyboardShortcuts {w} {
 
 
 	#TODO: to be improved
-	bind $w <Control-a> {sc_var create; updateBoard -pgn}
+	bind $w <Control-a> {
+		eval [excludeTextWidget %W]
+		sc_var create
+		::notify::PosChanged -pgn
+		break
+	}
 
 
 	#TODO: are these shortcuts useful?
