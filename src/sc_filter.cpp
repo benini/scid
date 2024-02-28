@@ -248,7 +248,9 @@ UI_res_t sc_filter(UI_extra_t cd, UI_handle_t ti, int argc, const char** argv) {
 	if (argc < 2)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	if (argc > 3) {
+	if (argc > 3 &&
+	    (strcmp("stats", argv[1]) != 0) // TODO: sc_filter stats baseID filterId
+	) {
 		auto dbase = DBasePool::getBase(strGetUnsigned(argv[2]));
 		if (!dbase)
 			return UI_Result(ti, ERROR_BadArg, usage);
