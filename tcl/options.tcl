@@ -181,7 +181,7 @@ set borderwidth 0
 
 # Square markers color and type
 set ::markColor green
-set ::markType full
+set ::markType square
 
 # boardCoords: 1-4 to show board Coordinates, 0 to hide them.
 set boardCoords 0

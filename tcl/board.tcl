@@ -994,7 +994,7 @@ proc ::board::setmarks {w cmds} {
 
     # Normalize the mark type
     switch -glob $type {
-        ""     {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
+        ""     {set type [expr {[string length $arg2] ? "arrow" : "square"}]}
         "mark" {set type "full"}
         ?      {set arg2 $type ; set type "text" }
     }
@@ -1220,21 +1220,28 @@ proc ::board::mark::add {win args} {
 #
 proc ::board::mark::DrawCircle {pathName square color} {
   # Some "constants":
-  set size 0.6	;# inner (enclosing) box size, 0.0 <  $size < 1.0
-  set width 0.1	;# outline around circle, 0.0 < $width < 1.0
+  set size 0.934  ;# inner (enclosing) box size, 0.0 <  $size < 1.0
+  set width 0.066 ;# outline around circle, 0.0 < $width < 1.0
 
   set box [GetBox $pathName $square $size]
   lappend pathName create oval [lrange $box 0 3] \
       -tag [list mark circle mark$square p$square]
-  if {$width > 0.5} {
-    ;# too thick, draw a disk instead
-    lappend pathName -fill $color
-  } else {
-    set width [expr {[lindex $box 4] * $width}]
-    if {$width <= 0.0} {set width 1.0}
-    lappend pathName -fill "" -outline $color -width $width
-  }
+  set width [expr {[lindex $box 4] * $width}]
+  if {$width <= 0.0} {set width 1.0}
+  lappend pathName -fill "" -outline $color -width $width
   eval $pathName
+}
+
+# ::board::mark::DrawSquare --
+# draw a rectangle on the square to mark
+proc ::board::mark::DrawSquare { pathName square color } {
+  if {$square < 0  ||  $square > 63} { return }
+  set box [GetBox $pathName $square]
+  set width [expr {[lindex $box 4] * 0.033}]
+  if {$width <= 0.0} {set width 1.0}
+  $pathName create rectangle [expr [lindex $box 0] + $width] [expr [lindex $box 1] + $width] \
+    [expr [lindex $box 2] - $width - 1] [expr [lindex $box 3] - $width - 1] \
+      -outline $color -width [expr $width + 2] -tag [list mark square mark$square p$square]
 }
 
 # ::board::mark::DrawDisk --
