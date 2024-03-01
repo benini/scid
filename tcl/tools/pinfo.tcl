@@ -45,6 +45,8 @@ proc setupDefaultResolvers { } {
       puts $optionF "#set idlink(5) {{useNAMEF+} {https://tools.wmflabs.org/persondata/index.php?name=%ID%} {} {PS}}"
       puts $optionF "#set idlink(6) {{useNAMEF_} {http://%LANG%.wikipedia.org/wiki/%ID%} {} {Wikipedia}}"
       puts $optionF "#set idlink(7) {{useNAMEF_} {https://www.365chess.com/players/%ID%} {} {365Chess}}"
+      puts $optionF "#set idlink(8) {{useNAMEF-} {https://chess.com/players/%ID%} {} {chess.com}}"
+      puts $optionF "#set idlink(9) {{useNAMEL_} {https://players.chessbase.com/de/player/%ID%} {} {CB}}"
       puts $optionF ""
       puts $optionF "#resolver with icons"
       puts $optionF "#set idlink(0) {{VIAF} {http://viaf.org/%ID%} {VIAF} viaflnk }"
@@ -55,6 +57,8 @@ proc setupDefaultResolvers { } {
       puts $optionF "#set idlink(5) {{useNAMEF+} {https://tools.wmflabs.org/persondata/index.php?name=%ID%} pslnk {PS}}"
       puts $optionF "#set idlink(6) {{useNAMEF_} {http://%LANG%.wikipedia.org/wiki/%ID%} wikiplnk {Wikipedia}}"
       puts $optionF "#set idlink(7) {{useNAMEF_} {https://www.365chess.com/players/%ID%} chess365lnk {365Chess}}"
+      puts $optionF "#set idlink(8) {{useNAMEF-} {https://chess.com/players/%ID%} chesslnk {chess.com}}"
+      puts $optionF "#set idlink(9) {{useNAMEL_} {https://players.chessbase.com/de/player/%ID%} cblnk {CB}}"
       puts $optionF ""
       puts $optionF "#"
       puts $optionF "# Icons for the links"
@@ -179,6 +183,28 @@ proc setupDefaultResolvers { } {
       puts $optionF "   tqaVpDA5TXVVBO9fB5pzLq0VWiucY86wiiUKjA2Jx6L/zb6EuLZFiesU9fWK/yf+AkkdVsIfTmX/"
       puts $optionF "   AAAAAElFTkSuQmCC"
       puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo chesslnk -data {"
+      puts $optionF "  iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB60lEQVQ4y42TPWhTYRSGn/PlpqkkWhNQ"
+      puts $optionF "  qxRxrNpJcHNRBCm2Qlsq4lZswcXBSQUnf1BXBX9ARNChUwdFKtTBSRQcOjiJSvEHaay1bXLTJPfe73Ux"
+      puts $optionF "  YNpqc6bD4ZznfXnhGGvU1alhZxYfybWnR0phTYul+GZpIfPqzuiEVu4GawHw8f7OrbnHHRvbC58+/8S5"
+      puts $optionF "  +FBE/SDwbuWqWzm4NnnCEh/3Ly/XCzNf56lU6wQBhYT4wFpaqwAXeseF+D63EPpypQbAcpXEyxVbAgA4"
+      puts $optionF "  C8bBpgHKFTG/5N8GtL1oCXBlcnCTJzoH6gZIOfBeeyNVz47e68+tC/DEPRJjQFqCTJuRSlm7xJkEv2Nd"
+      puts $optionF "  gCN4HVhm92KZ67PzXl9mkyT2nHdK95hSH9YFXOyd8IhiR87y2wrOchvM4cll09nZB6ef+JZClIu7DI6a"
+      puts $optionF "  AWDA8Voc5lsMcSifSLeEdklQi4TQnsjiG2P3B/4f4uWpwS2JokfI9/1Rph4JwEkaqSXVh6fu9jU5STWa"
+      puts $optionF "  S88GApTcBj/UANfqYjHU32Ld3rR537Hu59NP36vJwbdisn3uVzxYCr2FFU8p9PxY8Kj5fZzQsJHKrnqm"
+      puts $optionF "  SpzsrNS9NVIT/6xM4uNOYKkJYF5vzNxJSYcFXQZ5mbIAJisLzZm5GdBLQx8bd78Bl0vnJV3M+YwAAAAA"
+      puts $optionF "  SUVORK5CYII="
+      puts $optionF "}"
+      puts $optionF ""
+      puts $optionF "image create photo cblnk -data {"
+      puts $optionF "  iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABEElEQVQ4y5WTS07EMBAF69nNBNggsUHc"
+      puts $optionF "  ec7GfUg6fizsiDAfovHGakuprn52BBjANgCS2Nfnzzf+W4WDdRrAuwDb2EYSkris6wEkjgyeLJDvG9zr"
+      puts $optionF "  vNVVIIsX6abJYQYhMQ3IrUwOM4j2C4kBKY8abHvQIbGz0Nf7hzPMjFkNSzUJNEwWmN3r1bAU8916nTJp"
+      puts $optionF "  EwUoDaL0tI0Ak4jS3M9tEDTDVES1wQLRAdFEKyYQbfsIA8KroQ4IfW/b/buPRQEiRYY5IeY9ROr+VTSb"
+      puts $optionF "  Ojo3GbwLMQZkxrQCSZ91sVkr5Oi8yiwjr7x8iQEPG1w95dcUJ/o4ibpJhWzwTDdMYELXBn9+kBTECG4F"
+      puts $optionF "  qklD0A22m/kBwWq4B1MvEREAAAAASUVORK5CYII="
+      puts $optionF "}"
       close $optionF
    }
 }
@@ -193,7 +219,7 @@ proc ::pinfo::splitName { playerName } {
   if { $count > 0 } {
     set fname [string range $playerName [expr $count + $countlen] end]
     set lname [string range $playerName 0 [expr $count - 1]]
-    return [list $fname $lname]
+    return [list [string trim $fname] [string trim $lname]]
   }
   return [list $playerName ""]
 }
