@@ -994,7 +994,7 @@ proc ::board::setmarks {w cmds} {
 
     # Normalize the mark type
     switch -glob $type {
-        ""     {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
+        ""     {set type [expr {[string length $arg2] ? "arrow" : "circle"}]}
         "mark" {set type "full"}
         ?      {set arg2 $type ; set type "text" }
     }
@@ -1220,21 +1220,14 @@ proc ::board::mark::add {win args} {
 #
 proc ::board::mark::DrawCircle {pathName square color} {
   # Some "constants":
-  set size 0.6	;# inner (enclosing) box size, 0.0 <  $size < 1.0
-  set width 0.1	;# outline around circle, 0.0 < $width < 1.0
+  set size  0.94 ;# inner (enclosing) box size, 0.0 <  $size < 1.0
+  set width 0.06 ;# outline around circle, 0.0 < $width < 1.0
 
   set box [GetBox $pathName $square $size]
-  lappend pathName create oval [lrange $box 0 3] \
+  set width [expr int($width * [lindex $box 4] / $size)]
+  $pathName create oval [lrange $box 0 3] \
+      -fill "" -outline $color -width $width \
       -tag [list mark circle mark$square p$square]
-  if {$width > 0.5} {
-    ;# too thick, draw a disk instead
-    lappend pathName -fill $color
-  } else {
-    set width [expr {[lindex $box 4] * $width}]
-    if {$width <= 0.0} {set width 1.0}
-    lappend pathName -fill "" -outline $color -width $width
-  }
-  eval $pathName
 }
 
 # ::board::mark::DrawDisk --
