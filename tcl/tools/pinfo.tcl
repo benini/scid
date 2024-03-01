@@ -215,13 +215,11 @@ proc ::pinfo::splitName { playerName } {
   set count [string first "," $playerName ]
   if { $count < 0 } {
     set count [string first " " $playerName ]
-  } elseif { [string index $playerName [expr $count + 1]] eq " " } {
-      incr countlen
   }
   if { $count > 0 } {
     set fname [string range $playerName [expr $count + $countlen] end]
     set lname [string range $playerName 0 [expr $count - 1]]
-    return [list $fname $lname]
+    return [list [string trim $fname] [string trim $lname]]
   }
   return [list $playerName ""]
 }
