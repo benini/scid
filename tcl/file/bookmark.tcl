@@ -185,7 +185,7 @@ proc ::bookmarks::Go {entry} {
     }
     unbusyCursor .
     set ::glist 1
-    ::recentFiles::add "[file rootname $fname].si4"
+    ::recentFiles::add $fname
   }
   # Find and load the best database game matching the bookmark:
   set white [lindex $entry 5]

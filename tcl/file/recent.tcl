@@ -76,7 +76,7 @@ proc ::recentFiles::add {fname} {
 #
 proc ::recentFiles::load {fname} {
   set rname $fname
-  if {[file extension $rname] == ".si4"} {
+  if {[file extension $rname] == ".si5"} {
     set rname [file rootname $rname]
   }
   ::file::Open $fname
