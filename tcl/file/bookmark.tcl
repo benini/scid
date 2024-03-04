@@ -172,20 +172,13 @@ proc ::bookmarks::Go {entry} {
   set fname [lindex $entry 2]
   set gnum [lindex $entry 3]
   set ply [lindex $entry 4]
-  set slot [sc_base slot $fname]
+  set dbName $fName
+  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
+  set slot [sc_base slot $dbName]
   if {$slot != 0} {
     sc_base switch $slot
-  } else {
-    busyCursor .
-    if {[catch { ::file::Open $fname} result]} {
-      unbusyCursor .
-      tk_messageBox -icon warning -type ok -parent . \
-        -title "Scid" -message "Unable to load the database:\n$fname\n\n$result"
-      return
-    }
-    unbusyCursor .
-    set ::glist 1
-    ::recentFiles::add $fname
+  } else if {! [::file::Open $fname]} {
+    return
   }
   # Find and load the best database game matching the bookmark:
   set white [lindex $entry 5]
@@ -196,14 +189,7 @@ proc ::bookmarks::Go {entry} {
   set result [lindex $entry 10]
 
   set best [sc_game find $gnum $white $black $site $round $year $result]
-  if {[catch {::game::Load $best}]} {
-    tk_messageBox -icon warning -type ok -parent . \
-      -title "Scid" -message "Unable to load game number: $best"
-  } else {
-    sc_move pgn $ply
-  }
-  ::notify::GameChanged
-  ::notify::DatabaseChanged
+  ::game::Load $best $ply
 }
 
 # ::bookmarks::DeleteChildren
