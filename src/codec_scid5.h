@@ -273,9 +273,9 @@ public: // ICodecDatabase interface
 
 	errorT flush() final {
 		idx_seqwrite_ = 0;
-		errorT errIndex = (idxfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 		errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
-		errorT errNBfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
+		errorT errNBfile = (nbfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
+		errorT errIndex = (idxfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 		return errIndex ? errIndex : errGfile ? errGfile : errNBfile;
 	}
 
