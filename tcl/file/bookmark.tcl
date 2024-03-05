@@ -172,12 +172,12 @@ proc ::bookmarks::Go {entry} {
   set fname [lindex $entry 2]
   set gnum [lindex $entry 3]
   set ply [lindex $entry 4]
-  set dbName $fName
-  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
+  set dbName $fname
+  if {[string tolower [file extension "$fname"]] == ".si5"} { set dbName [file rootname "$fname"] }
   set slot [sc_base slot $dbName]
   if {$slot != 0} {
     sc_base switch $slot
-  } else if {! [::file::Open $fname]} {
+  } elseif {[::file::Open $fname]} {
     return
   }
   # Find and load the best database game matching the bookmark:
@@ -190,6 +190,7 @@ proc ::bookmarks::Go {entry} {
 
   set best [sc_game find $gnum $white $black $site $round $year $result]
   ::game::Load $best $ply
+  ::notify::DatabaseChanged
 }
 
 # ::bookmarks::DeleteChildren

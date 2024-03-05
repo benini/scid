@@ -139,7 +139,7 @@ proc ::file::Open_ {{fName ""} } {
 
   set ext [string tolower [file extension "$fName"] ]
   set dbName $fName
-#  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
+  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
   if {[sc_base slot $dbName] != 0} {
     tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
     return 1
@@ -175,6 +175,8 @@ proc ::file::Open_ {{fName ""} } {
   } else {
     if {$ext == ".si5" || $ext eq ""} {
       set dbType "SCID5"
+      # do not set a filename without extension in the recent file list
+      if {$ext eq ""} { set fName "$fName.si5" }
     } elseif {$ext == ".si4"} {
       set dbType "SCID4"
     } else {

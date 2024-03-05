@@ -75,10 +75,6 @@ proc ::recentFiles::add {fname} {
 #   if it is already open.
 #
 proc ::recentFiles::load {fname} {
-  set rname $fname
-  if {[file extension $rname] == ".si5"} {
-    set rname [file rootname $rname]
-  }
   ::file::Open $fname
 }
 
