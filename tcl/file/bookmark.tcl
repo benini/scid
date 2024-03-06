@@ -176,7 +176,7 @@ proc ::bookmarks::Go {entry} {
   if {[string tolower [file extension "$fname"]] == ".si5"} { set dbName [file rootname "$fname"] }
   set slot [sc_base slot $dbName]
   if {$slot != 0} {
-    sc_base switch $slot
+    ::file::SwitchToBase $slot
   } elseif {[::file::Open $fname]} {
     return
   }
@@ -190,7 +190,6 @@ proc ::bookmarks::Go {entry} {
 
   set best [sc_game find $gnum $white $black $site $round $year $result]
   ::game::Load $best $ply
-  ::notify::DatabaseChanged
 }
 
 # ::bookmarks::DeleteChildren
