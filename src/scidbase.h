@@ -417,7 +417,7 @@ private:
 	std::unique_ptr<ICodecDatabase> codec_;
 	Index* idx;
 	NameBase* nb_;
-	fileModeT fileMode_;   // Read-only, write-only, or both.
+	fileModeT fileMode_; // Read-only, write-only, or both.
 	std::vector<std::pair<std::string, Filter*>> filters_;
 	mutable Filter all_filter_{0};
 	mutable Stats* stats_;
