@@ -108,15 +108,11 @@ proc ::bookmarks::RefreshMenu {menu} {
 
 # ::bookmarks::CanAdd:
 #   Returns 1 if the current game can be added as a bookmark.
-#   It must be in an open database, not a PGN file, and not game number 0.
+#   It must be in an open database and not game number 0.
 #
 proc ::bookmarks::CanAdd {} {
   if {[sc_game number] == 0} { return 0 }
   if {$::curr_db == $::clipbase_db} { return 0 }
-  set fname [sc_base filename $::curr_db]
-  foreach suffix {.pgn .PGN} {
-    if {[string match "*$suffix" "$fname"]} { return 0 }
-  }
   return 1
 }
 
