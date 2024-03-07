@@ -516,20 +516,24 @@ UI_res_t sc_base_getGame(scidBaseT* dbase, UI_handle_t ti, int argc,
  *   games imported and a string containing import errors
  *   or warnings.
  */
-UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc,
+                        const char** argv) {
 	const char* usage = "Usage: sc_base import baseId filename";
-	if (argc != 4) return UI_Result(ti, ERROR_BadArg, usage);
+	if (argc != 4)
+		return UI_Result(ti, ERROR_BadArg, usage);
+
+	const auto tcl_strings_are_utf8 =
+	    std::filesystem::path((const char8_t*)argv[3]).string();
+	const auto filename = tcl_strings_are_utf8.c_str();
 
 	// if (pgn)
 	auto codec = ICodecDatabase::PGN;
 
 	auto nImported = dbase->numGames();
 	std::string errorMsg;
-	auto res_imp =
-	    dbase->importGames(codec, argv[3], UI_CreateProgress(ti), errorMsg);
-	if (res_imp != OK)
-		return UI_Result(ti, res_imp);
+	if (auto err = dbase->importGames(codec, filename, UI_CreateProgress(ti),
+	                                  errorMsg))
+		return UI_Result(ti, err);
 
 	UI_List res(2);
 	res.push_back(dbase->numGames() - nImported);
@@ -597,12 +601,16 @@ UI_res_t sc_base_open(UI_handle_t ti, int argc, const char** argv) {
  * - the handle of the database corresponding to @filename.
  * - 0 if not found.
  */
-UI_res_t sc_base_slot(UI_handle_t ti, int argc, const char** argv)
-{
+UI_res_t sc_base_slot(UI_handle_t ti, int argc, const char** argv) {
 	const char* usage = "Usage: sc_base slot filename";
-	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+	if (argc != 3)
+		return UI_Result(ti, ERROR_BadArg, usage);
 
-	int res = DBasePool::find(argv[2]);
+	const auto tcl_strings_are_utf8 =
+	    std::filesystem::path((const char8_t*)argv[2]).string();
+	const auto filename = tcl_strings_are_utf8.c_str();
+
+	int res = DBasePool::find(filename);
 	return UI_Result(ti, OK, res);
 }
 
