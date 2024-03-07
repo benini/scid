@@ -25,6 +25,7 @@
 #include "sortcache.h"
 #include "stored.h"
 #include <algorithm>
+#include <filesystem>
 
 std::pair<ICodecDatabase*, errorT>
 ICodecDatabase::open(Codec codec, fileModeT fMode, const char* filename,
@@ -91,7 +92,6 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 		codec_.reset(obj.first);
 		inUse = true;
 		fileMode_ = (fMode == FMODE_Create) ? FMODE_Both : fMode;
-		fileName_ = filename;
 		gameNumber = -1;
 
 		// Initialize the filters: all the games are included by default.
@@ -125,7 +125,6 @@ void scidBaseT::Close() {
 	clear();
 	game->Clear();
 	fileMode_ = FMODE_None;
-	fileName_ = "<empty>";
 	gameNumber = -1;
 	gameAltered = false;
 	all_filter_.Init(0);
@@ -148,6 +147,14 @@ void scidBaseT::clear() {
 		nameFreq_[nt].resize(0);
 	}
 	peakEloCache_.clear();
+}
+
+std::string scidBaseT::getFileName() const {
+	if (!inUse) {
+		return "<empty>";
+	}
+	const auto filenames = codec_->getFilenames();
+	return filenames.empty() ? "<clipbase>" : filenames[0];
 }
 
 errorT scidBaseT::beginTransaction() {
@@ -609,12 +616,14 @@ errorT scidBaseT::compact(const Progress& progress) {
 		return ERROR_CodecUnsupFeat;
 
 	// 1) Create a new temporary database
-	std::string filename = fileName_;
-	std::string tmpfile = filename + "__COMPACT__";
 	ICodecDatabase::Codec dbtype = codec_->getType();
 	scidBaseT tmp;
-	errorT err_Create = tmp.openHelper(dbtype, FMODE_Create, tmpfile.c_str());
-	if (err_Create != OK)
+	auto tmp_filename = std::filesystem::path(filenames[0]);
+	tmp_filename.replace_filename(tmp_filename.stem().u8string() +
+	                              u8"__COMPACT__" +
+	                              tmp_filename.extension().u8string());
+	if (auto err_Create = tmp.openHelper(dbtype, FMODE_Create,
+	                                     tmp_filename.string().c_str()))
 		return err_Create;
 
 	// 2) Create the list of games to be copied
@@ -728,7 +737,7 @@ errorT scidBaseT::compact(const Progress& progress) {
 		const char* s2 = filenames[i].c_str();
 		std::rename(s1, s2);
 	}
-	errorT res = openHelper(dbtype, FMODE_Both, filename.c_str());
+	errorT res = openHelper(dbtype, FMODE_Both, filenames[0].c_str());
 
 	// 10) Re-create filters and SortCaches
 	if (res == OK || res == ERROR_NameDataLoss) {

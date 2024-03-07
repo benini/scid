@@ -90,7 +90,7 @@ struct scidBaseT {
 
 	void Close();
 
-	const std::string& getFileName() const { return fileName_; }
+	std::string getFileName() const;
 	bool isReadOnly() const { return fileMode_ == FMODE_ReadOnly; }
 	gamenumT numGames() const { return idx->GetNumGames(); }
 
@@ -417,7 +417,6 @@ private:
 	std::unique_ptr<ICodecDatabase> codec_;
 	Index* idx;
 	NameBase* nb_;
-	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode_;   // Read-only, write-only, or both.
 	std::vector<std::pair<std::string, Filter*>> filters_;
 	mutable Filter all_filter_{0};
