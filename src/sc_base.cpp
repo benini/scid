@@ -24,6 +24,7 @@
 #include "ui.h"
 #include <algorithm>
 #include <cstring>
+#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
@@ -58,6 +59,10 @@ namespace {
  */
 static UI_res_t doOpenBase(UI_handle_t ti, const char* codec, fileModeT fMode,
                            const char* filename) {
+	const auto tcl_strings_are_utf8 =
+	    std::filesystem::path((const char8_t*)filename).string();
+	filename = tcl_strings_are_utf8.c_str();
+
 	if (DBasePool::find(filename))
 		return UI_Result(ti, ERROR_FileInUse);
 
