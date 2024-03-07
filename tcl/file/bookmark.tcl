@@ -172,9 +172,7 @@ proc ::bookmarks::Go {entry} {
   set fname [lindex $entry 2]
   set gnum [lindex $entry 3]
   set ply [lindex $entry 4]
-  set dbName $fname
-  if {[string tolower [file extension "$fname"]] == ".si5"} { set dbName [file rootname "$fname"] }
-  set slot [sc_base slot $dbName]
+  set slot [sc_base slot $fname]
   if {$slot != 0} {
     ::file::SwitchToBase $slot
   } elseif {[::file::Open $fname]} {
