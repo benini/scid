@@ -448,7 +448,7 @@ proc menuUpdateBases {} {
   .menu.db.copygames delete $::menuDBCopyGamesIdx end
 
   foreach i [sc_base list] {
-    set fname [file tail [sc_base filename $i]]
+    set fname [::file::BaseName $i]
 
     .menu.db add radiobutton -variable currentSlot -value $i \
         -label "Base $i: $fname" \

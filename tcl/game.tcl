@@ -228,7 +228,7 @@ proc ::game::ConfirmDiscard {} {
   #Default value: cancel action
   set ::game::answer 0
 
-  set fname [file tail [sc_base filename $::curr_db]]
+  set fname [::file::BaseName $::curr_db]
   set gnum [sc_game number]
   set players "[sc_game info white] - [sc_game info black]\n"
   if {[string equal " - \n" $players]} { set players "" }

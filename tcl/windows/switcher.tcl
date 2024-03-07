@@ -729,11 +729,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
       } else {
         grid forget $w.c.f$i.img
       }
-      if {$i == $::clipbase_db} {
-        set name [sc_base filename $i]
-      } else {
-        set name "[file tail [sc_base filename $i]]"
-      }
+      set name [::file::BaseName $i]
       $w.c.f$i.name configure -background $color -text $name
       if {[info exists ::sw_LinkedGList_($w)]} {
         set txt [::windows::gamelist::filterText $::sw_LinkedGList_($w) $i]

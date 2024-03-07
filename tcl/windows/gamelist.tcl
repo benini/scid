@@ -364,8 +364,8 @@ proc ::windows::gamelist::AweParse {{txt}} {
 proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase} {filter "dbfilter"} {ask true}} {
 	if {$w != "" && $srcBase == $::gamelistBase($w)} { set filter $::gamelistFilter($w) }
 
-	set fromName [file tail [sc_base filename $srcBase]]
-	set targetName [file tail [sc_base filename $dstBase]]
+	set fromName [::file::BaseName $srcBase]
+	set targetName [::file::BaseName $dstBase]
 	set nGamesToCopy [sc_filter count $srcBase $filter]
 	set targetReadOnly [sc_base isReadOnly $dstBase]
 	set err ""
@@ -562,7 +562,7 @@ proc ::windows::gamelist::update_ {{w} {moveUp}} {
 	}
 
 	set fr [::windows::gamelist::formatFilterText $filterSz $gameSz]
-	set fn [file tail [sc_base filename $::gamelistBase($w)]]
+	set fn [::file::BaseName $::gamelistBase($w)]
 	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
 	if {$moveUp} {
 		#Reset double-click behavior
@@ -1190,7 +1190,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
 
       foreach i [sc_base list] {
         if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
-        set fname [file tail [sc_base filename $i]]
+        set fname [::file::BaseName $i]
         $w.game_menu.merge add command -label "$i $fname" \
           -command "::game::mergeInBase $::glistBase($w) $i $idx"
         $w.game_menu.copy add command -label "$i $fname" \

@@ -15,7 +15,7 @@ proc ::file::Exit {}  {
         append msg "\n\n"
       }
       incr unsavedCount
-      set fname [file tail [sc_base filename $i]]
+      set fname [::file::BaseName $i]
       set g [sc_game number]
       append msg "   Base $i: $fname "
       append msg "($::tr(game) $g)"
@@ -67,16 +67,14 @@ proc ::file::New {} {
 
   if {$fName == ""} { return }
   set file_extension [string tolower [file extension $fName]]
-  set dbName $fName
   if {$file_extension == ".si5"} {
     set dbType "SCID5"
-    set dbName [file rootname $fName]
   } elseif {$file_extension == ".si4"} {
     set dbType "SCID4"
   } elseif {$file_extension == ".pgn"} {
     set dbType "PGN"
   }
-  if {[catch {sc_base create $dbType $dbName} baseId]} {
+  if {[catch {sc_base create $dbType $fName} baseId]} {
     ERROR::MessageBox "$fName\n"
     return
   }
@@ -138,9 +136,7 @@ proc ::file::Open_ {{fName ""} } {
   }
 
   set ext [string tolower [file extension "$fName"] ]
-  set dbName $fName
-  if {$ext == ".si5"} { set dbName [file rootname "$fName"] }
-  if {[sc_base slot $dbName] != 0} {
+  if {[sc_base slot $fName] != 0} {
     tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
     return 1
   }
@@ -182,7 +178,7 @@ proc ::file::Open_ {{fName ""} } {
       return 1;
     }
     progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..." $::tr(Cancel)
-    set err [catch {sc_base open $dbType $dbName} ::file::lastOpened]
+    set err [catch {sc_base open $dbType $fName} ::file::lastOpened]
     closeProgressWindow
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
@@ -282,6 +278,15 @@ proc ::file::SwitchToBase {{b} {saveHistory 1}} {
   }
   ::notify::GameChanged
   ::notify::DatabaseChanged
+}
+
+proc ::file::BaseName {baseIdx} {
+  set fname [file tail [sc_base filename $baseIdx]]
+  set ext [string tolower [file extension $fname] ]
+  if {$ext == ".si5"} {
+    return [file rootname $fname]
+  }
+  return $fname
 }
 
 # Databases that will be automatically loaded ad startup

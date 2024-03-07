@@ -445,7 +445,7 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   set selected 0
   foreach i [sc_base list] {
       if {$readOnly || ![sc_base isReadOnly $i]} {
-        set fname [file tail [sc_base filename $i]]
+        set fname [::file::BaseName $i]
         if {$i == $ref_base} { set selected [llength $listbases] }
         lappend listbases "$tr_database $i: $fname"
       }
