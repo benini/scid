@@ -175,8 +175,6 @@ proc ::file::Open_ {{fName ""} } {
   } else {
     if {$ext == ".si5" || $ext eq ""} {
       set dbType "SCID5"
-      # do not set a filename without extension in the recent file list
-      if {$ext eq ""} { set fName "$fName.si5" }
     } elseif {$ext == ".si4"} {
       set dbType "SCID4"
     } else {
