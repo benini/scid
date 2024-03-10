@@ -612,8 +612,8 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
 
 proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set linecolor red
-  set firstColor darkgreen
-  set secondColor blue
+  set firstColor green
+  set secondColor dodgerblue3
   set linewidth 2
   set psize 2
   
