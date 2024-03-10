@@ -669,6 +669,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
+    bind $w.c <ButtonPress-$::MB3> {::tools::graphs::score::Popup %x %X %Y}
+    bind $w.c <ButtonRelease-$::MB3> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
@@ -756,6 +758,15 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
+proc ::tools::graphs::score::Popup {mc xc yc} {
+  set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
+  sc_game push copyfast
+  sc_move start
+  sc_move forward $x
+  set bd [sc_pos board]
+  sc_game pop
+  ::board::popup .scorePopup $bd $xc $yc
+}
 
 ####################
 # Rating graph
