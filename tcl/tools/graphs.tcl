@@ -612,8 +612,8 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
 
 proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set linecolor red
-  set firstColor darkgreen
-  set secondColor blue
+  set firstColor green
+  set secondColor dodgerblue3
   set linewidth 2
   set psize 2
   
@@ -642,7 +642,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    canvas $w.c -width 500 -height 300
+    applyThemeStyle . $w.c
 
     $w.c create text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
@@ -669,6 +670,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
+    bind $w.c <ButtonPress-$::MB3> {::tools::graphs::score::Popup %x %X %Y}
+    bind $w.c <ButtonRelease-$::MB3> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
@@ -698,8 +701,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   }
 
   ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
-      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
-      -hline [list [list gray80 1 each $yticks ]] \
+      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor [ttk::style lookup $w.c -foreground]\
+      -hline [list [list gray80 1 each $yticks ]] -background [ttk::style lookup $w.c -background]\
       -vline {{gray80 1 each 1} {steelBlue 1 each 5}}
 
   # Create fake dataset with bounds so we see at least -1.0 to 1.0:
@@ -710,7 +713,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set blackelo [sc_game tag get BlackElo]
   if {$whiteelo == 0} {set whiteelo ""} else {set whiteelo "($whiteelo)"}
   if {$blackelo == 0} {set blackelo ""} else {set blackelo "($blackelo)"}
-  $w.c itemconfigure text -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
+  $w.c itemconfigure text -fill [ttk::style lookup $w.c -foreground] \
+      -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
   busyCursor $w
   update
 
@@ -756,6 +760,15 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
+proc ::tools::graphs::score::Popup {mc xc yc} {
+  set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
+  sc_game push copyfast
+  sc_move start
+  sc_move forward $x
+  set bd [sc_pos board]
+  sc_game pop
+  ::board::popup .scorePopup $bd $xc $yc
+}
 
 ####################
 # Rating graph
