@@ -642,7 +642,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    canvas $w.c -width 500 -height 300
+    applyThemeStyle . $w.c
 
     $w.c create text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
@@ -700,8 +701,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   }
 
   ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
-      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
-      -hline [list [list gray80 1 each $yticks ]] \
+      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor [ttk::style lookup $w.c -foreground]\
+      -hline [list [list gray80 1 each $yticks ]] -background [ttk::style lookup $w.c -background]\
       -vline {{gray80 1 each 1} {steelBlue 1 each 5}}
 
   # Create fake dataset with bounds so we see at least -1.0 to 1.0:
