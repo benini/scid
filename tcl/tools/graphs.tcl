@@ -713,7 +713,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set blackelo [sc_game tag get BlackElo]
   if {$whiteelo == 0} {set whiteelo ""} else {set whiteelo "($whiteelo)"}
   if {$blackelo == 0} {set blackelo ""} else {set blackelo "($blackelo)"}
-  $w.c itemconfigure text -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
+  $w.c itemconfigure text -fill [ttk::style lookup $w.c -foreground] \
+      -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
   busyCursor $w
   update
 
