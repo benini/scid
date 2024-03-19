@@ -515,10 +515,10 @@ proc configure_style {} {
     option add [lindex $elem 1] [lindex $elem 2]
   }
 }
-bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
-
 catch { ttk::style theme use $::lookTheme }
 configure_menus
+configure_style
+bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
 
 
 # Uses the circle and full circle unicode characters to simulate a switch button.
