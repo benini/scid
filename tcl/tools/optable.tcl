@@ -510,6 +510,11 @@ proc ::optable::saveReport {fmt} {
     }
     puts $tempfile $report
     close $tempfile
+    set dirname [file join [file dirname $fname] "bitmaps"]
+    if { $fmt == "html" && ! [file exists $dirname] } {
+        # copy bitmaps for html graphics
+        file copy [file join $::scidExeDir "bitmaps"] $dirname
+    }
   }
   unbusyCursor .
 }
