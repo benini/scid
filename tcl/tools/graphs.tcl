@@ -579,6 +579,7 @@ proc MoveTimeList {color add} {
 proc ::tools::graphs::MoveScoreList { invw invb } {
     set moveScores { }
     set mainline { }
+    set ::tools::graphs::score::Moves { }
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
@@ -590,6 +591,7 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
         # only search in the mainline
         if { $RAVd == 0 && $RAVn == 0} {
             lappend mainline [lindex [lindex $game $i] 4]
+            lappend ::tools::graphs::score::Moves [lindex [lindex $game $i] 5]
         }
     }
     set movenr 0.0
@@ -762,11 +764,10 @@ proc ::tools::graphs::score::Move {xc} {
 
 proc ::tools::graphs::score::Popup {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
-  sc_game push copyfast
-  sc_move start
-  sc_move forward $x
-  set bd [sc_pos board]
-  sc_game pop
+  if { $x < 1 } { return }
+  set bd [sc_pos board "position startpos moves" [lrange $::tools::graphs::score::Moves 0 $x]]
+  set label "[expr int(($x+1) / 2)]. "
+  if { ! [expr $x % 2] } {  append label "... " }
   ::board::popup .scorePopup $bd $xc $yc
 }
 
