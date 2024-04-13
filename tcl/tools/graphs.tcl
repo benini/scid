@@ -670,8 +670,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
-    bind $w.c <ButtonPress-$::MB3> {::tools::graphs::score::Popup %x %X %Y}
-    bind $w.c <ButtonRelease-$::MB3> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
+    bind $w.c <Motion> {::tools::graphs::score::Popup %x %X %Y}
+    bind $w.c <Any-Leave> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
