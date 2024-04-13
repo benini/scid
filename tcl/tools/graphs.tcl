@@ -580,6 +580,7 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
     set moveScores { }
     set mainline { }
     set ::tools::graphs::score::Moves { }
+    set ::tools::graphs::score::Evals [list {}]
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
@@ -598,6 +599,7 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
     set side 0
     for {set i 1} { $i < $n} { incr i } {
         set comment [lindex $mainline $i]
+        lappend ::tools::graphs::score::Evals [getScorefromComment $comment 200]
         set score [getScorefromComment $comment $::tools::graphs::score::MaxY]
 
         if { $score ne "" } {
@@ -672,7 +674,7 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
-    bind $w.c <Motion> {::tools::graphs::score::Popup %x %X %Y}
+    bind $w.c <Motion> {::tools::graphs::score::ShowEvalDetails %x %X %Y}
     bind $w.c <Any-Leave> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
@@ -762,13 +764,54 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
-proc ::tools::graphs::score::Popup {mc xc yc} {
+proc ::tools::graphs::score::Popup {w positionLongStr label xc yc {above ""}} {
+    if {! [winfo exists $w]} {
+        toplevel $w
+        wm overrideredirect $w 1
+        ttk::label $w.l
+        grid $w.l -sticky we -row 0
+        ::board::new $w.bd 30
+        grid $w.bd -row 1
+        ::update idletasks
+    }
+    $w.l configure -text $label
+    lassign $positionLongStr pos lastmove
+    ::board::update $w.bd $pos
+
+    if {$lastmove ne ""} {
+      ::board::lastMoveHighlight $w.bd $lastmove
+    }
+    # Make sure the popup window can fit on the screen:
+    set screenwidth [winfo screenwidth $w]
+    set screenheight [winfo screenheight $w]
+    set dx [winfo width $w]
+    set dy [winfo height $w]
+    incr xc 8
+    if {($xc+$dx) > $screenwidth} {
+        set xc [expr {$screenwidth - $dx}]
+    }
+    if {($yc+$dy) > ($screenheight -8)} {
+            set above 1
+    }
+    if {$above ne ""} {
+        set yc [expr { $yc -$dy -8 }]
+        if {$yc < 0} { set yc 0 }
+    } else {
+        incr yc 8
+    }
+    wm geometry $w "+$xc+$yc"
+    wm deiconify $w
+    raiseWin $w
+}
+
+proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
   if { $x < 1 } { return }
   set bd [sc_pos board "position startpos moves" [lrange $::tools::graphs::score::Moves 0 $x]]
   set label "[expr int(($x+1) / 2)]. "
   if { ! [expr $x % 2] } {  append label "... " }
-  ::board::popup .scorePopup $bd $xc $yc
+  append label "[lindex $::tools::graphs::score::Moves $x]\nEvaluation: [lindex $::tools::graphs::score::Evals $x]"
+  ::tools::graphs::score::Popup .scorePopup $bd $label $xc $yc
 }
 
 ####################
