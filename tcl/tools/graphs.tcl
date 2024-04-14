@@ -585,6 +585,7 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
     set n [llength $game]
+    set ::tools::graphs::score::startFen [lindex [lindex $game 0] 2]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {
         set RAVd [lindex [lindex $game $i] 0]
@@ -807,7 +808,7 @@ proc ::tools::graphs::score::Popup {w positionLongStr label xc yc {above ""}} {
 proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
   if { $x < 1 } { return }
-  set bd [sc_pos board "position startpos moves" [lrange $::tools::graphs::score::Moves 0 $x]]
+  set bd [sc_pos board "position fen $::tools::graphs::score::startFen moves" [lrange $::tools::graphs::score::Moves 0 $x]]
   set label "[expr int(($x+1) / 2)]. "
   if { ! [expr $x % 2] } {  append label "... " }
   append label "[lindex $::tools::graphs::score::Moves $x]\nEvaluation: [lindex $::tools::graphs::score::Evals $x]"
