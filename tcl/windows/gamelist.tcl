@@ -830,6 +830,8 @@ proc glist.create {{w} {layout}} {
   bind $w.glist <KeyPress-Left> {continue}
   bind $w.glist <KeyPress-Prior> {glist.ybar_ %W scroll -1 pages; break}
   bind $w.glist <KeyPress-Next> {glist.ybar_ %W scroll 1 pages; break}
+  bind $w.glist <Control-Home> {glist.ybar_ %W moveto 0; break}
+  bind $w.glist <Control-End> {glist.ybar_ %W moveto 1; break}
   bind $w.glist <KeyPress-Return> {
     foreach {idx ply} [split [%W selection] "_"] {}
     if {[info exists idx]} {
