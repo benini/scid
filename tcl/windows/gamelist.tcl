@@ -833,24 +833,24 @@ proc glist.create {{w} {layout}} {
   bind $w.glist <Control-Home> {glist.ybar_ %W moveto 0; break}
   bind $w.glist <Control-End> {glist.ybar_ %W moveto 1; break}
   bind $w.glist <KeyPress-Return> {
-    foreach {idx ply} [split [%W selection] "_"] {}
-    if {[info exists idx]} {
+    lassign [split [%W selection] "_"] idx ply
+    if {$idx ne ""} {
       ::file::SwitchToBase $::glistBase(%W) 0
       ::game::Load $idx $ply
     }
     break
   }
   bind $w.glist <Delete> {
-    foreach {idx ply} [split [%W selection] "_"] {}
-    if {[info exists idx]} {
+    lassign [split [%W selection] "_"] idx ply
+    if {$idx ne ""} {
       glist.delflag_ %W $idx
       glist.movesel_ %W next +1 end
     }
     break
   }
   bind $w.glist <Control-Delete> {
-    foreach {idx ply} [split [%W selection] "_"] {}
-    if {[info exists idx]} {
+    lassign [split [%W selection] "_"] idx ply
+    if {$idx ne ""} {
       glist.movesel_ %W next +1 end;
       sc_filter remove $::glistBase(%W) $::glistFilter(%W) $idx
       ::notify::DatabaseModified $::glistBase(%W)
@@ -1143,8 +1143,8 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
   if { $region != "heading" } {
 # if {[$w identify region $x $y] != "heading" }
     event generate $w <ButtonPress-1> -x $x -y $y
-    foreach {idx ply} [split [$w selection] "_"] {}
-    if {[info exists idx]} {
+    lassign [split [$w selection] "_"] idx ply
+    if {$idx ne ""} {
       if { [winfo exists $w.game_menu.merge] } { destroy $w.game_menu.merge }
       if { [winfo exists $w.game_menu.copy] } { destroy $w.game_menu.copy }
       if { [winfo exists $w.game_menu.filter] } { destroy $w.game_menu.filter }
