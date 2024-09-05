@@ -52,16 +52,6 @@ const genMovesT
     GEN_ALL_MOVES = (GEN_CAPTURES | GEN_NON_CAPS);
 
 
-// SANList: list of legal move strings in SAN.
-//
-struct sanListT
-{
-    bool        current;
-    ushort      num;
-    sanStringT  list [MAX_LEGAL_MOVES];
-};
-
-
 ///////////////////////////////////////////////////////////////////////////
 //  Position:  Class definition
 
@@ -273,10 +263,7 @@ public:
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
     void        UndoSimpleMove(simpleMoveT const& sm);  // ... and taking back
 
-    errorT      RelocatePiece (squareT fromSq, squareT toSq);
-
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
-	void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
 
     errorT      MakeCoordMoves(const char* moves, size_t movesLen, std::string* toSAN = nullptr);
     errorT      ReadCoordMove(simpleMoveT* m, const char* s, size_t slen, bool reverse);

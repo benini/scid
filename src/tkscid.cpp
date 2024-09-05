@@ -4518,7 +4518,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isCheck", "isLegal", "isPromotion",
-        "matchMoves", "moveNumber", "pgnOffset",
+        "moveNumber", "pgnOffset",
         "setComment", "side", "tex", "moves", "location",
         "attacks", "getPrevComment", "coordToSAN", NULL
     };
@@ -4526,7 +4526,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
-        POS_MATCHMOVES, POS_MOVENUM, POS_PGNOFFSET,
+        POS_MOVENUM, POS_PGNOFFSET,
         POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
         POS_ATTACKS, POS_GETPREVCOMMENT, POS_COORDTOSAN
     };
@@ -4620,11 +4620,8 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case POS_ISPROMO:
         return sc_pos_isPromo (cd, ti, argc, argv);
 
-    case POS_MATCHMOVES:
-        return sc_pos_matchMoves (cd, ti, argc, argv);
-
     case POS_MOVES:
-        return sc_pos_moves (cd, ti, argc, argv);
+        return sc_pos_moves (ti, argc, argv);
 
     case POS_MOVENUM:
         // This used to return:
@@ -5082,108 +5079,28 @@ sc_pos_isLegal (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_pos_matchMoves: Return the list of legal moves matching
-//     a specified prefix. Note that any occurrence of "x", "=", "+",
-//     or "#" is removed from the move text of each move, and the
-//     castling moves are "OK" and "OQ" for king and queen-side
-//     castling respectively, so that no move is a prefix of
-//     any other move.
-int
-sc_pos_matchMoves (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
-{
-	// copies original to target, filtering out any characters in excludeChars.
-	auto strCopyExclude = [](char* target, const char* original,
-	                         const char* excludeChars) {
-		while (*original != 0) {
-			int exclude = 0;
-			for (auto s = excludeChars; *s; s++) {
-				if (*original == *s) {
-					exclude = 1;
-					break;
-				}
-			}
-			if (!exclude) {
-				*target = *original;
-				target++;
-			}
-			original++;
-		}
-		*target = 0;
-	};
-
-    if (argc != 3  &&  argc != 4) {
-        return errorResult (ti, "Usage: sc_pos matchMoves <movetext-prefix>");
-    }
-    bool coordMoves = false;
-    const char * prefix = argv[2];
-    if (argc == 4) { coordMoves = strGetBoolean (argv[3]); }
-    char str[20];
-    Position * p = db->game->GetCurrentPos();
-    sanListT sanList;
-    p->CalcSANStrings (&sanList, SAN_NO_CHECKTEST);
-
-    for (uint i=0; i < sanList.num; i++) {
-        strCopyExclude (str, sanList.list[i], "x=+#");
-        if (strEqual (str, "O-O")) { strCopy (str, "OK"); }
-        if (strEqual (str, "O-O-O")) { strCopy (str, "OQ"); }
-        if (strIsPrefix (prefix, str)) {
-            Tcl_AppendElement (ti, str);
-        }
-    }
-
-    // If the prefix string is for b-pawn moves, also look for any
-    // Bishop moves that could match, and add them provided they do not
-    // clash with a pawn move.
-    if (prefix[0] >= 'a'  &&  prefix[0] <= 'h') {
-        char * newPrefix = strDuplicate (prefix);
-        newPrefix[0] = toupper(newPrefix[0]);
-        for (uint i=0; i < sanList.num; i++) {
-            strCopyExclude (str, sanList.list[i], "x=+#");
-            if (strIsPrefix (newPrefix, str)) {
-                Tcl_AppendElement (ti, str);
-            }
-        }
-#ifdef WINCE
-        my_Tcl_Free((char*) newPrefix);
-#else
-        delete[] newPrefix;
-#endif
-    }
-
-    // If the prefix string starts with a file (a-h), also add coordinate
-    // moves if coordMoves is true:
-    if (coordMoves  &&  prefix[0] >= 'a'  &&  prefix[0] <= 'h') {
-        MoveList mList;
-        p->GenerateMoves(&mList);
-        for (uint i=0; i < mList.Size(); i++) {
-            simpleMoveT * sm = mList.Get(i);
-            *sm->toLongNotation(str) = '\0';
-            if (strIsPrefix (prefix, str)) {
-                Tcl_AppendElement (ti, str);
-            }
-        }
-    }
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_moves: Return the list of legal moves in SAN notation
 //
-int
-sc_pos_moves(ClientData, Tcl_Interp * ti, int argc, const char**)
-{
-    if (argc != 2) {
-        return errorResult (ti, "Usage: sc_pos moves");
-    }
-    Position * p = db->game->GetCurrentPos();
-    sanListT sanList;
-    p->CalcSANStrings (&sanList, SAN_CHECKTEST);
+UI_res_t sc_pos_moves(UI_handle_t ti, int argc, const char** argv) {
+    const char* usage = "Usage: sc_pos moves [bIncludeLongNotation]";
+    if (argc != 2 && argc != 3)
+        return UI_Result(ti, ERROR_BadArg, usage);
 
-    for (uint i=0; i < sanList.num; i++) {
-            Tcl_AppendElement (ti, sanList.list[i]);
+    bool coordMoves = argc == 3 && strGetBoolean(argv[2]);
+    auto pos = db->game->GetCurrentPos();
+    MoveList moves;
+    pos->GenerateMoves(&moves);
+    UI_List res(moves.Size() * (coordMoves ? 2 : 1));
+    for (auto& sm : moves) {
+        char buf[64];
+        pos->MakeSANString(&sm, buf, SAN_CHECKTEST);
+        res.push_back(buf);
+        if (coordMoves) {
+            *sm.toLongNotation(buf) = '\0';
+            res.push_back(buf);
+        }
     }
-    return TCL_OK;
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -2190,22 +2190,6 @@ errorT Position::ParseMove(simpleMoveT* sm, const char* str,
 	};
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::CalcSANStrings():
-//      Calculate the SAN string for each move in the legal moves list.
-//
-void
-Position::CalcSANStrings (sanListT *sanList, sanFlagT flag)
-{
-    MoveList mlist;
-    GenerateMoves(&mlist);
-    for (size_t i = 0, n = mlist.Size(); i < n; i++) {
-        MakeSANString(mlist.Get(i), sanList->list[i], flag);
-    }
-    sanList->num = mlist.Size();
-    sanList->current = true;
-}
-
 errorT
 Position::ReadFromLongStr (const char * str)
 {

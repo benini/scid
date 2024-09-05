@@ -74,8 +74,7 @@ int sc_pos_html       (TCL_ARGS);
 int sc_pos_isAt       (TCL_ARGS);
 int sc_pos_isLegal    (TCL_ARGS);
 int sc_pos_isPromo    (TCL_ARGS);
-int sc_pos_matchMoves (TCL_ARGS);
-int sc_pos_moves      (TCL_ARGS);
+UI_res_t sc_pos_moves(UI_handle_t, int, const char**);
 int sc_pos_setComment (TCL_ARGS);
 
 int sc_tree_stats    (TCL_ARGS);

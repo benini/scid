@@ -1147,7 +1147,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   $mctxt add command -label [ tr CommentPosition] -command "::tree::mask::addComment"
 
   $mctxt add separator
-  set lMatchMoves [sc_pos matchMoves ""]
+  set lMatchMoves [sc_pos moves]
   if {[llength $lMatchMoves ] > 16} {
     # split the moves in several menus
     for {set idxMenu 0} { $idxMenu <= [expr int([llength $lMatchMoves ] / 16) ]} {incr idxMenu} {
@@ -1166,9 +1166,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   } else  {
     menu $mctxt.matchmoves
     $mctxt add cascade -label [ tr AddThisMoveToMask ] -menu $mctxt.matchmoves
-    foreach m [sc_pos matchMoves ""] {
-      if {$m == "OK"} { set m "O-O" }
-      if {$m == "OQ"} { set m "O-O-O" }
+    foreach m [sc_pos moves] {
       $mctxt.matchmoves add command -label [::trans $m] -command "::tree::mask::addToMask $m"
     }
   }

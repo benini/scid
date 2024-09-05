@@ -601,7 +601,7 @@ proc ::board::setInfoAlert {{w} {header} {msg} {msgcolor} {cmd}} {
     if {[winfo exists $cmd]} {
       after idle \"tk_popup $cmd %X \[expr -10 + %Y - \[winfo reqheight $cmd\] \]\"
     } else {
-      after idle $cmd
+      after idle \"$cmd\"
     }
   "
 }

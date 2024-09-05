@@ -48,7 +48,7 @@ proc moveEntry_Complete {} {
         if {$move == "OK"} { set move "O-O" }
         if {$move == "OQ"} { set move "O-O-O" }
         moveEntry_Clear
-        addSanMove $move
+        addSanMove [::untrans $move]
     }
 }
 
@@ -56,8 +56,7 @@ proc moveEntry_Backspace {} {
     global moveEntry
     set moveEntry(Text) [string range $moveEntry(Text) 0 \
             [expr {[string length $moveEntry(Text)] - 2}]]
-    set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
-    updateStatusBar
+    moveEntry_Char ""
 }
 
 proc moveEntry_Char {ch} {
@@ -65,7 +64,23 @@ proc moveEntry_Char {ch} {
     set oldMoveText $moveEntry(Text)
     set oldMoveList $moveEntry(List)
     append moveEntry(Text) $ch
-    set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
+    set moveEntry(List) [lmap move [sc_pos moves $moveEntry(Coord)] {
+        # Translate and remove any occurrence of "x", "=", "+", or "#"
+        set move [string map [list "x" "" "=" "" "+" "" "#" ""] [::trans $move]]
+        # Replace castling moves
+        switch -- $move {
+            "O-O" { set move "OK" }
+            "O-O-O" { set move "OQ" }
+        }
+        # Add the move if it matches the prefix
+        if {[string match -nocase "$moveEntry(Text)*" $move]} {
+            list [string length $move] $move
+        } else {
+            continue
+        }
+    }]
+    # Sort the moves list (and remove the string lengths)
+    set moveEntry(List) [lmap pair [lsort $moveEntry(List)] { lindex $pair 1 }]
     set len [llength $moveEntry(List)]
     if {$len == 0} {
         # No matching moves, so do not accept this character as input:
