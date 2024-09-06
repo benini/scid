@@ -81,6 +81,10 @@ proc moveEntry_Char {ch} {
     }]
     # Sort the moves list (and remove the extra sub-elements)
     set moveEntry(List) [lmap elem [lsort $moveEntry(List)] { lindex $elem 2 }]
+    # Add the null move if it is valid
+    if {$moveEntry(Text) in [list "-" "--"] && ![catch {sc_game SANtoUCI "--"}]} {
+        lappend moveEntry(List) "--"
+    }
     set len [llength $moveEntry(List)]
     lassign $moveEntry(List) move move2
     if {$len == 2 && [string equal -nocase $move $move2]} {
@@ -955,7 +959,7 @@ proc addMoveUCI {{moveUCI} {animate "-animate"}} {
         set board [sc_pos board]
         set k1 [string tolower [string index $board $sq1]]
         set k2 [string tolower [string index $board $sq2]]
-        if {$k1 == "k"  &&  $k2 == "k"} { set moveUCI "null" }
+        if {$moveUCI eq "0000" || ($k1 == "k"  &&  $k2 == "k")} { set moveUCI "null" }
     }
 
     if {[info exists ::playMode] && [eval "$::playMode premove {$moveUCI}"]} { return 0 } ;# not player's turn
