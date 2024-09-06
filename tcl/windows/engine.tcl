@@ -672,10 +672,9 @@ proc ::enginewin::updateDisplay {id msgData} {
             set sign_reversed [expr { [string index $score 0] eq "+" ? "-" : "+" }]
             set score "$sign_reversed[string range $score 1 end]"
         }
+        set best_move [string trimleft $pv ".0123456789"]
         if {$notation == 2 || $notation == -2} {
-            set best_move [::trans $pv]
-        } else {
-            set best_move $pv
+            set best_move [::trans $best_move]
         }
         ::notify::EngineBestMove $id $best_move $score
     }

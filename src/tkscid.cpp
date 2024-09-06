@@ -1976,8 +1976,8 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc == 3) {
             auto pos = db->game->GetCurrentPos();
             simpleMoveT sm;
-            errorT err = pos->ParseMove(&sm, argv[2]);
-            if (err != OK)
+            auto end = argv[2] + std::strlen(argv[2]);
+            if (auto err = pos->ParseMove(&sm, argv[2], end))
                 return UI_Result(ti, err);
 
             char buf[16] = {};

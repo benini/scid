@@ -267,7 +267,6 @@ public:
 
     errorT      MakeCoordMoves(const char* moves, size_t movesLen, std::string* toSAN = nullptr);
     errorT      ReadCoordMove(simpleMoveT* m, const char* s, size_t slen, bool reverse);
-    errorT      ParseMove(simpleMoveT* sm, const char* str);
     errorT      ParseMove(simpleMoveT* sm, const char* begin, const char* end);
 
     // Board I/O

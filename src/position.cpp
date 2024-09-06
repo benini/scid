@@ -2124,16 +2124,6 @@ errorT Position::ReadMoveCastle(simpleMoveT* sm, std::string_view str) const {
 	return ERROR_InvalidMove;
 }
 
-errorT Position::ParseMove(simpleMoveT* sm, const char* str) {
-	while (!isalpha(static_cast<unsigned char>(*str)) && *str != '\0') {
-		str++; // trim left
-	}
-	const char* begin = str;
-	while (!isspace(static_cast<unsigned char>(*str)) && *str != '\0') {
-		str++; // trim right
-	}
-	return ParseMove(sm, begin, str);
-}
 
 // Parse a single move from SAN-style (Nf3) or UCI (g1f3) notation.
 // If the move is legal, it stores the result in @e sm.
