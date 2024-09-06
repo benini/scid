@@ -41,15 +41,13 @@ proc moveEntry_Clear {} {
 }
 
 proc moveEntry_Complete {} {
-    global moveEntry
-    set len [llength $moveEntry(List)]
-    if {$len > 0} {
-        set move [lindex $moveEntry(List) 0]
-        if {$move == "OK"} { set move "O-O" }
-        if {$move == "OQ"} { set move "O-O-O" }
-        moveEntry_Clear
-        addSanMove [::untrans $move]
-    }
+    lassign $::moveEntry(List) move
+    if {$move eq ""} { return 0 }
+
+    if {$move == "OK"} { set move "O-O" }
+    if {$move == "OQ"} { set move "O-O-O" }
+    moveEntry_Clear
+    return [addSanMove [::untrans $move]]
 }
 
 proc moveEntry_Backspace {} {
@@ -74,14 +72,22 @@ proc moveEntry_Char {ch} {
         }
         # Add the move if it matches the prefix
         if {[string match -nocase "$moveEntry(Text)*" $move]} {
-            list [string length $move] $move
+            # Add extra sub-elements for sorting the list
+            set exact_prefix_len [strPrefixLen $moveEntry(Text) $move]
+            list [expr {$exact_prefix_len * -1}] [string length $move] $move
         } else {
             continue
         }
     }]
-    # Sort the moves list (and remove the string lengths)
-    set moveEntry(List) [lmap pair [lsort $moveEntry(List)] { lindex $pair 1 }]
+    # Sort the moves list (and remove the extra sub-elements)
+    set moveEntry(List) [lmap elem [lsort $moveEntry(List)] { lindex $elem 2 }]
     set len [llength $moveEntry(List)]
+    lassign $moveEntry(List) move move2
+    if {$len == 2 && [string equal -nocase $move $move2]} {
+        # Check for the special case where the user has entered a b-pawn
+        # capture that clashes with a Bishop move (e.g. bxc4 and Bxc4):
+        set len 1
+    }
     if {$len == 0} {
         # No matching moves, so do not accept this character as input:
         set moveEntry(Text) $oldMoveText
@@ -91,23 +97,12 @@ proc moveEntry_Char {ch} {
         # or if it equals the move entered. Note the comparison is
         # case insensitive to allow for 'b' to match both pawn and
         # Bishop moves.
-        set move [string tolower [lindex $moveEntry(List) 0]]
-
-        if {$moveEntry(AutoExpand) > 0  ||
-            ![string compare [string tolower $moveEntry(Text)] $move]} {
-            return [moveEntry_Complete]
-        }
-    } elseif {$len == 2} {
-        # Check for the special case where the user has entered a b-pawn
-        # capture that clashes with a Bishop move (e.g. bxc4 and Bxc4):
-        set first [string tolower [lindex $moveEntry(List) 0]]
-        set second [string tolower [lindex $moveEntry(List) 1]]
-        if {[string equal $first $second]} {
-            set moveEntry(List) [list $moveEntry(Text)]
+        if {$moveEntry(AutoExpand) || [string equal -nocase $moveEntry(Text) $move]} {
             return [moveEntry_Complete]
         }
     }
     updateStatusBar
+    return $len
 }
 
 # updateMainGame:
@@ -1259,16 +1254,12 @@ proc CreateMainBoard { {w} } {
     ::board::bind $w.board $i <ButtonRelease-1> "releaseSquare $w.board %X %Y"
   }
 
-  foreach i {o q r n k O Q R B N K} {
-    bind $w <$i> "moveEntry_Char [string toupper $i]"
-    bind $w <Alt-$i> { continue }
-
+  bind $w <Key> {
+    set ch %A
+    if {(%s & 0xC) == 0 && $ch ne "" && [moveEntry_Char $ch]} {
+      break
+    }
   }
-  foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
-    bind $w <Key-$i> "moveEntry_Char $i"
-    bind $w <Alt-$i> { continue }
-  }
-
   bind $w <BackSpace> moveEntry_Backspace
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
