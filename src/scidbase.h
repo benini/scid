@@ -32,6 +32,7 @@
 #include <memory>
 #include <string_view>
 #include <vector>
+#include <unordered_map>
 
 class SortCache;
 
@@ -129,20 +130,16 @@ struct scidBaseT {
 	/// Return the highest elo of the player (in the database's games)
 	eloT peakElo(idNumberT playerID) const {
 		if (peakEloCache_.empty()) {
-			const auto maxPlayerID = nb_->namebase_size(NAME_PLAYER);
-			peakEloCache_.resize(maxPlayerID, 0);
-			auto updateMax = [&](auto id, auto elo) {
-				if (elo > peakEloCache_[id])
-					peakEloCache_[id] = elo;
-			};
 			for (gamenumT gnum = 0, n = numGames(); gnum < n; gnum++) {
 				IndexEntry const& ie = *getIndexEntry(gnum);
+				auto updateMax = [&](auto id, auto elo) {
+					auto& max_value = peakEloCache_[id];
+					max_value = std::max(max_value, elo);
+				};
 				updateMax(ie.GetWhite(), ie.GetWhiteElo());
 				updateMax(ie.GetBlack(), ie.GetBlackElo());
 			}
 		}
-
-		ASSERT(playerID < peakEloCache_.size());
 		return peakEloCache_[playerID];
 	}
 
@@ -425,7 +422,7 @@ private:
 	// For each game: idx of duplicate game + 1 (0 if there is no duplicate).
 	std::unique_ptr<gamenumT[]> duplicates_;
 	std::vector<std::pair<std::string, SortCache*>> sortCaches_;
-	mutable std::vector<eloT> peakEloCache_;
+	mutable std::unordered_map<idNumberT, eloT> peakEloCache_;
 
 private:
 	errorT openHelper(ICodecDatabase::Codec dbtype, fileModeT mode,
