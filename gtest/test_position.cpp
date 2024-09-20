@@ -516,28 +516,33 @@ TEST(Test_MoveGeneration, GetCastling) {
 	}
 }
 
+template <typename PosT, typename MoveT>
+auto parse_move(PosT& pos, MoveT dest, std::string_view move) {
+	return pos.ParseMove(dest, move.data(), move.data() + move.size());
+}
+
 TEST(Test_PositionDoSimpleMove, castling_flags) {
 	std::vector<simpleMoveT> sm;
 	char buf[1024];
 	Position pos;
 	ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
 
-	pos.ParseMove(&sm.emplace_back(), "e1g1");
+	parse_move(pos, &sm.emplace_back(), "e1g1");
 	pos.DoSimpleMove(sm.back());
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k2r/8/8/8/8/8/8/R4RK1 b kq - 1 1");
 
-	pos.ParseMove(&sm.emplace_back(), "h8g8");
+	parse_move(pos, &sm.emplace_back(), "h8g8");
 	pos.DoSimpleMove(sm.back());
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/8/R4RK1 w q - 2 2");
 
-	pos.ParseMove(&sm.emplace_back(), "g1h2");
+	parse_move(pos, &sm.emplace_back(), "g1h2");
 	pos.DoSimpleMove(sm.back());
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "r3k1r1/8/8/8/8/8/7K/R4R2 b q - 3 2");
 
-	pos.ParseMove(&sm.emplace_back(), "e8c8");
+	parse_move(pos, &sm.emplace_back(), "e8c8");
 	pos.DoSimpleMove(sm.back());
 	pos.PrintFEN(buf);
 	EXPECT_STREQ(buf, "2kr2r1/8/8/8/8/8/7K/R4R2 w - - 4 3");
@@ -567,28 +572,28 @@ TEST(Test_PositionDoSimpleMove, castling_flags_capture) {
 	Position pos;
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
-		pos.ParseMove(&sm, "h1h8");
+		parse_move(pos, &sm, "h1h8");
 		pos.DoSimpleMove(sm);
 		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "r3k2R/8/8/8/8/8/8/R3K3 b Qq - 0 1");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1"));
-		pos.ParseMove(&sm, "a1a8");
+		parse_move(pos, &sm, "a1a8");
 		pos.DoSimpleMove(sm);
 		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "R3k2r/8/8/8/8/8/8/4K2R b Kk - 0 1");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
-		pos.ParseMove(&sm, "h8h1");
+		parse_move(pos, &sm, "h8h1");
 		pos.DoSimpleMove(sm);
 		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "r3k3/8/8/8/8/8/8/R3K2r w Qq - 0 2");
 	}
 	{
 		ASSERT_EQ(OK, pos.ReadFromFEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"));
-		pos.ParseMove(&sm, "a8a1");
+		parse_move(pos, &sm, "a8a1");
 		pos.DoSimpleMove(sm);
 		pos.PrintFEN(buf);
 		EXPECT_STREQ(buf, "4k2r/8/8/8/8/8/8/r3K2R w Kk - 0 2");
@@ -665,52 +670,52 @@ TEST(Test_PositionIsKingInCheck, last_move_optimization) {
 	{ // No Check
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/5pp1/8/2KR4/2B5 w - -"));
-		pos.ParseMove(&sm, "d2g2");
+		parse_move(pos, &sm, "d2g2");
 		pos.DoSimpleMove(sm);
 		EXPECT_FALSE(pos.IsKingInCheck(sm));
 	}
 	{ // Direct attack
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/5p2/8/2KR4/2B5 w - -"));
-		pos.ParseMove(&sm, "d2g2");
+		parse_move(pos, &sm, "d2g2");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}
 	{ // Discovered check
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/6p1/8/2KR4/2B5 w - -"));
-		pos.ParseMove(&sm, "d2g2");
+		parse_move(pos, &sm, "d2g2");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}
 	{ // Double check
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/8/8/2KR4/2B5 w - -"));
-		pos.ParseMove(&sm, "d2g2");
+		parse_move(pos, &sm, "d2g2");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}
 	{ // Castling
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("4k2r/6pp/8/8/8/6P1/4P1PP/5K2 b k -"));
-		pos.ParseMove(&sm, "e8h8");
+		parse_move(pos, &sm, "e8h8");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}
 	{ // En passant capture, the pawn checks the king
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/8/8/6k1/4p3/8/5P2/3K4 w - -"));
-		pos.ParseMove(&sm, "f2f4");
+		parse_move(pos, &sm, "f2f4");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
-		pos.ParseMove(&sm, "e4f3");
+		parse_move(pos, &sm, "e4f3");
 		pos.DoSimpleMove(sm);
 		EXPECT_FALSE(pos.IsKingInCheck(sm));
 	}
 	{ // En passant capture, discovered check
 		Position pos;
 		ASSERT_EQ(OK, pos.ReadFromFEN("8/4r3/8/6k1/4pP2/8/8/4K3 b - f3 0 1"));
-		pos.ParseMove(&sm, "e4f3");
+		parse_move(pos, &sm, "e4f3");
 		pos.DoSimpleMove(sm);
 		EXPECT_TRUE(pos.IsKingInCheck(sm));
 	}
@@ -722,14 +727,14 @@ TEST(Test_PositionIsKingInCheck, null_move) {
 		auto sm = simpleMoveT{};
 		EXPECT_EQ(OK, pos.ReadFromFENorUCI(
 		                  "position startpos moves d2d4 e7e6 b1c3 f8b4"));
-		EXPECT_EQ(OK, pos.ParseMove(&sm, "null"));
+		EXPECT_EQ(OK, parse_move(pos, &sm, "null"));
 	}
 	{ // Direct attack
 		auto pos = Position{};
 		auto sm = simpleMoveT{};
 		EXPECT_EQ(OK, pos.ReadFromFENorUCI(
 		                  "position startpos moves d2d4 e7e6 e2e4 f8b4"));
-		EXPECT_NE(OK, pos.ParseMove(&sm, "null"));
+		EXPECT_NE(OK, parse_move(pos, &sm, "null"));
 	}
 }
 
