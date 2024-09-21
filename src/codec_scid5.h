@@ -322,7 +322,11 @@ public: // ICodecDatabase interface
 		auto err_games = gfile_.open(filenames_[1], fmode);
 		auto err_names = read_names.get();
 		progress.report(1, 1);
-		// TODO: check the IndexEntries for invalid idNumberT
+
+		if (!err_names && nb_->count_invalid_ids(*idx_) > 0) {
+			err_names = ERROR_CorruptData;
+			// TODO: err_names = ERROR_NameDataLoss;
+		}
 		return err_idx ? err_idx : err_games ? err_games : err_names;
 	}
 

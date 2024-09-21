@@ -242,6 +242,27 @@ public:
 	}
 
 	/**
+	 * Counts how many invalid IDs (references to names that do not exist in
+	 * this NameBase) are present in @e idx.
+	 */
+	size_t count_invalid_ids(Index const& idx) const {
+		size_t n_invalid = 0;
+		std::array<size_t, NUM_NAME_TYPES> maxID;
+		for (auto n = nameT{}; n < NUM_NAME_TYPES; n++) {
+			maxID[n] = GetNumNames(n);
+		}
+		for (gamenumT i = 0, n = idx.GetNumGames(); i < n; i++) {
+			const IndexEntry* ie = idx.GetEntry(i);
+			n_invalid += ie->GetWhite() < maxID[NAME_PLAYER] ? 0 : 1;
+			n_invalid += ie->GetBlack() < maxID[NAME_PLAYER] ? 0 : 1;
+			n_invalid += ie->GetEvent() < maxID[NAME_EVENT] ? 0 : 1;
+			n_invalid += ie->GetSite() < maxID[NAME_SITE] ? 0 : 1;
+			n_invalid += ie->GetRound() < maxID[NAME_ROUND] ? 0 : 1;
+		}
+		return n_invalid;
+	}
+
+	/**
 	 * Validate a @e nameT type.
 	 * @param nt: @e nameT type to be validated.
 	 * @returns true if @e nt is valid.
