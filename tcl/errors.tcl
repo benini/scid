@@ -116,8 +116,9 @@ after idle {
     "Error while processing data: corrupted.\n"
   set ::ERROR::msg($::ERROR::Full) \
     "Error: insufficient space"
-  set ::ERROR::msg($::ERROR::NameDataLoss) \
-    "Some names (player, event, site or round) are missing and have been replaced by \"?\"\nCompact the database to make the changes permanent."
+  set ::ERROR::msg($::ERROR::NameDataLoss) [string cat \
+    "The database is in read-only mode due to missing names (player, event, site or round). The missing names have been temporarily replaced with \"?\".\n" \
+    "Compact the database to make the changes permanent and exit read-only mode." ]
   set ::ERROR::msg($::ERROR::NameTooLong) \
     "The entered values are too long"
 	set ::ERROR::msg($::ERROR::NameLimit) \

@@ -86,13 +86,14 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 	if (inUse)
 		return ERROR_FileInUse;
 
-	auto obj = ICodecDatabase::open(dbtype, fMode, filename, progress, idx,
-	                                nb_);
-	if (obj.first) {
-		codec_.reset(obj.first);
+	auto [db, err] = ICodecDatabase::open(dbtype, fMode, filename, progress,
+	                                      idx, nb_);
+	if (db) {
+		codec_.reset(db);
 		inUse = true;
 		fileMode_ = (fMode == FMODE_Create) ? FMODE_Both : fMode;
 		gameNumber = -1;
+		err_open_ = err;
 
 		// Initialize the filters: all the games are included by default.
 		all_filter_.Init(numGames());
@@ -107,7 +108,7 @@ errorT scidBaseT::openHelper(ICodecDatabase::Codec dbtype, fileModeT fMode,
 		nb_->Clear();
 	}
 
-	return obj.second;
+	return err;
 }
 
 void scidBaseT::Close() {
@@ -158,6 +159,9 @@ std::string scidBaseT::getFileName() const {
 }
 
 errorT scidBaseT::beginTransaction() {
+	if (err_open_) // Allow modifications only if open returned OK
+		return err_open_;
+
 	if (isReadOnly())
 		return ERROR_FileReadOnly;
 

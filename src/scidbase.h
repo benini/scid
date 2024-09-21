@@ -31,8 +31,8 @@
 #include <cassert>
 #include <memory>
 #include <string_view>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 class SortCache;
 
@@ -423,6 +423,7 @@ private:
 	std::unique_ptr<gamenumT[]> duplicates_;
 	std::vector<std::pair<std::string, SortCache*>> sortCaches_;
 	mutable std::unordered_map<idNumberT, eloT> peakEloCache_;
+	errorT err_open_ = OK;
 
 private:
 	errorT openHelper(ICodecDatabase::Codec dbtype, fileModeT mode,
