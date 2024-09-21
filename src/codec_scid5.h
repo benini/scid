@@ -428,7 +428,7 @@ private:
 
 		const auto chess960 = ie.isChessStd() ? 0 : 1;
 		const auto rtypes_result = (ie.GetWhiteRatingType() << 5) |
-		                           (ie.GetBlackRatingType() << 3) |
+		                           (ie.GetBlackRatingType() << 2) |
 		                           ie.GetResult();
 		auto home_pawn = ie.GetHomePawnData();
 		const uint32_t home_pawn_count = *home_pawn++;
