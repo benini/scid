@@ -579,10 +579,13 @@ proc MoveTimeList {color add} {
 proc ::tools::graphs::MoveScoreList { invw invb } {
     set moveScores { }
     set mainline { }
+    set ::tools::graphs::score::Moves { }
+    set ::tools::graphs::score::Evals [list {}]
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
     set n [llength $game]
+    set ::tools::graphs::score::startFen [lindex [lindex $game 0] 2]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {
         set RAVd [lindex [lindex $game $i] 0]
@@ -590,12 +593,14 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
         # only search in the mainline
         if { $RAVd == 0 && $RAVn == 0} {
             lappend mainline [lindex [lindex $game $i] 4]
+            lappend ::tools::graphs::score::Moves [lindex [lindex $game $i] 5]
         }
     }
     set movenr 0.0
     set side 0
     for {set i 1} { $i < $n} { incr i } {
         set comment [lindex $mainline $i]
+        lappend ::tools::graphs::score::Evals [getScorefromComment $comment 200]
         set score [getScorefromComment $comment $::tools::graphs::score::MaxY]
 
         if { $score ne "" } {
@@ -612,8 +617,8 @@ proc ::tools::graphs::MoveScoreList { invw invb } {
 
 proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set linecolor red
-  set firstColor darkgreen
-  set secondColor blue
+  set firstColor green
+  set secondColor dodgerblue3
   set linewidth 2
   set psize 2
   
@@ -642,7 +647,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
           -variable ::tools::graphs::score::$i -offvalue "0" -onvalue "1" \
           -command "::tools::graphs::score::Refresh"
     }
-    canvas $w.c -width 500 -height 300 -selectforeground [ttk::style lookup . -foreground] -background [ttk::style lookup . -background]
+    canvas $w.c -width 500 -height 300
+    applyThemeStyle . $w.c
 
     $w.c create text 25 5 -tag text -justify center -width 1 \
         -font font_Regular -anchor n
@@ -669,6 +675,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       ::utils::graph::redraw score
     }
     bind $w.c <1> {::tools::graphs::score::Move %x}
+    bind $w.c <Motion> {::tools::graphs::score::ShowEvalDetails %x %X %Y}
+    bind $w.c <Any-Leave> { if {[winfo exists .scorePopup]} {wm withdraw .scorePopup} }
     wm title $w "Scid: [tr ToolsScore]"
     ::createToplevelFinalize $w
     ::tools::graphs::score::ConfigMenus
@@ -698,8 +706,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   }
 
   ::utils::graph::create score -width $width -height $height -xtop 25 -ytop 25 \
-      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor black \
-      -hline [list [list gray80 1 each $yticks ]] \
+      -ytick $yticks -xtick 5 -font font_Small -canvas $w.c -textcolor [ttk::style lookup $w.c -foreground]\
+      -hline [list [list gray80 1 each $yticks ]] -background [ttk::style lookup $w.c -background]\
       -vline {{gray80 1 each 1} {steelBlue 1 each 5}}
 
   # Create fake dataset with bounds so we see at least -1.0 to 1.0:
@@ -710,7 +718,8 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
   set blackelo [sc_game tag get BlackElo]
   if {$whiteelo == 0} {set whiteelo ""} else {set whiteelo "($whiteelo)"}
   if {$blackelo == 0} {set blackelo ""} else {set blackelo "($blackelo)"}
-  $w.c itemconfigure text -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
+  $w.c itemconfigure text -fill [ttk::style lookup $w.c -foreground] \
+      -text "[sc_game info white]$whiteelo - [sc_game info black]$blackelo  [sc_game info site]  [sc_game info date]"
   busyCursor $w
   update
 
@@ -756,6 +765,55 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
+proc ::tools::graphs::score::Popup {w positionLongStr label xc yc {above ""}} {
+    if {! [winfo exists $w]} {
+        toplevel $w
+        wm overrideredirect $w 1
+        ttk::label $w.l
+        grid $w.l -sticky we -row 0
+        ::board::new $w.bd 30
+        grid $w.bd -row 1
+        ::update idletasks
+    }
+    $w.l configure -text $label
+    lassign $positionLongStr pos lastmove
+    ::board::update $w.bd $pos
+
+    if {$lastmove ne ""} {
+      ::board::lastMoveHighlight $w.bd $lastmove
+    }
+    # Make sure the popup window can fit on the screen:
+    set screenwidth [winfo screenwidth $w]
+    set screenheight [winfo screenheight $w]
+    set dx [winfo width $w]
+    set dy [winfo height $w]
+    incr xc 8
+    if {($xc+$dx) > $screenwidth} {
+        set xc [expr {$screenwidth - $dx}]
+    }
+    if {($yc+$dy) > ($screenheight -8)} {
+            set above 1
+    }
+    if {$above ne ""} {
+        set yc [expr { $yc -$dy -8 }]
+        if {$yc < 0} { set yc 0 }
+    } else {
+        incr yc 8
+    }
+    wm geometry $w "+$xc+$yc"
+    wm deiconify $w
+    raiseWin $w
+}
+
+proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
+  set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
+  if { $x < 1 } { return }
+  set bd [sc_pos board "position fen $::tools::graphs::score::startFen moves" [lrange $::tools::graphs::score::Moves 0 $x]]
+  set label "[expr int(($x+1) / 2)]. "
+  if { ! [expr $x % 2] } {  append label "... " }
+  append label "[lindex $::tools::graphs::score::Moves $x]\nEvaluation: [lindex $::tools::graphs::score::Evals $x]"
+  ::tools::graphs::score::Popup .scorePopup $bd $label $xc $yc
+}
 
 ####################
 # Rating graph
