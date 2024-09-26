@@ -1040,7 +1040,7 @@ proc leaveSquare { square } {
 proc pressSquare { square } {
     global selectedSq highcolor
 
-    if { ![::fics::playerCanMove] } { return } ;# not player's turn
+    if {[info procs ::fics::playerCanMove] ne "" && ![::fics::playerCanMove]} { return } ;# not player's turn
 
     # if training with calculations of var is on, just log the event
     if { [winfo exists .calvarWin] } {

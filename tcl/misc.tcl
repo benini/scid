@@ -321,7 +321,8 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   set x [expr ([winfo screenwidth $w] - 400) / 2]
   set y [expr ([winfo screenheight $w] - 40) / 2]
   wm geometry $w +$x+$y
-  grab $w
+  update idletasks
+  catch { grab $w }
   wm withdraw $w
 
   progressBarSet $w.f.c 401 21
