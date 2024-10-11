@@ -24,6 +24,14 @@ namespace eval tactics {
     # Don't try to find the exact best move but to win a won game (that is a mate in 5 is ok even if there was a pending mate in 2)
     set winWonGame 0
     
+    proc getBaseTypeFromFile { fname } {
+        set dbType "SCID5"
+        set ext [string tolower [file extension "$fname"] ]
+        if {$ext == ".si4" } {
+            set dbType "SCID4"
+        }
+        return $dbType
+    }
     ################################################################################
     # Tacticts training
     ################################################################################
@@ -37,17 +45,18 @@ namespace eval tactics {
 
         set prevBase [sc_base current]
         set valid {}
-        set fileList [lsort -dictionary [ glob -nocomplain -directory $::scidBasesDir *.si4 ] ]
+        set fileList [lsort -dictionary [ glob -nocomplain -directory $::scidBasesDir *.{si4,si5} ] ]
         set progress 0.0
         set progressIncr 1.0
         catch { set progressIncr [expr {602.0 / [llength $fileList]}] }
         busyCursor .
         foreach fname $fileList {
-            set fname [file rootname [file nativename $fname]]
-            set baseId [sc_base slot $fname]
+            set name [file rootname [file nativename $fname]]
+            set fname [file nativename $fname]
+            set baseId [sc_base slot $name]
             if {$baseId == 0} {
                 progressBarSet $win.dummy 100 10
-                if { [catch { sc_base open $fname } baseId] } {
+                if { [catch { sc_base open [getBaseTypeFromFile $fname] $name } baseId] } {
                     if {$::errorCode == $::ERROR::UserCancel} { break }
                     ERROR::MessageBox
                     continue
@@ -362,7 +371,7 @@ namespace eval tactics {
         set prevBase [sc_base current]
         set baseId [sc_base slot $fname]
         if {$baseId == 0} {
-            if { [catch { sc_base open $fname } baseId] } {
+            if { [catch { sc_base open [getBaseTypeFromFile $fname] $fname } baseId] } {
                 ERROR::MessageBox
                 continue
             }
@@ -643,10 +652,10 @@ namespace eval tactics {
             ::file::SwitchToBase $baseId 0
         } else  {
             progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$name"]..."
-            set err [catch {sc_base open "$name"} baseId]
+            set err [catch {sc_base open [getBaseTypeFromFile $name] "$name"} baseId]
             closeProgressWindow
             if {$err && $::errorCode != $::ERROR::NameDataLoss } {
-                ERROR::MessageBox "$fName\n"
+                ERROR::MessageBox "$name\n"
                 return $err
             }
         }
