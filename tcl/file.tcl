@@ -96,6 +96,7 @@ proc ::file::Open {{fName ""}} {
   if {$err == 0} {
     set ::curr_db $::file::lastOpened
     ::recentFiles::add "$fName"
+    set ::initialDir(base) [file dirname "$fName"]
     ::windows::gamelist::Open $::curr_db
     ::notify::DatabaseChanged
     set gamenum 1
@@ -155,7 +156,6 @@ proc ::file::Open_ {{fName ""} } {
       ERROR::MessageBox "$fName\n"
     } else {
       catch { sc_base extra $::file::lastOpened type 3 }
-      set ::initialDir(base) [file dirname "$fName"]
     }
   } elseif {"$ext" == ".epd"} {
     # EPD file:
@@ -165,7 +165,6 @@ proc ::file::Open_ {{fName ""} } {
     } else {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
-      set ::initialDir(base) [file dirname "$fName"]
     }
   } else {
     if {$ext == ".si5" || $ext eq ""} {
@@ -182,8 +181,6 @@ proc ::file::Open_ {{fName ""} } {
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
       ERROR::MessageBox "$fName\n"
-    } else {
-      set ::initialDir(base) [file dirname "$fName"]
     }
   }
 
