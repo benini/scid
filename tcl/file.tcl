@@ -124,6 +124,24 @@ proc ::file::openBaseAsTree { { fName "" } } {
   return $err
 }
 
+# switch to database when loaded or open the database
+proc ::file::OpenOrSwitch {fName  {add_to_recent 0} } {
+    set baseId [sc_base slot $fName]
+    if { $baseId == 0} {
+        set was_open 0
+        lassign [::file::Open_ "$fName"] err fName
+        if {$err == 0} {
+            set ::curr_db $::file::lastOpened
+            if { $add_to_recent } { ::recentFiles::add "$fName" }
+        }
+    } else {
+        set ::curr_db [sc_base switch $baseId]
+        set was_open 1
+        set err 0
+    }
+    return [list $err $was_open]
+}
+
 proc ::file::Open_ {{fName ""} } {
   if {$fName == ""} {
       set ftype {
