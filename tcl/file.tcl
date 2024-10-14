@@ -92,9 +92,10 @@ proc ::file::New {} {
 #    Opens file-open dialog and opens the selected Scid database.
 #
 proc ::file::Open {{fName ""}} {
-  set err [::file::Open_ "$fName"]
+  lassign [::file::Open_ "$fName"] err fName
   if {$err == 0} {
     set ::curr_db $::file::lastOpened
+    ::recentFiles::add "$fName"
     ::windows::gamelist::Open $::curr_db
     ::notify::DatabaseChanged
     set gamenum 1
@@ -132,13 +133,13 @@ proc ::file::Open_ {{fName ""} } {
       }
 
     set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-    if {$fName == ""} { return 2}
+    if {$fName == ""} { return [list 2 ""] }
   }
 
   set ext [string tolower [file extension "$fName"] ]
   if {[sc_base slot $fName] != 0} {
     tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
-    return 1
+    return [list 1 ""]
   }
 
   set err 0
@@ -155,7 +156,6 @@ proc ::file::Open_ {{fName ""} } {
     } else {
       catch { sc_base extra $::file::lastOpened type 3 }
       set ::initialDir(base) [file dirname "$fName"]
-      ::recentFiles::add "$fName"
     }
   } elseif {"$ext" == ".epd"} {
     # EPD file:
@@ -166,7 +166,6 @@ proc ::file::Open_ {{fName ""} } {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
       set ::initialDir(base) [file dirname "$fName"]
-      ::recentFiles::add "$fName"
     }
   } else {
     if {$ext == ".si5" || $ext eq ""} {
@@ -175,7 +174,7 @@ proc ::file::Open_ {{fName ""} } {
       set dbType "SCID4"
     } else {
       tk_messageBox -title "Scid: opening file" -message "Unsupported database format:  $ext"
-      return 1;
+      return [list 1 ""]
     }
     progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..." $::tr(Cancel)
     set err [catch {sc_base open $dbType $fName} ::file::lastOpened]
@@ -185,11 +184,10 @@ proc ::file::Open_ {{fName ""} } {
       ERROR::MessageBox "$fName\n"
     } else {
       set ::initialDir(base) [file dirname "$fName"]
-      ::recentFiles::add "$fName"
     }
   }
 
-  return $err
+  return [list $err $fName]
 }
 
 # ::file::Upgrade
