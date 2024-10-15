@@ -37,25 +37,20 @@ namespace eval tactics {
 
         set prevBase [sc_base current]
         set valid {}
-        set fileList [lsort -dictionary [ glob -nocomplain -directory $::scidBasesDir *.si4 ] ]
+        set fileList [lsort -dictionary [ glob -nocomplain -directory $::scidBasesDir *.{si4,si5} ] ]
         set progress 0.0
         set progressIncr 1.0
         catch { set progressIncr [expr {602.0 / [llength $fileList]}] }
         busyCursor .
         foreach fname $fileList {
-            set fname [file rootname [file nativename $fname]]
-            set baseId [sc_base slot $fname]
-            if {$baseId == 0} {
-                progressBarSet $win.dummy 100 10
-                if { [catch { sc_base open $fname } baseId] } {
-                    if {$::errorCode == $::ERROR::UserCancel} { break }
-                    ERROR::MessageBox
-                    continue
-                }
-                set wasOpened 0
-            } else  {
-                set wasOpened 1
+            set fname [file nativename $fname]
+            lassign [::file::OpenOrSwitch $fname 0] err wasOpened
+            if { $err } {
+                if {$::errorCode == $::ERROR::UserCancel} { break }
+                ERROR::MessageBox
+                continue
             }
+            set baseId $::curr_db
 
             set filter [sc_filter new $baseId]
             progressBarSet $win.dummy 100 10
@@ -360,19 +355,15 @@ namespace eval tactics {
         global ::tactics::cancelScoreReset
         
         set prevBase [sc_base current]
-        set baseId [sc_base slot $fname]
-        if {$baseId == 0} {
-            if { [catch { sc_base open $fname } baseId] } {
-                ERROR::MessageBox
-                continue
-            }
-            set wasOpened 0
-        } else  {
-            sc_base switch $baseId
-            set curr_game [sc_game number]
-            sc_game push
-            set wasOpened 1
+        set curr_game [sc_game number]
+        sc_game push
+        lassign [::file::OpenOrSwitch $fname 0] err wasOpened
+        set baseId $::curr_db
+        if {$err} {
+            ERROR::MessageBox
+            return
         }
+
         set filter [sc_filter new $baseId]
         sc_filter search $baseId $filter header -filter RESET -site "\"$::tactics::solved\""
         
@@ -638,18 +629,12 @@ namespace eval tactics {
     ################################################################################
     proc loadBase { name } {
         global ::tactics::baseId ::tactics::filter
-        set baseId [sc_base slot $name]
-        if {$baseId != 0} {
-            ::file::SwitchToBase $baseId 0
-        } else  {
-            progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$name"]..."
-            set err [catch {sc_base open "$name"} baseId]
-            closeProgressWindow
-            if {$err && $::errorCode != $::ERROR::NameDataLoss } {
-                ERROR::MessageBox "$fName\n"
-                return $err
-            }
+        lassign [::file::OpenOrSwitch $name 0] err wasOpened
+        if { $err } {
+            ERROR::MessageBox
+            return
         }
+        set baseId $::curr_db
         #TODO:
         #set filter [sc_filter new $baseId]
         set filter dbfilter
