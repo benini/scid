@@ -124,8 +124,8 @@ proc ::file::openBaseAsTree { { fName "" } } {
   return $err
 }
 
-# switch to database when loaded or open the database
-proc ::file::OpenOrSwitch {fName  {add_to_recent 0} } {
+# open a database or switch to it if already open
+proc ::file::OpenOrSwitch {fName {add_to_recent 0} } {
     set baseId [sc_base slot $fName]
     if { $baseId == 0} {
         set was_open 0
@@ -214,7 +214,8 @@ proc ::file::Upgrade {name} {
     set msg [string trim $::tr(ConfirmOpenNew)]
     set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
     if {$res == "no"} { return }
-    return [::file::Open_ "$name.si4"]
+    lassign [::file::Open_ "$name.si4"] err
+    return $err
   }
 
   set msg [string trim $::tr(ConfirmUpgrade)]
