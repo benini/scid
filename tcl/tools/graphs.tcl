@@ -765,19 +765,23 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
-proc ::tools::graphs::score::Popup {w positionLongStr label xc yc {above ""}} {
+proc ::tools::graphs::score::Popup {w positionLongStr textleft textright xc yc {above ""}} {
     if {! [winfo exists $w]} {
         toplevel $w
+        ::applyThemeColor_background $w
         wm overrideredirect $w 1
         ttk::label $w.l
-        grid $w.l -sticky we -row 0
+        grid $w.l -sticky w -row 0 -column 0
+        ttk::label $w.r
+        grid $w.r -sticky e -row 0 -column 1
         ::board::new $w.bd 30
-        grid $w.bd -row 1
+        grid $w.bd -row 1 -columnspan 2
         ::update idletasks
     }
-    $w.l configure -text $label
+    $w.l configure -text $textleft
+    $w.r configure -text $textright
     lassign $positionLongStr pos lastmove
-    ::board::update $w.bd $pos
+    catch { ::board::update $w.bd $pos }
 
     if {$lastmove ne ""} {
       ::board::lastMoveHighlight $w.bd $lastmove
@@ -807,12 +811,12 @@ proc ::tools::graphs::score::Popup {w positionLongStr label xc yc {above ""}} {
 
 proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
-  if { $x < 1 } { return }
+  if { $x < 1 || [llength $::tools::graphs::score::Moves] < 2 } { return }
   set bd [sc_pos board "position fen $::tools::graphs::score::startFen moves" [lrange $::tools::graphs::score::Moves 0 $x]]
   set label "[expr int(($x+1) / 2)]. "
   if { ! [expr $x % 2] } {  append label "... " }
-  append label "[lindex $::tools::graphs::score::Moves $x]\nEvaluation: [lindex $::tools::graphs::score::Evals $x]"
-  ::tools::graphs::score::Popup .scorePopup $bd $label $xc $yc
+  append label "[lindex $::tools::graphs::score::Moves $x]"
+  ::tools::graphs::score::Popup .scorePopup $bd $label "Eval.: [lindex $::tools::graphs::score::Evals $x]" $xc $yc
 }
 
 ####################
