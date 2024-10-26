@@ -110,6 +110,9 @@ namespace eval pgn {
     $w.menu.opt add checkbutton -label GInfoPhotos \
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
 
+    #ToDo: translate label
+    $w.menu.opt add checkbutton -label "Notation Figurine" \
+        -variable ::pgn::figurine -command {::pgn::Refresh 1}
     $w.menu.color add command -label PgnColorAnno \
         -command {::pgn::ChooseColor Nag annotation}
     $w.menu.color add command -label PgnColorComments \
@@ -293,7 +296,7 @@ namespace eval pgn {
       set pgnStr [sc_game pgn -symbols $::pgn::symbolicNags \
           -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
           -space $::pgn::moveNumberSpaces -format $format -column $::pgn::columnFormat \
-          -short $::pgn::shortHeader -markCodes $::pgn::stripMarks]
+          -short $::pgn::shortHeader -markCodes $::pgn::stripMarks -unicode $::pgn::figurine]
 
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
