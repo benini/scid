@@ -765,50 +765,6 @@ proc ::tools::graphs::score::Move {xc} {
   updateBoard
 }
 
-proc ::tools::graphs::score::Popup {w positionLongStr textleft textright xc yc {above ""}} {
-    if {! [winfo exists $w]} {
-        toplevel $w
-        ::applyThemeColor_background $w
-        wm overrideredirect $w 1
-        ttk::label $w.l
-        grid $w.l -sticky w -row 0 -column 0
-        ttk::label $w.r
-        grid $w.r -sticky e -row 0 -column 1
-        ::board::new $w.bd 30
-        grid $w.bd -row 1 -columnspan 2
-        ::update idletasks
-    }
-    $w.l configure -text $textleft
-    $w.r configure -text $textright
-    lassign $positionLongStr pos lastmove
-    catch { ::board::update $w.bd $pos }
-
-    if {$lastmove ne ""} {
-      ::board::lastMoveHighlight $w.bd $lastmove
-    }
-    # Make sure the popup window can fit on the screen:
-    set screenwidth [winfo screenwidth $w]
-    set screenheight [winfo screenheight $w]
-    set dx [winfo width $w]
-    set dy [winfo height $w]
-    incr xc 8
-    if {($xc+$dx) > $screenwidth} {
-        set xc [expr {$screenwidth - $dx}]
-    }
-    if {($yc+$dy) > ($screenheight -8)} {
-            set above 1
-    }
-    if {$above ne ""} {
-        set yc [expr { $yc -$dy -8 }]
-        if {$yc < 0} { set yc 0 }
-    } else {
-        incr yc 8
-    }
-    wm geometry $w "+$xc+$yc"
-    wm deiconify $w
-    raiseWin $w
-}
-
 proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
   if { $x < 1 || [llength $::tools::graphs::score::Moves] < 2 } { return }
@@ -816,7 +772,7 @@ proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set label "[expr int(($x+1) / 2)]. "
   if { ! [expr $x % 2] } {  append label "... " }
   append label "[lindex $::tools::graphs::score::Moves $x]"
-  ::tools::graphs::score::Popup .scorePopup $bd $label "Eval.: [lindex $::tools::graphs::score::Evals $x]" $xc $yc
+  ::board::popup .scorePopup $bd $xc $yc "" "$label" "Eval.: [lindex $::tools::graphs::score::Evals $x]"
 }
 
 ####################
