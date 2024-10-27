@@ -769,10 +769,13 @@ proc ::tools::graphs::score::ShowEvalDetails {mc xc yc} {
   set x [expr {round([::utils::graph::xunmap score $mc] * 2 + 0.5)} ]
   if { $x < 1 || [llength $::tools::graphs::score::Moves] < 2 } { return }
   set bd [sc_pos board "position fen $::tools::graphs::score::startFen moves" [lrange $::tools::graphs::score::Moves 0 $x]]
-  set label "[expr int(($x+1) / 2)]. "
+  set labelL "[expr int(($x+1) / 2)]. "
   if { ! [expr $x % 2] } {  append label "... " }
-  append label "[lindex $::tools::graphs::score::Moves $x]"
-  ::board::popup .scorePopup $bd $xc $yc "" "$label" "Eval.: [lindex $::tools::graphs::score::Evals $x]"
+  append labelL "[lindex $::tools::graphs::score::Moves $x]"
+  set labelR ""
+  set eval [lindex $::tools::graphs::score::Evals $x]
+  if { $eval ne "" } { set labelR "Eval.: $eval" }
+  ::board::popup .scorePopup $bd $xc $yc "" $labelL $labelR
 }
 
 ####################
