@@ -92,10 +92,21 @@ proc ::file::New {} {
 #    Opens file-open dialog and opens the selected Scid database.
 #
 proc ::file::Open {{fName ""}} {
-  lassign [::file::Open_ "$fName"] err fName
+  if {$fName == ""} {
+      set ftype {
+        { "All Scid files" {".si5" ".si4" ".si3" ".pgn" ".epd"} }
+        { "Scid databases" {".si5" ".si4" ".si3"} }
+        { "PGN files" {".pgn" ".PGN"} }
+        { "EPD files" {".epd" ".EPD"} }
+      }
+
+    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
+  }
+  set err [::file::Open_ "$fName"]
   if {$err == 0} {
-    set ::curr_db $::file::lastOpened
+    set ::initialDir(base) [file dirname "$fName"]
     ::recentFiles::add "$fName"
+    set ::curr_db $::file::lastOpened
     ::windows::gamelist::Open $::curr_db
     ::notify::DatabaseChanged
     set gamenum 1
@@ -114,32 +125,32 @@ proc ::file::Open {{fName ""}} {
   return $err
 }
 
+# Open a database or switch to it if it is already open.
+proc ::file::OpenOrSwitch { fname } {
+  set slot [sc_base slot $fname]
+  if {$slot != 0} {
+    return [::file::SwitchToBase $slot]
+  }
+  return [::file::Open "$fname"]
+}
+
 proc ::file::openBaseAsTree { { fName "" } } {
   set current [sc_base current]
-  set err [::file::Open_ "$fName"]
-  sc_base switch $current
-  ::notify::DatabaseChanged
-  if {$err == 0} { ::tree::make $::file::lastOpened 1 }
+  set err [::file::Open $fName]
+  if {! $err} {
+    ::file::SwitchToBase $current
+    ::tree::make $::file::lastOpened 1
+  }
   return $err
 }
 
-proc ::file::Open_ {{fName ""} } {
-  if {$fName == ""} {
-      set ftype {
-        { "All Scid files" {".si5" ".si4" ".si3" ".pgn" ".epd"} }
-        { "Scid databases" {".si5" ".si4" ".si3"} }
-        { "PGN files" {".pgn" ".PGN"} }
-        { "EPD files" {".epd" ".EPD"} }
-      }
-
-    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-    if {$fName == ""} { return [list 2 ""] }
-  }
+proc ::file::Open_ {fName } {
+  if {$fName == ""} { return 2}
 
   set ext [string tolower [file extension "$fName"] ]
   if {[sc_base slot $fName] != 0} {
     tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
-    return [list 1 ""]
+    return 1
   }
 
   set err 0
@@ -155,7 +166,6 @@ proc ::file::Open_ {{fName ""} } {
       ERROR::MessageBox "$fName\n"
     } else {
       catch { sc_base extra $::file::lastOpened type 3 }
-      set ::initialDir(base) [file dirname "$fName"]
     }
   } elseif {"$ext" == ".epd"} {
     # EPD file:
@@ -165,7 +175,6 @@ proc ::file::Open_ {{fName ""} } {
     } else {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
-      set ::initialDir(base) [file dirname "$fName"]
     }
   } else {
     if {$ext == ".si5" || $ext eq ""} {
@@ -174,7 +183,7 @@ proc ::file::Open_ {{fName ""} } {
       set dbType "SCID4"
     } else {
       tk_messageBox -title "Scid: opening file" -message "Unsupported database format:  $ext"
-      return [list 1 ""]
+      return 1;
     }
     progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..." $::tr(Cancel)
     set err [catch {sc_base open $dbType $fName} ::file::lastOpened]
@@ -182,12 +191,10 @@ proc ::file::Open_ {{fName ""} } {
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
       ERROR::MessageBox "$fName\n"
-    } else {
-      set ::initialDir(base) [file dirname "$fName"]
     }
   }
 
-  return [list $err $fName]
+  return $err
 }
 
 # ::file::Upgrade
@@ -271,11 +278,14 @@ proc ::file::Close {{base -1}} {
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
+  set err 1
   if {![catch {sc_base switch $b} res]} {
+    set err 0
     set ::curr_db $res
   }
   ::notify::GameChanged
   ::notify::DatabaseChanged
+  return $err
 }
 
 proc ::file::BaseName {baseIdx} {

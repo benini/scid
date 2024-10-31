@@ -168,10 +168,8 @@ proc ::bookmarks::Go {entry} {
   set fname [lindex $entry 2]
   set gnum [lindex $entry 3]
   set ply [lindex $entry 4]
-  set slot [sc_base slot $fname]
-  if {$slot != 0} {
-    ::file::SwitchToBase $slot
-  } elseif {[::file::Open $fname]} {
+  lassign [::file::OpenOrSwitch $fname] err
+  if {$err} {
     return
   }
   # Find and load the best database game matching the bookmark:

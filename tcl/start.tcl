@@ -371,7 +371,10 @@ proc safeStyle {interp args} {
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
 
-proc calculateGlistRowHeight { } {
+proc calculateTreeviewRowHeight { } {
+    set row_height [expr { round(1.1 * [font metrics font_Regular -linespace]) }]
+    ttk::style configure Treeview -rowheight $row_height
+
     set ::glistRowHeight [expr { round(1.4 * [font metrics font_Small -linespace]) }]
     ttk::style configure Gamelist.Treeview -rowheight $::glistRowHeight
 }
@@ -395,9 +398,9 @@ proc updateFonts {font_name} {
       set fontsize [font actual $font_name -size]
       font configure font_SmallBold -family $font -size $fontsize -weight bold
       font configure font_SmallItalic -family $font -size $fontsize -slant italic
-      calculateGlistRowHeight
     }
   }
+  calculateTreeviewRowHeight
 }
 
 proc createFonts {} {
@@ -502,7 +505,7 @@ proc configure_style {} {
       ttk::style configure Error.TSpinbox -fieldbackground #b80f0a
   }
 
-  calculateGlistRowHeight
+  calculateTreeviewRowHeight
 
   # The ttk::combobox popdown listbox cannot be configured using ttk::style
   option add *TCombobox*Listbox.background [ttk::style lookup . -fieldbackground "" white] startupFile
