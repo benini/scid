@@ -92,22 +92,10 @@ proc ::file::New {} {
 #    Opens file-open dialog and opens the selected Scid database.
 #
 proc ::file::Open {{fName ""}} {
-  if {$fName == ""} {
-      set ftype {
-        { "All Scid files" {".si5" ".si4" ".si3" ".pgn" ".epd"} }
-        { "Scid databases" {".si5" ".si4" ".si3"} }
-        { "PGN files" {".pgn" ".PGN"} }
-        { "EPD files" {".epd" ".EPD"} }
-      }
-    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-    if {$fName == ""} { return }
-  }
-
   lassign [::file::Open_ "$fName"] err fName
   if {$err == 0} {
     set ::curr_db $::file::lastOpened
     ::recentFiles::add "$fName"
-    set ::initialDir(base) [file dirname "$fName"]
     ::windows::gamelist::Open $::curr_db
     ::notify::DatabaseChanged
     set gamenum 1
@@ -126,39 +114,13 @@ proc ::file::Open {{fName ""}} {
   return $err
 }
 
-proc ::file::openBaseAsTree { fName } {
+proc ::file::openBaseAsTree { { fName "" } } {
   set current [sc_base current]
   set err [::file::Open_ "$fName"]
   sc_base switch $current
   ::notify::DatabaseChanged
   if {$err == 0} { ::tree::make $::file::lastOpened 1 }
   return $err
-}
-
-# open a database or switch to it if it is already open
-proc ::file::OpenOrSwitch { fname } {
-  set slot [sc_base slot $fname]
-  if {$slot != 0} {
-    ::file::SwitchToBase $slot
-    return 0
-  }
-  return [::file::Open "$fname"]
-}
-
-# open a database or switch to it if it is already open, but do not load a game
-# return error code and the information on whether the database was open
-proc ::file::OpenForTest {fName} {
-    set baseId [sc_base slot $fName]
-    if { $baseId == 0} {
-        set was_open 0
-        set err [ ::file::Open_ "$fName"]
-        set ::curr_db $::file::lastOpened
-    } else {
-        set ::curr_db [sc_base switch $baseId]
-        set was_open 1
-        set err 0
-    }
-    return [list $err $was_open]
 }
 
 proc ::file::Open_ {{fName ""} } {
@@ -193,6 +155,7 @@ proc ::file::Open_ {{fName ""} } {
       ERROR::MessageBox "$fName\n"
     } else {
       catch { sc_base extra $::file::lastOpened type 3 }
+      set ::initialDir(base) [file dirname "$fName"]
     }
   } elseif {"$ext" == ".epd"} {
     # EPD file:
@@ -202,6 +165,7 @@ proc ::file::Open_ {{fName ""} } {
     } else {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
+      set ::initialDir(base) [file dirname "$fName"]
     }
   } else {
     if {$ext == ".si5" || $ext eq ""} {
@@ -218,10 +182,12 @@ proc ::file::Open_ {{fName ""} } {
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
       ERROR::MessageBox "$fName\n"
+    } else {
+      set ::initialDir(base) [file dirname "$fName"]
     }
   }
 
-  return $err
+  return [list $err $fName]
 }
 
 # ::file::Upgrade
@@ -233,8 +199,7 @@ proc ::file::Upgrade {name} {
     set msg [string trim $::tr(ConfirmOpenNew)]
     set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
     if {$res == "no"} { return }
-    lassign [::file::Open_ "$name.si4"] err
-    return $err
+    return [::file::Open_ "$name.si4"]
   }
 
   set msg [string trim $::tr(ConfirmUpgrade)]

@@ -24,6 +24,14 @@ namespace eval tactics {
     # Don't try to find the exact best move but to win a won game (that is a mate in 5 is ok even if there was a pending mate in 2)
     set winWonGame 0
     
+    proc getBaseTypeFromFile { fname } {
+        set dbType "SCID5"
+        set ext [string tolower [file extension "$fname"] ]
+        if {$ext == ".si4" } {
+            set dbType "SCID4"
+        }
+        return $dbType
+    }
     ################################################################################
     # Tacticts training
     ################################################################################
@@ -43,10 +51,20 @@ namespace eval tactics {
         catch { set progressIncr [expr {602.0 / [llength $fileList]}] }
         busyCursor .
         foreach fname $fileList {
+            set name [file rootname [file nativename $fname]]
             set fname [file nativename $fname]
-            lassign [::file::OpenForTest $fname] err wasOpened
-            if { $err } { continue }
-            set baseId $::curr_db
+            set baseId [sc_base slot $name]
+            if {$baseId == 0} {
+                progressBarSet $win.dummy 100 10
+                if { [catch { sc_base open [getBaseTypeFromFile $fname] $name } baseId] } {
+                    if {$::errorCode == $::ERROR::UserCancel} { break }
+                    ERROR::MessageBox
+                    continue
+                }
+                set wasOpened 0
+            } else  {
+                set wasOpened 1
+            }
 
             set filter [sc_filter new $baseId]
             progressBarSet $win.dummy 100 10
@@ -351,12 +369,19 @@ namespace eval tactics {
         global ::tactics::cancelScoreReset
         
         set prevBase [sc_base current]
-        set curr_game [sc_game number]
-        sc_game push
-        lassign [::file::OpenForTest $fname] err wasOpened
-        if {$err} { return }
-        set baseId $::curr_db
-
+        set baseId [sc_base slot $fname]
+        if {$baseId == 0} {
+            if { [catch { sc_base open [getBaseTypeFromFile $fname] $fname } baseId] } {
+                ERROR::MessageBox
+                continue
+            }
+            set wasOpened 0
+        } else  {
+            sc_base switch $baseId
+            set curr_game [sc_game number]
+            sc_game push
+            set wasOpened 1
+        }
         set filter [sc_filter new $baseId]
         sc_filter search $baseId $filter header -filter RESET -site "\"$::tactics::solved\""
         
@@ -622,12 +647,15 @@ namespace eval tactics {
     ################################################################################
     proc loadBase { name } {
         global ::tactics::baseId ::tactics::filter
-        if { [::file::OpenOrSwitch $name] } { return }
+        lassign [::file::OpenOrSwitch $name] err
+        if {$err} { return $err }
+
         set baseId $::curr_db
         #TODO:
         #set filter [sc_filter new $baseId]
         set filter dbfilter
         sc_filter search $baseId $filter header -filter RESET -flag S -flag| T -site! "\"$::tactics::solved\""
+        ::notify::DatabaseModified $baseId $filter
         return 0
     }
     ################################################################################
