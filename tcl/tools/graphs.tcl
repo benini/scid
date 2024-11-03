@@ -491,76 +491,76 @@ set ::tools::graphs::score::MaxY 6
 #        "%emt 1.23" (used by Raptor)
 #    found somewhere in the comment of the move.
 proc MoveTimeList {color add} {
-    set movetimes   { }
-    set mainline { }
+    set movetimes {}
+    set mainline {}
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
     set n [llength $game]
     set movenr 0
     for {set i 0} { $i < $n} { incr i } {
-	set RAVd [lindex [lindex $game $i] 0]
-	set RAVn [lindex [lindex $game $i] 1]
-	# only search in the mainline
-	if { $RAVd == 0 && $RAVn == 0} {
-	    # append comments for white
-	    if {  $color == "w" && [expr $movenr % 2] == 1 }  {
-		lappend mainline [lindex [lindex $game $i] 4] }
-	    # append comments for black
-	    if {  $color == "b" && [expr $movenr % 2] == 0 }  {
-		lappend mainline [lindex [lindex $game $i] 4] }
-	    incr movenr
-	}
+        set RAVd [lindex [lindex $game $i] 0]
+        set RAVn [lindex [lindex $game $i] 1]
+        # only search in the mainline
+        if { $RAVd == 0 && $RAVn == 0} {
+            # append comments for white
+            if {  $color == "w" && [expr $movenr % 2] == 1 }  {
+                lappend mainline [lindex [lindex $game $i] 4] }
+            # append comments for black
+            if {  $color == "b" && [expr $movenr % 2] == 0 }  {
+                lappend mainline [lindex [lindex $game $i] 4] }
+            incr movenr
+        }
     }
     set movenr 0
     set offset 0.0
-    if {  $color == "w" } { set offset 0.5 }
+    if { $color == "w" } { set offset 0.5 }
     set sum 0.0
     for {set i 0} { $i < $n} { incr i } {
-	# only look for the first match, because normaly only one of these types should used in game
-	set comment [lindex $mainline $i]
-	set clkmsExp {.*?\[%clkms\s*(.*?)\s*\].*}
-	set clkms ""
-	regexp $clkmsExp $comment -> clkms
-	if { $clkms != "" } {
-	    scan $clkms "%f" sec
-	    if { [scan $clkms "%f" sec ] == 1 } {
-		# scale millisec to minutes
-		lappend movetimes [expr $movenr+$offset] [expr { $sec / 60000.0 }] }
-	} else {
-	    set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
-	    set clock ""
-	    regexp $clkExp $comment -> clock
-	    if { $clock != "" } {
-		if { [scan $clock "%f:%f:%f" ho mi sec ] == 3 } {
-		    lappend movetimes [expr $movenr+$offset] [expr { $ho*60.0 + $mi + $sec/60}] }
-	    } else {
-		set emtExp {.*?\[%emt\s*(.*?)\s*\].*}
-		set emt ""
-		regexp $emtExp $comment -> emt
-		if { $emt != "" } {
-		    # emt could have 2 formats: 00:12:34 or 1.23
-		    set ok 0
-		    if { [regexp ":" $emt] } {
-			if { [scan $emt "%f:%f:%f" ho mi sec ] == 3 } { incr ok }
-		    } else {
-			set ho 0.0
-			set mi 0.0
-			if { [scan $emt "%f" sec ] == 1 } { incr ok }
-		    }
-		    if { $ok == 1 } {
-			set f [expr { $ho*3600.0 + $mi*60 + $sec}]
-			if { $add } {
-			    # add move times and scale to minutes
-			    set f [expr { $f/60.0 + $sum }]
-			    set sum $f
-			}
-			lappend movetimes [expr $movenr+$offset] $f
-		    }
-		}
-	    }
-	}
-	incr movenr
+        # only look for the first match, because normaly only one of these types should used in game
+        set comment [lindex $mainline $i]
+        set clkmsExp {.*?\[%clkms\s*(.*?)\s*\].*}
+        set clkms ""
+        regexp $clkmsExp $comment -> clkms
+        if { $clkms != "" } {
+            scan $clkms "%f" sec
+            if { [scan $clkms "%f" sec ] == 1 } {
+                # scale millisec to minutes
+                lappend movetimes [expr $movenr+$offset] [expr { $sec / 60000.0 }] }
+        } else {
+            set clkExp {.*?\[%clk\s*(.*?)\s*\].*}
+            set clock ""
+            regexp $clkExp $comment -> clock
+            if { $clock != "" } {
+                if { [scan $clock "%f:%f:%f" ho mi sec ] == 3 } {
+                    lappend movetimes [expr $movenr+$offset] [expr { $ho*60.0 + $mi + $sec/60}] }
+            } else {
+                set emtExp {.*?\[%emt\s*(.*?)\s*\].*}
+                set emt ""
+                regexp $emtExp $comment -> emt
+                if { $emt != "" } {
+                    # emt could have 2 formats: 00:12:34 or 1.23
+                    set ok 0
+                    if { [regexp ":" $emt] } {
+                        if { [scan $emt "%f:%f:%f" ho mi sec ] == 3 } { incr ok }
+                    } else {
+                        set ho 0.0
+                        set mi 0.0
+                        if { [scan $emt "%f" sec ] == 1 } { incr ok }
+                    }
+                    if { $ok == 1 } {
+                        set f [expr { $ho*3600.0 + $mi*60 + $sec}]
+                        if { $add } {
+                            # add move times and scale to minutes
+                            set f [expr { $f/60.0 + $sum }]
+                            set sum $f
+                        }
+                        lappend movetimes [expr $movenr+$offset] $f
+                    }
+                }
+            }
+        }
+        incr movenr
     }
     return $movetimes
 }
@@ -577,8 +577,8 @@ proc MoveTimeList {color add} {
 #    move (0.0 = start, 0.5 after White's first move, 1.0 after Black's
 #    first move, etc) and the second is the value found.
 proc ::tools::graphs::MoveScoreList { invw invb } {
-    set moveScores { }
-    set mainline { }
+    set moveScores {}
+    set mainline {}
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
@@ -684,13 +684,13 @@ proc ::tools::graphs::score::Refresh { {docreate 1 }} {
       set max 0
       # Find max Value of time, then set the tick value vor horizontal lines
       foreach j { "w" "b"} {
-	  set coords [MoveTimeList $j $::tools::graphs::score::TimeSum]
-	  set coords$j $coords
-	  set ncoords [expr {[llength $coords] - 1}]
-	  for {set i 0} {$i < $ncoords} {incr i 2} {
-	      set y [lindex $coords [expr {$i + 1}]]
-	      if { $y > $max } { set max $y }
-	  }
+          set coords [MoveTimeList $j $::tools::graphs::score::TimeSum]
+          set coords$j $coords
+          set ncoords [expr {[llength $coords] - 1}]
+          for {set i 0} {$i < $ncoords} {incr i 2} {
+              set y [lindex $coords [expr {$i + 1}]]
+              if { $y > $max } { set max $y }
+          }
       }
       if {$max > 20} { set yticks 5 }
       if {$max > 50} { set yticks 10 }
