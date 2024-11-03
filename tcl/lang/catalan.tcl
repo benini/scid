@@ -151,7 +151,9 @@ menuText K WindowsStats "Finestra d'estadístiques" 12 \
   {Obre/tanca la finestra d'estadístiques del filtre}
 menuText K WindowsTree "Finestra de l'Arbre d'Obertures" 6 {Obre/tanca la finestra de l'Arbre d'Obertures (Book)}
 menuText K WindowsBook "Finestra de Llibres d'Obertures" 0 {Obrir/Tancar la finestra de Llibres d'Obertures (Book)}
-menuText K WindowsCorrChess "Finestra d'Escacs Postal" 0 {Obrir/Tancar la Finestra d'Escacs Postal}
+# ====== TODO To be translated ======
+menuText K WindowsScore "Gràfic de puntuació" 1 \
+  {Mostra la finestra del gràfic de puntuació}
 
 # Tools menu:
 menuText K Tools "Eines" 0
@@ -190,8 +192,6 @@ menuText K ToolsPlayerReport "Informe del jugador..." 3 \
   {Crea un informe sobre un jugador}
 menuText K ToolsRating "Gràfic de l'Elo" 0 \
   {Gráfic del historial Elo dels jugadors de la partida actual}
-menuText K ToolsScore "Gràfic de puntuació" 1 \
-  {Mostra la finestra del gràfic de puntuació}
 menuText K ToolsExpCurrent "Exportar la partida actual" 0 \
   {Escriu la partida actual a un arxiu de text}
 menuText K ToolsExpCurrentPGN "Exportar la partida a un arxiu PGN..." 33 \

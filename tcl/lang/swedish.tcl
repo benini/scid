@@ -143,7 +143,8 @@ menuText W WindowsStats "Statistikfönster" 0 \
   {Öppna/ stäng statistikfönstret}
 menuText W WindowsTree "Trädfönster" 2 {Öppna/ stäng variantträdets fönster}
 menuText W WindowsBook "Bokfönster" 0 {Öppna/stäng Bokfönstret}
-menuText W WindowsCorrChess "Korrespondensfönster" 0 {Öppna/stäng Korrespondensfönstret}
+# ====== TODO To be translated ======
+menuText W WindowsScore "Resultatdiagram" 8 {Visa resultatdiagrammet}
 
 # Tools menu:
 menuText W Tools "Verktyg" 0
@@ -184,7 +185,6 @@ menuText W ToolsPlayerReport "Spelarrapport..." 3 \
   {Skapa en spelarrapport}
 menuText W ToolsRating "Ratingdiagram" 0 \
   {Skapa ett ratingdiagram för spelarna i partiet}
-menuText W ToolsScore "Resultatdiagram" 8 {Visa resultatdiagrammet}
 menuText W ToolsExpCurrent "Exportera aktuellt parti" 1 \
   {Spara aktuellt parti till en textfil}
 menuText W ToolsExpCurrentPGN "Exportera till PGN..." 15 \

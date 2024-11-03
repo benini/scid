@@ -144,7 +144,7 @@ menuText Y WindowsTree "Stablo varijanata" 0 {Otvori/zatvori stablo varijanata}
 # ====== TODO To be translated ======
 menuText Y WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======
-menuText Y WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
+menuText Y WindowsScore "Grafikon skora" 0 {Prika¾i grafikon skora}
 
 # Tools menu:
 menuText Y Tools "Alati" 0
@@ -202,7 +202,6 @@ menuText Y ToolsPlayerReport "Player Report..." 3 \
   {Generate a player report} ;# ***
 menuText Y ToolsRating "Grafikon rejtinga" 0 \
   {Iscrtava grafik istorije rejtinga igraèa u tekuæoj partiji}
-menuText Y ToolsScore "Grafikon skora" 0 {Prika¾i grafikon skora}
 menuText Y ToolsExpCurrent "Izvezi tekuæu partiju" 8 \
   {Snimi tekuæu partiju u tekstualni fajl}
 menuText Y ToolsExpCurrentPGN "Izvezi partiju u PGN fajl..." 17 \

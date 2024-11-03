@@ -217,6 +217,7 @@ $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 $m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
 $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F6"
+$m add command -label WindowsScore -command ::tools::graphs::score::Refresh ;# -accelerator "Ctrl+Shift+Z"
 
 
 ### Tools menu:
@@ -251,7 +252,6 @@ menu $m.pinfo
 $m add cascade -label ToolsPInfo -menu $m.pinfo
 $m add command -label ToolsPlayerReport -command ::preport::preportDlg
 $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh both}
-$m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -accelerator "Ctrl+Shift+Z"
 
 
 ### Options menu:

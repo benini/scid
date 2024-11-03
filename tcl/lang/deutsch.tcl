@@ -162,7 +162,7 @@ menuText D WindowsECO "ECO-Auswertung" 0 {ECO-Auswertung öffnen/schließen}
 menuText D WindowsStats "Statistik" 4 {Filterstatistik öffnen/schließen}
 menuText D WindowsTree "Zugbaum" 0 {Zugbaum öffnen/schließen}
 menuText D WindowsBook "Buchfenster" 0 {Buchfenster öffnen/schließen}
-menuText D WindowsCorrChess "Fernschachfenster" 0 {Öffnet/schließt das Fernschachfenster}
+menuText D WindowsScore "Analyse Diagramm" 0 {Partie-Bewertung und Zeitverbrauch anzeigen}
 
 # Tools menu:
 menuText D Tools "Werkzeuge" 0
@@ -203,7 +203,6 @@ menuText D ToolsPlayerReport "Spielerbericht..." 7 \
   {Erzeuge einen Spielerbericht}
 menuText D ToolsRating "ELO-Zahl-Verlauf" 4 \
   {Wertungsverlauf beider Spieler grafisch darstellen}
-menuText D ToolsScore "Partiebewertung" 0 {Partie-Bewertung und Zeitverbrauch anzeigen}
 menuText D ToolsExpCurrent "Partie exportieren" 8 \
   {Aktuelle Partie in eine Textdatei schreiben}
 menuText D ToolsExpCurrentPGN "Partie in PGN-Datei exportieren..." 10 \

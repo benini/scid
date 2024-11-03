@@ -155,7 +155,9 @@ menuText S WindowsStats "Ventana de estadísticas" 12 \
   {Abre/cierra la ventana de estadísticas del filtro}
 menuText S WindowsTree "Ventana de árbol de aperturas" 6 {Abre/cierra la ventana de árbol de aperturas (Book)}
 menuText S WindowsBook "Ventana de libros de aperturas (Book)" 0 {Abrir/Cerrar la ventana de libros de aperturas (Book)}
-menuText S WindowsCorrChess "Ventana de Correo" 0 {Abrir/Cerrar la ventra de Correo}
+# ====== TODO To be translated ======
+menuText S WindowsScore "Gráfico de puntuación..." 1 \
+  {Muestra la ventana del gráfico de puntuación}
 
 # Tools menu:
 menuText S Tools "Herramientas" 0
@@ -196,8 +198,6 @@ menuText S ToolsPlayerReport "Informe del jugador..." 3 \
   {Crea un informe sobre un jugador}
 menuText S ToolsRating "Gráfico del Elo..." 0 \
   {Gráfico de la historia del Elo de los jugadores de la actual partida}
-menuText S ToolsScore "Gráfico de puntuación..." 1 \
-  {Muestra la ventana del gráfico de puntuación}
 menuText S ToolsExpCurrent "Exportar la partida actual..." 0 \
   {Escribe la partida actual en un archivo de texto}
 menuText S ToolsExpCurrentPGN "Exportar la partida a un archivo PGN..." 33 \

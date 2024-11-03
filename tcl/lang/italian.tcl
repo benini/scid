@@ -139,7 +139,8 @@ menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazio
 menuText I WindowsStats "Finestra di statistica" 12 {Apre/chiude la finestra di filtro statistico}
 menuText I WindowsTree "Finestra di albero" 12 {Apre/chiude la finestra di albero}
 menuText I WindowsBook "Libro di aperture" 2 {Apre/chiude la finestra del libro delle aperture}
-menuText I WindowsCorrChess "Gioco per corrispondenza" 10 {Apre/chiude la finestra per il gioco per corrispondenza}
+# ====== TODO To be translated ======
+menuText I WindowsScore "Grafico dei punti" 12 {Mostra il grafico dei punti}
 
 # Tools menu:
 menuText I Tools "Strumenti" 0
@@ -179,7 +180,6 @@ menuText I ToolsPlayerReport "Report del giocatore ..." 3 \
   {Genera un report del giocatore}
 menuText I ToolsRating "Grafico del punteggio Elo" 13 \
   {Grafico storico del punteggio Elo dei giocatori della corrente partita}
-menuText I ToolsScore "Grafico dei punti" 12 {Mostra il grafico dei punti}
 menuText I ToolsExpCurrent "Esporta la partita attuale" 0 \
   {Scrive la partita attuale in un file di testo}
 menuText I ToolsExpCurrentPGN "Esporta partita in un file PGN..." 0 \

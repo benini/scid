@@ -175,7 +175,8 @@ menuText U WindowsStats "Tilastot" 6 \
   {Avaa/sulje tilastoikkuna}
 menuText U WindowsTree "Puunäkymä" 3 {Avaa/sulje puunäkymä}
 menuText U WindowsBook "Avauskirja" 8 {Avaa/sulje avauskirja}
-menuText U WindowsCorrChess "Kirjeshakki" 6 {Avaa/sulje kirjeshakki-ikkuna}
+# ====== TODO To be translated ======
+menuText U WindowsScore "Tuloskaavio" 0 {Näytä tuloskaavio}
 
 # Tools menu:
 menuText U Tools "Työkalut" 1
@@ -214,7 +215,6 @@ menuText U ToolsPlayerReport "Pelaajaraportti..." 1 \
   {Luo pelaajaraportti}
 menuText U ToolsRating "Vahvuusluvut" 0 \
   {Kaavio pelaajien vahvuuslukuhistoriasta}
-menuText U ToolsScore "Tuloskaavio" 0 {Näytä tuloskaavio}
 menuText U ToolsExpCurrent "Vie tekstitiedostoon" 1 \
   {Kirjoita nykyinen peli tekstitiedostoon}
 menuText U ToolsExpCurrentPGN "Vie PGN-tiedostoon" 6 \

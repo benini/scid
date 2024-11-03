@@ -146,7 +146,7 @@ menuText O WindowsTree "Trevindu" 0 {Åpne/lukk trevinduet}
 # ====== TODO To be translated ======
 menuText O WindowsBook "Book Window" 0 {Open/close the Book window}
 # ====== TODO To be translated ======
-menuText O WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
+menuText O WindowsScore "Poeng-graf" 0 {Viser poeng-grafen}
 
 # Tools menu:
 menuText O Tools "Verktøy" 0
@@ -204,7 +204,6 @@ menuText O ToolsPlayerReport "Player Report..." 3 \
   {Generate a player report} ;# ***
 menuText O ToolsRating "Ratinggraf" 0 \
   {Tegner ratingen til disse spillerene over tid}
-menuText O ToolsScore "Poeng-graf" 0 {Viser poeng-grafen}
 menuText O ToolsExpCurrent "Eksporter parti" 0 \
   {Skriv dette partiet til en tekstfil}
 menuText O ToolsExpCurrentPGN "Eksporter parti til PGN-fil..." 0 \

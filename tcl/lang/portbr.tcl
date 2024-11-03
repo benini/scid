@@ -139,7 +139,8 @@ menuText B WindowsStats "Estatisticas" 0 \
   {Abre/fecha a janela de estatisticas}
 menuText B WindowsTree "Arvore" 0 {Abre/fecha a janela da Arvore de pesquisa}
 menuText B WindowsBook "Janela do Livro de Aberturas" 0 {Abre/Fecha  a janela do livro de aberturas}
-menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela de correspondencia}
+# ====== TODO To be translated ======
+menuText B WindowsScore "Grafico de Resultados" 0 {Mostra a janela com o grafico dos resultados}
 
 # Tools menu:
 menuText B Tools "Ferramentas" 0
@@ -178,7 +179,6 @@ menuText B ToolsPlayerReport "Relatório de jogador..." 3 \
   {Gera um relatório de jogador} 
 menuText B ToolsRating "Grafico de Rating" 0 \
   {Mostra, em um grafico, a evolucao do rating de um jogador}
-menuText B ToolsScore "Grafico de Resultados" 0 {Mostra a janela com o grafico dos resultados}
 menuText B ToolsExpCurrent "Exporta jogo corrente" 8 \
   {Grava o jogo corrente em um arquivo texto}
 menuText B ToolsExpCurrentPGN "Exporta para PGN..." 15 \

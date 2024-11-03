@@ -141,7 +141,8 @@ menuText H WindowsStats "Statisztika" 0 \
   {Kinyitja/becsukja a szûrési statisztika ablakát.}
 menuText H WindowsTree "Faszerkezet" 0 {Kinyitja/becsukja a faszerkezet-ablakot.}
 menuText H WindowsBook "Megnyitástárablak" 3 {Kinyitja/becsukja a megnyitástárablakot.}
-menuText H WindowsCorrChess "Levelezési sakk" 14 {Open/close the Correspondence window}
+# ====== TODO To be translated ======
+menuText H WindowsScore "Eredmény alakulása" 1 {Megmutatja az eredménygrafikont.}
 
 # Tools menu:
 menuText H Tools "Eszközök" 0
@@ -183,7 +184,6 @@ menuText H ToolsPlayerReport "Összefoglaló játékosról..." 0 \
     {Összefoglalót készít a játékosról}
 menuText H ToolsRating "Értékszám alakulása" 0\
   {Grafikusan ábrázolja, hogyan alakult az aktuális játszma résztvevõinek értékszáma.}
-menuText H ToolsScore "Eredmény alakulása" 1 {Megmutatja az eredménygrafikont.}
 menuText H ToolsExpCurrent "Az aktuális játszma exportálása" 21 \
   {Szövegfájlba írja az aktuális játszmát.}
 menuText H ToolsExpCurrentPGN "Exportálás PGN-fájlba..." 11 \

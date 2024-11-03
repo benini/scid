@@ -142,7 +142,8 @@ menuText R WindowsStats "Окно статистики" 2 \
   {Открыть/закрыть окно фильтрованной статистики}
 menuText R WindowsTree "Окно дерева" 10 {Открыть/закрыть окно дерева}
 menuText R WindowsBook "Окно книги" 0 {Открыть/закрыть окно книги}
-menuText R WindowsCorrChess "Окно переписки" 0 {Открыть/закрыть окно переписки}
+# ====== TODO To be translated ======
+menuText R WindowsScore "Диаграмма счёта" 2 {Показать окно диаграммы счёта}
 
 # Tools menu:
 menuText R Tools "Инструменты" 2
@@ -181,7 +182,6 @@ menuText R ToolsPlayerReport "Отчёт об игроке..." 3 \
   {Generate a player report}
 menuText R ToolsRating "Диаграмма рейтинга" 1 \
   {Диаграмма истории рейтинга для игроков текущей партии}
-menuText R ToolsScore "Диаграмма счёта" 2 {Показать окно диаграммы счёта}
 menuText R ToolsExpCurrent "Экспорт текущей партии" 0 \
   {Записать текущую партию в текстовый файл}
 menuText R ToolsExpCurrentPGN "Экспорт партии в файл PGN..." 0 \
