@@ -385,18 +385,27 @@ proc ::board::san {sqno} {
 # Show a pop-up board.
 # xc and yc are the coordinates of the top-left corner, or the bottom-left
 # corner if above is not "".
-proc ::board::popup {w positionLongStr xc yc {above ""}} {
+proc ::board::popup {w positionLongStr xc yc {above ""} {textleft "" } {textright ""}} {
     set psize 30
     if {$psize > $::boardSize} { set psize $::boardSize }
 
     if {! [winfo exists $w]} {
         toplevel $w
         wm overrideredirect $w 1
+        ::applyThemeColor_background $w
+        ttk::label $w.l
+        ttk::label $w.r
+        if { $textleft ne "" || $textright ne "" } {
+            grid $w.l -sticky w -row 0 -column 0
+            grid $w.r -sticky e -row 0 -column 1
+        }
         ::board::new $w.bd $psize
-        grid $w.bd
+        grid $w.bd -row 1 -columnspan 2
         ::update idletasks
     }
 
+    $w.l configure -text $textleft
+    $w.r configure -text $textright
     lassign $positionLongStr pos lastmove
     ::board::update $w.bd $pos
 
