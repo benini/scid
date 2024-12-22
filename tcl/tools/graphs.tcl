@@ -481,6 +481,62 @@ set ::tools::graphs::score::MaxY 6
 ###########################
 # Game score and time graph
 
+# TimeControlList
+#    Returns a Tcl list of the timecontrols, as found
+#    in the tag TimeControl.
+#    The parameter timecontrol is a string with the format
+#       ? unknown
+#       - no timecontrol
+#       46/9000:20/3600:0
+#       40/5400+30:1800+30
+#       40/6000+30:20/3000+30:600+30
+proc TimeControlList {timecontrol} {
+  set timecontrols {}
+  set entries [split $timecontrol ":"]
+  foreach e $entries {
+    switch $e {
+      ? {
+          # unknown, not processed
+          return {}
+      }
+      - {
+          # no timecontrol
+          return {}
+      }
+      default {
+          set pattern {^((\d+)/)?(\d+)([+](\d+))?$}
+          if {[expr [regexp $pattern $e notused notused moves starttime notused increment] > 0]} {
+            lappend timecontrols [list $moves $starttime $increment]
+          } else {
+              # could not parse the timecontrol string
+              return {}
+          }
+      }
+    }
+  }
+  return $timecontrols
+}
+
+# GetTimecontrol
+#    Returns a list with the matching moves, starttime and increment from the list timecontrols and the matching movenr
+proc GetTimecontrol {timecontrols movenr} {
+  set timecontrol {}
+  set movecount 0
+  foreach e $timecontrols {
+    lassign $e moves starttime increment
+    if { $moves eq "" || $movenr < ($movecount + $moves) } {
+      set timecontrol [list $moves $starttime $increment]
+      break
+    }
+    incr movecount $moves
+  }
+  return $timecontrol
+}
+
+
+###########################
+# Game score and time graph
+
 # MoveTimeList
 #    Returns a Tcl list of the numeric times of each move, as found
 #    in the commment for each move.
@@ -496,8 +552,24 @@ proc MoveTimeList {color add} {
     set base [sc_base current]
     set gnum [sc_game number]
     set game [sc_base getGame $base $gnum live]
+    set extraTags [sc_game tag get Extra]
+    set extraTagsList [split $extraTags "\n"]
     set n [llength $game]
     set movenr 0
+    set oldtime 0
+    set timecontrols {}
+    set timecontrolmoves 0
+    set oldtimecontrolmoves 0
+    set timecontrolstarttime 0
+    set timecontrolextratime 0
+    foreach i $extraTagsList {
+      if { [string equal -nocase [lindex $i 0] "TimeControl" ] } {
+        set timecontrolstr [string range $i [expr [string length "TimeControl"] +  2] end-1]
+        set timecontrols [TimeControlList $timecontrolstr]
+        break
+      }
+    }
+
     for {set i 0} { $i < $n} { incr i } {
 	set RAVd [lindex [lindex $game $i] 0]
 	set RAVn [lindex [lindex $game $i] 1]
@@ -514,6 +586,8 @@ proc MoveTimeList {color add} {
     }
     set movenr 0
     set offset 0.0
+    set movecount 1
+    set colormovenr 0
     if {  $color == "w" } { set offset 0.5 }
     set sum 0.0
     for {set i 0} { $i < $n} { incr i } {
@@ -533,7 +607,49 @@ proc MoveTimeList {color add} {
 	    regexp $clkExp $comment -> clock
 	    if { $clock != "" } {
 		if { [scan $clock "%f:%f:%f" ho mi sec ] == 3 } {
-		    lappend movetimes [expr $movenr+$offset] [expr { $ho*60.0 + $mi + $sec/60}] }
+          if { !$add && $timecontrols ne "" } {
+            # enable support for displaying time differences for %clk flag
+            # this is used e.g. for lichess and chess.com game analysis
+            set len [llength $movetimes]
+            set oldtimecontrolmoves $timecontrolmoves
+            lassign [GetTimecontrol $timecontrols $colormovenr] timecontrolmoves timecontrolstarttime timecontrolextratime
+            if {$timecontrolmoves eq ""} {
+              if { $oldtimecontrolmoves ne ""  && [expr $oldtimecontrolmoves > 0]} {
+                # formely interval has limited moves, now has unlimited moves
+                set movecount 1
+              }
+              set timecontrolmoves 0
+            }
+            if {$timecontrolstarttime eq ""} {
+              set timecontrolstarttime 0
+            }
+            if {$timecontrolextratime eq ""} {
+              set timecontrolextratime 0
+            }
+            set newtime [expr { $ho*3600.0 + $mi*60 + $sec}]
+            if {[expr $timecontrolmoves > 0 && $movecount > $timecontrolmoves] } {
+              # move counter exceeds the moves of the interval, reset move counter
+              set movecount 1
+            }
+            if {[expr $movecount == 1] } {
+              # add additional time for a new interval to oldtime 
+              set oldtime [expr $oldtime + $timecontrolstarttime]
+            }
+            set diff [expr { $oldtime - $newtime + $timecontrolextratime} ]
+            if { $len == 0 && $oldtime == 0 } {
+              # movetimes is empty and oldtime not initialized, assume 0 as start difference
+            	lappend movetimes [expr $movenr+$offset] 0.0
+            } else {
+              lappend movetimes [expr $movenr+$offset] $diff
+            }
+            set oldtime $newtime
+        } else {
+          lappend movetimes [expr $movenr+$offset] [expr { $ho*60.0 + $mi + $sec/60} ]           
+        }
+      # increment movecount/colormovenr only if valid %clk is found in the mainline
+      incr movecount 
+      incr colormovenr
+    }
 	    } else {
 		set emtExp {.*?\[%emt\s*(.*?)\s*\].*}
 		set emt ""
