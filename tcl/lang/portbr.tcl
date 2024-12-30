@@ -1297,6 +1297,12 @@ translate B SoundsAnnounceNew {Anuncia novos movimentos quando eles são feitos}
 translate B SoundsAnnounceForward {Anuncia movimentos quando avançar um movimento} 
 translate B SoundsAnnounceBack {Anuncia movimentos quando retroceder um movimento} 
 translate B SoundsSoundDisabled {O Scid não conseguiu encontrar o pacote de áudio Snack na inicialização;\nSound está desativado.}
+# ====== TODO To be translated ======
+translate B Off { Off }
+# ====== TODO To be translated ======
+translate B Talk { Talk }
+# ====== TODO To be translated ======
+translate B Sound { Sound }
 
 # Upgrading databases:
 translate B Upgrading {Atualizando}

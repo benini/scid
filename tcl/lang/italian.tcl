@@ -1299,6 +1299,12 @@ translate I SoundsAnnounceNew {Annuncia l'esecuzione di una nuova mossa}
 translate I SoundsAnnounceForward {Annuncia quando si va avanti di una mossa}
 translate I SoundsAnnounceBack {Annuncia quando si va indietro di una mossa}
 translate I SoundsSoundDisabled {Scid non è riuscito a trovare il pacchetto audio Snack all'avvio;\nSound è disabilitato.}
+# ====== TODO To be translated ======
+translate I Off { Off }
+# ====== TODO To be translated ======
+translate I Talk { Talk }
+# ====== TODO To be translated ======
+translate I Sound { Sound }
 
 # Upgrading databases:
 translate I Upgrading {Aggiornamento}

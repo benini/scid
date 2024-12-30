@@ -1347,6 +1347,9 @@ translate F SoundsAnnounceNew {Annoncer les coups joués}
 translate F SoundsAnnounceForward {Annoncer les coups quand avance d'un coup}
 translate F SoundsAnnounceBack {Annoncer quand retour arrière d'un coup}
 translate F SoundsSoundDisabled {Scid n'a pas pu trouver le paquet audio de Snack au démarrage;\nle son est désactivé.}
+translate F Off { Arrêt }
+translate F Talk { Parler }
+translate F Sound { Son }
 
 # Upgrading databases:
 translate F Upgrading {Mise à jour}

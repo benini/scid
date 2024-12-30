@@ -1302,6 +1302,12 @@ translate K SoundsAnnounceNew {Anunciar noves jugades quan estiguin fetes}
 translate K SoundsAnnounceForward {Anunciar jugades quan avancem una jugada}
 translate K SoundsAnnounceBack {Anunciar jugada quan rectifiquem o retrocedim una jugada}
 translate K SoundsSoundDisabled {L'Scid no ha pogut trobar el paquet d'àudio Snack al inicialitzar;\nEl so està desactivat.}
+# ====== TODO To be translated ======
+translate K Off { Off }
+# ====== TODO To be translated ======
+translate K Talk { Talk }
+# ====== TODO To be translated ======
+translate K Sound { Sound }
 
 # Upgrading databases:
 translate K Upgrading {Actualització}

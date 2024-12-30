@@ -1350,6 +1350,12 @@ translate C SoundsAnnounceForward {Oznamovat tahy pøi posunu o tah vpøed}
 translate C SoundsAnnounceBack {Oznamovat pøi vzetí tahu zpìt nebo posunu o tah zpìt}
 # ====== TODO To be translated ======
 translate C SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate C Off { Off }
+# ====== TODO To be translated ======
+translate C Talk { Talk }
+# ====== TODO To be translated ======
+translate C Sound { Sound }
 
 # Upgrading databases:
 translate C Upgrading {Upgrade}

@@ -1391,6 +1391,12 @@ translate G SoundsAnnounceForward {Αναγγελία όταν πρόκειτα�
 translate G SoundsAnnounceBack {Αναγγελία όταν πρόκειται για αναδρομή ή για κίνηση προς τα πίσω}
 # ====== TODO To be translated ======
 translate G SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate G Off { Off }
+# ====== TODO To be translated ======
+translate G Talk { Talk }
+# ====== TODO To be translated ======
+translate G Sound { Sound }
 
 # Upgrading databases:
 translate G Upgrading {Ενημέρωση}

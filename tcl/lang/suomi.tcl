@@ -1358,6 +1358,12 @@ translate U SoundsAnnounceForward {Ilmoita, kun siirryt‰‰n eteenp‰in yksi siirto
 translate U SoundsAnnounceBack {Ilmoita, kun siirryt‰‰n taaksep‰in yksi siirto}
 # ====== TODO To be translated ======
 translate U SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate U Off { Off }
+# ====== TODO To be translated ======
+translate U Talk { Talk }
+# ====== TODO To be translated ======
+translate U Sound { Sound }
 
 # Upgrading databases:
 translate U Upgrading {P‰ivitys}

@@ -1319,6 +1319,12 @@ translate W SoundsAnnounceForward {Annonsera drag när du går fram ett drag}
 translate W SoundsAnnounceBack {Annonsera drag när du går fram eller tillbaka ett drag}
 # ====== TODO To be translated ======
 translate W SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate W Off { Off }
+# ====== TODO To be translated ======
+translate W Talk { Talk }
+# ====== TODO To be translated ======
+translate W Sound { Sound }
 
 # Upgrading databases:
 translate W Upgrading {Uppdaterar}

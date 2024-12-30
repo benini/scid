@@ -1392,6 +1392,12 @@ translate S SoundsAnnounceNew {Anunciar nuevos movimientos cuando sean hechos}
 translate S SoundsAnnounceForward {Anunciar movimientos cuando avancemos un movimiento}
 translate S SoundsAnnounceBack {Anunciar movimiento cuando rectifiquemos o retrocedamos una jugada}
 translate S SoundsSoundDisabled {Scid no pudo encontrar el paquete de audio de Snack al inicio.\nEl sonido está desactivado.}
+# ====== TODO To be translated ======
+translate S Off { Off }
+# ====== TODO To be translated ======
+translate S Talk { Talk }
+# ====== TODO To be translated ======
+translate S Sound { Sound }
 
 # Upgrading databases:
 translate S Upgrading {Actualización}

@@ -1383,6 +1383,12 @@ translate N SoundsAnnounceNew {Kondig nieuwe zetten aan als ze gedaan worden} ;
 translate N SoundsAnnounceForward {Kondig  aan als één zet vooruit gedaan wordt} ;
 translate N SoundsAnnounceBack {Kondig  aan als één zet terug gedaan of genomen wordt} ;
 translate N SoundsSoundDisabled {Scid kon het snack-audiopakket niet vinden bij het opstarten;\nhet geluid is uitgeschakeld.}
+# ====== TODO To be translated ======
+translate N Off { Off }
+# ====== TODO To be translated ======
+translate N Talk { Talk }
+# ====== TODO To be translated ======
+translate N Sound { Sound }
 
 # Upgrading databases:
 translate N Upgrading {Bijwerken}
