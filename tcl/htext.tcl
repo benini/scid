@@ -418,10 +418,6 @@ proc ::htext::insertBoard {w move} {
     $w window create end -window $w.bd$move
     $w insert end "\n\n"
 }
-proc ::htext::h1_tag {w tagName} {
-    $w insert end "\n"
-    return { "h1" "h1" }
-}
 
 proc ::htext::display {w helptext {section ""} {fixed 1}} {
   global helpWin
@@ -457,7 +453,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     set tagName [string range $str [expr {$startPos + 1}] [expr {$endPos - 1}]]
 
     # Check if it is a starting tag (no "/" at the start):
-    set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag "h1" h1_tag }
+    set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag }
     if {![strIsPrefix "/" $tagName]} {
         set fullTag($tagName) $tagName
         foreach {tag proc} $tagList {
@@ -510,7 +506,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         q  {$w insert end "\""}
         lt {$w insert end "<"}
         gt {$w insert end ">"}
-        h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
+        h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
