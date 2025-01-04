@@ -163,7 +163,7 @@ namespace eval sergame {
     # Fixed depth
     ttk::frame $w.ftime.depth
     ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode -width 16
-    ttk::spinbox $w.ftime.depth.value -background white -width 3 -from 1 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    ttk::spinbox $w.ftime.depth.value -background white -width 3 -from 1 -to 30 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
     $w.ftime.depth.value set $::sergame::depth
     
     pack $w.ftime.depth -side top -fill x
@@ -171,9 +171,9 @@ namespace eval sergame {
     pack $w.ftime.depth.value -side left
     
     ttk::frame $w.ftime.nodes
-    ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode  -width 16
-    ttk::spinbox $w.ftime.nodes.value -background white -width 3 -from 5 -to 10000 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    $w.ftime.nodes.value set [ expr $::sergame::nodes /1000]
+    ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes)" -value "nodes" -variable ::sergame::timeMode  -width 16
+    ttk::spinbox $w.ftime.nodes.value -background white -width 5 -from 1 -to 100000 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
+    $w.ftime.nodes.value set [ expr $::sergame::nodes]
     
     pack $w.ftime.nodes -side top -fill x
     pack $w.ftime.nodes.button -side left
@@ -244,7 +244,7 @@ namespace eval sergame {
       set ::uci::uciInfo(winc3) [expr [.configSerGameWin.ftime.timebonus.whitespseconds get]*1000]
       set ::uci::uciInfo(binc3) [expr [.configSerGameWin.ftime.timebonus.blackspseconds get]*1000]
       set ::uci::uciInfo(fixeddepth3) [.configSerGameWin.ftime.depth.value get]
-      set ::uci::uciInfo(fixednodes3) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
+      set ::uci::uciInfo(fixednodes3) [expr [.configSerGameWin.ftime.nodes.value get]]
       set ::uci::uciInfo(movetime3) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
       destroy .configSerGameWin
