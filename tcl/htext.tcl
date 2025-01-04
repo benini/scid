@@ -418,7 +418,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
   set ::htext::interrupt 0
   $w mark set insert 0.0
   $w configure -state normal
-  set linkName ""
   set count 0
   set str $helptext
   if {$fixed} {
@@ -448,16 +447,13 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     # Check if it is a starting tag (no "/" at the start):
     set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag "h1" h1_tag }
     if {![strIsPrefix "/" $tagName]} {
-        set found 0
+        set fullTag($tagName) $tagName
         foreach {tag proc} $tagList {
             if {[strIsPrefix $tag $tagName]} {
-                lassign [$proc $w $tagName] tagName help
-                set fullTag($tagName) $help
-                set found 1
+                lassign [$proc $w $tagName] tagName fullTag($tagName)
                 break
             }
         }
-        if { ! $found } { set fullTag($tagName) $tagName }
     }
 
     # Now insert the text up to the formatting tag:
@@ -503,7 +499,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       if {$tagName == "menu"} {$w insert end "\["}
     }
     
-    # Check if it is an image or button tag:
+    # Check if it is an image, window or button tag:
     set tagList { "img " img_tag "button " button_tag "window " window_tag }
     foreach {tag proc} $tagList {
         if {[strIsPrefix $tag $tagName]} {
