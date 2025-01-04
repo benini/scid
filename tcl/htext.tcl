@@ -447,7 +447,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
 
     # Check if it is a starting tag (no "/" at the start):
     set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag "h1" h1_tag }
-
     if {![strIsPrefix "/" $tagName]} {
         set found 0
         foreach {tag proc} $tagList {
@@ -474,9 +473,8 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       # Get rid of initial "/" character:
       set tagName [string range $tagName 1 end]
       switch -- $tagName {
-        h1 - h2 - h3 - h4 - h5  {$w insert end "\n"}
+        h1 - h2 - h3 - h4 - h5 - p {$w insert end "\n"}
       }
-      if {$tagName == "p"} {$w insert end "\n"}
       if {$tagName == "menu"} {$w insert end "\]"}
       if {$tagName == "ul"} {
         incr helpWin(Indent) -4
@@ -495,12 +493,10 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
             $w insert end " "
           }
         }
-        p  {$w insert end "\n"}
-        br {$w insert end "\n"}
         q  {$w insert end "\""}
         lt {$w insert end "<"}
         gt {$w insert end ">"}
-        h2 - h3 - h4 - h5  {$w insert end "\n"}
+        h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
