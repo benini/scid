@@ -377,6 +377,35 @@ proc ::htext::c_tag {w tagName} {
     $w configure -cursor {}"
     return [list c $commentTag ]
 }
+proc ::htext::img_tag {w tagName} {
+      set imgName [string range $tagName 4 end]
+      #flags are not loaded on start, so check if a flag needs to load
+      if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
+        set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
+      }
+      set winName $w.$imgName
+      while {[winfo exists $winName]} { append winName a }
+      ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
+      $w window create end -window $winName
+}
+proc ::htext::button_tag {w tagName} {
+    set idx [ string first "-command" $tagName]
+     set cmd ""
+     if {$idx == -1} {
+       set imgName [string range $tagName 7 end]
+     } else  {
+       set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
+       set cmd [ string range $tagName [expr $idx +9] end ]
+     }
+     set winName $w.$imgName
+     while {[winfo exists $winName]} { append winName a }
+     ttk::button $winName -image $imgName -command $cmd
+     $w window create end -window $winName
+}
+proc ::htext::window_tag {w tagName} {
+    set winName [string range $tagName 7 end]
+    $w window create end -window $winName
+}
 proc ::htext::h1_tag {w tagName} {
     $w insert end "\n"
     return { "h1" "h1" }
@@ -479,34 +508,12 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     }
     
     # Check if it is an image or button tag:
-    if {[strIsPrefix "img " $tagName]} {
-      set imgName [string range $tagName 4 end]
-      #flags are not loaded on start, so check if a flag needs to load
-      if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
-        set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
-      }
-      set winName $w.$imgName
-      while {[winfo exists $winName]} { append winName a }
-      ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
-      $w window create end -window $winName
-    }
-    if {[strIsPrefix "button " $tagName]} {
-      set idx [ string first "-command" $tagName]
-      set cmd ""
-      if {$idx == -1} {
-        set imgName [string range $tagName 7 end]
-      } else  {
-        set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
-        set cmd [ string range $tagName [expr $idx +9] end ]
-      }
-      set winName $w.$imgName
-      while {[winfo exists $winName]} { append winName a }
-      ttk::button $winName -image $imgName -command $cmd
-      $w window create end -window $winName
-    }
-    if {[strIsPrefix "window " $tagName]} {
-      set winName [string range $tagName 7 end]
-      $w window create end -window $winName
+    set tagList { "img " img_tag "button " button_tag "window " window_tag }
+    foreach {tag proc} $tagList {
+        if {[strIsPrefix $tag $tagName]} {
+            $proc $w $tagName
+            break
+        }
     }
     
     # Now eliminate the processed text from the string:
