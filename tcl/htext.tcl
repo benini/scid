@@ -406,6 +406,18 @@ proc ::htext::window_tag {w tagName} {
     set winName [string range $tagName 7 end]
     $w window create end -window $winName
 }
+proc ::htext::insertBoard {w move} {
+    ::board::new $w.bd$move 25
+    set offSet [sc_pos pgnOffset]
+    sc_move pgn [string range $move 2 end]
+    set bd [sc_pos board]
+    sc_move pgn $offSet
+    if {[::board::isFlipped .main.board]} {set bd [string reverse [lindex $bd 0]]}
+    ::board::update $w.bd$move $bd
+    $w insert end "\n\n\t\t"
+    $w window create end -window $w.bd$move
+    $w insert end "\n\n"
+}
 proc ::htext::h1_tag {w tagName} {
     $w insert end "\n"
     return { "h1" "h1" }
@@ -457,8 +469,14 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     }
 
     # Now insert the text up to the formatting tag:
-    $w insert end [string range $str 0 [expr {$startPos - 1}]]
+    set text [string range $str 0 [expr {$startPos - 1}]]
+    $w insert end $text
 
+    #check for Diagramm in NAG D or in comment [#]
+    if { [info exists fullTag(m)] && ([strIsPrefix "/nag" $tagName] && [string first " D" $text] >= 0) ||
+         ([strIsPrefix "/c" $tagName] && [string first "\[#\]" $text] >= 0 )} {
+        insertBoard $w $fullTag(m)
+    }
     # Check if it is a name tag matching the section we want:
     if {$section != ""  &&  [strIsPrefix "name " $tagName]} {
       set sect [string range $tagName 5 end]
