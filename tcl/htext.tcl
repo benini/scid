@@ -212,12 +212,7 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
-  $w tag configure var -font font_Regular
-  $w tag configure nag -font font_Regular
-  if { $::pgnColor(Var) ne "" } {
-    $w tag configure var -foreground $::pgnColor(Var)
-  }
-  $w tag configure nag -foreground $::pgnColor(Nag)
+  $w tag configure nag -font font_Regular -foreground $::pgnColor(Nag)
 
   set lmargin 0
   for {set i 1} {$i <= 19} {incr i} {
@@ -418,6 +413,63 @@ proc ::htext::insertBoard {w move} {
     $w window create end -window $w.bd$move
     $w insert end "\n\n"
 }
+proc ::htext::var_tag {w tagName varIndex hideVar} {
+    #insert toggle token [+] or [-] for show/hide the variation
+    if { [ lsearch [$w tag names] hvar$varIndex] != -1 } {
+        set hideVar [$w tag cget hvar$varIndex -elide]
+    }
+    set start [$w index insert]
+    if { $hideVar } {
+        $w insert end " \[+\] "
+    } else {
+        $w insert end " \[-\] "
+    }
+    set end [$w index insert]
+    $w tag configure hvar$varIndex -elide $hideVar -font font_Regular -foreground $::pgnColor(Var)
+    $w tag configure toggle$varIndex -font font_Regular -foreground $::pgnColor(Var)
+    $w tag bind toggle$varIndex <ButtonRelease-1> "::htext::toggleHideVar $w $varIndex"
+    $w tag add toggle$varIndex $start $end
+    return [list var hvar$varIndex [expr {$varIndex+1}]]
+}
+#when new game is loaded delete all tags with hvarN
+proc ::htext::deleteToggleVar { w } {
+    foreach i [ lsearch -all -inline [$w tag names] hvar* ] {
+        $w tag delete $i
+    }
+}
+
+#make sure a variation is shown when a move from variation is on the board
+proc ::htext::showVar { w pos } {
+    set tag [lsearch -inline [$w tag names $pos] hvar*]
+    if { $tag ne "" } {
+        ::htext::toggleHideVar $w [string range $tag 4 end] 0
+    }
+}
+
+#reset status for hide/show on all variations according hideVar
+proc ::htext::resetToggleVar { w hideVar} {
+    foreach i [ lsearch -all -inline [$w tag names] hvar* ] {
+        toggleHideVar $w [string range $i 4 end] $hideVar
+    }
+}
+
+#toggle status of hide/show of a variation or set it to hv
+proc ::htext::toggleHideVar { w n {hv ""}} {
+    lassign [$w tag nextrange toggle$n 1.0] start end
+    if { $hv eq "" } {
+        set hv [expr - [$w tag cget hvar$n -elide] + 1 ];
+    }
+    $w tag configure hvar$n -elide $hv
+    $w configure -state normal
+    if { $hv } {
+        $w replace $start $end " \[+\] "
+    } else {
+        $w replace $start $end " \[-\] "
+    }
+    $w tag configure hvar$n -elide $hv
+    $w tag add toggle$n $start $end
+    $w configure -state disabled
+}
 
 proc ::htext::display {w helptext {section ""} {fixed 1}} {
   global helpWin
@@ -427,6 +479,8 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
   $w mark set insert 0.0
   $w configure -state normal
   set count 0
+  set hideVar 0 ;#$::pgn::hideVar
+  set varIndex 0
   set str $helptext
   if {$fixed} {
     regsub -all "\n\n" $str "<p>" str
@@ -453,12 +507,15 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     set tagName [string range $str [expr {$startPos + 1}] [expr {$endPos - 1}]]
 
     # Check if it is a starting tag (no "/" at the start):
-    set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag }
+    set tagList { "a " a_tag "url " url_tag "run " run_tag "go " go_tag "pi " pi_tag "g_" g_tag "m_" m_tag "c_" c_tag "var" var_tag }
     if {![strIsPrefix "/" $tagName]} {
         set fullTag($tagName) $tagName
         foreach {tag proc} $tagList {
             if {[strIsPrefix $tag $tagName]} {
-                lassign [$proc $w $tagName] tagName fullTag($tagName)
+                switch $tag {
+                    var { lassign [$proc $w $tagName $varIndex $hideVar] tagName fullTag($tagName) varIndex }
+                    default { lassign [$proc $w $tagName] tagName fullTag($tagName) }
+                }
                 break
             }
         }

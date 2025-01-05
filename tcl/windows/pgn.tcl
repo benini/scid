@@ -289,6 +289,7 @@ namespace eval pgn {
   proc Refresh { {pgnNeedsUpdate 0} } {
     if {![winfo exists .pgnWin]} { return }
 
+    if {$pgnNeedsUpdate == 2 } { ::htext::deleteToggleVar .pgnWin.text }
     if {$pgnNeedsUpdate} {
       busyCursor .
       set format plain
@@ -331,6 +332,7 @@ namespace eval pgn {
       .pgnWin.text tag remove Current 1.0 end
       set moveRange [.pgnWin.text tag nextrange "m_$offset" 1.0]
       if {[llength $moveRange] == 2} {
+        ::htext::showVar .pgnWin.text [lindex $moveRange 0]
         .pgnWin.text tag add Current [lindex $moveRange 0] [lindex $moveRange 1]
         .pgnWin.text see [lindex $moveRange 1]
       } else {
