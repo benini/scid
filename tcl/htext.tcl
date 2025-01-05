@@ -309,9 +309,8 @@ proc ::htext::go_tag {w tagName} {
         $w configure -cursor {}"
     return [list go $goTag ]
 }
-proc ::htext::pi_tag {w tagName} {
+proc ::htext::pi_tag {w playerTag} {
     # Check if it is a player info tag:
-    set playerTag $tagName
     set playerName [string range $playerTag 3 end]
     $w tag configure "$playerTag" -foreground DodgerBlue3
     $w tag bind "$playerTag" <ButtonRelease-1> "::pinfo::playerInfo \"$playerName\""
@@ -325,9 +324,8 @@ proc ::htext::pi_tag {w tagName} {
         $w configure -cursor {}"
 return [list pi $playerTag ]
 }
-proc ::htext::g_tag {w tagName} {
+proc ::htext::g_tag {w gameTag} {
     # Check if it is a game-load tag:
-    set gameTag $tagName
     set gnum [string range $gameTag 2 end]
     set glCommand "::game::LoadMenu $w [sc_base current] $gnum %X %Y"
     $w tag bind $gameTag <ButtonPress-1> $glCommand
@@ -343,13 +341,8 @@ proc ::htext::g_tag {w tagName} {
     $w configure -cursor {}"
     return [list g $gameTag ]
 }
-proc ::htext::m_tag {w tagName} {
+proc ::htext::m_tag {w moveTag} {
     # Check if it is a move tag:
-    set moveTag $tagName
-	  ### TODO
-	  ### Does not work for variations as the var-Tag appears before
-	  ### the <m_ tags, therefore this overwrites font sizes
-    ### $w tag configure $moveTag -font font_Figurine_ML
     $w tag bind $moveTag <ButtonRelease-1> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
     # Bind middle button to popup a PGN board:
     $w tag bind $moveTag <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text $moveTag %X %Y"
@@ -362,9 +355,8 @@ proc ::htext::m_tag {w tagName} {
     $w configure -cursor {}"
     return [list m $moveTag ]
 }
-proc ::htext::c_tag {w tagName} {
+proc ::htext::c_tag {w commentTag} {
     # Check if it is a comment tag:
-    set commentTag $tagName
     $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
     $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::makeCommentWin"
     $w tag bind $commentTag <Any-Enter> "$w tag configure $commentTag -underline 1
@@ -474,7 +466,7 @@ proc ::htext::toggleHideVar { w n {hv ""}} {
     $w configure -state disabled
 }
 
-proc ::htext::display {w helptext {section ""} {fixed 1}} {
+proc ::htext::display {w str {section ""} {fixed 1}} {
   global helpWin
   # set start [clock clicks -milli]
   set helpWin(Indent) 0
@@ -483,7 +475,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
   $w configure -state normal
   set count 0
   set varIndex 0
-  set str $helptext
   if {$fixed} {
     regsub -all "\n\n" $str "<p>" str
     regsub -all "\n" $str " " str
@@ -492,7 +483,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     regsub -all ">\[ \n\]+" $str "> " str
     regsub -all "\[ \n\]+<" $str " <" str
   }
-  set tagType ""
   set seePoint ""
 
   if {! [info exists ::htext::updates($w)]} {
@@ -542,12 +532,9 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       # Get rid of initial "/" character:
       set tagName [string range $tagName 1 end]
       switch -- $tagName {
+        menu {$w insert end "\]"}
+        ul   {incr helpWin(Indent) -4; $w insert end "\n"}
         h1 - h2 - h3 - h4 - h5 - p {$w insert end "\n"}
-      }
-      if {$tagName == "menu"} {$w insert end "\]"}
-      if {$tagName == "ul"} {
-        incr helpWin(Indent) -4
-        $w insert end "\n"
       }
       if {[info exists startIndex($tagName)]} {
         $w tag add $fullTag($tagName) $startIndex($tagName) [$w index insert]
@@ -566,11 +553,11 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         q  {$w insert end "\""}
         lt {$w insert end "<"}
         gt {$w insert end ">"}
+        menu {$w insert end "\["}
         h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
-      if {$tagName == "menu"} {$w insert end "\["}
     }
     
     # Check if it is an image, window or button tag:
