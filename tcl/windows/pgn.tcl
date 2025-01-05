@@ -111,6 +111,9 @@ namespace eval pgn {
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
 
     #ToDo: translate label
+    $w.menu.opt add checkbutton -label "Hide variations" \
+        -variable ::pgn::hideVar -command {::htext::resetToggleVar .pgnWin.text $::pgn::hideVar}
+     $w.menu.opt add checkbutton -label "Show Diagramm" -variable ::pgn::showDiagramm -command {::pgn::Refresh 1}
     $w.menu.opt add checkbutton -label "Notation Figurine" \
         -variable ::pgn::figurine -command {::pgn::Refresh 1}
     $w.menu.color add command -label PgnColorAnno \
@@ -205,6 +208,10 @@ namespace eval pgn {
     $mctxt.evals2 add command -label "N" -command {::addNag N}
     $mctxt.evals2 add command -label "D" -command {::addNag D}
 
+    #TODO: translate
+    $mctxt add command -label "Hide all Variations" -command {::htext::resetToggleVar .pgnWin.text 1}
+    $mctxt add command -label "Show all Variations" -command {::htext::resetToggleVar .pgnWin.text 0}
+    $mctxt add separator
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar"
     $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar"

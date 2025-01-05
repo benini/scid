@@ -212,6 +212,7 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
+  $w tag configure var -font font_Regular -foreground $::pgnColor(Var)
   $w tag configure nag -font font_Regular -foreground $::pgnColor(Nag)
 
   set lmargin 0
@@ -413,9 +414,11 @@ proc ::htext::insertBoard {w move} {
     $w window create end -window $w.bd$move
     $w insert end "\n\n"
 }
-proc ::htext::var_tag {w tagName varIndex hideVar} {
-    #insert toggle token [+] or [-] for show/hide the variation
+#insert toggle token [+] or [-] for show/hide the variation
+proc ::htext::var_tag {w tagName varIndex} {
+    set hideVar $::pgn::hideVar
     if { [ lsearch [$w tag names] hvar$varIndex] != -1 } {
+        #if tag exists then use it
         set hideVar [$w tag cget hvar$varIndex -elide]
     }
     set start [$w index insert]
@@ -425,7 +428,7 @@ proc ::htext::var_tag {w tagName varIndex hideVar} {
         $w insert end " \[-\] "
     }
     set end [$w index insert]
-    $w tag configure hvar$varIndex -elide $hideVar -font font_Regular -foreground $::pgnColor(Var)
+    $w tag configure hvar$varIndex -elide $hideVar
     $w tag configure toggle$varIndex -font font_Regular -foreground $::pgnColor(Var)
     $w tag bind toggle$varIndex <ButtonRelease-1> "::htext::toggleHideVar $w $varIndex"
     $w tag add toggle$varIndex $start $end
@@ -479,7 +482,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
   $w mark set insert 0.0
   $w configure -state normal
   set count 0
-  set hideVar 0 ;#$::pgn::hideVar
   set varIndex 0
   set str $helptext
   if {$fixed} {
@@ -513,7 +515,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         foreach {tag proc} $tagList {
             if {[strIsPrefix $tag $tagName]} {
                 switch $tag {
-                    var { lassign [$proc $w $tagName $varIndex $hideVar] tagName fullTag($tagName) varIndex }
+                    var { lassign [$proc $w $tagName $varIndex] tagName fullTag($tagName) varIndex }
                     default { lassign [$proc $w $tagName] tagName fullTag($tagName) }
                 }
                 break
@@ -526,8 +528,8 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     $w insert end $text
 
     #check for Diagramm in NAG D or in comment [#]
-    if { [info exists fullTag(m)] && ([strIsPrefix "/nag" $tagName] && [string first " D" $text] >= 0) ||
-         ([strIsPrefix "/c" $tagName] && [string first "\[#\]" $text] >= 0 )} {
+    if { $::pgn::showDiagramm && [info exists fullTag(m)] && (([strIsPrefix "/nag" $tagName] && [string first " D" $text] >= 0) ||
+         ([strIsPrefix "/c" $tagName] && [string first "\[#\]" $text] >= 0 ))} {
         insertBoard $w $fullTag(m)
     }
     # Check if it is a name tag matching the section we want:
@@ -549,6 +551,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       }
       if {[info exists startIndex($tagName)]} {
         $w tag add $fullTag($tagName) $startIndex($tagName) [$w index insert]
+        if { $tagName == "var" } {$w tag add var $startIndex($tagName) [$w index insert] }
         unset startIndex($tagName)
       }
     } else {
