@@ -141,6 +141,7 @@ namespace eval pgn {
     grid columnconfigure $w 0 -weight 1
 
     set pgnWin 1
+    bind $w <<NotifyNewGame>> "::htext::deleteToggleVar .pgnWin.text"
     bind $w <Destroy> { set pgnWin 0 }
 
     # Take input focus even if -state is disabled
@@ -296,7 +297,6 @@ namespace eval pgn {
   proc Refresh { {pgnNeedsUpdate 0} } {
     if {![winfo exists .pgnWin]} { return }
 
-    if {$pgnNeedsUpdate == 2 } { ::htext::deleteToggleVar .pgnWin.text }
     if {$pgnNeedsUpdate} {
       busyCursor .
       set format plain
@@ -312,6 +312,7 @@ namespace eval pgn {
       .pgnWin.text delete 1.0 end
 
       if {$::pgn::showColor} {
+        ::htext::countVar $pgnStr
         ::htext::display .pgnWin.text $pgnStr
       } else {
         .pgnWin.text insert 1.0 $pgnStr

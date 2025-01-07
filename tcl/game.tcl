@@ -353,7 +353,7 @@ namespace eval ::notify {
   # Invoke all the function that don't care about the current position but want
   # to be notified when the game text (tags, comments, notation) has changed.
   proc privGameTextChanged {} {
-    ::pgn::Refresh 2
+    ::pgn::Refresh 1
     ::tools::graphs::score::Refresh 0
   }
 
