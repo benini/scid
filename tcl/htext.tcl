@@ -214,7 +214,6 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
-  $w tag configure var -font font_Regular -foreground $::pgnColor(Var)
   $w tag configure nag -font font_Regular -foreground $::pgnColor(Nag)
 
   set lmargin 0
@@ -445,19 +444,20 @@ proc ::htext::varTagProcess {w tagName varIndex} {
         $w insert end " \[-\] "
     }
     set end [$w index insert]
-    $w tag configure hvar$varIndex -elide $hideVar
+    $w tag configure var$varIndex -elide $hideVar -font font_Regular -foreground $::pgnColor(Var)
+    $w tag lower var$varIndex
     $w tag configure toggle$varIndex -font font_Regular -foreground $::pgnColor(Var)
     $w tag bind toggle$varIndex <ButtonRelease-1> "::htext::toggleHideVar $w $varIndex"
     $w tag add toggle$varIndex $start $end
     set ::htext::pos($varIndex) $pos
     set ::htext::hideVarValue [lreplace $::htext::hideVarValue $varIndex $varIndex $hideVar]
-    return [list var hvar$varIndex [expr {$varIndex+1}]]
+    return [list var var$varIndex [expr {$varIndex+1}]]
 }
 
 #Helper procs for show/hide variation
-#when new game is loaded delete all tags with hvarN
+#when new game is loaded delete all tags with varN
 proc ::htext::deleteToggleVar { w } {
-    foreach i [ lsearch -all -inline [$w tag names] hvar* ] {
+    foreach i [ lsearch -all -inline [$w tag names] var* ] {
         $w tag delete $i
     }
     set ::htext::amountVar 0
@@ -466,16 +466,16 @@ proc ::htext::deleteToggleVar { w } {
 
 #make sure a variation is shown when a move from variation is on the board
 proc ::htext::showVar { w pos } {
-    set tag [lsearch -inline [$w tag names $pos] hvar*]
+    set tag [lsearch -inline [$w tag names $pos] var*]
     if { $tag ne "" } {
-        ::htext::toggleHideVar $w [string range $tag 4 end] 0
+        ::htext::toggleHideVar $w [string range $tag 3 end] 0
     }
 }
 
 #reset status for hide/show on all variations according hideVar
 proc ::htext::resetToggleVar { w hideVar} {
-    foreach i [ lsearch -all -inline [$w tag names] hvar* ] {
-        toggleHideVar $w [string range $i 4 end] $hideVar
+    foreach i [ lsearch -all -inline [$w tag names] var* ] {
+        toggleHideVar $w [string range $i 3 end] $hideVar
     }
 }
 
@@ -483,16 +483,16 @@ proc ::htext::resetToggleVar { w hideVar} {
 proc ::htext::toggleHideVar { w n {hv ""}} {
     lassign [$w tag nextrange toggle$n 1.0] start end
     if { $hv eq "" } {
-        set hv [expr - [$w tag cget hvar$n -elide] + 1 ];
+        set hv [expr - [$w tag cget var$n -elide] + 1 ];
     }
-    $w tag configure hvar$n -elide $hv
+    $w tag configure var$n -elide $hv
     $w configure -state normal
     if { $hv } {
         $w replace $start $end " \[+\] "
     } else {
         $w replace $start $end " \[-\] "
     }
-    $w tag configure hvar$n -elide $hv
+    $w tag configure var$n -elide $hv
     $w tag add toggle$n $start $end
     $w configure -state disabled
     set ::htext::hideVarValue [lreplace $::htext::hideVarValue $n $n $hv]
@@ -572,8 +572,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       }
       if {[info exists startIndex($tagName)]} {
         $w tag add $fullTag($tagName) $startIndex($tagName) [$w index insert]
-        # var tag needs two tags one (hvarN) for hiding (line above) and one (var) for coloring (line below) 
-        if { $tagName == "var" } {$w tag add var $startIndex($tagName) [$w index insert] }
         unset startIndex($tagName)
       }
     } else {
