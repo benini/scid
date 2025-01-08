@@ -312,7 +312,7 @@ namespace eval pgn {
       .pgnWin.text delete 1.0 end
 
       if {$::pgn::showColor} {
-        ::htext::countVar $pgnStr
+        ::htext::countVar .pgnWin.text $pgnStr
         ::htext::display .pgnWin.text $pgnStr
       } else {
         .pgnWin.text insert 1.0 $pgnStr

@@ -30,8 +30,8 @@ proc help_PushStack {name {heading ""}} {
 }
 
 set ::htext::headingColor "\#990000"
-set ::htext::amountVar 0
-set ::htext::hideVarValue {}
+array set ::htext::amountVar {}
+array set ::htext::hideVarValue {}
 array set ::htext:updates {}
 
 proc help_PopStack {} {
@@ -168,6 +168,8 @@ proc ::htext::init {w} {
   set green "green"
   
   set ::htext::updates($w) 100
+  set ::htext::amountVar($w) 0
+  set ::htext::hideVarValue($w) {}
   $w tag configure black -foreground black
   $w tag configure white -foreground white
   $w tag configure red -foreground red
@@ -412,31 +414,31 @@ proc ::htext::insertBoard {w movenr} {
     $w insert end "\n\n"
 }
 #calc number of variations in pgn string to check if number has changed 
-proc ::htext::countVar {str} {
+proc ::htext::countVar {w str} {
     set count [regsub -all "<var>" $str {} stripped]
-    set ::htext::varChanged [expr $count - $::htext::amountVar]
-    set ::htext::amountVar $count
+    set ::htext::varChanged [expr $count - $::htext::amountVar($w)]
+    set ::htext::amountVar($w) $count
 }
 #insert toggle token [+] or [-] for show/hide the variation
 proc ::htext::varTagProcess {w tagName varIndex} {
     set hideVar $::pgn::hideVar
     set start [$w index insert]
     set pos [$w count -chars 0.0 $start]
-    if {[llength $::htext::hideVarValue] > $varIndex } {
+    if {[llength $::htext::hideVarValue($w)] > $varIndex } {
         #if tag exists then use it
         if { $::htext::varChanged != 0 } {
             # number of variations has changed, ajust the values
             if { $::htext::varChanged > 0 && $pos ne $::htext::pos($varIndex)} {
                 # a variation was inserted
-                set ::htext::hideVarValue [linsert $::htext::hideVarValue $varIndex $::pgn::hideVar]
+                set ::htext::hideVarValue($w) [linsert $::htext::hideVarValue($w) $varIndex $::pgn::hideVar]
                 set ::htext::varChanged 0
             } elseif { $::htext::varChanged < 0 && $pos ne $::htext::pos($varIndex)} {
                 # a variation was deleted
-                set ::htext::hideVarValue [lreplace $::htext::hideVarValue $varIndex $varIndex]
+                set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $varIndex $varIndex]
                 set ::htext::varChanged 0
             }
         }
-        set hideVar [lindex $::htext::hideVarValue $varIndex]
+        set hideVar [lindex $::htext::hideVarValue($w) $varIndex]
     }
     if { $hideVar } {
         $w insert end " \[+\] "
@@ -450,7 +452,7 @@ proc ::htext::varTagProcess {w tagName varIndex} {
     $w tag bind toggle$varIndex <ButtonRelease-1> "::htext::toggleHideVar $w $varIndex"
     $w tag add toggle$varIndex $start $end
     set ::htext::pos($varIndex) $pos
-    set ::htext::hideVarValue [lreplace $::htext::hideVarValue $varIndex $varIndex $hideVar]
+    set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $varIndex $varIndex $hideVar]
     return [list var var$varIndex [expr {$varIndex+1}]]
 }
 
@@ -460,22 +462,24 @@ proc ::htext::deleteToggleVar { w } {
     foreach i [ lsearch -all -inline [$w tag names] var* ] {
         $w tag delete $i
     }
-    set ::htext::amountVar 0
-    set ::htext::hideVarValue { }
+    set ::htext::amountVar($w) 0
+    set ::htext::hideVarValue($w) { }
 }
 
 #make sure a variation is shown when a move from variation is on the board
 proc ::htext::showVar { w pos } {
     set tag [lsearch -inline [$w tag names $pos] var*]
-    if { $tag ne "" } {
-        ::htext::toggleHideVar $w [string range $tag 3 end] 0
+    if { $tag ne "" && [$w tag cget $tag -elide]} {
+        ::htext::toggleHideVar $w [string range $tag 3 end]
     }
 }
 
 #reset status for hide/show on all variations according hideVar
 proc ::htext::resetToggleVar { w hideVar} {
-    foreach i [ lsearch -all -inline [$w tag names] var* ] {
-        toggleHideVar $w [string range $i 3 end] $hideVar
+    set i [llength $::htext::hideVarValue($w)]
+    while { $i > 0 } {
+        incr i -1
+        toggleHideVar $w $i $hideVar
     }
 }
 
@@ -495,7 +499,7 @@ proc ::htext::toggleHideVar { w n {hv ""}} {
     $w tag configure var$n -elide $hv
     $w tag add toggle$n $start $end
     $w configure -state disabled
-    set ::htext::hideVarValue [lreplace $::htext::hideVarValue $n $n $hv]
+    set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $n $n $hv]
 }
 
 proc ::htext::display {w str {section ""} {fixed 1}} {
