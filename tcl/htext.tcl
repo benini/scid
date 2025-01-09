@@ -372,29 +372,29 @@ proc ::htext::cTagProcess {w commentTag} {
     return [list c $commentTag ]
 }
 proc ::htext::imgTagProcess {w tagName} {
-      set imgName [string range $tagName 4 end]
-      #flags are not loaded on start, so check if a flag needs to load
-      if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
-        set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
-      }
-      set winName $w.$imgName
-      while {[winfo exists $winName]} { append winName a }
-      ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
-      $w window create end -window $winName
+    set imgName [string range $tagName 4 end]
+    #flags are not loaded on start, so check if a flag needs to load
+    if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
+      set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
+    }
+    set winName $w.$imgName
+    while {[winfo exists $winName]} { append winName a }
+    ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
+    $w window create end -window $winName
 }
 proc ::htext::buttonTagProcess {w tagName} {
     set idx [ string first "-command" $tagName]
-     set cmd ""
-     if {$idx == -1} {
-       set imgName [string range $tagName 7 end]
-     } else  {
-       set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
-       set cmd [ string range $tagName [expr $idx +9] end ]
-     }
-     set winName $w.$imgName
-     while {[winfo exists $winName]} { append winName a }
-     ttk::button $winName -image $imgName -command $cmd
-     $w window create end -window $winName
+    set cmd ""
+    if {$idx == -1} {
+      set imgName [string range $tagName 7 end]
+    } else  {
+      set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
+      set cmd [ string range $tagName [expr $idx +9] end ]
+    }
+    set winName $w.$imgName
+    while {[winfo exists $winName]} { append winName a }
+    ttk::button $winName -image $imgName -command $cmd
+    $w window create end -window $winName
 }
 proc ::htext::windowTagProcess {w tagName} {
     set winName [string range $tagName 7 end]
