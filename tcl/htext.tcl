@@ -34,6 +34,21 @@ array set ::htext::amountVar {}
 array set ::htext::varIndex {}
 array set ::htext::hideVarValue {}
 array set ::htext:updates {}
+#assign processing proc to tags 
+array set ::htext::proc {
+    a       aTagProcess
+    url	    urlTagProcess
+    run	    runTagProcess
+    go	    goTagProcess
+    pi	    piTagProcess
+    g	    gTagProcess
+    m	    mTagProcess
+    c	    cTagProcess
+    var	    varTagProcess
+    img	    imgTagProcess
+    button	buttonTagProcess
+    window  windowTagProcess
+}
 
 proc help_PopStack {} {
   global helpWin helpText
@@ -543,15 +558,26 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
     $w insert end $text
 
     # Check if it is a starting tag (no "/" at the start) and process the tag:
-    set tagList { "a" aTagProcess "url" urlTagProcess "run" runTagProcess "go" goTagProcess "pi" piTagProcess "g_" gTagProcess
-                  "m_" mTagProcess "c_" cTagProcess "var" varTagProcess "img" imgTagProcess "button" buttonTagProcess "window" windowTagProcess }
     if {![strIsPrefix "/" $tagName]} {
       set fullTag($tagName) $tagName
-      foreach {tag proc} $tagList {
-        if {[strIsPrefix $tag $tagName]} {
-          lassign [$proc $w $tagName] tagName fullTag($tagName)
-          break
+      set tag $tagName
+      #create basename of tag: m_12 -> m or "pi name" -> pi
+      if { [regexp ".*?\[_ \]" $tagName tag] } { set tag [string range $tag 0 end-1]}
+      switch -- $tag {
+        a - url - run - go - pi - g - m - c - var - img - button - window {
+            lassign [$::htext::proc($tag) $w $tagName] tagName fullTag($tagName) }
+        ul {incr helpWin(Indent) 4}
+        li {
+          $w insert end "\n"
+          for {set space 0} {$space < $helpWin(Indent)} {incr space} {
+            $w insert end " "
+          }
         }
+        q  {$w insert end "\""}
+        lt {$w insert end "<"}
+        gt {$w insert end ">"}
+        menu {$w insert end "\["}
+        h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
     }
 
@@ -580,20 +606,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
         unset startIndex($tagName)
       }
     } else {
-      switch -- $tagName {
-        ul {incr helpWin(Indent) 4}
-        li {
-          $w insert end "\n"
-          for {set space 0} {$space < $helpWin(Indent)} {incr space} {
-            $w insert end " "
-          }
-        }
-        q  {$w insert end "\""}
-        lt {$w insert end "<"}
-        gt {$w insert end ">"}
-        menu {$w insert end "\["}
-        h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
-      }
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
     }
