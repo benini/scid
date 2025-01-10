@@ -534,14 +534,19 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
 
     set tagName [string range $str [expr {$startPos + 1}] [expr {$endPos - 1}]]
 
+    # Now insert the text up to the formatting tag:
+    set text [string range $str 0 [expr {$startPos - 1}]]
+    $w insert end $text
+
     # Check if it is a starting tag (no "/" at the start) and process the tag:
     set tagList { "a" aTagProcess "url" urlTagProcess "run" runTagProcess "go" goTagProcess "pi" piTagProcess "g_" gTagProcess
-                  "m_" mTagProcess "c_" cTagProcess "var" varTagProcess }
+                  "m_" mTagProcess "c_" cTagProcess "var" varTagProcess "img" imgTagProcess "button" buttonTagProcess "window" windowTagProcess }
     if {![strIsPrefix "/" $tagName]} {
       set fullTag($tagName) $tagName
       foreach {tag proc} $tagList {
         if {[strIsPrefix $tag $tagName]} {
           switch $tag {
+              img - button - window { $proc $w $tagName }
               var { lassign [$proc $w $tagName $varIndex] tagName fullTag($tagName) varIndex }
               default { lassign [$proc $w $tagName] tagName fullTag($tagName) }
           }
@@ -549,10 +554,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
         }
       }
     }
-
-    # Now insert the text up to the formatting tag:
-    set text [string range $str 0 [expr {$startPos - 1}]]
-    $w insert end $text
 
     #check for Diagramm in NAG D or in comment [#]
     if { $::pgn::showDiagramm && [info exists fullTag(m)] && (([strIsPrefix "/nag" $tagName] && [string first " D" $text] >= 0) ||
@@ -596,16 +597,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
     }
-    
-    # Check if it is an image, window or button tag:
-    set tagList { "img " imgTagProcess "button " buttonTagProcess "window " windowTagProcess }
-    foreach {tag proc} $tagList {
-        if {[strIsPrefix $tag $tagName]} {
-            $proc $w $tagName
-            break
-        }
-    }
-    
     # Now eliminate the processed text from the string:
     set str [string range $str [expr {$endPos + 1}] end]
     incr count
@@ -615,7 +606,7 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       return
     }
   }
-  
+
   # Now add any remaining text:
   if {! $::htext::interrupt} { $w insert end $str }
   
