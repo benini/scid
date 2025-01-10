@@ -31,6 +31,7 @@ proc help_PushStack {name {heading ""}} {
 
 set ::htext::headingColor "\#990000"
 array set ::htext::amountVar {}
+array set ::htext::varIndex {}
 array set ::htext::hideVarValue {}
 array set ::htext:updates {}
 
@@ -415,12 +416,14 @@ proc ::htext::insertBoard {w movenr} {
 }
 #calc number of variations in pgn string to check if number has changed 
 proc ::htext::countVar {w str} {
+    set ::htext::varIndex($w) 0
     set count [regsub -all "<var>" $str {} stripped]
     set ::htext::varChanged [expr $count - $::htext::amountVar($w)]
     set ::htext::amountVar($w) $count
 }
 #insert toggle token [+] or [-] for show/hide the variation
-proc ::htext::varTagProcess {w tagName varIndex} {
+proc ::htext::varTagProcess {w tagName} {
+    set varIndex $::htext::varIndex($w)
     set hideVar $::pgn::hideVar
     set start [$w index insert]
     set pos [$w count -chars 0.0 $start]
@@ -453,7 +456,8 @@ proc ::htext::varTagProcess {w tagName varIndex} {
     $w tag add toggle$varIndex $start $end
     set ::htext::pos($varIndex) $pos
     set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $varIndex $varIndex $hideVar]
-    return [list var var$varIndex [expr {$varIndex+1}]]
+    incr ::htext::varIndex($w)
+    return [list var var$varIndex]
 }
 
 #Helper procs for show/hide variation
@@ -510,7 +514,7 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
   $w mark set insert 0.0
   $w configure -state normal
   set count 0
-  set varIndex 0
+  ::htext::countVar $w $str
   if {$fixed} {
     regsub -all "\n\n" $str "<p>" str
     regsub -all "\n" $str " " str
@@ -545,11 +549,7 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       set fullTag($tagName) $tagName
       foreach {tag proc} $tagList {
         if {[strIsPrefix $tag $tagName]} {
-          switch $tag {
-              img - button - window { $proc $w $tagName }
-              var { lassign [$proc $w $tagName $varIndex] tagName fullTag($tagName) varIndex }
-              default { lassign [$proc $w $tagName] tagName fullTag($tagName) }
-          }
+          lassign [$proc $w $tagName] tagName fullTag($tagName)
           break
         }
       }
