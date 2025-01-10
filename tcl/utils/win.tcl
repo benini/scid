@@ -379,7 +379,7 @@ proc ::docking::_cleanup_tabs {srctab} {
 # Improving the matrix and recalculating can improve the select algorithm
 proc ::docking::choose_notebook { path } {
     lassign [lsearch -index 1 -inline $::docking::prev_nb $path] prev_dest
-    if {$prev_dest ne ""} { return $prev_dest }
+    if {[winfo exists $prev_dest]} { return $prev_dest }
 
     set dsttab {}
     set best_fitting ""
