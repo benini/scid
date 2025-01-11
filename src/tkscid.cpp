@@ -3294,14 +3294,14 @@ sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
         "-column", "-comments", "-base", "-gameNumber", "-format",
         "-shortHeader", "-indentComments", "-indentVariations",
         "-symbols", "-tags", "-variations", "-width", "-space",
-        "-markCodes", "-unicode",
+        "-markCodes", "-unicode", "-showDiagram",
         NULL
     };
     enum {
         OPT_COLUMN, OPT_COMMENTS, OPT_BASE, OPT_GAME_NUMBER, OPT_FORMAT,
         OPT_SHORT_HDR, OPT_INDENT_COMMENTS, OPT_INDENT_VARS,
         OPT_SYMBOLS, OPT_TAGS, OPT_VARS, OPT_WIDTH, OPT_SPACE,
-        OPT_NOMARKS, OPT_UNICODE,
+        OPT_NOMARKS, OPT_UNICODE, OPT_SHOWDIAGRAM,
     };
 
     const scidBaseT* base = db;
@@ -3392,6 +3392,8 @@ sc_game_pgn (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
                     bitmask = PGN_STYLE_STRIP_MARKS;     break;
                 case OPT_UNICODE:
                     bitmask = PGN_STYLE_UNICODE;         break;
+                case OPT_SHOWDIAGRAM:
+                    bitmask = PGN_STYLE_DIAGRAM;         break;
                 default: // unreachable!
                     return errorResult (ti, "Invalid option.");
             };

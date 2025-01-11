@@ -48,6 +48,7 @@ array set ::htext::proc {
     img	    imgTagProcess
     button	buttonTagProcess
     window  windowTagProcess
+    board   insertBoard
 }
 
 proc help_PopStack {} {
@@ -566,6 +567,9 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       switch -- $tag {
         a - url - run - go - pi - g - m - c - var - img - button - window {
             lassign [$::htext::proc($tag) $w $tagName] tagName fullTag($tagName) }
+        board { if { [info exists fullTag(m)] } {
+            # fullTag(m) has the movenumber of the last processed move
+            $::htext::proc($tag) $w [string range $fullTag(m) 2 end]} }
         ul {incr helpWin(Indent) 4}
         li {
           $w insert end "\n"
@@ -581,19 +585,13 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
       }
     }
 
-    #check for Diagramm in NAG D or in comment [#]
-    if { $::pgn::showDiagramm && [info exists fullTag(m)] && (([strIsPrefix "/nag" $tagName] && [string first " D" $text] >= 0) ||
-         ([strIsPrefix "/c" $tagName] && [string first "\[#\]" $text] >= 0 ))} {
-        # fullTag(m) has the movenumber of the last processed move
-        insertBoard $w [string range $fullTag(m) 2 end]
-    }
     # Check if it is a name tag matching the section we want:
     if {$section != ""  &&  [strIsPrefix "name " $tagName]} {
       set sect [string range $tagName 5 end]
       if {$section == $sect} { set seePoint [$w index insert] }
     }
 
-    if {[string index $tagName 0] == "/"} {
+    if {[strIsPrefix "/" $tagName]} {
       # Get rid of initial "/" character:
       set tagName [string range $tagName 1 end]
       switch -- $tagName {

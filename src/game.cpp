@@ -1844,6 +1844,9 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 tb->PrintWord (temp);
                 colWidth -= (int) std::strlen(temp);
 
+                if (IsColorFormat() && (m->nags[i] == NAG_Diagram) && (PgnStyle & PGN_STYLE_DIAGRAM)) {
+                    tb->PrintString ("<board>");
+                }
             }
             if (IsColorFormat()  &&  m->nagCount > 0) {
                 tb->PrintString ("</nag>");

@@ -302,9 +302,13 @@ namespace eval pgn {
       set format plain
       if {$::pgn::showColor} {set format color}
       set pgnStr [sc_game pgn -symbols $::pgn::symbolicNags \
-          -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
+          -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments -showDiagram $::pgn::showDiagramm \
           -space $::pgn::moveNumberSpaces -format $format -column $::pgn::columnFormat \
           -short $::pgn::shortHeader -markCodes $::pgn::stripMarks -unicode $::pgn::figurine]
+      if { $::pgn::showDiagramm } {
+          #Add Diagramm for Chessbase Notation [#] in comment
+          set pgnStr [string map {"\[#\]" "<board>" } $pgnStr]
+      }
 
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
