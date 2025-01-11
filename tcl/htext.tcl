@@ -49,6 +49,7 @@ array set ::htext::proc {
     button	buttonTagProcess
     window  windowTagProcess
     board   insertBoard
+    name    nameTagProcess
 }
 
 proc help_PopStack {} {
@@ -417,6 +418,12 @@ proc ::htext::windowTagProcess {w tagName} {
     set winName [string range $tagName 7 end]
     $w window create end -window $winName
 }
+#Process a name tag
+proc ::htext::nameTagProcess {w tagName section} {
+    if {$section == [string range $tagName 5 end] } {
+        $w yview [$w index insert]
+    }
+}
 #insert a board diagramm after movenr
 proc ::htext::insertBoard {w movenr} {
     ::board::new $w.bd$movenr 25
@@ -539,7 +546,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
     regsub -all ">\[ \n\]+" $str "> " str
     regsub -all "\[ \n\]+<" $str " <" str
   }
-  set seePoint ""
 
   if {! [info exists ::htext::updates($w)]} {
     set ::htext::updates($w) 100
@@ -570,6 +576,7 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
         board { if { [info exists fullTag(m)] } {
             # fullTag(m) has the movenumber of the last processed move
             $::htext::proc($tag) $w [string range $fullTag(m) 2 end]} }
+        name { $::htext::proc($tag) $w $tagName $section }
         ul {incr helpWin(Indent) 4}
         li {
           $w insert end "\n"
@@ -583,12 +590,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
         menu {$w insert end "\["}
         h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
-    }
-
-    # Check if it is a name tag matching the section we want:
-    if {$section != ""  &&  [strIsPrefix "name " $tagName]} {
-      set sect [string range $tagName 5 end]
-      if {$section == $sect} { set seePoint [$w index insert] }
     }
 
     if {[strIsPrefix "/" $tagName]} {
@@ -619,8 +620,6 @@ proc ::htext::display {w str {section ""} {fixed 1}} {
 
   # Now add any remaining text:
   if {! $::htext::interrupt} { $w insert end $str }
-  
-  if {$seePoint != ""} { $w yview $seePoint }
   $w configure -state disabled
   # set elapsed [expr {[clock clicks -milli] - $start}]
 }
