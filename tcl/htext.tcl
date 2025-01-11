@@ -243,14 +243,6 @@ proc ::htext::init {w} {
   }
 }
 
-proc ::htext::isStartTag {tagName} {
-  return [expr {![strIsPrefix "/" $tagName]} ]
-}
-
-proc ::htext::isEndTag {tagName} {
-  return [strIsPrefix "/" $tagName]
-}
-
 proc ::htext::isLinkTag {tagName} {
   return [strIsPrefix "a " $tagName]
 }
