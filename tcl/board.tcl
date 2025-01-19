@@ -1556,10 +1556,33 @@ proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
     if { $::arrowLastMove } {
         ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
     }
-    if { $::highlightLastMoveNag && [regexp {[!?]+} $nag nag] } {
-        # green background for ! !! !?  red background for ? ?? ?!
-        set background [expr {[string index $nag 0] eq "!" ? "#30c030" : "#ff3030"}]
-        ::board::mark::DrawNag $w $square2 $nag $background white
+    if { $::highlightLastMoveNag } {
+      if { [regexp {[!?]+} $nag nag] } {
+          # green background for ! !! !?  red background for ? ?? ?!
+          set background [expr {[string index $nag 0] eq "!" ? "#30c030" : "#ff3030"}]
+          ::board::mark::DrawNag $w $square2 $nag $background white
+      }
+      # Show Result on King positions on the board
+      set isMate [sc_pos isMate]
+      if {[sc_pos isAt end] || $isMate} {
+        set res [sc_game tag get Result]
+        if { $res ne "*" || $isMate} {
+          if { $isMate } { set res "M" }
+          switch $res {
+              0 { set t1 0; set t2 1 }
+              1 { set t1 1; set t2 0 }
+              = { set t1 "\u00BD"; set t2 "\u00BD" }
+              M { if { [string index $::board::_data($w) 65] eq "w" } {
+                      set t1 "#"; set t2 1
+                  } else {
+                      set t2 "#"; set t1 1
+                  }
+                }
+          }
+          ::board::mark::DrawNag $w [string first "K" $::board::_data($w)] $t1 "#d0d0d0" "#303030"
+          ::board::mark::DrawNag $w [string first "k" $::board::_data($w)] $t2 "#303030" "#d0d0d0"
+        }
+      }
     }
   }
 }
