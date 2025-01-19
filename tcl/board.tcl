@@ -1333,7 +1333,7 @@ proc ::board::mark::DrawRectangle { pathName square color pattern } {
 
 # ::board::mark::DrawNag --
 # Display Nag/Text at the upper right corner of a square
-proc ::board::mark::DrawNag { pathName square nag color} {
+proc ::board::mark::DrawNag { pathName square nag background foreground} {
   if {$square < 0  ||  $square > 63} { return }
   set box [::board::mark::GetBox $pathName.bd $square]
   set bsize $::board::_size($pathName)
@@ -1355,9 +1355,9 @@ proc ::board::mark::DrawNag { pathName square nag color} {
       set p(3) [expr $p(3) + $size]
       set offsetY $size
   }
-  $pathName.bd create oval $p(0) $p(1) $p(2) $p(3) -outline $color -fill $color -tag highlightLastMove
+  $pathName.bd create oval $p(0) $p(1) $p(2) $p(3) -outline $background -fill $background -tag highlightLastMove
   $pathName.bd create text [expr [lindex $box 2] - $offsetX] [expr [lindex $box 1] + $offsetY] -text $nag \
-      -tag highlightLastMove -fill white -font [list font_Bold $size bold]
+      -tag highlightLastMove -fill $foreground -font [list font_Bold $size bold]
 }
 
 # ::board::mark::DrawTux --
@@ -1558,8 +1558,8 @@ proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
     }
     if { $::highlightLastMoveNag && [regexp {[!?]+} $nag nag] } {
         # green background for ! !! !?  red background for ? ?? ?!
-        set color [expr {[string index $nag 0] eq "!" ? "#30c030" : "#ff3030"}]
-        ::board::mark::DrawNag $w $square2 $nag $color
+        set background [expr {[string index $nag 0] eq "!" ? "#30c030" : "#ff3030"}]
+        ::board::mark::DrawNag $w $square2 $nag $background white
     }
   }
 }
