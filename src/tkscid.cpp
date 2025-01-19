@@ -4512,7 +4512,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isCheck", "isLegal", "isPromotion",
-        "moveNumber", "pgnOffset",
+        "moveNumber", "pgnOffset", "isMate",
         "setComment", "side", "tex", "moves", "location",
         "attacks", "getPrevComment", "coordToSAN", NULL
     };
@@ -4520,7 +4520,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO,
-        POS_MOVENUM, POS_PGNOFFSET,
+        POS_MOVENUM, POS_PGNOFFSET, POS_ISMATE,
         POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
         POS_ATTACKS, POS_GETPREVCOMMENT, POS_COORDTOSAN
     };
@@ -4607,6 +4607,9 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case POS_ISCHECK:
         return UI_Result(ti, OK, db->game->GetCurrentPos()->IsKingInCheck());
+
+    case POS_ISMATE:
+        return UI_Result(ti, OK, db->game->GetCurrentPos()->IsKingInMate());
 
     case POS_ISLEGAL:
         return sc_pos_isLegal (cd, ti, argc, argv);
