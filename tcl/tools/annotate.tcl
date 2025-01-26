@@ -33,7 +33,10 @@ namespace eval ::annotation {
     set ::annotate(annotateVar) 0
     set ::annotate(annotateShort) 1
     set ::annotate(addScoreToShortAnnotations) 1
-    set ::annotate(msg) ""
+    set ::annotate(batchMode) 0
+    set ::annotate(batchEnd) 0
+    set ::annotate(msg1) ""
+    set ::annotate(msg2) ""
     set ::annotate(prevscore) 0
     set ::annotate(prevmoves) ""
     set ::annotate(score) 0
@@ -57,7 +60,7 @@ namespace eval ::annotation {
         trace variable ::annotateTime w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
 
         win::createDialog $w
-        ::setTitle $w "Scid: $::tr(Annotate)"
+        ::setTitle $w "Scid: $::tr(Annotate) Game"
         catch {grab $w}
         wm resizable $w 0 0
         set f [ttk::frame $w.f]
@@ -143,9 +146,10 @@ namespace eval ::annotation {
         ttk::labelframe $f.batch -text "Batch Annotation"
         ttk::frame $f.buttons
         ttk::frame $f.running
-        ttk::label $f.running.line -textvariable ::annotate(msg) -width 50
-        ttk::progressbar $f.running.progress -variable annotate(progress) -orient horizontal -length 300
-        pack $f.running.line $f.running.progress -side top -anchor w
+        ttk::label $f.running.line1 -textvariable ::annotate(msg1) -width 50 -anchor center
+        ttk::label $f.running.line2 -textvariable ::annotate(msg2) -width 50
+        ttk::progressbar $f.running.progress -variable annotate(progress) -orient horizontal -length 600
+        pack $f.running.line1 $f.running.line2 $f.running.progress -side top -anchor w
         grid $f.annotate -row 0 -column 0 -pady { 0 10 } -sticky nswe -padx { 0 10 }
         grid $f.comment -row 0 -column 1 -pady { 0 10 } -sticky nswe -padx { 10 0 }
         grid $f.av -row 1 -column 0 -pady { 10 0 } -sticky nswe -padx { 0 10 }
@@ -154,8 +158,8 @@ namespace eval ::annotation {
 
         set to [sc_base numGames $::curr_db]
         if {$to <1} { set to 1}
-        ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
-        ttk::spinbox $f.batch.spBatchEnd -width 8 -textvariable ::batchEnd \
+        ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::annotate(batchMode)
+        ttk::spinbox $f.batch.spBatchEnd -width 8 -textvariable ::annotate(batchEnd) \
             -from 1 -to $to -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
         ttk::checkbutton $f.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::annotate(OpeningErrors)
         ttk::spinbox $f.batch.spBatchOpening -width 2 -textvariable ::annotate(OpeningMoves) \
@@ -166,7 +170,7 @@ namespace eval ::annotation {
         pack $f.batch.cbBatchOpening -side top -anchor w
         pack $f.batch.spBatchOpening -side left -anchor w -padx { 20 4 }
         pack $f.batch.lBatchOpening  -side left
-        set ::batchEnd $to
+        set ::annotate(batchEnd) $to
 
         ttk::button $f.buttons.cancel -text $::tr(Cancel) -command {
             if { $::autoplayMode } {
@@ -216,33 +220,60 @@ namespace eval ::annotation {
         ::engine::connect AnnoEngine ::annotation::eng_messages $cmd {}
         ::engine::send AnnoEngine SetOptions $options
         ::engine::send AnnoEngine NewGame [list analysis post_pv post_wdl]
-        set ::annotate(progress) 0
-        set ::annotate(msg) ""
-        set ::annotate(prevscore) 0
-        set ::annotate(prevmoves) ""
-        set ::annotate(score) 0
-        set ::annotate(moves) ""
-        set ::annotate(scoremate) 0
-        set ::annotate(prevscoremate) 0
-        if { $::annotate(addAnnotatorTag) } {
-            appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
-        }
-        bookAnnotation
-        if { $::annotate(OpeningErrors) && ([sc_pos moveNumber] < $::annotate(OpeningMoves) ) } {
-            appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
-        }
-        set ::autoplayMode 1
 
-        while 1 {
-            set ::annotate(PV1) [list 0 cp ""]
-            ::engine::send AnnoEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
-            vwait ::engine_done
-            addAnnotation
-            incr ::annotate(progress)
-            if {[sc_pos isAt end]} break
-            sc_move forward
-            ::notify::PosChanged -pgn
-            if { ! $::autoplayMode } { break }
+        while { 1 } {
+            set firstmove [llength [sc_game moves]]
+            sc_game push copyfast
+            catch { sc_move forward 300 }
+            set anz [expr {[llength [sc_game moves]] - $firstmove}]
+            sc_game pop
+            $f.running.progress configure -maximum $anz
+            set ::annotate(progress) 0
+            set ::annotate(msg1) "[sc_game info white] - [sc_game info black]"
+            set ::annotate(msg2) ""
+            set ::annotate(prevscore) 0
+            set ::annotate(prevmoves) ""
+            set ::annotate(score) 0
+            set ::annotate(moves) ""
+            set ::annotate(scoremate) 0
+            set ::annotate(prevscoremate) 0
+            if { $::annotate(addAnnotatorTag) } {
+                appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
+            }
+            bookAnnotation
+            if { $::annotate(OpeningErrors) && ([sc_pos moveNumber] < $::annotate(OpeningMoves) ) } {
+                appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
+            }
+            set ::autoplayMode 1
+
+            # Annotate all remaining moves of the game
+            while 1 {
+                set ::annotate(PV1) [list 0 cp ""]
+                ::engine::send AnnoEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
+                vwait ::engine_done
+                addAnnotation
+                incr ::annotate(progress)
+                if {[sc_pos isAt end]} break
+                sc_move forward
+                ::notify::PosChanged -pgn
+                if { ! $::autoplayMode } { break }
+            }
+            if { $::annotate(batchMode) && $::autoplayMode } {
+                #Batchmode: save game and load next game
+                set gameNo [sc_game number]
+                if { $gameNo != 0 } {
+                    sc_game save $gameNo
+                }
+                # See if we must advance to the next game
+                if { $gameNo < $::annotate(batchEnd) } {
+                    incr gameNo
+                    sc_game load $gameNo
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
         }
         set ::autoplayMode 0
         ::engine::close AnnoEngine
@@ -408,7 +439,6 @@ namespace eval ::annotation {
             set text "\[%eval [format "%+.2f" $wscore]\]"
         }
         # And for the my (missed?) chance
-puts "$::annotate(progress) $gamemove $tomove priv $::annotate(prevscore) score $::annotate(score) Lost $gameIsLost"
         if { $::annotate(prevscoremate) != 0 } {
             set prevtext [format "M%d" [expr abs($::annotate(prevscoremate))]]
         } else {
@@ -530,7 +560,6 @@ puts "$::annotate(progress) $gamemove $tomove priv $::annotate(prevscore) score 
         sc_pos addNag $nag
         if {!$::annotate(tacticalExercises)} { return 0 }
 
-puts "prev $prevscore Score $score"
         # check at which depth the tactical shot is found
         # this assumes analysis by an UCI engine
         if {! $::annotate(uci)} { return 0 }
@@ -604,7 +633,7 @@ puts "BM $bm0 $bm1 $bm2 $bm3 $::annotate(PV1)"
             if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
             set ::annotate(PV$multipv) [list $score $score_type $pv]
             if { $multipv == 1 } {
-                set ::annotate(msg) [string range "Analyse Move $::annotate(progress) Score: $score\nLine: $pv" 0 70]
+                set ::annotate(msg2) [string range "Move $::annotate(progress) Score: $score\nLine: $pv" 0 70]
             }
         } elseif {$msgType eq "InfoBestMove"} {
             lassign $msgData ::engineBestMove
