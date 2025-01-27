@@ -9,6 +9,7 @@
 #TODO
 #check Tactical Exercise only for uci und multipv 4
 #use analyse depth, actual ignored
+#finish game function
 namespace eval ::annotation {
 
     set ::annotate(movetime) 1000
@@ -30,7 +31,6 @@ namespace eval ::annotation {
     set ::annotate(OpeningErrors) 0
     set ::annotate(OpeningMoves) 0
     set ::annotate(prevdepth) 0
-    set ::annotate(annotateVar) 0
     set ::annotate(annotateShort) 1
     set ::annotate(addScoreToShortAnnotations) 1
     set ::annotate(batchMode) 0
@@ -83,7 +83,7 @@ namespace eval ::annotation {
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotate(useAnalysisBook)
         set engList [::enginecfg::names ]
         if { $::annotate(engine) eq "" } { set ::annotate(engine) [lindex $engList 0] }
-        ttk::combobox $f.annotate.engine -width 30 -state readonly -values $engList -textvariable annotate(engine)
+        ttk::combobox $f.annotate.engine -width 25 -state readonly -values $engList -textvariable annotate(engine)
         # choose a book for analysis
         # load book names
         set bookPath $::scidBooksDir
@@ -129,18 +129,17 @@ namespace eval ::annotation {
         pack $f.av.all $f.av.white $f.av.black -side top -fill x -anchor w
 
         ttk::labelframe   $f.comment -text $::tr(Comments)
-        ttk::checkbutton  $f.comment.cbAnnotateVar      -text $::tr(AnnotateVariations)         -variable ::annotate(annotateVar)
+        # Checkmark to enable all-move-scoring
+        ttk::checkbutton  $f.comment.scoreAll -text $::tr(ScoreAllMoves) -variable ::annotate(scoreAllMoves)
         ttk::checkbutton  $f.comment.cbShortAnnotation  -text $::tr(ShortAnnotations)           -variable ::annotate(annotateShort)
         ttk::checkbutton  $f.comment.cbAddScore         -text $::tr(AddScoreToShortAnnotations) -variable ::annotate(addScoreToShortAnnotations)
         ttk::checkbutton  $f.comment.cbAddAnnotatorTag  -text $::tr(addAnnotatorTag)            -variable ::annotate(addAnnotatorTag)
-        # Checkmark to enable all-move-scoring
-        ttk::checkbutton  $f.comment.scoreAll -text $::tr(ScoreAllMoves) -variable ::annotate(scoreAllMoves)
         ttk::checkbutton  $f.comment.cbMarkTactics -text $::tr(MarkTacticalExercises) -variable ::annotate(tacticalExercises)
         #    if {! $::analysis(uci1)} {
         #        set ::markTacticalExercises 0
         #        $f.comment.cbMarkTactics configure -state disabled
         #    }
-        pack $f.comment.scoreAll $f.comment.cbAnnotateVar $f.comment.cbShortAnnotation $f.comment.cbAddScore \
+        pack $f.comment.scoreAll $f.comment.cbShortAnnotation $f.comment.cbAddScore \
             $f.comment.cbAddAnnotatorTag $f.comment.cbMarkTactics -fill x -anchor w
         # batch annotation of consecutive games, and optional opening errors finder
         ttk::labelframe $f.batch -text "Batch Annotation"
@@ -219,9 +218,9 @@ namespace eval ::annotation {
         ::engine::setLogCmd AnnoEngine {}
         ::engine::connect AnnoEngine ::annotation::eng_messages $cmd {}
         ::engine::send AnnoEngine SetOptions $options
-        ::engine::send AnnoEngine NewGame [list analysis post_pv post_wdl]
 
         while { 1 } {
+            ::engine::send AnnoEngine NewGame [list analysis post_pv post_wdl]
             set firstmove [llength [sc_game moves]]
             sc_game push copyfast
             catch { sc_move forward 300 }
@@ -229,7 +228,7 @@ namespace eval ::annotation {
             sc_game pop
             $f.running.progress configure -maximum $anz
             set ::annotate(progress) 0
-            set ::annotate(msg1) "[sc_game info white] - [sc_game info black]"
+            set ::annotate(msg1) "Game [sc_game number]: [sc_game info white] - [sc_game info black]"
             set ::annotate(msg2) ""
             set ::annotate(prevscore) 0
             set ::annotate(prevmoves) ""
@@ -248,7 +247,7 @@ namespace eval ::annotation {
 
             # Annotate all remaining moves of the game
             while 1 {
-                set ::annotate(PV1) [list 0 cp ""]
+                set ::annotate(PV1) [list "" "" ""]
                 ::engine::send AnnoEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
                 vwait ::engine_done
                 addAnnotation
@@ -365,11 +364,13 @@ namespace eval ::annotation {
         # We are here, now that the engine has analyzed the position reached by
         # our last move. Currently it is the opponent to move:
         set tomove [sc_pos side]
+        set gamemove [sc_game info previousMoveUCI]
 
         #TODO
         set skipEngineLine 0
         # And this is his best line:
         lassign $::annotate(PV1) score score_type ::annotate(moves)
+        if { $gamemove eq "" || $score eq "" } { return }
         set moves $::annotate(moves)
         set bestMoveIsMate 0
         if { $score_type eq "mate" } {
@@ -380,7 +381,7 @@ namespace eval ::annotation {
         # do nicely and is probably more accurate as well.
             set bestMoveIsMate 1
             set ::annotate(scoremate) $score
-            set score [expr { $tomove eq "black" ? 127 : -127 }]
+            set score [expr { $score < 0 ? -127 : 127 }]
             set ::annotate(score) $score
         } else {
             set ::annotate(score) $score
@@ -393,7 +394,6 @@ namespace eval ::annotation {
         set prevmoves $::annotate(prevmoves)
         # For non-uci lines, trim space characters in <moveno>.[ *][...]<move>
         set prevmoves [regsub -all {\. *} $prevmoves {.}]
-        set gamemove [sc_game info previousMoveUCI]
 
         # We will add a closing line at the end of variation or game
         set addClosingLine 0
@@ -426,6 +426,7 @@ namespace eval ::annotation {
             set isBlunder 1
         }
         set absdeltamove [expr { abs($deltamove) } ]
+puts "$tomove $gamemove $prevscore $score $absdeltamove $::annotate(PV1)"
 
         # to parse scores if the engine's name contains - or + chars (see sc_game_scores)
         set engine_name  [string map {"-" " " "+" " "} $::annotate(engine)]
@@ -438,12 +439,12 @@ namespace eval ::annotation {
             if { $tomove eq "black" } {set wscore [expr 0.0 - $score] }
             set text "\[%eval [format "%+.2f" $wscore]\]"
         }
-        # And for the my (missed?) chance
+        # And for the (missed?) chance
         if { $::annotate(prevscoremate) != 0 } {
             set prevtext [format "M%d" [expr abs($::annotate(prevscoremate))]]
         } else {
             set wprevscore $prevscore
-            if { $tomove eq "black" } {set wprevscore [expr 0.0 - $prevscore] }
+            if { $tomove eq "white" } {set wprevscore [expr 0.0 - $prevscore] }
             set prevtext "\[%eval [format "%+.2f" $wprevscore]\]"
         }
 
