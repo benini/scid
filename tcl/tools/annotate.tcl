@@ -179,71 +179,75 @@ namespace eval ::annotation {
             set ::annotate(movetime) [expr {int($::annotateTime * 1000.0)}]
             set ::annotate(blunderThreshold) $::annotateBlunderThreshold
             set ::annotate(time) $::annotateTime
-            ::annotation::runAnnotation
+            set ::annotate(AnalysisBookName) [.annotationDialog.f.annotate.comboBooks get]
+            set msg [::annotation::initAnnotationEngine]
+            if { $msg eq "ok" } {
+                ::annotation::runAnnotation
+            } else {
+                tk_messageBox -title Scid -icon info -type ok -message $msg
+            }
         }
         pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
         focus $f.annotate.typ.spDelay
         bind $w <Destroy> { focus . }
     }
 
-    proc initAnnotation { } {
+    proc initGameAnnotation { } {
         #reset engine
         ::engine::send AnnoEngine NewGame [list analysis post_pv post_wdl]
-        # calc amount of moves to analyze
+        # calc amount of moves to analyze for progressbar
         set firstmove [llength [sc_game moves]]
         sc_game push copyfast
         catch { sc_move forward 300 }
         set anz [expr {[llength [sc_game moves]] - $firstmove}]
         sc_game pop
         .annotationDialog.f.running.progress configure -maximum $anz
+        #reset values
         set ::annotate(progress) 0
-        set ::annotate(msg1) "Game [sc_game number]: [sc_game info white] - [sc_game info black]"
-        set ::annotate(msg2) ""
         set ::annotate(prevscore) 0
         set ::annotate(prevmoves) ""
         set ::annotate(score) 0
         set ::annotate(moves) ""
         set ::annotate(scoremate) 0
         set ::annotate(prevscoremate) 0
+        set ::annotate(msg2) ""
+        set ::annotate(msg1) "Game [sc_game number]: [sc_game info white] - [sc_game info black]"
         if { $::annotate(addAnnotatorTag) } {
             appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
         }
     }
 
-    proc runAnnotation { } {
-        set f .annotationDialog.f
-        grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
-        grid forget $f.annotate
-        grid forget $f.comment
-        grid forget $f.av
-        grid forget $f.batch
-        $f.buttons.ok configure -state disabled
-        set ::autoplayMode 1
-
-        set ::annotate(AnalysisBookName) [.annotationDialog.f.annotate.comboBooks get]
-        set ::book::lastBook $::annotate(AnalysisBookName)
-
+    proc initAnnotationEngine { } {
         # Open the engine
         set config [::enginecfg::get $::annotate(engine)]
-        lassign $config name cmd args wdir elo time url ::annotate(uci) options
+        lassign $config name cmd args wdir elo time url uci options
+        if { ! $uci } { return "Only UCI-Engines are supported!" }
         ::engine::setLogCmd AnnoEngine {}
         ::engine::connect AnnoEngine ::annotation::eng_messages $cmd {}
         # tactical positions is selected, must be in multipv mode
         if {$::annotate(tacticalExercises)} {
-            # make sure to use Multipv
             lappend options "MultiPV 4"
         }
         ::engine::send AnnoEngine SetOptions $options
-puts "$options"
+        return "ok"
+    }
 
+    proc runAnnotation { } {
+        set f .annotationDialog.f
+        grid forget $f.annotate
+        grid forget $f.comment
+        grid forget $f.av
+        grid forget $f.batch
+        # show progressbar and game infos
+        grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
+        $f.buttons.ok configure -state disabled
+        set ::autoplayMode 1
+
+
+        set ::autoplayMode 1
         while { 1 } {
-            annotation::initAnnotation
-            bookAnnotation
-            if { $::annotate(OpeningErrors) && ([sc_pos moveNumber] < $::annotate(OpeningMoves) ) } {
-                appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
-            }
-            set ::autoplayMode 1
-
+            initGameAnnotation
+            makeBookAnnotation
             # Annotate all remaining moves of the game
             while 1 {
                 set ::annotate(PV1) [list "" "" ""]
@@ -259,9 +263,7 @@ puts "$options"
             if { $::annotate(batchMode) && $::autoplayMode } {
                 #Batchmode: save game and load next game
                 set gameNo [sc_game number]
-                if { $gameNo != 0 } {
-                    sc_game save $gameNo
-                }
+                if { $gameNo != 0 } { sc_game save $gameNo }
                 # See if we must advance to the next game
                 if { $gameNo < $::annotate(batchEnd) } {
                     incr gameNo
@@ -275,7 +277,6 @@ puts "$options"
         }
         set ::autoplayMode 0
         ::engine::close AnnoEngine
-        set ::annotate(progress) 99
         destroy .annotationDialog
     }
 
@@ -283,7 +284,7 @@ puts "$options"
     # Part of annotation process : will check the moves if they are in te book, and add a comment
     # when going out of it
     ################################################################################
-    proc bookAnnotation { } {
+    proc makeBookAnnotation { } {
         if {$::annotate(useAnalysisBook)} {
             set prevbookmoves ""
             set bn [ file join $::scidBooksDir $::annotate(AnalysisBookName) ]
@@ -313,6 +314,9 @@ puts "$options"
                 set theCatch [catch {sc_move back 1}]
             } else  {
                 sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
+            }
+            if { $::annotate(OpeningErrors) && ([sc_pos moveNumber] < $::annotate(OpeningMoves) ) } {
+                appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
             }
 #TODO is this needed?
 #            if { ! $theCatch } {
@@ -385,12 +389,12 @@ puts "$options"
             set ::annotate(scoremate) 0
         }
         # For non-uci lines, trim space characters in <moveno>.[ *][...]<move>
-        set moves [regsub -all {\. *} $moves {.}]
+#        set moves [regsub -all {\. *} $moves {.}]
 
         # The best line we could have followed, and the game move we just played instead, are here:
         set prevmoves $::annotate(prevmoves)
         # For non-uci lines, trim space characters in <moveno>.[ *][...]<move>
-        set prevmoves [regsub -all {\. *} $prevmoves {.}]
+#        set prevmoves [regsub -all {\. *} $prevmoves {.}]
 
         # We will add a closing line at the end of variation or game
         set addClosingLine 0
@@ -497,7 +501,7 @@ puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::ann
                                        $::annotate(annotateMoves) == "black"  &&  $tomove == "white" )} {
                 sc_var create
                 # Add the starting move
-                sc_move_add [lrange $prevmoves 0 0]
+                ::uci::sc_move_add [lrange $prevmoves 0 0]
                 # Add its score
                 if { ! $bestMoveIsMate } {
                     if { ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations) } {
@@ -505,7 +509,7 @@ puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::ann
                     }
                 }
                 # Add remaining moves
-                sc_move_add [lrange $prevmoves 1 end]
+                ::uci::sc_move_add [lrange $prevmoves 1 end]
                 # Add position NAG, unless the line ends in mate
                 if { $::annotate(prevscoremate) == 0 } {
                     sc_pos addNag [scoreToNag $prevscore]
@@ -530,7 +534,7 @@ puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::ann
             if { ($::annotate(scoremate) == 0) && ( ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations)) } {
                 sc_pos setComment "$text"
             }
-            sc_move_add $moves
+            ::uci::sc_move_add $moves
             if { $::annotate(scoremate) == 0 } {
                 sc_pos addNag [scoreToNag $score]
             }
@@ -552,8 +556,7 @@ puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::ann
     ################################################################################
     proc markExercise { prevscore score nag} {
         sc_pos addNag $nag
-        # this assumes analysis by an UCI engine
-        if { ! $::annotate(uci) || ! $::annotate(tacticalExercises)} { return 0 }
+        if { ! $::annotate(tacticalExercises)} { return 0 }
 
         set deltamove [expr {$score + $prevscore}]
         # filter tactics so only those with high gains are kept
@@ -576,8 +579,8 @@ puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::ann
         }
 
         # The best move does not lose position.
-        if {[sc_pos side] == "black" && $score < [expr 0.0 - $::informant("+/-")] } { return 0 }
-        if {[sc_pos side] == "white" && $score > $::informant("+/-") } { return 0}
+#        if {[sc_pos side] == "black" && $score < [expr 0.0 - $::informant("+/-")] } { return 0 }
+#        if {[sc_pos side] == "white" && $score > $::informant("+/-") } { return 0}
 
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $::annotate(PV1) 2 ] 0 ]
@@ -591,6 +594,7 @@ puts "BM $bm0 $bm1 $bm2 $bm3 $::annotate(PV1)"
         if { $bm0 == $bm1 && $bm0 == $bm2 && $bm0 == $bm3 } {
             return 0
         }
+puts "prev $prevscore pv1 $score pv2 $sc2"
 
         # find what time is needed to get the solution (use internal analyze function)
         set timer {1 2 5 10 50 100 200 1000}
@@ -652,17 +656,5 @@ puts "BM $bm0 $bm1 $bm2 $bm3 $::annotate(PV1)"
             set i [expr {$i + 5}]
         }
         return $ana_nagList($i)
-    }
-
-    ################################################################################
-    # If UCI engine, add move through a dedicated function in uci namespace
-    # returns the error caught by catch
-    ################################################################################
-    proc sc_move_add { moves } {
-        if { $::annotate(uci) } {
-            return [::uci::sc_move_add $moves]
-        } else  {
-            return [ catch { sc_move addSan $moves } ]
-        }
     }
 }
