@@ -401,7 +401,6 @@ namespace eval ::annotation {
             set isBlunder 1
         }
         set absdeltamove [expr { abs($deltamove) } ]
-        puts "$tomove $gamemove $prevscore $score [string range $absdeltamove 0 6]$::annotate(PV1)"
 
         # to parse scores if the engine's name contains - or + chars (see sc_game_scores)
         set engine_name  [string map {"-" " " "+" " "} $::annotate(engine)]
@@ -475,13 +474,13 @@ namespace eval ::annotation {
                                        $::annotate(annotateMoves) == "black"  &&  $tomove == "white" )} {
                 sc_var create
                 # Add the starting move
-                ::uci::sc_move_add [lrange $prevmoves 0 0]
+                sc_move addSan [lrange $prevmoves 0 0]
                 # Add its score
                 if { ! $bestMoveIsMate && ( ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations) ) } {
                     sc_pos setComment "$prevtext"
                 }
                 # Add remaining moves
-                ::uci::sc_move_add [lrange $prevmoves 1 end]
+                sc_move addSan [lrange $prevmoves 1 end]
                 # Add position NAG, unless the line ends in mate
                 if { $::annotate(prevscoremate) == 0 } {
                     sc_pos addNag [scoreToNag $prevscore]
@@ -506,7 +505,7 @@ namespace eval ::annotation {
             if { ($::annotate(scoremate) == 0) && ( ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations)) } {
                 sc_pos setComment "$text"
             }
-            ::uci::sc_move_add $moves
+            sc_move addSan $moves
             if { $::annotate(scoremate) == 0 } {
                 sc_pos addNag [scoreToNag $score]
             }
@@ -549,22 +548,24 @@ namespace eval ::annotation {
         }
 
         # The best move does not lose position.
-        if {[sc_pos side] == "black" && $score < [expr 0.0 - $::informant("+/-")] } { return 0 }
-        if {[sc_pos side] == "white" && $score > $::informant("+/-") } { return 0}
+#        if {([sc_pos side] == "black") && ($score < [expr 0.0 - $::informant("+/-")]) } { return 0 }
+#        if {([sc_pos side] == "white") && ($score > $::informant("+/-")) } { return 0}
 
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $::annotate(PV1) 2 ] 0 ]
-        set bm0 [lindex $pv 0]
+        # bm0 must SAN, pv is UCI: convert
+        set bm0 [string range [lindex $pv 0] 0 3]
+        set bm0 [sc_pos coordToSAN $::annotate(position) $bm0]
+        set bm0 [string range $bm0 [expr [string first "." $bm0] + 1] end]
+
         foreach depth {1 2 3} {
             set res [ sc_pos analyze -time 1000 -hashkb 32 -pawnkb 1 -searchdepth $depth ]
             set bm$depth [lindex $res 1]
         }
-        #TODO Bm0 is UCI a2c4 not Bc4, reurn from sc_pos is pgn
-puts "BM $bm0 $bm1 $bm2 $bm3 $::annotate(PV1)"
         if { $bm0 == $bm1 && $bm0 == $bm2 && $bm0 == $bm3 } {
             return 0
         }
-puts "prev $prevscore pv1 $score pv2 $sc2"
+      puts "prev $prevscore pv1 $score pv2 $sc2 BM $bm0 $bm1 $bm2 $bm3 [string range $::annotate(PV1) 0 40]"
 
         # find what time is needed to get the solution (use internal analyze function)
         set timer {1 2 5 10 50 100 200 1000}
