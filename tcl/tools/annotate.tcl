@@ -2,14 +2,15 @@
 ### annotate.tcl: part of Scid.
 ### This file is part of Scid (Shane's Chess Information Database).
 ### Copyright (C) 2025 Uwe Klimmek
-### uses code from Fulvio Benini https://github.com/benini/chess_accuracy
-######################################################################
+### uses code from Fulvio Benini https://github.com/benini/chess_accuracy and analysis.tcl
+##########################################################################################
 ### Annotate Dialog: uses a chess engine to analyze and annotate a chess game.
 
 #TODO
-#check Tactical Exercise only for uci und multipv 4
+#improve Tactical Exercise
 #use analyse depth, actual ignored
-#finish game function
+#"finish game" function
+#accuracy function
 namespace eval ::annotation {
 
     # Typ may be "movetime": time per move or "depth": analyse till depth is reached
@@ -31,7 +32,6 @@ namespace eval ::annotation {
     set ::annotate(addAnnotatorTag) 1
     set ::annotate(OpeningErrors) 0
     set ::annotate(OpeningMoves) 0
-    set ::annotate(prevdepth) 0
     set ::annotate(annotateShort) 1
     set ::annotate(addScoreToShortAnnotations) 1
     set ::annotate(batchMode) 0
@@ -61,7 +61,7 @@ namespace eval ::annotation {
         trace variable ::annotateTime w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
 
         win::createDialog $w
-        ::setTitle $w "Scid: $::tr(Annotate) Game"
+        ::setTitle $w "Scid: $::tr(Annotate)"
         catch {grab $w}
         wm resizable $w 0 0
         set f [ttk::frame $w.f]
@@ -291,35 +291,21 @@ namespace eval ::annotation {
                 lassign [sc_book moves $::annotate(BookSlot)] bookmoves
             }
             sc_book close $::annotate(BookSlot)
-            set ::wentOutOfBook 1
 
-            set verboseMoveOutOfBook " $::tr(MoveOutOfBook)"
-            set verboseLastBookMove " $::tr(LastBookMove)"
-
-            set theCatch 0
             if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
                 if {$prevbookmoves != ""} {
-                    sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook [::trans $prevbookmoves]"
+                    sc_pos setComment "[sc_pos getComment] $::tr(LastBookMove) [::trans $prevbookmoves]"
                 } else  {
-                    sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
+                    sc_pos setComment "[sc_pos getComment] $::tr(LastBookMove)"
                 }
                 # last move was out of book: it needs to be analyzed, so take back
-                set theCatch [catch {sc_move back 1}]
+                sc_move back
             } else  {
-                sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
+                sc_pos setComment "[sc_pos getComment] $::tr(MoveOutOfBook)"
             }
             if { $::annotate(OpeningErrors) && ([sc_pos moveNumber] < $::annotate(OpeningMoves) ) } {
                 appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
             }
-#TODO is this needed?
-#            if { ! $theCatch } {
-#                resetAnalysis
-#                updateBoard -pgn
-#            }
-#            set analysis(prevscore$n)     $analysis(score$n)
-#            set analysis(prevmoves$n)     $analysis(moves$n)
-#            set analysis(prevscoremate$n) $analysis(scoremate$n)
-#            set analysis(prevdepth$n)     $analysis(depth$n)
         }
     }
 
@@ -444,7 +430,6 @@ namespace eval ::annotation {
             set ::annotate(prevscore)     $::annotate(score)
             set ::annotate(prevmoves)     $::annotate(moves)
             set ::annotate(prevscoremate) $::annotate(scoremate)
-            set ::annotate(prevdepth)     $::annotate(depth)
             updateBoard -pgn
         }
 
@@ -532,7 +517,6 @@ namespace eval ::annotation {
         set ::annotate(prevscore)     $::annotate(score)
         set ::annotate(prevmoves)     $::annotate(moves)
         set ::annotate(prevscoremate) $::annotate(scoremate)
-        set ::annotate(prevdepth)     $::annotate(depth)
         updateBoard -pgn
     }
 
@@ -565,8 +549,8 @@ namespace eval ::annotation {
         }
 
         # The best move does not lose position.
-#        if {[sc_pos side] == "black" && $score < [expr 0.0 - $::informant("+/-")] } { return 0 }
-#        if {[sc_pos side] == "white" && $score > $::informant("+/-") } { return 0}
+        if {[sc_pos side] == "black" && $score < [expr 0.0 - $::informant("+/-")] } { return 0 }
+        if {[sc_pos side] == "white" && $score > $::informant("+/-") } { return 0}
 
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $::annotate(PV1) 2 ] 0 ]
@@ -609,19 +593,22 @@ puts "prev $prevscore pv1 $score pv2 $sc2"
 
     proc ::annotation::eng_messages {msg} {
         lassign $msg msgType msgData
-
         switch $msgType {
             "InfoPV" {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                 if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
                 set ::annotate(PV$multipv) [list $score $score_type $pv]
                 if { $multipv == 1 } {
-                    set ::annotate(msg2) [string range "Move $::annotate(progress) Score: $score\nLine: $pv" 0 70]
+                    set pv [sc_pos coordToSAN $::annotate(position) $pv]
+                    set ::annotate(msg2) [string range "Depth: $depth/$seldepth Move $::annotate(progress) Score: $score\nLine: $pv" 0 70]
                 }
             }
             "InfoBestMove" {
                 lassign $msgData ::engineBestMove
                 set ::annotate(move_done) 1
+            }
+            "InfoGo" {
+                lassign $msgData ::annotate(position)
             }
             "InfoDisconnected" {
                 lassign $msgData errorMsg
