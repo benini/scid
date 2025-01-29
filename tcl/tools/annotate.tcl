@@ -258,15 +258,15 @@ namespace eval ::annotation {
         $f.buttons.ok configure -state disabled
 
         set ::autoplayMode 1
+        set gameNo [sc_game number]
+        if { $gameNo == 0 } { return }
         annotateGame
-        if { $::annotate(batchMode)} {
-            while { $::autoplayMode && ([sc_game number] < $::annotate(batchEnd)) } {
-                set gameNo [sc_game number]
-                if { $gameNo != 0 } { sc_game save $gameNo }
-                incr gameNo
-                sc_game load $gameNo
-                annotateGame
-            }
+        while { $::annotate(batchMode)} {
+            sc_game save $gameNo
+            incr gameNo
+            if { ! $::autoplayMode || $gameNo > $::annotate(batchEnd) } { break }
+            sc_game load $gameNo
+            annotateGame
         }
         set ::autoplayMode 0
         ::engine::close AnnoEngine
