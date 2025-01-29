@@ -8,7 +8,6 @@
 
 #TODO
 #improve Tactical Exercise
-#use analyse depth, actual ignored
 #"finish game" function
 #accuracy function
 namespace eval ::annotation {
@@ -212,12 +211,13 @@ namespace eval ::annotation {
         #reset values
         set ::annotate(progress) 0
         set ::annotate(prevscore) 0
-        set ::annotate(prevmoves) ""
         set ::annotate(score) 0
-        set ::annotate(moves) ""
         set ::annotate(scoremate) 0
         set ::annotate(prevscoremate) 0
+        set ::annotate(prevmoves) ""
+        set ::annotate(moves) ""
         set ::annotate(msg1) "$::tr(game) [sc_game number]: [sc_game info white] - [sc_game info black]"
+        set ::annotate(msg2) "$::tr(game) $::annotate(games)"
         set ::annotate(msg3) "$::tr(move)"
         if { $::annotate(addAnnotatorTag) } {
             appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
@@ -248,10 +248,9 @@ namespace eval ::annotation {
             addAnnotation
             incr ::annotate(progress)
             set ::annotate(msg3) "$::tr(move) $::annotate(progress)"
-            if {[sc_pos isAt end]} break
+            if {[sc_pos isAt end] || ! $::autoplayMode } break
             sc_move forward
             ::notify::PosChanged -pgn
-            if { ! $::autoplayMode } { break }
         }
     }
 
@@ -259,14 +258,12 @@ namespace eval ::annotation {
         set f .annotationDialog.f
         grid forget $f.annotate $f.comment $f.av $f.batch
         pack forget $f.buttons.ok
+        if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         # show progressbar and game infos
         set ::annotate(games) 1
-        set ::annotate(msg2) "$::tr(game) 1"
         set gameNo [sc_game number]
         $f.running.games configure -maximum [expr {$::annotate(batchEnd) - $gameNo + 1}]
-        if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
-        $f.buttons.ok configure -state disabled
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
@@ -276,7 +273,6 @@ namespace eval ::annotation {
             sc_game save $gameNo
             incr gameNo
             incr ::annotate(games)
-            set ::annotate(msg2) "$::tr(game) $::annotate(games)"
             if { ! $::autoplayMode || $gameNo > $::annotate(batchEnd) } { break }
             sc_game load $gameNo
             annotateGame
