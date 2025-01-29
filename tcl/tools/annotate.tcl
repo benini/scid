@@ -19,7 +19,7 @@ namespace eval ::annotation {
     set ::annotate(time) 1
     set ::annotate(depth) 20
     set ::annotate(engine) ""
-    set ::annotate(progress) 25
+    set ::annotate(progress) 0
     set ::annotate(blunderThreshold) 0.5
     set ::annotate(annotateMoves) all
     set ::annotate(annotateBlunders) blundersonly
@@ -38,6 +38,7 @@ namespace eval ::annotation {
     set ::annotate(batchEnd) 0
     set ::annotate(msg1) ""
     set ::annotate(msg2) ""
+    set ::annotate(msg3) ""
     set ::annotate(prevscore) 0
     set ::annotate(prevmoves) ""
     set ::annotate(score) 0
@@ -142,10 +143,16 @@ namespace eval ::annotation {
         ttk::labelframe $f.batch -text "Batch Annotation"
         ttk::frame $f.buttons
         ttk::frame $f.running
-        ttk::label $f.running.line1 -textvariable ::annotate(msg1) -width 50 -anchor center
-        ttk::label $f.running.line2 -textvariable ::annotate(msg2) -width 50
-        ttk::progressbar $f.running.progress -variable annotate(progress) -orient horizontal -length 600
-        pack $f.running.line1 $f.running.line2 $f.running.progress -side top -anchor w
+        ttk::label $f.running.line1 -textvariable ::annotate(msg1) -width 60
+        ttk::label $f.running.line2 -textvariable ::annotate(msg2) -width 10
+        ttk::label $f.running.line3 -textvariable ::annotate(msg3) -width 10
+        ttk::progressbar $f.running.progress -variable ::annotate(progress) -orient horizontal -length 600
+        ttk::progressbar $f.running.games -variable ::annotate(games) -orient horizontal -length 600
+        grid $f.running.line1 -row 0 -column 1 -sticky w -pady { 0 10 }
+        grid $f.running.line2 -row 1 -column 0 -sticky w
+        grid $f.running.line3 -row 2 -column 0 -sticky w
+        grid $f.running.games -row 1 -column 1 -sticky w
+        grid $f.running.progress -row 2 -column 1 -sticky w
         grid $f.annotate -row 0 -column 0 -pady { 0 10 } -sticky nswe -padx { 0 10 }
         grid $f.comment -row 0 -column 1 -pady { 0 10 } -sticky nswe -padx { 10 0 }
         grid $f.av -row 1 -column 0 -pady { 10 0 } -sticky nswe -padx { 0 10 }
@@ -210,8 +217,8 @@ namespace eval ::annotation {
         set ::annotate(moves) ""
         set ::annotate(scoremate) 0
         set ::annotate(prevscoremate) 0
-        set ::annotate(msg2) ""
-        set ::annotate(msg1) "Game [sc_game number]: [sc_game info white] - [sc_game info black]"
+        set ::annotate(msg1) "$::tr(game) [sc_game number]: [sc_game info white] - [sc_game info black]"
+        set ::annotate(msg3) "$::tr(move)"
         if { $::annotate(addAnnotatorTag) } {
             appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
         }
@@ -234,12 +241,13 @@ namespace eval ::annotation {
         initGameAnnotation
         makeBookAnnotation
         # Annotate all remaining moves of the game
-        while 1 {
+        while { 1 } {
             set ::annotate(PV1) [list "" "" ""]
             ::engine::send AnnoEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
             vwait ::annotate(move_done)
             addAnnotation
             incr ::annotate(progress)
+            set ::annotate(msg3) "$::tr(move) $::annotate(progress)"
             if {[sc_pos isAt end]} break
             sc_move forward
             ::notify::PosChanged -pgn
@@ -249,11 +257,14 @@ namespace eval ::annotation {
 
     proc runAnnotation { } {
         set f .annotationDialog.f
-        grid forget $f.annotate
-        grid forget $f.comment
-        grid forget $f.av
-        grid forget $f.batch
+        grid forget $f.annotate $f.comment $f.av $f.batch
+        pack forget $f.buttons.ok
         # show progressbar and game infos
+        set ::annotate(games) 1
+        set ::annotate(msg2) "$::tr(game) 1"
+        set gameNo [sc_game number]
+        $f.running.games configure -maximum [expr {$::annotate(batchEnd) - $gameNo + 1}]
+        if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
         $f.buttons.ok configure -state disabled
 
@@ -261,9 +272,11 @@ namespace eval ::annotation {
         set gameNo [sc_game number]
         if { $gameNo == 0 } { return }
         annotateGame
-        while { $::annotate(batchMode)} {
+        while {$::annotate(batchMode)} {
             sc_game save $gameNo
             incr gameNo
+            incr ::annotate(games)
+            set ::annotate(msg2) "$::tr(game) $::annotate(games)"
             if { ! $::autoplayMode || $gameNo > $::annotate(batchEnd) } { break }
             sc_game load $gameNo
             annotateGame
@@ -601,7 +614,6 @@ namespace eval ::annotation {
                 set ::annotate(PV$multipv) [list $score $score_type $pv]
                 if { $multipv == 1 } {
                     set pv [sc_pos coordToSAN $::annotate(position) $pv]
-                    set ::annotate(msg2) [string range "Depth: $depth/$seldepth Move $::annotate(progress) Score: $score\nLine: $pv" 0 70]
                 }
             }
             "InfoBestMove" {
