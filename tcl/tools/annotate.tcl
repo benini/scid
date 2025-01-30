@@ -205,20 +205,20 @@ namespace eval ::annotation {
         set firstmove [llength [sc_game moves]]
         sc_game push copyfast
         catch { sc_move forward 300 }
-        set anz [expr {[llength [sc_game moves]] - $firstmove}]
+        set anz [expr {[llength [sc_game moves]] - $firstmove + 1}]
         sc_game pop
         .annotationDialog.f.running.progress configure -maximum $anz
         #reset values
-        set ::annotate(progress) 0
         set ::annotate(prevscore) 0
         set ::annotate(score) 0
         set ::annotate(scoremate) 0
         set ::annotate(prevscoremate) 0
         set ::annotate(prevmoves) ""
         set ::annotate(moves) ""
+        set ::annotate(progress) 1
         set ::annotate(msg1) "$::tr(game) [sc_game number]: [sc_game info white] - [sc_game info black]"
         set ::annotate(msg2) "$::tr(game) $::annotate(games)"
-        set ::annotate(msg3) "$::tr(move)"
+        set ::annotate(msg3) "$::tr(move) 1"
         if { $::annotate(addAnnotatorTag) } {
             appendAnnotator "$::annotate(engine) $::annotate(typ) $::annotate($::annotate(typ))"
         }
@@ -359,7 +359,7 @@ namespace eval ::annotation {
 
         # And this is his best line:
         lassign $::annotate(PV1) score score_type ::annotate(moves)
-        if { $gamemove eq "" || $score eq "" } { return }
+        if { $gamemove eq "" || $score eq "" } { set ::annotate(prevscore) $score; return }
         set moves $::annotate(moves)
         set bestMoveIsMate 0
         if { $score_type eq "mate" } {
@@ -429,16 +429,6 @@ namespace eval ::annotation {
             set wprevscore [format "%+.2f" $prevscore]
             if { $tomove eq "white" } {set wprevscore [expr 0.0 - $wprevscore] }
             set prevtext "\[%eval $wprevscore\]"
-        }
-
-        # Must we annotate our own moves? If no, we bail out unless
-        # - we must add a closing line
-        if { ( $::annotate(annotateMoves) == "white"  &&  $tomove == "white" ||
-               $::annotate(annotateMoves) == "black"  &&  $tomove == "black"   ) && ! $addClosingLine } {
-            set ::annotate(prevscore)     $::annotate(score)
-            set ::annotate(prevmoves)     $::annotate(moves)
-            set ::annotate(prevscoremate) $::annotate(scoremate)
-            updateBoard -pgn
         }
 
         # See if we have the threshold filter activated.
@@ -613,7 +603,7 @@ namespace eval ::annotation {
                 }
             }
             "InfoBestMove" {
-                lassign $msgData ::engineBestMove
+                lassign $msgData ::annotate(bestmove)
                 set ::annotate(move_done) 1
             }
             "InfoGo" {
