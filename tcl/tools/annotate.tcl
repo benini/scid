@@ -38,12 +38,15 @@ namespace eval ::annotation {
     set ::annotate(msg1) ""
     set ::annotate(msg2) ""
     set ::annotate(msg3) ""
-    set ::annotate(prevscore) 0
-    set ::annotate(prevmoves) ""
+    set ::annotate(prevscore1) 0
+    set ::annotate(prevscore2) 0
+    set ::annotate(prevmoves1) ""
+    set ::annotate(prevmoves2) ""
     set ::annotate(score) 0
     set ::annotate(moves) ""
     set ::annotate(scoremate) 0
     set ::annotate(prevscoremate) 0
+    set ::annotate(anzVariant) 1
 
     proc doAnnotate {} {
         set w .annotationDialog
@@ -127,7 +130,8 @@ namespace eval ::annotation {
         ttk::radiobutton  $f.av.all     -text $::tr(AnnotateAll)   -variable ::annotate(annotateMoves) -value all
         ttk::radiobutton  $f.av.white   -text $::tr(AnnotateWhite) -variable ::annotate(annotateMoves) -value white
         ttk::radiobutton  $f.av.black   -text $::tr(AnnotateBlack) -variable ::annotate(annotateMoves) -value black
-        pack $f.av.all $f.av.white $f.av.black -side top -fill x -anchor w
+        ttk::checkbutton  $f.av.vars    -text "Store two variants" -variable ::annotate(anzVariant) -onvalue 2 -offvalue 1
+        pack $f.av.all $f.av.white $f.av.black $f.av.vars -side top -fill x -anchor w
 
         ttk::labelframe   $f.comment -text $::tr(Comments)
         # Checkmark to enable all-move-scoring
@@ -209,11 +213,13 @@ namespace eval ::annotation {
         sc_game pop
         .annotationDialog.f.running.progress configure -maximum $anz
         #reset values
-        set ::annotate(prevscore) 0
+        set ::annotate(prevscore1) 0
+        set ::annotate(prevscore2) 0
         set ::annotate(score) 0
         set ::annotate(scoremate) 0
         set ::annotate(prevscoremate) 0
-        set ::annotate(prevmoves) ""
+        set ::annotate(prevmoves1) ""
+        set ::annotate(prevmoves2) ""
         set ::annotate(moves) ""
         set ::annotate(progress) 1
         set ::annotate(msg1) "$::tr(game) [sc_game number]: [sc_game info white] - [sc_game info black]"
@@ -279,6 +285,7 @@ namespace eval ::annotation {
         }
         set ::autoplayMode 0
         ::engine::close AnnoEngine
+        ::notify::PosChanged -pgn
         destroy .annotationDialog
     }
 
@@ -359,7 +366,7 @@ namespace eval ::annotation {
 
         # And this is his best line:
         lassign $::annotate(PV1) score score_type ::annotate(moves)
-        if { $gamemove eq "" || $score eq "" } { set ::annotate(prevscore) $score; return }
+        if { $gamemove eq "" || $score eq "" } { set ::annotate(prevscore1) $score; return }
         set moves $::annotate(moves)
         set bestMoveIsMate 0
         if { $score_type eq "mate" } {
@@ -376,8 +383,6 @@ namespace eval ::annotation {
             set ::annotate(score) $score
             set ::annotate(scoremate) 0
         }
-        # The best line we could have followed, and the game move we just played instead, are here:
-        set prevmoves $::annotate(prevmoves)
 
         # We will add a closing line at the end of variation or game
         set addClosingLine 0
@@ -386,7 +391,7 @@ namespace eval ::annotation {
         }
 
         # This is the score we could have had if we had played our best move
-        set prevscore $::annotate(prevscore)
+        set prevscore $::annotate(prevscore1)
 
         # Note that the engine's judgement is in relative terms, a negative score
         # being favorable to opponent, a positive score favorable to player
@@ -421,14 +426,6 @@ namespace eval ::annotation {
             set wscore [format "%+.2f" $score]
             if { $tomove eq "black" } {set wscore [expr 0.0 - $wscore] }
             set text "\[%eval $wscore\]"
-        }
-        # And for the (missed?) chance
-        if { $::annotate(prevscoremate) != 0 } {
-            set prevtext [format "M%d" [expr abs($::annotate(prevscoremate))]]
-        } else {
-            set wprevscore [format "%+.2f" $prevscore]
-            if { $tomove eq "white" } {set wprevscore [expr 0.0 - $wprevscore] }
-            set prevtext "\[%eval $wprevscore\]"
         }
 
         # See if we have the threshold filter activated.
@@ -468,23 +465,36 @@ namespace eval ::annotation {
                     sc_pos addNag "D"
                 }
             }
-            if { $prevmoves != "" && ( $::annotate(annotateMoves) == "all" ||
+
+            if { $::annotate(prevmoves1) != "" && ( $::annotate(annotateMoves) == "all" ||
                                        $::annotate(annotateMoves) == "white"  &&  $tomove == "black" ||
                                        $::annotate(annotateMoves) == "black"  &&  $tomove == "white" )} {
-                sc_var create
-                # Add the starting move
-                sc_move addSan [lrange $prevmoves 0 0]
-                # Add its score
-                if { ! $bestMoveIsMate && ( ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations) ) } {
-                    sc_pos setComment "$prevtext"
+                set n 1
+                while { $n <= $::annotate(anzVariant) && $::annotate(prevmoves$n) ne "" } {
+                    sc_var create
+                    # Add the starting move
+                    sc_move addSan [lrange $::annotate(prevmoves$n) 0 0]
+                    # Add its score
+                    if { ! $::annotate(annotateShort) || $::annotate(addScoreToShortAnnotations) } {
+                        # And for the (missed?) chance
+                        if { $::annotate(prevscoremate) != 0 } {
+                            set prevtext [format "M%d" [expr abs($::annotate(prevscoremate))]]
+                        } else {
+                            set wprevscore [format "%+.2f" $::annotate(prevscore$n)]
+                            if { $tomove eq "white" } {set wprevscore [expr 0.0 - $wprevscore] }
+                            set prevtext "\[%eval $wprevscore\]"
+                        }
+                        sc_pos setComment "$prevtext"
+                    }
+                    # Add remaining moves
+                    sc_move addSan [lrange $::annotate(prevmoves$n) 1 end]
+                    # Add position NAG, unless the line ends in mate
+                    if { $n == 1 && $::annotate(prevscoremate) == 0 } {
+                        sc_pos addNag [scoreToNag $prevscore]
+                    }
+                    sc_var exit
+                    incr n
                 }
-                # Add remaining moves
-                sc_move addSan [lrange $prevmoves 1 end]
-                # Add position NAG, unless the line ends in mate
-                if { $::annotate(prevscoremate) == 0 } {
-                    sc_pos addNag [scoreToNag $prevscore]
-                }
-                sc_var exit
             }
             sc_move forward
         } else {
@@ -512,8 +522,9 @@ namespace eval ::annotation {
             # Now up to the end of the game
             ::move::Forward
         }
-        set ::annotate(prevscore)     $::annotate(score)
-        set ::annotate(prevmoves)     $::annotate(moves)
+        set ::annotate(prevscore1) $::annotate(score)
+        set ::annotate(prevmoves1) $::annotate(moves)
+        lassign $::annotate(PV2) ::annotate(prevscore2) score_type ::annotate(prevmoves2)
         set ::annotate(prevscoremate) $::annotate(scoremate)
         updateBoard -pgn
     }
