@@ -46,7 +46,7 @@ namespace eval ::annotation {
     set ::annotate(moves) ""
     set ::annotate(scoremate) 0
     set ::annotate(prevscoremate) 0
-    set ::annotate(anzVariant) 1
+    set ::annotate(anzVariation) 1
 
     proc doAnnotate {} {
         set w .annotationDialog
@@ -130,7 +130,7 @@ namespace eval ::annotation {
         ttk::radiobutton  $f.av.all     -text $::tr(AnnotateAll)   -variable ::annotate(annotateMoves) -value all
         ttk::radiobutton  $f.av.white   -text $::tr(AnnotateWhite) -variable ::annotate(annotateMoves) -value white
         ttk::radiobutton  $f.av.black   -text $::tr(AnnotateBlack) -variable ::annotate(annotateMoves) -value black
-        ttk::checkbutton  $f.av.vars    -text "Store two variants" -variable ::annotate(anzVariant) -onvalue 2 -offvalue 1
+        ttk::checkbutton  $f.av.vars    -text "Store two variations" -variable ::annotate(anzVariation) -onvalue 2 -offvalue 1
         pack $f.av.all $f.av.white $f.av.black $f.av.vars -side top -fill x -anchor w
 
         ttk::labelframe   $f.comment -text $::tr(Comments)
@@ -470,7 +470,7 @@ namespace eval ::annotation {
                                        $::annotate(annotateMoves) == "white"  &&  $tomove == "black" ||
                                        $::annotate(annotateMoves) == "black"  &&  $tomove == "white" )} {
                 set n 1
-                while { $n <= $::annotate(anzVariant) && $::annotate(prevmoves$n) ne "" } {
+                while { $n <= $::annotate(anzVariation) && $::annotate(prevmoves$n) ne "" } {
                     sc_var create
                     # Add the starting move
                     sc_move addSan [lrange $::annotate(prevmoves$n) 0 0]
