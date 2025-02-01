@@ -505,11 +505,13 @@ proc ::board::addNamesBar {w {varname}} {
   ttk::label $w.playerW.name -textvariable ${varname}(nameW) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerW.elo -textvariable ${varname}(eloW) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerW.clock -textvariable ${varname}(clockW) -font font_Regular -style fieldbg.TLabel
+  ttk::label $w.playerW.result -text "" -font font_Bold -style fieldbg.TLabel
   grid $w.playerW.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerW.name -row 0 -column 1 -sticky w
   grid $w.playerW.elo -row 0 -column 2 -sticky w
   grid $w.playerW.clock -row 0 -column 3 -sticky e
   grid $w.playerW.tomove -row 0 -column 4 -sticky w -padx 4
+  grid $w.playerW.result -row 0 -column 5 -sticky e
   grid columnconfigure $w.playerW 3 -weight 1
   grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
 
@@ -519,11 +521,13 @@ proc ::board::addNamesBar {w {varname}} {
   ttk::label $w.playerB.name -textvariable ${varname}(nameB) -font font_SmallBold -style fieldbg.TLabel
   ttk::label $w.playerB.elo -textvariable ${varname}(eloB) -font font_Small -style fieldbg.TLabel
   ttk::label $w.playerB.clock -textvariable ${varname}(clockB) -font font_Regular -style fieldbg.TLabel
+  ttk::label $w.playerB.result -text "" -font font_Bold -style fieldbg.TLabel
   grid $w.playerB.color -row 0 -column 0 -sticky news -padx 2 -pady 2
   grid $w.playerB.name -row 0 -column 1 -sticky w
   grid $w.playerB.elo -row 0 -column 2 -sticky w
   grid $w.playerB.clock -row 0 -column 3 -sticky e
   grid $w.playerB.tomove -row 0 -column 4 -sticky w -padx 4
+  grid $w.playerB.result -row 0 -column 5 -sticky e
   grid columnconfigure $w.playerB 3 -weight 1
   grid $w.playerB -row 3 -column 3 -columnspan 8 -sticky news -pady 4
 }
@@ -1542,6 +1546,26 @@ proc ::board::drawText {w sq text color args {shadow ""} } {
   #}
 }
 
+# show the result of the game at the last move in the player bar
+proc ::board::showResult {w} {
+  if { [winfo exists $w.playerW.result] } {
+      set t1 ""
+      set t2 ""
+      if {[sc_pos isAt end]} {
+          set res [sc_game tag get Result]
+          if { $res ne "*" } {
+              switch $res {
+                  0 { set t1 0; set t2 1 }
+                  1 { set t1 1; set t2 0 }
+                  = { set t1 "\u00BD"; set t2 "\u00BD" }
+              }
+          }
+      }
+      $w.playerW.result configure -text $t1
+      $w.playerB.result configure -text $t2
+  }
+}
+
 # Highlight last move played by drawing a rectangle around the two squares and/or an arrow
 proc  ::board::lastMoveHighlight {w moveuci {nag ""}} {
   $w.bd delete highlightLastMove
@@ -1639,6 +1663,7 @@ proc ::board::update {w {board ""} {animate 0}} {
 
   # Redraw last move highlight if mainboard
   if { $w == ".main.board"} {
+    ::board::showResult $w
     ::board::lastMoveHighlight $w [sc_game info previousMoveUCI] [sc_pos getNags]
   }
 
