@@ -550,21 +550,10 @@ namespace eval ::annotation {
         set sc2 [lindex $::annotate(PV2) 0]
         if { [expr abs( $score - $sc2 )] < 1.5 } { return 0 }
 
-        # There is no other winning moves (the best move may not win, of course, but
-        # I reject exercises when there are e.g. moves leading to +9, +7 and +5 scores)
-        if { [expr $score * $sc2] > 0.0 && [expr abs($score)] > $::informant("+-") && [expr abs($sc2)] > $::informant("+-") } {
-            puts diffscore
-#            return 0
-        }
-
-        # The best move does not lose position.
-#        if {([sc_pos side] == "black") && ($score < [expr 0.0 - $::informant("+/-")]) } { return 0 }
-#        if {([sc_pos side] == "white") && ($score > $::informant("+/-")) } { return 0}
-
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $::annotate(PV1) 2 ] 0 ]
         # bm0 must SAN, pv is UCI: convert
-        set bm0 [string range [lindex $pv 0] 0 3]
+        set bm0 [string range [lindex $pv 0] 0 4]
         set bm0 [sc_pos coordToSAN $::annotate(position) $bm0]
         set bm0 [string range $bm0 [expr [string first "." $bm0] + 1] end]
 
@@ -575,7 +564,6 @@ namespace eval ::annotation {
         if { $bm0 == $bm1 && $bm0 == $bm2 && $bm0 == $bm3 } {
             return 0
         }
-      puts "prev $prevscore pv1 $score pv2 $sc2 BM $bm0 $bm1 $bm2 $bm3 [string range $::annotate(PV1) 0 40]"
 
         # find what time is needed to get the solution (use internal analyze function)
         set timer {1 2 5 10 50 100 200 1000}
