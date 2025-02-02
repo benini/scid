@@ -550,6 +550,10 @@ namespace eval ::annotation {
         set sc2 [lindex $::annotate(PV2) 0]
         if { [expr abs( $score - $sc2 )] < 1.5 } { return 0 }
 
+        # The best move does not lose position.
+        if {([sc_pos side] == "black") && ($score < [expr 0.0 - $::informant("+/-")]) } { return 0 }
+        if {([sc_pos side] == "white") && ($score > $::informant("+/-")) } { return 0}
+
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $::annotate(PV1) 2 ] 0 ]
         # bm0 must SAN, pv is UCI: convert
