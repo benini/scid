@@ -117,13 +117,21 @@ namespace eval ::finishgame {
     proc ::finishgame::annotate { tomove } {
         lassign $::finishGame(PV1) score score_type pv
         if { $tomove eq "black" } {set score [expr 0.0 - $score] }
-        set tmp [sc_pos getComment]
-        if { $score_type eq "mate" } {
-            set score "M$score"
-        } else {
-            set score "\[%eval $score\]"
+        if {! $::finishGame(annotateShort) } {
+            sc_var create
+            # Add the starting move
+            sc_move addSan $pv
+            sc_var exit
         }
-        sc_pos setComment "$tmp $score"
+        if {$::finishGame(annotate) } {
+            set tmp [sc_pos getComment]
+            if { $score_type eq "mate" } {
+                set score "M$score"
+            } else {
+                set score "\[%eval $score\]"
+            }
+            sc_pos setComment "$tmp $score"
+        }
     }
 
     proc ::finishgame::runFinishGame { } {
@@ -184,5 +192,4 @@ namespace eval ::finishgame {
             }
         }
     }
-
 }
