@@ -16,6 +16,7 @@ namespace eval ::finishgame {
     set ::finishGame(cmdblack) movetime
     set ::finishGame(cmdValuewhite) 2
     set ::finishGame(cmdValueblack) 2
+    set ::finishGame(msg) ""
 
     ################################################################################
     # will ask engine(s) to play the game till the end
@@ -71,6 +72,7 @@ namespace eval ::finishgame {
         grid $w.finishGame -column 0 -row 2 -sticky w -padx 5 -pady 8
         ttk::checkbutton $w.finishGameShort -text $::tr(ShortAnnotations) -variable ::finishGame(annotateShort)
         grid $w.finishGameShort -column 1 -row 2 -sticky w -padx 5 -pady 8
+        ttk::label $w.line1 -textvariable ::finishGame(msg) -width 60
 
         ttk::frame $w.fbuttons
         ttk::button $w.fbuttons.cancel -text $::tr(Cancel) -command {
@@ -136,9 +138,15 @@ namespace eval ::finishgame {
 
     proc ::finishgame::runFinishGame { } {
         set w .configFinishGame
-        grid forget $w.wh_f $w.bk_f
+        grid forget $w.wh_f $w.bk_f $w.finishGame $w.finishGameShort
         pack forget $w.fbuttons.ok
+        grid $w.line1 -row 2 -column 0 -columnspan 2 -sticky we
+
         set ::autoplayMode 1
+        set repetition {}
+        set moves 0
+        set material 0
+        set pawns ""
         set tomove [sc_pos side]
         set value(white) $::finishGame(cmdValuewhite)
         set value(black) $::finishGame(cmdValueblack)
@@ -153,6 +161,18 @@ namespace eval ::finishgame {
                 set ::autoplayMode 0
             } else {
                 ::finishgame::annotate $tomove
+                lassign [checkRepetition $repetition] isRepetition repetition
+                lassign [checkfiftyMoveRule $moves $material $pawns] isFifty moves material pawns
+                if { $isRepetition || $isFifty } {
+                    if { $isFifty } {
+                        set text "50-moves rule"
+                    } else {
+                        set text "3-fold repetition"
+                    }
+                    set tmp [sc_pos getComment]
+                    sc_pos setComment "$tmp $text"
+                    set ::autoplayMode 0
+                }
             }
             sc_move forward
             ::notify::PosChanged -pgn
@@ -176,6 +196,7 @@ namespace eval ::finishgame {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                 if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
                 set ::finishGame(PV$multipv) [list $score $score_type $pv]
+                set ::finishGame(msg) $::finishGame(PV$multipv)
             }
             "InfoBestMove" {
                 lassign $msgData ::finishGame(bestmove)
@@ -191,5 +212,30 @@ namespace eval ::finishgame {
                 set ::autoplayMode 0
             }
         }
+    }
+
+    ################################################################################
+    # add current position for 3fold repetition detection and returns 1 if
+    # the position is a repetition
+    ################################################################################
+    proc checkRepetition { journal } {
+        set elt [lrange [split [sc_pos fen]] 0 2]
+        set isRep 0
+        # append the position only if different from the last element
+        if { $elt != [ lindex $journal end ] } { lappend journal $elt }
+        # 3fold repetion detected
+        if { [llength [lsearch -all $journal $elt] ] >=3 } { set isRep 1 }
+        return [list $isRep $journal]
+    }
+
+    proc checkfiftyMoveRule { moves prevmaterial prevpawns } {
+        set isFiftyRule 0
+        set elt [string range [sc_pos board] 0 63]
+        incr moves
+        set material [string length [string map {"." ""} $elt]]
+        set pawns [string map {"n" "." "b" "." "r" "." "q" "." "k" "." "N" "." "B" "." "R" "." "Q" "." "K" "." } $elt]
+        if { $pawns ne $prevpawns || $material ne $prevmaterial } { set moves 0 }
+        if { $moves >= 100 || $material == 2 } { set isFiftyRule 1 }
+        return [list $isFiftyRule $moves $material $pawns]
     }
 }
