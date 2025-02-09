@@ -10,6 +10,8 @@
 #improve Tactical Exercise
 #"finish game" function
 #accuracy function
+
+# engineNoWin will be used by annotate and finish game
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
 proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
@@ -20,8 +22,6 @@ proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
- # tactical positions is selected, must be in multipv mode
- #        if {$::annotate(tacticalExercises)} { set addOpts "MultiPV 4" }
     lappend options $addOpts
     ::engine::send $id SetOptions $options
     return "ok"
@@ -37,10 +37,31 @@ proc ::engineNoWin::changeEngine {id w {button ""}} {
         event generate $button <<Invoke>>
     }
 }
-proc ::engineNoWin::editEngine {id w engine} {
+proc ::engineNoWin::editEngine {id w enginevar} {
     grid $w -row 0 -column 2 -rowspan 2 -sticky ne -padx 10
+    set engine [set $enginevar]
     set msg [::engineNoWin::initEngine $id $engine [list ::annotation::eng_messages $id $w]]
     if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
+}
+
+#create frame for edit engine options
+proc ::engineNoWin::createEngineOptionsFrame {f id var} {
+    ttk::frame $f.engine
+    set engList [::enginecfg::names ]
+    if { [set $var] eq "" } { set $var [lindex $engList 0] }
+    ttk::combobox $f.engine.eng -width 20 -state readonly -values $engList -textvariable $var
+    bind $f.engine.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.engineOptions $f.engine.opts"
+    ttk::button $f.engine.opts -image ::icon::filter_adv -style Toolbutton \
+        -command "::engineNoWin::editEngine $id $f.engineOptions $var"
+    pack $f.engine.eng $f.engine.opts -side left -padx { 0 5 }
+    ttk::labelframe $f.engineOptions -text "Engine Parameter"
+    ttk::label $f.engineOptions.l -textvariable ::annotate(engine)
+    ttk::button $f.engineOptions.x -text "X" -style Toolbutton -command "grid forget $f.engineOptions"
+    ttk_text $f.engineOptions.text -wrap none -padx 4
+    autoscrollBars both $f.engineOptions $f.engineOptions.text 1
+    $f.engineOptions.text configure -state normal -wrap word -width 60 -height 18
+    grid $f.engineOptions.l -row 0 -column 0 -sticky w
+    grid $f.engineOptions.x -row 0 -column 1 -sticky e
 }
 
 proc ::engineNoWin::initEngineOptions {id w options} {
@@ -129,23 +150,8 @@ namespace eval ::annotation {
         ttk::spinbox $f.annotate.blunderbox.spBlunder -width 4 -textvariable ::annotateBlunderThreshold \
             -from 0.1 -to 3.0 -increment 0.1 -justify right
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotate(useAnalysisBook)
-        set engList [::enginecfg::names ]
-        if { $::annotate(engine) eq "" } { set ::annotate(engine) [lindex $engList 0] }
-        ttk::frame $f.annotate.eng
-        ttk::combobox $f.annotate.eng.engine -width 20 -state readonly -values $engList -textvariable ::annotate(engine)
-        #create frame for edit engine parameter
-        bind $f.annotate.eng.engine <<ComboboxSelected>> { ::engineNoWin::changeEngine AnnoEngine .annotationDialog.f.engpara .annotationDialog.f.annotate.eng.conf}
-        ttk::button $f.annotate.eng.conf -image ::icon::filter_adv -style Toolbutton \
-            -command { ::engineNoWin::editEngine AnnoEngine .annotationDialog.f.engpara $::annotate(engine) }
-        pack $f.annotate.eng.engine $f.annotate.eng.conf -side left -padx { 0 5 }
-        ttk::labelframe $f.engpara -text "Engine Parameter"
-        ttk::label $f.engpara.l -textvariable ::annotate(engine)
-        ttk::button $f.engpara.x -text "X" -style Toolbutton -command "grid forget $f.engpara"
-        ttk_text $f.engpara.text -wrap none -padx 4
-        autoscrollBars both $f.engpara $f.engpara.text 1
-        $f.engpara.text configure -state normal -wrap word -width 60 -height 18
-        grid $f.engpara.l -row 0 -column 0 -sticky w
-        grid $f.engpara.x -row 0 -column 0 -sticky e
+        ::engineNoWin::createEngineOptionsFrame $f AnnoEngine ::annotate(engine)
+
 
         # choose a book for analysis
         # load book names
@@ -176,7 +182,7 @@ namespace eval ::annotation {
         pack $f.annotate.blunderbox -side bottom -anchor w
         pack $f.annotate.blundersonly -side bottom -anchor w
         pack $f.annotate.allmoves  -side bottom -anchor w
-        pack $f.annotate.eng -side bottom -anchor w
+        pack $f.engine -in $f.annotate -side bottom -anchor w
         pack $f.annotate.typ -side bottom -anchor w
         grid $f.annotate.typ.label -row 0 -column 0 -sticky w
         grid $f.annotate.typ.ldepth -row 1 -column 0 -sticky w
@@ -310,7 +316,7 @@ namespace eval ::annotation {
 
     proc runAnnotation { } {
         set f .annotationDialog.f
-        grid forget $f.annotate $f.comment $f.av $f.batch $f.engpara
+        grid forget $f.annotate $f.comment $f.av $f.batch $f.engineOptions
         pack forget $f.buttons.ok
         if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         # show progressbar and game infos
