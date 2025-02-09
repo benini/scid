@@ -34,34 +34,36 @@ proc ::engineNoWin::changeEngine {id w {button ""}} {
     foreach wchild [winfo children $w.text] { destroy $wchild }
     catch { unset ::enginewin::engConfig_$id }
     if { $button ne "" && [winfo ismapped $w] } {
+        grid forget $w
         event generate $button <<Invoke>>
     }
 }
-proc ::engineNoWin::editEngine {id w enginevar} {
-    grid $w -row 0 -column 2 -rowspan 2 -sticky ne -padx 10
+proc ::engineNoWin::editEngine {id w enginevar col callback} {
+    if { [winfo ismapped $w] } { grid forget $w ; return }
+    grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
     set engine [set $enginevar]
-    set msg [::engineNoWin::initEngine $id $engine [list ::annotation::eng_messages $id $w]]
+    set msg [::engineNoWin::initEngine $id $engine [list $callback $id $w]]
     if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
 }
 
 #create frame for edit engine options
-proc ::engineNoWin::createEngineOptionsFrame {f id var} {
-    ttk::frame $f.engine
+proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
+    ttk::frame $f.$id
     set engList [::enginecfg::names ]
     if { [set $var] eq "" } { set $var [lindex $engList 0] }
-    ttk::combobox $f.engine.eng -width 20 -state readonly -values $engList -textvariable $var
-    bind $f.engine.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.engineOptions $f.engine.opts"
-    ttk::button $f.engine.opts -image ::icon::filter_adv -style Toolbutton \
-        -command "::engineNoWin::editEngine $id $f.engineOptions $var"
-    pack $f.engine.eng $f.engine.opts -side left -padx { 0 5 }
-    ttk::labelframe $f.engineOptions -text "Engine Parameter"
-    ttk::label $f.engineOptions.l -textvariable ::annotate(engine)
-    ttk::button $f.engineOptions.x -text "X" -style Toolbutton -command "grid forget $f.engineOptions"
-    ttk_text $f.engineOptions.text -wrap none -padx 4
-    autoscrollBars both $f.engineOptions $f.engineOptions.text 1
-    $f.engineOptions.text configure -state normal -wrap word -width 60 -height 18
-    grid $f.engineOptions.l -row 0 -column 0 -sticky w
-    grid $f.engineOptions.x -row 0 -column 1 -sticky e
+    ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
+    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $f.$id.opts"
+    ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
+        -command "::engineNoWin::editEngine $id $f.opts$id $var $col $callback"
+    pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
+    ttk::labelframe $f.opts$id -text "Engine Parameter"
+    ttk::label $f.opts$id.l -textvariable $var
+    ttk::button $f.opts$id.x -text "X" -style Toolbutton -command "grid forget $f.opts$id"
+    ttk_text $f.opts$id.text -wrap none -padx 4
+    autoscrollBars both $f.opts$id $f.opts$id.text 1
+    $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
+    grid $f.opts$id.l -row 0 -column 0 -sticky w
+    grid $f.opts$id.x -row 0 -column 1 -sticky e
 }
 
 proc ::engineNoWin::initEngineOptions {id w options} {
@@ -137,21 +139,18 @@ namespace eval ::annotation {
 
         ttk::labelframe $f.annotate -text $::tr(GameReview)
         ttk::frame $f.annotate.typ
-        ttk::radiobutton  $f.annotate.typ.label  -text $::tr(AnnotateTime) -variable ::annotate(typ) -value "movetime"
-        ttk::radiobutton  $f.annotate.typ.ldepth -text "Depth per move"    -variable ::annotate(typ) -value "depth"
-        ttk::spinbox $f.annotate.typ.spDelay -width 5 -textvariable ::annotateTime -from 0.1 -to 999 \
-            -validate key -justify right
-        ttk::spinbox $f.annotate.typ.depth -width 5 -textvariable ::annotate(depth) -from 2 -to 999 \
-            -validate key -justify right
-        ttk::radiobutton  $f.annotate.allmoves -text $::tr(AnnotateAllMoves) -variable ::annotate(annotateBlunders) -value allmoves
-        ttk::radiobutton  $f.annotate.blundersonly -text $::tr(AnnotateBlundersOnly) -variable ::annotate(annotateBlunders) -value blundersonly
+        ttk::radiobutton $f.annotate.typ.label -text $::tr(AnnotateTime) -variable ::annotate(typ) -value "movetime"
+        ttk::radiobutton $f.annotate.typ.ldepth -text "Depth per move" -variable ::annotate(typ) -value "depth"
+        ttk::spinbox $f.annotate.typ.spDelay -width 5 -textvariable ::annotateTime -from 0.1 -to 999 -validate key -justify right
+        ttk::spinbox $f.annotate.typ.depth -width 5 -textvariable ::annotate(depth) -from 2 -to 999 -validate key -justify right
+        ttk::radiobutton $f.annotate.allmoves -text $::tr(AnnotateAllMoves) -variable ::annotate(annotateBlunders) -value allmoves
+        ttk::radiobutton $f.annotate.blundersonly -text $::tr(AnnotateBlundersOnly) -variable ::annotate(annotateBlunders) -value blundersonly
         ttk::frame $f.annotate.blunderbox
         ttk::label $f.annotate.blunderbox.label -text $::tr(BlundersThreshold:)
         ttk::spinbox $f.annotate.blunderbox.spBlunder -width 4 -textvariable ::annotateBlunderThreshold \
             -from 0.1 -to 3.0 -increment 0.1 -justify right
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotate(useAnalysisBook)
-        ::engineNoWin::createEngineOptionsFrame $f AnnoEngine ::annotate(engine)
-
+        ::engineNoWin::createEngineOptionsFrame $f annotateEngine ::annotate(engine) 3 ::annotation::eng_messages
 
         # choose a book for analysis
         # load book names
@@ -175,15 +174,13 @@ namespace eval ::annotation {
         if { $::annotate(AnalysisBookName) eq "" } { set ::annotate(AnalysisBookName) [lindex $tmp $idx] }
         ttk::combobox $f.annotate.comboBooks -width 12 -values $tmp -textvariable ::annotate(AnalysisBookName)
         catch { $f.annotate.comboBooks current $idx }
-        pack $f.annotate.comboBooks -side bottom -anchor w -padx 20
-        pack $f.annotate.cbBook -side bottom -anchor w
         pack $f.annotate.blunderbox.label -side left -padx { 20 0 }
         pack $f.annotate.blunderbox.spBlunder -side left -anchor w
-        pack $f.annotate.blunderbox -side bottom -anchor w
-        pack $f.annotate.blundersonly -side bottom -anchor w
-        pack $f.annotate.allmoves  -side bottom -anchor w
-        pack $f.engine -in $f.annotate -side bottom -anchor w
-        pack $f.annotate.typ -side bottom -anchor w
+        pack $f.annotate.typ -side top -anchor w
+        pack $f.annotateEngine -in $f.annotate -side top -anchor w
+        pack $f.annotate.allmoves $f.annotate.blundersonly $f.annotate.blunderbox -side top -anchor w
+        pack $f.annotate.cbBook -side top -anchor w
+        pack $f.annotate.comboBooks -side top -anchor w -padx 20
         grid $f.annotate.typ.label -row 0 -column 0 -sticky w
         grid $f.annotate.typ.ldepth -row 1 -column 0 -sticky w
         grid $f.annotate.typ.spDelay -row 0 -column 1 -sticky w
@@ -246,8 +243,8 @@ namespace eval ::annotation {
             if { $::autoplayMode } {
                 set ::autoplayMode 0
             } else {
-                catch { unset ::enginewin::engConfig_AnnoEngine }
-                ::engine::close AnnoEngine
+                catch { unset ::enginewin::engConfig_annotateEngine }
+                ::engine::close annotateEngine
                 destroy .annotationDialog
             }
         }
@@ -256,7 +253,7 @@ namespace eval ::annotation {
             set ::annotate(movetime) [expr {int($::annotateTime * 1000.0)}]
             set ::annotate(blunderThreshold) $::annotateBlunderThreshold
             set ::annotate(time) $::annotateTime
-            set msg [::engineNoWin::initEngine AnnoEngine $::annotate(engine) [list ::annotation::eng_messages AnnoEngine .annotationDialog.f.engpara]]
+            set msg [::engineNoWin::initEngine annotateEngine $::annotate(engine) [list ::annotation::eng_messages annotateEngine .annotationDialog.f.engpara]]
             if { $msg eq "ok" } {
                 ::annotation::runAnnotation
             } else {
@@ -271,7 +268,7 @@ namespace eval ::annotation {
     # reset values for every game
     proc initGameAnnotation { } {
         #reset engine
-        ::engine::send AnnoEngine NewGame [list analysis post_pv post_wdl]
+        ::engine::send annotateEngine NewGame [list analysis post_pv post_wdl]
         # calc amount of moves to analyze for progressbar
         set firstmove [llength [sc_game moves]]
         sc_game push copyfast
@@ -303,7 +300,7 @@ namespace eval ::annotation {
         # Annotate all remaining moves of the game
         while { 1 } {
             set ::annotate(PV1) [list "" "" ""]
-            ::engine::send AnnoEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
+            ::engine::send annotateEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
             vwait ::annotate(move_done)
             addAnnotation
             incr ::annotate(progress)
@@ -316,7 +313,7 @@ namespace eval ::annotation {
 
     proc runAnnotation { } {
         set f .annotationDialog.f
-        grid forget $f.annotate $f.comment $f.av $f.batch $f.engineOptions
+        grid forget $f.annotate $f.comment $f.av $f.batch $f.optsannotateEngine
         pack forget $f.buttons.ok
         if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         # show progressbar and game infos
@@ -326,7 +323,7 @@ namespace eval ::annotation {
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
 
         # tactical positions is selected, must be in multipv mode
-        if {$::annotate(tacticalExercises)} { ::engine::send AnnoEngine SetOptions "MultiPV 4" }
+        if {$::annotate(tacticalExercises)} { ::engine::send annotateEngine SetOptions "MultiPV 4" }
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
@@ -341,8 +338,8 @@ namespace eval ::annotation {
             annotateGame
         }
         set ::autoplayMode 0
-        unset ::enginewin::engConfig_AnnoEngine
-        ::engine::close AnnoEngine
+        unset ::enginewin::engConfig_annotateEngine
+        ::engine::close annotateEngine
         ::notify::PosChanged -pgn
         destroy .annotationDialog
     }
