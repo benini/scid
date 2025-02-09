@@ -10,6 +10,50 @@
 #improve Tactical Exercise
 #"finish game" function
 #accuracy function
+namespace eval ::engineNoWin {}
+# Open the engine and configure it
+proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
+    if { [info exists ::enginewin::engConfig_$id] } { return "ok" }
+    set config [::enginecfg::get $engine]
+    lassign $config name cmd args wdir elo time url uci options
+    if { ! $uci } { return "Only UCI-Engines are supported!" }
+    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    ::engine::setLogCmd $id {}
+    ::engine::connect $id $callback $cmd {}
+ # tactical positions is selected, must be in multipv mode
+ #        if {$::annotate(tacticalExercises)} { set addOpts "MultiPV 4" }
+    lappend options $addOpts
+    ::engine::send $id SetOptions $options
+    return "ok"
+}
+
+proc ::engineNoWin::changeEngine {id w {button ""}} {
+    ::engine::close $id
+    $w.text configure -state normal
+    $w.text delete 1.0 end
+    foreach wchild [winfo children $w.text] { destroy $wchild }
+    catch { unset ::enginewin::engConfig_$id }
+    if { $button ne "" && [winfo ismapped $w] } {
+        event generate $button <<Invoke>>
+    }
+}
+proc ::engineNoWin::editEngine {id w engine} {
+    grid $w -row 0 -column 2 -rowspan 2 -sticky ne -padx 10
+    set msg [::engineNoWin::initEngine $id $engine [list ::annotation::eng_messages $id $w]]
+    if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
+}
+
+proc ::engineNoWin::initEngineOptions {id w options} {
+    upvar ::enginewin::engConfig_$id engConfig_
+    if { ! [winfo exists $w.text.reset] } {
+        lset ::enginewin::engConfig_$id 8 $options
+        ::enginecfg::createOptionWidgets $id $w $options
+    } else {
+        ::enginecfg::updateOptionWidgets $id $w $options {}
+        $w.text configure -state disabled
+    }
+}
+
 namespace eval ::annotation {
 
     # Typ may be "movetime": time per move or "depth": analyse till depth is reached
@@ -87,7 +131,22 @@ namespace eval ::annotation {
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotate(useAnalysisBook)
         set engList [::enginecfg::names ]
         if { $::annotate(engine) eq "" } { set ::annotate(engine) [lindex $engList 0] }
-        ttk::combobox $f.annotate.engine -width 26 -state readonly -values $engList -textvariable ::annotate(engine)
+        ttk::frame $f.annotate.eng
+        ttk::combobox $f.annotate.eng.engine -width 20 -state readonly -values $engList -textvariable ::annotate(engine)
+        #create frame for edit engine parameter
+        bind $f.annotate.eng.engine <<ComboboxSelected>> { ::engineNoWin::changeEngine AnnoEngine .annotationDialog.f.engpara .annotationDialog.f.annotate.eng.conf}
+        ttk::button $f.annotate.eng.conf -image ::icon::filter_adv -style Toolbutton \
+            -command { ::engineNoWin::editEngine AnnoEngine .annotationDialog.f.engpara $::annotate(engine) }
+        pack $f.annotate.eng.engine $f.annotate.eng.conf -side left -padx { 0 5 }
+        ttk::labelframe $f.engpara -text "Engine Parameter"
+        ttk::label $f.engpara.l -textvariable ::annotate(engine)
+        ttk::button $f.engpara.x -text "X" -style Toolbutton -command "grid forget $f.engpara"
+        ttk_text $f.engpara.text -wrap none -padx 4
+        autoscrollBars both $f.engpara $f.engpara.text 1
+        $f.engpara.text configure -state normal -wrap word -width 60 -height 18
+        grid $f.engpara.l -row 0 -column 0 -sticky w
+        grid $f.engpara.x -row 0 -column 0 -sticky e
+
         # choose a book for analysis
         # load book names
         set bookPath $::scidBooksDir
@@ -117,7 +176,7 @@ namespace eval ::annotation {
         pack $f.annotate.blunderbox -side bottom -anchor w
         pack $f.annotate.blundersonly -side bottom -anchor w
         pack $f.annotate.allmoves  -side bottom -anchor w
-        pack $f.annotate.engine -side bottom -anchor w
+        pack $f.annotate.eng -side bottom -anchor w
         pack $f.annotate.typ -side bottom -anchor w
         grid $f.annotate.typ.label -row 0 -column 0 -sticky w
         grid $f.annotate.typ.ldepth -row 1 -column 0 -sticky w
@@ -181,6 +240,8 @@ namespace eval ::annotation {
             if { $::autoplayMode } {
                 set ::autoplayMode 0
             } else {
+                catch { unset ::enginewin::engConfig_AnnoEngine }
+                ::engine::close AnnoEngine
                 destroy .annotationDialog
             }
         }
@@ -189,7 +250,7 @@ namespace eval ::annotation {
             set ::annotate(movetime) [expr {int($::annotateTime * 1000.0)}]
             set ::annotate(blunderThreshold) $::annotateBlunderThreshold
             set ::annotate(time) $::annotateTime
-            set msg [::annotation::initAnnotationEngine]
+            set msg [::engineNoWin::initEngine AnnoEngine $::annotate(engine) [list ::annotation::eng_messages AnnoEngine .annotationDialog.f.engpara]]
             if { $msg eq "ok" } {
                 ::annotation::runAnnotation
             } else {
@@ -230,19 +291,6 @@ namespace eval ::annotation {
         }
     }
 
-    # Open the engine and configure it
-    proc initAnnotationEngine { } {
-        set config [::enginecfg::get $::annotate(engine)]
-        lassign $config name cmd args wdir elo time url uci options
-        if { ! $uci } { return "Only UCI-Engines are supported!" }
-        ::engine::setLogCmd AnnoEngine {}
-        ::engine::connect AnnoEngine ::annotation::eng_messages $cmd {}
-        # tactical positions is selected, must be in multipv mode
-        if {$::annotate(tacticalExercises)} { lappend options "MultiPV 4" }
-        ::engine::send AnnoEngine SetOptions $options
-        return "ok"
-    }
-
     proc annotateGame { } {
         initGameAnnotation
         makeBookAnnotation
@@ -262,7 +310,7 @@ namespace eval ::annotation {
 
     proc runAnnotation { } {
         set f .annotationDialog.f
-        grid forget $f.annotate $f.comment $f.av $f.batch
+        grid forget $f.annotate $f.comment $f.av $f.batch $f.engpara
         pack forget $f.buttons.ok
         if {!$::annotate(batchMode)} { grid forget $f.running.games $f.running.line2 }
         # show progressbar and game infos
@@ -270,6 +318,9 @@ namespace eval ::annotation {
         set gameNo [sc_game number]
         $f.running.games configure -maximum [expr {$::annotate(batchEnd) - $gameNo + 1}]
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
+
+        # tactical positions is selected, must be in multipv mode
+        if {$::annotate(tacticalExercises)} { ::engine::send AnnoEngine SetOptions "MultiPV 4" }
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
@@ -284,6 +335,7 @@ namespace eval ::annotation {
             annotateGame
         }
         set ::autoplayMode 0
+        unset ::enginewin::engConfig_AnnoEngine
         ::engine::close AnnoEngine
         ::notify::PosChanged -pgn
         destroy .annotationDialog
@@ -594,9 +646,14 @@ namespace eval ::annotation {
         return 1
     }
 
-    proc ::annotation::eng_messages {msg} {
+    proc ::annotation::eng_messages {id w msg} {
         lassign $msg msgType msgData
         switch $msgType {
+            "InfoConfig" {
+                if { $::autoplayMode } { return }
+                set msgData [lindex $msgData 2]
+                ::engineNoWin::initEngineOptions $id $w $msgData
+            }
             "InfoPV" {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                 if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
