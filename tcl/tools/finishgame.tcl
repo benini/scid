@@ -33,22 +33,23 @@ proc ::engineNoWin::changeEngine {id w {button ""}} {
         event generate $button <<Invoke>>
     }
 }
-proc ::engineNoWin::editEngine {id w enginevar} {
-    grid $w -row 0 -column 4 -rowspan 2 -sticky ne -padx 10
+proc ::engineNoWin::editEngine {id w enginevar col callback} {
+    if { [winfo ismapped $w] } { grid forget $w ; return }
+    grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
     set engine [set $enginevar]
-    set msg [::engineNoWin::initEngine $id $engine [list ::finishgame::eng_messages $id $w]]
+    set msg [::engineNoWin::initEngine $id $engine [list $callback $id $w]]
     if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
 }
 
 #create frame for edit engine options
-proc ::engineNoWin::createEngineOptionsFrame {f id var} {
+proc ::engineNoWin::createEngineOptionsFrame {f id var col} {
     ttk::frame $f.$id
     set engList [::enginecfg::names ]
     if { [set $var] eq "" } { set $var [lindex $engList 0] }
     ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
     bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $f.$id.opts"
     ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
-        -command "::engineNoWin::editEngine $id $f.opts$id $var"
+        -command "::engineNoWin::editEngine $id $f.opts$id $var $col ::finishgame::eng_messages"
     pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
     ttk::labelframe $f.opts$id -text "Engine Parameter"
     ttk::label $f.opts$id.l -textvariable $var
@@ -111,7 +112,7 @@ namespace eval ::finishgame {
         ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGame(cmdValuewhite) -from 1 -to 999 -justify right
         ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdwhite) -value "movetime"
         ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdwhite) -value "depth"
-        ::engineNoWin::createEngineOptionsFrame $w fgEnginewhite ::finishGame(enginewhite)
+        ::engineNoWin::createEngineOptionsFrame $w fgEnginewhite ::finishGame(enginewhite) 4
         grid $w.fgEnginewhite -in $w.wh_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.wh_f.cv -column 1 -row 2 -sticky w
         grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
@@ -124,7 +125,7 @@ namespace eval ::finishgame {
         ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGame(cmdValueblack) -from 1 -to 999 -justify right
         ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdblack) -value "movetime"
         ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdblack) -value "depth"
-        ::engineNoWin::createEngineOptionsFrame $w fgEngineblack ::finishGame(engineblack)
+        ::engineNoWin::createEngineOptionsFrame $w fgEngineblack ::finishGame(engineblack) 5
         grid $w.fgEngineblack -in $w.bk_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.bk_f.cv -column 1 -row 2 -sticky w
         grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
