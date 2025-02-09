@@ -6,6 +6,71 @@
 ##########################################################################################
 ### finishGame Dialog: uses a chess engine to play a game
 
+# engineNoWin will be used by annotate and finish game
+#copied from annotate.tcl. to be removed later
+namespace eval ::engineNoWin {}
+# Open the engine and configure it
+proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
+    if { [info exists ::enginewin::engConfig_$id] } { return "ok" }
+    set config [::enginecfg::get $engine]
+    lassign $config name cmd args wdir elo time url uci options
+    if { ! $uci } { return "Only UCI-Engines are supported!" }
+    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    ::engine::setLogCmd $id {}
+    ::engine::connect $id $callback $cmd {}
+    lappend options $addOpts
+    ::engine::send $id SetOptions $options
+    return "ok"
+}
+
+proc ::engineNoWin::changeEngine {id w {button ""}} {
+    ::engine::close $id
+    $w.text configure -state normal
+    $w.text delete 1.0 end
+    foreach wchild [winfo children $w.text] { destroy $wchild }
+    catch { unset ::enginewin::engConfig_$id }
+    if { $button ne "" && [winfo ismapped $w] } {
+        event generate $button <<Invoke>>
+    }
+}
+proc ::engineNoWin::editEngine {id w enginevar} {
+    grid $w -row 0 -column 4 -rowspan 2 -sticky ne -padx 10
+    set engine [set $enginevar]
+    set msg [::engineNoWin::initEngine $id $engine [list ::finishgame::eng_messages $id $w]]
+    if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
+}
+
+#create frame for edit engine options
+proc ::engineNoWin::createEngineOptionsFrame {f id var} {
+    ttk::frame $f.$id
+    set engList [::enginecfg::names ]
+    if { [set $var] eq "" } { set $var [lindex $engList 0] }
+    ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
+    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $f.$id.opts"
+    ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
+        -command "::engineNoWin::editEngine $id $f.opts$id $var"
+    pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
+    ttk::labelframe $f.opts$id -text "Engine Parameter"
+    ttk::label $f.opts$id.l -textvariable $var
+    ttk::button $f.opts$id.x -text "X" -style Toolbutton -command "grid forget $f.opts$id"
+    ttk_text $f.opts$id.text -wrap none -padx 4
+    autoscrollBars both $f.opts$id $f.opts$id.text 1
+    $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
+    grid $f.opts$id.l -row 0 -column 0 -sticky w
+    grid $f.opts$id.x -row 0 -column 1 -sticky e
+}
+
+proc ::engineNoWin::initEngineOptions {id w options} {
+    upvar ::enginewin::engConfig_$id engConfig_
+    if { ! [winfo exists $w.text.reset] } {
+        lset ::enginewin::engConfig_$id 8 $options
+        ::enginecfg::createOptionWidgets $id $w $options
+    } else {
+        ::enginecfg::updateOptionWidgets $id $w $options {}
+        $w.text configure -state disabled
+    }
+}
+
 namespace eval ::finishgame {
 
     set ::finishGame(annotate) 1
@@ -41,54 +106,29 @@ namespace eval ::finishgame {
         foreach psize $::boardSizes {
             if {$psize >= 40} { break }
         }
-        set engList [::enginecfg::names ]
-        if { $::finishGame(enginewhite) eq "" } { set ::finishGame(enginewhite) [lindex $engList 0] }
-        if { $::finishGame(engineblack) eq "" } { set ::finishGame(engineblack) [lindex $engList 0] }
         ttk::label $w.wh_f.p -image wk$psize
         grid $w.wh_f.p -column 0 -row 0 -rowspan 3
-        ttk::combobox $w.wh_f.engine -width 26 -state readonly -values $engList -textvariable ::finishGame(enginewhite)
         ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGame(cmdValuewhite) -from 1 -to 999 -justify right
         ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdwhite) -value "movetime"
         ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdwhite) -value "depth"
-        ttk::button $w.wh_f.config -image tb_eng_config -style Toolbutton \
-            -command { grid forget .configFinishGame.bconf
-                grid .configFinishGame.wconf -column 3 -row 0 -rowspan 4 -sticky w -padx 5
-                .configFinishGame.wconf.text insert 0.0 "White $::finishGame(enginewhite)"
-                ::finishgame::initfgEngine white $::finishGame(enginewhite) }
-        ttk::frame $w.wconf
-        ::enginecfg::createConfigFrame fgEnginewhite $w.wconf "";#"White $::finishGame(enginewhite)"
-        $w.wconf.text configure -state normal -wrap word -width 60 -height 14
-        ttk::button $w.wconf.ok -text "OK" -command "grid forget $w.wconf"
-        grid $w.wconf.ok -row 2 -column 1
-        grid $w.wh_f.engine -column 1 -row 0 -columnspan 3 -sticky w
+        ::engineNoWin::createEngineOptionsFrame $w fgEnginewhite ::finishGame(enginewhite)
+        grid $w.fgEnginewhite -in $w.wh_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.wh_f.cv -column 1 -row 2 -sticky w
         grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
         grid $w.wh_f.c2 -column 3 -row 2 -sticky w
-        grid $w.wh_f.config -column 4 -row 0 -sticky w
 
         ttk::labelframe $w.bk_f -text "$::tr(Black)" -padding 5
         grid $w.bk_f -column 0 -row 1 -columnspan 2 -sticky we -pady 8
         ttk::label $w.bk_f.p -image bk$psize
         grid $w.bk_f.p -column 0 -row 0 -rowspan 3
-        ttk::combobox $w.bk_f.engine -width 26 -state readonly -values $engList -textvariable ::finishGame(engineblack)
         ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGame(cmdValueblack) -from 1 -to 999 -justify right
         ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdblack) -value "movetime"
         ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdblack) -value "depth"
-        ttk::button $w.bk_f.config -image tb_eng_config -style Toolbutton \
-            -command { grid forget .configFinishGame.wconf
-                grid .configFinishGame.bconf -column 3 -row 0 -rowspan 4 -sticky w -padx 5
-                .configFinishGame.bconf.text insert 0.0 "Black $::finishGame(engineblack)"
-                ::finishgame::initfgEngine black $::finishGame(engineblack) }
-        ttk::frame $w.bconf
-        ::enginecfg::createConfigFrame fgEngineblack $w.bconf ""
-        $w.bconf.text configure -state normal -wrap word -width 60 -height 14
-        ttk::button $w.bconf.ok -text "OK" -command "grid forget $w.bconf"
-        grid $w.bconf.ok -row 2 -column 1
-        grid $w.bk_f.engine -column 1 -row 1 -columnspan 3 -sticky w
+        ::engineNoWin::createEngineOptionsFrame $w fgEngineblack ::finishGame(engineblack)
+        grid $w.fgEngineblack -in $w.bk_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.bk_f.cv -column 1 -row 2 -sticky w
         grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
         grid $w.bk_f.c2 -column 3 -row 2 -sticky w
-        grid $w.bk_f.config -column 4 -row 1 -sticky w
 
         ttk::checkbutton $w.finishGame -text $::tr(Annotate) -variable ::finishGame(annotate)
         grid $w.finishGame -column 0 -row 2 -sticky w -padx 5 -pady 8
@@ -167,7 +207,7 @@ namespace eval ::finishgame {
 
     proc ::finishgame::runFinishGame { } {
         set w .configFinishGame
-        grid forget $w.wh_f $w.bk_f $w.finishGame $w.finishGameShort $w.wconf $w.bconf
+        grid forget $w.wh_f $w.bk_f $w.finishGame $w.finishGameShort $w.optsfgEnginewhite $w.optsfgEngineblack
         pack forget $w.fbuttons.ok
         grid $w.line1 -row 2 -column 0 -columnspan 2 -sticky we
 
@@ -220,21 +260,13 @@ namespace eval ::finishgame {
         destroy .configFinishGame
     }
 
-    proc ::finishgame::eng_messages {id msg} {
+    proc ::finishgame::eng_messages {id w msg} {
         lassign $msg msgType msgData
         switch $msgType {
             "InfoConfig" {
-                upvar ::enginewin::engConfig_$id engConfig_
                 if { $::autoplayMode } { return }
                 set msgData [lindex $msgData 2]
-                set w .configFinishGame.wconf
-                if { $id eq "fgEngineblack" } { set w .configFinishGame.bconf }
-                if { ! [winfo exists $w.text.reset] } {
-                    lset ::enginewin::engConfig_$id 8 $msgData
-                    ::enginecfg::createOptionWidgets $id $w $msgData
-                } else {
-                    ::enginecfg::updateOptionWidgets $id $w $msgData {}
-                }
+                ::engineNoWin::initEngineOptions $id $w $msgData
             }
             "InfoPV" {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
