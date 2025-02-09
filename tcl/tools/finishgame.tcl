@@ -50,10 +50,21 @@ namespace eval ::finishgame {
         ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGame(cmdValuewhite) -from 1 -to 999 -justify right
         ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdwhite) -value "movetime"
         ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdwhite) -value "depth"
-        grid $w.wh_f.engine -column 1 -row 1 -columnspan 3 -sticky w
+        ttk::button $w.wh_f.config -image tb_eng_config -style Toolbutton \
+            -command { grid forget .configFinishGame.bconf
+                grid .configFinishGame.wconf -column 3 -row 0 -rowspan 4 -sticky w -padx 5
+                .configFinishGame.wconf.text insert 0.0 "White $::finishGame(enginewhite)"
+                ::finishgame::initfgEngine white $::finishGame(enginewhite) }
+        ttk::frame $w.wconf
+        ::enginecfg::createConfigFrame fgEnginewhite $w.wconf "";#"White $::finishGame(enginewhite)"
+        $w.wconf.text configure -state normal -wrap word -width 60 -height 14
+        ttk::button $w.wconf.ok -text "OK" -command "grid forget $w.wconf"
+        grid $w.wconf.ok -row 2 -column 1
+        grid $w.wh_f.engine -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.wh_f.cv -column 1 -row 2 -sticky w
         grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
         grid $w.wh_f.c2 -column 3 -row 2 -sticky w
+        grid $w.wh_f.config -column 4 -row 0 -sticky w
 
         ttk::labelframe $w.bk_f -text "$::tr(Black)" -padding 5
         grid $w.bk_f -column 0 -row 1 -columnspan 2 -sticky we -pady 8
@@ -63,10 +74,21 @@ namespace eval ::finishgame {
         ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGame(cmdValueblack) -from 1 -to 999 -justify right
         ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdblack) -value "movetime"
         ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdblack) -value "depth"
+        ttk::button $w.bk_f.config -image tb_eng_config -style Toolbutton \
+            -command { grid forget .configFinishGame.wconf
+                grid .configFinishGame.bconf -column 3 -row 0 -rowspan 4 -sticky w -padx 5
+                .configFinishGame.bconf.text insert 0.0 "Black $::finishGame(engineblack)"
+                ::finishgame::initfgEngine black $::finishGame(engineblack) }
+        ttk::frame $w.bconf
+        ::enginecfg::createConfigFrame fgEngineblack $w.bconf ""
+        $w.bconf.text configure -state normal -wrap word -width 60 -height 14
+        ttk::button $w.bconf.ok -text "OK" -command "grid forget $w.bconf"
+        grid $w.bconf.ok -row 2 -column 1
         grid $w.bk_f.engine -column 1 -row 1 -columnspan 3 -sticky w
         grid $w.bk_f.cv -column 1 -row 2 -sticky w
         grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
         grid $w.bk_f.c2 -column 3 -row 2 -sticky w
+        grid $w.bk_f.config -column 4 -row 1 -sticky w
 
         ttk::checkbutton $w.finishGame -text $::tr(Annotate) -variable ::finishGame(annotate)
         grid $w.finishGame -column 0 -row 2 -sticky w -padx 5 -pady 8
@@ -79,6 +101,10 @@ namespace eval ::finishgame {
             if { $::autoplayMode } {
                 set ::autoplayMode 0
             } else {
+                ::engine::close fgEnginewhite
+                ::engine::close fgEngineblack
+                catch { unset ::enginewin::engConfig_fgEnginewhite }
+                catch { unset ::enginewin::engConfig_fgEngineblack }
                 destroy .configFinishGame
             }
         }
@@ -106,13 +132,16 @@ namespace eval ::finishgame {
 
     # Open the engine and configure it
     proc initfgEngine { color engine } {
+        set id fgEngine$color
+        if { [info exists ::enginewin::engConfig_$id] } { return "ok" }
         set config [::enginecfg::get $engine]
         lassign $config name cmd args wdir elo time url uci options
         if { ! $uci } { return "Only UCI-Engines are supported!" }
-        ::engine::setLogCmd fgEngine$color {}
-        ::engine::connect fgEngine$color ::finishgame::eng_messages $cmd {}
+        set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+        ::engine::setLogCmd $id {}
+        ::engine::connect $id [list ::finishgame::eng_messages $id] $cmd {}
         lappend options "MultiPV 2"
-        ::engine::send fgEngine$color SetOptions $options
+        ::engine::send $id SetOptions $options
         return "ok"
     }
 
@@ -138,7 +167,7 @@ namespace eval ::finishgame {
 
     proc ::finishgame::runFinishGame { } {
         set w .configFinishGame
-        grid forget $w.wh_f $w.bk_f $w.finishGame $w.finishGameShort
+        grid forget $w.wh_f $w.bk_f $w.finishGame $w.finishGameShort $w.wconf $w.bconf
         pack forget $w.fbuttons.ok
         grid $w.line1 -row 2 -column 0 -columnspan 2 -sticky we
 
@@ -185,13 +214,28 @@ namespace eval ::finishgame {
         sc_pos setComment "$tmp\n\n$::tr(FinishGame) $::tr(White): $::finishGame(enginewhite) $::finishGame(cmdwhite) $::finishGame(cmdValuewhite)\n\n$::tr(Black): $::finishGame(engineblack) $::finishGame(cmdblack) $::finishGame(cmdValueblack)"
         ::engine::close fgEnginewhite
         ::engine::close fgEngineblack
+        unset ::enginewin::engConfig_fgEnginewhite
+        unset ::enginewin::engConfig_fgEngineblack
         ::notify::PosChanged -pgn
         destroy .configFinishGame
     }
 
-    proc ::finishgame::eng_messages {msg} {
+    proc ::finishgame::eng_messages {id msg} {
         lassign $msg msgType msgData
         switch $msgType {
+            "InfoConfig" {
+                upvar ::enginewin::engConfig_$id engConfig_
+                if { $::autoplayMode } { return }
+                set msgData [lindex $msgData 2]
+                set w .configFinishGame.wconf
+                if { $id eq "fgEngineblack" } { set w .configFinishGame.bconf }
+                if { ! [winfo exists $w.text.reset] } {
+                    lset ::enginewin::engConfig_$id 8 $msgData
+                    ::enginecfg::createOptionWidgets $id $w $msgData
+                } else {
+                    ::enginecfg::updateOptionWidgets $id $w $msgData {}
+                }
+            }
             "InfoPV" {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                 if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
