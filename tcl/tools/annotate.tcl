@@ -15,35 +15,36 @@
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
 proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
-    if { [info exists ::enginewin::engConfig_$id] } { return "ok" }
+    if { [info exists ::enginewin::engConfig_$id] } { return 1 }
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
-    if { ! $uci } { return "Only UCI-Engines are supported!" }
+    if { ! $uci } {
+        tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
+        return 0
+    }
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
     lappend options $addOpts
     ::engine::send $id SetOptions $options
-    return "ok"
+    return 1
 }
 
-proc ::engineNoWin::changeEngine {id w {button ""}} {
+proc ::engineNoWin::changeEngine {id w enginevar callback} {
     ::engine::close $id
     $w.text configure -state normal
     $w.text delete 1.0 end
     foreach wchild [winfo children $w.text] { destroy $wchild }
     catch { unset ::enginewin::engConfig_$id }
-    if { $button ne "" && [winfo ismapped $w] } {
-        grid forget $w
-        event generate $button <<Invoke>>
-    }
+    set engine [set $enginevar]
+    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
-proc ::engineNoWin::editEngine {id w enginevar col callback} {
+
+proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     if { [winfo ismapped $w] } { grid forget $w ; return }
     grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
     set engine [set $enginevar]
-    set msg [::engineNoWin::initEngine $id $engine [list $callback $id $w]]
-    if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
+    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
 
 #create frame for edit engine options
@@ -52,9 +53,9 @@ proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
     set engList [::enginecfg::names ]
     if { [set $var] eq "" } { set $var [lindex $engList 0] }
     ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
-    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $f.$id.opts"
+    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $var $callback"
     ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
-        -command "::engineNoWin::editEngine $id $f.opts$id $var $col $callback"
+        -command "::engineNoWin::showHideOptionsFrame $id $f.opts$id $var $callback $col"
     pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
     ttk::labelframe $f.opts$id -text "Engine Parameter"
     ttk::label $f.opts$id.l -textvariable $var
@@ -253,11 +254,9 @@ namespace eval ::annotation {
             set ::annotate(movetime) [expr {int($::annotateTime * 1000.0)}]
             set ::annotate(blunderThreshold) $::annotateBlunderThreshold
             set ::annotate(time) $::annotateTime
-            set msg [::engineNoWin::initEngine annotateEngine $::annotate(engine) [list ::annotation::eng_messages annotateEngine .annotationDialog.f.engpara]]
-            if { $msg eq "ok" } {
+            if { [::engineNoWin::initEngine annotateEngine $::annotate(engine) \
+                      [list ::annotation::eng_messages annotateEngine .annotationDialog.f.engpara]] } {
                 ::annotation::runAnnotation
-            } else {
-                tk_messageBox -title Scid -icon info -type ok -message $msg
             }
         }
         pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
