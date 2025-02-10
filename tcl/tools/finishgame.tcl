@@ -11,45 +11,47 @@
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
 proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
-    if { [info exists ::enginewin::engConfig_$id] } { return "ok" }
+    if { [info exists ::enginewin::engConfig_$id] } { return 1 }
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
-    if { ! $uci } { return "Only UCI-Engines are supported!" }
+    if { ! $uci } {
+        tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
+        return 0
+    }
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
     lappend options $addOpts
     ::engine::send $id SetOptions $options
-    return "ok"
+    return 1
 }
 
-proc ::engineNoWin::changeEngine {id w {button ""}} {
+proc ::engineNoWin::changeEngine {id w enginevar callback} {
     ::engine::close $id
     $w.text configure -state normal
     $w.text delete 1.0 end
     foreach wchild [winfo children $w.text] { destroy $wchild }
     catch { unset ::enginewin::engConfig_$id }
-    if { $button ne "" && [winfo ismapped $w] } {
-        event generate $button <<Invoke>>
-    }
+    set engine [set $enginevar]
+    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
-proc ::engineNoWin::editEngine {id w enginevar col callback} {
+
+proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     if { [winfo ismapped $w] } { grid forget $w ; return }
     grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
     set engine [set $enginevar]
-    set msg [::engineNoWin::initEngine $id $engine [list $callback $id $w]]
-    if { $msg ne "ok" } { tk_messageBox -title Scid -icon info -type ok -message $msg }
+    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
 
 #create frame for edit engine options
-proc ::engineNoWin::createEngineOptionsFrame {f id var col} {
+proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
     ttk::frame $f.$id
     set engList [::enginecfg::names ]
     if { [set $var] eq "" } { set $var [lindex $engList 0] }
     ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
-    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $f.$id.opts"
+    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $var $callback"
     ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
-        -command "::engineNoWin::editEngine $id $f.opts$id $var $col ::finishgame::eng_messages"
+        -command "::engineNoWin::showHideOptionsFrame $id $f.opts$id $var $callback $col"
     pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
     ttk::labelframe $f.opts$id -text "Engine Parameter"
     ttk::label $f.opts$id.l -textvariable $var
@@ -112,7 +114,7 @@ namespace eval ::finishgame {
         ttk::spinbox $w.wh_f.cv -width 3 -textvariable ::finishGame(cmdValuewhite) -from 1 -to 999 -justify right
         ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdwhite) -value "movetime"
         ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdwhite) -value "depth"
-        ::engineNoWin::createEngineOptionsFrame $w fgEnginewhite ::finishGame(enginewhite) 4
+        ::engineNoWin::createEngineOptionsFrame $w fgEnginewhite ::finishGame(enginewhite) 4 ::finishgame::eng_messages
         grid $w.fgEnginewhite -in $w.wh_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.wh_f.cv -column 1 -row 2 -sticky w
         grid $w.wh_f.c1 -column 2 -row 2 -sticky w -padx 6
@@ -125,7 +127,7 @@ namespace eval ::finishgame {
         ttk::spinbox $w.bk_f.cv -width 3 -textvariable ::finishGame(cmdValueblack) -from 1 -to 999 -justify right
         ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGame(cmdblack) -value "movetime"
         ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGame(cmdblack) -value "depth"
-        ::engineNoWin::createEngineOptionsFrame $w fgEngineblack ::finishGame(engineblack) 5
+        ::engineNoWin::createEngineOptionsFrame $w fgEngineblack ::finishGame(engineblack) 5 ::finishgame::eng_messages
         grid $w.fgEngineblack -in $w.bk_f -column 1 -row 0 -columnspan 3 -sticky w
         grid $w.bk_f.cv -column 1 -row 2 -sticky w
         grid $w.bk_f.c1 -column 2 -row 2 -sticky w -padx 6
@@ -151,15 +153,11 @@ namespace eval ::finishgame {
         }
 
         ttk::button $w.fbuttons.ok -text "OK" -command {
-            set msg [::finishgame::initfgEngine white $::finishGame(enginewhite)]
-            if { $msg eq "ok" } {
-                set msg [::finishgame::initfgEngine black $::finishGame(engineblack)]
-                if { $msg eq "ok" } {
-                    ::finishgame::runFinishGame
-                }
-            }
-            if { $msg ne "ok" } {
-                tk_messageBox -title Scid -icon info -type ok -message $msg
+            if { [::engineNoWin::initEngine fgEnginewhite $::finishGame(enginewhite) \
+                      [list ::finishgame::eng_messages fgEnginewhite .configFinishGame.optsfgEnginewhite]] &&
+                 [::engineNoWin::initEngine fgEngineblack $::finishGame(engineblack) \
+                      [list ::finishgame::eng_messages fgEngineblack .configFinishGame.optsfgEngineblack]] } {
+                ::finishgame::runFinishGame
             }
         }
         packbuttons right $w.fbuttons.cancel $w.fbuttons.ok
