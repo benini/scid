@@ -267,7 +267,7 @@ namespace eval ::annotation {
     # reset values for every game
     proc initGameAnnotation { } {
         #reset engine
-        ::engine::send annotateEngine NewGame [list analysis post_pv post_wdl]
+        ::engine::send annotateEngine NewGame [list analysis post_pv post_wdl [sc_game variant]]
         # calc amount of moves to analyze for progressbar
         set firstmove [llength [sc_game moves]]
         sc_game push copyfast
@@ -660,9 +660,6 @@ namespace eval ::annotation {
                 lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                 if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
                 set ::annotate(PV$multipv) [list $score $score_type $pv]
-                if { $multipv == 1 } {
-                    set pv [sc_pos coordToSAN $::annotate(position) $pv]
-                }
             }
             "InfoBestMove" {
                 lassign $msgData ::annotate(bestmove)
