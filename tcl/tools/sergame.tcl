@@ -529,9 +529,7 @@ namespace eval sergame {
       } elseif {$timeMode == "nodes"} {
         set parameter "nodes $::uci::uciInfo(fixednodes3)"
       }
-#      ::engine::send serEngine Position "fen [sc_pos fen]"
       ::engine::send serEngine Go [list "position fen [sc_pos fen]" $parameter]; #[list $::annotate(typ) $::annotate($::annotate(typ))]]
-#      ::engine::send serEngine Go [list [sc_game UCI_currentPos] $parameter]; #[list $::annotate(typ) $::annotate($::annotate(typ))]]
     }
     
     set ::uci::uciInfo(bestmove3) ""
@@ -563,7 +561,7 @@ namespace eval sergame {
       return
     }
     
-    ::uci::sc_move_add $::uci::uciInfo(bestmove3)
+    sc_move addSan $::uci::uciInfo(bestmove3)
     ::utils::sound::AnnounceNewMove $::uci::uciInfo(bestmove3)
     set ::uci::uciInfo(prevscore3) $::uci::uciInfo(score3)
     if { $::sergame::storeEval == 1 } {
@@ -587,10 +585,7 @@ namespace eval sergame {
       } elseif {$timeMode == "nodes"} {
         set parameter "ponder nodes $::uci::uciInfo(fixednodes3)"
       }
-#      ::sergame::sendToEngine $n "position fen [sc_pos fen] moves $::uci::uciInfo(ponder$n)"
-#      ::engine::send serEngine Position "fen [sc_pos fen] moves $::uci::uciInfo(ponder$n)"
       ::engine::send serEngine Go [list "position fen [sc_pos fen] moves $::uci::uciInfo(ponder3)" $parameter]
-#      ::engine::send serEngine Go [list [sc_game UCI_currentPos] ponder $parameter]
     }
     
     after 1000 ::sergame::engineGo
