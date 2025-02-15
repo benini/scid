@@ -306,7 +306,9 @@ namespace eval sergame {
           }
           "InfoPV" {
               lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
-              if { $score_type ne "mate" } { set score [expr {$score / 100.0}] }
+              if { $multipv == 1 } {
+                  set ::uci::uciInfo(score3) [expr $score / 100.0]
+              }
           }
           "InfoBestMove" {
               lassign $msgData ::uci::uciInfo(bestmove3) ponder ::uci::uciInfo(ponder3)
@@ -383,6 +385,7 @@ namespace eval sergame {
 
   proc takeBack {takebackClockW takebackClockB} {
     sc_move back 1
+    sc_game truncate
     if {$takebackClockW != ""} {
       ::gameclock::setSec 1 [expr 0 - $takebackClockW]
       ::gameclock::setSec 2 [expr 0 - $takebackClockB]
@@ -537,32 +540,13 @@ namespace eval sergame {
     # -------------------------------------------------------------
     # if weak move detected, propose the user to tack back
     if { $::sergame::coachIsWatching && $::uci::uciInfo(prevscore3) != "" } {
-      set blunder 0
-      set delta [expr $::uci::uciInfo(score3) - $::uci::uciInfo(prevscore3)]
-      if {$delta > $::informant("?!") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("?!")] && $::sergame::engineColor == "black" } {
-        set blunder 1
-      }
+      set tBlunder ""
+      set delta [expr abs($::uci::uciInfo(score3) - $::uci::uciInfo(prevscore3))]
+      if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
+      if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
+      if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
       
-      if {$delta > $::informant("?") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("?")] && $::sergame::engineColor == "black" } {
-        set blunder 2
-      }
-      
-      if {$delta > $::informant("??") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("??")] && $::sergame::engineColor == "black" } {
-        set blunder 3
-      }
-      
-      if {$blunder == 1} {
-        set tBlunder "DubiousMovePlayedTakeBack"
-      } elseif {$blunder == 2} {
-        set tBlunder "WeakMovePlayedTakeBack"
-      } elseif {$blunder == 3} {
-        set tBlunder "BadMovePlayedTakeBack"
-      }
-      
-      if {$blunder != 0} {
+      if {$tBlunder ne ""} {
         clocks stop
         set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message $::tr($tBlunder) ]
         if {$answer == yes} {
@@ -605,7 +589,6 @@ namespace eval sergame {
       }
 #      ::sergame::sendToEngine $n "position fen [sc_pos fen] moves $::uci::uciInfo(ponder$n)"
 #      ::engine::send serEngine Position "fen [sc_pos fen] moves $::uci::uciInfo(ponder$n)"
-puts "[list "position fen [sc_pos fen] moves $::uci::uciInfo(ponder3)" $parameter]"
       ::engine::send serEngine Go [list "position fen [sc_pos fen] moves $::uci::uciInfo(ponder3)" $parameter]
 #      ::engine::send serEngine Go [list [sc_game UCI_currentPos] ponder $parameter]
     }
