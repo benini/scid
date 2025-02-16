@@ -539,7 +539,7 @@ namespace eval sergame {
     # if weak move detected, propose the user to tack back
     if { $::sergame::coachIsWatching && $::sergame::uciInfo(prevscore3) != "" } {
       set tBlunder ""
-      set delta [expr abs($::sergame::uciInfo(score3) - $::sergame::uciInfo(prevscore3))]
+      set delta [expr $::sergame::uciInfo(score3) - $::sergame::uciInfo(prevscore3)]
       if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
       if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
       if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
@@ -565,7 +565,9 @@ namespace eval sergame {
     ::utils::sound::AnnounceNewMove $::sergame::uciInfo(bestmove3)
     set ::sergame::uciInfo(prevscore3) $::sergame::uciInfo(score3)
     if { $::sergame::storeEval == 1 } {
-      storeEvalComment $::sergame::uciInfo(score3)
+      set score $::sergame::uciInfo(score3)
+      if { $::sergame::engineColor eq "black" } { set score [expr 0.0 - $score] }
+      storeEvalComment $score
     }
     updateBoard -pgn -animate
     repetition
