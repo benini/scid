@@ -761,13 +761,9 @@ proc ::uci::parseline {id line} {
     }
 
     if {[string match "bestmove *" $line]} {
-        lassign [split $line] -> ::engconn(InfoBestMove_$id) ponder ponder_move
-        #TODO:
-        # lassign [lsearch -inline -index 0 $::engconn(options_$id) "Ponder"] -> do_ponder
-        # if {$do_ponder eq "true" && $ponder eq "ponder"}
-        #   set ::engconn(waitReply_$id) "Go?"
-        #   ::engine::rawsend $id position ...
-        #   ::engine::rawsend $id go ponder ...
+        # assign ponder move as well
+        # starting ponder should not be done here because other parameter like time or depth not available here
+        set ::engconn(InfoBestMove_$id) [lrange [split $line] 1 3]
         return 1
     }
 
