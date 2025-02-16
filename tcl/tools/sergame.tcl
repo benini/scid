@@ -319,7 +319,7 @@ namespace eval sergame {
               lassign $msgData errorMsg
               if {$errorMsg eq ""} { set errorMsg "The connection with the engine terminated unexpectedly." }
               tk_messageBox -icon warning -type ok -parent . -message $errorMsg
-              set ::autoplayMode 0
+              ::sergame::abortGame
           }
       }
   }
