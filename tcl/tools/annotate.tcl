@@ -299,6 +299,7 @@ namespace eval ::annotation {
         # Annotate all remaining moves of the game
         while { 1 } {
             set ::annotate(PV1) [list "" "" ""]
+            set ::annotate(PV2) [list "" "" ""]
             ::engine::send annotateEngine Go [list [sc_game UCI_currentPos] [list $::annotate(typ) $::annotate($::annotate(typ))]]
             vwait ::annotate(move_done)
             addAnnotation
