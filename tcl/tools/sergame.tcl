@@ -9,14 +9,13 @@
 namespace eval sergame {
   
   # DEBUG
-  set ::sergame::uciInfo(log_stdout3) 0
+  set ::sergame::data(log_stdout) 0
   
   # if true, follow a specific opening
   set openingMovesList {}
   set openingMovesHash {}
   set openingMoves ""
   set outOfOpening 0
-  array set engineListBox {}
   set engineName ""
   set bookSlot 2
   set storeEval 0
@@ -55,8 +54,8 @@ namespace eval sergame {
     grid $w.fbuttons -row 2 -column 1 -sticky we
     
     # builds the list of UCI engines
-    ::engineNoWin::createEngineOptionsFrame $w serEngine ::sergame::engineName 5 ::sergame::eng_messages
-    pack $w.serEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
+    ::engineNoWin::createEngineOptionsFrame $w seriousEngine ::sergame::engineName 5 ::sergame::eng_messages
+    pack $w.seriousEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
     
     # load book names
     ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
@@ -112,10 +111,10 @@ namespace eval sergame {
     ttk::label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.blacklseconds -row $row -column 5
     
-    $w.ftime.timebonus.whitespminutes set [expr $::sergame::uciInfo(wtime3) / (60 * 1000)]
-    $w.ftime.timebonus.whitespseconds set [expr $::sergame::uciInfo(winc3) /  1000]
-    $w.ftime.timebonus.blackspminutes set [expr $::sergame::uciInfo(btime3) / (60 * 1000)]
-    $w.ftime.timebonus.blackspseconds set [expr $::sergame::uciInfo(binc3) /  1000 ]
+    $w.ftime.timebonus.whitespminutes set [expr $::sergame::data(wtime) / (60 * 1000)]
+    $w.ftime.timebonus.whitespseconds set [expr $::sergame::data(winc) /  1000]
+    $w.ftime.timebonus.blackspminutes set [expr $::sergame::data(btime) / (60 * 1000)]
+    $w.ftime.timebonus.blackspseconds set [expr $::sergame::data(binc) /  1000 ]
     
     # Fixed depth
     ttk::frame $w.ftime.depth
@@ -194,18 +193,18 @@ namespace eval sergame {
           set ::sergame::useBook 0
         }
       }
-      set ::sergame::uciInfo(wtime3) [expr [.configSerGameWin.ftime.timebonus.whitespminutes get]*1000*60]
-      set ::sergame::uciInfo(btime3) [expr [.configSerGameWin.ftime.timebonus.blackspminutes get]*1000*60]
-      set ::sergame::uciInfo(winc3) [expr [.configSerGameWin.ftime.timebonus.whitespseconds get]*1000]
-      set ::sergame::uciInfo(binc3) [expr [.configSerGameWin.ftime.timebonus.blackspseconds get]*1000]
-      set ::sergame::uciInfo(fixeddepth3) [.configSerGameWin.ftime.depth.value get]
-      set ::sergame::uciInfo(fixednodes3) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
-      set ::sergame::uciInfo(movetime3) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
+      set ::sergame::data(wtime) [expr [.configSerGameWin.ftime.timebonus.whitespminutes get]*1000*60]
+      set ::sergame::data(btime) [expr [.configSerGameWin.ftime.timebonus.blackspminutes get]*1000*60]
+      set ::sergame::data(winc) [expr [.configSerGameWin.ftime.timebonus.whitespseconds get]*1000]
+      set ::sergame::data(binc) [expr [.configSerGameWin.ftime.timebonus.blackspseconds get]*1000]
+      set ::sergame::data(fixeddepth) [.configSerGameWin.ftime.depth.value get]
+      set ::sergame::data(fixednodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
+      set ::sergame::data(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
-      set callback [list ::sergame::eng_messages serEngine nop]
-      if { [::engineNoWin::initEngine serEngine $::sergame::engineName $callback] } {
+      set callback [list ::sergame::eng_messages seriousEngine nop]
+      if { [::engineNoWin::initEngine seriousEngine $::sergame::engineName $callback] } {
           destroy .configSerGameWin
-          ::sergame::play serEngine
+          ::sergame::play seriousEngine
       }
     }
     ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
@@ -231,9 +230,9 @@ namespace eval sergame {
     }
 
     set ::sergame::lFen {}
-    set ::sergame::uciInfo(prevscore3) 0.0
-    set ::sergame::uciInfo(score3) 0.0
-    set ::sergame::uciInfo(ponder3) ""
+    set ::sergame::data(prevscore) 0.0
+    set ::sergame::data(score) 0.0
+    set ::sergame::data(ponder) ""
     
     if {$::sergame::startFromCurrent} {
       set isOpening 0
@@ -307,11 +306,11 @@ namespace eval sergame {
           "InfoPV" {
               lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
               if { $multipv == 1 } {
-                  set ::sergame::uciInfo(score3) [expr $score / 100.0]
+                  set ::sergame::data(score) [expr $score / 100.0]
               }
           }
           "InfoBestMove" {
-              lassign $msgData ::sergame::uciInfo(bestmove3) ponder ::sergame::uciInfo(ponder3)
+              lassign $msgData ::sergame::data(bestmove) ponder ::sergame::data(ponder)
           }
           "InfoGo" {
               lassign $msgData ::annotate(position)
@@ -340,10 +339,10 @@ namespace eval sergame {
     after cancel ::sergame::engineGo
     clocks stop
     set ::sergame::lFen {}
-    ::engine::send serEngine StopGo
-    ::engine::close serEngine
-    unset ::enginewin::engConfig_serEngine
-    set ::sergame::uciInfo(bestmove3) "abort"
+    ::engine::send seriousEngine StopGo
+    ::engine::close seriousEngine
+    unset ::enginewin::engConfig_seriousEngine
+    set ::sergame::data(bestmove) "abort"
     ::notify::GameChanged
   }
 
@@ -354,8 +353,8 @@ namespace eval sergame {
       init {
           ::gameclock::new "" 1
           ::gameclock::new "" 2
-          ::gameclock::setSec 1 [expr 0 - $::sergame::uciInfo(wtime3)/1000]
-          ::gameclock::setSec 2 [expr 0 - $::sergame::uciInfo(btime3)/1000]
+          ::gameclock::setSec 1 [expr 0 - $::sergame::data(wtime)/1000]
+          ::gameclock::setSec 2 [expr 0 - $::sergame::data(btime)/1000]
       }
       start {
           if { [sc_pos side] == "white" } {
@@ -370,11 +369,11 @@ namespace eval sergame {
       }
       toggle {
           if {[::gameclock::stop 1]} {
-            ::gameclock::add 1 [expr $::sergame::uciInfo(winc3)/1000]
+            ::gameclock::add 1 [expr $::sergame::data(winc)/1000]
             ::gameclock::storeTimeComment 1
             ::gameclock::start 2
           } elseif {[::gameclock::stop 2]} {
-            ::gameclock::add 2 [expr $::sergame::uciInfo(binc3)/1000]
+            ::gameclock::add 2 [expr $::sergame::data(binc)/1000]
             ::gameclock::storeTimeComment 2
             ::gameclock::start 1
           }
@@ -432,7 +431,7 @@ namespace eval sergame {
         set takebackClockB [::gameclock::getSec 2]
         clocks toggle
       }
-      repetition
+      if { [repetition] } { [return }
     }
     
     # make a move corresponding to a specific opening, (it is engine's turn)
@@ -485,8 +484,9 @@ namespace eval sergame {
           
           clocks toggle
           updateBoard -pgn -animate
-          repetition
-          after 1000 ::sergame::engineGo
+          if { ! [repetition] } {
+              after 1000 ::sergame::engineGo
+          }
           return
         }
       }
@@ -501,45 +501,46 @@ namespace eval sergame {
         sc_move addSan $move
         ::utils::sound::AnnounceNewMove $move
         # we made a book move so assume a score = 0
-        set ::sergame::uciInfo(prevscore3) 0.0
+        set ::sergame::data(prevscore) 0.0
         clocks toggle
         updateBoard -pgn -animate
-        repetition
-        after 1000 ::sergame::engineGo
+        if { ! [repetition] } {
+            after 1000 ::sergame::engineGo
+        }
         return
       }
     }
     # -------------------------------------------------------------
     # check if the engine pondered on the right move
     
-    if { $::sergame::ponder && $::sergame::uciInfo(ponder3) == [sc_game info previousMoveUCI]} {
-      ::engine::rawsend serEngine "ponderhit"
+    if { $::sergame::ponder && $::sergame::data(ponder) == [sc_game info previousMoveUCI]} {
+      ::engine::rawsend seriousEngine "ponderhit"
     } else {
       if { $::sergame::ponder } {
-        ::engine::send serEngine StopGo
+        ::engine::send seriousEngine StopGo
       }
       if {$timeMode == "timebonus"} {
         set wtime [expr [::gameclock::getSec 1] * 1000 ]
         set btime [expr [::gameclock::getSec 2] * 1000 ]
-        set parameter "wtime $wtime btime $btime winc $::sergame::uciInfo(winc3) binc $::sergame::uciInfo(binc3)"
+        set parameter "wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
       } elseif {$timeMode == "depth"} {
-        set parameter "depth $::sergame::uciInfo(fixeddepth3)"
+        set parameter "depth $::sergame::data(fixeddepth)"
       } elseif {$timeMode == "movetime"} {
-        set parameter "movetime $::sergame::uciInfo(movetime3)"
+        set parameter "movetime $::sergame::data(movetime)"
       } elseif {$timeMode == "nodes"} {
-        set parameter "nodes $::sergame::uciInfo(fixednodes3)"
+        set parameter "nodes $::sergame::data(fixednodes)"
       }
-      ::engine::send serEngine Go [list "position fen [sc_pos fen]" $parameter]; #[list $::annotate(typ) $::annotate($::annotate(typ))]]
+      ::engine::send seriousEngine Go [list "position fen [sc_pos fen]" $parameter]; #[list $::annotate(typ) $::annotate($::annotate(typ))]]
     }
     
-    set ::sergame::uciInfo(bestmove3) ""
-    vwait ::sergame::uciInfo(bestmove3)
+    set ::sergame::data(bestmove) ""
+    vwait ::sergame::data(bestmove)
     
     # -------------------------------------------------------------
     # if weak move detected, propose the user to tack back
-    if { $::sergame::coachIsWatching && $::sergame::uciInfo(prevscore3) != "" } {
+    if { $::sergame::coachIsWatching && $::sergame::data(prevscore) != "" } {
       set tBlunder ""
-      set delta [expr $::sergame::uciInfo(score3) - $::sergame::uciInfo(prevscore3)]
+      set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
       if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
       if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
       if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
@@ -557,37 +558,37 @@ namespace eval sergame {
     }
     
     # -------------------------------------------------------------
-    if { $::sergame::uciInfo(bestmove3) == "abort" } {
+    if { $::sergame::data(bestmove) == "abort" } {
       return
     }
     
-    sc_move addSan $::sergame::uciInfo(bestmove3)
-    ::utils::sound::AnnounceNewMove $::sergame::uciInfo(bestmove3)
-    set ::sergame::uciInfo(prevscore3) $::sergame::uciInfo(score3)
+    sc_move addSan $::sergame::data(bestmove)
+    ::utils::sound::AnnounceNewMove $::sergame::data(bestmove)
+    set ::sergame::data(prevscore) $::sergame::data(score)
     if { $::sergame::storeEval == 1 } {
-      set score $::sergame::uciInfo(score3)
+      set score $::sergame::data(score)
       if { $::sergame::engineColor eq "black" } { set score [expr 0.0 - $score] }
       storeEvalComment $score
     }
     updateBoard -pgn -animate
-    repetition
+    if { [repetition] } { return }
     
     clocks toggle
 
-      # ponder mode (the engine just played its move) ;&& $::sergame::uciInfo(ponder3) != ""
+      # ponder mode (the engine just played its move) ;&& $::sergame::data(ponder) != ""
     if {$::sergame::ponder } {
       if {$timeMode == "timebonus"} {
         set wtime [expr [::gameclock::getSec 1] * 1000 ]
         set btime [expr [::gameclock::getSec 2] * 1000 ]
-        set parameter "ponder wtime $wtime btime $btime winc $::sergame::uciInfo(winc3) binc $::sergame::uciInfo(binc3)"
+        set parameter "ponder wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
       } elseif {$timeMode == "depth"} {
-        set parameter "ponder depth $::sergame::uciInfo(fixeddepth3)"
+        set parameter "ponder depth $::sergame::data(fixeddepth)"
       } elseif {$timeMode == "movetime"} {
-        set parameter "ponder movetime $::sergame::uciInfo(movetime3)"
+        set parameter "ponder movetime $::sergame::data(movetime)"
       } elseif {$timeMode == "nodes"} {
-        set parameter "ponder nodes $::sergame::uciInfo(fixednodes3)"
+        set parameter "ponder nodes $::sergame::data(fixednodes)"
       }
-      ::engine::send serEngine Go [list "position fen [sc_pos fen] moves $::sergame::uciInfo(ponder3)" $parameter]
+      ::engine::send seriousEngine Go [list "position fen [sc_pos fen] moves $::sergame::data(ponder)" $parameter]
     }
     
     after 1000 ::sergame::engineGo
@@ -605,7 +606,7 @@ namespace eval sergame {
     
     if { [llength [lsearch -all $::sergame::lFen $elt] ] >=3 } {
       tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
-      puts $::sergame::lFen
+      ::sergame::abortGame
       return 1
     }
     return 0
@@ -614,7 +615,7 @@ namespace eval sergame {
   #
   ################################################################################
   proc logEngine {n text} {
-    if {$::sergame::uciInfo(log_stdout3)} {
+    if {$::sergame::data(log_stdout)} {
       puts stdout "$n $text"
     }
   }

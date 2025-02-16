@@ -337,13 +337,13 @@ set ::sergame::startFromCurrent 0
 set ::sergame::coachIsWatching 0
 set ::sergame::timeMode "timebonus"
 set ::sergame::depth 3
-set ::sergame::movetime 0
+set ::sergame::movetime 1000
 set ::sergame::nodes 10000
 set ::sergame::ponder 0
-set ::sergame::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
-set ::sergame::uciInfo(winc3) [expr 10 * 1000 ]
-set ::sergame::uciInfo(btime3) [expr 5 * 60 * 1000 ]
-set ::sergame::uciInfo(binc3) [expr 10 * 1000 ]
+set ::sergame::data(wtime) [expr 5 * 60 * 1000 ]
+set ::sergame::data(winc) [expr 10 * 1000 ]
+set ::sergame::data(btime) [expr 5 * 60 * 1000 ]
+set ::sergame::data(binc) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
@@ -658,7 +658,7 @@ proc options.write {} {
           ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
           ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
-          ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
+          ::sergame::data(wtime) ::sergame::data(winc) ::sergame::data(btime) ::sergame::data(binc) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard \
