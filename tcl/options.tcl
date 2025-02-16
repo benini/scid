@@ -340,10 +340,10 @@ set ::sergame::depth 3
 set ::sergame::movetime 0
 set ::sergame::nodes 10000
 set ::sergame::ponder 0
-set ::uci::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(winc3) [expr 10 * 1000 ]
-set ::uci::uciInfo(btime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
+set ::sergame::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
+set ::sergame::uciInfo(winc3) [expr 10 * 1000 ]
+set ::sergame::uciInfo(btime3) [expr 5 * 60 * 1000 ]
+set ::sergame::uciInfo(binc3) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
