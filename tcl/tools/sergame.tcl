@@ -598,13 +598,8 @@ namespace eval sergame {
   # the position is a repetition
   ################################################################################
   proc repetition {} {
-    set elt [lrange [split [sc_pos fen]] 0 2]
-    # append the position only if different from the last element
-    if { $elt != [ lindex $::sergame::lFen end ] } {
-      lappend ::sergame::lFen $elt
-    }
-    
-    if { [llength [lsearch -all $::sergame::lFen $elt] ] >=3 } {
+    lassign [checkRepetition $::sergame::lFen] isRepetition ::sergame::lFen
+    if { $isRepetition } {
       tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
       ::sergame::abortGame
       return 1

@@ -288,29 +288,29 @@ namespace eval ::finishgame {
             }
         }
     }
+}
 
-    ################################################################################
-    # add current position for 3fold repetition detection and returns 1 if
-    # the position is a repetition
-    ################################################################################
-    proc checkRepetition { journal } {
-        set elt [lrange [split [sc_pos fen]] 0 2]
-        set isRep 0
-        # append the position only if different from the last element
-        if { $elt != [ lindex $journal end ] } { lappend journal $elt }
-        # 3fold repetion detected
-        if { [llength [lsearch -all $journal $elt] ] >=3 } { set isRep 1 }
-        return [list $isRep $journal]
-    }
+################################################################################
+# add current position for 3fold repetition detection and returns 1 if
+# the position is a repetition
+################################################################################
+proc checkRepetition { journal } {
+    set elt [lrange [split [sc_pos fen]] 0 2]
+    set isRep 0
+    # append the position only if different from the last element
+    if { $elt != [ lindex $journal end ] } { lappend journal $elt }
+    # 3fold repetion detected
+    if { [llength [lsearch -all $journal $elt] ] >=3 } { set isRep 1 }
+    return [list $isRep $journal]
+}
 
-    proc checkfiftyMoveRule { moves prevmaterial prevpawns } {
-        set isFiftyRule 0
-        set elt [string range [sc_pos board] 0 63]
-        incr moves
-        set material [string length [string map {"." ""} $elt]]
-        set pawns [string map {"n" "." "b" "." "r" "." "q" "." "k" "." "N" "." "B" "." "R" "." "Q" "." "K" "." } $elt]
-        if { $pawns ne $prevpawns || $material ne $prevmaterial } { set moves 0 }
-        if { $moves >= 100 || $material == 2 } { set isFiftyRule 1 }
-        return [list $isFiftyRule $moves $material $pawns]
-    }
+proc checkfiftyMoveRule { moves prevmaterial prevpawns } {
+    set isFiftyRule 0
+    set elt [string range [sc_pos board] 0 63]
+    incr moves
+    set material [string length [string map {"." ""} $elt]]
+    set pawns [string map {"n" "." "b" "." "r" "." "q" "." "k" "." "N" "." "B" "." "R" "." "Q" "." "K" "." } $elt]
+    if { $pawns ne $prevpawns || $material ne $prevmaterial } { set moves 0 }
+    if { $moves >= 100 || $material == 2 } { set isFiftyRule 1 }
+    return [list $isFiftyRule $moves $material $pawns]
 }
