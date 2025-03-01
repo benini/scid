@@ -17,9 +17,12 @@ namespace eval sergame {
   set openingMoves ""
   set outOfOpening 0
   set engineName ""
+  set coachName ""
   set bookSlot 2
   set storeEval 0
-
+  set coachTypeMove 1
+  set coachTypeTactic 1
+  set useCoachEngine 1
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   
@@ -56,6 +59,16 @@ namespace eval sergame {
     # builds the list of UCI engines
     ::engineNoWin::createEngineOptionsFrame $w seriousEngine ::sergame::engineName 5 ::sergame::eng_messages
     pack $w.seriousEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
+    # coach engine
+    ::engineNoWin::createEngineOptionsFrame $w coachEngine ::sergame::coachName 6 ::sergame::eng_messages
+    ttk::label $w.fengines.lcoach -text "Coaching"
+    ttk::frame $w.fengines.cb
+    ttk::checkbutton $w.fengines.cb.noCoach -text "use $::tr(Coachengine)" -variable ::sergame::useCoachEngine
+    ttk::checkbutton $w.fengines.cb.coach -text "Move" -variable ::sergame::coachTypeMove
+    ttk::checkbutton $w.fengines.cb.fullCoach -text "Tactical advice" -variable ::sergame::coachTypeTactic
+    pack $w.fengines.cb.noCoach $w.fengines.cb.coach $w.fengines.cb.fullCoach -side left -padx 4
+    pack $w.fengines.lcoach $w.fengines.cb -side top -anchor w -padx 4
+    pack $w.coachEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
     
     # load book names
     ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
@@ -155,9 +168,6 @@ namespace eval sergame {
     ttk::checkbutton $w.fconfig.cbPonder -text $::tr(Ponder) -variable ::sergame::ponder
     pack $w.fconfig.cbPonder  -side top -anchor w
     
-    # Warn if the user makes weak/bad moves
-    ttk::checkbutton $w.fconfig.cbCoach -text $::tr(CoachIsWatching) -variable ::sergame::coachIsWatching
-    pack $w.fconfig.cbCoach -side top -anchor w
     #Should the evaluation of the position stored in the comment?
     ttk::checkbutton $w.fconfig.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::storeEval
     pack $w.fconfig.storeEval -side top -anchor w
@@ -289,6 +299,13 @@ namespace eval sergame {
     ::setPlayMode "::sergame::callback"
     ::notify::GameChanged
 
+    if { $::sergame::coachTypeTactic || $::sergame::useCoachEngine } {
+        set ::sergame::useCoachEngine 1
+        set callback [list ::sergame::coachEng_messages coachEngine nop]
+        if { ! [::engineNoWin::initEngine coachEngine $::sergame::coachName $callback] } {
+            set ::sergame::useCoachEngine 0
+        }
+    }
     clocks init
     clocks start
 
@@ -304,16 +321,42 @@ namespace eval sergame {
               ::engineNoWin::initEngineOptions $id $w $msgData
           }
           "InfoPV" {
-              lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
-              if { $multipv == 1 } {
-                  set ::sergame::data(score) [expr $score / 100.0]
+              if { ! $::sergame::useCoachEngine } {
+                  # no coach engine then use score from playing engine
+                  lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
+                  if { $multipv == 1 } {
+                      set ::sergame::data(score) [expr $score / 100.0]
+                  }
               }
           }
           "InfoBestMove" {
               lassign $msgData ::sergame::data(bestmove) ponder ::sergame::data(ponder)
           }
-          "InfoGo" {
-              lassign $msgData ::annotate(position)
+          "InfoDisconnected" {
+              lassign $msgData errorMsg
+              if {$errorMsg eq ""} { set errorMsg "The connection with the engine terminated unexpectedly." }
+              tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+              ::sergame::abortGame
+          }
+      }
+  }
+  proc ::sergame::coachEng_messages {id w msg} {
+      lassign $msg msgType msgData
+      switch $msgType {
+          "InfoConfig" {
+              if { ! [winfo exists $w] } { return }
+              set msgData [lindex $msgData 2]
+              ::engineNoWin::initEngineOptions $id $w $msgData
+          }
+          "InfoPV" {
+              lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
+              if { $multipv == 1 } {
+                  set ::sergame::data(bestCoachmove) $pv
+                  set ::sergame::data(score) [expr $score / 100.0]
+              }
+          }
+          "InfoBestMove" {
+              lassign $msgData ::sergame::data(bestCoachmove)
           }
           "InfoDisconnected" {
               lassign $msgData errorMsg
@@ -343,6 +386,11 @@ namespace eval sergame {
     ::engine::close seriousEngine
     unset ::enginewin::engConfig_seriousEngine
     set ::sergame::data(bestmove) "abort"
+    if { $::sergame::useCoachEngine } {
+        ::engine::send coachEngine StopGo
+        ::engine::close coachEngine
+        unset ::enginewin::engConfig_coachEngine
+    }
     ::notify::GameChanged
   }
 
@@ -530,17 +578,24 @@ namespace eval sergame {
       } elseif {$timeMode == "nodes"} {
         set parameter "nodes $::sergame::data(fixednodes)"
       }
-      ::engine::send seriousEngine Go [list "position fen [sc_pos fen]" $parameter]; #[list $::annotate(typ) $::annotate($::annotate(typ))]]
+      ::engine::send seriousEngine Go [list "position fen [sc_pos fen]" $parameter]
+      if { $::sergame::useCoachEngine } {
+          ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
+      }
     }
     
     set ::sergame::data(bestmove) ""
     vwait ::sergame::data(bestmove)
+    if { $::sergame::useCoachEngine } {
+        ::engine::send coachEngine StopGo
+    }
     
     # -------------------------------------------------------------
     # if weak move detected, propose the user to tack back
-    if { $::sergame::coachIsWatching && $::sergame::data(prevscore) != "" } {
+    if { $::sergame::coachTypeMove && $::sergame::data(prevscore) != "" } {
       set tBlunder ""
       set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
+        if { [sc_pos side] != $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
       if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
       if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
       if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
@@ -575,7 +630,7 @@ namespace eval sergame {
     
     clocks toggle
 
-      # ponder mode (the engine just played its move) ;&& $::sergame::data(ponder) != ""
+    # ponder mode (the engine just played its move) ;&& $::sergame::data(ponder) != ""
     if {$::sergame::ponder } {
       if {$timeMode == "timebonus"} {
         set wtime [expr [::gameclock::getSec 1] * 1000 ]

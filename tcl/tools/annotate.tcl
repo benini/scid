@@ -42,7 +42,7 @@ proc ::engineNoWin::changeEngine {id w enginevar callback} {
 
 proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     if { [winfo ismapped $w] } { grid forget $w ; return }
-    grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
+    grid $w -row 0 -column $col -rowspan 4 -sticky nswe -padx 10
     set engine [set $enginevar]
     ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
