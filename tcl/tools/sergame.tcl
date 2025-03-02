@@ -23,6 +23,11 @@ namespace eval sergame {
   set coachTypeMove 1
   set coachTypeTactic 1
   set useCoachEngine 1
+  set tacticBlunder ""
+  set tacTime 10
+  set actTacTime 0
+  set threshold 0.6
+  set isLimitedAnalysisTime 1
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   
@@ -67,7 +72,15 @@ namespace eval sergame {
     ttk::checkbutton $w.fengines.cb.coach -text "Move" -variable ::sergame::coachTypeMove
     ttk::checkbutton $w.fengines.cb.fullCoach -text "Tactical advice" -variable ::sergame::coachTypeTactic
     pack $w.fengines.cb.noCoach $w.fengines.cb.coach $w.fengines.cb.fullCoach -side left -padx 4
-    pack $w.fengines.lcoach $w.fengines.cb -side top -anchor w -padx 4
+    ttk::frame $w.fengines.th
+    ttk::label $w.fengines.th.l -text $::tr(moveblunderthreshold)
+    ttk::spinbox $w.fengines.th.val -width 3 -from 0.4 -to 5.0 -increment 0.1 -textvariable ::sergame::threshold -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
+    pack $w.fengines.th.l $w.fengines.th.val -side left -anchor w -padx 4
+    ttk::frame $w.fengines.ad
+    ttk::checkbutton $w.fengines.ad.l -text $::tr(limitanalysis) -variable ::sergame::isLimitedAnalysisTime
+    ttk::spinbox $w.fengines.ad.val -width 3 -from 1 -to 360 -increment 1 -textvariable ::sergame::tacTime -validate all -validatecommand { regexp {^[0-9]$} %P }
+    pack $w.fengines.ad.l $w.fengines.ad.val -side left -anchor w -padx 4
+    pack $w.fengines.lcoach $w.fengines.cb $w.fengines.th $w.fengines.ad -side top -anchor w -padx 4
     pack $w.coachEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
     
     # load book names
@@ -292,6 +305,13 @@ namespace eval sergame {
       sc_game tags set -$::sergame::playerColor "Player"
       sc_game tags set -$::sergame::engineColor "$::sergame::engineName"
       sc_game tags set -date [::utils::date::today]
+      if { $::sergame::coachTypeMove || $::sergame::coachTypeTactic } {
+          set co "Coached Game: "
+          if { $::sergame::coachTypeMove } { append co "Bad Move Warning; " }
+          if { $::sergame::coachTypeTactic } { append co "Engine Blunder Information; " }
+          append co "Blunder Threshold: $::sergame::threshold "
+          sc_pos setComment $co
+      }
     }
 
     set ::sergame::waitPlayerMove 0
@@ -466,7 +486,41 @@ namespace eval sergame {
     if { [sc_pos side] != $::sergame::engineColor } {
       set ::sergame::waitPlayerMove 1
       after 1000 ::sergame::engineGo
+      if { $::sergame::useCoachEngine && $::sergame::coachTypeTactic && $::sergame::actTacTime > 0 && $::sergame::data(prevscore) != "" } {
+          incr ::sergame::actTacTime -1
+          if { $::sergame::isLimitedAnalysisTime && ! $::sergame::actTacTime } {
+              ::engine::send coachEngine StopGo
+          } else {
+              set ::sergame::tacticBlunder ""
+              set delta [expr $::sergame::data(score) + $::sergame::data(prevscore)]
+              if { [sc_pos side] == $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
+              if { $delta >= $::sergame::threshold } {
+                  if {$delta > $::informant("?!") } { set ::sergame::tacticBlunder "?!" }
+                  if {$delta > $::informant("?") } { set ::sergame::tacticBlunder "?" }
+                  if {$delta > $::informant("??") } { set ::sergame::tacticBlunder "??" }
+                  if { $::sergame::tacticBlunder ne "" } {
+                      if { $::sergame::engineColor eq "white" } {
+                          set from $::sergame::data(prevscore)
+                          set to [expr 0.0 - $::sergame::data(score)]
+                      } else {
+                          set from [expr 0.0 - $::sergame::data(prevscore)]
+                          set to $::sergame::data(score)
+                      }
+                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder" "$from -> $to" red {{*}$::playMode stop}
+                  }
+              }
+          }
+      }
       return
+    }
+    if { $::sergame::useCoachEngine } {
+        ::board::updateEvalBar .main.board ""
+        ::engine::send coachEngine StopGo
+        if { $::sergame::tacticBlunder ne "" } {
+            sc_move back
+            sc_pos addNag $::sergame::tacticBlunder
+            sc_move forward
+        }
     }
     
     set takebackClockW ""
@@ -595,11 +649,12 @@ namespace eval sergame {
     if { $::sergame::coachTypeMove && $::sergame::data(prevscore) != "" } {
       set tBlunder ""
       set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
-        if { [sc_pos side] != $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
-      if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
-      if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
-      if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
-      
+      if { [sc_pos side] != $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
+      if { $delta >= $::sergame::threshold } {
+          if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
+          if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
+          if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
+      }
       if {$tBlunder ne ""} {
         clocks stop
         set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message $::tr($tBlunder) ]
@@ -646,6 +701,10 @@ namespace eval sergame {
       ::engine::send seriousEngine Go [list "position fen [sc_pos fen] moves $::sergame::data(ponder)" $parameter]
     }
     
+    if { $::sergame::useCoachEngine } {
+        set ::sergame::actTacTime $::sergame::tacTime
+        ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
+    }
     after 1000 ::sergame::engineGo
   }
   ################################################################################
