@@ -20,11 +20,11 @@ namespace eval sergame {
   set coachName ""
   set bookSlot 2
   set storeEval 0
-  set coachTypeMove 1
-  set coachTypeTactic 1
-  set useCoachEngine 1
+  set coachTypeMove 0
+  set coachTypeTactic 0
+  set useCoachEngine 0
   set tacticBlunder ""
-  set tacTime 10
+  set tacTime 5
   set actTacTime 0
   set threshold 0.6
   set isLimitedAnalysisTime 1
@@ -49,39 +49,52 @@ namespace eval sergame {
     bind $w <F1> { helpWindow SeriousGame }
     setWinLocation $w
     
-    ttk::frame $w.fconfig -padding 10
+    ttk::frame $w.fconfig
+    ttk::frame $w.fconfig2
     ttk::frame $w.fbuttons
     ttk::labelframe $w.fengines -text $::tr(Engine)
+    ttk::labelframe $w.coach -text "Coaching"
     ttk::labelframe $w.ftime -text $::tr(TimeMode)
     ttk::labelframe $w.fopening -text $::tr(Opening)
     
     grid $w.fengines -row 0 -column 0 -pady { 0 10 } -sticky nswe -padx { 0 10 }
-    grid $w.fopening -row 0 -column 1 -pady { 0 10 } -sticky nswe -padx { 10 0 }
-    grid $w.ftime -row 1 -column 0 -pady { 10 0 } -sticky nswe -padx { 0 10 }
-    grid $w.fconfig -row 1 -column 1 -pady { 10 0 } -sticky we -padx { 10 0 }
-    grid $w.fbuttons -row 2 -column 1 -sticky we
+    grid $w.coach -row 0 -column 1 -pady { 0 10 } -sticky nswe -padx { 0 10 }
+    grid $w.fopening -row 1 -column 0 -pady { 0 10 } -sticky nswe -padx { 0 10 }
+    grid $w.ftime -row 1 -column 1 -pady { 0 10 } -sticky nswe -padx { 0 10 }
+    grid $w.fconfig -row 2 -column 0 -pady { 0 10 } -sticky we -padx { 0 10 }
+    grid $w.fconfig2 -row 2 -column 1 -pady { 0 10 } -sticky we -padx { 0 10 }
+    grid $w.fbuttons -row 3 -column 1 -sticky se
     
     # builds the list of UCI engines
     ::engineNoWin::createEngineOptionsFrame $w seriousEngine ::sergame::engineName 5 ::sergame::eng_messages
+    # ponder
+    ttk::checkbutton $w.fengines.ponder -text $::tr(Ponder) -variable ::sergame::ponder
     pack $w.seriousEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
+    pack $w.fengines.ponder -side top -anchor w
+
     # coach engine
+    ttk::frame $w.coach.en
+    ttk::checkbutton $w.coach.en.coach -text "$::tr(Engine)" -variable ::sergame::useCoachEngine
+    ::utils::tooltip::Set $w.coach.en.coach "Use a separate (strong) engine for coaching if the playing engine is weak."
     ::engineNoWin::createEngineOptionsFrame $w coachEngine ::sergame::coachName 6 ::sergame::eng_messages
-    ttk::label $w.fengines.lcoach -text "Coaching"
-    ttk::frame $w.fengines.cb
-    ttk::checkbutton $w.fengines.cb.noCoach -text "use $::tr(Coachengine)" -variable ::sergame::useCoachEngine
-    ttk::checkbutton $w.fengines.cb.coach -text "Move" -variable ::sergame::coachTypeMove
-    ttk::checkbutton $w.fengines.cb.fullCoach -text "Tactical advice" -variable ::sergame::coachTypeTactic
-    pack $w.fengines.cb.noCoach $w.fengines.cb.coach $w.fengines.cb.fullCoach -side left -padx 4
-    ttk::frame $w.fengines.th
-    ttk::label $w.fengines.th.l -text $::tr(moveblunderthreshold)
-    ttk::spinbox $w.fengines.th.val -width 3 -from 0.4 -to 5.0 -increment 0.1 -textvariable ::sergame::threshold -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
-    pack $w.fengines.th.l $w.fengines.th.val -side left -anchor w -padx 4
-    ttk::frame $w.fengines.ad
-    ttk::checkbutton $w.fengines.ad.l -text $::tr(limitanalysis) -variable ::sergame::isLimitedAnalysisTime
-    ttk::spinbox $w.fengines.ad.val -width 3 -from 1 -to 360 -increment 1 -textvariable ::sergame::tacTime -validate all -validatecommand { regexp {^[0-9]$} %P }
-    pack $w.fengines.ad.l $w.fengines.ad.val -side left -anchor w -padx 4
-    pack $w.fengines.lcoach $w.fengines.cb $w.fengines.th $w.fengines.ad -side top -anchor w -padx 4
-    pack $w.coachEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
+    pack $w.coach.en.coach -in $w.coach.en -side left -pady 5 -anchor w -padx 4
+    pack $w.coachEngine -in $w.coach.en -side left -pady 5 -anchor w -padx 4
+    ttk::frame $w.coach.cb
+    ttk::checkbutton $w.coach.cb.coach -text "Bad move warning" -variable ::sergame::coachTypeMove
+    ::utils::tooltip::Set $w.coach.cb.coach "Coach warns if player made a bad move. Player can take back this move."
+    ttk::checkbutton $w.coach.cb.fullCoach -text "Mark engine blunder" -variable ::sergame::coachTypeTactic \
+        -command { if { $::sergame::coachTypeTactic } { set ::sergame::useCoachEngine 1 } }
+    ::utils::tooltip::Set $w.coach.cb.fullCoach "Gives a hint (in InfoBar) that engines has blundered. Needs coaching engine."
+    pack $w.coach.cb.coach $w.coach.cb.fullCoach -side left -padx 4
+    ttk::frame $w.coach.th
+    ttk::label $w.coach.th.l -text $::tr(moveblunderthreshold)
+    ttk::spinbox $w.coach.th.val -width 3 -from 0.4 -to 5.0 -increment 0.1 -textvariable ::sergame::threshold -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
+    pack $w.coach.th.l $w.coach.th.val -side left -anchor w -padx 4
+    ttk::frame $w.coach.ad
+    ttk::checkbutton $w.coach.ad.l -text $::tr(limitanalysis) -variable ::sergame::isLimitedAnalysisTime
+    ttk::spinbox $w.coach.ad.val -width 3 -from 1 -to 360 -increment 1 -textvariable ::sergame::tacTime -validate all -validatecommand { regexp {^[0-9]$} %P }
+    pack $w.coach.ad.l $w.coach.ad.val -side left -anchor w -padx 4
+    pack $w.coach.cb $w.coach.th $w.coach.en $w.coach.ad -side top -anchor w -padx 4
     
     # load book names
     ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
@@ -174,16 +187,10 @@ namespace eval sergame {
     pack $w.fconfig.combo -side top -anchor w -padx 20 -fill x
     
     # New game or use current position ?
-    ttk::checkbutton $w.fconfig.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
-    pack $w.fconfig.cbPosition  -side top -anchor w
-    
-    # ponder
-    ttk::checkbutton $w.fconfig.cbPonder -text $::tr(Ponder) -variable ::sergame::ponder
-    pack $w.fconfig.cbPonder  -side top -anchor w
-    
+    ttk::checkbutton $w.fconfig2.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
     #Should the evaluation of the position stored in the comment?
-    ttk::checkbutton $w.fconfig.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::storeEval
-    pack $w.fconfig.storeEval -side top -anchor w
+    ttk::checkbutton $w.fconfig2.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::storeEval
+    pack $w.fconfig2.cbPosition $w.fconfig2.storeEval -side top -anchor w
     
     # choose a specific opening
     ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
