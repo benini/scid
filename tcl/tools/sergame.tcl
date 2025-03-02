@@ -305,7 +305,12 @@ namespace eval sergame {
       sc_game tags set -$::sergame::playerColor "Player"
       sc_game tags set -$::sergame::engineColor "$::sergame::engineName"
       sc_game tags set -date [::utils::date::today]
+      if {$::sergame::timeMode eq "timebonus"} {
+          sc_game tags set -extra [list "TimeControlWhite \"[expr $::sergame::data(wtime)/60000]+[expr $::sergame::data(winc)/1000]\"" \
+                                   "TimeControlBlack \"[expr $::sergame::data(btime)/60000]+[expr $::sergame::data(binc)/1000]\""]
+      }
       if { $::sergame::coachTypeMove || $::sergame::coachTypeTactic } {
+          sc_game tags set -event "Coached game"
           set co "Coached Game: "
           if { $::sergame::coachTypeMove } { append co "Bad Move Warning; " }
           if { $::sergame::coachTypeTactic } { append co "Engine Blunder Information; " }
@@ -506,7 +511,7 @@ namespace eval sergame {
                           set from [expr 0.0 - $::sergame::data(prevscore)]
                           set to $::sergame::data(score)
                       }
-                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder" "$from -> $to" red {{*}$::playMode stop}
+                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to  Playing..." [tr Stop] red {{*}$::playMode stop}
                   }
               }
           }
