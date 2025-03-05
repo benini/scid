@@ -28,6 +28,7 @@ namespace eval sergame {
   set actTacTime 0
   set threshold 0.6
   set isLimitedAnalysisTime 1
+  set useBook 0
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   
@@ -358,6 +359,13 @@ namespace eval sergame {
                   lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                   if { $multipv == 1 } {
                       set ::sergame::data(score) [expr $score / 100.0]
+                      if { $score_type eq "mate" } {
+                          if { $score > 0 } {
+                              set ::sergame::data(score) 128.0
+                          } else {
+                              set ::sergame::data(score) -128.0
+                          }
+                      }
                   }
               }
           }
@@ -383,8 +391,15 @@ namespace eval sergame {
           "InfoPV" {
               lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
               if { $multipv == 1 } {
-                  set ::sergame::data(bestCoachmove) $pv
+                  set ::sergame::data(bestCoachmove) [lrange $pv 0 0]
                   set ::sergame::data(score) [expr $score / 100.0]
+                  if { $score_type eq "mate" } {
+                      if { $score > 0 } {
+                          set ::sergame::data(score) 128.0
+                      } else {
+                          set ::sergame::data(score) -128.0
+                      }
+                  }
               }
           }
           "InfoBestMove" {
@@ -496,9 +511,11 @@ namespace eval sergame {
     if { [::sergame::endOfGame] } { return }
     
     if { [sc_pos side] != $::sergame::engineColor } {
+      # wait until player has moved
       set ::sergame::waitPlayerMove 1
       after 1000 ::sergame::engineGo
       if { $::sergame::useCoachEngine && $::sergame::coachTypeTactic && $::sergame::actTacTime > 0 && $::sergame::data(prevscore) != "" } {
+          #check for engine blunder with coach engine
           incr ::sergame::actTacTime -1
           if { $::sergame::isLimitedAnalysisTime && ! $::sergame::actTacTime } {
               ::engine::send coachEngine StopGo
@@ -518,7 +535,8 @@ namespace eval sergame {
                           set from [expr 0.0 - $::sergame::data(prevscore)]
                           set to $::sergame::data(score)
                       }
-                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to  Playing..." [tr Stop] red {{*}$::playMode stop}
+                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
+                          {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
                   }
               }
           }
@@ -526,11 +544,16 @@ namespace eval sergame {
       return
     }
     if { $::sergame::useCoachEngine } {
-        ::board::updateEvalBar .main.board ""
         ::engine::send coachEngine StopGo
         if { $::sergame::tacticBlunder ne "" } {
+            # engine blundered, add nag and correct eval comment
             sc_move back
             sc_pos addNag $::sergame::tacticBlunder
+            if { $::sergame::storeEval == 1 } {
+                set score $::sergame::data(score)
+                if { $::sergame::engineColor eq "white" } { set score [expr 0.0 - $score] }
+                storeEvalComment $score
+            }
             sc_move forward
         }
     }
