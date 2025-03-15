@@ -261,7 +261,7 @@ namespace eval sergame {
     }
 
     set ::sergame::lFen {}
-    set ::sergame::data(prevscore) 0.0
+    set ::sergame::data(prevscore) ""
     set ::sergame::data(score) 0.0
     set ::sergame::data(ponder) ""
     
@@ -494,7 +494,8 @@ namespace eval sergame {
   proc endOfGame {} {
     set move_done [sc_game info previousMove]
     if { [string index [sc_game info previousMove] end ] == "#"} {
-      clocks stop
+      tk_messageBox -type ok -message "This is Mate!" -parent .main -icon info
+      ::sergame::abortGame
       return 1
     }
     return 0
@@ -518,6 +519,7 @@ namespace eval sergame {
           #check for engine blunder with coach engine
           incr ::sergame::actTacTime -1
           if { $::sergame::isLimitedAnalysisTime && ! $::sergame::actTacTime } {
+              while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
               ::engine::send coachEngine StopGo
           } else {
               set ::sergame::tacticBlunder ""
@@ -638,7 +640,7 @@ namespace eval sergame {
         sc_move addSan $move
         ::utils::sound::AnnounceNewMove $move
         # we made a book move so assume a score = 0
-        set ::sergame::data(prevscore) 0.0
+        set ::sergame::data(prevscore) ""
         clocks toggle
         updateBoard -pgn -animate
         if { ! [repetition] } {
@@ -668,19 +670,21 @@ namespace eval sergame {
         set parameter "nodes $::sergame::data(fixednodes)"
       }
       ::engine::send seriousEngine Go [list "position fen [sc_pos fen]" $parameter]
-      if { $::sergame::useCoachEngine } {
-          ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
-      }
+    }
+    if { $::sergame::useCoachEngine } {
+        set ::sergame::data(bestCoachmove) ""
+        ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
     }
     
     set ::sergame::data(bestmove) ""
     vwait ::sergame::data(bestmove)
     if { $::sergame::useCoachEngine } {
+        while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
         ::engine::send coachEngine StopGo
     }
     
     # -------------------------------------------------------------
-    # if weak move detected, propose the user to tack back
+    # if weak move detected, propose the user to take back
     if { $::sergame::coachTypeMove && $::sergame::data(prevscore) != "" } {
       set tBlunder ""
       set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
@@ -692,7 +696,7 @@ namespace eval sergame {
       }
       if {$tBlunder ne ""} {
         clocks stop
-        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message $::tr($tBlunder) ]
+        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$::sergame::data(prevscore) -> $::sergame::data(score)" ]
         if {$answer == yes} {
           takeBack $takebackClockW $takebackClockB
           after 1000 ::sergame::engineGo
@@ -738,6 +742,7 @@ namespace eval sergame {
     
     if { $::sergame::useCoachEngine } {
         set ::sergame::actTacTime $::sergame::tacTime
+        set ::sergame::data(bestCoachmove) ""
         ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
     }
     after 1000 ::sergame::engineGo
