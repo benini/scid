@@ -231,6 +231,9 @@ namespace eval sergame {
       set ::sergame::data(fixeddepth) [.configSerGameWin.ftime.depth.value get]
       set ::sergame::data(fixednodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
       set ::sergame::data(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
+      set ::sergame::depth [.configSerGameWin.ftime.depth.value get]
+      set ::sergame::nodes [expr [.configSerGameWin.ftime.nodes.value get]*1000]
+      set ::sergame::movetime [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
       set callback [list ::sergame::eng_messages seriousEngine nop]
       if { [::engineNoWin::initEngine seriousEngine $::sergame::engineName $callback] } {
@@ -519,6 +522,7 @@ namespace eval sergame {
           #check for engine blunder with coach engine
           incr ::sergame::actTacTime -1
           if { $::sergame::isLimitedAnalysisTime && ! $::sergame::actTacTime } {
+              # make sure we have a move and evaluation from coach engine 
               while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
               ::engine::send coachEngine StopGo
           } else {
@@ -679,6 +683,7 @@ namespace eval sergame {
     set ::sergame::data(bestmove) ""
     vwait ::sergame::data(bestmove)
     if { $::sergame::useCoachEngine } {
+        # make sure we have a move and evaluation from coach engine 
         while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
         ::engine::send coachEngine StopGo
     }
