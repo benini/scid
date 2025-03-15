@@ -655,8 +655,7 @@ namespace eval sergame {
     }
     # -------------------------------------------------------------
     # check if the engine pondered on the right move
-    
-    if { $::sergame::ponder && $::sergame::data(ponder) == [sc_game info previousMoveUCI]} {
+    if { $::sergame::ponder && $::sergame::data(ponder) ne "" && $::sergame::data(ponder) == [sc_game info previousMoveUCI]} {
       ::engine::rawsend seriousEngine "ponderhit"
     } else {
       if { $::sergame::ponder } {
