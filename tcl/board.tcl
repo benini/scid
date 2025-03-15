@@ -1004,6 +1004,8 @@ proc ::board::setmarks {w cmds} {
       "G" {set color "green" }
       "Y" {set color "yellow"}
       "B" {set color "blue"  }
+      "O" {set color "orange"}
+      "C" {set color "cyan"  }
     }
     list $type $arg1 $arg2 $color
   }]
@@ -1048,7 +1050,7 @@ namespace eval ::board::mark {
   # ChessBase' syntax for markers and arrows
   variable CBSquare    {csl}
   variable CBarrow     {cal}
-  variable CBColor     {[BGRY]}
+  variable CBColor     {[BGRYOC]}
   variable Square      {[a-h][1-8]\M}
   variable sqintern    {[a-h][1-8]}
 
