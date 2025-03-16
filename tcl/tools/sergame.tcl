@@ -210,10 +210,10 @@ namespace eval sergame {
     $w.fopening.fOpeningList.lbOpening see $::sergame::chosenOpening
     
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
+    pack $w.fopening.cbOpening -fill x -side top
     pack $w.fopening.fOpeningList.ybar -side right -fill y
     pack $w.fopening.fOpeningList.lbOpening -side left -fill both -expand 1
     pack $w.fopening.fOpeningList -fill both -side top
-    pack $w.fopening.cbOpening -fill x -side top
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
@@ -427,6 +427,21 @@ namespace eval sergame {
     return 0
   }
 
+  proc setResult {} {
+      set w .askResult
+      ::win::createDialog $w
+      wm resizable $w 0 0
+      wm title $w "Scid: [tr Result]"
+      ttk::button $w.win -text "  1-0  " -command { sc_game tags set -result 1; destroy .askResult }
+      ttk::button $w.loss -text "  0-1  " -command { sc_game tags set -result 0; destroy .askResult }
+      ttk::button $w.draw -text "1/2-1/2" -command { sc_game tags set -result =; destroy .askResult }
+      ttk::button $w.undef -text "   *   " -command { sc_game tags set -result *; destroy .askResult }
+      pack $w.win $w.draw $w.loss $w.undef -side left -padx 10
+      tk::PlaceWindow $w
+      grab $w
+      tkwait window $w
+  }
+
   proc abortGame { } {
     ::setPlayMode ""
     after cancel ::sergame::engineGo
@@ -441,6 +456,7 @@ namespace eval sergame {
         ::engine::close coachEngine
         unset ::enginewin::engConfig_coachEngine
     }
+    if { [sc_game tag get Result] eq "*" } { setResult }
     ::notify::GameChanged
   }
 
@@ -495,9 +511,11 @@ namespace eval sergame {
   # returns true if last move is a mate and stops clocks
   ################################################################################
   proc endOfGame {} {
-    set move_done [sc_game info previousMove]
     if { [string index [sc_game info previousMove] end ] == "#"} {
       tk_messageBox -type ok -message "This is Mate!" -parent .main -icon info
+      set result 0
+      if { [sc_pos side] == "black" } { set result 1 }
+      sc_game tags set -result $result
       ::sergame::abortGame
       return 1
     }
@@ -759,6 +777,7 @@ namespace eval sergame {
     lassign [checkRepetition $::sergame::lFen] isRepetition ::sergame::lFen
     if { $isRepetition } {
       tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
+      sc_game tags set -result =
       ::sergame::abortGame
       return 1
     }
