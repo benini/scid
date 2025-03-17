@@ -552,6 +552,23 @@ namespace eval sergame {
       }
       return $ret
   }
+  proc checkEngineBlunder { } {
+      set delta [expr $::sergame::data(score) + $::sergame::data(prevscore)]
+      if { [sc_pos side] == $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
+      lassign [checkBlunder $delta] ::sergame::tacticBlunder
+      if { $::sergame::tacticBlunder ne "" } {
+          if { $::sergame::engineColor eq "white" } {
+              set from $::sergame::data(prevscore)
+              set to [expr 0.0 - $::sergame::data(score)]
+          } else {
+              set from [expr 0.0 - $::sergame::data(prevscore)]
+              set to $::sergame::data(score)
+          }
+          ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
+              {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
+      }
+  }
+
   ################################################################################
   #
   ################################################################################
@@ -575,24 +592,12 @@ namespace eval sergame {
               while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
               ::engine::send coachEngine StopGo
           } else {
-              set delta [expr $::sergame::data(score) + $::sergame::data(prevscore)]
-              if { [sc_pos side] == $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
-              lassign [checkBlunder $delta] ::sergame::tacticBlunder
-              if { $::sergame::tacticBlunder ne "" } {
-                  if { $::sergame::engineColor eq "white" } {
-                      set from $::sergame::data(prevscore)
-                      set to [expr 0.0 - $::sergame::data(score)]
-                  } else {
-                      set from [expr 0.0 - $::sergame::data(prevscore)]
-                      set to $::sergame::data(score)
-                  }
-                  ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
-                      {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
-              }
+              checkEngineBlunder
           }
       }
       return
     }
+
     if { $::sergame::useCoachEngine } {
         ::engine::send coachEngine StopGo
         if { $::sergame::tacticBlunder ne "" } {
