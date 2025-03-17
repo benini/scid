@@ -299,6 +299,9 @@ namespace eval sergame {
         if {[catch {sc_move addSan $m}]} { }
         lappend openingMovesHash [sc_pos hash]
       }
+      #goto start pos and clear the moves
+      sc_move start
+      sc_game truncate
     }
 
     # Engine plays for the upper side
@@ -456,7 +459,7 @@ namespace eval sergame {
         ::engine::close coachEngine
         unset ::enginewin::engConfig_coachEngine
     }
-    if { [sc_game tag get Result] eq "*" } { setResult }
+    # if { [sc_game tag get Result] eq "*" } { setResult }
     ::notify::GameChanged
   }
 
