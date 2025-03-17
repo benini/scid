@@ -3,7 +3,7 @@
 ### Copyright (C) 2007  Pascal Georges
 ###
 ################################################################################
-# The number used for the engine playing a serious game is 3
+# Use new engine interface for serious game and combine a coach engine
 ################################################################################
 
 namespace eval sergame {
@@ -524,6 +524,34 @@ namespace eval sergame {
     }
     return 0
   }
+
+  # start playing engine: ponder must be "" or "ponder"
+  proc startEngine { ponder } {
+      global ::sergame::timeMode
+      if {$timeMode == "timebonus"} {
+        set wtime [expr [::gameclock::getSec 1] * 1000 ]
+        set btime [expr [::gameclock::getSec 2] * 1000 ]
+        set parameter "$ponder wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
+      } elseif {$timeMode == "depth"} {
+        set parameter "$ponder depth $::sergame::data(fixeddepth)"
+      } elseif {$timeMode == "movetime"} {
+        set parameter "$ponder movetime $::sergame::data(movetime)"
+      } elseif {$timeMode == "nodes"} {
+        set parameter "$ponder nodes $::sergame::data(fixednodes)"
+      }
+      if { $ponder ne "" } { set ponder "moves $::sergame::data(ponder)" }
+      ::engine::send seriousEngine Go [list "position fen [sc_pos fen] $ponder" $parameter]
+  }
+
+  proc checkBlunder { delta } {
+      set ret ""
+      if { $delta >= $::sergame::threshold } {
+          if {$delta > $::informant("?!") } { set ret [list "?!" "DubiousMovePlayedTakeBack"] }
+          if {$delta > $::informant("?") } { set ret [list "?" "WeakMovePlayedTakeBack"] }
+          if {$delta > $::informant("??") } { set ret [list "??" "BadMovePlayedTakeBack"] }
+      }
+      return $ret
+  }
   ################################################################################
   #
   ################################################################################
@@ -547,24 +575,19 @@ namespace eval sergame {
               while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
               ::engine::send coachEngine StopGo
           } else {
-              set ::sergame::tacticBlunder ""
               set delta [expr $::sergame::data(score) + $::sergame::data(prevscore)]
               if { [sc_pos side] == $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
-              if { $delta >= $::sergame::threshold } {
-                  if {$delta > $::informant("?!") } { set ::sergame::tacticBlunder "?!" }
-                  if {$delta > $::informant("?") } { set ::sergame::tacticBlunder "?" }
-                  if {$delta > $::informant("??") } { set ::sergame::tacticBlunder "??" }
-                  if { $::sergame::tacticBlunder ne "" } {
-                      if { $::sergame::engineColor eq "white" } {
-                          set from $::sergame::data(prevscore)
-                          set to [expr 0.0 - $::sergame::data(score)]
-                      } else {
-                          set from [expr 0.0 - $::sergame::data(prevscore)]
-                          set to $::sergame::data(score)
-                      }
-                      ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
-                          {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
+              lassign [checkBlunder $delta] ::sergame::tacticBlunder
+              if { $::sergame::tacticBlunder ne "" } {
+                  if { $::sergame::engineColor eq "white" } {
+                      set from $::sergame::data(prevscore)
+                      set to [expr 0.0 - $::sergame::data(score)]
+                  } else {
+                      set from [expr 0.0 - $::sergame::data(prevscore)]
+                      set to $::sergame::data(score)
                   }
+                  ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
+                      {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
               }
           }
       }
@@ -679,21 +702,8 @@ namespace eval sergame {
     if { $::sergame::ponder && $::sergame::data(ponder) ne "" && $::sergame::data(ponder) == [sc_game info previousMoveUCI]} {
       ::engine::rawsend seriousEngine "ponderhit"
     } else {
-      if { $::sergame::ponder } {
-        ::engine::send seriousEngine StopGo
-      }
-      if {$timeMode == "timebonus"} {
-        set wtime [expr [::gameclock::getSec 1] * 1000 ]
-        set btime [expr [::gameclock::getSec 2] * 1000 ]
-        set parameter "wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
-      } elseif {$timeMode == "depth"} {
-        set parameter "depth $::sergame::data(fixeddepth)"
-      } elseif {$timeMode == "movetime"} {
-        set parameter "movetime $::sergame::data(movetime)"
-      } elseif {$timeMode == "nodes"} {
-        set parameter "nodes $::sergame::data(fixednodes)"
-      }
-      ::engine::send seriousEngine Go [list "position fen [sc_pos fen]" $parameter]
+      if { $::sergame::ponder } { ::engine::send seriousEngine StopGo }
+      startEngine ""
     }
     if { $::sergame::useCoachEngine } {
         set ::sergame::data(bestCoachmove) ""
@@ -711,14 +721,9 @@ namespace eval sergame {
     # -------------------------------------------------------------
     # if weak move detected, propose the user to take back
     if { $::sergame::coachTypeMove && $::sergame::data(prevscore) != "" } {
-      set tBlunder ""
       set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
       if { [sc_pos side] != $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
-      if { $delta >= $::sergame::threshold } {
-          if {$delta > $::informant("?!") } { set tBlunder "DubiousMovePlayedTakeBack" }
-          if {$delta > $::informant("?") } { set tBlunder "WeakMovePlayedTakeBack" }
-          if {$delta > $::informant("??") } { set tBlunder "BadMovePlayedTakeBack" }
-      }
+      lassign [checkBlunder $delta] nop tBlunder
       if {$tBlunder ne ""} {
         clocks stop
         set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$::sergame::data(prevscore) -> $::sergame::data(score)" ]
@@ -749,21 +754,8 @@ namespace eval sergame {
     
     clocks toggle
 
-    # ponder mode (the engine just played its move) ;&& $::sergame::data(ponder) != ""
-    if {$::sergame::ponder } {
-      if {$timeMode == "timebonus"} {
-        set wtime [expr [::gameclock::getSec 1] * 1000 ]
-        set btime [expr [::gameclock::getSec 2] * 1000 ]
-        set parameter "ponder wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
-      } elseif {$timeMode == "depth"} {
-        set parameter "ponder depth $::sergame::data(fixeddepth)"
-      } elseif {$timeMode == "movetime"} {
-        set parameter "ponder movetime $::sergame::data(movetime)"
-      } elseif {$timeMode == "nodes"} {
-        set parameter "ponder nodes $::sergame::data(fixednodes)"
-      }
-      ::engine::send seriousEngine Go [list "position fen [sc_pos fen] moves $::sergame::data(ponder)" $parameter]
-    }
+    # ponder mode (the engine just played its move)
+    if {$::sergame::ponder } { startEngine ponder }
     
     if { $::sergame::useCoachEngine } {
         set ::sergame::actTacTime $::sergame::tacTime
