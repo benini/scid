@@ -348,7 +348,7 @@ namespace eval sergame {
     clocks init
     clocks start
 
-    ::sergame::engineGo
+    ::sergame::playLoop
   }
 
   proc ::sergame::eng_messages {id w msg} {
@@ -447,7 +447,7 @@ namespace eval sergame {
 
   proc abortGame { } {
     ::setPlayMode ""
-    after cancel ::sergame::engineGo
+    after cancel ::sergame::playLoop
     clocks stop
     set ::sergame::lFen {}
     ::engine::send seriousEngine StopGo
@@ -572,18 +572,18 @@ namespace eval sergame {
   ################################################################################
   #
   ################################################################################
-  proc engineGo { } {
+  proc playLoop { } {
     global ::sergame::isOpening ::sergame::openingMovesList ::sergame::openingMovesHash ::sergame::openingMoves \
         ::sergame::timeMode ::sergame::outOfOpening
     
-    after cancel ::sergame::engineGo
+    after cancel ::sergame::playLoop
     
     if { [::sergame::endOfGame] } { return }
     
     if { [sc_pos side] != $::sergame::engineColor } {
       # wait until player has moved
       set ::sergame::waitPlayerMove 1
-      after 1000 ::sergame::engineGo
+      after 1000 ::sergame::playLoop
       if { $::sergame::useCoachEngine && $::sergame::coachTypeTactic && $::sergame::actTacTime > 0 && $::sergame::data(prevscore) != "" } {
           #check for engine blunder with coach engine
           incr ::sergame::actTacTime -1
@@ -642,7 +642,7 @@ namespace eval sergame {
               -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             takeBack $takebackClockW $takebackClockB
-            after 1000 ::sergame::engineGo
+            after 1000 ::sergame::playLoop
             return
           }  else  {
             set outOfOpening 1
@@ -677,7 +677,7 @@ namespace eval sergame {
           clocks toggle
           updateBoard -pgn -animate
           if { ! [repetition] } {
-              after 1000 ::sergame::engineGo
+              after 1000 ::sergame::playLoop
           }
           return
         }
@@ -697,7 +697,7 @@ namespace eval sergame {
         clocks toggle
         updateBoard -pgn -animate
         if { ! [repetition] } {
-            after 1000 ::sergame::engineGo
+            after 1000 ::sergame::playLoop
         }
         return
       }
@@ -734,7 +734,7 @@ namespace eval sergame {
         set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$::sergame::data(prevscore) -> $::sergame::data(score)" ]
         if {$answer == yes} {
           takeBack $takebackClockW $takebackClockB
-          after 1000 ::sergame::engineGo
+          after 1000 ::sergame::playLoop
           return
         }
         clocks start
@@ -767,7 +767,7 @@ namespace eval sergame {
         set ::sergame::data(bestCoachmove) ""
         ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
     }
-    after 1000 ::sergame::engineGo
+    after 1000 ::sergame::playLoop
   }
   ################################################################################
   #   add current position for 3fold repetition detection and returns 1 if
