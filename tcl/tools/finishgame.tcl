@@ -185,8 +185,8 @@ namespace eval ::finishgame {
         sc_pos setComment "$tmp\n\n$::tr(FinishGame) $::tr(White): $::finishGame(enginewhite) $::finishGame(cmdwhite) $::finishGame(cmdValuewhite)\n\n$::tr(Black): $::finishGame(engineblack) $::finishGame(cmdblack) $::finishGame(cmdValueblack)"
         ::engine::close fgEnginewhite
         ::engine::close fgEngineblack
-        unset ::enginewin::engConfig_fgEnginewhite
-        unset ::enginewin::engConfig_fgEngineblack
+        catch { unset ::enginewin::engConfig_fgEnginewhite }
+        catch { unset ::enginewin::engConfig_fgEngineblack }
         ::notify::PosChanged -pgn
         destroy .configFinishGame
     }
@@ -213,9 +213,7 @@ namespace eval ::finishgame {
                 lassign $msgData ::annotate(position)
             }
             "InfoDisconnected" {
-                lassign $msgData errorMsg
-                if {$errorMsg eq ""} { set errorMsg "The connection with the engine terminated unexpectedly." }
-                tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+                ::engineNoWin::disconnected $id $msgData
                 set ::autoplayMode 0
             }
         }
