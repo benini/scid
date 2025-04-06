@@ -90,6 +90,14 @@ proc ::engineNoWin::saveEngineSetup { id } {
     ::enginecfg::save [set ::enginewin::engConfig_$id]
 }
 
+proc ::engineNoWin::disconnected { id data } {
+    upvar ::enginewin::engConfig_$id engConfig_
+    lassign $data errorMsg
+    lassign [set ::enginewin::engConfig_$id] engine
+    if {$errorMsg eq ""} { set errorMsg "The connection with the engine $id $engine terminated unexpectedly." }
+    tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+}
+
 namespace eval ::annotation {
 
     # Typ may be "movetime": time per move or "depth": analyse till depth is reached
@@ -682,9 +690,7 @@ namespace eval ::annotation {
                 lassign $msgData ::annotate(position)
             }
             "InfoDisconnected" {
-                lassign $msgData errorMsg
-                if {$errorMsg eq ""} { set errorMsg "The connection with the engine terminated unexpectedly." }
-                tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+                ::engineNoWin::disconnected $id $msgData
                 set ::autoplayMode 0
             }
         }
