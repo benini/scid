@@ -14,7 +14,7 @@
 # engineNoWin will be used by annotate and finish game
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
-proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
+proc ::engineNoWin::initEngine { id engine callback } {
     if { [info exists ::enginewin::engConfig_$id] } { return 1 }
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
@@ -25,7 +25,6 @@ proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {} {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
-    lappend options $addOpts
     ::engine::send $id SetOptions $options
     return 1
 }
@@ -332,6 +331,8 @@ namespace eval ::annotation {
     }
 
     proc runAnnotation { } {
+        # make sure, we have 2 best lines
+        ::engine::send annotateEngine SetOptions [list {MultiPV 2}]
         set f .annotationDialog.f
         grid forget $f.annotate $f.comment $f.av $f.batch $f.optsannotateEngine
         pack forget $f.buttons.ok
@@ -343,7 +344,7 @@ namespace eval ::annotation {
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
 
         # tactical positions is selected, must be in multipv mode
-        if {$::annotate(tacticalExercises)} { ::engine::send annotateEngine SetOptions "MultiPV 4" }
+        if {$::annotate(tacticalExercises)} { ::engine::send annotateEngine SetOptions [list {MultiPV 4}] }
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
