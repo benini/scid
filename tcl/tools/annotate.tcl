@@ -22,7 +22,7 @@ proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
         tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
         return 0
     }
-    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {} {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
     lappend options $addOpts
@@ -42,7 +42,7 @@ proc ::engineNoWin::changeEngine {id w enginevar callback} {
 
 proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     if { [winfo ismapped $w] } { grid forget $w ; return }
-    grid $w -row 0 -column $col -rowspan 2 -sticky ne -padx 10
+    grid $w -row 0 -column $col -rowspan 5 -sticky ne -padx 10
     set engine [set $enginevar]
     ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
@@ -63,8 +63,11 @@ proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
     ttk_text $f.opts$id.text -wrap none -padx 4
     autoscrollBars both $f.opts$id $f.opts$id.text 1
     $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
+    ttk::button $f.opts$id.save -text "Save Setup" -command "::engineNoWin::saveEngineSetup $id"
     grid $f.opts$id.l -row 0 -column 0 -sticky w
     grid $f.opts$id.x -row 0 -column 1 -sticky e
+    grid $f.opts$id.save -row 2 -column 0 -columnspan 2 -sticky e -pady { 5 0 }
+    bind $f.$id <Destroy> "catch { unset ::enginewin::engConfig_$id }; ::engine::close $id"
 }
 
 proc ::engineNoWin::initEngineOptions {id w options} {
@@ -73,9 +76,18 @@ proc ::engineNoWin::initEngineOptions {id w options} {
         lset ::enginewin::engConfig_$id 8 $options
         ::enginecfg::createOptionWidgets $id $w $options
     } else {
+        # changed options stored in #9, but do not save
+        lset ::enginewin::engConfig_$id 9 $options
         ::enginecfg::updateOptionWidgets $id $w $options {}
         $w.text configure -state disabled
     }
+}
+
+proc ::engineNoWin::saveEngineSetup { id } {
+    upvar ::enginewin::engConfig_$id engConfig_
+    # copy #9 to #8 to save the options
+    lset ::enginewin::engConfig_$id 8 [lindex [set ::enginewin::engConfig_$id] 9]
+    ::enginecfg::save [set ::enginewin::engConfig_$id]
 }
 
 namespace eval ::annotation {
