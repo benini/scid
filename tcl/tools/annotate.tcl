@@ -14,7 +14,7 @@
 # engineNoWin will be used by annotate and finish game
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
-proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
+proc ::engineNoWin::initEngine { id engine callback } {
     if { [info exists ::enginewin::engConfig_$id] } { return 1 }
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
@@ -22,10 +22,9 @@ proc ::engineNoWin::initEngine { id engine callback {addOpts "MultiPV 2"}} {
         tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
         return 0
     }
-    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {} {}]
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd {}
-    lappend options $addOpts
     ::engine::send $id SetOptions $options
     return 1
 }
@@ -42,7 +41,7 @@ proc ::engineNoWin::changeEngine {id w enginevar callback} {
 
 proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     if { [winfo ismapped $w] } { grid forget $w ; return }
-    grid $w -row 0 -column $col -rowspan 4 -sticky nswe -padx 10
+    grid $w -row 0 -column $col -rowspan 5 -sticky ne -padx 10
     set engine [set $enginevar]
     ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
@@ -63,8 +62,11 @@ proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
     ttk_text $f.opts$id.text -wrap none -padx 4
     autoscrollBars both $f.opts$id $f.opts$id.text 1
     $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
+    ttk::button $f.opts$id.save -text "Save Setup" -command "::engineNoWin::saveEngineSetup $id"
     grid $f.opts$id.l -row 0 -column 0 -sticky w
     grid $f.opts$id.x -row 0 -column 1 -sticky e
+    grid $f.opts$id.save -row 2 -column 0 -columnspan 2 -sticky e -pady { 5 0 }
+    bind $f.$id <Destroy> "catch { unset ::enginewin::engConfig_$id }; ::engine::close $id"
 }
 
 proc ::engineNoWin::initEngineOptions {id w options} {
@@ -73,9 +75,26 @@ proc ::engineNoWin::initEngineOptions {id w options} {
         lset ::enginewin::engConfig_$id 8 $options
         ::enginecfg::createOptionWidgets $id $w $options
     } else {
+        # changed options stored in #9, but do not save
+        lset ::enginewin::engConfig_$id 9 $options
         ::enginecfg::updateOptionWidgets $id $w $options {}
         $w.text configure -state disabled
     }
+}
+
+proc ::engineNoWin::saveEngineSetup { id } {
+    upvar ::enginewin::engConfig_$id engConfig_
+    # copy #9 to #8 to save the options
+    lset ::enginewin::engConfig_$id 8 [lindex [set ::enginewin::engConfig_$id] 9]
+    ::enginecfg::save [set ::enginewin::engConfig_$id]
+}
+
+proc ::engineNoWin::disconnected { id data } {
+    upvar ::enginewin::engConfig_$id engConfig_
+    lassign $data errorMsg
+    lassign [set ::enginewin::engConfig_$id] engine
+    if {$errorMsg eq ""} { set errorMsg "The connection with the engine $id $engine terminated unexpectedly." }
+    tk_messageBox -icon warning -type ok -parent . -message $errorMsg
 }
 
 namespace eval ::annotation {
@@ -312,6 +331,8 @@ namespace eval ::annotation {
     }
 
     proc runAnnotation { } {
+        # make sure, we have 2 best lines
+        ::engine::send annotateEngine SetOptions [list {MultiPV 2}]
         set f .annotationDialog.f
         grid forget $f.annotate $f.comment $f.av $f.batch $f.optsannotateEngine
         pack forget $f.buttons.ok
@@ -323,7 +344,7 @@ namespace eval ::annotation {
         grid $f.running -row 2 -column 0 -columnspan 2 -sticky we
 
         # tactical positions is selected, must be in multipv mode
-        if {$::annotate(tacticalExercises)} { ::engine::send annotateEngine SetOptions "MultiPV 4" }
+        if {$::annotate(tacticalExercises)} { ::engine::send annotateEngine SetOptions [list {MultiPV 4}] }
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
@@ -670,9 +691,7 @@ namespace eval ::annotation {
                 lassign $msgData ::annotate(position)
             }
             "InfoDisconnected" {
-                lassign $msgData errorMsg
-                if {$errorMsg eq ""} { set errorMsg "The connection with the engine terminated unexpectedly." }
-                tk_messageBox -icon warning -type ok -parent . -message $errorMsg
+                ::engineNoWin::disconnected $id $msgData
                 set ::autoplayMode 0
             }
         }
