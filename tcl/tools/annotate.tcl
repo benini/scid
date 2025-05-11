@@ -18,14 +18,14 @@ proc ::engineNoWin::initEngine { id engine callback } {
     if { [info exists ::enginewin::engConfig_$id] } { return 1 }
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
-    if { ! $uci } {
+    if { $uci ne "" && ! $uci } {
         tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
         return 0
     }
     set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {} {}]
     ::engine::setLogCmd $id {}
-    ::engine::connect $id $callback $cmd {}
-    ::engine::send $id SetOptions $options
+    ::engine::connect $id $callback $cmd $args
+    if { $options ne "" } { ::engine::send $id SetOptions $options }
     return 1
 }
 
@@ -74,6 +74,7 @@ proc ::engineNoWin::initEngineOptions {id w options} {
     if { ! [winfo exists $w.text.reset] } {
         lset ::enginewin::engConfig_$id 8 $options
         ::enginecfg::createOptionWidgets $id $w $options
+        ::engine::replyInfoConfig $id
     } else {
         # changed options stored in #9, but do not save
         lset ::enginewin::engConfig_$id 9 $options
