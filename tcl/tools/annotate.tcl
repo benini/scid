@@ -76,8 +76,7 @@ proc ::engineNoWin::initEngineOptions {id w options} {
         ::enginecfg::createOptionWidgets $id $w $options
         ::engine::replyInfoConfig $id
     } else {
-        # changed options stored in #9, but do not save
-        lset ::enginewin::engConfig_$id 9 $options
+        lset ::enginewin::engConfig_$id 8 $options
         ::enginecfg::updateOptionWidgets $id $w $options {}
         $w.text configure -state disabled
     }
@@ -85,8 +84,6 @@ proc ::engineNoWin::initEngineOptions {id w options} {
 
 proc ::engineNoWin::saveEngineSetup { id } {
     upvar ::enginewin::engConfig_$id engConfig_
-    # copy #9 to #8 to save the options
-    lset ::enginewin::engConfig_$id 8 [lindex [set ::enginewin::engConfig_$id] 9]
     ::enginecfg::save [set ::enginewin::engConfig_$id]
 }
 
