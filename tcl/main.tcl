@@ -1148,9 +1148,10 @@ proc selectMarker {} {
     set y [expr {max(0, $y - 40)}]
     wm geometry $w_ "+$x+$y"
 
+    applyThemeColor_background $w_
     ttk::frame $w_.markers
     set i 0
-    foreach {marker lbl} {
+    set lmark {
         full █
         circle ◯
         disk ⬤
@@ -1176,7 +1177,9 @@ proc selectMarker {} {
         7 7
         8 8
         9 9
-    } {
+    }
+    if { $::lichessFormat } { set lmark { circle ◯ } }
+    foreach {marker lbl} $lmark {
         radiobutton $w_.markers.mark_$marker \
             -indicatoron "false" \
             -foreground "$::markColor" -background "light gray" -selectcolor "dark gray" \
@@ -1187,18 +1190,9 @@ proc selectMarker {} {
     }
     ttk::frame $w_.colors
     set i 0
-    foreach color {
-        green
-        red
-        orange
-        yellow
-        blue
-        cyan
-        purple
-        white
-        black
-        gray
-    } {
+    set markColors { green red orange yellow blue cyan }
+    if { ! $::lichessFormat } { append markColors { purple white black gray } }
+    foreach color $markColors {
         radiobutton $w_.colors.col_$color \
             -indicatoron "false" \
             -background "$color" -selectcolor "$color" \
