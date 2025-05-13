@@ -174,6 +174,7 @@ set borderwidth 0
 # Square markers color and type
 set ::markColor green
 set ::markType full
+set ::lichessFormat 0
 
 # boardCoords: 1-4 to show board Coordinates, 0 to hide them.
 set boardCoords 0
@@ -638,7 +639,7 @@ proc options.write {} {
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth \
           highlightLastMoveColor highlightLastMoveNag \
-          glossOfDanger locale(numeric) \
+          glossOfDanger ::lichessFormat locale(numeric) \
           spellCheckFile autoRaise windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \

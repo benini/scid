@@ -176,6 +176,7 @@ proc ::preferences::moves { t } {
     ttk::checkbutton $t.osp -variable ::pgn::moveNumberSpaces -text [tr OptionsMovesSpace]
     ttk::checkbutton $t.sva -variable showVarArrows -text [tr OptionsMovesShowVarArrows]
     ttk::checkbutton $t.god -variable glossOfDanger -text [tr OptionsMovesGlossOfDanger] -command updateBoard
+    ttk::checkbutton $t.lic -variable ::lichessFormat -text [tr LichessFormatforCircleArrow]
 
     ttk::frame $t.auto
     ttk::label $t.auto.label -text "[tr OptionsMovesDelay]\n$::tr(AnnotateTime:)"
@@ -196,7 +197,7 @@ proc ::preferences::moves { t } {
     grid $t.high.arrow -row 1 -column 0 -columnspan 2 -sticky w
     grid $t.high.nag -row 2 -column 0 -sticky w
     pack $t.auto.label $t.auto.spDelay -side left -padx "0 10" -anchor w
-    pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god -side top -anchor w
+    pack $t.ani $t.omc $t.omk $t.oms $t.osv $t.osp $t.auto $t.sva $t.god $t.lic -side top -anchor w
     pack $t.high -side top -anchor w -pady "5 0"
 }
 
