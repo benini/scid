@@ -235,11 +235,8 @@ namespace eval sergame {
       set ::sergame::nodes [expr [.configSerGameWin.ftime.nodes.value get]*1000]
       set ::sergame::movetime [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
-      set callback [list ::sergame::eng_messages seriousEngine nop]
-      if { [::engineNoWin::initEngine seriousEngine $::sergame::engineName $callback] } {
-          destroy .configSerGameWin
-          ::sergame::play seriousEngine
-      }
+      destroy .configSerGameWin
+      ::sergame::play seriousEngine
     }
     ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
@@ -259,6 +256,11 @@ namespace eval sergame {
     global ::sergame::chosenOpening ::sergame::isOpening ::tacgame::openingList ::sergame::openingMovesList \
         ::sergame::openingMovesHash ::sergame::openingMoves ::sergame::outOfOpening
     
+    set callback [list ::sergame::eng_messages $engine nop]
+    if { ! [::engineNoWin::initEngine $engine $::sergame::engineName $callback] } {
+        tk_messageBox -title Scid -icon info -type ok -message "The UCI-Engines could not be started."
+        return
+    }
     if {$::sergame::isOpening || !$::sergame::startFromCurrent} {
       if {[::game::Clear] eq "cancel"} { return }
     }
