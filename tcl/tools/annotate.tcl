@@ -6,23 +6,15 @@
 ##########################################################################################
 ### Annotate Dialog: uses a chess engine to analyze and annotate a chess game.
 
-#TODO
-#improve Tactical Exercise
-#"finish game" function
-#accuracy function
-
 # engineNoWin will be used by annotate and finish game
 namespace eval ::engineNoWin {}
 # Open the engine and configure it
 proc ::engineNoWin::initEngine { id engine callback } {
     if { [info exists ::enginewin::engConfig_$id] } { return 1 }
+#   tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
-    if { $uci ne "" && ! $uci } {
-        tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
-        return 0
-    }
-    set ::enginewin::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {} {}]
+    set ::enginewin::engConfig_$id $config
     ::engine::setLogCmd $id {}
     ::engine::connect $id $callback $cmd $args
     if { $options ne "" } { ::engine::send $id SetOptions $options }
@@ -46,10 +38,22 @@ proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
     ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
 
-#create frame for edit engine options
-proc ::engineNoWin::createEngineOptionsFrame {f id var col callback} {
+#create frame for select and edit engine options
+#engType: all, uci or winboard
+proc ::engineNoWin::createEngineOptionsFrame {f id var col callback {engTyp "uci"}} {
     ttk::frame $f.$id
-    set engList [::enginecfg::names ]
+    set allEngList [::enginecfg::names ]
+    if { $engTyp ne "all"} {
+        set engList {}
+        foreach name $allEngList {
+            set typ [lindex [::enginecfg::get $name] 7]
+            if { $engTyp == "uci" && $typ || $engTyp == "winboard" && ! $typ } {
+                lappend engList $name
+            }
+        }
+    } else {
+        set engList $allEngList
+    }
     if { [set $var] eq "" } { set $var [lindex $engList 0] }
     ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
     bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $var $callback"
