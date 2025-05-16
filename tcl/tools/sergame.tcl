@@ -14,21 +14,10 @@ namespace eval sergame {
   # if true, follow a specific opening
   set openingMovesList {}
   set openingMovesHash {}
-  set openingMoves ""
   set outOfOpening 0
-  set engineName ""
-  set coachName ""
   set bookSlot 2
-  set storeEval 0
-  set coachTypeMove 0
-  set coachTypeTactic 0
-  set useCoachEngine 0
-  set tacticBlunder ""
-  set tacTime 5
   set actTacTime 0
-  set threshold 0.6
   set isLimitedAnalysisTime 1
-  set useBook 0
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   

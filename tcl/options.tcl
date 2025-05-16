@@ -339,6 +339,15 @@ set ::sergame::timeMode "timebonus"
 set ::sergame::depth 3
 set ::sergame::movetime 1000
 set ::sergame::nodes 10000
+set ::sergame::engineName ""
+set ::sergame::coachName ""
+set ::sergame::storeEval 0
+set ::sergame::coachTypeMove 0
+set ::sergame::coachTypeTactic 0
+set ::sergame::useCoachEngine 0
+set ::sergame::tacticBlunder ""
+set ::sergame::threshold 0.6
+set ::sergame::tacTime 5
 set ::sergame::ponder 0
 set ::sergame::data(wtime) [expr 5 * 60 * 1000 ]
 set ::sergame::data(winc) [expr 10 * 1000 ]
@@ -657,6 +666,8 @@ proc options.write {} {
           ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::openingType ::tacgame::chosenOpening \
           ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
+          ::sergame::storeEval ::sergame::coachTypeMove ::sergame::coachTypeTactic ::sergame::engineName \
+          ::sergame::tacticBlunder ::sergame::threshold ::sergame::tacTime ::sergame::useCoachEngine \
           ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
           ::sergame::data(wtime) ::sergame::data(winc) ::sergame::data(btime) ::sergame::data(binc) \
           boardfile_lite boardfile_dark \
