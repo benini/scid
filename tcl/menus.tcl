@@ -213,7 +213,6 @@ set m .menu.play
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Play -menu $m
 $m add command -label ToolsSeriousGame -command ::sergame::config
-$m add command -label ToolsTacticalGame -command ::tacgame::config
 $m add command -label ToolsTrainFics -command ::fics::config
 $m add separator
 menu $m.training

@@ -186,7 +186,7 @@ menuText D ToolsTracker "Figurenverteilung"  7 \
   {Figurenverteilungsfenster öffnen}
 menuText D ToolsTraining "Training"  0 {Trainingswerkzeuge (Taktik, Eröffnungen,...) }
 menuText D ToolsTacticalGame "Trainingspartie"  0 {Trainingspartie spielen}
-menuText D ToolsSeriousGame "Ernste Partie"  0 {Ernste Partie spielen}
+menuText D ToolsSeriousGame "Partie spielen"  0 {Eine Partie gegen eine Engine spielen}
 menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
 menuText D ToolsTrainReviewGame "Partie nachspielen"  0 {Finden von Zügen wie in vorgegebener Partie}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}

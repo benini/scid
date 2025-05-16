@@ -234,24 +234,6 @@ set windowsDock 1
 
 set ::tactics::analysisTime 3
 
-set ::tacgame::threshold 0.9
-set ::tacgame::blunderwarning false
-set ::tacgame::blunderwarningvalue 0.0
-set ::tacgame::levelMin 1200
-set ::tacgame::levelMax 2200
-set ::tacgame::levelFixed 1500
-set ::tacgame::randomLevel 0
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::showblunder 1
-set ::tacgame::showblundervalue 1
-set ::tacgame::showblunderfound 1
-set ::tacgame::showmovevalue 1
-set ::tacgame::showevaluation 1
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::analysisTime 10
-set ::tacgame::openingType new
-set ::tacgame::chosenOpening 0
-
 # Analysis command: to start chess analysis engine.
 set analysisCommand ""
 if {$windowsOS} {
@@ -659,11 +641,6 @@ proc options.write {} {
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
-          ::tacgame::threshold ::tacgame::blunderwarning ::tacgame::blunderwarningvalue \
-          ::tacgame::levelMin  ::tacgame::levelMax  ::tacgame::levelFixed ::tacgame::randomLevel \
-          ::tacgame::isLimitedAnalysisTime ::tacgame::showblunder ::tacgame::showblundervalue \
-          ::tacgame::showblunderfound ::tacgame::showmovevalue ::tacgame::showevaluation \
-          ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::openingType ::tacgame::chosenOpening \
           ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
           ::sergame::storeEval ::sergame::coachTypeMove ::sergame::coachTypeTactic ::sergame::engineName \

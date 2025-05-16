@@ -219,6 +219,7 @@ InitTooltip
 # initialized here, so that default values can be set up and
 # altered when the user options file is loaded.
 #
+#ToDo remove tacgame from list, but prevent error from options.dat
 foreach ns {
   ::icon
   ::splash
@@ -758,7 +759,6 @@ move.tcl
 main.tcl
 tools/uci.tcl
 end.tcl
-tools/tacgame.tcl
 tools/sergame.tcl
 tools/calvar.tcl
 tools/fics.tcl

@@ -190,7 +190,7 @@ namespace eval sergame {
     $w.fopening.fOpeningList.lbOpening column 0 -width 250
     $w.fopening.fOpeningList.lbOpening configure -height 5
     set idx 0
-    foreach o $::tacgame::openingList {
+    foreach o $::sergame::openingList {
         $w.fopening.fOpeningList.lbOpening insert {} end -id $idx -values [list $o]
         incr idx
     }
@@ -242,7 +242,7 @@ namespace eval sergame {
   #
   ################################################################################
   proc play { engine } {
-    global ::sergame::chosenOpening ::sergame::isOpening ::tacgame::openingList ::sergame::openingMovesList \
+    global ::sergame::chosenOpening ::sergame::isOpening ::sergame::openingList ::sergame::openingMovesList \
         ::sergame::openingMovesHash ::sergame::openingMoves ::sergame::outOfOpening
     
     set callback [list ::sergame::eng_messages $engine nop]
@@ -782,7 +782,71 @@ namespace eval sergame {
       puts stdout "$n $text"
     }
   }
-  
+  ################################################################################
+  #
+  ################################################################################
+  set openingList [ list \
+      "$::tr(Reti): 1.Nf3" \
+      "$::tr(English): 1.c4" \
+      "$::tr(d4Nf6Miscellaneous): 1.d4 Nf6" \
+      "$::tr(Trompowsky): 1.d4 Nf6 2.Bg5" \
+      "$::tr(Budapest): 1.d4 Nf6 2.c4 e5" \
+      "$::tr(OldIndian): 1.d4 Nf6 2.c4 d6" \
+      "$::tr(BenkoGambit): 1.d4 Nf6 2.c4 c5 3.d5 b5" \
+      "$::tr(ModernBenoni): 1.d4 Nf6 2.c4 c5 3.d5 e6" \
+      "$::tr(DutchDefence): 1.d4 f5" \
+      "1.e4" \
+      "$::tr(Scandinavian): 1.e4 d5" \
+      "$::tr(AlekhineDefence): 1.e4 Nf6" \
+      "$::tr(Pirc): 1.e4 d6" \
+      "$::tr(CaroKann): 1.e4 c6" \
+      "$::tr(CaroKannAdvance): 1.e4 c6 2.d4 d5 3.e5" \
+      "$::tr(Sicilian): 1.e4 c5" \
+      "$::tr(SicilianAlapin): 1.e4 c5 2.c3" \
+      "$::tr(SicilianClosed): 1.e4 c5 2.Nc3" \
+      "$::tr(Sicilian): 1.e4 c5 2.Nf3 Nc6" \
+      "$::tr(Sicilian): 1.e4 c5 2.Nf3 e6" \
+      "$::tr(SicilianRauzer): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 Nc6" \
+      "$::tr(SicilianDragon): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 " \
+      "$::tr(SicilianScheveningen): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6" \
+      "$::tr(SicilianNajdorf): 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6" \
+      "$::tr(OpenGame): 1.e4 e5" \
+      "$::tr(Vienna): 1.e4 e5 2.Nc3" \
+      "$::tr(KingsGambit): 1.e4 e5 2.f4" \
+      "$::tr(RussianGame): 1.e4 e5 2.Nf3 Nf6" \
+      "$::tr(OpenGame): 1.e4 e5 2.Nf3 Nc6" \
+      "$::tr(ItalianTwoKnights): 1.e4 e5 2.Nf3 Nc6 3.Bc4" \
+      "$::tr(Spanish): 1.e4 e5 2.Nf3 Nc6 3.Bb5" \
+      "$::tr(SpanishExchange): 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Bxc6" \
+      "$::tr(SpanishOpen): 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Nxe4" \
+      "$::tr(SpanishClosed): 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7" \
+      "$::tr(FrenchDefence): 1.e4 e6" \
+      "$::tr(FrenchAdvance): 1.e4 e6 2.d4 d5 3.e5" \
+      "$::tr(FrenchTarrasch): 1.e4 e6 2.d4 d5 3.Nd2" \
+      "$::tr(FrenchWinawer): 1.e4 e6 2.d4 d5 3.Nc3 Bb4" \
+      "$::tr(FrenchExchange): 1.e4 e6 2.d4 d5 3.exd5 exd5" \
+      "$::tr(QueensPawn): 1.d4 d5" \
+      "$::tr(Slav): 1.d4 d5 2.c4 c6" \
+      "$::tr(QGA): 1.d4 d5 2.c4 dxc4" \
+      "$::tr(QGD): 1.d4 d5 2.c4 e6" \
+      "$::tr(QGDExchange): 1.d4 d5 2.c4 e6 3.cxd5 exd5" \
+      "$::tr(SemiSlav): 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Nf3 c6" \
+      "$::tr(QGDwithBg5): 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5" \
+      "$::tr(QGDOrthodox): 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7" \
+      "$::tr(Grunfeld): 1.d4 Nf6 2.c4 g6 3.Nc3 d5" \
+      "$::tr(GrunfeldExchange): 1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5" \
+      "$::tr(GrunfeldRussian): 1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3" \
+      "$::tr(Catalan): 1.d4 Nf6 2.c4 e6 3.g3 " \
+      "$::tr(CatalanOpen): 1.d4 Nf6 2.c4 e6 3.g3 d5 4.Bg2 dxc4" \
+      "$::tr(CatalanClosed): 1.d4 Nf6 2.c4 e6 3.g3 d5 4.Bg2 Be7" \
+      "$::tr(QueensIndian): 1.d4 Nf6 2.c4 e6 3.Nf3 b6" \
+      "$::tr(NimzoIndian): 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4" \
+      "$::tr(NimzoIndianClassical): 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.Qc2" \
+      "$::tr(NimzoIndianRubinstein): 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3" \
+      "$::tr(KingsIndian): 1.d4 Nf6 2.c4 g6" \
+      "$::tr(KingsIndianSamisch): 1.d4 Nf6 2.c4 g6 4.e4 d6 5.f3" \
+      "$::tr(KingsIndianMainLine): 1.d4 Nf6 2.c4 g6 4.e4 d6 5.Nf3" \
+      ]
 }
 ###
 ### End of file: sergame.tcl
