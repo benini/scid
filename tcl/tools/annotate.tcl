@@ -102,28 +102,7 @@ proc ::engineNoWin::disconnected { id data } {
 namespace eval ::annotation {
 
     # Typ may be "movetime": time per move or "depth": analyse till depth is reached
-    set annotateData(typ) "movetime"
-    set annotateData(movetime) 1000
-    set annotateData(time) 1
-    set annotateData(depth) 20
-    set annotateData(engine) ""
     set annotateData(progress) 0
-    set annotateData(blunderThreshold) 0.5
-    set annotateData(annotateMoves) all
-    set annotateData(annotateBlunders) blundersonly
-    set annotateData(scoreAllMoves) 1
-    set annotateData(annotateMode) 0
-    set annotateData(useAnalysisBook) 0
-    set annotateData(AnalysisBookName) ""
-    set annotateData(BookSlot) 1
-    set annotateData(tacticalExercises) 0
-    set annotateData(addAnnotatorTag) 1
-    set annotateData(OpeningErrors) 0
-    set annotateData(OpeningMoves) 0
-    set annotateData(annotateShort) 1
-    set annotateData(addScoreToShortAnnotations) 1
-    set annotateData(batchMode) 0
-    set annotateData(batchEnd) 0
     set annotateData(msg1) ""
     set annotateData(msg2) ""
     set annotateData(msg3) ""
@@ -135,7 +114,6 @@ namespace eval ::annotation {
     set annotateData(moves) ""
     set annotateData(scoremate) 0
     set annotateData(prevscoremate) 0
-    set annotateData(anzVariation) 1
 
     proc doAnnotate {} {
         global ::annotation::annotateData
