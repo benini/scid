@@ -62,7 +62,7 @@ proc ::engineNoWin::createEngineOptionsFrame {f id var col callback {engTyp "uci
     pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
     ttk::labelframe $f.opts$id -text "Engine Parameter"
     ttk::label $f.opts$id.l -textvariable $var
-    ttk::button $f.opts$id.x -text "X" -style Toolbutton -command "grid forget $f.opts$id"
+    ttk::button $f.opts$id.x -image tb_close -style Toolbutton -command "grid forget $f.opts$id"
     ttk_text $f.opts$id.text -wrap none -padx 4
     autoscrollBars both $f.opts$id $f.opts$id.text 1
     $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
