@@ -8,9 +8,6 @@
 
 namespace eval sergame {
   
-  # DEBUG
-  set ::sergame::data(log_stdout) 0
-  
   # if true, follow a specific opening
   set openingMovesList {}
   set openingMovesHash {}
@@ -761,14 +758,6 @@ namespace eval sergame {
       return 1
     }
     return 0
-  }
-  ################################################################################
-  #
-  ################################################################################
-  proc logEngine {n text} {
-    if {$::sergame::data(log_stdout)} {
-      puts stdout "$n $text"
-    }
   }
   ################################################################################
   #
