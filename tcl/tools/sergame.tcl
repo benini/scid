@@ -86,27 +86,15 @@ namespace eval sergame {
     pack $w.coach.ad.l $w.coach.ad.val -side left -anchor w -padx 4
     pack $w.coach.cb $w.coach.th $w.coach.en $w.coach.ad -side top -anchor w -padx 4
     
-    # load book names
     ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
-    set bookPath $::scidBooksDir
-    set bookList [ lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
-    if { [llength $bookList] == 0 } {
+    # load book names
+    lassign [getBookList $::sergame::bookToUse] idx tmp
+    if { $idx < 0 } {
       $w.fconfig.cbUseBook configure -state disabled
       set ::sergame::useBook 0
     }
-    set i 0
-    set idx 0
-    set tmp {}
-    foreach file  $bookList {
-      lappend tmp [ file tail $file ]
-      if { $::sergame::bookToUse == [ file tail $file ]} {
-        set idx $i
-      }
-      incr i
-    }
-    
     ttk::combobox $w.fconfig.combo -width 12 -values $tmp
-    catch { ch$w.fconfig.combo current $idx }
+    catch { $w.fconfig.combo current $idx }
     
     set row 0
     
