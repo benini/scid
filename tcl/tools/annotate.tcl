@@ -60,24 +60,12 @@ namespace eval ::annotation {
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotation::annotateData(useAnalysisBook)
         ::engineNoWin::createEngineOptionsFrame $f annotateEngine ::annotation::annotateData(engine) 3 ::annotation::eng_messages
 
-        # choose a book for analysis
         # load book names
-        set bookPath $::scidBooksDir
-        set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+        lassign [getBookList $annotateData(AnalysisBookName)] idx tmp
         # No book found
-        if { [llength $bookList] == 0 } {
+        if { $idx < 0 } {
             set annotateData(useAnalysisBook) 0
             $f.annotate.cbBook configure -state disabled
-        }
-        set tmp {}
-        set idx 0
-        set i 0
-        foreach file $bookList {
-            lappend tmp [ file tail $file ]
-            if {$::book::lastBook == [ file tail $file ] } {
-                set idx $i
-            }
-            incr i
         }
         if { $annotateData(AnalysisBookName) eq "" } { set annotateData(AnalysisBookName) [lindex $tmp $idx] }
         ttk::combobox $f.annotate.comboBooks -width 12 -values $tmp -textvariable ::annotation::annotateData(AnalysisBookName)
