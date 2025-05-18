@@ -125,19 +125,27 @@ proc InitDefaultFonts {} {
 }
 
 proc InitDefaultAnnotate {} {
-  set ::isBatchOpening 0
-  set ::isBatchOpeningMoves 12
-  set ::isBatch 0
-  set ::markTacticalExercises 0
-  set ::isAnnotateVar 0
-  set ::isShortAnnotation 0
-  set ::addScoreToShortAnnotations 0
-  set ::addAnnotatorTag 0
-  set ::annotateMoves all
-  set ::annotateBlunders blundersonly
-  set ::scoreAllMoves 0
-  # Blunder Threshold
-  set ::blunderThreshold 1.0
+  set ::annotation::annotateData(typ) "movetime"
+  set ::annotation::annotateData(movetime) 1000
+  set ::annotation::annotateData(time) 1
+  set ::annotation::annotateData(depth) 20
+  set ::annotation::annotateData(engine) ""
+  set ::annotation::annotateData(blunderThreshold) 0.5
+  set ::annotation::annotateData(annotateMoves) all
+  set ::annotation::annotateData(annotateBlunders) blundersonly
+  set ::annotation::annotateData(scoreAllMoves) 1
+  set ::annotation::annotateData(useAnalysisBook) 0
+  set ::annotation::annotateData(AnalysisBookName) ""
+  set ::annotation::annotateData(BookSlot) 1
+  set ::annotation::annotateData(tacticalExercises) 0
+  set ::annotation::annotateData(addAnnotatorTag) 1
+  set ::annotation::annotateData(OpeningErrors) 0
+  set ::annotation::annotateData(OpeningMoves) 0
+  set ::annotation::annotateData(annotateShort) 1
+  set ::annotation::annotateData(addScoreToShortAnnotations) 1
+  set ::annotation::annotateData(batchMode) 0
+  set ::annotation::annotateData(batchEnd) 0
+  set ::annotation::annotateData(anzVariation) 1
 }
 
 InitDefaultFonts
@@ -649,12 +657,11 @@ proc options.write {} {
           ::sergame::data(wtime) ::sergame::data(winc) ::sergame::data(btime) ::sergame::data(binc) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard \
-          isBatchOpening isBatchOpeningMoves isBatch \
-          markTacticalExercises scoreAllMoves \
-          isAnnotateVar isShortAnnotation addScoreToShortAnnotations annotateBlunders\
-          addAnnotatorTag annotateMoves } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
+    }
+    foreach i [lsort [array names ::annotation::annotateData]] {
+        puts $optionF "set ::annotation::annotateData($i) [list $::annotation::annotateData($i)]"
     }
 
     puts $optionF ""

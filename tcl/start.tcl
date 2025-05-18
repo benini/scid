@@ -243,7 +243,7 @@ foreach ns {
   ::tools::graphs
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
-  ::board ::move
+  ::board ::move ::annotation
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
   ::pinfo
@@ -745,6 +745,7 @@ tools/optable.tcl
 tools/preport.tcl
 tools/pinfo.tcl
 tools/analysis.tcl
+tools/enginenowin.tcl
 tools/annotate.tcl
 tools/finishgame.tcl
 tools/wbdetect.tcl

@@ -6,124 +6,10 @@
 ##########################################################################################
 ### Annotate Dialog: uses a chess engine to analyze and annotate a chess game.
 
-# engineNoWin will be used by annotate and finish game
-namespace eval ::engineNoWin {}
-# Open the engine and configure it
-proc ::engineNoWin::initEngine { id engine callback } {
-    if { [info exists ::enginewin::engConfig_$id] } { return 1 }
-#   tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
-    set config [::enginecfg::get $engine]
-    lassign $config name cmd args wdir elo time url uci options
-    set ::enginewin::engConfig_$id $config
-    ::engine::setLogCmd $id {}
-    ::engine::connect $id $callback $cmd $args
-    if { $options ne "" } { ::engine::send $id SetOptions $options }
-    return 1
-}
-
-proc ::engineNoWin::changeEngine {id w enginevar callback} {
-    ::engine::close $id
-    $w.text configure -state normal
-    $w.text delete 1.0 end
-    foreach wchild [winfo children $w.text] { destroy $wchild }
-    catch { unset ::enginewin::engConfig_$id }
-    set engine [set $enginevar]
-    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
-}
-
-proc ::engineNoWin::showHideOptionsFrame {id w enginevar callback col} {
-    if { [winfo ismapped $w] } { grid forget $w ; return }
-    grid $w -row 0 -column $col -rowspan 5 -sticky ne -padx 10
-    set engine [set $enginevar]
-    ::engineNoWin::initEngine $id $engine [list $callback $id $w]
-}
-
-#create frame for select and edit engine options
-#engType: all, uci or winboard
-proc ::engineNoWin::createEngineOptionsFrame {f id var col callback {engTyp "uci"}} {
-    ttk::frame $f.$id
-    set allEngList [::enginecfg::names ]
-    if { $engTyp ne "all"} {
-        set engList {}
-        foreach name $allEngList {
-            set typ [lindex [::enginecfg::get $name] 7]
-            if { $engTyp == "uci" && $typ || $engTyp == "winboard" && ! $typ } {
-                lappend engList $name
-            }
-        }
-    } else {
-        set engList $allEngList
-    }
-    if { [set $var] eq "" } { set $var [lindex $engList 0] }
-    ttk::combobox $f.$id.eng -width 20 -state readonly -values $engList -textvariable $var
-    bind $f.$id.eng <<ComboboxSelected>> "::engineNoWin::changeEngine $id $f.opts$id $var $callback"
-    ttk::button $f.$id.opts -image ::icon::filter_adv -style Toolbutton \
-        -command "::engineNoWin::showHideOptionsFrame $id $f.opts$id $var $callback $col"
-    pack $f.$id.eng $f.$id.opts -side left -padx { 0 5 }
-    ttk::labelframe $f.opts$id -text "Engine Parameter"
-    ttk::label $f.opts$id.l -textvariable $var
-    ttk::button $f.opts$id.x -text "X" -style Toolbutton -command "grid forget $f.opts$id"
-    ttk_text $f.opts$id.text -wrap none -padx 4
-    autoscrollBars both $f.opts$id $f.opts$id.text 1
-    $f.opts$id.text configure -state normal -wrap word -width 60 -height 18
-    ttk::button $f.opts$id.save -text "Save Setup" -command "::engineNoWin::saveEngineSetup $id"
-    grid $f.opts$id.l -row 0 -column 0 -sticky w
-    grid $f.opts$id.x -row 0 -column 1 -sticky e
-    grid $f.opts$id.save -row 2 -column 0 -columnspan 2 -sticky e -pady { 5 0 }
-    bind $f.$id <Destroy> "catch { unset ::enginewin::engConfig_$id }; ::engine::close $id"
-}
-
-proc ::engineNoWin::initEngineOptions {id w options} {
-    upvar ::enginewin::engConfig_$id engConfig_
-    if { ! [winfo exists $w.text.reset] } {
-        lset ::enginewin::engConfig_$id 8 $options
-        ::enginecfg::createOptionWidgets $id $w $options
-        ::engine::replyInfoConfig $id
-    } else {
-        lset ::enginewin::engConfig_$id 8 $options
-        ::enginecfg::updateOptionWidgets $id $w $options {}
-        $w.text configure -state disabled
-    }
-}
-
-proc ::engineNoWin::saveEngineSetup { id } {
-    upvar ::enginewin::engConfig_$id engConfig_
-    ::enginecfg::save [set ::enginewin::engConfig_$id]
-}
-
-proc ::engineNoWin::disconnected { id data } {
-    upvar ::enginewin::engConfig_$id engConfig_
-    lassign $data errorMsg
-    lassign [set ::enginewin::engConfig_$id] engine
-    if {$errorMsg eq ""} { set errorMsg "The connection with the engine $id $engine terminated unexpectedly." }
-    tk_messageBox -icon warning -type ok -parent . -message $errorMsg
-}
-
 namespace eval ::annotation {
 
     # Typ may be "movetime": time per move or "depth": analyse till depth is reached
-    set annotateData(typ) "movetime"
-    set annotateData(movetime) 1000
-    set annotateData(time) 1
-    set annotateData(depth) 20
-    set annotateData(engine) ""
     set annotateData(progress) 0
-    set annotateData(blunderThreshold) 0.5
-    set annotateData(annotateMoves) all
-    set annotateData(annotateBlunders) blundersonly
-    set annotateData(scoreAllMoves) 1
-    set annotateData(annotateMode) 0
-    set annotateData(useAnalysisBook) 0
-    set annotateData(AnalysisBookName) ""
-    set annotateData(BookSlot) 1
-    set annotateData(tacticalExercises) 0
-    set annotateData(addAnnotatorTag) 1
-    set annotateData(OpeningErrors) 0
-    set annotateData(OpeningMoves) 0
-    set annotateData(annotateShort) 1
-    set annotateData(addScoreToShortAnnotations) 1
-    set annotateData(batchMode) 0
-    set annotateData(batchEnd) 0
     set annotateData(msg1) ""
     set annotateData(msg2) ""
     set annotateData(msg3) ""
@@ -135,7 +21,6 @@ namespace eval ::annotation {
     set annotateData(moves) ""
     set annotateData(scoremate) 0
     set annotateData(prevscoremate) 0
-    set annotateData(anzVariation) 1
 
     proc doAnnotate {} {
         global ::annotation::annotateData
@@ -175,24 +60,12 @@ namespace eval ::annotation {
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotation::annotateData(useAnalysisBook)
         ::engineNoWin::createEngineOptionsFrame $f annotateEngine ::annotation::annotateData(engine) 3 ::annotation::eng_messages
 
-        # choose a book for analysis
         # load book names
-        set bookPath $::scidBooksDir
-        set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+        lassign [getBookList $annotateData(AnalysisBookName)] idx tmp
         # No book found
-        if { [llength $bookList] == 0 } {
+        if { $idx < 0 } {
             set annotateData(useAnalysisBook) 0
             $f.annotate.cbBook configure -state disabled
-        }
-        set tmp {}
-        set idx 0
-        set i 0
-        foreach file $bookList {
-            lappend tmp [ file tail $file ]
-            if {$::book::lastBook == [ file tail $file ] } {
-                set idx $i
-            }
-            incr i
         }
         if { $annotateData(AnalysisBookName) eq "" } { set annotateData(AnalysisBookName) [lindex $tmp $idx] }
         ttk::combobox $f.annotate.comboBooks -width 12 -values $tmp -textvariable ::annotation::annotateData(AnalysisBookName)
