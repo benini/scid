@@ -744,6 +744,7 @@ tools/optable.tcl
 tools/preport.tcl
 tools/pinfo.tcl
 tools/analysis.tcl
+tools/enginenowin.tcl
 tools/annotate.tcl
 tools/finishgame.tcl
 tools/wbdetect.tcl
