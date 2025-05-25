@@ -320,7 +320,6 @@ set ::novag::referee "OFF"
 # Defaults for serious game training
 set ::sergame::isOpening 0
 set ::sergame::chosenOpening 0
-set ::sergame::chosenEngine 0
 set ::sergame::useBook 1
 set ::sergame::bookToUse ""
 set ::sergame::startFromCurrent 0
@@ -649,7 +648,7 @@ proc options.write {} {
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
-          ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
+          ::sergame::chosenOpening ::sergame::useBook ::sergame::bookToUse \
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
           ::sergame::storeEval ::sergame::coachTypeMove ::sergame::coachTypeTactic ::sergame::engineName \
           ::sergame::tacticBlunder ::sergame::threshold ::sergame::tacTime ::sergame::useCoachEngine \
