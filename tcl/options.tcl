@@ -125,27 +125,26 @@ proc InitDefaultFonts {} {
 }
 
 proc InitDefaultAnnotate {} {
-  set ::annotation::annotateData(typ) "movetime"
-  set ::annotation::annotateData(movetime) 1000
-  set ::annotation::annotateData(time) 1
-  set ::annotation::annotateData(depth) 20
-  set ::annotation::annotateData(engine) ""
-  set ::annotation::annotateData(blunderThreshold) 0.5
-  set ::annotation::annotateData(annotateMoves) all
-  set ::annotation::annotateData(annotateBlunders) blundersonly
-  set ::annotation::annotateData(scoreAllMoves) 1
-  set ::annotation::annotateData(useAnalysisBook) 0
-  set ::annotation::annotateData(AnalysisBookName) ""
-  set ::annotation::annotateData(BookSlot) 1
-  set ::annotation::annotateData(tacticalExercises) 0
-  set ::annotation::annotateData(addAnnotatorTag) 1
-  set ::annotation::annotateData(OpeningErrors) 0
-  set ::annotation::annotateData(OpeningMoves) 0
-  set ::annotation::annotateData(annotateShort) 1
-  set ::annotation::annotateData(addScoreToShortAnnotations) 1
-  set ::annotation::annotateData(batchMode) 0
-  set ::annotation::annotateData(batchEnd) 0
-  set ::annotation::annotateData(anzVariation) 1
+  set ::annotation::options(typ) "movetime"
+  set ::annotation::options(movetime) 1000
+  set ::annotation::options(time) 1
+  set ::annotation::options(depth) 20
+  set ::annotation::options(engine) ""
+  set ::annotation::options(blunderThreshold) 0.5
+  set ::annotation::options(annotateMoves) all
+  set ::annotation::options(annotateBlunders) blundersonly
+  set ::annotation::options(scoreAllMoves) 1
+  set ::annotation::options(useAnalysisBook) 0
+  set ::annotation::options(AnalysisBookName) ""
+  set ::annotation::options(tacticalExercises) 0
+  set ::annotation::options(addAnnotatorTag) 1
+  set ::annotation::options(OpeningErrors) 0
+  set ::annotation::options(OpeningMoves) 8
+  set ::annotation::options(annotateShort) 1
+  set ::annotation::options(addScoreToShortAnnotations) 1
+  set ::annotation::options(batchMode) 0
+  set ::annotation::options(batchEnd) 0
+  set ::annotation::options(anzVariation) 1
 }
 
 InitDefaultFonts
@@ -672,8 +671,8 @@ proc options.write {} {
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
     }
-    foreach i [lsort [array names ::annotation::annotateData]] {
-        puts $optionF "set ::annotation::annotateData($i) [list $::annotation::annotateData($i)]"
+    foreach i [lsort [array names ::annotation::options]] {
+        puts $optionF "set ::annotation::options($i) [list $::annotation::options($i)]"
     }
 
     puts $optionF ""
