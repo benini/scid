@@ -318,30 +318,30 @@ set ::pinfo::dnburl        "http://d-nb.info/gnd"
 set ::novag::referee "OFF"
 
 # Defaults for serious game training
-set ::sergame::isOpening 0
-set ::sergame::chosenOpening 0
-set ::sergame::useBook 1
-set ::sergame::bookToUse ""
-set ::sergame::startFromCurrent 0
-set ::sergame::coachIsWatching 0
-set ::sergame::timeMode "timebonus"
-set ::sergame::depth 3
-set ::sergame::movetime 1000
-set ::sergame::nodes 10000
-set ::sergame::engineName ""
-set ::sergame::coachName ""
-set ::sergame::storeEval 0
-set ::sergame::coachTypeMove 0
-set ::sergame::coachTypeTactic 0
-set ::sergame::useCoachEngine 0
-set ::sergame::tacticBlunder ""
-set ::sergame::threshold 0.6
-set ::sergame::tacTime 5
-set ::sergame::ponder 0
-set ::sergame::data(wtime) [expr 5 * 60 * 1000 ]
-set ::sergame::data(winc) [expr 10 * 1000 ]
-set ::sergame::data(btime) [expr 5 * 60 * 1000 ]
-set ::sergame::data(binc) [expr 10 * 1000 ]
+set ::sergame::options(isOpening) 0
+set ::sergame::options(chosenOpening) 0
+set ::sergame::options(useBook) 1
+set ::sergame::options(bookToUse) ""
+set ::sergame::options(startFromCurrent) 0
+set ::sergame::options(coachIsWatching) 0
+set ::sergame::options(timeMode) "timebonus"
+set ::sergame::options(depth) 3
+set ::sergame::options(movetime) 1000
+set ::sergame::options(nodes) 10000
+set ::sergame::options(engineName) ""
+set ::sergame::options(coachName) ""
+set ::sergame::options(storeEval) 0
+set ::sergame::options(coachTypeMove) 0
+set ::sergame::options(coachTypeTactic) 0
+set ::sergame::options(useCoachEngine) 0
+set ::sergame::options(threshold) 0.6
+set ::sergame::options(tacTime) 5
+set ::sergame::options(ponder) 0
+set ::sergame::options(isLimitedAnalysisTime) 1
+set ::sergame::options(wtime) [expr 5 * 60 * 1000 ]
+set ::sergame::options(winc) [expr 10 * 1000 ]
+set ::sergame::options(btime) [expr 5 * 60 * 1000 ]
+set ::sergame::options(binc) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
@@ -648,16 +648,13 @@ proc options.write {} {
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
-          ::sergame::chosenOpening ::sergame::useBook ::sergame::bookToUse \
-          ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
-          ::sergame::storeEval ::sergame::coachTypeMove ::sergame::coachTypeTactic ::sergame::engineName \
-          ::sergame::tacticBlunder ::sergame::threshold ::sergame::tacTime ::sergame::useCoachEngine \
-          ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
-          ::sergame::data(wtime) ::sergame::data(winc) ::sergame::data(btime) ::sergame::data(binc) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
+    }
+    foreach i [lsort [array names ::sergame::options]] {
+        puts $optionF "set ::sergame::options($i) [list $::sergame::options($i)]"
     }
     foreach i [lsort [array names ::annotation::annotateData]] {
         puts $optionF "set ::annotation::annotateData($i) [list $::annotation::annotateData($i)]"

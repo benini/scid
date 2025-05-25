@@ -9,20 +9,20 @@
 namespace eval sergame {
   
   # if true, follow a specific opening
-  set openingMovesList {}
-  set openingMovesHash {}
-  set outOfOpening 0
-  set bookSlot 2
-  set actTacTime 0
-  set isLimitedAnalysisTime 1
+  set _Data(openingMovesList) {}
+  set _Data(openingMovesHash) {}
+  set _Data(outOfOpening) 0
+  set _Data(bookSlot) 2
+  set _Data(tacticBlunder) ""
+  set _Data(actTacTime) 0
   # list of fen positions played to detect 3 fold repetition
-  set lFen {}
+  set _Data(lFen) {}
   
   ################################################################################
   #
   ################################################################################
   proc config {} {
-    global ::sergame::configWin ::sergame::chosenOpening
+    global ::sergame::_Data ::sergame::options ::sergame::configWin
     
     set w ".configSerGameWin"
     if {[winfo exists $w]} {
@@ -53,42 +53,42 @@ namespace eval sergame {
     grid $w.fbuttons -row 3 -column 1 -sticky se
     
     # builds the list of UCI engines
-    ::engineNoWin::createEngineOptionsFrame $w seriousEngine ::sergame::engineName 5 ::sergame::eng_messages
+    ::engineNoWin::createEngineOptionsFrame $w seriousEngine ::sergame::options(engineName) 5 ::sergame::eng_messages
     # ponder
-    ttk::checkbutton $w.fengines.ponder -text $::tr(Ponder) -variable ::sergame::ponder
+    ttk::checkbutton $w.fengines.ponder -text $::tr(Ponder) -variable ::sergame::options(ponder)
     pack $w.seriousEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
     pack $w.fengines.ponder -side top -anchor w
 
     # coach engine
     ttk::frame $w.coach.en
-    ttk::checkbutton $w.coach.en.coach -text "$::tr(Engine)" -variable ::sergame::useCoachEngine
+    ttk::checkbutton $w.coach.en.coach -text "$::tr(Engine)" -variable ::sergame::options(useCoachEngine)
     ::utils::tooltip::Set $w.coach.en.coach "Use a separate (strong) engine for coaching if the playing engine is weak."
-    ::engineNoWin::createEngineOptionsFrame $w coachEngine ::sergame::coachName 6 ::sergame::eng_messages
+    ::engineNoWin::createEngineOptionsFrame $w coachEngine ::sergame::options(coachName) 6 ::sergame::eng_messages
     pack $w.coach.en.coach -in $w.coach.en -side left -pady 5 -anchor w -padx 4
     pack $w.coachEngine -in $w.coach.en -side left -pady 5 -anchor w -padx 4
     ttk::frame $w.coach.cb
-    ttk::checkbutton $w.coach.cb.coach -text "Bad move warning" -variable ::sergame::coachTypeMove
+    ttk::checkbutton $w.coach.cb.coach -text "Bad move warning" -variable ::sergame::options(coachTypeMove)
     ::utils::tooltip::Set $w.coach.cb.coach "Coach warns if player made a bad move. Player can take back this move."
-    ttk::checkbutton $w.coach.cb.fullCoach -text "Mark engine blunder" -variable ::sergame::coachTypeTactic \
-        -command { if { $::sergame::coachTypeTactic } { set ::sergame::useCoachEngine 1 } }
+    ttk::checkbutton $w.coach.cb.fullCoach -text "Mark engine blunder" -variable ::sergame::options(coachTypeTactic) \
+        -command { if { $::sergame::options(coachTypeTactic) } { set ::sergame::options(useCoachEngine) 1 } }
     ::utils::tooltip::Set $w.coach.cb.fullCoach "Gives a hint (in InfoBar) that engines has blundered. Needs coaching engine."
     pack $w.coach.cb.coach $w.coach.cb.fullCoach -side left -padx 4
     ttk::frame $w.coach.th
     ttk::label $w.coach.th.l -text $::tr(moveblunderthreshold)
-    ttk::spinbox $w.coach.th.val -width 3 -from 0.4 -to 5.0 -increment 0.1 -textvariable ::sergame::threshold -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
+    ttk::spinbox $w.coach.th.val -width 3 -from 0.4 -to 5.0 -increment 0.1 -textvariable ::sergame::options(threshold) -validate all -validatecommand { regexp {^[0-9]\.[0-9]$} %P }
     pack $w.coach.th.l $w.coach.th.val -side left -anchor w -padx 4
     ttk::frame $w.coach.ad
-    ttk::checkbutton $w.coach.ad.l -text $::tr(limitanalysis) -variable ::sergame::isLimitedAnalysisTime
-    ttk::spinbox $w.coach.ad.val -width 3 -from 1 -to 360 -increment 1 -textvariable ::sergame::tacTime -validate all -validatecommand { regexp {^[0-9]$} %P }
+    ttk::checkbutton $w.coach.ad.l -text $::tr(limitanalysis) -variable ::sergame::options(isLimitedAnalysisTime)
+    ttk::spinbox $w.coach.ad.val -width 3 -from 1 -to 360 -increment 1 -textvariable ::sergame::options(tacTime) -validate all -validatecommand { regexp {^[0-9]$} %P }
     pack $w.coach.ad.l $w.coach.ad.val -side left -anchor w -padx 4
     pack $w.coach.cb $w.coach.th $w.coach.en $w.coach.ad -side top -anchor w -padx 4
     
-    ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
+    ttk::checkbutton $w.fconfig.cbUseBook -text $::tr(UseBook) -variable ::sergame::options(useBook)
     # load book names
-    lassign [getBookList $::sergame::bookToUse] idx tmp
+    lassign [getBookList $options(bookToUse)] idx tmp
     if { $idx < 0 } {
       $w.fconfig.cbUseBook configure -state disabled
-      set ::sergame::useBook 0
+      set options(useBook) 0
     }
     ttk::combobox $w.fconfig.combo -width 12 -values $tmp
     catch { $w.fconfig.combo current $idx }
@@ -99,7 +99,7 @@ namespace eval sergame {
     ttk::frame $w.ftime.timebonus
     pack  $w.ftime.timebonus -side top -fill x
     
-    ttk::radiobutton $w.ftime.timebonus.rb1 -text $::tr(TimeBonus) -value "timebonus" -variable ::sergame::timeMode
+    ttk::radiobutton $w.ftime.timebonus.rb1 -text $::tr(TimeBonus) -value "timebonus" -variable ::sergame::options(timeMode)
     grid $w.ftime.timebonus.rb1 -row $row -column 0 -sticky w -rowspan 2
     
     ttk::label $w.ftime.timebonus.whitelabel -text $::tr(White)
@@ -125,34 +125,34 @@ namespace eval sergame {
     ttk::label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.blacklseconds -row $row -column 5
     
-    $w.ftime.timebonus.whitespminutes set [expr $::sergame::data(wtime) / (60 * 1000)]
-    $w.ftime.timebonus.whitespseconds set [expr $::sergame::data(winc) /  1000]
-    $w.ftime.timebonus.blackspminutes set [expr $::sergame::data(btime) / (60 * 1000)]
-    $w.ftime.timebonus.blackspseconds set [expr $::sergame::data(binc) /  1000 ]
+    $w.ftime.timebonus.whitespminutes set [expr $options(wtime) / (60 * 1000)]
+    $w.ftime.timebonus.whitespseconds set [expr $options(winc) /  1000]
+    $w.ftime.timebonus.blackspminutes set [expr $options(btime) / (60 * 1000)]
+    $w.ftime.timebonus.blackspseconds set [expr $options(binc) /  1000 ]
     
     # Fixed depth
     ttk::frame $w.ftime.depth
-    ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode -width 16
+    ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::options(timeMode) -width 16
     ttk::spinbox $w.ftime.depth.value -background white -width 3 -from 1 -to 20 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    $w.ftime.depth.value set $::sergame::depth
+    $w.ftime.depth.value set $options(depth)
     
     pack $w.ftime.depth -side top -fill x
     pack $w.ftime.depth.button -side left
     pack $w.ftime.depth.value -side left
     
     ttk::frame $w.ftime.nodes
-    ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode  -width 16
+    ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::options(timeMode) -width 16
     ttk::spinbox $w.ftime.nodes.value -background white -width 3 -from 5 -to 10000 -increment 5 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    $w.ftime.nodes.value set [ expr $::sergame::nodes /1000]
+    $w.ftime.nodes.value set [ expr $options(nodes) /1000]
     
     pack $w.ftime.nodes -side top -fill x
     pack $w.ftime.nodes.button -side left
     pack $w.ftime.nodes.value -side left
     
     ttk::frame $w.ftime.movetime
-    ttk::radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::timeMode -width 16
+    ttk::radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::options(timeMode) -width 16
     ttk::spinbox $w.ftime.movetime.value -background white -width 3 -from 1 -to 120 -increment 1 -validate all -validatecommand { regexp {^[0-9]+$} %P }
-    $w.ftime.movetime.value set [ expr $::sergame::movetime /1000]
+    $w.ftime.movetime.value set [ expr $options(movetime) /1000]
     
     pack $w.ftime.movetime -side top -fill x
     pack $w.ftime.movetime.button -side left
@@ -162,13 +162,13 @@ namespace eval sergame {
     pack $w.fconfig.combo -side top -anchor w -padx 20 -fill x
     
     # New game or use current position ?
-    ttk::checkbutton $w.fconfig2.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
+    ttk::checkbutton $w.fconfig2.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::options(startFromCurrent)
     #Should the evaluation of the position stored in the comment?
-    ttk::checkbutton $w.fconfig2.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::storeEval
+    ttk::checkbutton $w.fconfig2.storeEval -text $::tr(AddScoreToShortAnnotations) -variable ::sergame::options(storeEval)
     pack $w.fconfig2.cbPosition $w.fconfig2.storeEval -side top -anchor w
     
     # choose a specific opening
-    ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
+    ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::options(isOpening)
     ttk::frame $w.fopening.fOpeningList
     ttk::treeview $w.fopening.fOpeningList.lbOpening -columns {0} -show {} -selectmode browse \
         -yscrollcommand "$w.fopening.fOpeningList.ybar set"
@@ -180,8 +180,8 @@ namespace eval sergame {
         incr idx
     }
 
-    $w.fopening.fOpeningList.lbOpening selection set $::sergame::chosenOpening
-    $w.fopening.fOpeningList.lbOpening see $::sergame::chosenOpening
+    $w.fopening.fOpeningList.lbOpening selection set $options(chosenOpening)
+    $w.fopening.fOpeningList.lbOpening see $options(chosenOpening)
     
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.cbOpening -fill x -side top
@@ -191,23 +191,23 @@ namespace eval sergame {
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
-      set ::sergame::chosenOpening [.configSerGameWin.fopening.fOpeningList.lbOpening selection]
-      if {$::sergame::useBook} {
-        set ::sergame::bookToUse [.configSerGameWin.fconfig.combo get]
-        if {$::sergame::bookToUse == "" } {
-          set ::sergame::useBook 0
+      set ::sergame::options(chosenOpening) [.configSerGameWin.fopening.fOpeningList.lbOpening selection]
+      if {$::sergame::options(useBook)} {
+        set ::sergame::options(bookToUse) [.configSerGameWin.fconfig.combo get]
+        if {$::sergame::options(bookToUse) == "" } {
+          set ::sergame::options(useBook) 0
         }
       }
-      set ::sergame::data(wtime) [expr [.configSerGameWin.ftime.timebonus.whitespminutes get]*1000*60]
-      set ::sergame::data(btime) [expr [.configSerGameWin.ftime.timebonus.blackspminutes get]*1000*60]
-      set ::sergame::data(winc) [expr [.configSerGameWin.ftime.timebonus.whitespseconds get]*1000]
-      set ::sergame::data(binc) [expr [.configSerGameWin.ftime.timebonus.blackspseconds get]*1000]
-      set ::sergame::data(fixeddepth) [.configSerGameWin.ftime.depth.value get]
-      set ::sergame::data(fixednodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
-      set ::sergame::data(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
-      set ::sergame::depth [.configSerGameWin.ftime.depth.value get]
-      set ::sergame::nodes [expr [.configSerGameWin.ftime.nodes.value get]*1000]
-      set ::sergame::movetime [expr [.configSerGameWin.ftime.movetime.value get]*1000]
+      set ::sergame::options(wtime) [expr [.configSerGameWin.ftime.timebonus.whitespminutes get]*1000*60]
+      set ::sergame::options(btime) [expr [.configSerGameWin.ftime.timebonus.blackspminutes get]*1000*60]
+      set ::sergame::options(winc) [expr [.configSerGameWin.ftime.timebonus.whitespseconds get]*1000]
+      set ::sergame::options(binc) [expr [.configSerGameWin.ftime.timebonus.blackspseconds get]*1000]
+      set ::sergame::options(fixeddepth) [.configSerGameWin.ftime.depth.value get]
+      set ::sergame::options(fixednodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
+      set ::sergame::options(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
+      set ::sergame::options(depth) [.configSerGameWin.ftime.depth.value get]
+      set ::sergame::options(nodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
+      set ::sergame::options(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
       destroy .configSerGameWin
       ::sergame::play seriousEngine
@@ -227,53 +227,52 @@ namespace eval sergame {
   #
   ################################################################################
   proc play { engine } {
-    global ::sergame::chosenOpening ::sergame::isOpening ::sergame::openingList ::sergame::openingMovesList \
-        ::sergame::openingMovesHash ::sergame::openingMoves ::sergame::outOfOpening
+    global ::sergame::_Data ::sergame::options
     
     set callback [list ::sergame::eng_messages $engine nop]
-    if { ! [::engineNoWin::initEngine $engine $::sergame::engineName $callback] } {
+    if { ! [::engineNoWin::initEngine $engine $options(engineName) $callback] } {
         tk_messageBox -title Scid -icon info -type ok -message "The UCI-Engines could not be started."
         return
     }
-    if {$::sergame::isOpening || !$::sergame::startFromCurrent} {
+    if {$options(isOpening) || !$options(startFromCurrent)} {
       if {[::game::Clear] eq "cancel"} { return }
     }
 
-    set ::sergame::lFen {}
-    set ::sergame::data(prevscore) ""
-    set ::sergame::data(score) 0.0
-    set ::sergame::data(ponder) ""
+    set _Data(lFen) {}
+    set _Data(prevscore) ""
+    set _Data(score) 0.0
+    set _Data(ponder) ""
     
-    if {$::sergame::startFromCurrent} {
-      set isOpening 0
+    if {$options(startFromCurrent)} {
+      set options(isOpening) 0
     }
     
     # ponder
     set ponder false
-    if {$::sergame::ponder} { set ponder true }
+    if {$options(ponder)} { set ponder true }
     ::engine::send $engine SetOptions [list {Ponder true}]
     
     # if will follow a specific opening line
-    if {$isOpening} {
-      set fields [split [lindex $openingList $chosenOpening] ":"]
-      set openingName [lindex $fields 0]
-      set openingMoves [string trim [lindex $fields 1]]
-      set openingMovesList ""
-      set openingMovesHash ""
-      set outOfOpening 0
-      foreach m [split $openingMoves] {
+    if {$options(isOpening)} {
+      set fields [split [lindex $::sergame::openingList $options(chosenOpening)] ":"]
+#      set openingName [lindex $fields 0]
+      set _Data(openingMoves) [string trim [lindex $fields 1]]
+      set _Data(openingMovesList) ""
+      set _Data(openingMovesHash) ""
+      set _Data(outOfOpening) 0
+      foreach m [split $_Data(openingMoves)] {
         # in case of multiple adjacent spaces in opening line
         if {$m =={}} {
           continue
         }
         set p [string trim $m]
-        lappend openingMovesList [string trim [regsub {^[1-9]+\.} $p ""] ]
+        lappend _Data(openingMovesList) [string trim [regsub {^[1-9]+\.} $p ""] ]
       }
       
-      lappend openingMovesHash [sc_pos hash]
-      foreach m  $openingMovesList {
+      lappend _Data(openingMovesHash) [sc_pos hash]
+      foreach m  $_Data(openingMovesList) {
         if {[catch {sc_move addSan $m}]} { }
-        lappend openingMovesHash [sc_pos hash]
+        lappend _Data(openingMovesHash) [sc_pos hash]
       }
       #goto start pos and clear the moves
       sc_move start
@@ -282,43 +281,43 @@ namespace eval sergame {
 
     # Engine plays for the upper side
     if {[::board::isFlipped .main.board]} {
-      set ::sergame::playerColor "black"
-      set ::sergame::engineColor "white"
+      set _Data(playerColor) "black"
+      set _Data(engineColor) "white"
     } else {
-      set ::sergame::playerColor "white"
-      set ::sergame::engineColor "black"
+      set _Data(playerColor) "white"
+      set _Data(engineColor) "black"
     }
 
-    if {!$::sergame::startFromCurrent} {
+    if {!$options(startFromCurrent)} {
       # create a new game if a DB is opened
       sc_game tags set -event "Serious game"
-      sc_game tags set -$::sergame::playerColor "Player"
-      sc_game tags set -$::sergame::engineColor "$::sergame::engineName"
+      sc_game tags set -$_Data(playerColor) "Player"
+      sc_game tags set -$_Data(engineColor) "$options(engineName)"
       sc_game tags set -date [::utils::date::today]
-      if {$::sergame::timeMode eq "timebonus"} {
-          sc_game tags set -extra [list "TimeControlWhite \"[expr $::sergame::data(wtime)/60000]+[expr $::sergame::data(winc)/1000]\"" \
-                                   "TimeControlBlack \"[expr $::sergame::data(btime)/60000]+[expr $::sergame::data(binc)/1000]\""]
+      if {$options(timeMode) eq "timebonus"} {
+          sc_game tags set -extra [list "TimeControlWhite \"[expr $options(wtime)/60000]+[expr $options(winc)/1000]\"" \
+                                   "TimeControlBlack \"[expr $options(btime)/60000]+[expr $options(binc)/1000]\""]
       }
-      if { $::sergame::coachTypeMove || $::sergame::coachTypeTactic } {
+      if { $options(coachTypeMove) || $options(coachTypeTactic) } {
           sc_game tags set -event "Coached game"
           set co "Coached Game: "
-          if { $::sergame::coachTypeMove } { append co "Bad Move Warning; " }
-          if { $::sergame::coachTypeTactic } { append co "Engine Blunder Information; " }
-          append co "Blunder Threshold: $::sergame::threshold "
+          if { $options(coachTypeMove) } { append co "Bad Move Warning; " }
+          if { $options(coachTypeTactic) } { append co "Engine Blunder Information; " }
+          append co "Blunder Threshold: $options(threshold)"
           sc_pos setComment $co
       }
     }
 
-    set ::sergame::waitPlayerMove 0
-    set ::sergame::wentOutOfBook 0
+    set _Data(waitPlayerMove) 0
+    set _Data(wentOutOfBook) 0
     ::setPlayMode "::sergame::callback"
     ::notify::GameChanged
 
-    if { $::sergame::coachTypeTactic || $::sergame::useCoachEngine } {
-        set ::sergame::useCoachEngine 1
+    if { $options(coachTypeTactic) || $options(useCoachEngine) } {
+        set options(useCoachEngine) 1
         set callback [list ::sergame::coachEng_messages coachEngine nop]
-        if { ! [::engineNoWin::initEngine coachEngine $::sergame::coachName $callback] } {
-            set ::sergame::useCoachEngine 0
+        if { ! [::engineNoWin::initEngine coachEngine $::sergame::options(coachName) $callback] } {
+            set options(useCoachEngine) 0
         }
     }
     clocks init
@@ -328,6 +327,7 @@ namespace eval sergame {
   }
 
   proc ::sergame::eng_messages {id w msg} {
+      global ::sergame::_Data ::sergame::options
       lassign $msg msgType msgData
       switch $msgType {
           "InfoConfig" {
@@ -336,23 +336,23 @@ namespace eval sergame {
               ::engineNoWin::initEngineOptions $id $w $msgData
           }
           "InfoPV" {
-              if { ! $::sergame::useCoachEngine } {
+              if { ! $options(useCoachEngine) } {
                   # no coach engine then use score from playing engine
                   lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
                   if { $multipv == 1 } {
-                      set ::sergame::data(score) [expr $score / 100.0]
+                      set _Data(score) [expr $score / 100.0]
                       if { $score_type eq "mate" } {
                           if { $score > 0 } {
-                              set ::sergame::data(score) 128.0
+                              set _Data(score) 128.0
                           } else {
-                              set ::sergame::data(score) -128.0
+                              set _Data(score) -128.0
                           }
                       }
                   }
               }
           }
           "InfoBestMove" {
-              lassign $msgData ::sergame::data(bestmove) ponder ::sergame::data(ponder)
+              lassign $msgData _Data(bestmove) ponder _Data(ponder)
           }
           "InfoDisconnected" {
               lassign $msgData errorMsg
@@ -363,6 +363,7 @@ namespace eval sergame {
       }
   }
   proc ::sergame::coachEng_messages {id w msg} {
+      global ::sergame::_Data ::sergame::options
       lassign $msg msgType msgData
       switch $msgType {
           "InfoConfig" {
@@ -373,19 +374,19 @@ namespace eval sergame {
           "InfoPV" {
               lassign $msgData multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
               if { $multipv == 1 } {
-                  set ::sergame::data(bestCoachmove) [lrange $pv 0 0]
-                  set ::sergame::data(score) [expr $score / 100.0]
+                  set _Data(bestCoachmove) [lrange $pv 0 0]
+                  set _Data(score) [expr $score / 100.0]
                   if { $score_type eq "mate" } {
                       if { $score > 0 } {
-                          set ::sergame::data(score) 128.0
+                          set _Data(score) 128.0
                       } else {
-                          set ::sergame::data(score) -128.0
+                          set _Data(score) -128.0
                       }
                   }
               }
           }
           "InfoBestMove" {
-              lassign $msgData ::sergame::data(bestCoachmove)
+              lassign $msgData _Data(bestCoachmove)
           }
           "InfoDisconnected" {
               lassign $msgData errorMsg
@@ -397,9 +398,10 @@ namespace eval sergame {
   }
 
   proc callback {cmd args} {
+    global ::sergame::_Data
     switch $cmd {
         premove { # TODO: currently we just return true if it is the engine turn.
-            return [expr { ! $::sergame::waitPlayerMove }]
+            return [expr { ! $_Data(waitPlayerMove) }]
         }
         stop { ::sergame::abortGame }
     }
@@ -422,15 +424,16 @@ namespace eval sergame {
   }
 
   proc abortGame { } {
+    global ::sergame::_Data ::sergame::options
     ::setPlayMode ""
     after cancel ::sergame::playLoop
     clocks stop
-    set ::sergame::lFen {}
+    set _Data(lFen) {}
     ::engine::send seriousEngine StopGo
     ::engine::close seriousEngine
     unset ::enginewin::engConfig_seriousEngine
-    set ::sergame::data(bestmove) "abort"
-    if { $::sergame::useCoachEngine } {
+    set _Data(bestmove) "abort"
+    if { $options(useCoachEngine) } {
         ::engine::send coachEngine StopGo
         ::engine::close coachEngine
         unset ::enginewin::engConfig_coachEngine
@@ -440,14 +443,15 @@ namespace eval sergame {
   }
 
   proc clocks {cmd} {
-    if {$::sergame::timeMode != "timebonus"} { return }
+    global ::sergame::options
+    if {$options(timeMode) != "timebonus"} { return }
 
     switch $cmd {
       init {
           ::gameclock::new "" 1
           ::gameclock::new "" 2
-          ::gameclock::setSec 1 [expr 0 - $::sergame::data(wtime)/1000]
-          ::gameclock::setSec 2 [expr 0 - $::sergame::data(btime)/1000]
+          ::gameclock::setSec 1 [expr 0 - $options(wtime)/1000]
+          ::gameclock::setSec 2 [expr 0 - $options(btime)/1000]
       }
       start {
           if { [sc_pos side] == "white" } {
@@ -462,11 +466,11 @@ namespace eval sergame {
       }
       toggle {
           if {[::gameclock::stop 1]} {
-            ::gameclock::add 1 [expr $::sergame::data(winc)/1000]
+            ::gameclock::add 1 [expr $options(winc)/1000]
             ::gameclock::storeTimeComment 1
             ::gameclock::start 2
           } elseif {[::gameclock::stop 2]} {
-            ::gameclock::add 2 [expr $::sergame::data(binc)/1000]
+            ::gameclock::add 2 [expr $options(binc)/1000]
             ::gameclock::storeTimeComment 2
             ::gameclock::start 1
           }
@@ -490,6 +494,7 @@ namespace eval sergame {
   # returns true if last move is a mate and stops clocks
   ################################################################################
   proc endOfGame {} {
+    global ::sergame::_Data
     if { [string index [sc_game info previousMove] end ] == "#"} {
       tk_messageBox -type ok -message "This is Mate!" -parent .main -icon info
       set result 0
@@ -503,25 +508,26 @@ namespace eval sergame {
 
   # start playing engine: ponder must be "" or "ponder"
   proc startEngine { ponder } {
-      global ::sergame::timeMode
-      if {$timeMode == "timebonus"} {
+      global ::sergame::_Data ::sergame::options
+      if {$options(timeMode) == "timebonus"} {
         set wtime [expr [::gameclock::getSec 1] * 1000 ]
         set btime [expr [::gameclock::getSec 2] * 1000 ]
-        set parameter "$ponder wtime $wtime btime $btime winc $::sergame::data(winc) binc $::sergame::data(binc)"
-      } elseif {$timeMode == "depth"} {
-        set parameter "$ponder depth $::sergame::data(fixeddepth)"
-      } elseif {$timeMode == "movetime"} {
-        set parameter "$ponder movetime $::sergame::data(movetime)"
-      } elseif {$timeMode == "nodes"} {
-        set parameter "$ponder nodes $::sergame::data(fixednodes)"
+        set parameter "$ponder wtime $wtime btime $btime winc $options(winc) binc $options(binc)"
+      } elseif {$options(timeMode) == "depth"} {
+        set parameter "$ponder depth $options(fixeddepth)"
+      } elseif {$options(timeMode) == "movetime"} {
+        set parameter "$ponder movetime $options(movetime)"
+      } elseif {$options(timeMode) == "nodes"} {
+        set parameter "$ponder nodes $options(fixednodes)"
       }
-      if { $ponder ne "" } { set ponder "moves $::sergame::data(ponder)" }
+      if { $ponder ne "" } { set ponder "moves $options(ponder)" }
       ::engine::send seriousEngine Go [list "position fen [sc_pos fen] $ponder" $parameter]
   }
 
   proc checkBlunder { delta } {
+      global ::sergame::options
       set ret ""
-      if { $delta >= $::sergame::threshold } {
+      if { $delta >= $options(threshold) } {
           if {$delta > $::informant("?!") } { set ret [list "?!" "DubiousMovePlayedTakeBack"] }
           if {$delta > $::informant("?") } { set ret [list "?" "WeakMovePlayedTakeBack"] }
           if {$delta > $::informant("??") } { set ret [list "??" "BadMovePlayedTakeBack"] }
@@ -529,19 +535,20 @@ namespace eval sergame {
       return $ret
   }
   proc checkEngineBlunder { } {
-      set delta [expr $::sergame::data(score) + $::sergame::data(prevscore)]
-      if { [sc_pos side] == $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
-      lassign [checkBlunder $delta] ::sergame::tacticBlunder
-      if { $::sergame::tacticBlunder ne "" } {
-          if { $::sergame::engineColor eq "white" } {
-              set from $::sergame::data(prevscore)
-              set to [expr 0.0 - $::sergame::data(score)]
+      global ::sergame::_Data ::sergame::options
+      set delta [expr $_Data(score) + $_Data(prevscore)]
+      if { [sc_pos side] == $_Data(engineColor) } { set delta [expr 0.0 - $delta] }
+      lassign [checkBlunder $delta] _Data(tacticBlunder)
+      if { $_Data(tacticBlunder) ne "" } {
+          if { $_Data(engineColor) eq "white" } {
+              set from $_Data(prevscore)
+              set to [expr 0.0 - $_Data(score)]
           } else {
-              set from [expr 0.0 - $::sergame::data(prevscore)]
-              set to $::sergame::data(score)
+              set from [expr 0.0 - $_Data(prevscore)]
+              set to $_Data(score)
           }
-          ::board::setInfoAlert .main.board "Engine blunders: $::sergame::tacticBlunder $from -> $to" "Show move" red \
-              {::board::setInfoAlert .main.board "Try move $::sergame::data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
+          ::board::setInfoAlert .main.board "Engine blunders: $_Data(tacticBlunder) $from -> $to" "Show move" red \
+              {::board::setInfoAlert .main.board "Try move $::sergame::_Data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
       }
   }
 
@@ -549,23 +556,22 @@ namespace eval sergame {
   #
   ################################################################################
   proc playLoop { } {
-    global ::sergame::isOpening ::sergame::openingMovesList ::sergame::openingMovesHash ::sergame::openingMoves \
-        ::sergame::timeMode ::sergame::outOfOpening
+    global ::sergame::_Data ::sergame::options
     
     after cancel ::sergame::playLoop
     
     if { [::sergame::endOfGame] } { return }
     
-    if { [sc_pos side] != $::sergame::engineColor } {
+    if { [sc_pos side] != $_Data(engineColor) } {
       # wait until player has moved
-      set ::sergame::waitPlayerMove 1
+      set _Data(waitPlayerMove) 1
       after 1000 ::sergame::playLoop
-      if { $::sergame::useCoachEngine && $::sergame::coachTypeTactic && $::sergame::actTacTime > 0 && $::sergame::data(prevscore) != "" } {
+      if { $options(useCoachEngine) && $options(coachTypeTactic) && $_Data(actTacTime) > 0 && $_Data(prevscore) != "" } {
           #check for engine blunder with coach engine
-          incr ::sergame::actTacTime -1
-          if { $::sergame::isLimitedAnalysisTime && ! $::sergame::actTacTime } {
+          incr _Data(actTacTime) -1
+          if { $options(isLimitedAnalysisTime) && ! $_Data(actTacTime) } {
               # make sure we have a move and evaluation from coach engine 
-              while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
+              while { $_Data(bestCoachmove) eq "" } { vwait ::sergame::_Data(bestCoachmove) }
               ::engine::send coachEngine StopGo
           } else {
               checkEngineBlunder
@@ -574,15 +580,15 @@ namespace eval sergame {
       return
     }
 
-    if { $::sergame::useCoachEngine } {
+    if { $options(useCoachEngine) } {
         ::engine::send coachEngine StopGo
-        if { $::sergame::tacticBlunder ne "" } {
+        if { $_Data(tacticBlunder) ne "" } {
             # engine blundered, add nag and correct eval comment
             sc_move back
-            sc_pos addNag $::sergame::tacticBlunder
-            if { $::sergame::storeEval == 1 } {
-                set score $::sergame::data(score)
-                if { $::sergame::engineColor eq "white" } { set score [expr 0.0 - $score] }
+            sc_pos addNag $_Data(tacticBlunder)
+            if { $options(storeEval) == 1 } {
+                set score $_Data(score)
+                if { $_Data(engineColor) eq "white" } { set score [expr 0.0 - $score] }
                 storeEvalComment $score
             }
             sc_move forward
@@ -591,10 +597,10 @@ namespace eval sergame {
     
     set takebackClockW ""
     set takebackClockB ""
-    if {$::sergame::waitPlayerMove} {
+    if {$_Data(waitPlayerMove)} {
       # The player moved
-      set ::sergame::waitPlayerMove 0
-      if {$::sergame::timeMode == "timebonus"} {
+      set _Data(waitPlayerMove) 0
+      if {$options(timeMode) == "timebonus"} {
         set takebackClockW [::gameclock::getSec 1]
         set takebackClockB [::gameclock::getSec 2]
         clocks toggle
@@ -603,25 +609,25 @@ namespace eval sergame {
     }
     
     # make a move corresponding to a specific opening, (it is engine's turn)
-    if {$isOpening && !$outOfOpening} {
+    if {$options(isOpening) && !$_Data(outOfOpening)} {
       set index 0
       # Warn if the user went out of the opening line chosen
-      if { !$outOfOpening } {
+      if { !$_Data(outOfOpening) } {
         set ply [ expr [sc_pos moveNumber] * 2 - 1]
         if { [sc_pos side] == "white" } {
           set ply [expr $ply - 1]
         }
         
-        if { [lsearch $openingMovesHash [sc_pos hash]] == -1 && [llength $openingMovesList] >= $ply} {
+        if { [lsearch $_Data(openingMovesHash) [sc_pos hash]] == -1 && [llength $_Data(openingMovesList)] >= $ply} {
           clocks stop
           set answer [tk_messageBox -icon question -parent .main -title $::tr(OutOfOpening) -type yesno \
-              -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
+              -message "$::tr(NotFollowedLine) $_Data(openingMoves)\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             takeBack $takebackClockW $takebackClockB
             after 1000 ::sergame::playLoop
             return
           }  else  {
-            set outOfOpening 1
+            set _Data(outOfOpening) 1
           }
           clocks start
         }
@@ -629,12 +635,12 @@ namespace eval sergame {
       
       set hpos [sc_pos hash]
       # Find a corresponding position in the opening line
-      set length [llength $openingMovesHash]
+      set length [llength $_Data(openingMovesHash)]
       for {set i 0}   { $i < [expr $length-1] } { incr i } {
-        set h [lindex $openingMovesHash $i]
+        set h [lindex $_Data(openingMovesHash) $i]
         if {$h == $hpos} {
-          set index [lsearch $openingMovesHash $h]
-          set move [lindex $openingMovesList $index]
+          set index [lsearch $_Data(openingMovesHash) $h]
+          set move [lindex $_Data(openingMovesList) $index]
           # play the move
           set action "replace"
           if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
@@ -661,15 +667,15 @@ namespace eval sergame {
     }
     # -------------------------------------------------------------
     # use a book
-    if {$::sergame::useBook && ! $::sergame::wentOutOfBook} {
-      set move [ ::book::getMove $::sergame::bookToUse [sc_pos fen] $::sergame::bookSlot]
+    if {$options(useBook) && ! $_Data(wentOutOfBook)} {
+      set move [ ::book::getMove $options(bookToUse) [sc_pos fen] $_Data(bookSlot)]
       if {$move == ""} {
-        set ::sergame::wentOutOfBook 1
+        set _Data(wentOutOfBook) 1
       } else  {
         sc_move addSan $move
         ::utils::sound::AnnounceNewMove $move
         # we made a book move so assume a score = 0
-        set ::sergame::data(prevscore) ""
+        set _Data(prevscore) ""
         clocks toggle
         updateBoard -pgn -animate
         if { ! [repetition] } {
@@ -680,34 +686,34 @@ namespace eval sergame {
     }
     # -------------------------------------------------------------
     # check if the engine pondered on the right move
-    if { $::sergame::ponder && $::sergame::data(ponder) ne "" && $::sergame::data(ponder) == [sc_game info previousMoveUCI]} {
+    if { $options(ponder) && $_Data(ponder) ne "" && $_Data(ponder) == [sc_game info previousMoveUCI]} {
       ::engine::rawsend seriousEngine "ponderhit"
     } else {
-      if { $::sergame::ponder } { ::engine::send seriousEngine StopGo }
+      if { $options(ponder) } { ::engine::send seriousEngine StopGo }
       startEngine ""
     }
-    if { $::sergame::useCoachEngine } {
-        set ::sergame::data(bestCoachmove) ""
+    if { $options(useCoachEngine) } {
+        set _Data(bestCoachmove) ""
         ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
     }
     
-    set ::sergame::data(bestmove) ""
-    vwait ::sergame::data(bestmove)
-    if { $::sergame::useCoachEngine } {
+    set _Data(bestmove) ""
+    vwait ::sergame::_Data(bestmove)
+    if { $options(useCoachEngine) } {
         # make sure we have a move and evaluation from coach engine 
-        while { $::sergame::data(bestCoachmove) eq "" } { vwait ::sergame::data(bestCoachmove) }
+        while { $_Data(bestCoachmove) eq "" } { vwait ::sergame::_Data(bestCoachmove) }
         ::engine::send coachEngine StopGo
     }
     
     # -------------------------------------------------------------
     # if weak move detected, propose the user to take back
-    if { $::sergame::coachTypeMove && $::sergame::data(prevscore) != "" } {
-      set delta [expr $::sergame::data(score) - $::sergame::data(prevscore)]
-      if { [sc_pos side] != $::sergame::engineColor } { set delta [expr 0.0 - $delta] }
+    if { $options(coachTypeMove) && $_Data(prevscore) != "" } {
+      set delta [expr $_Data(score) - $_Data(prevscore)]
+      if { [sc_pos side] != $_Data(engineColor) } { set delta [expr 0.0 - $delta] }
       lassign [checkBlunder $delta] nop tBlunder
       if {$tBlunder ne ""} {
         clocks stop
-        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$::sergame::data(prevscore) -> $::sergame::data(score)" ]
+        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$_Data(prevscore) -> $_Data(score)" ]
         if {$answer == yes} {
           takeBack $takebackClockW $takebackClockB
           after 1000 ::sergame::playLoop
@@ -718,16 +724,16 @@ namespace eval sergame {
     }
     
     # -------------------------------------------------------------
-    if { $::sergame::data(bestmove) == "abort" } {
+    if { $_Data(bestmove) == "abort" } {
       return
     }
     
-    sc_move addSan $::sergame::data(bestmove)
-    ::utils::sound::AnnounceNewMove $::sergame::data(bestmove)
-    set ::sergame::data(prevscore) $::sergame::data(score)
-    if { $::sergame::storeEval == 1 } {
-      set score $::sergame::data(score)
-      if { $::sergame::engineColor eq "black" } { set score [expr 0.0 - $score] }
+    sc_move addSan $_Data(bestmove)
+    ::utils::sound::AnnounceNewMove $_Data(bestmove)
+    set _Data(prevscore) $_Data(score)
+    if { $options(storeEval) == 1 } {
+      set score $_Data(score)
+      if { $_Data(engineColor) eq "black" } { set score [expr 0.0 - $score] }
       storeEvalComment $score
     }
     updateBoard -pgn -animate
@@ -736,11 +742,11 @@ namespace eval sergame {
     clocks toggle
 
     # ponder mode (the engine just played its move)
-    if {$::sergame::ponder } { startEngine ponder }
+    if {$options(ponder) } { startEngine ponder }
     
-    if { $::sergame::useCoachEngine } {
-        set ::sergame::actTacTime $::sergame::tacTime
-        set ::sergame::data(bestCoachmove) ""
+    if { $options(useCoachEngine) } {
+        set _Data(actTacTime) $options(tacTime)
+        set _Data(bestCoachmove) ""
         ::engine::send coachEngine Go [list "position fen [sc_pos fen]" "infinite"]
     }
     after 1000 ::sergame::playLoop
@@ -750,7 +756,8 @@ namespace eval sergame {
   # the position is a repetition
   ################################################################################
   proc repetition {} {
-    lassign [checkRepetition $::sergame::lFen] isRepetition ::sergame::lFen
+    global ::sergame::_Data
+    lassign [checkRepetition $_Data(lFen)] isRepetition _Data(lFen)
     if { $isRepetition } {
       tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
       sc_game tags set -result =
