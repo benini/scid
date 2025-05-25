@@ -49,8 +49,8 @@ proc convertMarker { source destination } {
                 set result [string range $moves end-8 end]
                 foreach i { "1-0" "0-1" "1/2-1/2" "*" } {
                     if { [string first $i $result] >= 0 } {
-                        set arrows [regexp -all -inline {(\[\%draw[ \n]arrow),([a-h][1-8]),([a-h][1-8]),([A-z]*)\]} $moves]
-                        set circles [regexp -all -inline {(\[\%draw[ \n][\!-z]*),([a-h][1-8]),([A-z]*)\]} $moves]
+                        set arrows [regexp -all -inline {(\[\%draw[ \n]*arrow),([a-h][1-8]),([a-h][1-8]),([A-z]*)\]} $moves]
+                        set circles [regexp -all -inline {(\[\%draw[ \n]*[\!-z]*),([a-h][1-8]),([A-z]*)\]} $moves]
                         foreach { arrow nop from to color } $arrows {
                             set color [mapColor $color]
                             set ws [string index $arrow 6]
