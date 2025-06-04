@@ -430,13 +430,11 @@ namespace eval sergame {
     clocks stop
     set _Data(lFen) {}
     ::engine::send seriousEngine StopGo
-    ::engine::close seriousEngine
-    unset ::enginewin::engConfig_seriousEngine
+    ::engineNoWin::closeEngine seriousEngine
     set _Data(bestmove) "abort"
     if { $options(useCoachEngine) } {
         ::engine::send coachEngine StopGo
-        ::engine::close coachEngine
-        unset ::enginewin::engConfig_coachEngine
+        ::engineNoWin::closeEngine coachEngine
     }
     # if { [sc_game tag get Result] eq "*" } { setResult }
     ::notify::GameChanged
