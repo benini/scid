@@ -76,10 +76,8 @@ namespace eval ::finishgame {
             if { $::autoplayMode } {
                 set ::autoplayMode 0
             } else {
-                ::engine::close fgEnginewhite
-                ::engine::close fgEngineblack
-                catch { unset ::enginewin::engConfig_fgEnginewhite }
-                catch { unset ::enginewin::engConfig_fgEngineblack }
+                ::engineNoWin::closeEngine fgEnginewhite
+                ::engineNoWin::closeEngine fgEngineblack
                 destroy .configFinishGame
             }
         }
@@ -183,10 +181,8 @@ namespace eval ::finishgame {
         set ::autoplayMode 0
         set tmp [sc_pos getComment]
         sc_pos setComment "$tmp\n\n$::tr(FinishGame) $::tr(White): $::finishGame(enginewhite) $::finishGame(cmdwhite) $::finishGame(cmdValuewhite)\n\n$::tr(Black): $::finishGame(engineblack) $::finishGame(cmdblack) $::finishGame(cmdValueblack)"
-        ::engine::close fgEnginewhite
-        ::engine::close fgEngineblack
-        catch { unset ::enginewin::engConfig_fgEnginewhite }
-        catch { unset ::enginewin::engConfig_fgEngineblack }
+        ::engineNoWin::closeEngine fgEnginewhite
+        ::engineNoWin::closeEngine fgEngineblack
         ::notify::PosChanged -pgn
         destroy .configFinishGame
     }
