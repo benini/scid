@@ -26,11 +26,10 @@ proc ::engineNoWin::closeEngine { id } {
 }
 
 proc ::engineNoWin::changeEngine {id w enginevar callback} {
-    ::engine::close $id
+    ::engineNoWin::closeEngine $id
     $w.text configure -state normal
     $w.text delete 1.0 end
     foreach wchild [winfo children $w.text] { destroy $wchild }
-    catch { unset ::enginewin::engConfig_$id }
     set engine [set $enginevar]
     ::engineNoWin::initEngine $id $engine [list $callback $id $w]
 }
@@ -74,7 +73,7 @@ proc ::engineNoWin::createEngineOptionsFrame {f id var col callback {engTyp "uci
     grid $f.opts$id.l -row 0 -column 0 -sticky w
     grid $f.opts$id.x -row 0 -column 1 -sticky e
     grid $f.opts$id.save -row 2 -column 0 -columnspan 2 -sticky e -pady { 5 0 }
-    bind $f.$id <Destroy> "catch { unset ::enginewin::engConfig_$id }; ::engine::close $id"
+    bind $f.$id <Destroy> "::engineNoWin::closeEngine $id"
 }
 
 proc ::engineNoWin::initEngineOptions {id w options} {
