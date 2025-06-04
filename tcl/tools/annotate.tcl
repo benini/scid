@@ -127,8 +127,7 @@ namespace eval ::annotation {
             if { $::autoplayMode } {
                 set ::autoplayMode 0
             } else {
-                catch { unset ::enginewin::engConfig_annotateEngine }
-                ::engine::close annotateEngine
+                ::engineNoWin::closeEngine annotateEngine
                 destroy .annotationDialog
             }
         }
@@ -226,8 +225,7 @@ namespace eval ::annotation {
             annotateGame
         }
         set ::autoplayMode 0
-        unset ::enginewin::engConfig_annotateEngine
-        ::engine::close annotateEngine
+        ::engineNoWin::closeEngine annotateEngine
         ::notify::PosChanged -pgn
         destroy .annotationDialog
     }

@@ -11,7 +11,6 @@ namespace eval ::engineNoWin {}
 # Open the engine and configure it
 proc ::engineNoWin::initEngine { id engine callback } {
     if { [info exists ::enginewin::engConfig_$id] } { return 1 }
-#   tk_messageBox -title Scid -icon info -type ok -message "Only UCI-Engines are supported!"
     set config [::enginecfg::get $engine]
     lassign $config name cmd args wdir elo time url uci options
     set ::enginewin::engConfig_$id $config
@@ -19,6 +18,11 @@ proc ::engineNoWin::initEngine { id engine callback } {
     ::engine::connect $id $callback $cmd $args
     if { $options ne "" } { ::engine::send $id SetOptions $options }
     return 1
+}
+
+proc ::engineNoWin::closeEngine { id } {
+    ::engine::close $id
+     unset -nocomplain ::enginewin::engConfig_$id
 }
 
 proc ::engineNoWin::changeEngine {id w enginevar callback} {
