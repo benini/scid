@@ -41,7 +41,7 @@ proc convertMarker { source destination } {
             }
             moves {
                 append moves "$line\n"
-                if {[regexp {(^|\s)(1-0|0-1|1/2-1/2|\*)$} $line]} {
+                if {[regexp {(^|\s)(1-0|0-1|1/2-1/2|\*)$} $line] && ([string last "{" $line] <= [string last "}" $line] )} {
                     set arrows [regexp -all -inline {(\[\%draw[ \n]*arrow),([a-h][1-8]),([a-h][1-8]),([A-z]*)\]} $moves]
                     set circles [regexp -all -inline {(\[\%draw[ \n]*[\!-z]*),([a-h][1-8]),([A-z]*)\]} $moves]
                     foreach { arrow nop from to color } $arrows {
