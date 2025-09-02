@@ -478,8 +478,11 @@ namespace eval sergame {
   }
 
   proc takeBack {takebackClockW takebackClockB} {
+    global ::sergame::_Data
     sc_move back 1
     sc_game truncate
+    set _Data(prevscore) ""
+    set _Data(score) 0.0
     if {$takebackClockW != ""} {
       ::gameclock::setSec 1 [expr 0 - $takebackClockW]
       ::gameclock::setSec 2 [expr 0 - $takebackClockB]
@@ -711,7 +714,13 @@ namespace eval sergame {
       lassign [checkBlunder $delta] nop tBlunder
       if {$tBlunder ne ""} {
         clocks stop
-        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$_Data(prevscore) -> $_Data(score)" ]
+        set prevScore $_Data(prevscore)
+        set actScore $_Data(score)
+        if { $_Data(playerColor) eq "white" } {
+            set prevScore [expr 0.0 - $prevScore]
+            set actScore [expr 0.0 - $actScore]
+        }
+        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message "$::tr($tBlunder)\n$prevScore -> $actScore" ]
         if {$answer == yes} {
           takeBack $takebackClockW $takebackClockB
           after 1000 ::sergame::playLoop
