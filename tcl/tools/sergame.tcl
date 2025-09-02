@@ -39,7 +39,7 @@ namespace eval sergame {
     ttk::frame $w.fconfig
     ttk::frame $w.fconfig2
     ttk::frame $w.fbuttons
-    ttk::labelframe $w.fengines -text $::tr(Engine)
+    ttk::labelframe $w.fengines -text "$::tr(Player) - $::tr(Engine)"
     ttk::labelframe $w.coach -text "Coaching"
     ttk::labelframe $w.ftime -text $::tr(TimeMode)
     ttk::labelframe $w.fopening -text $::tr(Opening)
@@ -58,6 +58,14 @@ namespace eval sergame {
     ttk::checkbutton $w.fengines.ponder -text $::tr(Ponder) -variable ::sergame::options(ponder)
     pack $w.seriousEngine -in $w.fengines -side top -pady 5 -anchor w -padx 4
     pack $w.fengines.ponder -side top -anchor w
+    # Engine plays for the upper side
+    set _Data(playerColor) [expr {[::board::isFlipped .main.board] ? "black" : "white"}]
+    ttk::frame $w.fengines.player
+    ttk::label $w.fengines.player.l -text "$::tr(Player) $::tr(GlistColor)"
+    ttk::radiobutton $w.fengines.player.w -text $::tr(white) -value "white" -variable ::sergame::_Data(playerColor)
+    ttk::radiobutton $w.fengines.player.b -text $::tr(black) -value "black" -variable ::sergame::_Data(playerColor)
+    pack $w.fengines.player.l $w.fengines.player.w $w.fengines.player.b -side left
+    pack $w.fengines.player -side top -anchor w
 
     # coach engine
     ttk::frame $w.coach.en
@@ -278,14 +286,10 @@ namespace eval sergame {
       sc_move start
       sc_game truncate
     }
-
-    # Engine plays for the upper side
-    if {[::board::isFlipped .main.board]} {
-      set _Data(playerColor) "black"
-      set _Data(engineColor) "white"
-    } else {
-      set _Data(playerColor) "white"
-      set _Data(engineColor) "black"
+    set _Data(engineColor) [expr {$_Data(playerColor) eq "white" ? "black" : "white"}]
+    if { (![::board::isFlipped .main.board] && $_Data(playerColor) eq "black") || \
+         ([::board::isFlipped .main.board] && $_Data(playerColor) eq "white") } {
+             board::flip .main.board
     }
 
     if {!$options(startFromCurrent)} {
