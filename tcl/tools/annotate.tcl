@@ -565,15 +565,14 @@ namespace eval ::annotation {
             }
         }
     }
-    # Informant index strings
-    array set ana_informantList { 0 "+=" 1 "+/-" 2 "+-" 3 "+--" }
-    # Nags. Note the slight inconsistency for the "crushing" symbol (see game.cpp)
-    array set ana_nagList  { 0 "=" 1 "+=" 2 "+/-" 3 "+-" 4 "+--" 5 "=" 6 "=+" 7 "-/+" 8 "-+" 9 "--+" }
     ################################################################################
     #
     ################################################################################
     proc scoreToNag {score} {
-        global ana_informantList ana_nagList
+        # Informant index strings
+        array set ana_informantList { 0 "+=" 1 "+/-" 2 "+-" 3 "+--" }
+        # Nags. Note the slight inconsistency for the "crushing" symbol (see game.cpp)
+        array set ana_nagList  { 0 "=" 1 "+=" 2 "+/-" 3 "+-" 4 "+--" 5 "=" 6 "=+" 7 "-/+" 8 "-+" 9 "--+" }
         # Find the score in the informant map
         set tmp [expr { abs( $score ) }]
         for { set i 0 } { $i < 4 } { incr i } {
