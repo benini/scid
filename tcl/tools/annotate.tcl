@@ -214,7 +214,6 @@ namespace eval ::annotation {
 
         set ::autoplayMode 1
         set gameNo [sc_game number]
-        if { $gameNo == 0 } { return }
         annotateGame
         while {$options(batchMode)} {
             sc_game save $gameNo
