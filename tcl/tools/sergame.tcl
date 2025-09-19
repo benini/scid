@@ -217,6 +217,8 @@ namespace eval sergame {
       set ::sergame::options(nodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
       set ::sergame::options(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
+      #do not destroy changed but not saved engine config
+      bind .configSerGameWin.seriousEngine <Destroy> ""
       destroy .configSerGameWin
       ::sergame::play seriousEngine
     }
