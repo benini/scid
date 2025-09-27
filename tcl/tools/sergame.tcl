@@ -217,7 +217,6 @@ namespace eval sergame {
       set ::sergame::options(nodes) [expr [.configSerGameWin.ftime.nodes.value get]*1000]
       set ::sergame::options(movetime) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
 
-      #do not destroy changed but not saved engine config
       bind .configSerGameWin.seriousEngine <Destroy> ""
       destroy .configSerGameWin
       ::sergame::play seriousEngine
@@ -252,6 +251,7 @@ namespace eval sergame {
     set _Data(prevscore) ""
     set _Data(score) 0.0
     set _Data(ponder) ""
+    set _Data(takeback) 0
     
     if {$options(startFromCurrent)} {
       set options(isOpening) 0
@@ -485,8 +485,9 @@ namespace eval sergame {
 
   proc takeBack {takebackClockW takebackClockB} {
     global ::sergame::_Data
+    sc_pos setComment "Player takes back this move"
     sc_move back 1
-    sc_game truncate
+    set _Data(takeback) 1
     set _Data(prevscore) ""
     set _Data(score) 0.0
     if {$takebackClockW != ""} {
@@ -585,6 +586,15 @@ namespace eval sergame {
           }
       }
       return
+    }
+
+    if { $_Data(takeback) } {
+        # player has taken back his move and played an new move, make new move mainline and old move to var
+        if {[info exists ::guessedAddMove]} {
+            sc_game undo; addMoveEx [lindex $::guessedAddMove 1] mainline
+            unset ::guessedAddMove
+        }
+        set _Data(takeback) 0
     }
 
     if { $options(useCoachEngine) } {
