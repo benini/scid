@@ -297,7 +297,7 @@ namespace eval sergame {
     if {!$options(startFromCurrent)} {
       # create a new game if a DB is opened
       sc_game tags set -event "Serious game"
-      sc_game tags set -$_Data(playerColor) "Player"
+      sc_game tags set -$_Data(playerColor) $::tr(Player)
       sc_game tags set -$_Data(engineColor) "$options(engineName)"
       sc_game tags set -date [::utils::date::today]
       if {$options(timeMode) eq "timebonus"} {
