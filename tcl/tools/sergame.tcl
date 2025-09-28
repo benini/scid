@@ -585,13 +585,24 @@ namespace eval sergame {
               checkEngineBlunder
           }
       }
+      if {![sc_pos isAt vend] && ! $_Data(takeback) } {
+          # postion has changed to earlier postion in the game. set takeback flag
+          set _Data(takeback) 2
+          set _Data(prevscore) ""
+          set _Data(score) 0.0
+      }
       return
     }
 
     if { $_Data(takeback) } {
-        # player has taken back his move and played an new move, make new move mainline and old move to var
+        # player has taken back his move or changed position and played an new move, ask for continuation
         if {[info exists ::guessedAddMove]} {
-            sc_game undo; addMoveEx [lindex $::guessedAddMove 1] mainline
+            set answer mainline
+            if { $_Data(takeback) == 2 } {
+                set answer [tk_messageBox -icon question -parent .main -title $::tr(ReplaceMove) -type yesno \
+                                -message "Position has changed.\n\n$::tr(Yes)=Move old move(s) to variation\n$::tr(No)=Delete old moves" ]
+            }
+            sc_game undo; addMoveEx [lindex $::guessedAddMove 1] [expr {$answer == no ? "replace" : "mainline"}]
             unset ::guessedAddMove
         }
         set _Data(takeback) 0
