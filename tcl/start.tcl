@@ -568,6 +568,8 @@ proc configure_style {} {
   foreach {fname} [glob -directory $dname *.png] {
     set iname [string range [file tail $fname] 0 end-4]
     image create photo ::icon::$iname -format png -file $fname
+    #ToDo: Hack to have old named icons for light and dark themes
+    image create photo $iname -format png -file $fname
   }
 }
 bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
