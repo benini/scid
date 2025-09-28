@@ -669,20 +669,7 @@ namespace eval sergame {
         if {$h == $hpos} {
           set index [lsearch $_Data(openingMovesHash) $h]
           set move [lindex $_Data(openingMovesList) $index]
-          # play the move
-          set action "replace"
-          if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
-          if {$action == "replace"} {
-            if {[catch {sc_move addSan $move}]} {}
-          } elseif {$action == "var"} {
-            sc_var create
-            if {[catch {sc_move addSan $move}]} {}
-          } elseif {$action == "mainline"} {
-            sc_var create
-            if {[catch {sc_move addSan $move}]} {}
-            sc_var promote
-            sc_move forward 1
-          }
+          sc_move addSan $move
           
           clocks toggle
           updateBoard -pgn -animate
