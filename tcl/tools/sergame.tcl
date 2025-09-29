@@ -597,12 +597,7 @@ namespace eval sergame {
     if { $_Data(takeback) } {
         # player has taken back his move or changed position and played an new move, ask for continuation
         if {[info exists ::guessedAddMove]} {
-            set answer mainline
-            if { $_Data(takeback) == 2 } {
-                set answer [tk_messageBox -icon question -parent .main -title $::tr(ReplaceMove) -type yesno \
-                                -message "Position has changed.\n\n$::tr(Yes)=Move old move(s) to variation\n$::tr(No)=Delete old moves" ]
-            }
-            sc_game undo; addMoveEx [lindex $::guessedAddMove 1] [expr {$answer == no ? "replace" : "mainline"}]
+            sc_game undo; addMoveEx [lindex $::guessedAddMove 1] mainline
             unset ::guessedAddMove
         }
         set _Data(takeback) 0
