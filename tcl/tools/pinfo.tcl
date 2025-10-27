@@ -20,6 +20,8 @@ proc piechart {w x y width height name data} {
    foreach item $data {
        foreach {name n color} $item break
        set extent [expr {$n*360./$sum}]
+       if { $extent < 1 } { continue }
+       if { $extent > 359 } { set extent 359 }
        $w create arc $coords -start $start -extent $extent -fill $color -outline $color
        set angle [expr {($start-90+$extent/2)/180.*acos(-1)}]
        set tx [expr $xm-$rad*sin($angle)]
@@ -428,10 +430,10 @@ proc playerInfo {{player ""}} {
       append g $regs
       regexp $g $pinfo -> win
       append r $regs
-      regexp $r $pinfo -> remis
+      regexp $r $pinfo -> draw
       append l $regs
       regexp $l $pinfo -> loss
-      set pielist [list [list - $loss red3] [list = $remis blue3] [list + $win green3]]
+      set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
       piechart $w.$p [expr $fw/2] $lsp $size $size $n $pielist
   }
   # Display the player info
