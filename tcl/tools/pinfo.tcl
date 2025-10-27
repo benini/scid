@@ -2,6 +2,33 @@
 ####################
 # Player Info window
 
+#############################################################
+# Draw Pie Chart
+# Input: window; x,y: upper left corner; name of chart
+# data: list of list with 3 inputs: name of set, count, color
+proc piechart {w x y width height name data} {
+   set coords [list $x $y [expr {$x+$width}] [expr {$y+$height}]]
+   set xm  [expr {$x+$width/2.}]
+   set ym  [expr {$y+$height/2.}]
+   set rad [expr {$width/2.+6}]
+   set sum 0
+
+   foreach item $data {set sum [expr {$sum + [lindex $item 1]}]}
+   if { $sum < 1 } return
+   set start 90
+   $w create text 0 0 -text $name -anchor nw -tag txt -fill [ttk::style lookup . -foreground]
+   foreach item $data {
+       foreach {name n color} $item break
+       set extent [expr {$n*360./$sum}]
+       $w create arc $coords -start $start -extent $extent -fill $color -outline $color
+       set angle [expr {($start-90+$extent/2)/180.*acos(-1)}]
+       set tx [expr $xm-$rad*sin($angle)]
+       set ty [expr $ym-$rad*cos($angle)]
+       $w create text $tx $ty -text "$name [expr round(100.0*$n/$sum)]%" -tag txt -fill [ttk::style lookup . -foreground]
+       set start [expr $start+$extent]
+   }
+}
+
 namespace eval pinfo {
 set playerInfoName ""
 set ::eloFromRating 0
@@ -386,9 +413,39 @@ proc playerInfo {{player ""}} {
 
   set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
+  # Define canvas for pie charts
+  set lsp [font metrics font_small -linespace]
+  set fw [expr [font measure font_small " = 99%"]]
+  set size 80
+  foreach p { paw pab pac pow pob poc } {
+      destroy $w.$p
+      canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -background \
+          [ttk::style lookup $w.text -fieldbackground "" [ttk::style lookup $w.text -background]] -highlightthickness 0
+  }
+  # Extract data from pinfo string
+  set regs { \{\}; ::windows::stats::Refresh>[ ]*([0-9]*)}
+  foreach {g r l p n} [list fw fd fl paw $::tr(White) fW fD fL pab $::tr(Black) fwW fdD flL pac $::tr(Total) ow od ol pow $::tr(White) oW oD oL pob $::tr(Black) owW odD olL poc $::tr(Total)] {
+      append g $regs
+      regexp $g $pinfo -> win
+      append r $regs
+      regexp $r $pinfo -> remis
+      append l $regs
+      regexp $l $pinfo -> loss
+      set pielist [list [list - $loss red3] [list = $remis blue3] [list + $win green3]]
+      piechart $w.$p [expr $fw/2] $lsp $size $size $n $pielist
+  }
   # Display the player info
   ::htext::display $w.text $pinfo
 
+  # Insert the pie charts
+  set cl [expr int([$w.text search "=" 1.0 40.0])+3]
+  $w.text window create $cl.1 -window $w.paw
+  $w.text window create $cl.2 -window $w.pab
+  $w.text window create $cl.3 -window $w.pac
+  incr cl 10
+  $w.text window create $cl.1 -window $w.pow
+  $w.text window create $cl.2 -window $w.pob
+  $w.text window create $cl.3 -window $w.poc
   $w.text configure -state disabled
 }
 
