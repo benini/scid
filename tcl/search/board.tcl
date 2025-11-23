@@ -46,15 +46,33 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 	grid $w.filterOp.and $w.filterOp.or $w.filterOp.reset -ipadx 8
 
 	grid [ttk::frame $w.buttons] -sticky news
-	ttk::button $w.buttons.save -text [::tr Save] -state disabled \
+	ttk::button $w.buttons.save -text [::tr Save] -state normal \
 		-command "::search::save_ $options_cmd"
+	# Enable save button if the specific search module provides a save proc.
+	# options_cmd is the command returned by the create_subwnd (eg "::search::headerGetOptions"
+	# or "::search::boardOptions"). Try to derive the base module name and check for
+	# a corresponding "::save" procedure (e.g. "::search::header::save").
+	set save_cmd ""
+	# Remove trailing GetOptions or Options to compute the module base name.
+	if {[regsub {GetOptions$|Options$} $options_cmd "" base] > 0} {
+		set candidate "${base}::save"
+		if {[llength [info procs $candidate]] > 0 || [llength [info commands $candidate]] > 0} {
+			set save_cmd $candidate
+		}
+	}
+	if {$save_cmd ne ""} {
+		# enable and bind directly to the module's save proc
+		$w.buttons.save configure -state normal -command $save_cmd
+	}
 	ttk::button $w.buttons.reset_values -text [::tr Defaults] \
 		-command "set ::search::filterOp_($w) reset; $options_cmd reset"
+	ttk::button $w.buttons.load -text [::tr Load] -command "::search::load_ $options_cmd"
+	ttk::button $w.buttons.make_default -text [::tr "Make Default"] -command "::search::makeDefault_ $options_cmd"
 	ttk::button $w.buttons.search_new -text "[tr Search] ([tr GlistNewSort] [tr Filter])" \
 		-command "::search::start_ 1 $w $options_cmd"
 	ttk::button $w.buttons.search -text [::tr Search] \
 		-command "::search::start_ 0 $w $options_cmd"
-	grid $w.buttons.save $w.buttons.reset_values x $w.buttons.search_new $w.buttons.search -sticky w -padx "0 5"
+	grid $w.buttons.save $w.buttons.load $w.buttons.make_default $w.buttons.reset_values x $w.buttons.search_new $w.buttons.search -sticky w -padx "0 5"
 	grid columnconfigure $w.buttons 2 -weight 1
 
 	ttk::button $w.buttons.stop -text [::tr Stop] -command progressBarCancel
@@ -128,7 +146,130 @@ proc ::search::progressbar_ {w show_hide} {
 }
 
 proc ::search::save_ {options_cmd} {
-	# TODO:
+	# options_cmd is the command returned by the create_subwnd (eg
+	# "::search::headerGetOptions" or "::search::boardOptions").
+	# Derive the base module name and call its ::save proc if present.
+	if {[string length $options_cmd] == 0} {
+		tk_messageBox -type ok -icon info -title [::tr Save] -message [::tr "Save not available for this dialog"]
+		return
+	}
+
+	# Try to extract a base name: strip trailing GetOptions or Options
+	if {[regexp {^(.+)(GetOptions|Options)$} $options_cmd -> base _]} {
+		set candidate "${base}::save"
+	} else {
+		# Fallback: try to replace trailing Get... patterns conservatively
+		set candidate "${options_cmd}::save"
+	}
+
+	# Try to invoke the computed candidate directly. If it fails, inform the user.
+	if {[catch $candidate errMsg]} {
+		# Diagnostic information to help understand why the module save failed.
+		set procList [info procs $candidate]
+		set cmdList  [info commands $candidate]
+		set diagMsg "Failed invoking save candidate:\n$candidate\n\nError:\n$errMsg\n\nprocs found: [llength $procList]\ncommands found: [llength $cmdList]"
+		# Also append diagnostics to a temp file for easier copy/paste from the user.
+		set logFile "/tmp/scid_save_debug.txt"
+		set now [clock format [clock seconds] -format "%Y-%m-%d %H:%M:%S"]
+		if {[catch {set fh [open $logFile a]} openErr]} {
+			# If logging fails, still show a message box with diagnostics
+			tk_messageBox -type ok -icon error -title [::tr Save] -message $diagMsg
+		} else {
+			puts $fh "--- $now ---"
+			puts $fh $diagMsg
+			puts $fh "\n" 
+			close $fh
+			tk_messageBox -type ok -icon error -title [::tr Save] -message "Save failed; diagnostics written to: $logFile"
+		}
+	}
+}
+
+proc ::search::load_ {options_cmd} {
+	# Open a saved SearchOptions (.sso) file and source it to restore variables.
+	set ftype { { "Scid SearchOptions files" {".sso"} } }
+	set fName [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Open a SearchOptions file"]
+	if {$fName == ""} { return }
+	# Source the file in the global namespace so it sets variables like ::sWhite
+	set nativeName [file nativename $fName]
+	if {[catch {namespace eval :: [list source $nativeName]} errMsg]} {
+		tk_messageBox -title "Error: Unable to load file" -type ok -icon error \
+			-message "Unable to load SearchOptions file: $fName\n\nError:\n$errMsg"
+		return
+	}
+	# Update combobox history so loaded values appear and are selected
+	catch { ::utils::history::AddEntry HeaderSearchSite $::sSite }
+	catch { ::utils::history::AddEntry HeaderSearchEvent $::sEvent }
+	catch { ::utils::history::AddEntry HeaderSearchWhite $::sWhite }
+	catch { ::utils::history::AddEntry HeaderSearchBlack $::sBlack }
+	# After sourcing, the variables bound to widgets should update automatically.
+	# Refresh any open search windows so UI reflects the loaded values.
+	foreach w [array names ::search::dbase_] {
+		catch { ::search::refresh_ $w }
+		# If the window is a HeaderSearch, also re-run the create frame function
+		# to ensure widgets reflect the newly loaded variables when necessary.
+		if {[string match *.wnd_HeaderSearch $w] || [string match .wnd_HeaderSearch $w]} {
+			if {[winfo exists $w]} {
+				# try to re-evaluate header create frame to sync widgets
+				catch { ::search::headerCreateFrame $w.options }
+			}
+		}
+	}
+	tk_messageBox -type ok -icon info -title "Search Options loaded" -message "Loaded: $fName"
+}
+
+proc ::search::makeDefault_ {options_cmd} {
+	# Register current header search variables to be saved as options across restarts.
+	# List of vars and arrays to persist:
+	set vars {
+		sWhite sBlack sEvent sSite sRound sAnnotated sDateMin sDateMax
+		sResWin sResLoss sResDraw sResOther
+		sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+		sEcoMin sEcoMax sEloDiffMin sEloDiffMax
+		sIgnoreCol sSideToMoveW sSideToMoveB sGlMin sGlMax
+		sTagName sTagValue ::search::filter::operation
+		sPgntext sHeaderFlags sTitles
+	}
+
+	foreach v $vars {
+		# Use fully-qualified options.store so we always register in global scope
+		catch { ::options.store $v }
+	}
+
+	# Now write options file to persist the registered variables
+	if {[catch { ::options.write } errMsg]} {
+		tk_messageBox -type ok -icon error -title [::tr "Make Default"] -message "Unable to save defaults:\n$errMsg"
+		return
+	}
+
+		# Previously we appended an explicit `set ::sSite [list $::sSite]` here
+		# to force persistence of the scalar site preference. That explicit
+		# append is no longer necessary because header prefs are registered
+		# via ::options.store above and written by ::options.write. Removing
+		# the manual append avoids duplicate/boilerplate entries in the
+		# options file.
+
+		# (debugging removed)
+
+	# Try to apply them immediately by sourcing the options file.
+	if {[catch { namespace eval :: [list source [scidConfigFile options]] } srcErr]} {
+		# Not fatal; inform user that restart is required to apply.
+		tk_messageBox -type ok -icon info -title [::tr "Make Default"] -message "Header search settings saved as defaults. Restart Scid to apply them on startup.\n\nSourcing options now failed: $srcErr"
+		return
+	}
+
+		# After applying defaults, update history lists so comboboxes show the
+		# new default as the selected/top entry.
+		catch { ::utils::history::AddEntry HeaderSearchSite $::sSite }
+		catch { ::utils::history::AddEntry HeaderSearchEvent $::sEvent }
+		catch { ::utils::history::AddEntry HeaderSearchWhite $::sWhite }
+		catch { ::utils::history::AddEntry HeaderSearchBlack $::sBlack }
+
+		# Refresh open search windows to reflect applied defaults
+	foreach w [array names ::search::dbase_] {
+		catch { ::search::refresh_ $w }
+	}
+
+	tk_messageBox -type ok -icon info -title [::tr "Make Default"] -message "Header search settings saved as defaults and applied to current session."
 }
 
 proc ::search::start_ {new_filter w options_cmd} {
