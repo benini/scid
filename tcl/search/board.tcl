@@ -168,19 +168,8 @@ proc ::search::save_ {options_cmd} {
 		set procList [info procs $candidate]
 		set cmdList  [info commands $candidate]
 		set diagMsg "Failed invoking save candidate:\n$candidate\n\nError:\n$errMsg\n\nprocs found: [llength $procList]\ncommands found: [llength $cmdList]"
-		# Also append diagnostics to a temp file for easier copy/paste from the user.
-		set logFile "/tmp/scid_save_debug.txt"
-		set now [clock format [clock seconds] -format "%Y-%m-%d %H:%M:%S"]
-		if {[catch {set fh [open $logFile a]} openErr]} {
-			# If logging fails, still show a message box with diagnostics
-			tk_messageBox -type ok -icon error -title [::tr Save] -message $diagMsg
-		} else {
-			puts $fh "--- $now ---"
-			puts $fh $diagMsg
-			puts $fh "\n" 
-			close $fh
-			tk_messageBox -type ok -icon error -title [::tr Save] -message "Save failed; diagnostics written to: $logFile"
-		}
+		# Show diagnostics in a message box (avoid writing temp debug files).
+		tk_messageBox -type ok -icon error -title [::tr Save] -message $diagMsg
 	}
 }
 
