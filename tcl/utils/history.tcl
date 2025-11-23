@@ -142,6 +142,31 @@ proc ::utils::history::RefillCombobox {key} {
   $cbWidget delete 0 end
   set entries [GetList $key]
   $cbWidget configure -values $entries
+  # If entries exist, auto-select only when a saved preference variable
+  # exists for this history key. This ensures fields like Site will show
+  # the saved preference immediately, while other fields remain blank.
+  if {[llength $entries] > 0} {
+    set prefVar ""
+    switch -- $key {
+      HeaderSearchSite { set prefVar ::sSite }
+      HeaderSearchEvent { set prefVar ::sEvent }
+      HeaderSearchWhite { set prefVar ::sWhite }
+      HeaderSearchBlack { set prefVar ::sBlack }
+      default { set prefVar "" }
+    }
+    if {$prefVar ne "" && [info exists $prefVar] && [string length [set $prefVar]] > 0} {
+      set val [set $prefVar]
+      set idx [lsearch -exact $entries $val]
+      if {$idx >= 0} {
+        catch { $cbWidget current $idx }
+      } else {
+        # Not in entries: insert at top and select it
+        set entries [linsert $entries 0 $val]
+        $cbWidget configure -values $entries
+        catch { $cbWidget current 0 }
+      }
+    }
+  }
 }
 
 

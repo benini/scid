@@ -41,27 +41,50 @@ proc checkDates {} {
 }
 
 proc ::search::header::defaults {} {
-  set ::sWhite "";  set ::sBlack ""
-  set ::sEvent ""; set ::sSite "";  set ::sRound ""; set ::sAnnotated 0
-  set ::sTagName "Annotator";
-  set ::sTagValue "";
-  set ::sWhiteEloMin ""; set ::sWhiteEloMax ""
-  set ::sBlackEloMin ""; set ::sBlackEloMax ""
-  set ::sEloDiffMin ""; set ::sEloDiffMax ""
-  set ::sGlMin ""; set ::sGlMax ""
-  set ::sEcoMin "";  set ::sEcoMax ""; set ::sEco Yes
-  set ::sGnumMin ""; set ::sGnumMax ""
-  set ::sDateMin ""; set ::sDateMax ""
-  set ::sEventDateMin ""; set ::sEventDateMax ""
-  set ::sResWin ""; set ::sResLoss ""; set ::sResDraw ""; set ::sResOther ""
-  set ::sIgnoreCol No
-  set ::sSideToMoveW "w"
-  set ::sSideToMoveB "b"
-  foreach flag  [ concat $::sHeaderFlagList $::sHeaderCustomFlagList ] { set ::sHeaderFlags($flag) both }
-  foreach i [array names ::sPgntext] { set ::sPgntext($i) "" }
+  # Use ::options.store so existing values loaded from the options file
+  # are not overwritten. This registers default values for persistence
+  # without clobbering loaded settings on startup.
+  ::options.store ::sWhite ""
+  ::options.store ::sBlack ""
+  ::options.store ::sEvent ""
+  ::options.store ::sSite ""
+  ::options.store ::sRound ""
+  ::options.store ::sAnnotated 0
+  ::options.store ::sTagName "Annotator"
+  ::options.store ::sTagValue ""
+  ::options.store ::sWhiteEloMin ""
+  ::options.store ::sWhiteEloMax ""
+  ::options.store ::sBlackEloMin ""
+  ::options.store ::sBlackEloMax ""
+  ::options.store ::sEloDiffMin ""
+  ::options.store ::sEloDiffMax ""
+  ::options.store ::sGlMin ""
+  ::options.store ::sGlMax ""
+  ::options.store ::sEcoMin ""
+  ::options.store ::sEcoMax ""
+  ::options.store ::sEco Yes
+  ::options.store ::sGnumMin ""
+  ::options.store ::sGnumMax ""
+  ::options.store ::sDateMin ""
+  ::options.store ::sDateMax ""
+  ::options.store ::sEventDateMin ""
+  ::options.store ::sEventDateMax ""
+  ::options.store ::sResWin ""
+  ::options.store ::sResLoss ""
+  ::options.store ::sResDraw ""
+  ::options.store ::sResOther ""
+  ::options.store ::sIgnoreCol No
+  ::options.store ::sSideToMoveW "w"
+  ::options.store ::sSideToMoveB "b"
+  foreach flag [concat $::sHeaderFlagList $::sHeaderCustomFlagList] {
+    ::options.store ::sHeaderFlags($flag) both
+  }
+  foreach i [array names ::sPgntext] {
+    ::options.store ::sPgntext($i) ""
+  }
   foreach i $::sTitleList {
-    set ::sTitles(w:$i) 1
-    set ::sTitles(b:$i) 1
+    ::options.store ::sTitles(w:$i) 1
+    ::options.store ::sTitles(b:$i) 1
   }
 }
 
@@ -112,6 +135,12 @@ proc search::headerCreateFrame { w } {
   }
 
   set regular font_Small
+  # Ensure local-visible variables are populated from globals so combobox
+  # textvariables bind to the expected values when widgets are created.
+  if {[info exists ::sSite]} { set sSite $::sSite }
+  if {[info exists ::sEvent]} { set sEvent $::sEvent }
+  if {[info exists ::sWhite]} { set sWhite $::sWhite }
+  if {[info exists ::sBlack]} { set sBlack $::sBlack }
   ttk::labelframe $w.player -text $::tr(Player)
   pack $w.player -side top -fill x -pady 5
   foreach color {White Black} {
@@ -163,6 +192,83 @@ proc search::headerCreateFrame { w } {
     ttk::label $f.l$i -textvar ::tr(${i}:)
     ttk::combobox $f.e$i -textvariable s$i -width 30
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
+  }
+  # Ensure Site combobox shows saved preference immediately when present.
+  catch { ::utils::history::AddEntry HeaderSearchSite $::sSite }
+  # If ::sSite is not set in the running session, try to read the saved
+  # value from the options file and pre-populate the combobox with it.
+  if {![info exists ::sSite] || [string length $::sSite] == 0} {
+    if {[catch {set optFile [scidConfigFile options]} _] == 0 && [file exists $optFile]} {
+      if {[catch {set fh [open $optFile r]; set optContents [read $fh]; close $fh} _] == 0} {
+        # Try to find a saved sSite value. Handle both "set ::sSite iccf" and
+        # "set ::sSite [list iccf]" forms.
+        set savedSite ""
+        if {[regexp {set\s+(?:::{0,2})sSite\s+\[list\s+([^\]]+)\]} $optContents -> savedSiteMatch]} {
+          set savedSite $savedSiteMatch
+        } elseif {[regexp {set\s+(?:::{0,2})sSite\s+([^\n\r]+)} $optContents -> savedSiteMatch2]} {
+          set savedSite [string trim $savedSiteMatch2]
+        }
+        if {$savedSite ne ""} {
+          # remove surrounding quotes if any
+          if {[string match {"*"} $savedSite]} {
+            set savedSite [string range $savedSite 1 end-1]
+          }
+          # ignore empty list literal like {}
+          if {[regexp {^\{\s*\}$} $savedSite]} { set savedSite "" }
+          # If the widget already contains the value, select it; otherwise
+          # add it to the top of the values list and select it.
+          if {[catch {set vals [$f.eSite cget -values]} _] == 0} {
+            if {[string first $savedSite $vals] >= 0} {
+              # find index
+              set idx [lsearch -exact $vals $savedSite]
+              if {$idx >= 0} { catch { $f.eSite current $idx } }
+            } else {
+              # prepend and select
+              set newvals [linsert $vals 0 $savedSite]
+              catch { $f.eSite configure -values $newvals }
+              catch { $f.eSite current 0 }
+            }
+          }
+        }
+      }
+    }
+  } else {
+    # Session variable exists; ensure widget shows it
+    catch { set sSite $::sSite }
+  }
+
+  # Also handle Event similarly: populate from session or options file
+  catch { ::utils::history::AddEntry HeaderSearchEvent $::sEvent }
+  if {![info exists ::sEvent] || [string length $::sEvent] == 0} {
+    if {[catch {set optFile [scidConfigFile options]} _] == 0 && [file exists $optFile]} {
+      if {[catch {set fh [open $optFile r]; set optContents [read $fh]; close $fh} _] == 0} {
+        set savedEvent ""
+        if {[regexp {set\s+(?:::{0,2})sEvent\s+\[list\s+([^\]]+)\]} $optContents -> savedEventMatch]} {
+          set savedEvent $savedEventMatch
+        } elseif {[regexp {set\s+(?:::{0,2})sEvent\s+([^\n\r]+)} $optContents -> savedEventMatch2]} {
+          set savedEvent [string trim $savedEventMatch2]
+        }
+        if {$savedEvent ne ""} {
+          if {[string match {"*"} $savedEvent]} {
+            set savedEvent [string range $savedEvent 1 end-1]
+          }
+          # ignore empty list literal like {}
+          if {[regexp {^\{\s*\}$} $savedEvent]} { set savedEvent "" }
+          if {[catch {set vals [$f.eEvent cget -values]} _] == 0} {
+            if {[string first $savedEvent $vals] >= 0} {
+              set idx [lsearch -exact $vals $savedEvent]
+              if {$idx >= 0} { catch { $f.eEvent current $idx } }
+            } else {
+              set newvals [linsert $vals 0 $savedEvent]
+              catch { $f.eEvent configure -values $newvals }
+              catch { $f.eEvent current 0 }
+            }
+          }
+        }
+      }
+    }
+  } else {
+    catch { set sEvent $::sEvent }
   }
   pack $f.lEvent $f.eEvent -side left
   pack $f.eSite -side right
@@ -572,7 +678,34 @@ proc ::search::header::save {} {
   }
   puts $searchF "\# SearchOptions File created by Scid $::scidVersion"
   puts $searchF "set searchType Header"
-  getSearchEntries
+  # Write title selections and other entries that are not covered
+  # by the generic variable dump below. `getSearchEntries` was
+  # historically a helper that writes title arrays into the
+  # search options file. Implement a minimal compatible helper
+  # here that writes `sTitles(w:...)` and `sTitles(b:...)`.
+  proc getSearchEntries {} {
+    # This proc will be called from within ::search::header::save where
+    # the file handle `searchF` is a local variable. Use `uplevel` so
+    # the `puts $searchF ...` runs in the caller frame and can access it.
+    global sTitleList sTitles
+    foreach i $sTitleList {
+      set wval $sTitles(w:$i)
+      set bval $sTitles(b:$i)
+      uplevel [list puts $searchF "set sTitles(w:$i) [list $wval]"]
+      uplevel [list puts $searchF "set sTitles(b:$i) [list $bval]"]
+    }
+    # Also write custom flag labels if present in the current DB
+    # (these are used to label CustomFlag1..6). The code that sets
+    # these labels uses sc_base extra; attempt to write them if available.
+    if {[catch {set db [sc_base current]}]} {
+      return
+    }
+    foreach {tagname tagvalue} [sc_base extra $db] {
+      if {$tagvalue ne "" && [regexp {flag([1-6])} $tagname -> i]} {
+        uplevel [list puts $searchF "set sHeaderCustomLabel$i [list $tagvalue]"]
+      }
+    }
+  }
 
   # First write the regular variables:
   foreach i {sWhite sBlack sEvent sSite sRound sAnnotated sDateMin sDateMax sResWin
