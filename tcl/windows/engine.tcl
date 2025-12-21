@@ -1,5 +1,5 @@
 ########################################################################
-# Copyright (C) 2020-2023 Fulvio Benini
+# Copyright (C) 2020-2025 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 # Scid is free software: you can redistribute it and/or modify
@@ -122,8 +122,12 @@ proc ::enginewin::Open { {id ""} {enginename ""} } {
     grid columnconfigure $w.main 1 -weight 1
 
     ttk::frame $w.config.btn
-    ::enginecfg::createConfigButtons $id $w.config.btn [list ::enginewin::connectEngine $id]
+    ::enginecfg::createConfigButtons $id $w.config.btn
+    bind $w.config.btn <<EngineCfgConnect>> "::enginewin::connectEngine {*}%d"
     ttk::frame $w.config.options
+    ::enginecfg::createConfigOptions $id $w.config.options
+    bind $w.config.options <<EngineCfgConnect>> "::enginewin::connectEngine {*}%d"
+    bind $w.config.options <<EngineCfgLayout>> "::enginewin::changeDisplayLayout {*}%d"
     grid columnconfigure $w.config 0 -weight 1
     grid rowconfigure $w.config 1 -weight 1
     grid $w.config.btn
@@ -424,11 +428,8 @@ proc ::enginewin::logHandler {id widget tag prefix msg} {
 # If any, closes the connection with the current engine.
 # If "config" is not "" opens a connection with a new engine.
 proc ::enginewin::connectEngine {id enginename} {
-    set configFrame .engineWin$id.config.options
-    foreach wchild [winfo children $configFrame] { destroy $wchild }
-
     ::engine::close $id
-    ::enginewin::logEngine $id false
+    ::enginewin::changeDisplayLayout $id debug false
 
     set config [::enginecfg::get $enginename]
     lassign $config name cmd args wdir elo time url uci options
@@ -440,19 +441,20 @@ proc ::enginewin::connectEngine {id enginename} {
     ::enginewin::changeState $id closed
     ::enginewin::updateEngineName $id $name
 
+    set configFrame .engineWin$id.config.options
     if {$config eq ""} {
-        ::enginecfg::createConfigFrame $id $configFrame \
+        ::enginecfg::resetConfigOptions $id $configFrame \
             "No engine open: select or add one."
         return
     }
 
-    ::enginecfg::createConfigFrame $id $configFrame "$cmd $args\nConnecting..."
+    ::enginecfg::resetConfigOptions $id $configFrame "$cmd $args\nConnecting..."
 
     lassign $url ::enginewin::m_(scoreside,$id) notation pvwrap debugframe priority netport
     ::enginewin::changeDisplayLayout $id notation $notation
     ::enginewin::changeDisplayLayout $id wrap $pvwrap
     ::enginewin::updateOptions $id ""
-    ::enginewin::logEngine $id $debugframe
+    ::enginewin::changeDisplayLayout $id debug $debugframe
 
     update idletasks
 
@@ -495,7 +497,7 @@ proc ::enginewin::callback {id msg} {
     switch $msgType {
         "InfoConfig" {
             ::enginewin::updateOptions $id $msgData
-            set renamed [::enginecfg::updateConfigFrame $id $configFrame $msgData]
+            set renamed [::enginecfg::updateConfigOptions $id $configFrame $msgData]
             if {$renamed ne ""} {
                 ::enginewin::updateEngineName $id $renamed
             }
@@ -515,7 +517,7 @@ proc ::enginewin::callback {id msg} {
         "InfoDisconnected" {
             ::enginewin::updateOptions $id ""
             ::enginecfg::autoSaveConfig $id $configFrame false
-            ::enginecfg::updateConfigFrame $id $configFrame {}
+            ::enginecfg::updateConfigOptions $id $configFrame {}
             ::enginewin::changeState $id disconnected
             lassign $msgData errorMsg
             if {$errorMsg eq ""} {
@@ -529,6 +531,9 @@ proc ::enginewin::callback {id msg} {
 proc ::enginewin::changeDisplayLayout {id param value} {
     set w .engineWin$id
     switch $param {
+        "debug" {
+            ::enginewin::logEngine $id $value
+        }
         "notation" -
         "scoreside" {
             set ::enginewin::m_($param,$id) $value

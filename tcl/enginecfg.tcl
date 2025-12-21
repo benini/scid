@@ -163,50 +163,47 @@ proc ::enginecfg::dlgNewRemote {} {
     return [::enginecfg::add [list $::enginecfg_dlgresult $::enginecfg_dlgresult {} {} {} 0 {} 2]]
 }
 
-# TODO: no references to ::enginewin should exists in this file
-
 # Creates buttons used for selecting an engine and managing configured engines:
 # Adds a new local or remote engine; reloads, clones, or deletes an existing engine.
 # fn_connect: Callback function invoked upon engine selection.
 # In response to the virtual event <<UpdateEngineName>>, it updates the name of the
 # selected engine and the state of the reload, clone, and delete buttons.
-proc ::enginecfg::createConfigButtons {id w fn_connect} {
+proc ::enginecfg::createConfigButtons {id w} {
     ttk::combobox $w.engine -width 30 -state readonly -postcommand [list apply {{w} {
         $w.engine configure -values [::enginecfg::names ]
     }} $w]
-    bind $w.engine <<ComboboxSelected>> [list apply {{fn_connect} {
-        {*}$fn_connect [%W get]
-    }} $fn_connect]
+    bind $w.engine <<ComboboxSelected>> \
+        "event generate $w <<EngineCfgConnect>> -data \[list $id \[%W get]]"
     ::utils::tooltip::Set $w.engine [tr EngineSelect]
 
     ttk::button $w.reload -text "\u21BB" -style Toolbutton \
         -command "event generate $w.engine <<ComboboxSelected>>"
     ::utils::tooltip::Set $w.reload [tr EngineReload]
 
-    ttk::button $w.addpipe -text "\u271A" -style Toolbutton -command [list apply {{fn_connect} {
+    ttk::button $w.addpipe -text "\u271A" -style Toolbutton -command [list apply {{id w} {
         if {[set newEngine [::enginecfg::dlgNewLocal]] ne ""} {
-            {*}$fn_connect $newEngine
+            event generate $w <<EngineCfgConnect>> -data [list $id $newEngine]
         }
-    }} $fn_connect]
+    }} $id $w]
     ::utils::tooltip::Set $w.addpipe [tr EngineAddLocal]
 
-    ttk::button $w.addremote -text "\u2B82" -style Toolbutton -command [list apply {{fn_connect} {
+    ttk::button $w.addremote -text "\u2B82" -style Toolbutton -command [list apply {{id w} {
         if {[set newEngine [::enginecfg::dlgNewRemote]] ne ""} {
-            {*}$fn_connect $newEngine
+            event generate $w <<EngineCfgConnect>> -data [list $id $newEngine]
         }
-    }} $fn_connect]
+    }} $id $w]
     ::utils::tooltip::Set $w.addremote [tr EngineAddRemote]
 
-    ttk::button $w.clone -text "\u29C9" -style Toolbutton -command [list apply {{id fn_connect} {
-        {*}$fn_connect [::enginecfg::add [set ::enginecfg::engConfig_$id]]
-    }} $id $fn_connect]
+    ttk::button $w.clone -text "\u29C9" -style Toolbutton -command [list apply {{id w} {
+        event generate $w <<EngineCfgConnect>> -data [list $id [::enginecfg::add [set ::enginecfg::engConfig_$id]]]
+    }} $id $w]
     ::utils::tooltip::Set $w.clone [tr EngineClone]
 
-    ttk::button $w.delete -text "\u2A02" -style Toolbutton -command [list apply {{w fn_connect} {
+    ttk::button $w.delete -text "\u2A02" -style Toolbutton -command [list apply {{id w} {
         if {[::enginecfg::remove [$w.engine get]]} {
-            {*}$fn_connect {}
+            event generate $w <<EngineCfgConnect>> -data [list $id {}]
         }
-    }} $w $fn_connect]
+    }} $id $w]
     ::utils::tooltip::Set $w.delete [tr EngineDelete]
 
     grid $w.engine $w.reload $w.addpipe $w.addremote \
@@ -227,9 +224,15 @@ proc ::enginecfg::createConfigButtons {id w fn_connect} {
 }
 
 # Creates the frame with the widgets necessary to change an engine's configuration.
-proc ::enginecfg::createConfigFrame {id configFrame msg} {
+proc ::enginecfg::createConfigOptions {id configFrame} {
     ttk_text $configFrame.text -wrap none -padx 4
     autoscrollBars both $configFrame $configFrame.text
+    $configFrame.text configure -state disabled
+}
+
+proc ::enginecfg::resetConfigOptions {id configFrame msg} {
+    $configFrame.text configure -state normal
+    $configFrame.text delete 1.0 end
     $configFrame.text insert end $msg
     $configFrame.text configure -state disabled
 }
@@ -237,7 +240,7 @@ proc ::enginecfg::createConfigFrame {id configFrame msg} {
 # Update or recreate the config and option widgets
 # If it is a new engine added with auto-config, return the new name
 # otherwise return an empty "" string
-proc ::enginecfg::updateConfigFrame {id configFrame msgInfoConfig} {
+proc ::enginecfg::updateConfigOptions {id configFrame msgInfoConfig} {
     upvar ::enginecfg::engConfig_$id engConfig_
     set w $configFrame.text
     lassign $msgInfoConfig protocol netclients options
@@ -365,7 +368,6 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         }]] end]
 
     if {$name == ""} {
-        ::enginecfg::clearConfigFrame $configFrame
         return false
     }
 
@@ -379,38 +381,62 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         $w.$widget configure -width $wd
     }}
 
+    set fn_reconnect [list apply {{id configFrame} {
+        switch [winfo name %W] {
+            "cmd"      { set configIdx 1; set newValue [%W get] }
+            "cmdbtn"   { set configIdx 1; set dlgcmd tk_getOpenFile }
+            "args"     { set configIdx 2; set newValue [%W get] }
+            "wdir"     { set configIdx 3; set newValue [%W get] }
+            "wdirbtn"  { set configIdx 3; set dlgcmd tk_chooseDirectory }
+            "protocol" { set configIdx 7; set newValue [%W current] }
+            default { error "wrong option" }
+        }
+        upvar ::enginecfg::engConfig_$id engConfig_
+        set oldValue [lindex $engConfig_ $configIdx]
+        if {[info exists dlgcmd]} {
+            set newValue [$dlgcmd -initialdir [file dirname $oldValue]]
+            if {$newValue == ""} {
+                return
+            }
+        }
+        if {$newValue ne $oldValue} {
+            lset engConfig_ $configIdx $newValue
+            event generate $configFrame <<EngineCfgConnect>> \
+                -data [list $id [::enginecfg::save $engConfig_]]
+        }
+    }} $id $configFrame]
+
     apply $fn_create_entry $w name [tr EngineName] $name
-    bind $w.name <FocusOut> [list apply {{id} {
+    bind $w.name <FocusOut> [list apply {{id configFrame} {
         lassign [set ::enginecfg::engConfig_$id] old
         if {$old ne [set name [%W get]]} {
             ::enginecfg::save [set ::enginecfg::engConfig_$id]
-            ::enginewin::connectEngine $id [::enginecfg::rename $old $name]
+            event generate $configFrame <<EngineCfgConnect>> \
+                -data [list $id [::enginecfg::rename $old $name]]
         }
-    }} $id]
+    }} $id $configFrame]
     bind $w.name <Return> [bind $w.name <FocusOut>]
 
     apply $fn_create_entry $w cmd "\n[tr EngineCmd]" $cmd
-    bind $w.cmd <FocusOut> "::enginecfg::onSubmitParam $id cmd \[ %W get \]"
+    bind $w.cmd <FocusOut> $fn_reconnect
     bind $w.cmd <Return> [bind $w.cmd <FocusOut>]
-    ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... \
-        -command "::enginecfg::onSubmitParam $id cmd {} 1"
+    ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... -command $fn_reconnect
     $w window create end -window $w.cmdbtn -pady 2 -padx 2
 
     apply $fn_create_entry $w args "\n[tr EngineArgs]" $args
-    bind $w.args <FocusOut> "::enginecfg::onSubmitParam $id args \[ %W get \]"
+    bind $w.args <FocusOut> $fn_reconnect
     bind $w.args <Return> [bind $w.args <FocusOut>]
 
     apply $fn_create_entry $w wdir "\n[tr EngineDir]" $wdir
-    bind $w.wdir <FocusOut> "::enginecfg::onSubmitParam $id wdir \[ %W get \]"
+    bind $w.wdir <FocusOut> $fn_reconnect
     bind $w.wdir <Return> [bind $w.wdir <FocusOut>]
-    ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... \
-        -command "::enginecfg::onSubmitParam $id wdir {} 2"
+    ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... -command $fn_reconnect
     $w window create end -window $w.wdirbtn -pady 2 -padx 2
 
     if {$uci == 0 || $uci == 1} {
         $w insert end "\n[tr EngineProtocol]:\t"
         ttk::combobox $w.protocol -state readonly -width 12 -values {xboard uci}
-        bind $w.protocol <<ComboboxSelected>> "::enginecfg::onSubmitParam $id protocol \[ %W current \]"
+        bind $w.protocol <<ComboboxSelected>> $fn_reconnect
         $w window create end -window $w.protocol -pady 2
         $w.protocol set [expr { $uci == 0 ? "xboard" : "uci" }]
     }
@@ -418,28 +444,26 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     $w insert end "\n[tr EngineNotation]:\t"
     ttk::combobox $w.notation -state readonly -width 12 -values [list engine SAN "English SAN" figurine]
     bind $w.notation <<ComboboxSelected>> "
-        ::enginecfg::onChangeLayout $id notation \[ $w.notation current \]
+        ::enginecfg::onChangeLayout $id $configFrame notation \[ $w.notation current \]
     "
     $w window create end -window $w.notation -pady 2
     $w.notation current [expr { $notation < 0 ? 0 - $notation : $notation }]
-    ::enginecfg::onChangeLayout $id notation $notation
+    ::enginecfg::onChangeLayout $id $configFrame notation $notation
 
     ttk::checkbutton $w.wrap -text [tr GInfoWrap] -onvalue word -offvalue none -style Toolbutton \
-        -command "::enginecfg::onChangeLayout $id wrap \[ set ::$w.wrap \]"
+        -command "::enginecfg::onChangeLayout $id $configFrame wrap \[ set ::$w.wrap \]"
     $w window create end -window $w.wrap -pady 2 -padx 6
     set ::$w.wrap $pvwrap
 
     $w insert end "\n[tr EngineFlipEvaluation]:\t"
     ttk::checkbutton $w.scoreside -style Switch.Toolbutton -onvalue engine -offvalue white \
-        -command "::enginecfg::onChangeLayout $id scoreside \[::update_switch_btn $w.scoreside \]"
+        -command "::enginecfg::onChangeLayout $id $configFrame scoreside \[::update_switch_btn $w.scoreside \]"
     ::update_switch_btn $w.scoreside $scoreside
     $w window create end -window $w.scoreside -pady 2
 
     $w insert end "\n[tr EngineShowLog]:\t"
-    ttk::checkbutton $w.debug -style Switch.Toolbutton -command "
-        lset ::enginecfg::engConfig_$id 6 3 \[::update_switch_btn $w.debug\]
-        ::enginewin::logEngine $id \[::update_switch_btn $w.debug\]
-    "
+    ttk::checkbutton $w.debug -style Switch.Toolbutton \
+        -command "::enginecfg::onChangeLayout $id $configFrame debug \[::update_switch_btn $w.debug \]"
     ::update_switch_btn $w.debug $debugframe
     $w window create end -window $w.debug -pady 2
 
@@ -613,31 +637,6 @@ proc ::enginecfg::updateNetClients {configFrame netclients} {
     $w replace netclients_tag.first netclients_tag.last $strclients netclients_tag
 }
 
-# Checks whether the specified connection parameter has been changed, and
-# if necessary reconnects the current engine using the new parameters.
-proc ::enginecfg::onSubmitParam {id connectParam newValue {opendlg 0}} {
-    switch $connectParam {
-        "cmd"      { set configIdx 1 }
-        "args"     { set configIdx 2 }
-        "wdir"     { set configIdx 3 }
-        "protocol" { set configIdx 7 }
-        default { error "wrong option" }
-    }
-    upvar ::enginecfg::engConfig_$id engConfig_
-    set oldValue [lindex $engConfig_ $configIdx]
-    if {$opendlg} {
-        set dlgcmd [expr { $opendlg == 1 ? "tk_getOpenFile" : "tk_chooseDirectory" }]
-        set newValue [$dlgcmd -initialdir [file dirname $oldValue]]
-        if {$newValue == ""} {
-            return
-        }
-    }
-    if {$newValue ne $oldValue} {
-        lset engConfig_ $configIdx $newValue
-        ::enginewin::connectEngine $id [::enginecfg::save $engConfig_]
-    }
-}
-
 # Reset all the engine's options to their default values.
 proc ::enginecfg::onSubmitReset {id w} {
     upvar ::enginecfg::engConfig_$id engConfig_
@@ -726,7 +725,7 @@ proc ::enginecfg::onSubmitNetd {id w} {
     $w.netport configure -state $state
 }
 
-proc ::enginecfg::onChangeLayout {id param value} {
+proc ::enginecfg::onChangeLayout {id configFrame param value} {
     upvar ::enginecfg::engConfig_$id engConfig_
     switch $param {
         "scoreside" {
@@ -748,8 +747,11 @@ proc ::enginecfg::onChangeLayout {id param value} {
         "wrap" {
             set idx 2
         }
+        "debug" {
+            set idx 3
+        }
         default { error "changeLayout unknown $param" }
     }
     lset engConfig_ 6 $idx $value
-    ::enginewin::changeDisplayLayout $id $param $value
+    event generate $configFrame <<EngineCfgLayout>> -data [list $id $param $value]
 }
