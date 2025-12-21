@@ -47,6 +47,7 @@ proc ::search::Open {ref_base ref_filter title create_subwnd} {
 
 	grid [ttk::frame $w.buttons] -sticky news
 	ttk::menubutton $w.buttons.save -text [::tr Presets] -direction above
+	::utils::tooltip::Set $w.buttons.save [::tr PresetLoadSave]
 	$w.buttons.save configure {*}[$options_cmd $w.buttons.save]
 	ttk::button $w.buttons.reset_values -text [::tr Defaults] \
 		-command "set ::search::filterOp_($w) reset; $options_cmd reset"

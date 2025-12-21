@@ -85,7 +85,7 @@ proc checkfile {code langfile enc} {
   }
 
   set fnew [open $langfile.tcl w]
-  fconfigure $fnew -encoding $enc
+  fconfigure $fnew -encoding $enc -translation lf
 
   set lastLine -1
   foreach line $englishData {

@@ -790,6 +790,10 @@ translate F TagContains {contains}
 translate F Variant {Variant}
 translate F Annotator {Annotateur}
 translate F Cmnts {Jeux annotés uniquement}
+# ====== TODO To be translated ======
+translate F Presets {Presets}
+# ====== TODO To be translated ======
+translate F PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate F GlistNumber {Numéro}

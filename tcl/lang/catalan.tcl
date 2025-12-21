@@ -777,6 +777,10 @@ translate K TagContains {contains}
 translate K Variant {Variant}
 translate K Annotator {Comentarista}
 translate K Cmnts {Només partides comentades}
+# ====== TODO To be translated ======
+translate K Presets {Presets}
+# ====== TODO To be translated ======
+translate K PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate K GlistNumber {Número}

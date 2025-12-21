@@ -932,6 +932,10 @@ translate P Variant {Variant}
 translate P Annotator {Annotator}
 # ====== TODO To be translated ======
 translate P Cmnts {Annotated games only}
+# ====== TODO To be translated ======
+translate P Presets {Presets}
+# ====== TODO To be translated ======
+translate P PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate P GlistNumber {Numer}

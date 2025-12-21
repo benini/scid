@@ -789,6 +789,10 @@ translate W TagContains {contains}
 translate W Variant {Variant}
 translate W Annotator {Kommentator}
 translate W Cmnts {Bara kommenterade partier}
+# ====== TODO To be translated ======
+translate W Presets {Presets}
+# ====== TODO To be translated ======
+translate W PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate W GlistNumber {Nummer}

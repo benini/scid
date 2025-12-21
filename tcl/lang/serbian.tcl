@@ -926,6 +926,10 @@ translate Y Variant {Variant}
 translate Y Annotator {Annotator}
 # ====== TODO To be translated ======
 translate Y Cmnts {Annotated games only}
+# ====== TODO To be translated ======
+translate Y Presets {Presets}
+# ====== TODO To be translated ======
+translate Y PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate Y GlistNumber {Broj}

@@ -827,6 +827,10 @@ translate U TagContains {contains}
 translate U Variant {Variant}
 translate U Annotator {Annotoija}
 translate U Cmnts {Vain annotoidut pelit}
+# ====== TODO To be translated ======
+translate U Presets {Presets}
+# ====== TODO To be translated ======
+translate U PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate U GlistNumber {Numero}

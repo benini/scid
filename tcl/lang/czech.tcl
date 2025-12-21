@@ -786,6 +786,10 @@ translate C Variant {Variant}
 translate C Annotator {Annotator}
 # ====== TODO To be translated ======
 translate C Cmnts {Annotated games only}
+# ====== TODO To be translated ======
+translate C Presets {Presets}
+# ====== TODO To be translated ======
+translate C PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate C GlistNumber {Èíslo}

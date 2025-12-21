@@ -823,6 +823,10 @@ translate G TagContains {contains}
 translate G Variant {Variant}
 translate G Annotator {Υπομνηματιστής}
 translate G Cmnts {Μόνον υπομνηματισμένες παρτίδες}
+# ====== TODO To be translated ======
+translate G Presets {Presets}
+# ====== TODO To be translated ======
+translate G PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate G GlistNumber {Αριθμός}

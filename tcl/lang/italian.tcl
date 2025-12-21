@@ -777,6 +777,8 @@ translate I TagContains {contains}
 translate I Variant {Variant}
 translate I Annotator {Commentatore}
 translate I Cmnts {Solo partite annotate}
+translate I Presets {Memorizzati}
+translate I PresetLoadSave {Carica/Memorizza le impostazioni di ricerca correnti}
 
 # Game list window:
 translate I GlistNumber {Numero}

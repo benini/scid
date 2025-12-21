@@ -803,6 +803,10 @@ translate H Variant {Variant}
 translate H Annotator {Annotator}
 # ====== TODO To be translated ======
 translate H Cmnts {Annotated games only}
+# ====== TODO To be translated ======
+translate H Presets {Presets}
+# ====== TODO To be translated ======
+translate H PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate H GlistNumber {Szám}

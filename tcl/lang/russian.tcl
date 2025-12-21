@@ -785,6 +785,10 @@ translate R TagContains {contains}
 translate R Variant {Variant}
 translate R Annotator {Комментатор}
 translate R Cmnts {Только комментированные партии}
+# ====== TODO To be translated ======
+translate R Presets {Presets}
+# ====== TODO To be translated ======
+translate R PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate R GlistNumber {Номер}

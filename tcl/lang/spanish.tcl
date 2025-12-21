@@ -833,6 +833,10 @@ translate S TagContains {contains}
 translate S Variant {Variant}
 translate S Annotator {Comentarista}
 translate S Cmnts {Sólo partidas comentadas}
+# ====== TODO To be translated ======
+translate S Presets {Presets}
+# ====== TODO To be translated ======
+translate S PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate S GlistNumber {Número}

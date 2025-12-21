@@ -797,6 +797,8 @@ translate E TagContains {contains}
 translate E Variant {Variant}
 translate E Annotator {Annotator}
 translate E Cmnts {Annotated games only}
+translate E Presets {Presets}
+translate E PresetLoadSave {Load/Save current settings as a preset}
 
 # Game list window:
 translate E GlistNumber {Number}
