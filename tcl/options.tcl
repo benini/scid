@@ -760,7 +760,11 @@ proc options.write {} {
 
     # Save vars that were added with options.store()
     if {[info exists ::autosave_opt]} {
-      set opt_sorted [lsort -dictionary $::autosave_opt]
+      set opt_sorted [lsort -dictionary [lmap elem $::autosave_opt {
+        if {![info exists $elem]} {continue}
+        if {[array exists $elem] && [array size $elem] == 0} { continue }
+        set elem
+      }]]
       puts $optionF ""
       puts $optionF "set ::autosave_opt [list $opt_sorted]"
       foreach ns [lsort -unique [lmap elem $opt_sorted { namespace qualifiers $elem }]] {
