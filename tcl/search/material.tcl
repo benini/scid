@@ -60,12 +60,6 @@ set sameBishops 0
 set minMatDiff -40
 set maxMatDiff +40
 
-trace variable minMoveNum w {::utils::validate::Integer 999 0}
-trace variable maxMoveNum w {::utils::validate::Integer 999 0}
-trace variable minHalfMoves w {::utils::validate::Integer 99 0}
-trace variable minMatDiff w {::utils::validate::Integer -99 0}
-trace variable maxMatDiff w {::utils::validate::Integer -99 0}
-
 set nPatterns 3
 set nMaxPatterns 10
 
@@ -75,26 +69,16 @@ for { set i 1 } { $i <= $nMaxPatterns } { incr i } {
   set pattPiece($i) "?";  set pattFyle($i) "?";  set pattRank($i) "?"
 }
 
-proc checkPieceCounts {name el op} {
-  global pMin pMax
-  ::utils::validate::Integer 9 0 $name $el $op
-  # Now make sure minor piece counts fit with bishop/knight counts:
-  set wmMin [expr {$pMin(wn) + $pMin(wb)} ]
-  set wmMax [expr {$pMax(wn) + $pMax(wb)} ]
-  set bmMin [expr {$pMin(bn) + $pMin(bb)} ]
-  set bmMax [expr {$pMax(bn) + $pMax(bb)} ]
-  if {$pMin(wm) < $wmMin} { set pMin(wm) $wmMin }
-  if {$pMax(wm) > $wmMax} { set pMax(wm) $wmMax }
-  if {$pMin(bm) < $bmMin} { set pMin(bm) $bmMin }
-  if {$pMax(bm) > $bmMax} { set pMax(bm) $bmMax }
-  foreach p {wq wr wb wn wm wp bq br bb bn bm bp} {
-    if {$pMax($p) != ""  &&  $pMax($p) < $pMin($p)} { set pMax($p) $pMin($p) }
+# Validates that the input is empty or a number between 0-99.
+# Resets empty fields to 0 on focus loss.
+proc checkPieceCounts {P mode varname} {
+  if {$mode eq "focusout" && $P eq ""} {
+    upvar #0 $varname v
+    set v 0
+    return 1
   }
+  return [::validate::integer $P 0 99]
 }
-
-trace variable pMin w checkPieceCounts
-trace variable pMax w checkPieceCounts
-
 
 proc makeBoolMenu {w varName} {
   upvar #0 $varName var
@@ -270,8 +254,10 @@ proc ::search::material {{ref_base ""}} {
     ttk::button $f.w1p -text "1+" -command "set pMin(w$i) 1; set pMax(w$i) 2"
     ttk::label $f.wi -image w${i}20 -font font_Small
     ttk::label $f.wto -text "-" -font font_Small -padding 0
-    ttk::entry $f.wmin -width 2 -textvar pMin(w$i) -font font_Small -justify right ;#-relief sunken
-    ttk::entry $f.wmax -width 2 -textvar pMax(w$i) -font font_Small -justify right ;#-relief sunken
+    ttk::entry $f.wmin -width 2 -textvar pMin(w$i) -font font_Small -justify right \
+        -validate all -validatecommand [list checkPieceCounts %P %V pMin(w$i)]
+    ttk::entry $f.wmax -width 2 -textvar pMax(w$i) -font font_Small -justify right \
+        -validate all -validatecommand [list checkPieceCounts %P %V pMax(w$i)]
     pack $f.w0 $f.w1 $f.w2 $f.wa $f.w1p $f.wi $f.wmin $f.wto $f.wmax -side left -pady 1
 
     pack [ttk::frame $f.space -width 20] -side left
@@ -282,8 +268,10 @@ proc ::search::material {{ref_base ""}} {
     ttk::button $f.b1p -text "1+" -command "set pMin(b$i) 1; set pMax(b$i) 2"
     ttk::label $f.bi -image b${i}20 -font font_Small
     ttk::label $f.bto -text "-" -font font_Small
-    ttk::entry $f.bmin -width 2 -textvar pMin(b$i) -font font_Small -justify right ;#-relief sunken
-    ttk::entry $f.bmax -width 2 -textvar pMax(b$i) -font font_Small -justify right ;#-relief sunken
+    ttk::entry $f.bmin -width 2 -textvar pMin(b$i) -font font_Small -justify right \
+        -validate all -validatecommand [list checkPieceCounts %P %V pMin(b$i)]
+    ttk::entry $f.bmax -width 2 -textvar pMax(b$i) -font font_Small -justify right \
+        -validate all -validatecommand [list checkPieceCounts %P %V pMax(b$i)]
     pack $f.b0 $f.b1 $f.b2 $f.ba $f.b1p $f.bi $f.bmin $f.bto $f.bmax -side left -pady 1
 
     foreach b {0 1 2 a 1p} {
@@ -402,9 +390,11 @@ proc ::search::material {{ref_base ""}} {
   set f $w.mp.material.mdiff
   pack $f -side left -anchor n -pady 5
   ttk::label $f.label -text $::tr(MaterialDiff)
-  ttk::entry $f.min -width 3 -textvar minMatDiff -font $small -justify right ;#-relief sunken
+  ttk::entry $f.min -width 3 -textvar minMatDiff -font $small -justify right \
+      -validate key -validatecommand [list ::validate::integer %P -99 99]
   ttk::label $f.sep -text "-" -font $small
-  ttk::entry $f.max -width 3 -textvar maxMatDiff -font $small -justify right ;#-relief sunken
+  ttk::entry $f.max -width 3 -textvar maxMatDiff -font $small -justify right \
+      -validate key -validatecommand [list ::validate::integer %P -99 99]
   ttk::label $f.sep2 -text " " -font $small
   ttk::button $f.any -textvar ::tr(Any) -style Pad0.Small.TButton -command {set minMatDiff -40; set maxMatDiff +40} -width 0
   ttk::button $f.w1 -text " + " -style Pad0.Small.TButton -command {set minMatDiff +1; set maxMatDiff +40}  -width 0
@@ -556,12 +546,15 @@ proc ::search::material {{ref_base ""}} {
   set f $w.fmc.move
   pack [ttk::frame $f] -side top -ipady 5 ;# -expand 1 -fill both
   ttk::label $f.fromlab -textvar ::tr(MoveNumberRange:) -font font_Small
-  ttk::entry $f.from -width 4 -textvar minMoveNum -justify right -font font_Small
+  ttk::entry $f.from -width 4 -textvar minMoveNum -justify right -font font_Small \
+      -validate key -validatecommand [list ::validate::integer %P 0 999]
   ttk::label $f.tolab -text "-" -font font_Small
-  ttk::entry $f.to -width 4 -textvar maxMoveNum -justify right -font font_Small
+  ttk::entry $f.to -width 4 -textvar maxMoveNum -justify right -font font_Small \
+      -validate key -validatecommand [list ::validate::integer %P 0 999]
   ttk::label $f.space -text "  "
   ttk::label $f.label1 -textvar ::tr(MatchForAtLeast) -font font_Small
-  ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right -font font_Small
+  ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right -font font_Small \
+      -validate key -validatecommand [list ::validate::integer %P 0 999]
   ttk::label $f.label2 -textvar ::tr(HalfMoves) -font font_Small
   pack $f.fromlab $f.from $f.tolab $f.to $f.space $f.label1 $f.hmoves $f.label2 -side left
 

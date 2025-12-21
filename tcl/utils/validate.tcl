@@ -10,16 +10,16 @@ namespace eval ::validate {
     #     max : (Optional) If set, prevents typing values larger than this.
     # -------------------------------------------------------------------------
     proc integer {P {min ""} {max ""}} {
-        # Allow empty and signs (+/-)
         if {$P eq ""} { return 1 }
-        if {$P eq "+"} { return 1 }
         if {$P eq "-" && $min < 0} { return 1 }
+        # Prevent octal (https://wiki.tcl-lang.org/page/Tcl+and+octal+numbers)
+        if {[scan $P %d] ne $P} { return 0 }
         # Enforce min only if P is negative.
         #   If Min=10 and P=1, P is invalid but P is "on the way" to 10. We must allow it.
         #   If Min=-10 and P=-20, P is invalid and adding digits (e.g. -200) makes it worse. Block it.
         if {$min ne "" && $P < $min && $P < 0} { return 0 }
         if {$max ne "" && $P > $max} { return 0 }
-        return [string is integer $P]
+        return 1
     }
 }
 
