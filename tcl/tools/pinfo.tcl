@@ -4,9 +4,9 @@
 
 #############################################################
 # Draw Pie Chart
-# Input: window; x,y: upper left corner; name of chart
+# Input: window; x,y: upper left corner; name of chart; type: "%": show % only, else show name of set, value and %
 # data: list of list with 3 inputs: name of set, count, color
-proc piechart {w x y width height name data} {
+proc piechart {w x y width height name type data} {
    set coords [list $x $y [expr {$x+$width}] [expr {$y+$height}]]
    set xm  [expr {$x+$width/2.}]
    set ym  [expr {$y+$height/2.}]
@@ -26,7 +26,12 @@ proc piechart {w x y width height name data} {
        set angle [expr {($start-90+$extent/2)/180.*acos(-1)}]
        set tx [expr $xm-$rad*sin($angle)]
        set ty [expr $ym-$rad*cos($angle)]
-       $w create text $tx $ty -text "$name [expr round(100.0*$n/$sum)]%" -tag txt -fill [ttk::style lookup . -foreground]
+       if { $type eq "%" } {
+           set text "$name [expr round(100.0*$n/$sum)]%"
+       } else {
+           set text "$name $n\n[expr round(100.0*$n/$sum)]%"
+       }
+       $w create text $tx $ty -text $text -tag txt -fill [ttk::style lookup . -foreground] -justify center
        set start [expr $start+$extent]
    }
 }
