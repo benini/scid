@@ -336,6 +336,8 @@ proc playerInfo {{player ""}} {
   global playerInfoName eloFromRating
   if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
+  # get same info in text format
+  set pinfo2 [sc_name info $player]
   # add country flag
   set found [string first " \[" $pinfo]
   if { $found > 0 } {
@@ -424,22 +426,19 @@ proc playerInfo {{player ""}} {
   set lsp [font metrics font_small -linespace]
   set fw [expr [font measure font_small " = 99%"]]
   set size 80
-  foreach p { paw pab pac pow pob poc } {
+  foreach p { paw pab pac pow pob poc pfw pfb pfc} {
       destroy $w.$p
       canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -background \
-          [ttk::style lookup $w.text -fieldbackground "" [ttk::style lookup $w.text -background]] -highlightthickness 0
+          [ttk::style lookup Treeview -background] -highlightthickness 0
   }
-  # Extract data from pinfo string
-  set regs { \{\}; ::windows::stats::Refresh>[ ]*([0-9]*)}
-  foreach {g r l p n} [list fw fd fl paw $::tr(White) fW fD fL pab $::tr(Black) fwW fdD flL pac $::tr(Total) ow od ol pow $::tr(White) oW oD oL pob $::tr(Black) owW odD olL poc $::tr(Total)] {
-      append g $regs
-      regexp $g $pinfo -> win
-      append r $regs
-      regexp $r $pinfo -> draw
-      append l $regs
-      regexp $l $pinfo -> loss
+  # Extract data from pinfo2 string
+  set regs { +[+=-] *([0-9]+)}
+  set wlrValues [regexp -all -inline -- $regs $pinfo2]
+  set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total) \
+                pow $::tr(White) pob $::tr(Black) poc $::tr(Total)]
+  foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
-      piechart $w.$p [expr $fw/2] $lsp $size $size $n $pielist
+      piechart $w.$p [expr $fw/2] $lsp $size $size $n "%" $pielist
   }
   # Display the player info
   ::htext::display $w.text $pinfo
@@ -449,7 +448,11 @@ proc playerInfo {{player ""}} {
   $w.text window create $cl.1 -window $w.paw
   $w.text window create $cl.2 -window $w.pab
   $w.text window create $cl.3 -window $w.pac
-  incr cl 10
+  incr cl 5
+  $w.text window create $cl.1 -window $w.pfw
+  $w.text window create $cl.2 -window $w.pfb
+  $w.text window create $cl.3 -window $w.pfc
+  incr cl 5
   $w.text window create $cl.1 -window $w.pow
   $w.text window create $cl.2 -window $w.pob
   $w.text window create $cl.3 -window $w.poc
