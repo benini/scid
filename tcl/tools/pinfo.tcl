@@ -6,7 +6,7 @@
 # Draw Pie Chart
 # Input: window; x,y: upper left corner; name of chart; type: "%": show % only, else show name of set, value and %
 # data: list of list with 3 inputs: name of set, count, color
-proc piechart {w x y width height name type data} {
+proc piechart {w x y width height chartName type data} {
    set coords [list $x $y [expr {$x+$width}] [expr {$y+$height}]]
    set xm  [expr {$x+$width/2.}]
    set ym  [expr {$y+$height/2.}]
@@ -16,23 +16,23 @@ proc piechart {w x y width height name type data} {
    foreach item $data {set sum [expr {$sum + [lindex $item 1]}]}
    if { $sum < 1 } return
    set start 90
-   ttk_create $w text 0 0 -text $name -anchor nw -tag txt
+   ttk_create $w text 0 0 -text $chartName -anchor nw -tag txt
    foreach item $data {
-       foreach {name n color} $item break
+       lassign $item name n color
        set extent [expr {$n*360./$sum}]
        if { $extent < 1 } { continue }
        if { $extent > 359 } { set extent 359 }
        $w create arc $coords -start $start -extent $extent -fill $color -outline $color
        set angle [expr {($start-90+$extent/2)/180.*acos(-1)}]
-       set tx [expr $xm-$rad*sin($angle)]
-       set ty [expr $ym-$rad*cos($angle)]
+       set tx [expr {$xm-$rad*sin($angle)}]
+       set ty [expr {$ym-$rad*cos($angle)}]
        if { $type eq "%" } {
-           set text "$name [expr round(100.0*$n/$sum)]%"
+           set text "$name [expr {round(100.0*$n/$sum)}]%"
        } else {
-           set text "$name $n\n[expr round(100.0*$n/$sum)]%"
+           set text "$name $n\n[expr {round(100.0*$n/$sum)}]%"
        }
        ttk_create $w text $tx $ty -text $text -tag txt -justify center
-       set start [expr $start+$extent]
+       set start [expr {$start+$extent}]
    }
 }
 
@@ -432,7 +432,7 @@ proc playerInfo {{player ""}} {
   set size 80
   foreach p { paw pab pac pow pob poc pfw pfb pfc} {
       destroy $w.$p
-      ttk_canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -highlightthickness 0
+      ttk_canvas $w.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
   }
   set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total)]
   if { $wlrCount > 36 } {
@@ -440,13 +440,13 @@ proc playerInfo {{player ""}} {
   }
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
-      piechart $w.$p [expr $fw/2] $lsp $size $size $n "%" $pielist
+      piechart $w.$p [expr {$fw/2}] $lsp $size $size $n "%" $pielist
   }
   # Display the player info
   ::htext::display $w.text $pinfo
 
   # Insert the pie charts
-  set cl [expr int([$w.text search "=" 1.0 40.0])+3]
+  set cl [expr {int([$w.text search "=" 1.0 40.0])+3}]
   $w.text window create $cl.1 -window $w.paw
   $w.text window create $cl.2 -window $w.pab
   $w.text window create $cl.3 -window $w.pac
