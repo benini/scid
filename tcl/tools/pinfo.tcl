@@ -251,8 +251,8 @@ proc ::pinfo::splitName { playerName } {
     set count [string first " " $playerName ]
   }
   if { $count > 0 } {
-    set fname [string range $playerName [expr $count + $countlen] end]
-    set lname [string range $playerName 0 [expr $count - 1]]
+    set fname [string range $playerName [expr {$count + $countlen}] end]
+    set lname [string range $playerName 0 [expr {$count - 1}]]
     return [list [string trim $fname] [string trim $lname]]
   }
   return [list $playerName ""]
@@ -341,10 +341,10 @@ proc playerInfo {{player ""}} {
   # add country flag
   set found [string first " \[" $pinfo]
   if { $found > 0 } {
-    set countryID [string range $pinfo [expr $found - 3] [expr $found - 1]]
+    set countryID [string range $pinfo [expr {$found - 3}] [expr {$found - 1}]]
     set country [getFlagImage $countryID]
     if { $country ne "" } {
-      set pinfo [string replace $pinfo [expr $found - 3] [expr $found - 1] "$countryID <img $country>"]
+      set pinfo [string replace $pinfo [expr {$found - 3}] [expr {$found - 1}] "$countryID <img $country>"]
     }
   }
   # append Elo History
