@@ -16,7 +16,7 @@ proc piechart {w x y width height name type data} {
    foreach item $data {set sum [expr {$sum + [lindex $item 1]}]}
    if { $sum < 1 } return
    set start 90
-   $w create text 0 0 -text $name -anchor nw -tag txt -fill [ttk::style lookup . -foreground]
+   ttk_create $w text 0 0 -text $name -anchor nw -tag txt
    foreach item $data {
        foreach {name n color} $item break
        set extent [expr {$n*360./$sum}]
@@ -31,7 +31,7 @@ proc piechart {w x y width height name type data} {
        } else {
            set text "$name $n\n[expr round(100.0*$n/$sum)]%"
        }
-       $w create text $tx $ty -text $text -tag txt -fill [ttk::style lookup . -foreground] -justify center
+       ttk_create $w text $tx $ty -text $text -tag txt -justify center
        set start [expr $start+$extent]
    }
 }
@@ -447,8 +447,7 @@ proc playerInfo {{player ""}} {
   set size 80
   foreach p { paw pab pac pow pob poc pfw pfb pfc} {
       destroy $w.$p
-      canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -background \
-          [ttk::style lookup Treeview -background] -highlightthickness 0
+      ttk_canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -highlightthickness 0
   }
   # Extract data from pinfo2 string
   set regs { +[+=-] *([0-9]+)}
