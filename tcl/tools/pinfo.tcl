@@ -2,38 +2,63 @@
 ####################
 # Player Info window
 
-#############################################################
+namespace eval ::chart {
+    variable PIE_DEFAULTS {
+        START_ANGLE     90
+        DIRECTION       1
+        LABEL_OFFSET    6
+        LABEL_TYPE      "full"
+        FONT            "TkDefaultFont"
+        SHOW_LABELS     true
+        TITLE_ANCHOR    "nw"
+    }
+}
 # Draw Pie Chart
-# Input: window; x,y: upper left corner; name of chart; type: "%": show % only, else show name of set, value and %
-# data: list of list with 3 inputs: name of set, count, color
-proc piechart {w x y width height chartName type data} {
-   set coords [list $x $y [expr {$x+$width}] [expr {$y+$height}]]
-   set xm  [expr {$x+$width/2.}]
-   set ym  [expr {$y+$height/2.}]
-   set rad [expr {$width/2.+6}]
-   set sum 0
+# w       - canvas widget
+# x, y    - upper left corner
+# width, height - dimensions
+# title   - chart title
+# data    - list of {name count color} entries
+# options - optional dict to override PIE_DEFAULTS
+proc ::chart::piechart {w x y width height title data {options {}}} {
+    variable PIE_DEFAULTS
+    set config [dict merge $PIE_DEFAULTS $options]
 
-   foreach item $data {set sum [expr {$sum + [lindex $item 1]}]}
-   if { $sum < 1 } return
-   set start 90
-   ttk_create $w text 0 0 -text $chartName -anchor nw -tag txt
-   foreach item $data {
-       lassign $item name n color
-       set extent [expr {$n*360./$sum}]
-       if { $extent < 1 } { continue }
-       if { $extent > 359 } { set extent 359 }
-       $w create arc $coords -start $start -extent $extent -fill $color -outline $color
-       set angle [expr {($start-90+$extent/2)/180.*acos(-1)}]
-       set tx [expr {$xm-$rad*sin($angle)}]
-       set ty [expr {$ym-$rad*cos($angle)}]
-       if { $type eq "%" } {
-           set text "$name [expr {round(100.0*$n/$sum)}]%"
-       } else {
-           set text "$name $n\n[expr {round(100.0*$n/$sum)}]%"
-       }
-       ttk_create $w text $tx $ty -text $text -tag txt -justify center
-       set start [expr {$start+$extent}]
-   }
+    set coords [list $x $y [expr {$x + $width}] [expr {$y + $height}]]
+    set xm  [expr {$x + $width / 2.0}]
+    set ym  [expr {$y + $height / 2.0}]
+    set rad [expr {$width / 2.0 + [dict get $config LABEL_OFFSET]}]
+
+    set sum [::tcl::mathop::+ {*}[lmap item $data {lindex $item 1}]]
+    if {$sum < 1} return
+
+    ttk_create $w text 0 0 -text $title -tag txt \
+        -anchor [dict get $config TITLE_ANCHOR] \
+        -font [dict get $config FONT]
+
+    set start [dict get $config START_ANGLE]
+    set dir   [dict get $config DIRECTION]
+    foreach item $data {
+        lassign $item name n color
+        set extent [expr {$dir * $n * 360.0 / $sum}]
+        if {abs($extent) < 1} continue
+        if {abs($extent) > 359} {set extent [expr {$dir * 359}]}
+        $w create arc $coords -start $start -extent $extent -fill $color -outline $color
+        if {[dict get $config SHOW_LABELS]} {
+            set angle [expr {($start - 90 + $extent / 2.0) / 180.0 * acos(-1)}]
+            set tx [expr {$xm - $rad * sin($angle)}]
+            set ty [expr {$ym - $rad * cos($angle)}]
+            set pct [expr {round(100.0 * $n / $sum)}]
+            if {[dict get $config LABEL_TYPE] eq "%"} {
+                set text "$name ${pct}%"
+            } else {
+                set text "$name $n\n${pct}%"
+            }
+            ttk_create $w text $tx $ty -text $text -tag txt -justify center \
+                -font [dict get $config FONT]
+        }
+        set start [expr {$start + $extent}]
+    }
 }
 
 namespace eval pinfo {
@@ -440,7 +465,8 @@ proc playerInfo {{player ""}} {
   }
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
-      piechart $w.$p [expr {$fw/2}] $lsp $size $size $n "%" $pielist
+      ::chart::piechart $w.$p [expr {$fw/2}] $lsp $size $size $n $pielist \
+          {LABEL_TYPE % START_ANGLE -90 FONT font_Regular}
   }
   # Display the player info
   ::htext::display $w.text $pinfo
