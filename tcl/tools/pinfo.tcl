@@ -36,25 +36,6 @@ proc piechart {w x y width height name type data} {
    }
 }
 
-# can't use empty string as operand of "+"
-#     while executing
-# "expr {$sum + [lindex $item 1]}"
-#     (procedure "piechart" line 8)
-#     invoked from within
-# "piechart $w.$p [expr $fw/2] $lsp $size $size $n "%" $pielist"
-#     (procedure "::pinfo::playerInfo" line 103)
-#     invoked from within
-# "::pinfo::playerInfo "Sulyok, Eszter""
-#     (command bound to event)
-trace add execution piechart {enter} ::trace_log
-# [10:28:30] enter {piechart .playerInfoWin.paw 24 18 80 80 White % {{- 30 red3} {= 4 blue3} {+ 25 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pab 24 18 80 80 Black % {{- 22 red3} {= 8 blue3} {+ 20 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pac 24 18 80 80 Total % {{- 52 red3} {= 12 blue3} {+ 45 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pfw 24 18 80 80 White % {{- 30 red3} {= 4 blue3} {+ 25 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pfb 24 18 80 80 Black % {{- 22 red3} {= 8 blue3} {+ 20 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pfc 24 18 80 80 Total % {{- 52 red3} {= 12 blue3} {+ 45 green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-# [10:28:30] enter {piechart .playerInfoWin.pow 24 18 80 80 White % {{- {} red3} {= {} blue3} {+ {} green3}}} enter - bt: {::pinfo::playerInfo {Sulyok, Eszter}}
-
 namespace eval pinfo {
 set playerInfoName ""
 set ::eloFromRating 0
