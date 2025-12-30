@@ -441,6 +441,10 @@ proc playerInfo {{player ""}} {
 
   set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
+  # Extract data for pies from pinfo2 string
+  set regs { +[+=-] *([0-9]+)}
+  set wlrValues [regexp -all -inline -- $regs $pinfo2]
+  set wlrCount [llength $wlrValues]
   # Define canvas for pie charts
   set lsp [font metrics font_small -linespace]
   set fw [expr [font measure font_small " = 99%"]]
@@ -449,11 +453,10 @@ proc playerInfo {{player ""}} {
       destroy $w.$p
       ttk_canvas $w.$p -width [expr $size+$fw] -height [expr $size+2*$lsp] -highlightthickness 0
   }
-  # Extract data from pinfo2 string
-  set regs { +[+=-] *([0-9]+)}
-  set wlrValues [regexp -all -inline -- $regs $pinfo2]
-  set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total) \
-                pow $::tr(White) pob $::tr(Black) poc $::tr(Total)]
+  set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total)]
+  if { $wlrCount > 36 } {
+      lappend pies pow $::tr(White) pob $::tr(Black) poc $::tr(Total)
+  }
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
       piechart $w.$p [expr $fw/2] $lsp $size $size $n "%" $pielist
@@ -470,11 +473,14 @@ proc playerInfo {{player ""}} {
   $w.text window create $cl.1 -window $w.pfw
   $w.text window create $cl.2 -window $w.pfb
   $w.text window create $cl.3 -window $w.pfc
-  incr cl 5
-  $w.text window create $cl.1 -window $w.pow
-  $w.text window create $cl.2 -window $w.pob
-  $w.text window create $cl.3 -window $w.poc
-  $w.text configure -state disabled
+  if { $wlrCount > 36 } {
+      #show pie if values for opponent available
+      incr cl 5
+      $w.text window create $cl.1 -window $w.pow
+      $w.text window create $cl.2 -window $w.pob
+      $w.text window create $cl.3 -window $w.poc
+      $w.text configure -state disabled
+  }
 }
 
 # Call in the idlink config file.
