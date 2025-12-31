@@ -357,6 +357,45 @@ proc ::pinfo::ReplaceIDTags { pinfo pname } {
   return $pinfo
 }
 
+proc ::pinfo::Open {} {
+  set w .playerInfoWin
+  if {[::win::createWindow $w "Scid: [tr ToolsPInfo]"]} {
+    pack [ttk::frame $w.b2] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
+    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo}
+    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo}
+    ttk::label $w.b.eloT  -text "$::tr(Rating):"
+    ttk::button $w.b.graph -text [tr ToolsRating] \
+      -command {::tools::graphs::rating::Refresh player $::pinfo::playerInfoName}
+    ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
+      makeNameEditor
+      setNameEditorType rating
+      set editName $::pinfo::playerInfoName
+      set editNameSelect crosstable
+    }
+    ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
+      -command {::preport::preportDlg $::pinfo::playerInfoName}
+    dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
+    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo}
+    dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
+    packbuttons right $w.b2.close $w.b2.update $w.b2.help
+    pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
+    packbuttons left $w.b.graph $w.b.edit
+    packbuttons left $w.b2.report
+
+    ttk::frame $w.frame
+    ttk_text $w.frame.text -font font_Regular -wrap none -state disabled
+    autoscrollBars both $w.frame $w.frame.text
+    ttk::label $w.frame.photo
+    pack $w.frame -side top -fill both -expand yes
+    ::htext::init $w.frame.text
+    ::htext::updateRate $w.frame.text 0
+    bind $w <F1> {helpWindow PInfo}
+    bind $w <<NotifyFilter>> { if {"%d" eq [list $::curr_db dbfilter]} ::pinfo::playerInfo }
+  }
+  return $w
+}
+
 proc ::pinfo::playerInfo {{player ""}} {
   global eloFromRating
   if {$player == ""} { set player $::pinfo::playerInfoName }
@@ -393,46 +432,7 @@ proc ::pinfo::playerInfo {{player ""}} {
   }
 
   set ::pinfo::playerInfoName $player
-  set w .playerInfoWin
-  if {! [winfo exists $w]} {
-    ::createToplevel $w
-    wm title $w "Scid: [tr ToolsPInfo]"
-    ::setTitle $w "Scid: [tr ToolsPInfo]"
-    wm minsize $w 40 5
-    pack [ttk::frame $w.b2] -side bottom -fill x
-    pack [ttk::frame $w.b] -side bottom -fill x
-    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo}
-    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo}
-    ttk::label $w.b.eloT  -text "$::tr(Rating):"
-    ttk::button $w.b.graph -text [tr ToolsRating] \
-      -command {::tools::graphs::rating::Refresh player $::pinfo::playerInfoName}
-    ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
-      makeNameEditor
-      setNameEditorType rating
-      set editName $::pinfo::playerInfoName
-      set editNameSelect crosstable
-    }
-    ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
-      -command {::preport::preportDlg $::pinfo::playerInfoName}
-    dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
-    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo}
-    dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
-    packbuttons right $w.b2.close $w.b2.update $w.b2.help
-    pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
-    packbuttons left $w.b.graph $w.b.edit
-    packbuttons left $w.b2.report
-
-    autoscrollText both $w.frame $w.frame.text Treeview
-    $w.frame.text configure -font font_Regular -wrap none -state normal
-    ttk::label $w.frame.photo
-    pack $w.frame -side top -fill both -expand yes
-    bind $w <Escape> "focus .; destroy $w"
-    ::htext::init $w.frame.text
-    ::htext::updateRate $w.frame.text 0
-    bind $w <Escape> "focus .; destroy $w"
-    bind $w <F1> {helpWindow PInfo}
-    ::createToplevelFinalize $w
-  }
+  set w [::pinfo::Open]
   lassign [normalizePlayerName $player] player spellname
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
