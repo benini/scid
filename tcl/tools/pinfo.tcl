@@ -452,8 +452,8 @@ proc playerInfo {{player ""}} {
   set wlrValues [regexp -all -inline -- $regs $pinfo2]
   set wlrCount [llength $wlrValues]
   # Define canvas for pie charts
-  set lsp [font metrics font_small -linespace]
-  set fw [expr [font measure font_small " = 99%"]]
+  set lsp [font metrics font_Small -linespace]
+  set fw [expr {[font measure font_Small " = 99%"]}]
   set size 80
   foreach p { paw pab pac pow pob poc pfw pfb pfc} {
       destroy $w.frame.$p
@@ -466,7 +466,7 @@ proc playerInfo {{player ""}} {
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
       ::chart::piechart $w.frame.$p [expr {$fw/2}] $lsp $size $size $n $pielist \
-          {LABEL_TYPE % START_ANGLE -90 FONT font_Regular}
+          {LABEL_TYPE % START_ANGLE -90 FONT font_Small}
   }
   # Display the player info
   ::htext::display $w.frame.text $pinfo
