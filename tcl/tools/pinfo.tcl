@@ -433,17 +433,18 @@ proc ::pinfo::playerInfo {{player ""}} {
 
   set ::pinfo::playerInfoName $player
   set w [::pinfo::Open]
+  set w_text $w.frame.text
   lassign [normalizePlayerName $player] player spellname
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
     $w.frame.photo configure -image photoPInfo -anchor ne
-    place $w.frame.photo -in $w.frame.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+    place $w.frame.photo -in $w_text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
     place forget $w.frame.photo
   }
-  $w.frame.text configure -state normal
-  $w.frame.text delete 1.0 end
+  $w_text configure -state normal
+  $w_text delete 1.0 end
 
   set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
@@ -455,39 +456,36 @@ proc ::pinfo::playerInfo {{player ""}} {
   set lsp [font metrics font_Small -linespace]
   set fw [expr {[font measure font_Small " = 99%"]}]
   set size 80
-  foreach p { paw pab pac pow pob poc pfw pfb pfc} {
-      destroy $w.frame.$p
-      ttk_canvas $w.frame.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
-  }
   set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total)]
   if { $wlrCount > 36 } {
       lappend pies pow $::tr(White) pob $::tr(Black) poc $::tr(Total)
   }
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
-      set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
-      ::chart::piechart $w.frame.$p [expr {$fw/2}] $lsp $size $size $n $pielist \
+      ttk_canvas $w_text.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
+      ::chart::piechart $w_text.$p [expr {$fw/2}] $lsp $size $size $n \
+          [list [list - $loss red3] [list = $draw blue3] [list + $win green3]] \
           {LABEL_TYPE % START_ANGLE -90 FONT font_Small}
   }
   # Display the player info
-  ::htext::display $w.frame.text $pinfo
+  ::htext::display $w_text $pinfo
 
   # Insert the pie charts
-  set cl [expr {int([$w.frame.text search "=" 1.0 40.0])+3}]
-  $w.frame.text window create $cl.1 -window $w.frame.paw
-  $w.frame.text window create $cl.2 -window $w.frame.pab
-  $w.frame.text window create $cl.3 -window $w.frame.pac
+  set cl [expr {int([$w_text search "=" 1.0 40.0])+3}]
+  $w_text window create $cl.1 -window $w_text.paw
+  $w_text window create $cl.2 -window $w_text.pab
+  $w_text window create $cl.3 -window $w_text.pac
   incr cl 5
-  $w.frame.text window create $cl.1 -window $w.frame.pfw
-  $w.frame.text window create $cl.2 -window $w.frame.pfb
-  $w.frame.text window create $cl.3 -window $w.frame.pfc
+  $w_text window create $cl.1 -window $w_text.pfw
+  $w_text window create $cl.2 -window $w_text.pfb
+  $w_text window create $cl.3 -window $w_text.pfc
   if { $wlrCount > 36 } {
       #show pie if values for opponent available
       incr cl 5
-      $w.frame.text window create $cl.1 -window $w.frame.pow
-      $w.frame.text window create $cl.2 -window $w.frame.pob
-      $w.frame.text window create $cl.3 -window $w.frame.poc
+      $w_text window create $cl.1 -window $w_text.pow
+      $w_text window create $cl.2 -window $w_text.pob
+      $w_text window create $cl.3 -window $w_text.poc
   }
-  $w.frame.text configure -state disabled
+  $w_text configure -state disabled
 }
 
 # Call in the idlink config file.
