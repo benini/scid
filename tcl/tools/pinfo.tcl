@@ -424,7 +424,7 @@ proc playerInfo {{player ""}} {
 
     autoscrollText both $w.frame $w.frame.text Treeview
     $w.frame.text configure -font font_Regular -wrap none -state normal
-    ttk::label $w.photo
+    ttk::label $w.frame.photo
     pack $w.frame -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"
     ::htext::init $w.frame.text
@@ -437,10 +437,10 @@ proc playerInfo {{player ""}} {
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
-    $w.photo configure -image photoPInfo -anchor ne
-    place $w.photo -in $w.frame.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+    $w.frame.photo configure -image photoPInfo -anchor ne
+    place $w.frame.photo -in $w.frame.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
-    place forget $w.photo
+    place forget $w.frame.photo
   }
   $w.frame.text configure -state normal
   $w.frame.text delete 1.0 end
@@ -456,8 +456,8 @@ proc playerInfo {{player ""}} {
   set fw [expr [font measure font_small " = 99%"]]
   set size 80
   foreach p { paw pab pac pow pob poc pfw pfb pfc} {
-      destroy $w.$p
-      ttk_canvas $w.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
+      destroy $w.frame.$p
+      ttk_canvas $w.frame.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
   }
   set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total)]
   if { $wlrCount > 36 } {
@@ -465,7 +465,7 @@ proc playerInfo {{player ""}} {
   }
   foreach {g win r draw l loss} $wlrValues {p n} $pies {
       set pielist [list [list - $loss red3] [list = $draw blue3] [list + $win green3]]
-      ::chart::piechart $w.$p [expr {$fw/2}] $lsp $size $size $n $pielist \
+      ::chart::piechart $w.frame.$p [expr {$fw/2}] $lsp $size $size $n $pielist \
           {LABEL_TYPE % START_ANGLE -90 FONT font_Regular}
   }
   # Display the player info
@@ -473,19 +473,19 @@ proc playerInfo {{player ""}} {
 
   # Insert the pie charts
   set cl [expr {int([$w.frame.text search "=" 1.0 40.0])+3}]
-  $w.frame.text window create $cl.1 -window $w.paw
-  $w.frame.text window create $cl.2 -window $w.pab
-  $w.frame.text window create $cl.3 -window $w.pac
+  $w.frame.text window create $cl.1 -window $w.frame.paw
+  $w.frame.text window create $cl.2 -window $w.frame.pab
+  $w.frame.text window create $cl.3 -window $w.frame.pac
   incr cl 5
-  $w.frame.text window create $cl.1 -window $w.pfw
-  $w.frame.text window create $cl.2 -window $w.pfb
-  $w.frame.text window create $cl.3 -window $w.pfc
+  $w.frame.text window create $cl.1 -window $w.frame.pfw
+  $w.frame.text window create $cl.2 -window $w.frame.pfb
+  $w.frame.text window create $cl.3 -window $w.frame.pfc
   if { $wlrCount > 36 } {
       #show pie if values for opponent available
       incr cl 5
-      $w.frame.text window create $cl.1 -window $w.pow
-      $w.frame.text window create $cl.2 -window $w.pob
-      $w.frame.text window create $cl.3 -window $w.poc
+      $w.frame.text window create $cl.1 -window $w.frame.pow
+      $w.frame.text window create $cl.2 -window $w.frame.pob
+      $w.frame.text window create $cl.3 -window $w.frame.poc
   }
   $w.frame.text configure -state disabled
 }
