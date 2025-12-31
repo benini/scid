@@ -422,13 +422,13 @@ proc playerInfo {{player ""}} {
     packbuttons left $w.b.graph $w.b.edit
     packbuttons left $w.b2.report
 
-    autoscrollText both $w.frame $w.text Treeview
-    $w.text configure -font font_Regular -wrap none -state normal
+    autoscrollText both $w.frame $w.frame.text Treeview
+    $w.frame.text configure -font font_Regular -wrap none -state normal
     ttk::label $w.photo
     pack $w.frame -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"
-    ::htext::init $w.text
-    ::htext::updateRate $w.text 0
+    ::htext::init $w.frame.text
+    ::htext::updateRate $w.frame.text 0
     bind $w <Escape> "focus .; destroy $w"
     bind $w <F1> {helpWindow PInfo}
     ::createToplevelFinalize $w
@@ -438,12 +438,12 @@ proc playerInfo {{player ""}} {
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
     $w.photo configure -image photoPInfo -anchor ne
-    place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+    place $w.photo -in $w.frame.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
     place forget $w.photo
   }
-  $w.text configure -state normal
-  $w.text delete 1.0 end
+  $w.frame.text configure -state normal
+  $w.frame.text delete 1.0 end
 
   set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
@@ -469,25 +469,25 @@ proc playerInfo {{player ""}} {
           {LABEL_TYPE % START_ANGLE -90 FONT font_Regular}
   }
   # Display the player info
-  ::htext::display $w.text $pinfo
+  ::htext::display $w.frame.text $pinfo
 
   # Insert the pie charts
-  set cl [expr {int([$w.text search "=" 1.0 40.0])+3}]
-  $w.text window create $cl.1 -window $w.paw
-  $w.text window create $cl.2 -window $w.pab
-  $w.text window create $cl.3 -window $w.pac
+  set cl [expr {int([$w.frame.text search "=" 1.0 40.0])+3}]
+  $w.frame.text window create $cl.1 -window $w.paw
+  $w.frame.text window create $cl.2 -window $w.pab
+  $w.frame.text window create $cl.3 -window $w.pac
   incr cl 5
-  $w.text window create $cl.1 -window $w.pfw
-  $w.text window create $cl.2 -window $w.pfb
-  $w.text window create $cl.3 -window $w.pfc
+  $w.frame.text window create $cl.1 -window $w.pfw
+  $w.frame.text window create $cl.2 -window $w.pfb
+  $w.frame.text window create $cl.3 -window $w.pfc
   if { $wlrCount > 36 } {
       #show pie if values for opponent available
       incr cl 5
-      $w.text window create $cl.1 -window $w.pow
-      $w.text window create $cl.2 -window $w.pob
-      $w.text window create $cl.3 -window $w.poc
+      $w.frame.text window create $cl.1 -window $w.pow
+      $w.frame.text window create $cl.2 -window $w.pob
+      $w.frame.text window create $cl.3 -window $w.poc
   }
-   $w.text configure -state disabled
+  $w.frame.text configure -state disabled
 }
 
 # Call in the idlink config file.
