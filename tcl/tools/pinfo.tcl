@@ -486,8 +486,8 @@ proc playerInfo {{player ""}} {
       $w.text window create $cl.1 -window $w.pow
       $w.text window create $cl.2 -window $w.pob
       $w.text window create $cl.3 -window $w.poc
-      $w.text configure -state disabled
   }
+   $w.text configure -state disabled
 }
 
 # Call in the idlink config file.
