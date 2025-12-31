@@ -62,8 +62,9 @@ proc ::chart::piechart {w x y width height title data {options {}}} {
 }
 
 namespace eval pinfo {
-set playerInfoName ""
-set ::eloFromRating 0
+    set playerInfoName ""
+    set eloFromRating 0
+}
 
 proc ::pinfo::setupDefaultResolvers { } {
    set optionF ""
@@ -360,34 +361,45 @@ proc ::pinfo::ReplaceIDTags { pinfo pname } {
 proc ::pinfo::Open {} {
   set w .playerInfoWin
   if {[::win::createWindow $w "Scid: [tr ToolsPInfo]"]} {
-    pack [ttk::frame $w.b2] -side bottom -fill x
-    pack [ttk::frame $w.b] -side bottom -fill x
-    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo}
-    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo}
-    ttk::label $w.b.eloT  -text "$::tr(Rating):"
-    ttk::button $w.b.graph -text [tr ToolsRating] \
-      -command {::tools::graphs::rating::Refresh player $::pinfo::playerInfoName}
-    ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
+    ttk::frame $w.frame
+    ttk_text $w.frame.text -font font_Regular -wrap none -state disabled
+    autoscrollBars both $w.frame $w.frame.text
+    ttk::label $w.frame.photo
+
+    ttk::frame $w.b
+    ttk::radiobutton $w.b.eloF -text [tr PInfoEloFile] -value 1 -variable ::pinfo::eloFromRating \
+        -command {::pinfo::playerInfo}
+    ttk::radiobutton $w.b.eloD -text [tr Database] -value 0 -variable ::pinfo::eloFromRating \
+        -command {::pinfo::playerInfo}
+    ttk::label $w.b.eloT -text "[tr Rating]:"
+    ttk::button $w.b.graph -text [tr ToolsRating] -command {
+      ::tools::graphs::rating::Refresh player $::pinfo::playerInfoName
+    }
+    ttk::button $w.b.edit -text [tr PInfoEditRatings] -command {
       makeNameEditor
       setNameEditorType rating
       set editName $::pinfo::playerInfoName
       set editNameSelect crosstable
     }
+
+    ttk::frame $w.b2
     ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
       -command {::preport::preportDlg $::pinfo::playerInfoName}
     dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
     dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo}
-    dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
-    packbuttons right $w.b2.close $w.b2.update $w.b2.help
+    packbuttons right $w.b2.update $w.b2.help
     pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
     packbuttons left $w.b.graph $w.b.edit
     packbuttons left $w.b2.report
 
-    ttk::frame $w.frame
-    ttk_text $w.frame.text -font font_Regular -wrap none -state disabled
-    autoscrollBars both $w.frame $w.frame.text
-    ttk::label $w.frame.photo
-    pack $w.frame -side top -fill both -expand yes
+    grid $w.frame -sticky news
+    grid $w.b -sticky news
+    grid $w.b2 -sticky news
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
+    grid rowconfigure $w 2 -weight 0
+    grid columnconfigure $w 0 -weight 1
+
     ::htext::init $w.frame.text
     ::htext::updateRate $w.frame.text 0
     bind $w <F1> {helpWindow PInfo}
@@ -397,7 +409,6 @@ proc ::pinfo::Open {} {
 }
 
 proc ::pinfo::playerInfo {{player ""}} {
-  global eloFromRating
   if {$player == ""} { set player $::pinfo::playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
   # get same info in text format
@@ -413,7 +424,7 @@ proc ::pinfo::playerInfo {{player ""}} {
   }
   # append Elo History
   append pinfo "<br><br><darkblue>$::tr(PInfoRating):</darkblue><br>"
-  if { $::eloFromRating } {
+  if { $::pinfo::eloFromRating } {
     set eloList [sc_name elo $player]
   } else {
     set filter [sc_filter new $::curr_db]
@@ -500,4 +511,3 @@ proc ::pinfo::playerInfo {{player ""}} {
    } else {
      ::splash::add "ID resolvers found, extended player info available."
    }
-}
