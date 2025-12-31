@@ -2,11 +2,71 @@
 ####################
 # Player Info window
 
-namespace eval pinfo {
-set playerInfoName ""
-set ::eloFromRating 0
+namespace eval ::chart {
+    variable PIE_DEFAULTS {
+        START_ANGLE     90
+        DIRECTION       1
+        LABEL_OFFSET    6
+        LABEL_TYPE      "full"
+        FONT            "TkDefaultFont"
+        SHOW_LABELS     true
+        TITLE_ANCHOR    "nw"
+    }
+}
+# Draw Pie Chart
+# w       - canvas widget
+# x, y    - upper left corner
+# width, height - dimensions
+# title   - chart title
+# data    - list of {name count color} entries
+# options - optional dict to override PIE_DEFAULTS
+proc ::chart::piechart {w x y width height title data {options {}}} {
+    variable PIE_DEFAULTS
+    set config [dict merge $PIE_DEFAULTS $options]
 
-proc setupDefaultResolvers { } {
+    set coords [list $x $y [expr {$x + $width}] [expr {$y + $height}]]
+    set xm  [expr {$x + $width / 2.0}]
+    set ym  [expr {$y + $height / 2.0}]
+    set rad [expr {$width / 2.0 + [dict get $config LABEL_OFFSET]}]
+
+    set sum [::tcl::mathop::+ {*}[lmap item $data {lindex $item 1}]]
+    if {$sum < 1} return
+
+    ttk_create $w text 0 0 -text $title -tag txt \
+        -anchor [dict get $config TITLE_ANCHOR] \
+        -font [dict get $config FONT]
+
+    set start [dict get $config START_ANGLE]
+    set dir   [dict get $config DIRECTION]
+    foreach item $data {
+        lassign $item name n color
+        set extent [expr {$dir * $n * 360.0 / $sum}]
+        if {abs($extent) < 1} continue
+        if {abs($extent) > 359} {set extent [expr {$dir * 359}]}
+        $w create arc $coords -start $start -extent $extent -fill $color -outline $color
+        if {[dict get $config SHOW_LABELS]} {
+            set angle [expr {($start - 90 + $extent / 2.0) / 180.0 * acos(-1)}]
+            set tx [expr {$xm - $rad * sin($angle)}]
+            set ty [expr {$ym - $rad * cos($angle)}]
+            set pct [expr {round(100.0 * $n / $sum)}]
+            if {[dict get $config LABEL_TYPE] eq "%"} {
+                set text "$name ${pct}%"
+            } else {
+                set text "$name $n\n${pct}%"
+            }
+            ttk_create $w text $tx $ty -text $text -tag txt -justify center \
+                -font [dict get $config FONT]
+        }
+        set start [expr {$start + $extent}]
+    }
+}
+
+namespace eval pinfo {
+    set playerInfoName ""
+    set eloFromRating 0
+}
+
+proc ::pinfo::setupDefaultResolvers { } {
    set optionF ""
    if {[catch {open [scidConfigFile resolvers] w} optionF]} {
       tk_messageBox -title "Scid: Unable to write file" -type ok -icon warning \
@@ -217,8 +277,8 @@ proc ::pinfo::splitName { playerName } {
     set count [string first " " $playerName ]
   }
   if { $count > 0 } {
-    set fname [string range $playerName [expr $count + $countlen] end]
-    set lname [string range $playerName 0 [expr $count - 1]]
+    set fname [string range $playerName [expr {$count + $countlen}] end]
+    set lname [string range $playerName 0 [expr {$count - 1}]]
     return [list [string trim $fname] [string trim $lname]]
   }
   return [list $playerName ""]
@@ -298,22 +358,73 @@ proc ::pinfo::ReplaceIDTags { pinfo pname } {
   return $pinfo
 }
 
-proc playerInfo {{player ""}} {
-  global playerInfoName eloFromRating
-  if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
+proc ::pinfo::Open {} {
+  set w .playerInfoWin
+  if {[::win::createWindow $w "Scid: [tr ToolsPInfo]"]} {
+    ttk::frame $w.frame
+    ttk_text $w.frame.text -font font_Regular -wrap none -state disabled
+    autoscrollBars both $w.frame $w.frame.text
+    ttk::label $w.frame.photo
+
+    ttk::frame $w.b
+    ttk::radiobutton $w.b.eloF -text [tr PInfoEloFile] -value 1 -variable ::pinfo::eloFromRating \
+        -command {::pinfo::playerInfo}
+    ttk::radiobutton $w.b.eloD -text [tr Database] -value 0 -variable ::pinfo::eloFromRating \
+        -command {::pinfo::playerInfo}
+    ttk::label $w.b.eloT -text "[tr Rating]:"
+    ttk::button $w.b.graph -text [tr ToolsRating] -command {
+      ::tools::graphs::rating::Refresh player $::pinfo::playerInfoName
+    }
+    ttk::button $w.b.edit -text [tr PInfoEditRatings] -command {
+      makeNameEditor
+      setNameEditorType rating
+      set editName $::pinfo::playerInfoName
+      set editNameSelect crosstable
+    }
+
+    ttk::frame $w.b2
+    ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
+      -command {::preport::preportDlg $::pinfo::playerInfoName}
+    dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
+    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo}
+    packbuttons right $w.b2.update $w.b2.help
+    pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
+    packbuttons left $w.b.graph $w.b.edit
+    packbuttons left $w.b2.report
+
+    grid $w.frame -sticky news
+    grid $w.b -sticky news
+    grid $w.b2 -sticky news
+    grid rowconfigure $w 0 -weight 1
+    grid rowconfigure $w 1 -weight 0
+    grid rowconfigure $w 2 -weight 0
+    grid columnconfigure $w 0 -weight 1
+
+    ::htext::init $w.frame.text
+    ::htext::updateRate $w.frame.text 0
+    bind $w <F1> {helpWindow PInfo}
+    bind $w <<NotifyFilter>> { if {"%d" eq [list $::curr_db dbfilter]} ::pinfo::playerInfo }
+  }
+  return $w
+}
+
+proc ::pinfo::playerInfo {{player ""}} {
+  if {$player == ""} { set player $::pinfo::playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
+  # get same info in text format
+  set pinfo2 [sc_name info $player]
   # add country flag
   set found [string first " \[" $pinfo]
   if { $found > 0 } {
-    set countryID [string range $pinfo [expr $found - 3] [expr $found - 1]]
+    set countryID [string range $pinfo [expr {$found - 3}] [expr {$found - 1}]]
     set country [getFlagImage $countryID]
     if { $country ne "" } {
-      set pinfo [string replace $pinfo [expr $found - 3] [expr $found - 1] "$countryID <img $country>"]
+      set pinfo [string replace $pinfo [expr {$found - 3}] [expr {$found - 1}] "$countryID <img $country>"]
     }
   }
   # append Elo History
   append pinfo "<br><br><darkblue>$::tr(PInfoRating):</darkblue><br>"
-  if { $::eloFromRating } {
+  if { $::pinfo::eloFromRating } {
     set eloList [sc_name elo $player]
   } else {
     set filter [sc_filter new $::curr_db]
@@ -331,65 +442,61 @@ proc playerInfo {{player ""}} {
     if { $i == 3 } { append pinfo "<br>"; set i 0 }
   }
 
-  set playerInfoName $player
-  set w .playerInfoWin
-  if {! [winfo exists $w]} {
-    ::createToplevel $w
-    wm title $w "Scid: [tr ToolsPInfo]"
-    ::setTitle $w "Scid: [tr ToolsPInfo]"
-    wm minsize $w 40 5
-    pack [ttk::frame $w.b2] -side bottom -fill x
-    pack [ttk::frame $w.b] -side bottom -fill x
-    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
-    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
-    ttk::label $w.b.eloT  -text "$::tr(Rating):"
-    ttk::button $w.b.graph -text [tr ToolsRating] \
-      -command {::tools::graphs::rating::Refresh player $playerInfoName}
-    ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
-      makeNameEditor
-      setNameEditorType rating
-      set editName $playerInfoName
-      set editNameSelect crosstable
-    }
-    ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
-      -command {::preport::preportDlg $playerInfoName}
-    dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
-    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo $playerInfoName}
-    dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
-    packbuttons right $w.b2.close $w.b2.update $w.b2.help
-    pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
-    packbuttons left $w.b.graph $w.b.edit
-    packbuttons left $w.b2.report
-
-    autoscrollText both $w.frame $w.text Treeview
-    $w.text configure -font font_Regular -wrap none -state normal
-    ttk::label $w.photo
-    pack $w.frame -side top -fill both -expand yes
-    bind $w <Escape> "focus .; destroy $w"
-    ::htext::init $w.text
-    ::htext::updateRate $w.text 0
-    bind $w <Escape> "focus .; destroy $w"
-    bind $w <F1> {helpWindow PInfo}
-    ::createToplevelFinalize $w
-  }
+  set ::pinfo::playerInfoName $player
+  set w [::pinfo::Open]
+  set w_text $w.frame.text
   lassign [normalizePlayerName $player] player spellname
   set imgdata [getphoto $player]
   if {$imgdata != ""} {
     image create photo photoPInfo -data $imgdata
-    $w.photo configure -image photoPInfo -anchor ne
-    place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+    $w.frame.photo configure -image photoPInfo -anchor ne
+    place $w.frame.photo -in $w_text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {
-    place forget $w.photo
+    place forget $w.frame.photo
   }
-  $w.text configure -state normal
-  $w.text delete 1.0 end
+  $w_text configure -state normal
+  $w_text delete 1.0 end
 
   set pinfo [::pinfo::ReplaceIDTags $pinfo $spellname]
 
+  # Extract data for pies from pinfo2 string
+  set regs { +[+=-] *([0-9]+)}
+  set wlrValues [regexp -all -inline -- $regs $pinfo2]
+  set wlrCount [llength $wlrValues]
+  # Define canvas for pie charts
+  set lsp [font metrics font_Small -linespace]
+  set fw [expr {[font measure font_Small " = 99%"]}]
+  set size 80
+  set pies [list paw $::tr(White) pab $::tr(Black) pac $::tr(Total) pfw $::tr(White) pfb $::tr(Black) pfc $::tr(Total)]
+  if { $wlrCount > 36 } {
+      lappend pies pow $::tr(White) pob $::tr(Black) poc $::tr(Total)
+  }
+  foreach {g win r draw l loss} $wlrValues {p n} $pies {
+      ttk_canvas $w_text.$p -width [expr {$size+$fw}] -height [expr {$size+2*$lsp}] -highlightthickness 0
+      ::chart::piechart $w_text.$p [expr {$fw/2}] $lsp $size $size $n \
+          [list [list - $loss red3] [list = $draw blue3] [list + $win green3]] \
+          {LABEL_TYPE % START_ANGLE -90 FONT font_Small}
+  }
   # Display the player info
-  ::htext::display $w.text $pinfo
+  ::htext::display $w_text $pinfo
 
-  $w.text configure -state disabled
+  # Insert the pie charts
+  set cl [expr {int([$w_text search "=" 1.0 40.0])+3}]
+  $w_text window create $cl.1 -window $w_text.paw
+  $w_text window create $cl.2 -window $w_text.pab
+  $w_text window create $cl.3 -window $w_text.pac
+  incr cl 5
+  $w_text window create $cl.1 -window $w_text.pfw
+  $w_text window create $cl.2 -window $w_text.pfb
+  $w_text window create $cl.3 -window $w_text.pfc
+  if { $wlrCount > 36 } {
+      #show pie if values for opponent available
+      incr cl 5
+      $w_text window create $cl.1 -window $w_text.pow
+      $w_text window create $cl.2 -window $w_text.pob
+      $w_text window create $cl.3 -window $w_text.poc
+  }
+  $w_text configure -state disabled
 }
 
 # Call in the idlink config file.
@@ -404,4 +511,3 @@ proc playerInfo {{player ""}} {
    } else {
      ::splash::add "ID resolvers found, extended player info available."
    }
-}
