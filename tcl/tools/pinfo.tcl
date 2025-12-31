@@ -65,7 +65,7 @@ namespace eval pinfo {
 set playerInfoName ""
 set ::eloFromRating 0
 
-proc setupDefaultResolvers { } {
+proc ::pinfo::setupDefaultResolvers { } {
    set optionF ""
    if {[catch {open [scidConfigFile resolvers] w} optionF]} {
       tk_messageBox -title "Scid: Unable to write file" -type ok -icon warning \
@@ -357,9 +357,9 @@ proc ::pinfo::ReplaceIDTags { pinfo pname } {
   return $pinfo
 }
 
-proc playerInfo {{player ""}} {
-  global playerInfoName eloFromRating
-  if {$player == "" && [info exists playerInfoName]} { set player $playerInfoName }
+proc ::pinfo::playerInfo {{player ""}} {
+  global eloFromRating
+  if {$player == ""} { set player $::pinfo::playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
   # get same info in text format
   set pinfo2 [sc_name info $player]
@@ -392,7 +392,7 @@ proc playerInfo {{player ""}} {
     if { $i == 3 } { append pinfo "<br>"; set i 0 }
   }
 
-  set playerInfoName $player
+  set ::pinfo::playerInfoName $player
   set w .playerInfoWin
   if {! [winfo exists $w]} {
     ::createToplevel $w
@@ -401,21 +401,21 @@ proc playerInfo {{player ""}} {
     wm minsize $w 40 5
     pack [ttk::frame $w.b2] -side bottom -fill x
     pack [ttk::frame $w.b] -side bottom -fill x
-    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
-    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo $playerInfoName}
+    ttk::radiobutton $w.b.eloF -text $::tr(PInfoEloFile) -value 1 -variable ::eloFromRating -command {::pinfo::playerInfo}
+    ttk::radiobutton $w.b.eloD -text $::tr(Database) -value 0 -variable ::eloFromRating -command {::pinfo::playerInfo}
     ttk::label $w.b.eloT  -text "$::tr(Rating):"
     ttk::button $w.b.graph -text [tr ToolsRating] \
-      -command {::tools::graphs::rating::Refresh player $playerInfoName}
+      -command {::tools::graphs::rating::Refresh player $::pinfo::playerInfoName}
     ttk::button $w.b.edit -text $::tr(PInfoEditRatings) -command {
       makeNameEditor
       setNameEditorType rating
-      set editName $playerInfoName
+      set editName $::pinfo::playerInfoName
       set editNameSelect crosstable
     }
     ttk::button $w.b2.report -text [tr ToolsPlayerReport] \
-      -command {::preport::preportDlg $playerInfoName}
+      -command {::preport::preportDlg $::pinfo::playerInfoName}
     dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
-    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo $playerInfoName}
+    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo}
     dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
     packbuttons right $w.b2.close $w.b2.update $w.b2.help
     pack $w.b.eloT $w.b.eloF $w.b.eloD -side left -padx "5 0"
