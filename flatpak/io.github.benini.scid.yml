@@ -119,7 +119,7 @@ modules:
       - type: git
         url: https://github.com/tcltk/tcl.git
         tag: core-8-6-17
-        commit: b522ab7c2ad740a068df9546538405f8d2a2c703
+        commit: 433df5b20a8bd6957c3bda981c83d65202eb7de7
 
   - name: tk # latest stable tk, required for scid
     subdir: unix
@@ -153,3 +153,12 @@ modules:
         url: https://github.com/benini/scid.git
         commit: be56eae535473304dd90fe7b4a5cbf74d4327e15
 
+  - name: ttk_themes
+    buildsystem: simple
+    build-commands:
+      - mv tclthemes /app/scid/themes
+    sources:
+      - type: git
+        url: https://github.com/ukscid/ttk-themes-scid.git
+        tag: V1.0
+        commit: f6b8f2565e76ffaefc5a5191b0c1494fa73104d7
