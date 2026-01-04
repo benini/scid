@@ -6,7 +6,7 @@ namespace eval ::chart {
     variable PIE_DEFAULTS {
         START_ANGLE     90
         DIRECTION       1
-        LABEL_OFFSET    6
+        LABEL_OFFSET    1
         LABEL_TYPE      "full"
         FONT            "TkDefaultFont"
         SHOW_LABELS     true
