@@ -10,7 +10,18 @@
 
 package require Tcl 8.5
 package require Tk  8.5
-package require fileutil
+
+proc updateFileInPlace { filename replacementCmd } {
+    set fd [open $filename r]
+    set content [read $fd]
+    close $fd
+
+    set newContent [{*}$replacementCmd $content]
+
+    set fd [open $filename w]
+    puts -nonewline $fd $newContent
+    close $fd
+}
 
 proc initProgress { size {msg ""} } {
     global progCount vProgress tProgress
@@ -31,6 +42,7 @@ proc updateProgress { ist { msg "" }} {
         update
     }
 }
+
 proc OpenFile { filename {type "" } mode } {
     global workFile
     set ftype { { "Scid Spellcheck files" {".ssp"} } }
@@ -105,7 +117,7 @@ proc dofilterData { source destination fromElo toElo Countries removeHist} {
     close $of
     close $fd
     set replacementCmd [list string map [list "Player information: --x--" "Player information: $anz_player"]]
-    fileutil::updateInPlace $destination $replacementCmd
+    updateFileInPlace $destination $replacementCmd
     initProgress [file size $source] "Finished. $anz_player Player found. File $destination was created."
 }
 
