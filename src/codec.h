@@ -40,7 +40,7 @@ class Progress;
  */
 class ICodecDatabase {
 public:
-	virtual ~ICodecDatabase(){};
+	virtual ~ICodecDatabase() {};
 
 	enum Codec { MEMORY, PGN, SCID4, SCID5 };
 	/**
