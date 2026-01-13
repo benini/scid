@@ -42,6 +42,7 @@
   </screenshots>
 
   <url type="homepage">https://scid.sourceforge.net/</url>
+  <url type="vcs-browser">https://sourceforge.net/p/scid/code/ci/master/tree/</url>
 
   <provides>
     <id>scid.desktop</id>
