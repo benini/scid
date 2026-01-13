@@ -13,6 +13,74 @@ finish-args:
   - --socket=pulseaudio      # play sound with PulseAudio
 
 modules:
+  - name: tcl # latest stable tcl, required for scid
+    subdir: unix
+    post-install:
+      - chmod 755 /app/lib/libtcl*.so
+    cleanup:
+      - /bin
+      - /lib/pkgconfig
+      - /man
+    sources:
+      - type: git
+        url: https://github.com/tcltk/tcl.git
+        tag: core-8-6-17
+        commit: 433df5b20a8bd6957c3bda981c83d65202eb7de7
+
+  - name: tk # latest stable tk, required for scid
+    subdir: unix
+    make-args:
+      - binaries
+      - libraries
+    make-install-args:
+      - install-binaries
+      - install-libraries
+    post-install:
+      - chmod 755 /app/lib/libtk*.so
+    cleanup:
+      - /bin
+      - /lib/pkgconfig
+      - /man
+    sources:
+      - type: git
+        url: https://github.com/tcltk/tk.git
+        tag: core-8-6-17
+        commit: afdf30259d05840a4e513bae638955902322d1ec
+
+  - name: scid # main app
+    buildsystem: cmake
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_VERBOSE_MAKEFILE=ON
+    post-install:
+      - ln -s /app/scid/scid /app/bin/
+      - install -Dma+r flatpak/io.github.benini.scid.svg /app/share/icons/hicolor/scalable/apps/io.github.benini.scid.svg
+      - install -Dma+r flatpak/io.github.benini.scid.desktop /app/share/applications/io.github.benini.scid.desktop
+      - install -Dma+r flatpak/io.github.benini.scid.appdata.xml /app/share/appdata/io.github.benini.scid.appdata.xml
+    sources:
+      - type: git
+        url: https://github.com/benini/scid.git
+        commit: 4ba5da2c18b47cf71e52a8ae0acf79eb3331954a
+
+  - name: players_data
+    buildsystem: simple
+    build-commands:
+      - unzip *.zip -d /app/scid/
+    sources:
+      - type: file
+        url: https://prdownloads.sourceforge.net/scid/players-5.1.zip
+        sha256: 29f31da6baa57038193deff80a6d0f886de0883dc8b991f1b80b2f81b108cf35
+
+  - name: ttk_themes
+    buildsystem: simple
+    build-commands:
+      - mv tclthemes /app/scid/themes
+    sources:
+      - type: git
+        url: https://github.com/ukscid/ttk-themes-scid.git
+        tag: V1.0
+        commit: f6b8f2565e76ffaefc5a5191b0c1494fa73104d7
+
   - name: stockfish # Stockfish engine, put into /app/engines
     subdir: src
     buildsystem: simple
@@ -106,59 +174,3 @@ modules:
         dest-filename: nn.pb.gz
         url: https://storage.lczero.org/files/networks-contrib/t1-512x15x8h-distilled-swa-3395000.pb.gz
         sha256: 1fdb1519e5b02e03f1d9201ec8eb95f640e32cc6459a4f14c0eab6890dc097e8
-
-  - name: tcl # latest stable tcl, required for scid
-    subdir: unix
-    post-install:
-      - chmod 755 /app/lib/libtcl*.so
-    cleanup:
-      - /bin
-      - /lib/pkgconfig
-      - /man
-    sources:
-      - type: git
-        url: https://github.com/tcltk/tcl.git
-        tag: core-8-6-17
-        commit: 433df5b20a8bd6957c3bda981c83d65202eb7de7
-
-  - name: tk # latest stable tk, required for scid
-    subdir: unix
-    make-args:
-      - binaries
-      - libraries
-    make-install-args:
-      - install-binaries
-      - install-libraries
-    post-install:
-      - chmod 755 /app/lib/libtk*.so
-    cleanup:
-      - /bin
-      - /lib/pkgconfig
-      - /man
-    sources:
-      - type: git
-        url: https://github.com/tcltk/tk.git
-        tag: core-8-6-17
-        commit: afdf30259d05840a4e513bae638955902322d1ec
-
-  - name: scid # main app
-    buildsystem: cmake-ninja
-    post-install:
-      - ln -s /app/scid/scid /app/bin/
-      - install -Dma+r flatpak/io.github.benini.scid.svg /app/share/icons/hicolor/scalable/apps/io.github.benini.scid.svg
-      - install -Dma+r flatpak/io.github.benini.scid.desktop /app/share/applications/io.github.benini.scid.desktop
-      - install -Dma+r flatpak/io.github.benini.scid.appdata.xml /app/share/appdata/io.github.benini.scid.appdata.xml
-    sources:
-      - type: git
-        url: https://github.com/benini/scid.git
-        commit: be56eae535473304dd90fe7b4a5cbf74d4327e15
-
-  - name: ttk_themes
-    buildsystem: simple
-    build-commands:
-      - mv tclthemes /app/scid/themes
-    sources:
-      - type: git
-        url: https://github.com/ukscid/ttk-themes-scid.git
-        tag: V1.0
-        commit: f6b8f2565e76ffaefc5a5191b0c1494fa73104d7
