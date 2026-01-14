@@ -38,7 +38,7 @@ set useLocalTooltip [catch {package require tooltip 2.0}]
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
-set scidVersionExpected "5.1.0"
+set scidVersionExpected "5.1.202601"
 
 # Check that the version of c++ code matches the version of tcl code
 #

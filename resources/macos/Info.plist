@@ -8,7 +8,7 @@
     <key>CFBundleExecutable</key>
     <string>scid/scid</string>
     <key>CFBundleGetInfoString</key>
-    <string>Scid 5.1.0</string>
+    <string>Scid 5.1.202601</string>
     <key>CFBundleIconFile</key>
     <string>ScidApp.icns</string>
     <key>CFBundleIdentifier</key>
@@ -20,7 +20,7 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>5.1.0</string>
+    <string>5.1.202601</string>
     <key>CFBundleSignature</key>
     <string>Scid</string>
     <key>LSMinimumSystemVersion</key>
