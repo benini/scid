@@ -1,5 +1,5 @@
 
-#define AppVersion '5.1.0'
+#define AppVersion '5.1.202601'
 #define AppName    'Scid'
 #define TCLDIR     'C:\Tcl'
 
