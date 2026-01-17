@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2015 Fulvio Benini
+# Copyright (C) 2009-2026 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 #
@@ -55,14 +55,76 @@ proc ::move::showVarArrows {} {
 	if {$move != ""} {
 		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#0000ff"
+		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#5200aa"
 	}
 	set varList [sc_var list UCI]
 	foreach { move } $varList {
 		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#00aaff"
+		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#795998"
 	}
+}
+
+proc ::move::showVarPopup {} {
+	if {$::autoplayMode} return
+
+	set numVars [sc_var count]
+	if {$numVars == 0} return
+
+	set prev_focus [focus]
+	set w .variationsPopup
+	destroy $w
+	toplevel $w
+	wm overrideredirect $w 1
+	ttk::treeview $w.tv -show {} -columns {moves} -selectmode browse -height [expr $numVars + 1]
+	$w.tv tag configure font -font font_Regular
+	pack $w.tv -fill both -expand 1
+
+	bind $w <FocusOut>        [list destroy $w]
+	bind $w <Escape>          [list focus $prev_focus]
+	bind $w <Left>            [list focus $prev_focus]
+	bind $w <Return>          [list focus $prev_focus]
+	bind $w <Return>          {+::move::EnterVar [%W selection]}
+	bind $w <Right>           {event generate %W <Return> -when tail}
+	bind $w <ButtonRelease-1> {event generate %W <Return> -when tail}
+	for {set i 0} {$i <= min(9, $numVars)} {incr i} {
+		bind $w.tv <Key-$i> "%W selection set $i ; event generate %W <Return> -when tail"
+	}
+
+	set width 160
+	set line [sc_game info nextMove]
+	if {$line eq ""} { set line "([tr End])" }
+	$w.tv insert {} end -id 0 -values [list "0: $line"] -tag font
+	set width [expr {max($width, [font measure font_Regular "0: $line"])}]
+
+	for {set i 0} {$i < $numVars} {} {
+		sc_var moveInto $i
+		set line [sc_game info previousMove]
+		if {$line eq ""} {
+			set line "([tr empty])"
+		} else {
+			for {set j 0} {$j < 5} {incr j} {
+				if {[set move [sc_game info nextMove]] eq ""} { break }
+				append line " \{[sc_pos getComment]\} $move"
+				sc_move forward
+			}
+			append line " \{[sc_pos getComment]\}"
+		}
+		# Normalize whitespace, remove " {}" occurrences, and truncate
+		set line [string range [string map {{ {}} {}} [regsub -all {\s+} $line { }]] 0 60]
+		sc_var exit
+
+		incr i
+		$w.tv insert {} end -id $i -values [list "$i: $line"] -tag font
+		set width [expr {max($width, [font measure font_Regular "$i: $line"])}]
+	}
+
+	$w.tv column moves -width $width
+
+	::tk::PlaceWindow $w widget .main.board
+	focus $w.tv
+	$w.tv focus 0
+	$w.tv selection set 0
 }
 
 proc ::move::Start {} {
@@ -150,7 +212,9 @@ proc ::move::Forward {{count 1}} {
 
 	if {$bArrows || $bVarPopup} {
 		if {$bArrows} { ::move::showVarArrows }
-		if {$bVarPopup} { showVars }
+		if {$bVarPopup} { ::move::showVarPopup }
+	} elseif {$count > 1 && [sc_var count] != 0} {
+		::move::showVarPopup
 	} else {
 		sc_move forward $count
 		::notify::PosChanged "" -animate

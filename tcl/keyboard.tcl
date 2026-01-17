@@ -13,7 +13,7 @@
 # It is not necessary to recompile scid after changing this file.
 
 proc keyboardShortcuts {w} {
-	# Go back/forward
+	# Go back/forward. <Down> also pops up the variants menu.
 	bind $w <Left>  { excludeTextWidget %W; ::move::Back }
 	bind $w <Right> { excludeTextWidget %W; ::move::Forward }
 	bind $w <Up>    { excludeTextWidget %W; ::move::Back 10 }
@@ -56,13 +56,6 @@ proc keyboardShortcuts {w} {
 
 	# Toggle fullscreen
 	bind $w <F11> { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen]] }
-
-	# Open the enter/create variation dialog
-	# TODO: <v> is not intuitive: <space> or <up> <down> may be better
-	bind $w <KeyPress-v> {
-		excludeTextWidget %W
-		::showVars
-	}
 
 	# Change current database
 	set totalBaseSlots [sc_info limit bases]
