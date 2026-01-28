@@ -51,17 +51,17 @@ proc ::move::drawVarArrows {} {
 }
 
 proc ::move::showVarArrows {} {
-	set move [sc_game info nextMoveUCI]
-	if {$move != ""} {
-		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
-		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
-		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#5200aa"
-	}
 	set varList [sc_var list UCI]
 	foreach { move } $varList {
 		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
 		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#795998"
+	}
+	set move [sc_game info nextMoveUCI]
+	if {$move != ""} {
+		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
+		set sq_end [ ::board::sq [ string range $move 2 3 ] ]
+		::board::mark::add ".main.board" "arrow" $sq_start $sq_end "#5200aa"
 	}
 }
 
@@ -119,7 +119,7 @@ proc ::move::showVarPopup {} {
 		set width [expr {max($width, [font measure font_Regular "$i: $line"])}]
 	}
 
-	$w.tv column moves -width $width
+	$w.tv column moves -width [expr 10 + $width]
 
 	::tk::PlaceWindow $w widget .main.board
 	focus $w.tv
