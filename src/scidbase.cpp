@@ -615,19 +615,23 @@ errorT scidBaseT::getCompactStat(unsigned long long* n_deleted,
 }
 
 errorT scidBaseT::compact(const Progress& progress) {
-	std::vector<std::string> filenames = codec_->getFilenames();
+	std::vector<std::filesystem::path> filenames;
+	for (auto const& e : codec_->getFilenames()) {
+		auto data = (const char8_t*)e.data();
+		filenames.emplace_back(data, data + e.size());
+	}
 	if (filenames.empty())
 		return ERROR_CodecUnsupFeat;
 
 	// 1) Create a new temporary database
 	ICodecDatabase::Codec dbtype = codec_->getType();
 	scidBaseT tmp;
-	auto tmp_filename = std::filesystem::path(filenames[0]);
+	auto tmp_filename = filenames[0];
 	tmp_filename.replace_filename(tmp_filename.stem().u8string() +
 	                              u8"__COMPACT__" +
 	                              tmp_filename.extension().u8string());
-	if (auto err_Create = tmp.openHelper(dbtype, FMODE_Create,
-	                                     tmp_filename.string().c_str()))
+	if (auto err_Create = tmp.openHelper(
+	        dbtype, FMODE_Create, (const char*)tmp_filename.u8string().c_str()))
 		return err_Create;
 
 	// 2) Create the list of games to be copied
@@ -693,16 +697,20 @@ errorT scidBaseT::compact(const Progress& progress) {
 	}
 
 	// 5) Finalize the new database
-	std::vector<std::string> tmp_filenames = tmp.codec_->getFilenames();
 	errorT err_NbWrite = tmp.endTransaction();
+	std::vector<std::filesystem::path> tmp_filenames;
+	for (auto const& e : tmp.codec_->getFilenames()) {
+		auto data = (const char8_t*)e.data();
+		tmp_filenames.emplace_back(data, data + e.size());
+	}
 	tmp.Close();
 	auto err_Close = (filenames.size() == tmp_filenames.size()) ? OK : ERROR;
 
 	// 6) Error: cleanup and report
 	if (err_Header != OK || err_AddGame != OK || err_UserCancel ||
 	    err_NbWrite != OK || err_Close != OK) {
-		for (size_t i = 0, n = tmp_filenames.size(); i < n; i++) {
-			std::remove(tmp_filenames[i].c_str());
+		for (auto const& fname : tmp_filenames) {
+			std::filesystem::remove(fname);
 		}
 		if (err_Header != OK)
 			return err_Header;
@@ -730,18 +738,18 @@ errorT scidBaseT::compact(const Progress& progress) {
 
 	// 8) Remove the old database
 	Close();
-	for (size_t i = 0, n = filenames.size(); i < n; i++) {
-		if (std::remove(filenames[i].c_str()) != 0)
+	for (auto const& fname : filenames) {
+		if (!std::filesystem::remove(fname))
 			return ERROR_CompactRemove;
 	}
 
 	// 9) Success: rename the files and open the new database
-	for (size_t i = 0, n = filenames.size(); i < n; i++) {
-		const char* s1 = tmp_filenames[i].c_str();
-		const char* s2 = filenames[i].c_str();
-		std::rename(s1, s2);
+	auto ec = std::error_code{};
+	for (size_t i = 0, n = filenames.size(); !ec && i < n; i++) {
+		std::filesystem::rename(tmp_filenames[i], filenames[i], ec);
 	}
-	errorT res = openHelper(dbtype, FMODE_Both, filenames[0].c_str());
+	errorT res = openHelper(dbtype, FMODE_Both,
+	                        (const char*)filenames[0].u8string().c_str());
 
 	// 10) Re-create filters and SortCaches
 	if (res == OK || res == ERROR_NameDataLoss) {

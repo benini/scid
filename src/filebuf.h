@@ -26,6 +26,10 @@
 #include "common.h"
 #include <climits>
 #include <fstream>
+#include <string_view>
+
+// https://github.com/microsoft/STL/blob/vs-2022-17.14/stl/inc/__msvc_filebuf.hpp#L21
+#include <filesystem>
 
 /**
  * Adds some helper functions to std::filebuf:
@@ -40,7 +44,7 @@ public:
 	 * @param fmode: open the file for reading, writing, or both.
 	 * @returns OK on success, an @e errorT code on failure.
 	 */
-	errorT Open(const char* filename, fileModeT fmode) {
+	errorT Open(std::u8string_view filename, fileModeT fmode) {
 		std::ios::openmode mode = std::ios::binary;
 		switch (fmode) {
 		case FMODE_ReadOnly:
@@ -59,7 +63,16 @@ public:
 			return ERROR_FileMode;
 		}
 
-		return (open(filename, mode) != 0) ? OK : ERROR_FileOpen;
+		return open(filename, mode) ? OK : ERROR_FileOpen;
+	}
+
+	/// The Tcl C API returns UTF-8 encoded strings.
+	/// TODO: Do the cast immediately after obtaining the string and remove this.
+	errorT Open(std::string_view filename, fileModeT fmode) {
+		return Open(std::u8string_view(
+		                reinterpret_cast<const char8_t*>(filename.data()),
+		                filename.size()),
+		            fmode);
 	}
 
 	/**
@@ -194,8 +207,8 @@ public:
 	 * @param fmode: open the file for reading, writing, or both.
 	 * @returns OK on success, an @e errorT code on failure.
 	 */
-	errorT open(const std::string& filename, fileModeT fmode) {
-		errorT res = Open(filename.c_str(), fmode);
+	errorT open(auto const& filename, fileModeT fmode) {
+		errorT res = Open(filename, fmode);
 		if (res != OK)
 			return res;
 		fileSz_ = pubseekoff(0, std::ios::end);

@@ -59,10 +59,6 @@ namespace {
  */
 static UI_res_t doOpenBase(UI_handle_t ti, const char* codec, fileModeT fMode,
                            const char* filename) {
-	const auto tcl_strings_are_utf8 =
-	    std::filesystem::path((const char8_t*)filename).string();
-	filename = tcl_strings_are_utf8.c_str();
-
 	if (DBasePool::find(filename))
 		return UI_Result(ti, ERROR_FileInUse);
 
@@ -522,15 +518,12 @@ UI_res_t sc_base_import(scidBaseT* dbase, UI_handle_t ti, int argc,
 	if (argc != 4)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	const auto tcl_strings_are_utf8 =
-	    std::filesystem::path((const char8_t*)argv[3]).string();
-	const auto filename = tcl_strings_are_utf8.c_str();
-
 	// if (pgn)
 	auto codec = ICodecDatabase::PGN;
 
 	auto nImported = dbase->numGames();
 	std::string errorMsg;
+	const auto filename = argv[3];
 	if (auto err = dbase->importGames(codec, filename, UI_CreateProgress(ti),
 	                                  errorMsg))
 		return UI_Result(ti, err);
@@ -606,10 +599,7 @@ UI_res_t sc_base_slot(UI_handle_t ti, int argc, const char** argv) {
 	if (argc != 3)
 		return UI_Result(ti, ERROR_BadArg, usage);
 
-	const auto tcl_strings_are_utf8 =
-	    std::filesystem::path((const char8_t*)argv[2]).string();
-	const auto filename = tcl_strings_are_utf8.c_str();
-
+	const auto filename = argv[2];
 	int res = DBasePool::find(filename);
 	return UI_Result(ti, OK, res);
 }
