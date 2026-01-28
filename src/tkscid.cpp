@@ -44,7 +44,6 @@
 #include "ui.h"
 #include <algorithm>
 #include <cstring>
-#include <filesystem>
 #include <numeric>
 #include <set>
 #include <unordered_map>
@@ -457,11 +456,7 @@ sc_base_export (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             return InvalidCommand (ti, "sc_base export", options);
         }
     }
-
-    const auto tcl_strings_are_utf8 =
-        std::filesystem::path((const char8_t*)argv[4]).string();
-    const auto exportFileName = tcl_strings_are_utf8.c_str();
-    auto exportFile = fopen (exportFileName, (appendToFile ? "r+" : "w"));
+    auto exportFile = fopen(argv[4], (appendToFile ? "r+" : "w"));
     if (exportFile == NULL) {
         return errorResult (ti, "Error opening file for exporting games.");
     }
@@ -1841,10 +1836,7 @@ sc_filter_old(ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_EXPORT:
         if (argc >= 7 && argc <=9) {
-            const auto tcl_strings_are_utf8 =
-                std::filesystem::path((const char8_t*)argv[5]).string();
-            const auto exportFileName = tcl_strings_are_utf8.c_str();
-            auto exportFile = fopen(exportFileName, "wb");
+            FILE* exportFile = fopen(argv[5], "wb");
             if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
             auto old_language = language;
             Game g;
