@@ -25,9 +25,6 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-#ifdef SPELLCHKVALIDATE
-#include <fstream>
-#endif
 
 /*
 * A "spelling" file contains the correct names for players, events, sites and rounds.
@@ -184,39 +181,6 @@ public:
 
 		return (itBegin + idx)->second;
 	}
-
-#ifdef SPELLCHKVALIDATE
-	std::string isValid() const {
-		for (size_t i=1, n=elo_.size(); i < n; i++) {
-			if (elo_[i].first < elo_[i -1].first) return "unsorted";
-		}
-
-		auto count = [this](uint year) {
-			return std::count_if(this->elo_.begin(), this->elo_.end(),
-				[&](const std::pair<uint16_t, eloT>& e) { return e.first == year; });
-		};
-
-		auto expected = [](uint year) {
-			if (year < 1990) return 1;
-			if (year < 2001) return 2;
-			if (year < 2009) return 4;
-			if (year < 2010) return 5;
-			if (year < 2012) return 6;
-			if (year < 2013) return 9;
-			return 12;
-		};
-
-		for (uint y=1970; y<2015; y++) {
-			auto n = count(y);
-			if (n == 0) continue;
-			if (n != expected(y))
-				return std::to_string(y) + ": " + std::to_string(n) + "(" +
-				       std::to_string(expected(y)) + ")";
-		}
-
-		return std::string();
-	}
-#endif
 };
 
 
@@ -254,7 +218,6 @@ public:
  * class SpellChecker - name spelling
  *
  * Read a spell file and allow to retrieve corrected names and players data.
- * if SPELLCHKVALIDATE is defined also check the spell file for errors.
  */
 class SpellChecker {
 	struct Idx {
@@ -431,60 +394,6 @@ private:
 		}
 		return it.first;
 	}
-
-
-#ifndef SPELLCHKVALIDATE
-	class SpellChkValidate {
-	public:
-		SpellChkValidate(const char*, const SpellChecker&) {}
-		void ignoredLine(const char*) {}
-		void idxDuplicates(const nameT&) {}
-		void checkEloData() {}
-	};
-#else
-	class SpellChkValidate {
-		const SpellChecker& spell_;
-		std::ofstream f_;
-
-	public:
-		SpellChkValidate(const char* spellfile, const SpellChecker& sp) : spell_(sp) {
-			f_.open(spellfile + std::string(".validate"));
-		}
-		void ignoredLine(const char* line) {
-			f_ << "Ignored line:" << '\n';
-			f_ << line << '\n';
-			f_ << '\n';
-		}
-		static bool cmpIdxAlias(const Idx& a, const Idx& b) {
-			return a.alias == b.alias;
-		}
-		void idxDuplicates(const nameT& nt) {
-			IdxIt it = spell_.idx_[nt].begin();
-			IdxIt it_end = spell_.idx_[nt].end();
-			for (;;) {
-				it = std::adjacent_find(it, it_end, cmpIdxAlias);
-				if (it == it_end) return;
-
-				IdxIt it_endDuplicates = std::upper_bound(it, it_end, *it);
-				f_ << "Duplicate hash: " << it->alias << '\n';
-				for(; it != it_endDuplicates; it++) {
-					f_ << spell_.names_[nt][it->idx];
-					f_ << " - Idx:" << it->idx << '\n';
-				}
-				f_ << '\n';
-			}
-		}
-		void checkEloData() {
-			for (size_t i=0, n = spell_.pElo_.size(); i < n; i++) {
-				std::string s = spell_.pElo_[i].isValid();
-				if (! s.empty()) {
-					f_ << "Elo error: " << s << " --- ";
-					f_ << spell_.names_[NAME_PLAYER][i] << '\n';
-				}
-			}
-		}
-	};
-#endif
 
 };
 

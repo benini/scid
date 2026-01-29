@@ -58,11 +58,6 @@ set_property(TARGET scid PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE True)
 target_include_directories(scid PRIVATE ${TCL_INCLUDE_PATH})
 target_link_libraries(scid PRIVATE polyglot ${CMAKE_THREAD_LIBS_INIT} ${TCL_LIBRARY})
 
-option(SPELLCHKVALIDATE "Verify the integrity of spelling files" OFF)
-if(SPELLCHKVALIDATE)
-  target_compile_definitions(scid PRIVATE -DSPELLCHKVALIDATE)
-endif()
-
 install(TARGETS scid DESTINATION scid)
 file(GLOB ECO_FILES *.eco)
 install(FILES ${ECO_FILES} DESTINATION scid)

@@ -127,18 +127,15 @@ Parser::Parser(char* line) {
  * Reading from a "spelling" file is not stateless and the Parser object
  * cannot contain all the necessary data: a SpellChkLoader object keep track
  * of the current nameT section and the current correct name.
- * The SpellChkValidate object is used to log ignored data, usually
- * caused by typos like "@Eol" or "@Preffix".
  */
 class SpellChkLoader {
 	SpellChecker& sp_;
-	SpellChecker::SpellChkValidate& validate_;
 	nameT nt_;
 	int32_t nameIdx_;
 
 public:
-	SpellChkLoader(SpellChecker& sp, SpellChecker::SpellChkValidate& v)
-	: sp_(sp), validate_(v), nt_(NAME_INVALID), nameIdx_(-1) {
+	SpellChkLoader(SpellChecker& sp)
+	: sp_(sp), nt_(NAME_INVALID), nameIdx_(-1) {
 	}
 
 	errorT load(const Parser& data, bool* keepBuffer) {
@@ -169,7 +166,6 @@ public:
 				return OK;
 			case SPELL_OLDBIO:
 			case SPELL_UNKNOWN:
-				validate_.ignoredLine(data.name);
 				return OK;
 		}
 
@@ -243,7 +239,6 @@ private:
  * this function twice, because this is the only non-const member function.
  * If the function fails (result != OK) the object state is undefined
  * and the only valid operation is to destroy the object.
- * If SPELLCHKVALIDATE is defined, it also creates a @filename.validate log.
  */
 errorT SpellChecker::read(const char* filename, const Progress& progress)
 {
@@ -259,8 +254,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	}
 	if (fileSize == -1) return ERROR_FileOpen;
 
-	SpellChkValidate validate(filename, *this);
-
 	// Parse the file lines
 	staticStrings_ = (char*) malloc(fileSize + 1);
 	char* bEnd = staticStrings_ + fileSize + 1;
@@ -268,7 +261,7 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	size_t nRead;
 	uint report_i = 0;
 	std::streamsize report_done = 0;
-	SpellChkLoader loader(*this, validate);
+	SpellChkLoader loader(*this);
 	while ((nRead = file.getline(line, std::distance(line, bEnd))) != 0) {
 		report_done += nRead;
 		if ((++report_i % 10000) == 0) {
@@ -288,7 +281,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	if (pElo_.size() > 0) {
 		// if necessary, add empty PlayerElo objects
 		pElo_.resize(pInfo_.size());
-		validate.checkEloData();
 	}
 
 	// Free unused memory
@@ -313,7 +305,6 @@ errorT SpellChecker::read(const char* filename, const Progress& progress)
 	// Sort the index
 	for (nameT i=0; i < NUM_NAME_TYPES; i++) {
 		std::sort(idx_[i].begin(), idx_[i].end());
-		validate.idxDuplicates(i);
 	}
 	return OK;
 }
