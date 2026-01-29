@@ -256,7 +256,7 @@ public:
 	 * - OK and a pointer to the new object
 	 * - on error the ERROR_*CODE* and NULL
 	 */
-	errorT read(const char* filename, const Progress& progress);
+	errorT read(const char8_t* filename, const Progress& progress);
 
 	/**
 	 * find() - search for correct names

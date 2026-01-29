@@ -240,19 +240,19 @@ private:
  * If the function fails (result != OK) the object state is undefined
  * and the only valid operation is to destroy the object.
  */
-errorT SpellChecker::read(const char* filename, const Progress& progress)
+errorT SpellChecker::read(const char8_t* filename, const Progress& progress)
 {
 	ASSERT(filename != NULL);
 	ASSERT(staticStrings_ == NULL);
 
 	// Open the file and get the file size.
 	Filebuf file;
-	std::streamsize fileSize = -1;
-	if (file.open(filename, std::ios::in | std::ios::binary | std::ios::ate) != 0) {
-		fileSize = file.pubseekoff(0, std::ios::cur, std::ios::in);
-		file.pubseekoff(0, std::ios::beg, std::ios::in);
-	}
+	if (auto err = file.open_path(filename, FMODE_ReadOnly))
+		return err;
+
+	const std::streamsize fileSize = file.pubseekoff(0, std::ios::end);;
 	if (fileSize == -1) return ERROR_FileOpen;
+	file.pubseekoff(0, std::ios::beg);
 
 	// Parse the file lines
 	staticStrings_ = (char*) malloc(fileSize + 1);

@@ -6338,7 +6338,7 @@ sc_name_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (argc > 2) {
-        auto filename = argv[2];
+        auto filename = (const char8_t*)argv[2];
         auto spell = std::unique_ptr<SpellChecker>(new SpellChecker);
         Progress progress = UI_CreateProgress(ti);
         if (auto err = spell->read(filename, progress))
