@@ -25,11 +25,25 @@
 
 #include "common.h"
 #include <climits>
+#include <filesystem>
 #include <fstream>
 #include <string_view>
 
-// https://github.com/microsoft/STL/blob/vs-2022-17.14/stl/inc/__msvc_filebuf.hpp#L21
-#include <filesystem>
+namespace {
+using std::ios;
+constexpr std::ios::openmode std_fmode[] = {
+    ios::binary,                                  // FMODE_None
+    ios::binary | ios::in,                        // FMODE_ReadOnly
+    ios::binary | ios::out,                       // FMODE_WriteOnly
+    ios::binary | ios::in | ios::out,             // FMODE_Both
+    ios::binary | ios::in | ios::out | ios::trunc // FMODE_Create
+};
+static_assert(FMODE_None == 0);
+static_assert(FMODE_ReadOnly == 1);
+static_assert(FMODE_WriteOnly == 2);
+static_assert(FMODE_Both == 3);
+static_assert(FMODE_Create == 4);
+} // namespace
 
 /**
  * Adds some helper functions to std::filebuf:
@@ -44,35 +58,18 @@ public:
 	 * @param fmode: open the file for reading, writing, or both.
 	 * @returns OK on success, an @e errorT code on failure.
 	 */
-	errorT Open(std::u8string_view filename, fileModeT fmode) {
-		std::ios::openmode mode = std::ios::binary;
-		switch (fmode) {
-		case FMODE_ReadOnly:
-			mode |= std::ios::in;
-			break;
-		case FMODE_WriteOnly:
-			mode |= std::ios::out;
-			break;
-		case FMODE_Both:
-			mode |= std::ios::in | std::ios::out;
-			break;
-		case FMODE_Create:
-			mode |= std::ios::in | std::ios::out | std::ios::trunc;
-			break;
-		default:
+	errorT open_path(std::filesystem::path const& filename, fileModeT fmode) {
+		if (fmode < 0 || fmode >= std::size(std_fmode))
 			return ERROR_FileMode;
-		}
 
-		return open(filename, mode) ? OK : ERROR_FileOpen;
+		return open(filename, std_fmode[fmode]) ? OK : ERROR_FileOpen;
 	}
 
 	/// The Tcl C API returns UTF-8 encoded strings.
-	/// TODO: Do the cast immediately after obtaining the string and remove this.
+	/// TODO: Cast immediately after obtaining the string and remove this.
 	errorT Open(std::string_view filename, fileModeT fmode) {
-		return Open(std::u8string_view(
-		                reinterpret_cast<const char8_t*>(filename.data()),
-		                filename.size()),
-		            fmode);
+		auto fname = reinterpret_cast<const char8_t*>(filename.data());
+		return open_path({fname, fname + filename.size()}, fmode);
 	}
 
 	/**

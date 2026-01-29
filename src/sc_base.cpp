@@ -24,7 +24,6 @@
 #include "ui.h"
 #include <algorithm>
 #include <cstring>
-#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
