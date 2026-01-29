@@ -60,13 +60,12 @@ const int MAX_BASES = 9;
 
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static std::unique_ptr<PBook> ecoBook; // eco classification pbook.
-static SpellChecker* spellChk;         // Name correction.
+static std::unique_ptr<SpellChecker> spellChk; // Name correction.
 static OpTable * reports[2] = {NULL, NULL};
 
 void scid_Exit(void*) {
 	DBasePool::closeAll();
 	if (scratchGame != NULL) delete scratchGame;
-	if (spellChk != NULL) delete spellChk;
 	for (size_t i = 0, n = sizeof(reports) / sizeof(reports[0]); i < n; i++) {
 		if (reports[i] != NULL) delete reports[i];
 	}
@@ -2251,7 +2250,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Find all games that should be listed in the crosstable:
-    const SpellChecker* spell = spellChk;
+    const SpellChecker* spell = spellChk.get();
     bool tableFullMessage = false;
     for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
@@ -5668,7 +5667,7 @@ sc_name_info (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     if (tWidth > wbtWidth) { wbtWidth = tWidth; }
     const char * fmt = \
      "%s  %-*s %3u%c%02u%%   +%s%3u%s  =%s%3u%s  -%s%3u%s  %4u%c%c /%s%4u%s";
-    SpellChecker* spChecker = spellChk;
+    const SpellChecker* spChecker = spellChk.get();
 
     Tcl_AppendResult (ti, startBold, playerName, endBold, newline, NULL);
 
@@ -6339,14 +6338,13 @@ sc_name_read (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (argc > 2) {
-        const char * filename = argv[2];
+        auto filename = argv[2];
+        auto spell = std::unique_ptr<SpellChecker>(new SpellChecker);
         Progress progress = UI_CreateProgress(ti);
-        std::pair<errorT, SpellChecker*> newSpell = SpellChecker::Create(filename, progress);
-        if (newSpell.first != OK) {
-            return UI_Result(ti, newSpell.first, "Error reading name spellcheck file.");
-        }
-        if (spellChk != NULL) { delete spellChk; }
-        spellChk = newSpell.second;
+        if (auto err = spell->read(filename, progress))
+            return UI_Result(ti, err, "Error reading name spellcheck file.");
+
+        spellChk = std::move(spell);
         progress.report(1, 1);
     }
 

@@ -237,34 +237,26 @@ class SpellChecker {
 	std::vector<const char*> names_[NUM_NAME_TYPES];
 	std::vector<PlayerInfo> pInfo_;
 	std::vector<PlayerElo>  pElo_;
-	char* staticStrings_;
+	char* staticStrings_ = nullptr;
 
 	friend class SpellChkLoader;
 
 public:
+	SpellChecker() = default;
+	SpellChecker(const SpellChecker&) = delete;
+	SpellChecker& operator=(const SpellChecker&) = delete;
 	~SpellChecker() {
 		free(staticStrings_);
 	}
 
 	/**
-	 * Create() - Create a new SpellChecker object
-	 *
-	 * Create a new SpellChecker reading from @e filename.
+	 * Populate the SpellChecker reading from @e filename.
 	 * It's the caller's responsibility to free the object with "delete".
 	 * Return:
 	 * - OK and a pointer to the new object
 	 * - on error the ERROR_*CODE* and NULL
 	 */
-	static std::pair<errorT, SpellChecker*> Create(const char* filename,
-	                                               const Progress& progress) {
-		SpellChecker* res = new SpellChecker;
-		errorT err = res->read(filename, progress);
-		if (err != OK) {
-			delete res;
-			res = NULL;
-		}
-		return std::make_pair(err, res);
-	}
+	errorT read(const char* filename, const Progress& progress);
 
 	/**
 	 * find() - search for correct names
@@ -339,12 +331,6 @@ public:
 	}
 
 private:
-	SpellChecker() : staticStrings_(NULL) {}
-	SpellChecker(const SpellChecker&);
-	SpellChecker& operator=(const SpellChecker&);
-
-	errorT read(const char* filename, const Progress& progress);
-
 	std::string normalizeAndTransform(const nameT& nt, const char* s) const { 
 		std::string res;
 		for (const char* i = s; *i != 0; i++) {
