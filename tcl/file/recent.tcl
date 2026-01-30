@@ -7,7 +7,8 @@ set recentFiles(menu)   9   ;# Maximum number of files to show in File menu.
 set recentFiles(extra)  9   ;# Maximum number of files to show in extra menu.
 set recentFiles(data)  {}   ;# List of recently used files.
 
-catch {source [scidConfigFile recentfiles]}
+#TODO: safeSource
+catch {source -encoding utf-8 [scidConfigFile recentfiles]}
 
 namespace eval ::recentFiles {}
 
@@ -26,6 +27,7 @@ proc ::recentFiles::save {{reportError 0}} {
     }
     return
   }
+  fconfigure $f -encoding utf-8
   puts $f "# Scid $::scidVersion recent files list"
   puts $f ""
   foreach i {limit menu extra data} {
