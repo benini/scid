@@ -194,7 +194,7 @@ menuText E ToolsOpenRecentBaseAsTree "Open recent base as tree" 0   {Open a rece
 menuText E ToolsTracker "Piece Tracker"  6 {Open the Piece Tracker window}
 menuText E ToolsTraining "Training"  0 {Training tools (tactics, openings,...) }
 menuText E ToolsTacticalGame "Tactical game"  0 {Play a game with tactics}
-menuText E ToolsSeriousGame "Serious game"  0 {Play a serious game}
+menuText E ToolsSeriousGame "Play against engine"  0 {Play a game against an engine}
 menuText E ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 menuText E ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText E ToolsTrainTactics "Tactics"  0 {Solve tactics}

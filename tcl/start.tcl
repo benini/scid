@@ -219,6 +219,7 @@ InitTooltip
 # initialized here, so that default values can be set up and
 # altered when the user options file is loaded.
 #
+#ToDo remove tacgame from list, but prevent error from options.dat
 foreach ns {
   ::icon
   ::splash
@@ -242,7 +243,7 @@ foreach ns {
   ::tools::graphs
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
-  ::board ::move
+  ::board ::move ::annotation
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
   ::pinfo
@@ -744,6 +745,9 @@ tools/optable.tcl
 tools/preport.tcl
 tools/pinfo.tcl
 tools/analysis.tcl
+tools/enginenowin.tcl
+tools/annotate.tcl
+tools/finishgame.tcl
 tools/wbdetect.tcl
 tools/graphs.tcl
 tools/ptracker.tcl
@@ -756,7 +760,6 @@ move.tcl
 main.tcl
 tools/uci.tcl
 end.tcl
-tools/tacgame.tcl
 tools/sergame.tcl
 tools/calvar.tcl
 tools/fics.tcl

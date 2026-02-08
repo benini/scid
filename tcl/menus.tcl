@@ -213,7 +213,6 @@ set m .menu.play
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Play -menu $m
 $m add command -label ToolsSeriousGame -command ::sergame::config
-$m add command -label ToolsTacticalGame -command ::tacgame::config
 $m add command -label ToolsTrainFics -command ::fics::config
 $m add separator
 menu $m.training
@@ -250,6 +249,8 @@ $m  add command -label ToolsStartEngine1 \
     -command "::enginewin::start 1" -accelerator "F2"
 $m  add command -label ToolsStartEngine2 \
     -command "::enginewin::start 2" -accelerator "F3"
+$m  add command -label "Annotate Game(s)" -command "::annotation::doAnnotate"
+$m  add command -label "Finish Game" -command "::finishgame::finishGameDialog"
 $m  add command -label ToolsAnalysis -command "makeAnalysisWin 1"
 $m add separator
 $m add checkbutton -label ToolsFilterGraph \

@@ -125,19 +125,26 @@ proc InitDefaultFonts {} {
 }
 
 proc InitDefaultAnnotate {} {
-  set ::isBatchOpening 0
-  set ::isBatchOpeningMoves 12
-  set ::isBatch 0
-  set ::markTacticalExercises 0
-  set ::isAnnotateVar 0
-  set ::isShortAnnotation 0
-  set ::addScoreToShortAnnotations 0
-  set ::addAnnotatorTag 0
-  set ::annotateMoves all
-  set ::annotateBlunders blundersonly
-  set ::scoreAllMoves 0
-  # Blunder Threshold
-  set ::blunderThreshold 1.0
+  set ::annotation::options(typ) "movetime"
+  set ::annotation::options(movetime) 1000
+  set ::annotation::options(time) 1
+  set ::annotation::options(depth) 20
+  set ::annotation::options(engine) ""
+  set ::annotation::options(blunderThreshold) 0.5
+  set ::annotation::options(annotateMoves) all
+  set ::annotation::options(annotateBlunders) blundersonly
+  set ::annotation::options(scoreAllMoves) 1
+  set ::annotation::options(useAnalysisBook) 0
+  set ::annotation::options(AnalysisBookName) ""
+  set ::annotation::options(tacticalExercises) 0
+  set ::annotation::options(addAnnotatorTag) 1
+  set ::annotation::options(OpeningErrors) 0
+  set ::annotation::options(OpeningMoves) 8
+  set ::annotation::options(annotateShort) 1
+  set ::annotation::options(addScoreToShortAnnotations) 1
+  set ::annotation::options(batchMode) 0
+  set ::annotation::options(batchEnd) 0
+  set ::annotation::options(anzVariation) 1
 }
 
 InitDefaultFonts
@@ -234,24 +241,6 @@ set windowsDock 1
 
 set ::tactics::analysisTime 3
 
-set ::tacgame::threshold 0.9
-set ::tacgame::blunderwarning false
-set ::tacgame::blunderwarningvalue 0.0
-set ::tacgame::levelMin 1200
-set ::tacgame::levelMax 2200
-set ::tacgame::levelFixed 1500
-set ::tacgame::randomLevel 0
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::showblunder 1
-set ::tacgame::showblundervalue 1
-set ::tacgame::showblunderfound 1
-set ::tacgame::showmovevalue 1
-set ::tacgame::showevaluation 1
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::analysisTime 10
-set ::tacgame::openingType new
-set ::tacgame::chosenOpening 0
-
 # Analysis command: to start chess analysis engine.
 set analysisCommand ""
 if {$windowsOS} {
@@ -328,22 +317,30 @@ set ::pinfo::dnburl        "http://d-nb.info/gnd"
 set ::novag::referee "OFF"
 
 # Defaults for serious game training
-set ::sergame::isOpening 0
-set ::sergame::chosenOpening 0
-set ::sergame::chosenEngine 0
-set ::sergame::useBook 1
-set ::sergame::bookToUse ""
-set ::sergame::startFromCurrent 0
-set ::sergame::coachIsWatching 0
-set ::sergame::timeMode "timebonus"
-set ::sergame::depth 3
-set ::sergame::movetime 0
-set ::sergame::nodes 10000
-set ::sergame::ponder 0
-set ::uci::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(winc3) [expr 10 * 1000 ]
-set ::uci::uciInfo(btime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
+set ::sergame::options(isOpening) 0
+set ::sergame::options(chosenOpening) 0
+set ::sergame::options(useBook) 1
+set ::sergame::options(bookToUse) ""
+set ::sergame::options(startFromCurrent) 0
+set ::sergame::options(coachIsWatching) 0
+set ::sergame::options(timeMode) "timebonus"
+set ::sergame::options(depth) 3
+set ::sergame::options(movetime) 1000
+set ::sergame::options(nodes) 10000
+set ::sergame::options(engineName) ""
+set ::sergame::options(coachName) ""
+set ::sergame::options(storeEval) 0
+set ::sergame::options(coachTypeMove) 0
+set ::sergame::options(coachTypeTactic) 0
+set ::sergame::options(useCoachEngine) 0
+set ::sergame::options(threshold) 0.6
+set ::sergame::options(tacTime) 5
+set ::sergame::options(ponder) 0
+set ::sergame::options(isLimitedAnalysisTime) 1
+set ::sergame::options(wtime) [expr 5 * 60 * 1000 ]
+set ::sergame::options(winc) [expr 10 * 1000 ]
+set ::sergame::options(btime) [expr 5 * 60 * 1000 ]
+set ::sergame::options(binc) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
@@ -650,23 +647,16 @@ proc options.write {} {
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
-          ::tacgame::threshold ::tacgame::blunderwarning ::tacgame::blunderwarningvalue \
-          ::tacgame::levelMin  ::tacgame::levelMax  ::tacgame::levelFixed ::tacgame::randomLevel \
-          ::tacgame::isLimitedAnalysisTime ::tacgame::showblunder ::tacgame::showblundervalue \
-          ::tacgame::showblunderfound ::tacgame::showmovevalue ::tacgame::showevaluation \
-          ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::openingType ::tacgame::chosenOpening \
-          ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
-          ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
-          ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
-          ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard \
-          isBatchOpening isBatchOpeningMoves isBatch \
-          markTacticalExercises scoreAllMoves \
-          isAnnotateVar isShortAnnotation addScoreToShortAnnotations annotateBlunders\
-          addAnnotatorTag annotateMoves } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
+    }
+    foreach i [lsort [array names ::sergame::options]] {
+        puts $optionF "set ::sergame::options($i) [list $::sergame::options($i)]"
+    }
+    foreach i [lsort [array names ::annotation::options]] {
+        puts $optionF "set ::annotation::options($i) [list $::annotation::options($i)]"
     }
 
     puts $optionF ""
