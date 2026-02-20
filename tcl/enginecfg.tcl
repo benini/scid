@@ -381,14 +381,14 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
         $w.$widget configure -width $wd
     }}
 
-    set fn_reconnect [list apply {{id configFrame} {
-        switch [winfo name %W] {
-            "cmd"      { set configIdx 1; set newValue [%W get] }
+    set fn_reconnect [list apply {{id configFrame {W %W}} {
+        switch [winfo name $W] {
+            "cmd"      { set configIdx 1; set newValue [$W get] }
             "cmdbtn"   { set configIdx 1; set dlgcmd tk_getOpenFile }
-            "args"     { set configIdx 2; set newValue [%W get] }
-            "wdir"     { set configIdx 3; set newValue [%W get] }
+            "args"     { set configIdx 2; set newValue [$W get] }
+            "wdir"     { set configIdx 3; set newValue [$W get] }
             "wdirbtn"  { set configIdx 3; set dlgcmd tk_chooseDirectory }
-            "protocol" { set configIdx 7; set newValue [%W current] }
+            "protocol" { set configIdx 7; set newValue [$W current] }
             default { error "wrong option" }
         }
         upvar ::enginecfg::engConfig_$id engConfig_
@@ -420,7 +420,8 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     apply $fn_create_entry $w cmd "\n[tr EngineCmd]" $cmd
     bind $w.cmd <FocusOut> $fn_reconnect
     bind $w.cmd <Return> [bind $w.cmd <FocusOut>]
-    ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... -command $fn_reconnect
+    ttk::button $w.cmdbtn -style Pad0.Small.TButton -text ... \
+        -command [list {*}$fn_reconnect $w.cmdbtn]
     $w window create end -window $w.cmdbtn -pady 2 -padx 2
 
     apply $fn_create_entry $w args "\n[tr EngineArgs]" $args
@@ -430,7 +431,8 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     apply $fn_create_entry $w wdir "\n[tr EngineDir]" $wdir
     bind $w.wdir <FocusOut> $fn_reconnect
     bind $w.wdir <Return> [bind $w.wdir <FocusOut>]
-    ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... -command $fn_reconnect
+    ttk::button $w.wdirbtn -style Pad0.Small.TButton -text ... \
+        -command [list {*}$fn_reconnect $w.wdirbtn]
     $w window create end -window $w.wdirbtn -pady 2 -padx 2
 
     if {$uci == 0 || $uci == 1} {
