@@ -5,6 +5,27 @@
 ######################################################################
 ### Book window
 
+# return index of actBook and a list of all books, return -1 if no books available
+proc getBookList { actBook } {
+    set bookPath $::scidBooksDir
+    set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+    # No book found
+    if { [llength $bookList] == 0 } {
+        return [list -1 {}]
+    }
+    set tmp {}
+    set idx 0
+    set i 0
+    foreach file $bookList {
+        lappend tmp [ file tail $file ]
+        if {$actBook == [ file tail $file ] } {
+            set idx $i
+            }
+        incr i
+    }
+    return [list $idx $tmp]
+}
+
 namespace eval book {
   set isOpen 0
   set isReadonly 0
@@ -105,28 +126,14 @@ namespace eval book {
     if { $name == "" && $lastBook != "" } {
       set name $lastBook
     }
-    set bookPath $::scidBooksDir
-    set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
-
+    lassign [getBookList $name] idx tmp
     # No book found
-    if { [llength $bookList] == 0 } {
+    if { $idx < 0 } {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
       set ::book::currentBook ""
       ::win::closeWindow $w
       return
-    }
-
-    set i 0
-    set idx 0
-    set tmp {}
-    foreach file  $bookList {
-      set f [ file tail $file ]
-      lappend tmp $f
-      if {$name == $f} {
-        set idx $i
-      }
-      incr i
     }
     ttk::combobox $w.f.combo -width 12 -values $tmp
 
@@ -270,28 +277,13 @@ namespace eval book {
     ttk::frame $w.f
     applyThemeColor_background $w
     # load book names
-    set bookPath $::scidBooksDir
-    set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
-
-    # No book found
-    if { [llength $bookList] == 0 } {
+    lassign [getBookList $name] idx tmp
+    if { $idx < 0 } {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
       set ::book::currentBook ""
       ::win::closeWindow $w
       return
-    }
-
-    set i 0
-    set idx 0
-    set tmp {}
-    foreach file  $bookList {
-      set f [ file tail $file ]
-      lappend tmp $f
-      if {$name == $f} {
-        set idx $i
-      }
-      incr i
     }
 
     ttk::combobox $w.fcombo.combo -width 12 -values $tmp

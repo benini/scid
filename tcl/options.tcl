@@ -125,19 +125,26 @@ proc InitDefaultFonts {} {
 }
 
 proc InitDefaultAnnotate {} {
-  set ::isBatchOpening 0
-  set ::isBatchOpeningMoves 12
-  set ::isBatch 0
-  set ::markTacticalExercises 0
-  set ::isAnnotateVar 0
-  set ::isShortAnnotation 0
-  set ::addScoreToShortAnnotations 0
-  set ::addAnnotatorTag 0
-  set ::annotateMoves all
-  set ::annotateBlunders blundersonly
-  set ::scoreAllMoves 0
-  # Blunder Threshold
-  set ::blunderThreshold 1.0
+  set ::annotation::options(typ) "movetime"
+  set ::annotation::options(movetime) 1000
+  set ::annotation::options(time) 1
+  set ::annotation::options(depth) 20
+  set ::annotation::options(engine) ""
+  set ::annotation::options(blunderThreshold) 0.5
+  set ::annotation::options(annotateMoves) all
+  set ::annotation::options(annotateBlunders) blundersonly
+  set ::annotation::options(scoreAllMoves) 1
+  set ::annotation::options(useAnalysisBook) 0
+  set ::annotation::options(AnalysisBookName) ""
+  set ::annotation::options(tacticalExercises) 0
+  set ::annotation::options(addAnnotatorTag) 1
+  set ::annotation::options(OpeningErrors) 0
+  set ::annotation::options(OpeningMoves) 8
+  set ::annotation::options(annotateShort) 1
+  set ::annotation::options(addScoreToShortAnnotations) 1
+  set ::annotation::options(batchMode) 0
+  set ::annotation::options(batchEnd) 0
+  set ::annotation::options(anzVariation) 1
 }
 
 InitDefaultFonts
@@ -337,13 +344,13 @@ set ::sergame::startFromCurrent 0
 set ::sergame::coachIsWatching 0
 set ::sergame::timeMode "timebonus"
 set ::sergame::depth 3
-set ::sergame::movetime 0
+set ::sergame::movetime 1000
 set ::sergame::nodes 10000
 set ::sergame::ponder 0
-set ::uci::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(winc3) [expr 10 * 1000 ]
-set ::uci::uciInfo(btime3) [expr 5 * 60 * 1000 ]
-set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
+set ::sergame::data(wtime) [expr 5 * 60 * 1000 ]
+set ::sergame::data(winc) [expr 10 * 1000 ]
+set ::sergame::data(btime) [expr 5 * 60 * 1000 ]
+set ::sergame::data(binc) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
@@ -658,15 +665,14 @@ proc options.write {} {
           ::sergame::chosenOpening ::sergame::chosenEngine ::sergame::useBook ::sergame::bookToUse \
           ::sergame::startFromCurrent ::sergame::coachIsWatching ::sergame::timeMode \
           ::sergame::depth ::sergame::movetime ::sergame::nodes ::sergame::ponder ::sergame::isOpening \
-          ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
+          ::sergame::data(wtime) ::sergame::data(winc) ::sergame::data(btime) ::sergame::data(binc) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard \
-          isBatchOpening isBatchOpeningMoves isBatch \
-          markTacticalExercises scoreAllMoves \
-          isAnnotateVar isShortAnnotation addScoreToShortAnnotations annotateBlunders\
-          addAnnotatorTag annotateMoves } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme ThemePackageFile autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
+    }
+    foreach i [lsort [array names ::annotation::options]] {
+        puts $optionF "set ::annotation::options($i) [list $::annotation::options($i)]"
     }
 
     puts $optionF ""
