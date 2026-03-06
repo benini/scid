@@ -26,7 +26,7 @@ jobs:
       cd tcl & cd win
       nmake -f makefile.vc INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
       nmake -f makefile.vc install INSTALLDIR=$(Build.SourcesDirectory)\tcldir OPTS=symbols
-      for %%f in ($(Build.SourcesDirectory)\tcldir\lib\tcl??tg.lib) do echo ##vso[task.setvariable variable=TCL_LIB_PATH]%%f
+      for %%f in ($(Build.SourcesDirectory)\tcldir\lib\tcl9*.lib) do echo ##vso[task.setvariable variable=TCL_LIB_PATH]%%f
     displayName: Generate tcl library
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
@@ -87,6 +87,7 @@ jobs:
       cd tcl & cd win
       nmake -f makefile.vc release OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
       nmake -f makefile.vc install OPTS=nomsvcrt INSTALLDIR=$(Build.SourcesDirectory)\tcldir
+      for %%f in ($(Build.SourcesDirectory)\tcldir\lib\tcl??.lib) do echo ##vso[task.setvariable variable=TCL_LIB_PATH]%%f
     displayName: Generate tcl library
   - script: |
       pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
@@ -102,7 +103,7 @@ jobs:
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: '-DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/install -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include $(Build.SourcesDirectory) -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DWITH_MD_LIBRARY=OFF'
+      cmakeArgs: '-DCMAKE_INSTALL_PREFIX=$(Build.SourcesDirectory)/install -DTCL_INCLUDE_PATH=$(Build.SourcesDirectory)\tcldir\include -DTCL_LIBRARY=$(TCL_LIB_PATH) $(Build.SourcesDirectory) -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DWITH_MD_LIBRARY=OFF'
   - task: MSBuild@1
     inputs:
       solution: 'build/INSTALL.vcxproj'
@@ -220,7 +221,7 @@ jobs:
       mkdir tcltk && cd tcltk
       git clone --depth=1 --branch $(TCLBRANCH) https://github.com/tcltk/tcl.git
       cd tcl && cd unix
-      ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads
+      ./configure --prefix=$(Build.SourcesDirectory)/tcltk --disable-shared --enable-threads --disable-zipfs
       make && make install
     displayName: Generate tcl library
   - script: |
