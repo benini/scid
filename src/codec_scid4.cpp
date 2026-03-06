@@ -535,7 +535,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
                             const Progress& progress, Index* idx,
                             NameBase* nb) {
 	if (fMode == FMODE_WriteOnly || !filename || !idx || !nb)
-		return ERROR;
+		return ERROR_FileMode;
 
 	auto dbname = std::string_view(filename);
 	if (dbname.ends_with(".si4"))
@@ -553,7 +553,7 @@ errorT CodecSCID4::dyn_open(fileModeT fMode, const char* filename,
 	filenames_[1].assign(dbname).append(".sn4");
 	filenames_[2].assign(dbname).append(".sg4");
 
-	errorT err = gfile_.open(filenames_[2], fMode);
+	errorT err = gfile_.open_utf8(filenames_[2], fMode);
 	if (err != OK)
 		return err;
 
@@ -617,7 +617,7 @@ errorT CodecSCID4::flush() {
 		err = namefileWrite(filenames_[1].c_str(), nb_->getNames(),
 		                    nb_->calcNameFreq(*idx_));
 	}
-	errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
+	errorT errGfile = gfile_.pubsync();
 
 	return (err == OK) ? errGfile : err;
 }

@@ -1,0 +1,113 @@
+package require tcltest
+namespace import ::tcltest::*
+
+set test_dir [file dirname [file normalize [info script]]]
+source [file join $test_dir .. tcl enginecomm.tcl]
+
+proc uci_parseline_tests {} {
+    set tests {
+        {info depth 10 nodes 12345 nps 99999}
+        {0 {} {} {}}
+
+        {info depth 12 seldepth 20 nodes 100 nps 200 time 50 score cp 13 pv e2e4 e7e5 g1f3}
+        {0 {1 12 20 100 200 {} {} 50 13 cp {} {e2e4 e7e5 g1f3}} {} {}}
+
+        {info depth 5 pv e2e4 e7e5 depth 99 nodes 123}
+        {0 {1 99 {} 123 {} {} {} {} {} {} {} {e2e4 e7e5}} {} {}}
+
+        {info multipv 2 depth 18 seldepth 22 nodes 999 nps 888 hashfull 77 tbhits 6 time 123 score cp -4 pv a2a4}
+        {0 {2 18 22 999 888 77 6 123 -4 cp {} a2a4} {} {}}
+
+        {info depth 10 score mate 3 pv e2e4}
+        {0 {1 10 {} {} {} {} {} {} 3 mate {} e2e4} {} {}}
+
+        {info depth 20 score mate -5 pv e2e4}
+        {0 {1 20 {} {} {} {} {} {} -5 mate {} e2e4} {} {}}
+
+        {info depth 10 score cp 12 wdl 100 200 300 pv e2e4}
+        {0 {1 10 {} {} {} {} {} {} 12 cp {100 200 300} e2e4} {} {}}
+
+        {info depth 10 score cp 50 lowerbound pv e2e4}
+        {0 {1 10 {} {} {} {} {} {} 50 lowerbound {} e2e4} {} {}}
+
+        {info depth 10 score cp -30 upperbound pv d2d4}
+        {0 {1 10 {} {} {} {} {} {} -30 upperbound {} d2d4} {} {}}
+
+        {bestmove e2e4}
+        {1 {} e2e4 {}}
+
+        {bestmove e2e4 ponder e7e5}
+        {1 {} e2e4 {}}
+
+        {bestmove a7a8q}
+        {1 {} a7a8q {}}
+
+        {bestmove (none)}
+        {1 {} (none) {}}
+
+        {readyok}
+        {1 {} {} {}}
+
+        {uciok}
+        {1 {} {} {}}
+
+        {option name Hash type spin default 16 min 1 max 1024}
+        {0 {} {} {{Hash 16 spin 16 1 1024 {} 0}}}
+
+        {option name Ponder type check default false}
+        {0 {} {} {{Ponder false check false {} {} {} 1}}}
+
+        {option name Style type combo default Normal var Aggressive var Normal var Defensive}
+        {0 {} {} {{Style Normal combo Normal {} {} {Aggressive Normal Defensive} 0}}}
+
+        {option name Clear Hash type button}
+        {0 {} {} {{{Clear Hash} {} button {} {} {} {} 0}}}
+
+        {option name SyzygyPath type string default /path/to/syzygy}
+        {0 {} {} {{SyzygyPath /path/to/syzygy path /path/to/syzygy {} {} {} 0}}}
+
+        {option name LogFile type string default engine.log}
+        {0 {} {} {{LogFile engine.log file engine.log {} {} {} 0}}}
+
+        {option name BookPath type string default /books}
+        {0 {} {} {{BookPath /books path /books {} {} {} 0}}}
+
+        {option name UCI_AnalyseMode type check default false}
+        {0 {} {} {{UCI_AnalyseMode false check false {} {} {} 1}}}
+
+        {option name Skill Level type spin default 20 min 0 max 20}
+        {0 {} {} {{{Skill Level} 20 spin 20 0 20 {} 0}}}
+
+        {id name Stockfish 16}
+        {0 {} {} {{myname {Stockfish 16} string {Stockfish 16} {} {} {} 1}}}
+
+        {id author John Doe}
+        {0 {} {} {}}
+
+        {}
+        {0 {} {} {}}
+
+        {some random garbage}
+        {0 {} {} {}}
+    }
+
+    set n 0
+    foreach {input expected} $tests {
+        test parseline-[incr n] "uci_parseline: $input" -setup {
+            catch {unset ::engconn(InfoPV_t)}
+            catch {unset ::engconn(InfoBestMove_t)}
+            set ::engconn(options_t) {}
+        } \
+        -body [list apply {{line} {
+            set rc [::uci::parseline t $line]
+            list $rc \
+                [expr {[info exists ::engconn(InfoPV_t)] ? $::engconn(InfoPV_t) : {}}] \
+                [expr {[info exists ::engconn(InfoBestMove_t)] ? $::engconn(InfoBestMove_t) : {}}] \
+                $::engconn(options_t)
+        }} $input] \
+        -result $expected
+    }
+}
+
+uci_parseline_tests
+cleanupTests

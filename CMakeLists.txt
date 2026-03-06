@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 project(scid)
-set(CPACK_PACKAGE_VERSION 5.1.202601)
+set(CPACK_PACKAGE_VERSION 5.2.202603)
 set(
   CPACK_PACKAGE_DESCRIPTION_SUMMARY
   "chess database application with play and training functionality"
@@ -80,5 +80,7 @@ install(TARGETS phalanx-scid DESTINATION bin)
 
 option(GTEST "Build unit tests" OFF)
 if(GTEST)
+  enable_testing()
+  include(CTest)
   add_subdirectory(gtest)
 endif()

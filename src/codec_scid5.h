@@ -28,6 +28,7 @@
 
 #include "codec.h"
 #include "filebuf.h"
+#include "filemap.h"
 #include "index.h"
 #include "namebase.h"
 #include <algorithm>
@@ -159,11 +160,10 @@ class CodecSCID5 final : public ICodecDatabase {
 	    {"flag1", {}}, {"flag2", {}},       {"flag3", {}},
 	    {"flag4", {}}, {"flag5", {}},       {"flag6", {}},
 	};
-	FilebufAppend gfile_;
+	FileMap<> gfile_;
 	FilebufAppend nbfile_;
 	Filebuf idxfile_;
 	gamenumT idx_seqwrite_ = 0;
-	char gcache_[1ULL << 17];
 
 	enum : unsigned long long {
 		LIMIT_GAMEOFFSET = 1ULL << 47,
@@ -194,17 +194,11 @@ public: // ICodecDatabase interface
 	};
 
 	ByteBuffer getGameData(uint64_t offset, uint32_t length) final {
-		if (offset >= gfile_.size())
-			return {nullptr, 0};
-		if (length >= LIMIT_GAMELEN)
-			return {nullptr, 0};
-
-		if (gfile_.pubseekpos(offset) < 0)
-			return {nullptr, 0};
-		if (gfile_.sgetn(gcache_, length) != length)
+		auto data = gfile_.view_at(offset, length);
+		if (data.size() != length)
 			return {nullptr, 0};
 
-		return {reinterpret_cast<const byte*>(gcache_), length};
+		return {reinterpret_cast<const byte*>(data.data()), data.size()};
 	}
 
 	ByteBuffer getGameMoves(IndexEntry const& ie) final {
@@ -273,7 +267,7 @@ public: // ICodecDatabase interface
 
 	errorT flush() final {
 		idx_seqwrite_ = 0;
-		errorT errGfile = (gfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
+		errorT errGfile = gfile_.pubsync();
 		errorT errNBfile = (nbfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 		errorT errIndex = (idxfile_.pubsync() == 0) ? OK : ERROR_FileWrite;
 		return errIndex ? errIndex : errGfile ? errGfile : errNBfile;
@@ -282,7 +276,7 @@ public: // ICodecDatabase interface
 	errorT dyn_open(fileModeT fmode, const char* dbname,
 	                const Progress& progress, Index* idx, NameBase* nb) final {
 		if (fmode == FMODE_WriteOnly || !dbname || !idx || !nb)
-			return ERROR;
+			return ERROR_FileMode;
 
 		idx_ = idx;
 		nb_ = nb;
@@ -308,7 +302,7 @@ public: // ICodecDatabase interface
 			if (auto err = idxfile_.Open(filenames_[0].c_str(), fmode))
 				return err;
 
-			if (auto err = gfile_.open(filenames_[1], fmode))
+			if (auto err = gfile_.open_utf8(filenames_[1], fmode))
 				return err;
 
 			return nbfile_.open(filenames_[2], fmode);
@@ -319,7 +313,7 @@ public: // ICodecDatabase interface
 		                             filenames_[2]);
 
 		auto err_idx = read_index(fmode, filenames_[0].c_str(), progress);
-		auto err_games = gfile_.open(filenames_[1], fmode);
+		auto err_games = gfile_.open_utf8(filenames_[1], fmode);
 		auto err_names = read_names.get();
 		progress.report(1, 1);
 

@@ -83,6 +83,17 @@ proc ::windows::gamelist::OpenTreeBest { {base} {w} } {
 	set ::gamelistPosMask($w) 1
 }
 
+proc ::windows::gamelist::makeVisible {base {filter ""}} {
+	foreach glwin $::windows::gamelist::wins {
+		if {$base == [::windows::gamelist::GetBase $glwin] &&
+		    ($filter eq "" || $::gamelistFilter($glwin) == $filter)} {
+			::win::makeVisible $glwin
+			return
+		}
+	}
+	::windows::gamelist::Open $base
+}
+
 proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
 	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
 	foreach w $wlist {
@@ -119,7 +130,11 @@ proc ::windows::gamelist::listTreeBases {{base ""}} {
 	foreach w $::windows::gamelist::wins {
 		if { $::gamelistPosMask($w) != 0 && ($base == "" || $base == $::gamelistBase($w)) } {
 			$w.games.glist tag configure fsmall -foreground #bababa
-			$w.buttons.boardFilter configure -image tb_BoardMaskBusy
+			$w.buttons.boardFilter state user1
+			if {$::gamelistMenu($w) eq "stats"} {
+				$w.stats.b.c delete all
+				ttk_create $w.stats.b.c text 10 30 -anchor sw -text "................"
+			}
 			set progressbar "$w.progress 100 100"
 			lappend bases [list $::gamelistBase($w) $::gamelistFilter($w) $progressbar]
 		}
@@ -465,18 +480,18 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 
 proc ::windows::gamelist::createMenu_ {w} {
 	ttk::frame $w.buttons -padding {5 5 2 5}
-	ttk::button $w.buttons.filter -image tb_search_on -command "::windows::gamelist::menu_ $w filter"
+	ttk::button $w.buttons.filter -image tb_search_on -command "glist.toggleFindBar $w.games"
 	# TODO: Use a single button for statistics and positional search
 	# It doesn't make sense to show statistics if positional search is not selected.
 	# But I also want the ability to hide the statistics when positional search is selected.
 	ttk::button $w.buttons.stats -image tb_Stats -command [list apply {{w} {
 		::windows::gamelist::menu_ $w stats;
-		if {$::gamelistMenu($w) ne "" && ! $::gamelistPosMask($w)} {
+		if {($::gamelistMenu($w) eq "stats") != $::gamelistPosMask($w)} {
 			::windows::gamelist::searchpos_ $w
 		}
 	}} $w]
-	ttk::button $w.buttons.boardFilter -image tb_BoardMask -command [list apply {{w} {
-		if {($::gamelistMenu($w) ne "stats") eq ! $::gamelistPosMask($w)} {
+	ttk::button $w.buttons.boardFilter -image [list tb_BoardMask user1 tb_BoardMaskBusy] -command [list apply {{w} {
+		if {$::gamelistPosMask($w) && $::gamelistMenu($w) eq "stats"} {
 			::windows::gamelist::menu_ $w stats
 		}
 		::windows::gamelist::searchpos_ $w
@@ -502,36 +517,6 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid $w.buttons.boardFilter -row 2
 	grid $w.buttons.export -row 3
 	grid $w.buttons -row 0 -column 0 -sticky news
-
-	ttk::frame $w.filter -padding {4 5 6 0}
-	ttk::frame $w.filter.b
-	grid $w.filter.b -sticky news
-	grid rowconfigure $w.filter 0 -weight 1
-	grid columnconfigure $w.filter 0 -weight 1
-	ttk::button $w.filter.b.rfilter -image tb_rfilter  \
-		-command "::windows::gamelist::filter_ $w r"
-	ttk::button $w.filter.b.bsearch -image tb_bsearch \
-		-command "::windows::gamelist::filter_ $w b"
-	ttk::button $w.filter.b.hsearch -image tb_hsearch \
-		-command "::windows::gamelist::filter_ $w h"
-	ttk::button $w.filter.b.msearch -image tb_msearch \
-		-command "::windows::gamelist::filter_ $w m"
-	ttk::button $w.filter.b.tmt -image tb_tmt \
-		-command ::tourney::toggle
-	ttk::button $w.filter.b.crosst -image tb_crosst \
-		-command ::crosstab::Open
-	#TODO: rewrite the tooltip system (most tooltip are not translated when you change language)
-	::utils::tooltip::Set "$w.filter.b.rfilter" "$::helpMessage($::language,SearchReset)"
-	::utils::tooltip::Set "$w.filter.b.bsearch" "$::helpMessage($::language,SearchCurrent)"
-	::utils::tooltip::Set "$w.filter.b.hsearch" "$::helpMessage($::language,SearchHeader)"
-	::utils::tooltip::Set "$w.filter.b.msearch" "$::helpMessage($::language,SearchMaterial)"
-	::utils::tooltip::Set "$w.filter.b.tmt" "$::helpMessage($::language,WindowsTmt)"
-	::utils::tooltip::Set "$w.filter.b.crosst" "$::helpMessage($::language,ToolsCross)"
-	grid $w.filter.b.rfilter
-	grid $w.filter.b.hsearch
-	grid $w.filter.b.bsearch
-	grid $w.filter.b.msearch
-	grid $w.filter.b.crosst
 
 	ttk::frame $w.stats -padding {0 5 6 2}
 	ttk::frame $w.stats.b -borderwidth 2 -relief groove
@@ -568,29 +553,13 @@ proc ::windows::gamelist::createExportMenu_ {{w} {m}} {
 
 proc ::windows::gamelist::menu_ {{w} {button}} {
 	if {$::gamelistMenu($w) != ""} {
-		$w.buttons.$::gamelistMenu($w) state !pressed
 		grid forget $w.$::gamelistMenu($w)
-		if {$button == "filter"} { event generate $w.games <<FindBarHide>> }
 	}
 	if {$::gamelistMenu($w) != $button} {
-		$w.buttons.$button state pressed
 		set ::gamelistMenu($w) $button
 		grid $w.$button -row 0 -column 1 -sticky news
-		if {$button == "filter"} { event generate $w.games <<FindBarShow>> }
 	} else {
 		set ::gamelistMenu($w) ""
-	}
-}
-
-proc ::windows::gamelist::filter_ {{w} {type}} {
-	if {$type == "r"} {
-		::windows::gamelist::FilterReset $w $::gamelistBase($w)
-	} elseif {$type == "b"} {
-		::search::board $::gamelistBase($w) $::gamelistFilter($w)
-	} elseif {$type == "h"} {
-		::search::header $::gamelistBase($w) $::gamelistFilter($w)
-	} elseif {$type == "m"} {
-		::search::material $::gamelistBase($w)
 	}
 }
 
@@ -599,7 +568,7 @@ proc ::windows::gamelist::update_ {{w} {moveUp}} {
 	lassign [sc_filter sizes $::gamelistBase($w) $f] filterSz gameSz mainSz
 
 	$w.games.glist tag configure fsmall -foreground ""
-	$w.buttons.boardFilter configure -image tb_BoardMask
+	$w.buttons.boardFilter state !user1
 	$w.buttons.export configure -state [expr {$filterSz ? "normal" : "disabled"}]
 
 	if {$gameSz == $mainSz} {
@@ -647,106 +616,124 @@ proc ::windows::gamelist::filterRelease_ {{base} {filter}} {
 }
 
 proc ::windows::gamelist::updateStats_ { {w} } {
-	if {$::gamelistMenu($w) != "stats"} { return }
-	set stats {}
-	set stats [sc_filter treestats $::gamelistBase($w) $::gamelistFilter($w)]
-	set lineH [expr { round(1.8 * [font metrics font_Regular -linespace]) }]
-	set rectW [expr { round([font metrics font_Regular -ascent] *0.5) }]
-	set rectB [expr { [font metrics font_Regular -descent] + int($rectW*0.25) }]
-	set rectH [expr { $rectW + $rectB }]
+	if {$::gamelistMenu($w) ne "stats"} { return }
+
+	set reg_asc  [font metrics font_Regular -ascent]
+	set reg_desc [font metrics font_Regular -descent]
+	set regH     [font metrics font_Regular -linespace]
+	set smallH   [font metrics font_Small -linespace]
+	set midLS   [expr { round($regH / 2) }]
+	set lineH   [expr { round(1.8 * $midLS * 2) }]
+	set barW    [expr { 10 * round([font measure font_Small 99%] / 1.9) }]
+	set barHalf [expr { max(round(1.1 * $midLS), round(2 + $smallH / 2.0))} ]
+	set rectW   [expr { round($reg_asc *0.5) }]
+	set rectBot [expr { $reg_desc + int($rectW*0.25) }]
+	set rectTop [expr { $rectBot + $rectW }]
 	incr rectW 4
-	set moveW 0
-	foreach move $stats {
-		set m [font measure font_Regular "..[lindex $move 0]"]
-		set n [font measure font_Italic [lindex $move 1]]
-		set s [expr { $m + $n + int($rectW*2) }]
-		if {$s > $moveW} { set moveW $s }
-	}
-	set barW [expr { $moveW + 6 }]
-	set percW [expr { [font measure font_Small 99%] / 2 }]
-	set winW [expr { $barW + 10 * $percW + 4 }]
+
+	set stats [sc_filter treestats $::gamelistBase($w) $::gamelistFilter($w)]
+	set moveW [::tcl::mathfunc::max 0 {*}[lmap move $stats {
+		expr {[font measure font_Regular "..[lindex $move 0]"] \
+		    + [font measure font_Italic [lindex $move 1]] + $rectW * 2}
+	}]]
+	set barX0 [expr { $moveW + 6 }]
+	set barX3 [expr { $barX0 + $barW }]
+	set winW  [expr { $barX3 + 4 }]
 	if {[info exists ::gamelistLastTreeW($w)]} {
 		set diff [expr { $::gamelistLastTreeW($w) - $winW }]
 		if {$diff > -5 && $diff < [expr 4 * $rectW]} {
 			set winW $::gamelistLastTreeW($w)
-			incr barW $diff
+			incr barX0 $diff
+			incr barX3 $diff
 			incr moveW $diff
 		}
 	}
 	set ::gamelistLastTreeW($w) $winW
-	set coeff [expr $percW / 10.0]
-	set line $lineH
-	$w.stats.b.c delete all
+
+	set c $w.stats.b.c
+	$c delete all
 	set i_add 0
+	set line $lineH
 	foreach move $stats {
 		lassign $move moveSAN n_totgames n_white n_draw	n_black	avgElo performance n_ratedgames toMove
 
-		set pColor "#707070"
-		set perfCmd ""
-		if { $n_ratedgames > 5 } {
-			set rate [expr { $performance - $avgElo }]
-			if { $rate > 150 } { set pColor "#47a148" }
-			if { $rate < -150 } { set pColor "#f40000" }
-			set perfCmd "tk_messageBox -message"
-			lappend perfCmd [format {Performance: %.0f (%+.0f)} $performance $rate]
-		}
-		$w.stats.b.c create rectangle 4 [expr { $line - $rectH }] $rectW [expr { $line -$rectB }] \
-		    -fill $pColor -outline "" -tag perf$i_add
-		$w.stats.b.c bind perf$i_add <ButtonPress-1> "$perfCmd"
+		$c bind add$i_add <ButtonPress-1> [list addSanMove $moveSAN]
 
-		$w.stats.b.c bind add$i_add <ButtonPress-1> "
-			if {! \[addSanMove \{$moveSAN\}\] && \$::gamelistPosMask($w) == 0} {
-				$w.buttons.boardFilter invoke
-			}
-		"
+		set pColor "#707070"
+		if {$n_ratedgames > 5} {
+			set rate [expr {$performance - $avgElo}]
+			if {$rate > 150}  { set pColor "#47a148" }
+			if {$rate < -150} { set pColor "#f40000" }
+		}
+		$c create rectangle 4 [expr {$line - $rectTop}] $rectW [expr {$line - $rectBot}] \
+			-fill $pColor -outline "" -tag add$i_add
+
 		if { $toMove == "B" } { set moveSAN "..$moveSAN" }
-		ttk_create $w.stats.b.c text [expr int($rectW*1.5)] $line -anchor sw \
+		ttk_create $c text [expr int($rectW*1.5)] $line -anchor sw \
 		    -text $moveSAN -font font_Regular -tag add$i_add
 
-		incr i_add
-		ttk_create $w.stats.b.c text $moveW $line -anchor se \
-		    -text $n_totgames -fill #707070 -font font_Italic
-		set barh1 [expr { $line - 2*$rectB }]
-		set barh2 [expr { $line - $rectB }]
+		ttk_create $c text $moveW $line \
+			-anchor se -text $n_totgames -fill #707070 -font font_Italic -tag tot$i_add
+
 		set n_tot [expr { $n_white + $n_draw + $n_black }]
 		if {$n_tot != 0} {
-			set p_white [expr { 100.0 * $n_white / $n_tot }]
-			set p_draw [expr { 100.0 * $n_draw / $n_tot }]
-			set p_black [expr { 100.0 - $p_white - $p_draw }]
+			set p_white [expr { double($n_white) / $n_tot }]
+			set p_draw  [expr { double($n_draw) / $n_tot }]
+			set p_black [expr { 1.0 - $p_white - $p_draw }]
 			if {$n_tot > 99} {
-				set t_white "[expr { round($p_white) }]%"
-				set t_draw "[expr { round($p_draw) }]%"
-				set t_black "[expr { round($p_black) }]%"
+				set t_white "[expr {round(100.0 * $p_white)}]%"
+				set t_draw  "[expr {round(100.0 * $p_draw)}]%"
+				set t_black "[expr {100 - round(100.0 * $p_white) - round(100.0 * $p_draw)}]%"
 			} else {
-				set t_white "$n_white "
-				set t_draw "$n_draw "
-				set t_black "$n_black "
+				set t_white "$n_white"
+				set t_draw  "$n_draw"
+				set t_black "$n_black"
 			}
 
-			set win [expr { round($barW + $coeff * $p_white) }]
-			$w.stats.b.c create rectangle $barW  $barh1 $win $barh2  -fill white -outline ""
-			set draw [expr { round($win + $coeff * $p_draw) }]
-			$w.stats.b.c create rectangle $win $barh1 $draw $barh2 -fill #707070 -outline ""
-			set loss [expr { $barW + $percW * 10 }]
-			$w.stats.b.c create rectangle $draw $barh1 $loss $barh2 -fill black -outline ""
+			set textMidY [expr {$line - $midLS}]
+			set y0 [expr {$textMidY - $barHalf}]
+			set y1 [expr {$textMidY + $barHalf}]
+			set x1 [expr {round($barX0 + $barW * $p_white)}]
+			set x2 [expr {round($x1 + $barW * $p_draw)}]
 
-			$w.stats.b.c create rectangle $barW $barh1 $loss $barh2 -outline #808080
+			$c create rectangle $barX0 $y0 $barX3 $y1 -fill white -outline "" -tag perf$i_add
+			::utils::tooltip::Set $c -item perf$i_add \
+				[format "[tr GlistAverageElo]: %.0f\nPerformance: %.0f" $avgElo $performance]
 
-			ttk_create $w.stats.b.c text [expr { $barW + $percW * 3 }] $barh1 \
-				-font font_Small -anchor se -text "$t_white"
-			ttk_create $w.stats.b.c text [expr { $barW + $percW * 6 }] $barh1 \
-				-font font_Small -anchor se -text "$t_draw"
-			ttk_create $w.stats.b.c text [expr { $barW + $percW * 9 }] $barh1 \
-				-font font_Small -anchor se -text "$t_black"
+			# State disabled so events pass through
+			if {$p_white > 0.0} {
+				$c create rectangle $barX0 $y0 $x1 $y1 -fill white -outline "" -state disabled
+			}
+			if {$p_draw > 0.0} {
+				$c create rectangle $x1 $y0 $x2 $y1 -fill #707070 -outline "" -state disabled
+			}
+			if {$p_black > 0.0} {
+				$c create rectangle $x2 $y0 $barX3 $y1 -fill black -outline "" -state disabled
+			}
+
+			$c create rectangle $barX0 $y0 $barX3 $y1 -outline #808080
+
+			set cxW [expr {int(($barX0 + $x1) / 2)}]
+			if {$cxW - $barX0 > 0} {
+				$c create text $cxW $textMidY -font font_Small -anchor center -text $t_white -fill black -state disabled
+			}
+			set cxD [expr {int(($x1 + $x2) / 2)}]
+			if {$cxD - $x1 > 0} {
+				$c create text $cxD $textMidY -font font_Small -anchor center -text $t_draw -fill white -state disabled
+			}
+			set cxB [expr {int(($x2 + $barX3) / 2)}]
+			if {$cxB - $x2 > 0} {
+				$c create text $cxB $textMidY -font font_Small -anchor center -text $t_black -fill white -state disabled
+			}
 		}
 
 		incr line $lineH
+		incr i_add
 	}
-	incr line -$lineH
-	$w.stats.b.c configure -scrollregion [list 0 0 $winW $line] -width $winW
+
+	set line [expr {$line - $lineH + max(2, $barHalf - $midLS + 2)}]
+	$c configure -scrollregion [list 0 0 $winW $line] -width $winW
 }
-
-
 
 ##########################################################################
 # June 2011: A new reusable and simplified gamelist widget
@@ -838,17 +825,38 @@ proc glist.create {{w} {layout} {reset_layout false}} {
   set ::glistYScroll($w.glist) [$w.glist cget -yscrollcommand]
   $w.glist configure -yscrollcommand "glist.yscroll_ $w.glist"
   $w.ybar configure -command "glist.ybar_ $w.glist"
-  bindMouseWheel $w.glist "glist.ybar_ $w.glist"
   bind $w.glist <$::COMMAND-f> "event generate $w <<FindBarShow>>"
 
   # Find widget
   ttk::frame $w.find
   ttk::frame $w.find.t
   ttk::label $w.find.size
-  ttk::button $w.find.advanced -image ::icon::filter_adv -style Toolbutton -command [list apply {{w} {
-    set w_top [regexp -inline {^\.[^.]+} $w]
-    ::search::header $::gamelistBase($w_top) $::gamelistFilter($w_top)
-  }} $w]
+  menu $w.find.advanced_menu
+  menu $w.find.advanced_menu.presets
+  $w.find.advanced_menu configure -postcommand [list apply {{m w} {
+    $m delete 0 end
+    $m.presets delete 0 end
+    lassign [regexp -inline {^\.[^.]+} $w] w_top
+
+    if {[array size ::sHeader_PresetFilters]} {
+      foreach name [array names ::sHeader_PresetFilters] {
+        $m.presets add command -label $name -command "
+          ::search::header::loadPreset [list $name]
+          ::search::header $::gamelistBase($w_top) $::gamelistFilter($w_top)
+        "
+      }
+      $m add cascade -label [::tr Presets] -menu $m.presets
+      $m add separator
+    }
+
+    $m add command -label [tr SearchHeader] \
+      -command "::search::header $::gamelistBase($w_top) $::gamelistFilter($w_top)"
+    $m add command -label [tr SearchCurrent] \
+      -command "::search::board $::gamelistBase($w_top) $::gamelistFilter($w_top)"
+    $m add command -label [tr SearchMaterial] \
+      -command "::search::material $::gamelistBase($w_top)"
+  }} $w.find.advanced_menu $w]
+  ttk::menubutton $w.find.advanced -image ::icon::filter_adv -style Toolbutton -menu $w.find.advanced_menu
   ::utils::tooltip::Set "$w.find.advanced" "$::helpMessage($::language,SearchHeader)"
   ttk::button $w.find.reset -image ::icon::filter_reset -style Toolbutton -command "
     $w.find.text delete 0 end
@@ -943,6 +951,16 @@ proc glist.layout_save {layout} {
   set ::glist_Sort($new_ly) $::glist_Sort($layout)
   set ::glist_FindBar($new_ly) $::glist_FindBar($layout)
   lappend ::glist_Layouts "$new_ly"
+}
+
+proc glist.toggleFindBar {w} {
+  if {[winfo ismapped $::glistFindBar($w.glist)]} {
+    event generate $w <<FindBarHide>>
+    return 0
+  } else {
+    event generate $w <<FindBarShow>>
+    return 1
+  }
 }
 
 
@@ -1352,13 +1370,6 @@ proc glist.sortStore_ {w layout} {
 
 # Scrollbar
 proc glist.ybar_ {w cmd {n 0} {units ""}} {
-  if { $cmd == "-1" || $cmd == "+1" } {
-    #MouseWheel
-    set n $cmd
-    set units "units"
-    set cmd scroll
-  }
-  if { $cmd == "scroll" || $cmd == "moveto"} {
     if {$cmd == "moveto"} {
       set ::glistFirst($w) [expr { int(ceil($n * $::glistTotal($w))) }]
     } else {
@@ -1375,7 +1386,6 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
 
     after cancel glist.loadvalues_ $w
     after idle glist.loadvalues_ $w
-  }
 }
 
 proc glist.yscroll_ {w first last} {
@@ -1394,6 +1404,7 @@ proc glist.yscroll_ {w first last} {
       return
     }
     if {$::glistFirst($w) == 0} {
+      set ::glistVisibleLn($w) $::glistLoaded($w)
       return [{*}$::glistYScroll($w) $first $last]
     }
   }

@@ -543,6 +543,20 @@ proc ::board::addInfoBar {w varname} {
   set menu [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
     -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
+  ::bind $w.bar.cmd <$::MB3> {
+    if {![catch {::tk::GetSelection %W CLIPBOARD} clip] && $clip ne ""} {
+      sc_game undoPoint
+      sc_game clear
+      if {[catch {sc_game import $clip} errmsg]} {
+        if {"ok" ne [tk_messageBox -icon warning -type okcancel -parent %W -title [tr ImportPGN] -message "$errmsg"]} {
+          sc_game undo
+          return
+        }
+      }
+      ::notify::GameChanged
+    }
+  }
+
   grid $w.bar.cmd -in $w.bar -row 0 -column 0 -sticky news
   grid $w.bar.info -in $w.bar -row 0 -column 1 -sticky news -padx 4
   grid $w.bar.leavevar -row 0 -column 2 -sticky news
@@ -2072,11 +2086,26 @@ proc ::board::animate {w oldboard newboard} {
   ::board::_animate $w
 }
 
+proc ::board::suspend_animations {} {
+  foreach w [array names ::board::_animate] {
+    after cancel "::board::_animate $w"
+  }
+}
+
+proc ::board::restore_animations {} {
+  foreach w [array names ::board::_animate] {
+    ::board::_animate $w
+  }
+}
+
 # ::board::_animate
 #   Internal procedure for updating a board move animation.
 #
 proc ::board::_animate {w} {
-  if {! [winfo exists $w]} { return }
+  if {! [winfo exists $w] || ! [info exists ::board::_animate($w)]} {
+    array unset ::board::_animate $w
+    return
+  }
 
   lassign $::board::_animate($w) start end from to from2 to2
   set now [clock clicks -milli]
@@ -2109,8 +2138,9 @@ proc ::board::_animate {w} {
 
   # Schedule another animation update in a few milliseconds:
   if {$now < $end} {
-    after 5 "::board::_animate $w"
+    after 16 "::board::_animate $w"
   } else {
+    array unset ::board::_animate $w
     $w.bd delete tmp_animate
   }
 }

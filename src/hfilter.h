@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include <algorithm>
+#include <atomic>
 #include <iterator>
 #include <memory>
 
@@ -35,7 +36,7 @@
 class Filter {
 	std::unique_ptr<byte[]> data_; // The actual filter data.
 	gamenumT size_;                // Number of values in filter.
-	gamenumT nonzero_;             // Number of nonzero values in filter.
+	std::atomic<gamenumT> nonzero_; // Number of nonzero values in filter.
 	size_t capacity_;              // Number of values allocated for data_.
 
 public:

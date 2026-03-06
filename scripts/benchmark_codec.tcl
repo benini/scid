@@ -56,6 +56,18 @@ lmap el $pos {
   puts "Search pos ($elapsed ms): $n_found games - $el"
 }
 
+# Search sequential positions
+sc_game load 110
+puts [sc_game pgn -tags 1 -comments 1 -var 1 -width 75]
+for {set i 0} {$i < 20} {incr i} {
+  set elapsed [clock milliseconds]
+  sc_filter search $baseId "dbfilter" board nocache
+  set elapsed [expr { [clock milliseconds] - $elapsed }]
+  lassign [sc_filter sizes $baseId dbfilter] n_found
+  puts "Search ply $i ($elapsed ms): $n_found games - [sc_pos fen]"
+  sc_move forward
+}
+
 # Collect extra tags
 set elapsed [clock milliseconds]
 set tags [sc_base taglist $baseId]

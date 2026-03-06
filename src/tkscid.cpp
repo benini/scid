@@ -1888,23 +1888,25 @@ int
 sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "altered",    "crosstable", "eco",
+        "altered",    "clear",      "crosstable", "eco",
         "find",       "firstMoves", "import",
         "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
         "startBoard", "strip",
-        "tags",       "truncate",   "variant", "UCI_currentPos",
+        "tags",       "truncate",   "variant",
+        "UCI_currentPos", "UCI_mainLine",
         "undo",       "undoAll",    "undoPoint",  "redo",       NULL
     };
     enum {
-        GAME_ALTERED,    GAME_CROSSTABLE, GAME_ECO,
+        GAME_ALTERED,    GAME_CLEAR,      GAME_CROSSTABLE, GAME_ECO,
         GAME_FIND,       GAME_FIRSTMOVES, GAME_IMPORT,
         GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
         GAME_STARTBOARD, GAME_STRIP,
-        GAME_TAGS,       GAME_TRUNCATE,   GAME_VARIANT, GAME_UCI_CURRENTPOS,
+        GAME_TAGS,       GAME_TRUNCATE,   GAME_VARIANT,
+        GAME_UCI_CURRENTPOS, GAME_UCI_MAINLINE,
         GAME_UNDO,       GAME_UNDO_ALL,   GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
@@ -1915,6 +1917,10 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case GAME_ALTERED:
         return UI_Result(ti, OK, db->gameAltered);
+
+    case GAME_CLEAR:
+        db->game->Clear();
+        return UI_Result(ti, OK);
 
     case GAME_CROSSTABLE:
         return sc_game_crosstable (cd, ti, argc, argv);
@@ -2011,6 +2017,14 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case GAME_UCI_CURRENTPOS:
         return UI_Result(ti, OK, db->game->currentPosUCI());
 
+    case GAME_UCI_MAINLINE: {
+        auto vec = db->game->mainLineUCI();
+        UI_List res(vec.size());
+        for (auto const& e : vec) {
+            res.push_back(e);
+        }
+        return UI_Result(ti, OK, res);
+    }
     case GAME_UNDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
             return UI_Result(ti, OK, (uint) db->gameAlterations.undoSize());
@@ -2489,7 +2503,7 @@ int sc_game_import(ClientData, Tcl_Interp* ti, int argc, const char** argv) {
 		return UI_Result(ti, OK,
 		                 "PGN text imported with no errors or warnings.");
 
-	return UI_Result(ti, OK,
+	return UI_Result(ti, ERROR_InvalidMove,
 	                 "Errors/warnings importing PGN text:\n\n" + pgn.log);
 }
 
@@ -7870,46 +7884,6 @@ sc_search_material (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-
-const uint NUM_TITLES = 8;
-enum {
-    TITLE_GM, TITLE_IM, TITLE_FM,
-    TITLE_WGM, TITLE_WIM, TITLE_WFM,
-    TITLE_W, TITLE_NONE
-};
-const char * titleStr [NUM_TITLES] = {
-    "gm", "im", "fm", "wgm", "wim", "wfm", "w", "none"
-};
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// parseTitles:
-//    Called from sc_search_header to parse a list
-//    of player titles to be searched for. The provided
-//    string should have some subset of the elements
-//    gm, im, fm, wgm, wim, w and none, each separated
-//    by whitespace. Example: "gm wgm" would indicate
-//    to only search for games by a GM or WIM.
-bool *
-parseTitles (const char * str)
-{
-    bool * titles = new bool [NUM_TITLES];
-
-    for (uint t=0; t < NUM_TITLES; t++) { titles[t] = false; }
-
-    str = strFirstWord (str);
-    while (*str != 0) {
-        for (uint i=0; i < NUM_TITLES; i++) {
-            if (strIsCasePrefix (titleStr[i], str)) {
-                titles[i] = true;
-                break;
-            }
-        }
-        str = strNextWord (str);
-    }
-    return titles;
-}
-
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_search_header:
 //    Searches by header information.
@@ -7923,16 +7897,6 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 
     //TODO: the old options that follows do not work with FILTEROP_OR
     //      at the moment there is no tcl code that use them with FILTEROP_OR
-
-	bool * wTitles = NULL;
-    bool * bTitles = NULL;
-
-    bool wToMove = true;
-    bool bToMove = true;
-
-    int pgnTextCount = 0;
-    const char ** sPgnText = NULL;
-
     const char * options[] = {
         "wtitles", "btitles", "toMove",
         "pgn", NULL
@@ -7941,6 +7905,32 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
         OPT_PGN
     };
+
+    std::set<std::string> wTitles;
+    std::set<std::string> bTitles;
+    // Parse user-provided titles into a set of lowercase title strings
+    auto parseTitles = [](const char* str) -> std::set<std::string> {
+        std::set<std::string> titles;
+        str = strFirstWord(str);
+        while (*str != 0) {
+            const char* wordEnd = str;
+            while (*wordEnd != 0 && !isspace(static_cast<unsigned char>(*wordEnd))) {
+                wordEnd++;
+            }
+            std::string word(str, wordEnd - str);
+            // Convert to lowercase for case-insensitive matching
+            std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+            titles.insert(std::move(word));
+            str = strNextWord(wordEnd);
+        }
+        return titles;
+    };
+
+    bool wToMove = true;
+    bool bToMove = true;
+
+    decltype(Tcl_GetCharLength(nullptr)) pgnTextCount; // size type changed with Tcl9
+    const char ** sPgnText = NULL;
 
     int arg = 2;
     while (arg+1 < argc) {
@@ -7954,13 +7944,11 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 
         switch (index) {
         case OPT_WTITLES:
-            delete[] wTitles;
-            wTitles = parseTitles (value);
+            wTitles = parseTitles(value);
             break;
 
         case OPT_BTITLES:
-            delete[] bTitles;
-            bTitles = parseTitles (value);
+            bTitles = parseTitles(value);
             break;
 
         case OPT_TOMOVE:
@@ -7975,94 +7963,66 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
             break;
 
         case OPT_PGN:
-            if (Tcl_SplitList (ti, (char *)value, &pgnTextCount,
-                               &sPgnText) != TCL_OK) {
-                delete[] wTitles;
-                delete[] bTitles;
+            if (sPgnText ||
+                Tcl_SplitList(ti, value, &pgnTextCount, &sPgnText) != TCL_OK) {
                 return TCL_ERROR;
             }
             break;
-
         }
     }
 
-    // Set up White name matches array:
-    std::vector<bool> mWhite;
-    if (wTitles != NULL  &&  spellChk != NULL) {
-        bool allTitlesOn = true;
-        for (uint t=0; t < NUM_TITLES; t++) {
-            if (! wTitles[t]) { allTitlesOn = false; break; }
-        }
-        if (! allTitlesOn) {
-            idNumberT i;
-            idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
-            mWhite.resize(numNames, true);
-            for (i=0; i < numNames; i++) {
-                const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
-                const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
-                const char * title = (pInfo) ? pInfo->getTitle() : "";
-                if ((!wTitles[TITLE_GM]  &&  strEqual(title, "gm"))
-                    || (!wTitles[TITLE_GM]  &&  strEqual(title, "hgm"))
-                    || (!wTitles[TITLE_IM]  &&  strEqual(title, "im"))
-                    || (!wTitles[TITLE_FM]  &&  strEqual(title, "fm"))
-                    || (!wTitles[TITLE_WGM]  &&  strEqual(title, "wgm"))
-                    || (!wTitles[TITLE_WIM]  &&  strEqual(title, "wim"))
-                    || (!wTitles[TITLE_WFM]  &&  strEqual(title, "wfm"))
-                    || (!wTitles[TITLE_W]  &&  strEqual(title, "w"))
-                    || (!wTitles[TITLE_NONE]  &&  strEqual(title, ""))
-                    || (!wTitles[TITLE_NONE]  &&  strEqual(title, "cgm"))
-                    || (!wTitles[TITLE_NONE]  &&  strEqual(title, "cim"))) {
-                    mWhite[i] = false;
-                }
-            }
-        }
+    if (!sPgnText && wTitles.empty() && bTitles.empty() &&
+        wToMove == true && bToMove == true) {
+        return UI_Result(ti, OK); // Nothing to do
     }
 
-    // Set up Black name matches array:
-    std::vector<bool> mBlack;
-    if (bTitles != NULL  &&  spellChk != NULL) {
-        bool allTitlesOn = true;
-        for (uint t=0; t < NUM_TITLES; t++) {
-            if (!bTitles[t]) { allTitlesOn = false; break; }
-        }
-        if (! allTitlesOn) {
-            idNumberT i;
-            idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
-            mBlack.resize(numNames, true);
-            for (i=0; i < numNames; i++) {
-                const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
-                const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
-                const char * title = (pInfo) ? pInfo->getTitle() : "";
-                if ((!bTitles[TITLE_GM]  &&  strEqual(title, "gm"))
-                    || (!bTitles[TITLE_GM]  &&  strEqual(title, "hgm"))
-                    || (!bTitles[TITLE_IM]  &&  strEqual(title, "im"))
-                    || (!bTitles[TITLE_FM]  &&  strEqual(title, "fm"))
-                    || (!bTitles[TITLE_WGM]  &&  strEqual(title, "wgm"))
-                    || (!bTitles[TITLE_WIM]  &&  strEqual(title, "wim"))
-                    || (!bTitles[TITLE_WFM]  &&  strEqual(title, "wfm"))
-                    || (!bTitles[TITLE_W]  &&  strEqual(title, "w"))
-                    || (!bTitles[TITLE_NONE]  &&  strEqual(title, ""))
-                    || (!bTitles[TITLE_NONE]  &&  strEqual(title, "cgm"))
-                    || (!bTitles[TITLE_NONE]  &&  strEqual(title, "cim"))) {
-                    mBlack[i] = false;
-                }
-            }
-        }
-    }
+    // Build cache on-the-fly using std::map for player ID -> matches filter
+    std::map<idNumberT, bool> w_cache;
+    std::map<idNumberT, bool> b_cache;
 
-    bool skipSearch = false;
-    if (mWhite.empty() && mBlack.empty() &&
-        wToMove == true && bToMove == true &&
-        pgnTextCount == 0) {
-        skipSearch = true;
-    }
+    // Check if a player's title matches the user-specified set
+    // Returns true if player should be INCLUDED (matches filter)
+    auto titleMatches = [](const auto& allowedTitles, const auto& playerTitle) {
+        if (allowedTitles.empty())
+            return true; // No filter specified
+
+        std::string lower(playerTitle);
+        std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+        if (lower.empty() || lower == "cgm" || lower == "cim") {
+            lower = "none";
+        } else if (lower == "hgm") {
+            lower = "gm";
+        }
+
+        return allowedTitles.contains(lower);
+    };
+
+    auto getPlayerTitleMatch = [&](auto playerId, auto const& titles,
+                                   auto& cache) -> bool {
+        if (titles.empty())
+            return true; // No filter
+        if (spellChk == NULL)
+            return true; // No spell checker available
+
+        auto it = cache.find(playerId);
+        if (it != cache.end()) {
+            return it->second;
+        }
+
+        // Build cache entry on-the-fly
+        const char* name = base->getNameBase()->GetName(NAME_PLAYER, playerId);
+        const PlayerInfo* pInfo = spellChk->getPlayerInfo(name);
+        bool matches = titleMatches(titles, pInfo ? pInfo->getTitle() : "");
+        cache[playerId] = matches;
+
+        return matches;
+    };
 
     // Here is the loop that searches on each game:
     errorT result = OK;
-    if (!skipSearch)
-    for (uint i=0, n = base->numGames(); i < n; i++) {
-        if ((i % 5000) == 0) {  // Update the percentage done bar:
-            if (!progress.report(i,n)) {
+    for (gamenumT i = 0, n = base->numGames(); i < n; i++) {
+        if ((i % 4096) == 0) { // Update the percentage done bar:
+            if (!progress.report(i, n)) {
                 result = ERROR_UserCancel;
                 break;
             }
@@ -8086,10 +8046,10 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 			}
 
 			// Last, we check the players
-			if (!mWhite.empty() && !mWhite[ie->GetWhite()]) {
+			if (!getPlayerTitleMatch(ie->GetWhite(), wTitles, w_cache)) {
 				return false;
 			}
-			if (!mBlack.empty() && !mBlack[ie->GetBlack()]) {
+			if (!getPlayerTitleMatch(ie->GetBlack(), bTitles, b_cache)) {
 				return false;
 			}
 
@@ -8104,7 +8064,7 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
 
-		if (match && pgnTextCount > 0) {
+		if (match && sPgnText) {
 			if (base->getGame(*ie, *scratchGame) != OK) {
 				match = false;
 			} else {
@@ -8115,28 +8075,23 @@ sc_search_header (ClientData, Tcl_Interp * ti, scidBaseT* base, HFilter& filter,
 				scratchGame->AddPgnStyle(PGN_STYLE_SYMBOLS);
 				scratchGame->SetPgnFormat(PGN_FORMAT_Plain);
 				const char* buf = scratchGame->WriteToPGN().first;
-				for (int m = 0; m < pgnTextCount; m++) {
-					if (match) {
-						match = strContains(buf, sPgnText[m]);
-					}
+				for (auto it = sPgnText, end = sPgnText + pgnTextCount;
+				     match && it != end; it++) {
+					match = strContains(buf, *it);
 				}
 			}
 		}
 
-        if (match) {
-            filter.set (i, 1);
-        } else {
-            // This game did NOT match:
-            filter.set (i, 0);
+        if (!match) {
+            filter.set(i, 0);
         }
     }
-    if (wTitles != NULL) { delete[] wTitles; }
-    if (bTitles != NULL) { delete[] bTitles; }
+
     Tcl_Free ((char *) sPgnText);
 
     progress.report(1,1);
 
-    return UI_Result(ti, result);;
+    return UI_Result(ti, result);
 }
 
 

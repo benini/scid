@@ -196,26 +196,39 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure TScrollbar \
+            -arrowsize 10 -width 10 \
             -troughcolor $colors(fieldbg) \
-            -bordercolor $colors(buttonbg) \
+            -bordercolor $colors(fieldbg) \
             -background $colors(through) \
-            -arrowcolor $colors(lightcolor) \
         ;
         ttk::style map TScrollbar \
             -background [list \
-                pressed $colors(buttonbglight) \
-                active $colors(buttonbglight) \
+                pressed $colors(lightcolor) \
+                active $colors(lightcolor) \
                 disabled $colors(through) \
-                !pressed $colors(buttonbg)] \
+                !pressed $colors(buttonbglight)] \
             -lightcolor [list \
                 pressed $colors(darkcolor) \
                 active $colors(lightcolor) \
-                disabled $colors(through)] \
+                disabled $colors(through) \
+                !pressed $colors(buttonbglight)] \
             -darkcolor [list \
                 pressed $colors(lightcolor) \
                 active $colors(darkcolor) \
-                disabled $colors(through)] \
+                disabled $colors(through) \
+                !pressed $colors(buttonbglight)] \
         ;
+        # Remove arrows
+        ttk::style layout Vertical.TScrollbar {
+            Vertical.Scrollbar.trough -sticky news -children {
+                Vertical.Scrollbar.thumb -expand true
+            }
+        }
+        ttk::style layout Horizontal.TScrollbar {
+            Horizontal.Scrollbar.trough -sticky news -children {
+                Horizontal.Scrollbar.thumb -expand true
+            }
+        }
 
         ttk::style configure Heading \
             -relief raised \
@@ -226,6 +239,9 @@ namespace eval ttk::theme::dark {
         ;
 
         ttk::style configure Treeview \
+            -relief flat \
+            -bordercolor $colors(fieldbg) \
+            -lightcolor $colors(fieldbg) \
             -background $colors(fieldbg) \
         ;
         ttk::style map Treeview \

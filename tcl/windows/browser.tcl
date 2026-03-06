@@ -60,8 +60,13 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Control-Shift-Left> "set ::gbrowser::size \[::board::resize $w.bd -1\]"
   bind $w <plus> "set ::gbrowser::size \[::board::resize $w.bd +1\]"
   bind $w <Control-Shift-Right> "set ::gbrowser::size \[::board::resize $w.bd +1\]"
-  bindMouseWheel $w "::gbrowser::mousewheelHandler $n"
-
+  ttk::bindMouseWheel $w [list apply {{n amount {factor 1.0}} {
+    if {$amount / $factor < 0} {
+      ::gbrowser::update $n -1
+    } else {
+      ::gbrowser::update $n +1
+    }
+  }} $n]
   ttk::button $w.b.start -image tb_start -command "::gbrowser::update $n start"
   ttk::button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
   ttk::button $w.b.forward -image tb_next -command "::gbrowser::update $n +1"
@@ -93,16 +98,8 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   }
   ::gbrowser::update $n $ply
 
-  if { [::board::isFlipped .main.board] } {
+  if { [main_isFlipped] } {
     ::gbrowser::flip $n
-  }
-}
-
-proc gbrowser::mousewheelHandler {n direction} {
-  if {$direction < 0} {
-    ::gbrowser::update $n -1
-  } else {
-    ::gbrowser::update $n +1
   }
 }
 

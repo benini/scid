@@ -33,12 +33,12 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 ############################################################
 
-package require Tk  8.6
+package require Tk 8.6-
 set useLocalTooltip [catch {package require tooltip 2.0}]
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
-set scidVersionExpected "5.1.202601"
+set scidVersionExpected "5.2.202603"
 
 # Check that the version of c++ code matches the version of tcl code
 #
@@ -289,7 +289,7 @@ if { $macOS } {
 # eval $::unsafe::badcode
 # after idle $::unsafe::badcode
 
-proc safeSource {filename args} {
+proc safeSource {filename vars {alias {}}} {
   if {![info exists ::safeInterp]} {
     set ::safeInterp [::safe::interpCreate]
     interp hide $::safeInterp set
@@ -300,12 +300,15 @@ proc safeSource {filename args} {
   set n [file tail $f]
   set vdir [::safe::interpAddToAccessPath $::safeInterp $d]
   interp alias $::safeInterp image {} ::safeImage $::safeInterp [list $vdir $d]
-  foreach {varname value} $args {
+  foreach {cmd to_cmd} $alias {
+    interp alias $::safeInterp $cmd {} {*}$to_cmd
+  }
+  foreach {varname value} $vars {
     $::safeInterp eval [list set $varname $value]
   }
   $::safeInterp eval [list set vdir $vdir]
   $::safeInterp eval "source \$vdir/$n"
-  foreach {varname value} $args {
+  foreach {varname value} $vars {
     $::safeInterp eval [list unset $varname]
   }
 }
@@ -406,6 +409,22 @@ proc safeStyle {interp args} {
 ####################################################
 # Load default/saved values
 source [file nativename [file join $::scidTclDir "options.tcl"]]
+
+proc configAddEngine {arglist} {
+  array set newEngine [list Args "" Dir "" Elo 0 Time 0 URL "" UCI 0 UCIoptions ""]
+  array set newEngine $arglist
+  if {[info exists newEngine(Name)] && [info exists newEngine(Cmd)]} {
+    lappend ::engines(list) [list $newEngine(Name) $newEngine(Cmd) \
+            $newEngine(Args) $newEngine(Dir) $newEngine(Elo) $newEngine(Time) \
+            $newEngine(URL) $newEngine(UCI) $newEngine(UCIoptions)]
+  }
+}
+# Load the Engine list file.
+set ::engines(list) {}
+if {[catch {safeSource [scidConfigFile engines] {} [list ::engine ::configAddEngine]}] &&
+  [file exists [scidConfigFile engines]]} {
+  tk_messageBox -message $::errorInfo
+}
 
 proc calculateTreeviewRowHeight { } {
   set row_height [expr { round(1.1 * [font metrics font_Regular -linespace]) }]
@@ -693,6 +712,22 @@ set ::clipbase_db [sc_info clipbase]
 sc_base switch $::clipbase_db
 set ::curr_db [sc_base current]
 
+proc ::legacy_engine {args} {
+  if {[info procs [lindex $args 0]] eq ""} {
+    if {[lindex $args 0] eq "updateAnalysis"} { return }
+
+    uplevel #0 {
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/uci.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/analysis.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/tacgame.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/sergame.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/calvar.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/tactics.tcl"]]
+      source -encoding utf-8 [file nativename [file join $::scidTclDir "tools/reviewgame.tcl"]]
+    }
+  }
+  eval $args
+}
 
 set tcl_files {
 language.tcl
@@ -707,6 +742,7 @@ utils/sound.tcl
 utils/string.tcl
 utils/validate.tcl
 utils/win.tcl
+chart.tcl
 enginecfg.tcl
 enginecomm.tcl
 misc.tcl
@@ -743,7 +779,6 @@ tools/import.tcl
 tools/optable.tcl
 tools/preport.tcl
 tools/pinfo.tcl
-tools/analysis.tcl
 tools/wbdetect.tcl
 tools/graphs.tcl
 tools/ptracker.tcl
@@ -754,15 +789,9 @@ menus.tcl
 board.tcl
 move.tcl
 main.tcl
-tools/uci.tcl
 end.tcl
-tools/tacgame.tcl
-tools/sergame.tcl
-tools/calvar.tcl
 tools/fics.tcl
 tools/opening.tcl
-tools/tactics.tcl
-tools/reviewgame.tcl
 tools/inputengine.tcl
 tools/novag.tcl
 }

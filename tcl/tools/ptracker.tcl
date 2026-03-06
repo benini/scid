@@ -12,9 +12,6 @@ set ::ptrack::mode "-games"
 set ::ptrack::color blue
 set ::ptrack::colors [list black red yellow cyan blue xblack xred xyellow xcyan xblue]
 
-trace variable ::ptrack::moves(start) w {::utils::validate::Integer 999 0}
-trace variable ::ptrack::moves(end) w {::utils::validate::Integer 999 0}
-
 # ::ptrack::sq
 #   Given a square number (0=a1 to 63=h8), returns the square name.
 #
@@ -274,9 +271,11 @@ proc ::ptrack::make {} {
 
   set f $w.t.moves
   ttk::label $f.lfrom -text $::tr(TrackerMoves:) -font font_Bold
-  ttk::entry $f.from -width 3 -justify right -textvariable ::ptrack::moves(start)
+  ttk::entry $f.from -width 4 -justify right -textvariable ::ptrack::moves(start) \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   ttk::label $f.lto -text "-"
-  ttk::entry $f.to -width 3 -justify right -textvariable ::ptrack::moves(end)
+  ttk::entry $f.to -width 4 -justify right -textvariable ::ptrack::moves(end) \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   pack $f.lfrom $f.from $f.lto $f.to -side left -pady 5
   bind $f.from <FocusIn> [list +::ptrack::status $::tr(TrackerMovesStart)]
   bind $f.from <FocusOut> +::ptrack::status

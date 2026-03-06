@@ -105,10 +105,10 @@ proc ::move::showVarPopup {} {
 		} else {
 			for {set j 0} {$j < 5} {incr j} {
 				if {[set move [sc_game info nextMove]] eq ""} { break }
-				append line " \{[sc_pos getComment]\} $move"
+				append line " \{[regsub -all {\[%.*?\]} [sc_pos getComment] {}]\} $move"
 				sc_move forward
 			}
-			append line " \{[sc_pos getComment]\}"
+			append line " \{[regsub -all {\[%.*?\]} [sc_pos getComment] {}]\}"
 		}
 		# Normalize whitespace, remove " {}" occurrences, and truncate
 		set line [string range [string map {{ {}} {}} [regsub -all {\s+} $line { }]] 0 60]
@@ -248,6 +248,17 @@ proc ::move::Follow {{moveUCI}} {
 
 proc ::move::PGNOffset { location } {
 	sc_move pgn $location
-	updateBoard
+	::notify::PosChanged
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
+}
+
+proc ::move::MainLine {ply {expected_pos ""}} {
+	set location [sc_move pgn]
+	sc_move ply $ply
+	if {$expected_pos eq "" || $expected_pos eq [sc_game UCI_currentPos]} {
+		::notify::PosChanged
+		if {[::move::drawVarArrows]} { ::move::showVarArrows }
+	} else {
+		sc_move pgn $location
+	}
 }

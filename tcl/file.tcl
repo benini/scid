@@ -278,6 +278,8 @@ proc ::file::Close {{base -1}} {
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
+  if {$b == [sc_base current]} { return 1 }
+
   set err 1
   if {![catch {sc_base switch $b} res]} {
     set err 0

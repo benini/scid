@@ -263,6 +263,9 @@ proc ::win::manageWindow {wnd title} {
 proc ::win::createDialog {w {y 10}} {
 	toplevel $w -padx 10 -pady $y
 	::applyThemeColor_background $w
+
+	# Set up geometry for middle of screen:
+	after idle [list tk::PlaceWindow $w widget .]
 }
 
 # Make sure that a window is visible
@@ -744,7 +747,7 @@ proc ::docking::create_window {wnd} {
       "\.(fdock)?glistWin([0-9]+)"    { ::windows::gamelist::Open }
       "\.(fdock)?treeWin([0-9]+)"     { ::tree::make [lindex $regmatch end]}
       "\.(fdock)?engineWin([0-9]+)"   { ::enginewin::Open [lindex $regmatch end]}
-      "\.(fdock)?analysisWin([0-9]+)" { ::makeAnalysisWin [lindex $regmatch end] 0 0}
+      "\.(fdock)?analysisWin([0-9]+)" { ::legacy_engine ::makeAnalysisWin [lindex $regmatch end] 0 0}
       "\.(fdock)?crosstableWin"       { ::crosstab::Open }
       }
 }

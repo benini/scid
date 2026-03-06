@@ -20,11 +20,6 @@ proc ::plist::defaults {} {
 
 ::plist::defaults
 
-trace variable ::plist::minElo w [list ::utils::validate::Integer [sc_info limit elo] 0]
-trace variable ::plist::maxElo w [list ::utils::validate::Integer [sc_info limit elo] 0]
-trace variable ::plist::minGames w [list ::utils::validate::Integer 9999 0]
-trace variable ::plist::maxGames w [list ::utils::validate::Integer 9999 0]
-
 proc ::plist::toggle {} {
   set w .plist
   if {[winfo exists $w]} {
@@ -66,11 +61,9 @@ proc ::plist::Open {} {
   ::utils::history::SetCombobox ::plist::name $f.name
   focus $f.name
   ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
-  ttk::combobox $f.esize -width 4 -justify right -textvar ::plist::size -values {50 100 200 500 1000}
-  trace variable ::plist::size w {::utils::validate::Integer 1000 0}
-  # foreach n {50 100 200 500 1000} {
-    # $f.esize list insert end $n
-  # }
+  ttk::combobox $f.esize -textvariable ::plist::size -width 4 -justify right \
+    -values {50 100 200 500 1000} \
+    -validate key -validatecommand [list ::validate::integer %P 0 1000]
   pack $f.esize -side right -padx "0 8" -pady 2
   pack $f.size -side right -pady 2
   pack $f.nlabel -side left -padx "8 0" -pady 2
@@ -79,21 +72,17 @@ proc ::plist::Open {} {
   set f $w.o2
   ttk::frame $f
   ttk::label $f.elo -text "[tr PListSortElo]:" -font $fbold
-  ttk::entry $f.emin -textvariable ::plist::minElo
+  ttk::entry $f.emin -textvariable ::plist::minElo -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0]
   ttk::label $f.eto -text "-"
-  ttk::entry $f.emax -textvariable ::plist::maxElo
+  ttk::entry $f.emax -textvariable ::plist::maxElo -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0]
   ttk::label $f.games -text "[tr PListSortGames]:" -font $fbold
-  ttk::entry $f.gmin -textvariable ::plist::minGames
+  ttk::entry $f.gmin -textvariable ::plist::minGames -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0]
   ttk::label $f.gto -text "-"
-  ttk::entry $f.gmax -textvariable ::plist::maxGames
-
-  foreach entry {emin emax} {
-    $f.$entry configure -width 4 -justify right -font $font
-  }
-
-  foreach entry {gmin gmax} {
-    $f.$entry configure -width 6 -justify right -font $font
-  }
+  ttk::entry $f.gmax -textvariable ::plist::maxGames -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0]
 
   pack $f.elo -side left -padx "8 0"
   pack $f.emin $f.eto $f.emax -side left

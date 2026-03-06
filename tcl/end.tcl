@@ -141,6 +141,7 @@ proc mergeGame {base gnum} {
   dialogbutton $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
   packbuttons right $w.b.cancel $w.b.ok
+  tk::PlaceWindow $w pointer
   grab $w
   updateMergeGame $w [expr $merge(ply) / 2]
 }
@@ -451,18 +452,6 @@ set whiteElo 0; set blackElo 0; set eco 0; set extraTags ""
 set whiteRType "Elo"; set blackRType "Elo"
 set edate 0; set eyear 0; set emonth 0; set eday 0
 
-# Traces on game-save dialog variables to ensure sane values:
-
-trace variable resultVal w  ::utils::validate::Result
-trace variable whiteElo w {::utils::validate::Integer [sc_info limit elo] 0}
-trace variable blackElo w {::utils::validate::Integer [sc_info limit elo] 0}
-trace variable year w {::utils::validate::Integer [sc_info limit year] 1}
-trace variable month w {::utils::validate::Integer 12 1}
-trace variable day w {::utils::validate::Integer 31 1}
-trace variable eyear w {::utils::validate::Integer [sc_info limit year] 1}
-trace variable emonth w {::utils::validate::Integer 12 1}
-trace variable eday w {::utils::validate::Integer 31 1}
-
 set gsaveNum 0
 set i 0; set j 0
 set temp 0
@@ -507,11 +496,11 @@ proc clearMatchList { tw } {
 
 # Traces to update the match list as names are typed in:
 
-trace variable event w { updateMatchList .save.g.list e 9 }
-trace variable site  w { updateMatchList .save.g.list s 9 }
-trace variable white w { updateMatchList .save.g.list p 9 }
-trace variable black w { updateMatchList .save.g.list p 9 }
-trace variable round w { updateMatchList .save.g.list r 9 }
+trace add variable event write { updateMatchList .save.g.list e 9 }
+trace add variable site  write { updateMatchList .save.g.list s 9 }
+trace add variable white write { updateMatchList .save.g.list p 9 }
+trace add variable black write { updateMatchList .save.g.list p 9 }
+trace add variable round write { updateMatchList .save.g.list r 9 }
 
 set editName ""
 set editNameNew ""
@@ -522,10 +511,7 @@ set editNameRType "Elo"
 set editDate ""
 set editDateNew ""
 
-trace variable editNameRating w {::utils::validate::Integer [sc_info limit elo] 0}
-trace variable editName w { updateMatchList .nedit.g.list "" 9 }
-trace variable editDate w ::utils::validate::Date
-trace variable editDateNew w ::utils::validate::Date
+trace add variable editName write { updateMatchList .nedit.g.list "" 9 }
 
 proc editNameNewProc { tw nametype maxMatches name el op } {
   global editNameNew
@@ -538,7 +524,7 @@ proc editNameNewProc { tw nametype maxMatches name el op } {
   catch {updateMatchList $tw $nametype $maxMatches $name $el $op}
 }
 
-trace variable editNameNew w { editNameNewProc .nedit.g.list "" 9 }
+trace add variable editNameNew write { editNameNewProc .nedit.g.list "" 9 }
 
 
 set nameEditorWin 0
@@ -636,17 +622,20 @@ proc nameEditor {} {
   pack $w.g -side top -fill x
   ttk::label $w.g.fromL -textvar ::tr(NameEditReplace:) -font font_Bold -anchor e
   ttk::entry $w.g.fromE -width 40 -textvariable editName
-  ttk::entry $w.g.fromD -width 15 -textvariable editDate
+  ttk::entry $w.g.fromD -width 15 -textvariable editDate \
+    -validate key -validatecommand [list ::validate::date %P]
   grid $w.g.fromL -row 0 -column 1 -sticky e
   grid $w.g.fromE -row 0 -column 2 -sticky we
 
   ttk::label $w.g.toL -textvar ::tr(NameEditWith:) -font font_Bold -anchor e
   ttk::entry $w.g.toE -width 40 -textvariable editNameNew
-  ttk::entry $w.g.toD -width 15 -textvariable editDateNew
+  ttk::entry $w.g.toD -width 15 -textvariable editDateNew \
+    -validate key -validatecommand [list ::validate::date %P]
   grid $w.g.toL -row 1 -column 1 -sticky e
   grid $w.g.toE -row 1 -column 2 -sticky we
 
-  ttk::entry $w.g.ratingE -width 5 -textvariable editNameRating -justify right
+  ttk::entry $w.g.ratingE -width 5 -textvariable editNameRating -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 [sc_info limit elo]]
   set mlist [split [sc_info ratings] " "]
   ttk::menubutton $w.g.rtype -textvariable editNameRType -menu $w.g.rtype.menu
   menu $w.g.rtype.menu
@@ -738,7 +727,8 @@ proc gameSave { gnum } {
     wm title $w "Scid: [tr GameReplace]"
   }
   set gsaveNum $gnum
-  catch {grab $w}
+  tk::PlaceWindow $w pointer
+  grab $w
 
   set f [ttk::frame $w.g]
   ttk_text $f.list -height 9 -width 40 -state disabled \
@@ -760,7 +750,7 @@ proc gameSave { gnum } {
   set blackRType [sc_game tag get BlackRType]
   set eco [sc_game tag get ECO]
   set extraTags [sc_game tag get Extra]
-  if {[::board::isFlipped .main.board]} {
+  if {[main_isFlipped]} {
     regsub -all {FlipB "[01]"\n} $extraTags {} extraTags
     append extraTags "FlipB \"1\"\n"
   } else {
@@ -784,11 +774,14 @@ proc gameSave { gnum } {
 
   ttk::frame $f.dateframe
   ttk::label $f.datelabel -textvar ::tr(Date:)
-  ttk::entry $f.dateyear -width 6 -textvariable year -justify right
+  ttk::entry $f.dateyear -width 6 -textvariable year -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 [sc_info limit year]]
   ttk::label $f.datedot1 -text "."
-  ttk::entry $f.datemonth -width 3 -textvariable month -justify right
+  ttk::entry $f.datemonth -width 3 -textvariable month -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 12]
   ttk::label $f.datedot2 -text "."
-  ttk::entry $f.dateday -width 3 -textvariable day -justify right
+  ttk::entry $f.dateday -width 3 -textvariable day -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 31]
   grid $f.datelabel -row 2 -column 0 -sticky w
   grid $f.dateframe -row 2 -column 1 -columnspan 5 -sticky w
   ttk::button $f.datechoose -image tb_calendar -style Pad0.Small.TButton -command {
@@ -813,11 +806,14 @@ proc gameSave { gnum } {
 
   ttk::frame $f.edateframe
   ttk::label $f.edatelabel -textvar ::tr(EventDate:)
-  ttk::entry $f.edateyear -width 6 -textvariable eyear -justify right
+  ttk::entry $f.edateyear -width 6 -textvariable eyear -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 [sc_info limit year]]
   ttk::label $f.edatedot1 -text "."
-  ttk::entry $f.edatemonth -width 3 -textvariable emonth -justify right
+  ttk::entry $f.edatemonth -width 3 -textvariable emonth -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 12]
   ttk::label $f.edatedot2 -text "."
-  ttk::entry $f.edateday -width 3 -textvariable eday -justify right
+  ttk::entry $f.edateday -width 3 -textvariable eday -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 31]
   grid $f.edatelabel -row 3 -column 0 -sticky w
   grid $f.edateframe -row 3 -column 1 -columnspan 5 -sticky w
   ttk::button $f.edatechoose -image tb_calendar -style Pad0.Small.TButton -command {
@@ -858,13 +854,15 @@ proc gameSave { gnum } {
 
   ttk::combobox $f.wrtype -values [sc_info ratings] -width 7 -textvariable whiteRType
 
-  ttk::entry $f.weloentry -width 5 -textvariable whiteElo -justify right
+  ttk::entry $f.weloentry -width 5 -textvariable whiteElo -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 [sc_info limit elo]]
 
   ttk::label $f.belolabel -text "$::tr(Black) "
 
   ttk::combobox $f.brtype -values [sc_info ratings] -width 7 -textvariable blackRType
 
-  ttk::entry $f.beloentry -width 5 -textvariable blackElo -justify right
+  ttk::entry $f.beloentry -width 5 -textvariable blackElo -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 [sc_info limit elo]]
 
   grid $f.welolabel -row 8 -column 0 -sticky w
   grid $f.wrtype -row 8 -column 1 -sticky w
@@ -1025,65 +1023,6 @@ proc helpAbout {} {
   regsub ",  $" $str "." str
 
   tk_messageBox -title "About Scid" -message $str -type ok
-}
-
-
-proc MouseWheelRedirector {W X Y D} {
-    # Generate an MWheel virtual event to the window that has the mouse pointer
-    set w [winfo containing -displayof $W $X $Y]
-    # Check for active "grab"
-    set grabW [grab current $w]
-    if {$grabW != ""} { set w $grabW}
-    # For virtual events we can't use the attribute "-delta" and we get away
-    # without a global variable by using instead "-data" which maps to %d
-    event generate $w <<MWheel>> -data $D -rootx $X -rooty $Y
-}
-
-proc ShiftMouseWheelRedirector {W X Y D} {
-    set w [winfo containing -displayof $W $X $Y]
-    set grabW [grab current $w]
-    if {$grabW != ""} { set w $grabW}
-    event generate $w <<Shift-MWheel>> -data $D -rootx $X -rooty $Y
-}
-
-# On Windows, redirect mouse wheel events to those windows that have the
-# mouse pointer:
-# - Disable completely MouseWheel handling for all used classes. No class or
-#   window should listen to MouseWheel to avoid double firing
-# - Any window that receives a MouseWheel redirects these events as MWheel
-#   to the window with the mouse pointer
-# - Rebind all classes and windows that handle mouse wheel to MWheel events.
-#   Bind code is from TCL 8.5
-# On Linux and Macs this redirection is not necessary
-
-if { [tk windowingsystem] == "win32" } {
-    # Disable MouseWheel handling
-    set mw_classes [list Text Listbox Treeview]
-    foreach class $mw_classes { bind $class <MouseWheel> {} }
-
-    # Transform MouseWheel events into MWheel
-    bind all <MouseWheel> { MouseWheelRedirector %W %X %Y %D }
-    bind all <Shift-MouseWheel> { ShiftMouseWheelRedirector %W %X %Y %D }
-
-    # Bind classes to MWheel
-    bind Listbox <<MWheel>> { %W yview scroll [expr {-(%d/120) * 4}] units}
-    bind Treeview <<MWheel>> { %W yview scroll [expr {-(%d/120)}] units }
-    bind Text <<MWheel>> {
-	if {%d >= 0} { %W yview scroll [expr {-%d/3}] pixels
-	} else { %W yview scroll [expr {(2-%d)/3}] pixels }
-    }
-}
-
-# Forward MouseWheel events catched by ttk widgets
-foreach class {TCombobox TSpinbox TEntry TLabel TButton TCheckbutton TRadiobutton} {
-    if {[tk windowingsystem] eq "x11"} {
-        bind $class <Button-4> { event generate [winfo parent %W] <Button-4> -rootx %X -rooty %Y }
-        bind $class <Button-5> { event generate [winfo parent %W] <Button-5> -rootx %X -rooty %Y }
-    } elseif {[tk windowingsystem] eq "win32"} {
-        bind $class <MouseWheel> { event generate [winfo parent %W] <<MWheel>> -rootx %X -rooty %Y -data %D }
-    } else {
-        bind $class <MouseWheel> { event generate [winfo parent %W] <MouseWheel> -rootx %X -rooty %Y -delta %D }
-    }
 }
 
 #################

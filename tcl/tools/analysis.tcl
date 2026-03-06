@@ -144,7 +144,7 @@ proc resetAnalysis {{n 1}} {
 
 namespace eval enginelist {}
 
-set engines(list) {}
+set engines(sort) Time
 
 # engine:
 #   Adds an engine to the engine list.
@@ -228,9 +228,6 @@ proc ::enginelist::write {} {
     return 1
 }
 
-# Read the user Engine List file now:
-#
-catch { ::enginelist::read }
 if {[llength $engines(list)] == 0} {
     # No engines, so set up a default engine list:
     set phalanx "phalanx-scid"
@@ -426,8 +423,6 @@ proc ::enginelist::setTime {index {time -1}} {
     set e [lreplace $e 5 5 $time]
     set engines(list) [lreplace $engines(list) $index $index $e]
 }
-
-trace variable engines(newElo) w [list ::utils::validate::Integer [sc_info limit elo] 0]
 
 # ::enginelist::delete
 #   Removes an engine from the list.
@@ -793,9 +788,6 @@ proc configAnnotation {} {
         return
     }
 
-    trace variable blunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
-    trace variable tempdelay w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
-    
     set tempdelay [expr {$autoplayDelay / 1000.0}]
     win::createDialog $w
     ::setTitle $w "Scid: $::tr(Annotate)"
@@ -3075,7 +3067,6 @@ proc updateAnalysis {{n 1}} {
 ################################################################################
 
 set temptime 0
-trace variable temptime w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
 
 proc setAutomoveTime {{n 1}} {
     global analysis temptime dialogResult

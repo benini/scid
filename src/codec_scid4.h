@@ -27,6 +27,7 @@
 
 #include "codec.h"
 #include "filebuf.h"
+#include "filemap.h"
 #include "index.h"
 #include "namebase.h"
 #include <limits>
@@ -39,8 +40,7 @@ class CodecSCID4 : public ICodecDatabase {
 	NameBase* nb_ = nullptr;
 	std::vector<std::string> filenames_;
 	Filebuf idxfile_;
-	FilebufAppend gfile_;
-	char gamecache_[1ULL << 17];
+	FileMap<> gfile_;
 	gamenumT seqWrite_ = 0;
 
 	struct {
@@ -89,17 +89,11 @@ public: // ICodecDatabase interface
 	errorT setExtraInfo(const char* tagname, const char* new_value) override;
 
 	ByteBuffer getGameData(uint64_t offset, uint32_t length) final {
-		if (offset >= gfile_.size())
-			return {nullptr, 0};
-		if (length >= LIMIT_GAMELEN)
-			return {nullptr, 0};
-
-		if (gfile_.pubseekpos(offset) == -1)
-			return {nullptr, 0};
-		if (gfile_.sgetn(gamecache_, length) != std::streamsize(length))
+		auto data = gfile_.view_at(offset, length);
+		if (data.size() != length)
 			return {nullptr, 0};
 
-		return {reinterpret_cast<const byte*>(gamecache_), length};
+		return {reinterpret_cast<const byte*>(data.data()), data.size()};
 	}
 
 	ByteBuffer getGameMoves(IndexEntry const& ie) final {

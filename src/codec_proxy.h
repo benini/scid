@@ -143,7 +143,7 @@ private:
 	errorT dyn_open(fileModeT fMode, const char* filename,
 	                const Progress& progress, Index* idx, NameBase* nb) final {
 		if (filename == 0)
-			return ERROR;
+			return ERROR_FileMode;
 
 		errorT err = CodecMemory::dyn_open(FMODE_Create, filename, progress,
 		                                   idx, nb);

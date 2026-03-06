@@ -321,6 +321,10 @@ public:
     }
     /// @return an "UCI position" string that leads to the current position
     std::string currentPosUCI() const;
+    /// @return the main line as a vector of UCI strings. The first element is
+    /// the setup (e.g., "position startpos moves"), then moves (e.g., "e2e4").
+    /// Null moves are replaced with the setup: "position fen [FEN] moves".
+    std::vector<std::string> mainLineUCI() const;
     simpleMoveT* GetCurrentMove() { // Deprecated
         return CurrentMove->endMarker() ? nullptr : &CurrentMove->moveData;
     }

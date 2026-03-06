@@ -2,7 +2,7 @@
 ### misc.tcl: part of Scid.
 ### Copyright (C) 2001  Shane Hudson.
 ### Copyright (C) 2007  Pascal Georges
-### Copyright (C) 2015  Fulvio Benini
+### Copyright (C) 2015-2026  Fulvio Benini
 ###
 ### Miscellaneous routines called by other Tcl functions
 
@@ -26,28 +26,6 @@ proc vwaitTimed { var {delay 0} {warn "warnuser"} } {
 
   if [info exists timerId] { after cancel $timerId }
 
-}
-
-## FROM TK 8.5.9
-## ttk::bindMouseWheel $bindtag $command...
-#	Adds basic mousewheel support to $bindtag.
-#	$command will be passed one additional argument
-#	specifying the mousewheel direction (-1: up, +1: down).
-#
-
-proc bindMouseWheel {bindtag callback} {
-    switch -- [tk windowingsystem] {
-	x11 {
-	    bind $bindtag <ButtonPress-4> "$callback -1; break"
-	    bind $bindtag <ButtonPress-5> "$callback +1; break"
-	}
-	win32 {
-	    bind $bindtag <<MWheel>> "[append callback { [expr {-(%d/120)}]}]; break"
-	}
-	aqua {
-	    bind $bindtag <MouseWheel> "[append callback { [expr {-(%D)}]} ]; break"
-	}
-    }
 }
 
 # dialogbuttonframe:
@@ -165,7 +143,11 @@ proc autoscrollBars {bars frame w {frame_row 0}} {
     grid columnconfigure $frame 1 -weight 0
     set _autoscroll($frame.ybar) 1
     set _autoscroll(time:$frame.ybar) 0
-    bindMouseWheel $w "_autoscrollMouseWheel $w $frame.ybar"
+    bind $w <MouseWheel> [list apply {{ybar} {
+      event generate $ybar <MouseWheel> -delta %D
+      return -code break
+    }} $frame.ybar]
+    append bindTouchpad [list event generate $frame.ybar <TouchpadScroll> -delta %D] \n
   }
   incr frame_row
   if {$bars == "x"  ||  $bars == "both"} {
@@ -175,12 +157,11 @@ proc autoscrollBars {bars frame w {frame_row 0}} {
     grid rowconfigure $frame $frame_row -weight 0
     set _autoscroll($frame.xbar) 1
     set _autoscroll(time:$frame.xbar) 0
+    append bindTouchpad [list event generate $frame.xbar <TouchpadScroll> -delta %D] \n
   }
-}
-
-proc _autoscrollMouseWheel {{w} {bar} {direction}} {
-  if {$::_autoscroll($bar) == 0} return
-  $w yview scroll $direction units
+  catch { # In Tk 8.6, touchpad gestures already produce <MouseWheel> events
+    bind $w <TouchpadScroll> [append bindTouchpad [list return -code break]]
+  }
 }
 
 array set _autoscroll {}
@@ -318,10 +299,6 @@ proc progressWindow { title text {button ""} {command "progressBarCancel"} } {
   grid remove $w.f.cmsg
   if {$button == ""} { grid remove $w.f.cancel }
 
-  # Set up geometry for middle of screen:
-  set x [expr ([winfo screenwidth $w] - 400) / 2]
-  set y [expr ([winfo screenheight $w] - 40) / 2]
-  wm geometry $w +$x+$y
   grab $w
 
   progressBarSet $w.f.c 401 21
@@ -357,12 +334,11 @@ proc progressCallBack {done {msg ""}} {
     return -code break
   }
 
-  set elapsed [expr { [clock milliseconds] - $::progressCanvas(time) }]
+  set elapsed_ms [expr { [clock milliseconds] - $::progressCanvas(time) }]
+  set elapsed [expr { int($elapsed_ms / 1000) }]
   if {$done != 0} {
-    set estimated [expr { int($elapsed / double($done) / 1000) }]
-    set elapsed [expr { $elapsed / 1000 }]
+    set estimated [expr { int($elapsed_ms / double($done) / 1000) }]
   } else {
-    set elapsed [expr { $elapsed / 1000 }]
     set estimated $elapsed
   }
 
@@ -383,7 +359,11 @@ proc progressCallBack {done {msg ""}} {
     }
   }
 
-  update
+  ::board::suspend_animations
+  if {$elapsed_ms > 30 } {
+    update
+  }
+  ::board::restore_animations
 
   if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
     #Interrupted
@@ -452,6 +432,63 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   $w.lb current $selected
   event generate $w.lb <<ComboboxSelected>>
 }
+
+# Dynamically collapses menubuttons.
+# When widgets don't fit, they are hidden and their menus are consolidated into an
+# overflow menubutton.
+#   container    - The parent widget containing the menubuttons
+#   overflowName - Name of the overflow menubutton (relative to container)
+#   collapsible  - Dictionary mapping widget names to their submenu labels,
+#                  ordered by collapse priority (last items collapse first)
+proc collapseMenubuttons {container overflowName collapsible} {
+    set avail [winfo width $container]
+    if {$avail <= 1} { return }
+
+    set slaves [grid slaves $container]
+    set req [::tcl::mathop::+ {*}[lmap e $slaves {winfo reqwidth $e}]]
+
+    set currentHidden {}
+    set collapsed $container.$overflowName
+    if {$collapsed in $slaves} {
+        incr req -[winfo reqwidth $collapsed]
+        foreach name [lreverse [dict keys $collapsible]] {
+            set widget $container.$name
+            if {$widget ni $slaves} {
+                lappend currentHidden $name
+                incr req [winfo reqwidth $widget]
+            }
+        }
+    }
+    set willHide {}
+    if {$req > $avail} {
+        incr req [winfo reqwidth $collapsed]
+        foreach name [lreverse [dict keys $collapsible]] {
+            if {$req <= $avail} { break }
+            lappend willHide $name
+            incr req -[winfo reqwidth $container.$name]
+        }
+    }
+    if {$willHide eq $currentHidden} { return }
+
+    foreach name [dict keys $collapsible] {
+        grid $container.$name
+    }
+    if {[llength $willHide] == 0} {
+        grid remove $collapsed
+    } else {
+        foreach name $willHide {
+            grid remove $container.$name
+        }
+        set m [$collapsed cget -menu]
+        $m delete 0 end
+        foreach name [lreverse $willHide] {
+            set submenu [$container.$name cget -menu]
+            $m add cascade -label [dict get $collapsible $name] -menu $submenu
+        }
+        grid $collapsed
+    }
+}
+
 proc storeEmtComment { h m s } {
     set time "[format "%d" $h]:[format "%02d" $m]:[format "%02d" $s]"
 

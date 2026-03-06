@@ -26,12 +26,12 @@
 
 // Piece letters translation
 int language = 0; // default to english
-//  0 = en, 
+//  0 = en,
 //  1 = fr, 2 = es, 3 = de, 4 = it, 5 = ne, 6 = cz
 //  7 = hu, 8 = no, 9 = sw, 10 = ca, 11 = fi, 12 = gr
 //  TODO Piece translations for greek
-const char * langPieces[] = { "", 
-"PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", 
+const char * langPieces[] = { "",
+"PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS",
 "PPKRQDRTBANC", "PpKKQDRTBLNP", "PPKKQDRVBSNJ",
 "PGKKQVRBBFNH", "PBKKQDRTBLNS", "PBKKQDRTBLNS", "PPKRQDRTBANC", "PSKKQDRTBLNR", "" };
 
@@ -835,6 +835,35 @@ std::string Game::currentPosUCI() const {
 		it = (*m)->moveData.toLongNotation(it);
 	}
 	res.resize(std::distance(res.data(), it)); // shrink
+	return res;
+}
+
+std::vector<std::string> Game::mainLineUCI() const {
+	std::vector<std::string> res;
+	char buf[256] = {};
+	if (HasNonStandardStart(buf)) {
+		res.push_back(std::string("position fen ") + buf + " moves");
+	} else {
+		res.push_back("position startpos moves");
+	}
+	auto it_pos = std::unique_ptr<Position>{};
+	auto it = FirstMove->Next();
+	for (auto m = it; !m->endMarker(); m = m->Next()) {
+		if (m->isNull()) {
+			if (!it_pos) {
+				it_pos = std::make_unique<Position>(
+				    StartPos ? *StartPos : Position::getStdStart());
+			}
+			for (auto end = m->Next(); it != end; it = it->Next()) {
+				it_pos->DoSimpleMove(it->moveData);
+			}
+			it_pos->PrintFEN(buf);
+			res.push_back(std::string("position fen ") + buf + " moves");
+		} else {
+			auto end = m->moveData.toLongNotation(buf);
+			res.emplace_back(buf, end);
+		}
+	}
 	return res;
 }
 

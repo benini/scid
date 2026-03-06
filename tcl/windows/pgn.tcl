@@ -249,7 +249,7 @@ namespace eval pgn {
     set offSet [sc_pos pgnOffset]
     sc_move pgn [string range $moveTag 2 end]
     set bd [sc_pos board]
-    if {[::board::isFlipped .main.board]} {set bd [string reverse [lindex $bd 0]]}
+    if {[main_isFlipped]} {set bd [string reverse [lindex $bd 0]]}
     sc_move pgn $offSet
 
     ::board::popup .pgnPopup $bd $xc $yc

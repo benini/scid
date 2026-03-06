@@ -460,7 +460,7 @@ namespace eval tactics {
     #
     ################################################################################
     proc isPlayerTurn {} {
-        if { [sc_pos side] == "white" &&  ![::board::isFlipped .main.board] || [sc_pos side] == "black" &&  [::board::isFlipped .main.board] } {
+        if { [sc_pos side] == "white" &&  ![main_isFlipped] || [sc_pos side] == "black" &&  [main_isFlipped] } {
             return 1
         }
         return 0
@@ -485,7 +485,7 @@ namespace eval tactics {
         ::tactics::resetValues
         ::notify::GameChanged
         ::notify::DatabaseChanged
-        if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
+        if { [sc_pos side] == "white" && [main_isFlipped] || [sc_pos side] == "black" &&  ![main_isFlipped] } {
             ::board::flip .main.board
         }
         set ::tactics::prevFen [sc_pos fen]

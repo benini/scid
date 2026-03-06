@@ -1,20 +1,22 @@
 #!/bin/bash
 
+TCL_BRANCH="${1:-core-8-6-branch}"
+
 if [ -z "$Build_SourcesDirectory" ]; then
   Build_SourcesDirectory=$(pwd)
 fi
 
 cd $Build_SourcesDirectory
 mkdir -p tcltk && cd tcltk
-git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tcl.git
+git clone --depth=1 --branch "$TCL_BRANCH" https://github.com/tcltk/tcl.git
 cd tcl/unix
-./configure --prefix=$Build_SourcesDirectory/tcltk --enable-64bit --disable-shared
+./configure --prefix=$Build_SourcesDirectory/tcltk --enable-64bit --disable-shared --disable-zipfs
 make -j
 make install
 
 cd $Build_SourcesDirectory
 mkdir -p tcltk && cd tcltk
-git clone --depth=1 --branch core-8-6-branch https://github.com/tcltk/tk.git
+git clone --depth=1 --branch "$TCL_BRANCH" https://github.com/tcltk/tk.git
 # LAYOUT_WITH_BASE_CHUNKS is not thread safe
 sed -i'' -e '/define TK_LAYOUT_WITH_BASE_CHUNKS/d' tk/macosx/tkMacOSXInt.h
 sed -i'' -e '/define TK_DRAW_IN_CONTEXT/d' tk/macosx/tkMacOSXInt.h
@@ -39,7 +41,8 @@ else
   EXTRA_TCL_LIBS="-lz -ldl"
 fi
 
-tcltk/bin/tclsh8.6 configure \
+TCLSH=$(ls tcltk/bin/tclsh* 2>/dev/null | head -1)
+$TCLSH configure \
   LIBS="$EXTRA_TCL_LIBS" \
   SHAREDIR="$Build_SourcesDirectory/Scid.app/Contents/scid" \
   BINDIR="$Build_SourcesDirectory/Scid.app/Contents/MacOS"

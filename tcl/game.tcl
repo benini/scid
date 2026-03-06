@@ -111,14 +111,6 @@ proc ::game::LoadMenu {w base gnum x y} {
   event generate $m <ButtonPress-1>
 }
 
-
-# ::game::moveEntryNumber
-#
-#   Entry variable for GotoMoveNumber dialog.
-#
-set ::game::moveEntryNumber ""
-trace variable ::game::moveEntryNumber w {::utils::validate::Regexp {^[0-9]*$}}
-
 # ::game::GotoMoveNumber
 #
 #    Prompts for the move number to go to in the current game.
@@ -134,7 +126,8 @@ proc ::game::GotoMoveNumber {} {
   ttk::label $f.label -text $::tr(GotoMoveNumber)
   pack $f.label -side top -pady 5 -padx 5
 
-  ttk::entry $f.entry -width 8 -textvariable ::game::moveEntryNumber
+  ttk::entry $f.entry -width 8 -textvariable ::game::moveEntryNumber \
+    -validate key -validatecommand [list ::validate::integer %P 0]
   bind $f.entry <Escape> { .mnumDialog.f.buttons.cancel invoke }
   bind $f.entry <Return> { .mnumDialog.f.buttons.load invoke }
   pack $f.entry -side top -pady 5
@@ -288,7 +281,7 @@ proc ::game::ConfirmDiscard {} {
   grid $w.backBtn     -row 4 -column 1 -sticky e -padx 10 -pady "14 4"
   grid columnconfigure $w 2 -weight 1
 
-  tk::PlaceWindow $w
+  tk::PlaceWindow $w pointer
   grab $w
   tkwait window $w
   return $::game::answer
@@ -364,8 +357,8 @@ namespace eval ::notify {
     updateMainToolbar
     updateTitle
     if {$::showGameInfo} { updateGameInfo }
-    updateAnalysis 1
-    updateAnalysis 2
+    ::legacy_engine updateAnalysis 1
+    ::legacy_engine updateAnalysis 2
     ::windows::commenteditor::Refresh
     if {[winfo exists .twinchecker]} { updateTwinChecker }
     if {[winfo exists .bookWin]} { ::book::refresh }

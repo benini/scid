@@ -70,16 +70,6 @@ proc ::search::header::defaults {} {
 }
 ::search::header::defaults
 
-trace variable sDateMin w ::utils::validate::Date
-trace variable sDateMax w ::utils::validate::Date
-trace variable sEventDateMin w ::utils::validate::Date
-trace variable sEventDateMax w ::utils::validate::Date
-
-# Forcing ECO entry to be valid ECO codes:
-foreach i {sEcoMin sEcoMax} {
-  trace variable $i w {::utils::validate::Regexp {^$|^[A-Ea-e]$|^[A-Ea-e][0-9]$|^[A-Ea-e][0-9][0-9]$|^[A-Ea-e][0-9][0-9][a-z]$|^[A-Ea-e][0-9][0-9][a-z][1-4]$}}
-}
-
 set sHeaderFlagFrame 0
 
 # ::search::header
@@ -97,82 +87,138 @@ proc search::headerCreateFrame { w } {
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res gl ends eco} {
-    ttk::frame $w.$frame
-  }
-
   set regular font_Small
-  ttk::labelframe $w.player -text $::tr(Player)
-  pack $w.player -side top -fill x -pady 5
   set elo_limit [sc_info limit elo]
-  foreach color {White Black} {
-    pack $w.c$color -side top -fill x -in $w.player
-    ttk::label $w.c$color.lab -textvar ::tr($color:) -width 9 -anchor w
-    ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
-    ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
 
-    ttk::label $w.c$color.space
-    ttk::label $w.c$color.elo1 -textvar ::tr(Rating:)
-    ttk::entry $w.c$color.elomin -textvar s${color}EloMin -width 6 -justify right \
-      -validate key -validatecommand [list ::validate::integer %P 0 $elo_limit]
-    ttk::label $w.c$color.elo2 -text "-"
-    ttk::entry $w.c$color.elomax -textvar s${color}EloMax -width 6 -justify right \
-      -validate key -validatecommand [list ::validate::integer %P 0 $elo_limit]
+  # Configure main window grid - two columns: left (main content) and right (flags)
+  grid columnconfigure $w 0 -weight 1
+  grid columnconfigure $w 1 -weight 0
+  grid rowconfigure $w 0 -weight 1
 
-    pack $w.c$color.lab $w.c$color.e $w.c$color.space -side left
-    pack $w.c$color.elomax $w.c$color.elo2 $w.c$color.elomin $w.c$color.elo1 -side right
+  # ============ LEFT SIDE CONTAINER ============
+  ttk::frame $w.left
+  grid $w.left -row 0 -column 0 -sticky nsew -padx "0 5"
+  grid columnconfigure $w.left 0 -weight 1
+
+  # Create sub-frames
+  foreach frame {cWhite cBlack ignore tw tb eventsite eventround date res gl ends eco} {
+    ttk::frame $w.left.$frame
   }
 
-  pack $w.ignore -side top -fill x -in $w.player
-  ttk::checkbutton $w.ignore.yes -variable sIgnoreCol -onvalue Yes -offvalue No -textvar ::tr(IgnoreColors)
-  pack $w.ignore.yes -side left
-  ttk::label $w.ignore.rdiff -textvar ::tr(RatingDiff:)
-  ttk::entry $w.ignore.rdmin -width 6 -textvar sEloDiffMin -justify right \
+  set mainRow 0
+
+  # ============ PLAYER SECTION ============
+  ttk::labelframe $w.left.player -text $::tr(Player)
+  grid $w.left.player -row $mainRow -column 0 -sticky ew -pady 5
+  incr mainRow
+  grid columnconfigure $w.left.player 0 -weight 1
+
+  set playerRow 0
+  foreach color {White Black} {
+    grid $w.left.c$color -row $playerRow -column 0 -sticky ew -in $w.left.player
+    incr playerRow
+
+    ttk::label $w.left.c$color.lab -textvar ::tr($color:) -width 9 -anchor w
+    ttk::combobox $w.left.c$color.e -textvariable "s$color" -width 40
+    ::utils::history::SetCombobox HeaderSearch$color $w.left.c$color.e
+
+    ttk::label $w.left.c$color.space
+    ttk::label $w.left.c$color.elo1 -textvar ::tr(Rating:)
+    ttk::entry $w.left.c$color.elomin -textvar s${color}EloMin -width 6 -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 $elo_limit]
+    ttk::label $w.left.c$color.elo2 -text "-"
+    ttk::entry $w.left.c$color.elomax -textvar s${color}EloMax -width 6 -justify right \
+      -validate key -validatecommand [list ::validate::integer %P 0 $elo_limit]
+
+    grid $w.left.c$color.lab     -row 0 -column 0 -sticky w
+    grid $w.left.c$color.e       -row 0 -column 1 -sticky w
+    grid $w.left.c$color.space   -row 0 -column 2 -sticky ew
+    grid $w.left.c$color.elo1    -row 0 -column 3 -sticky e
+    grid $w.left.c$color.elomin  -row 0 -column 4 -sticky e
+    grid $w.left.c$color.elo2    -row 0 -column 5 -sticky e
+    grid $w.left.c$color.elomax  -row 0 -column 6 -sticky e
+    grid columnconfigure $w.left.c$color 2 -weight 1
+  }
+
+  # Ignore colors row
+  grid $w.left.ignore -row $playerRow -column 0 -sticky ew -in $w.left.player
+  incr playerRow
+
+  ttk::checkbutton $w.left.ignore.yes -variable sIgnoreCol -onvalue Yes -offvalue No -textvar ::tr(IgnoreColors)
+  ttk::label $w.left.ignore.rdiff -textvar ::tr(RatingDiff:)
+  ttk::entry $w.left.ignore.rdmin -width 6 -textvar sEloDiffMin -justify right \
     -validate key -validatecommand [list ::validate::integer %P -$elo_limit $elo_limit]
-  ttk::label $w.ignore.rdto -text "-"
-  ttk::entry $w.ignore.rdmax -width 6 -textvar sEloDiffMax -justify right \
+  ttk::label $w.left.ignore.rdto -text "-"
+  ttk::entry $w.left.ignore.rdmax -width 6 -textvar sEloDiffMax -justify right \
     -validate key -validatecommand [list ::validate::integer %P -$elo_limit $elo_limit]
 
-  pack $w.ignore.rdmax $w.ignore.rdto $w.ignore.rdmin $w.ignore.rdiff -side right
+  grid $w.left.ignore.yes    -row 0 -column 0 -sticky w
+  grid $w.left.ignore.rdiff  -row 0 -column 1 -sticky e
+  grid $w.left.ignore.rdmin  -row 0 -column 2 -sticky e
+  grid $w.left.ignore.rdto   -row 0 -column 3 -sticky e
+  grid $w.left.ignore.rdmax  -row 0 -column 4 -sticky e
+  grid columnconfigure $w.left.ignore 0 -weight 1
 
-  pack [ttk::separator $w.sep] -side top -fill x -in $w.player
+  # Separator
+  grid [ttk::separator $w.left.sep] -row $playerRow -column 0 -sticky ew -in $w.left.player
+  incr playerRow
+
+  # FIDE titles
   set spellstate normal
   if {[lindex [sc_name read] 0] == 0} { set spellstate disabled }
   foreach c {w b} name {White Black} {
-    pack $w.t$c -side top -fill x -in $w.player
-    ttk::label $w.t$c.label -text "$::tr($name) FIDE:" -width 14 -anchor w
-    pack $w.t$c.label -side left
+    grid $w.left.t$c -row $playerRow -column 0 -sticky ew -in $w.left.player
+    incr playerRow
+
+    ttk::label $w.left.t$c.label -text "$::tr($name) FIDE:" -width 14 -anchor w
+    grid $w.left.t$c.label -row 0 -column 0 -sticky w
+
+    set col 1
     foreach i $sTitleList {
-      set name [string toupper $i]
-      if {$i == "none"} { set name "-" }
-      ttk::checkbutton $w.t$c.b$i -text $name -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
-      pack $w.t$c.b$i -side left -padx "0 10"
+      set titleName [string toupper $i]
+      if {$i == "none"} { set titleName "-" }
+      ttk::checkbutton $w.left.t$c.b$i -text $titleName -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
+      grid $w.left.t$c.b$i -row 0 -column $col -sticky w -padx "0 10"
+      incr col
     }
   }
 
-  lower $w.player
+  lower $w.left.player
 
-  ttk::labelframe $w.tournement -text $::tr(Event)
-  pack $w.tournement -side top -fill x -pady 5
-  set f $w.eventsite
-  pack $f -side top -fill x -in $w.tournement -pady "0 3"
-  foreach i {Event Site} {
-    ttk::label $f.l$i -textvar ::tr(${i}:)
-    ttk::combobox $f.e$i -textvariable s$i -width 30
-    ::utils::history::SetCombobox HeaderSearch$i $f.e$i
-  }
-  pack $f.lEvent $f.eEvent -side left
-  pack $f.eSite -side right
-  pack $f.lSite -side right -padx "10 0"
+  # ============ TOURNAMENT SECTION ============
+  ttk::labelframe $w.left.tournement -text $::tr(Event)
+  grid $w.left.tournement -row $mainRow -column 0 -sticky ew -pady 5
+  incr mainRow
+  grid columnconfigure $w.left.tournement 0 -weight 1
 
-  set f $w.eventround
-  pack $f -side top -fill x -in $w.tournement
-  lower $w.tournement
-  ## Setup date of Event
+  set tournRow 0
+
+  # Event and Site row
+  set f $w.left.eventsite
+  grid $f -row $tournRow -column 0 -sticky ew -in $w.left.tournement -pady "0 3"
+  incr tournRow
+
+  ttk::label $f.lEvent -textvar ::tr(Event:)
+  ttk::combobox $f.eEvent -textvariable sEvent -width 30
+  ::utils::history::SetCombobox HeaderSearchEvent $f.eEvent
+  ttk::label $f.lSite -textvar ::tr(Site:)
+  ttk::combobox $f.eSite -textvariable sSite -width 30
+  ::utils::history::SetCombobox HeaderSearchSite $f.eSite
+
+  grid $f.lEvent -row 0 -column 0 -sticky w
+  grid $f.eEvent -row 0 -column 1 -sticky w
+  grid $f.lSite  -row 0 -column 2 -sticky e -padx "10 0"
+  grid $f.eSite  -row 0 -column 3 -sticky e
+  grid columnconfigure $f 1 -weight 1
+
+  # Event date and round row
+  set f $w.left.eventround
+  grid $f -row $tournRow -column 0 -sticky ew -in $w.left.tournement
+  incr tournRow
+
   ttk::label $f.dl1 -text "$::tr(Event)\n$::tr(Date:)"
-  ttk::label $f.dl2 -text "-"
-  ttk::label $f.dl3 -text " "
-  ttk::entry $f.demin -textvariable sEventDateMin -width 10
+  ttk::entry $f.demin -textvariable sEventDateMin -width 10 \
+    -validate key -validatecommand [list ::validate::date %P]
   ttk::button $f.deminCal -image tb_calendar -style Pad0.Small.TButton -command {
     regsub -all {[.]} $sEventDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -180,7 +226,9 @@ proc search::headerCreateFrame { w } {
       set sEventDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.demax -textvariable sEventDateMax -width 10
+  ttk::label $f.dl2 -text "-"
+  ttk::entry $f.demax -textvariable sEventDateMax -width 10 \
+    -validate key -validatecommand [list ::validate::date %P]
   ttk::button $f.demaxCal -image tb_calendar -style Pad0.Small.TButton -command {
     regsub -all {[.]} $sEventDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -190,25 +238,36 @@ proc search::headerCreateFrame { w } {
   }
   bind $f.demin <FocusOut> +checkDates
   bind $f.demax <FocusOut> +checkDates
+  ttk::label $f.dl3 -text " "
   ttk::button $f.dlyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
     set sEventDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
     set sEventDateMax [::utils::date::today]
   }
   ::utils::tooltip::Set $f.dlyear $::tr(YearToTodayTooltip)
 
-  pack $f.dl1 $f.demin $f.deminCal $f.dl2 $f.demax $f.demaxCal $f.dl3 $f.dlyear -side left
-
   ttk::label $f.lRound -textvar ::tr(Round:)
   ttk::entry $f.eRound -textvariable sRound -width 10
-  pack $f.eRound $f.lRound -side right
 
-  set f $w.date
-  pack $f -side top -fill x -in $w.tournement -pady "0 3"
-  ## Setup Date of Game
+  grid $f.dl1      -row 0 -column 0 -sticky w
+  grid $f.demin    -row 0 -column 1 -sticky w
+  grid $f.deminCal -row 0 -column 2 -sticky w
+  grid $f.dl2      -row 0 -column 3 -sticky w
+  grid $f.demax    -row 0 -column 4 -sticky w
+  grid $f.demaxCal -row 0 -column 5 -sticky w
+  grid $f.dl3      -row 0 -column 6 -sticky w
+  grid $f.dlyear   -row 0 -column 7 -sticky w
+  grid $f.lRound   -row 0 -column 8 -sticky e
+  grid $f.eRound   -row 0 -column 9 -sticky e
+  grid columnconfigure $f 8 -weight 1
+
+  # Game date row
+  set f $w.left.date
+  grid $f -row $tournRow -column 0 -sticky ew -in $w.left.tournement -pady "0 3"
+  incr tournRow
+
   ttk::label $f.l1 -text "$::tr(game)\n$::tr(Date:)"
-  ttk::label $f.l2 -text "-"
-  ttk::label $f.l3 -text " "
-  ttk::entry $f.emin -textvariable sDateMin -width 10
+  ttk::entry $f.emin -textvariable sDateMin -width 10 \
+    -validate key -validatecommand [list ::validate::date %P]
   ttk::button $f.eminCal -image tb_calendar -style Pad0.Small.TButton -command {
     regsub -all {[.]} $sDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -216,7 +275,9 @@ proc search::headerCreateFrame { w } {
       set sDateMin "[lindex $ndate 0].[lindex $ndate 1].[lindex $ndate 2]"
     }
   }
-  ttk::entry $f.emax -textvariable sDateMax -width 10
+  ttk::label $f.l2 -text "-"
+  ttk::entry $f.emax -textvariable sDateMax -width 10 \
+    -validate key -validatecommand [list ::validate::date %P]
   ttk::button $f.emaxCal -image tb_calendar -style Pad0.Small.TButton -command {
     regsub -all {[.]} $sDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
@@ -226,48 +287,93 @@ proc search::headerCreateFrame { w } {
   }
   bind $f.emin <FocusOut> +checkDates
   bind $f.emax <FocusOut> +checkDates
+  ttk::label $f.l3 -text " "
   ttk::button $f.lyear -textvar ::tr(YearToToday) -style Pad0.Small.TButton -command {
     set sDateMin "[expr [::utils::date::today year]-1].[::utils::date::today month].[::utils::date::today day]"
     set sDateMax [::utils::date::today]
   }
   ::utils::tooltip::Set $f.lyear $::tr(YearToTodayTooltip)
 
-  pack $f.l1 $f.emin $f.eminCal $f.l2 $f.emax $f.emaxCal $f.l3 $f.lyear -side left
+  grid $f.l1      -row 0 -column 0 -sticky w
+  grid $f.emin    -row 0 -column 1 -sticky w
+  grid $f.eminCal -row 0 -column 2 -sticky w
+  grid $f.l2      -row 0 -column 3 -sticky w
+  grid $f.emax    -row 0 -column 4 -sticky w
+  grid $f.emaxCal -row 0 -column 5 -sticky w
+  grid $f.l3      -row 0 -column 6 -sticky w
+  grid $f.lyear   -row 0 -column 7 -sticky w
 
-  ttk::labelframe $w.result -text $::tr(Result)
-  pack $w.result -side top -fill x -pady 5
-  pack $w.res -side top -fill x -in $w.result
-  ttk::label $w.res.l1 -textvar ::tr(Result:)
-  ttk::checkbutton $w.res.ewin -text "1-0 " -variable sResWin -offvalue "1" -onvalue ""
-  ttk::checkbutton $w.res.edraw -text "1/2-1/2 " -variable sResDraw -offvalue "=" -onvalue ""
-  ttk::checkbutton $w.res.eloss -text "0-1 " -variable sResLoss -offvalue "0" -onvalue ""
-  ttk::checkbutton $w.res.eother -text "* " -variable sResOther -offvalue "*" -onvalue ""
-  pack $w.res.l1 $w.res.ewin $w.res.edraw $w.res.eloss $w.res.eother -side left
-  lower $w.result
+  lower $w.left.tournement
 
-  ttk::label $w.gl.l1 -textvar ::tr(GameLength:)
-  ttk::label $w.gl.l2 -text "-"
-  ttk::label $w.gl.l3 -textvar ::tr(HalfMoves)
-  ttk::entry $w.gl.emin -textvariable sGlMin -justify right -width 4 \
+  # ============ RESULT SECTION ============
+  ttk::labelframe $w.left.result -text $::tr(Result)
+  grid $w.left.result -row $mainRow -column 0 -sticky ew -pady 5
+  incr mainRow
+  grid columnconfigure $w.left.result 0 -weight 1
+
+  set resultRow 0
+
+  # Result checkbuttons and game length
+  grid $w.left.res -row $resultRow -column 0 -sticky ew -in $w.left.result
+  incr resultRow
+
+  ttk::label $w.left.res.l1 -textvar ::tr(Result:)
+  ttk::checkbutton $w.left.res.ewin -text "1-0 " -variable sResWin -offvalue "1" -onvalue ""
+  ttk::checkbutton $w.left.res.edraw -text "1/2-1/2 " -variable sResDraw -offvalue "=" -onvalue ""
+  ttk::checkbutton $w.left.res.eloss -text "0-1 " -variable sResLoss -offvalue "0" -onvalue ""
+  ttk::checkbutton $w.left.res.eother -text "* " -variable sResOther -offvalue "*" -onvalue ""
+
+  grid $w.left.res.l1     -row 0 -column 0 -sticky w
+  grid $w.left.res.ewin   -row 0 -column 1 -sticky w
+  grid $w.left.res.edraw  -row 0 -column 2 -sticky w
+  grid $w.left.res.eloss  -row 0 -column 3 -sticky w
+  grid $w.left.res.eother -row 0 -column 4 -sticky w
+
+  # Game length (in same row as results, right side)
+  ttk::label $w.left.gl.l1 -textvar ::tr(GameLength:)
+  ttk::entry $w.left.gl.emin -textvariable sGlMin -justify right -width 4 \
     -validate key -validatecommand [list ::validate::integer %P 0 9999]
-  ttk::entry $w.gl.emax -textvariable sGlMax -justify right -width 4 \
+  ttk::label $w.left.gl.l2 -text "-"
+  ttk::entry $w.left.gl.emax -textvariable sGlMax -justify right -width 4 \
     -validate key -validatecommand [list ::validate::integer %P 0 9999]
+  ttk::label $w.left.gl.l3 -textvar ::tr(HalfMoves)
 
-  pack $w.gl -in $w.res -side right -fill x
-  pack $w.gl.l1 $w.gl.emin $w.gl.l2 $w.gl.emax $w.gl.l3 -side left
+  grid $w.left.gl -row 0 -column 5 -sticky e -in $w.left.res
+  grid columnconfigure $w.left.res 4 -weight 1
 
-  ttk::label $w.ends.label -textvar ::tr(EndSideToMove)
-  ttk::checkbutton $w.ends.white -textvar ::tr(White) -variable sSideToMoveW -offvalue "" -onvalue w
-  ttk::checkbutton $w.ends.black -textvar ::tr(Black) -variable sSideToMoveB -offvalue "" -onvalue b
-  pack $w.ends.label $w.ends.white $w.ends.black -side left -padx "0 5"
-  pack $w.ends -side top -fill x -in $w.result
+  grid $w.left.gl.l1   -row 0 -column 0 -sticky w
+  grid $w.left.gl.emin -row 0 -column 1 -sticky w
+  grid $w.left.gl.l2   -row 0 -column 2 -sticky w
+  grid $w.left.gl.emax -row 0 -column 3 -sticky w
+  grid $w.left.gl.l3   -row 0 -column 4 -sticky w
 
-  ttk::label $w.eco.l1 -textvar ::tr(ECOCode:)
-  ttk::label $w.eco.l2 -text "-"
-  ttk::label $w.eco.l3 -text " "
-  ttk::entry $w.eco.emin -textvariable sEcoMin -width 5
-  ttk::entry $w.eco.emax -textvariable sEcoMax -width 5
-  ttk::button $w.eco.range -text "..." -style  Pad0.Small.TButton -width 0 -command {
+  lower $w.left.result
+
+  # Side to move row
+  grid $w.left.ends -row $resultRow -column 0 -sticky ew -in $w.left.result
+  incr resultRow
+
+  ttk::label $w.left.ends.label -textvar ::tr(EndSideToMove)
+  ttk::checkbutton $w.left.ends.white -textvar ::tr(White) -variable sSideToMoveW -offvalue "" -onvalue w
+  ttk::checkbutton $w.left.ends.black -textvar ::tr(Black) -variable sSideToMoveB -offvalue "" -onvalue b
+
+  grid $w.left.ends.label -row 0 -column 0 -sticky w
+  grid $w.left.ends.white -row 0 -column 1 -sticky w -padx "0 5"
+  grid $w.left.ends.black -row 0 -column 2 -sticky w -padx "0 5"
+
+  # ============ ECO SECTION ============
+  grid $w.left.eco -row $mainRow -column 0 -sticky ew -pady 5
+  incr mainRow
+
+  ttk::label $w.left.eco.l1 -textvar ::tr(ECOCode:)
+  ttk::entry $w.left.eco.emin -textvariable sEcoMin -width 6 \
+    -validate key -validatecommand [list regexp {^([A-Ea-e](\d(\d([a-z]([1-4])?)?)?)?)?$} %P]
+
+  ttk::label $w.left.eco.l2 -text "-"
+  ttk::entry $w.left.eco.emax -textvariable sEcoMax -width 6 \
+    -validate key -validatecommand [list regexp {^([A-Ea-e](\d(\d([a-z]([1-4])?)?)?)?)?$} %P]
+
+  ttk::button $w.left.eco.range -text "..." -style Pad0.Small.TButton -width 0 -command {
     set tempResult [chooseEcoRange]
     if {[scan $tempResult "%\[A-E0-9a-z\]-%\[A-E0-9a-z\]" sEcoMin_tmp sEcoMax_tmp] == 2} {
       set sEcoMin $sEcoMin_tmp
@@ -275,22 +381,28 @@ proc search::headerCreateFrame { w } {
     }
     unset tempResult
   }
-  ttk::checkbutton $w.eco.yes -variable sEco -onvalue Yes -offvalue No -textvar ::tr(GamesWithNoECO)
-  pack $w.eco -side top -fill x -pady "5"
-  pack $w.eco.l1 $w.eco.emin $w.eco.l2 $w.eco.emax -side left
-  pack $w.eco.range -side left -padx "5 10"
-  pack $w.eco.l3 $w.eco.yes -side left
+  ttk::label $w.left.eco.l3 -text " "
+  ttk::checkbutton $w.left.eco.yes -variable sEco -onvalue Yes -offvalue No -textvar ::tr(GamesWithNoECO)
 
-  set f [ttk::frame $w.gnum]
-  pack $f -side top -fill x -pady "0 5"
+  grid $w.left.eco.l1    -row 0 -column 0 -sticky w
+  grid $w.left.eco.emin  -row 0 -column 1 -sticky w
+  grid $w.left.eco.l2    -row 0 -column 2 -sticky w
+  grid $w.left.eco.emax  -row 0 -column 3 -sticky w
+  grid $w.left.eco.range -row 0 -column 4 -sticky w -padx "5 10"
+  grid $w.left.eco.l3    -row 0 -column 5 -sticky w
+  grid $w.left.eco.yes   -row 0 -column 6 -sticky w
+
+  # ============ GAME NUMBER SECTION ============
+  set f [ttk::frame $w.left.gnum]
+  grid $f -row $mainRow -column 0 -sticky ew -pady "0 5"
+  incr mainRow
+
   ttk::label $f.l1 -textvar ::tr(GlistGameNumber:)
   ttk::entry $f.emin -textvariable sGnumMin -width 12 -justify right \
     -validate key -validatecommand [list ::validate::integer %P 0]
   ttk::label $f.l2 -text "-" -font $regular
   ttk::entry $f.emax -textvariable sGnumMax -width 12 -justify right \
     -validate key -validatecommand [list ::validate::integer %P 0]
-
-  pack $f.l1 $f.emin $f.l2 $f.emax -side left
   ttk::label $f.l3 -text " "
   ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin ""; set sGnumMax ""}
   ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
@@ -303,50 +415,74 @@ proc search::headerCreateFrame { w } {
     $f.last.m add command -label $x \
         -command "set sGnumMin -$x; set sGnumMax -1"
   }
-  pack $f.l3 $f.all $f.first $f.last -side left -padx 2
 
-  pack [set f [ttk::frame $w.variant]] -side top -fill x -pady "0 5"
-  ttk::label $w.variant.label -text "[tr Variant]:"
-  ttk::checkbutton $w.variant.std -text "standard" -variable sVariantStd -offvalue 0 -onvalue 1
-  ttk::checkbutton $w.variant.960 -text "960" -variable sVariant960 -offvalue 0 -onvalue 1
-  pack $w.variant.label -side left
-  pack $w.variant.std $w.variant.960 -side left -padx "5 0"
+  grid $f.l1    -row 0 -column 0 -sticky w
+  grid $f.emin  -row 0 -column 1 -sticky w
+  grid $f.l2    -row 0 -column 2 -sticky w
+  grid $f.emax  -row 0 -column 3 -sticky w
+  grid $f.l3    -row 0 -column 4 -sticky w
+  grid $f.all   -row 0 -column 5 -sticky w -padx 2
+  grid $f.first -row 0 -column 6 -sticky w -padx 2
+  grid $f.last  -row 0 -column 7 -sticky w -padx 2
+
+  # ============ VARIANT SECTION ============
+  set f [ttk::frame $w.left.variant]
+  grid $f -row $mainRow -column 0 -sticky ew -pady "0 5"
+  incr mainRow
+  grid columnconfigure $f 2 -weight 1
+
+  ttk::label $f.label -text "[tr Variant]:"
+  ttk::checkbutton $f.std -text "standard" -variable sVariantStd -offvalue 0 -onvalue 1
+  ttk::checkbutton $f.960 -text "960" -variable sVariant960 -offvalue 0 -onvalue 1
   ttk::checkbutton $f.annotated -textvar ::tr(Cmnts) -variable sAnnotated -offvalue 0 -onvalue 1
-  pack $f.annotated -side right
 
-  pack [set f [ttk::frame $w.tagpair]] -side top -fill x -pady "0 5"
+  grid $f.label     -row 0 -column 0 -sticky w
+  grid $f.std       -row 0 -column 1 -sticky w -padx "5 0"
+  grid $f.960       -row 0 -column 2 -sticky w -padx "5 0"
+  grid $f.annotated -row 0 -column 3 -sticky e
+
+  # ============ TAG PAIR SECTION ============
+  set f [ttk::frame $w.left.tagpair]
+  grid $f -row $mainRow -column 0 -sticky ew -pady "0 5"
+  incr mainRow
+  grid columnconfigure $f 3 -weight 1
+
   ttk::label $f.label1 -text "[tr PgnTag]:"
   ttk::entry $f.tagname -textvariable sTagName -width 20
   ttk::label $f.label2 -text "[tr TagContains]"
   ttk::entry $f.tagvalue -textvariable sTagValue
-  pack $f.label1 $f.tagname $f.label2 -side left -padx "0 5"
-  pack $f.tagvalue -fill x
 
-  set f [ttk::frame $w.pgntext]
-  pack $f -side top -fill x
+  grid $f.label1   -row 0 -column 0 -sticky w
+  grid $f.tagname  -row 0 -column 1 -sticky w -padx "0 5"
+  grid $f.label2   -row 0 -column 2 -sticky w -padx "0 5"
+  grid $f.tagvalue -row 0 -column 3 -sticky ew
+
+  # ============ PGN TEXT SECTION ============
+  set f [ttk::frame $w.left.pgntext]
+  grid $f -row $mainRow -column 0 -sticky ew -pady "0 5"
+  incr mainRow
+
   ttk::label $f.l1 -textvar ::tr(PgnContains:)
   ttk::entry $f.e1 -textvariable sPgntext(1) -width 15
   ttk::label $f.l2 -text "+" -font $regular
   ttk::entry $f.e2 -textvariable sPgntext(2) -width 15
   ttk::label $f.l3 -text "+" -font $regular
   ttk::entry $f.e3 -textvariable sPgntext(3) -width 15
-  pack $f.l1 $f.e1 $f.l2 $f.e2 $f.l3 $f.e3 -side left -pady "0 5"
 
-  ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command "
-    if {\$::sHeaderFlagFrame} {
-      set ::sHeaderFlagFrame 0
-      pack forget $w.flags
-    } else {
-      set ::sHeaderFlagFrame 1
-      pack $w.flags -side top -after $w.flagslabel -pady 5 -fill x
-    }
-  "
-  pack $w.flagslabel -side top -fill x -pady "5 5"
+  grid $f.l1 -row 0 -column 0 -sticky w
+  grid $f.e1 -row 0 -column 1 -sticky w
+  grid $f.l2 -row 0 -column 2 -sticky w
+  grid $f.e2 -row 0 -column 3 -sticky w
+  grid $f.l3 -row 0 -column 4 -sticky w
+  grid $f.e3 -row 0 -column 5 -sticky w
 
-  ttk::frame $w.flags
-  if {$::sHeaderFlagFrame} {
-    pack $w.flags -side top -pady 5 -fill x
-  }
+  # ============ FLAGS TOGGLE BUTTON (at bottom of left side) ============
+  ttk::button $w.left.flagstoggle -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton \
+    -image tb_menu -compound left -command [list ::search::header::toggleFlags $w]
+  grid $w.left.flagstoggle -row $mainRow -column 0 -sticky ew -pady "5 0"
+
+  # ============ FLAGS SECTION (Right Column) ============
+  ttk::labelframe $w.flags -text $::tr(FindGamesWith:)
 
   set row 0
   set col 0
@@ -360,12 +496,17 @@ proc search::headerCreateFrame { w } {
     grid [ttk::radiobutton $w.flags.both$var -variable sHeaderFlags($var) -value both -text $::tr(Both)] -row $row -column $col
     incr col -3
     incr row
-    if {$row == 12} {
-      set col 5
-      set row 0
-    }
   }
-  grid columnconfigure $w.flags 4 -weight 1
+
+  # Add some padding around the flags content
+  foreach child [winfo children $w.flags] {
+    grid configure $child -padx 2 -pady 1
+  }
+
+  # Show flags panel if previously open
+  if {$::sHeaderFlagFrame} {
+    grid $w.flags -row 0 -column 1 -sticky nsew -padx "5 0"
+  }
 
   #TODO: ref_base should be used instead of curr_db
   set ::curr_db [sc_base current]
@@ -376,6 +517,17 @@ proc search::headerCreateFrame { w } {
   }
 
   return "::search::headerGetOptions"
+}
+
+# Toggle the flags panel visibility
+proc ::search::header::toggleFlags {w} {
+  if {$::sHeaderFlagFrame} {
+    set ::sHeaderFlagFrame 0
+    grid forget $w.flags
+  } else {
+    set ::sHeaderFlagFrame 1
+    grid $w.flags -row 0 -column 1 -sticky nsew -padx "5 0"
+  }
 }
 
 proc ::search::headerGetOptions {{cmd ""}} {
@@ -598,8 +750,8 @@ proc ::search::header::savePreset {name} {
   if {$name eq ""} {
     set w .searchHeaderNewPreset
     ::win::createDialog $w
-    pack [ttk::label $w.msg -text "New preset filter:"] -fill x
-    pack [ttk::entry $w.value] -fill x
+    grid [ttk::label $w.msg -text "New preset filter:"] -row 0 -column 0 -columnspan 2 -sticky ew
+    grid [ttk::entry $w.value] -row 1 -column 0 -columnspan 2 -sticky ew
     dialogbutton $w.cancel -text [tr Cancel] -command "destroy $w"
     dialogbutton $w.ok -text "OK" -command [list apply {{w} {
       set value [$w.value get]
@@ -608,7 +760,10 @@ proc ::search::header::savePreset {name} {
         ::search::header::savePreset $value
       }
     }} $w]
-    ::packdlgbuttons $w.ok $w.cancel
+    grid $w.ok -row 2 -column 0 -sticky e -padx 5 -pady 5
+    grid $w.cancel -row 2 -column 1 -sticky w -padx 5 -pady 5
+    grid columnconfigure $w 0 -weight 1
+    grid columnconfigure $w 1 -weight 1
     bind $w <Escape> "$w.cancel invoke"
     bind $w <Return> "$w.ok invoke"
     grab $w
@@ -727,9 +882,14 @@ proc chooseEcoRange {} {
     $w.list insert {} end -id [incr i] -values [list $elem]
   }
   ttk::scrollbar $w.ybar -command "$w.list yview" -takefocus 0
-  pack [ttk::frame $w.b] -side bottom -fill x
-  pack $w.ybar -side right -fill y
-  pack $w.list -side left -fill both -expand yes
+  ttk::frame $w.b
+
+  grid $w.list -row 0 -column 0 -sticky nsew
+  grid $w.ybar -row 0 -column 1 -sticky ns
+  grid $w.b    -row 1 -column 0 -columnspan 2 -sticky ew
+
+  grid rowconfigure $w 0 -weight 1
+  grid columnconfigure $w 0 -weight 1
 
   ttk::button $w.b.ok -text "OK" -command {
     set sel [.ecoRangeWin.list selection]
@@ -740,7 +900,11 @@ proc chooseEcoRange {} {
     destroy .ecoRangeWin
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) -command "destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 2
+
+  grid $w.b.ok     -row 0 -column 0 -sticky e -padx 5 -pady 2
+  grid $w.b.cancel -row 0 -column 1 -sticky e -padx 5 -pady 2
+  grid columnconfigure $w.b 0 -weight 1
+
   bind $w <Escape> "
   set scid_ecoRangeChosen {}
   grab release $w

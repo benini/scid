@@ -306,6 +306,120 @@ TEST(Test_Game, currentPosUCI_fen) {
 	}
 }
 
+TEST(Test_Game, mainLineUCI_standard_start) {
+	std::string_view pgn = "1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 1/2-1/2";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {"position startpos moves",
+	                                     "e2e4",
+	                                     "e7e5",
+	                                     "g1f3",
+	                                     "b8c6",
+	                                     "f1b5",
+	                                     "a7a6"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_fen) {
+	std::string_view pgn = "[FEN \"8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198\"]\n"
+	                       "198.Kd2 a1=Q 199.Ke3 Qe1+ 0-1";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {
+	    "position fen 8/8/8/8/2p5/1k1p4/p4N2/2K5 w - - 0 198 moves", "c1d2",
+	    "a2a1q", "d2e3", "a1e1"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_empty_game) {
+	Game game;
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {"position startpos moves"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_castling) {
+	std::string_view pgn = "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.O-O Nf6 5.d3 O-O *";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {"position startpos moves",
+	                                     "e2e4",
+	                                     "e7e5",
+	                                     "g1f3",
+	                                     "b8c6",
+	                                     "f1c4",
+	                                     "f8c5",
+	                                     "e1g1",
+	                                     "g8f6",
+	                                     "d2d3",
+	                                     "e8g8"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_ignores_variations) {
+	std::string_view pgn = "1.e4 e5 (1...c5 2.Nf3) 2.Nf3 *";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {"position startpos moves", "e2e4",
+	                                     "e7e5", "g1f3"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_with_null_move) {
+	std::string_view pgn =
+	    "[FEN \"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1\"]\n"
+	    "1...e5 2.-- d5 3.exd5 *";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {
+	    "position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 "
+	    "1 moves",
+	    "e7e5",
+	    "position fen rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - "
+	    "1 2 moves",
+	    "d7d5", "e4d5"};
+	EXPECT_EQ(expected, result);
+}
+
+TEST(Test_Game, mainLineUCI_multiple_null_moves) {
+	std::string_view pgn = "1.e4 -- 2.d4 -- 3.c4 -- 4.Nf3 *";
+	Game game;
+	pgn::parse_game({pgn.data(), pgn.data() + pgn.size()}, PgnVisitor{game});
+
+	auto result = game.mainLineUCI();
+
+	std::vector<std::string> expected = {
+	    "position startpos moves",
+	    "e2e4",
+	    "position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 "
+	    "2 moves",
+	    "d2d4",
+	    "position fen rnbqkbnr/pppppppp/8/8/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 "
+	    "3 moves",
+	    "c2c4",
+	    "position fen rnbqkbnr/pppppppp/8/8/2PPP3/8/PP3PPP/RNBQKBNR w KQkq - 1 "
+	    "4 moves",
+	    "g1f3"};
+	EXPECT_EQ(expected, result);
+}
+
 TEST(Test_Game, illegalPGN_Castling) {
 	std::string_view pgn = "1.e4 e5 2.Nf3 Nf6 3.Be2 Be7 4.O-O O-O 5.O-O";
 	Game game;

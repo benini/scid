@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2013-2018  Fulvio Benini
+* Copyright (C) 2013-2026  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -29,7 +29,9 @@
 #include "scidbase.h"
 #include "stored.h"
 #include <algorithm>
-#include <memory>
+#include <atomic>
+#include <thread>
+#include <vector>
 
 /// Return true if there is a piece's count in @e a which is less than its
 /// counterpart in @e b.
@@ -175,22 +177,61 @@ private:
 	template <colorT TOMOVE>
 	bool SetFilter(scidBaseT const& base, HFilter& filter,
 	               const Progress& prg) const {
-		filter->clear();
-		long long progress = 0;
-		for (gamenumT i = 0, n = base.numGames(); i < n; i++) {
-			const IndexEntry* ie = base.getIndexEntry(i);
-			int ply = index_match(*ie);
-			if (ply >= 0) {
-				filter.set(i, static_cast<byte>(ply + 1));
-			} else if (ply == -1) {
-				ply = base.getGame(ie).search<TOMOVE>(board_, nPieces_);
-				if (ply != 0)
-					filter.set(i, (ply > 255) ? 255 : ply);
+		struct Sync {
+			alignas(64) std::atomic<gamenumT> n_done{0};
+			alignas(64) std::atomic<bool> interrupted{false};
+		} sync;
+
+		auto worker = [&](gamenumT start, gamenumT end) {
+			constexpr gamenumT rep_freq = 32 * 1024;
+			gamenumT rep_i = 0;
+			for (auto gnum = start; gnum < end; gnum++) {
+				if (sync.interrupted.load(std::memory_order_acquire))
+					break;
+
+				auto ie = base.getIndexEntry(gnum);
+				auto ply = index_match(*ie);
+				if (ply >= 0) {
+					filter.set(gnum, static_cast<byte>(ply + 1));
+				} else if (ply == -1) {
+					ply = base.getGame(ie).search<TOMOVE>(board_, nPieces_);
+					if (ply != 0)
+						filter.set(gnum, (ply > 255) ? 255 : ply);
+				}
+
+				if (++rep_i % rep_freq == 0) {
+					sync.n_done.fetch_add(rep_freq, std::memory_order_relaxed);
+					sync.n_done.notify_one();
+				}
 			}
-			if (progress++ % 512 == 0 && !prg.report(i, n))
-				return false;
+			sync.n_done.fetch_add(rep_i % rep_freq, std::memory_order_relaxed);
+			sync.n_done.notify_one();
+		};
+
+		filter->clear();
+		static const auto n_cores = std::thread::hardware_concurrency();
+		const auto n_th = std::min(n_cores, base.numGames() / (128 * 1024));
+		const auto n_parts = std::max<size_t>(1, n_th);
+		const auto n_games = base.numGames();
+		std::vector<std::thread> jobs;
+		for (size_t i = 0; i < n_parts; i++) {
+			auto begin = i * n_games / n_parts;
+			auto end = (1 + i) * n_games / n_parts;
+			jobs.emplace_back(worker, begin, end);
 		}
-		return true;
+		gamenumT n_reported = 0;
+		while (n_reported != n_games) {
+			sync.n_done.wait(n_reported, std::memory_order_relaxed);
+			n_reported = sync.n_done.load(std::memory_order_relaxed);
+			if (!prg.report(n_reported, n_games)) {
+				sync.interrupted = true;
+				break;
+			}
+		}
+		for (auto& j : jobs) {
+			j.join();
+		}
+		return !sync.interrupted;
 	}
 };
 

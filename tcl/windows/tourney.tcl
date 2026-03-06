@@ -10,13 +10,6 @@ foreach {n v} {start 0000.00.00 end 2047.12.31 minPlayers 2 maxPlayers 999 \
   set ::tourney::$n $v
 }
 
-trace variable ::tourney::start w ::utils::validate::Date
-trace variable ::tourney::end w ::utils::validate::Date
-foreach {n v} {minPlayers 999 maxPlayers 999 minGames 9999 maxGames 9999 \
-                 minElo [sc_info limit elo] maxElo [sc_info limit elo]} {
-  trace variable ::tourney::$n w [list ::utils::validate::Integer $v 0]
-}
-
 set tourneyWin 0
 
 proc ::tourney::toggle {} {
@@ -71,9 +64,11 @@ proc ::tourney::Open {} {
   set fbold font_SmallBold
   set f $w.o1
   ttk::label $f.from -text "[tr TmtSortDate]:" -font $fbold
-  ttk::entry $f.efrom -textvariable ::tourney::start -width 10 -font $font
+  ttk::entry $f.efrom -textvariable ::tourney::start -width 10 -font $font \
+    -validate key -validatecommand [list ::validate::date %P]
   ttk::label $f.to -text "-" -font $font
-  ttk::entry $f.eto -textvariable ::tourney::end -width 10 -font $font
+  ttk::entry $f.eto -textvariable ::tourney::end -width 10 -font $font \
+    -validate key -validatecommand [list ::validate::date %P]
   pack $f.from $f.efrom $f.to $f.eto -side left
 
   ttk::label $f.cn -text "  $::tr(Country):" -font $fbold
@@ -83,33 +78,34 @@ proc ::tourney::Open {} {
   pack $f.cn $f.ecn -side left
 
   ttk::label $f.size -text $::tr(TmtLimit:) -font $fbold
-  ttk::combobox $f.esize -width 4 -justify right -textvar ::tourney::size -values {10 20 50 100 200 500 1000}
-  trace variable ::tourney::size w {::utils::validate::Integer 1000 0}
+  ttk::combobox $f.esize -width 4 -justify right -textvar ::tourney::size \
+    -values {10 20 50 100 200 500 1000} \
+    -validate key -validatecommand [list ::validate::integer %P 0 1000]
 
   pack $f.esize $f.size -side right -pady "2 0"
 
   set f $w.o2
   ttk::label $f.players -text "[tr TmtSortPlayers]:" -font $fbold
-  ttk::entry $f.pmin -textvariable ::tourney::minPlayers \
-    -width 3 -justify right -font $font
+  ttk::entry $f.pmin -textvariable ::tourney::minPlayers -width 3 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 999]
   ttk::label $f.pto -text "-"
-  ttk::entry $f.pmax -textvariable ::tourney::maxPlayers \
-    -width 3 -justify right -font $font
+  ttk::entry $f.pmax -textvariable ::tourney::maxPlayers -width 3 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 999]
   pack $f.players $f.pmin $f.pto $f.pmax -side left -pady "2 0"
 
   ttk::label $f.games -text "   [tr TmtSortGames]:" -font $fbold
-  ttk::entry $f.gmin -textvariable ::tourney::minGames \
-    -width 4 -justify right -font $font
+  ttk::entry $f.gmin -textvariable ::tourney::minGames -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   ttk::label $f.gto -text "-" -font $font
-  ttk::entry $f.gmax -textvariable ::tourney::maxGames \
-    -width 4 -justify right -font $font
+  ttk::entry $f.gmax -textvariable ::tourney::maxGames -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   pack $f.games $f.gmin $f.gto $f.gmax -side left -pady "2 0"
   ttk::label $f.elolab -text "$::tr(TmtMeanElo):" -font $fbold
-  ttk::entry $f.elomin -textvariable ::tourney::minElo \
-    -width 5 -justify right -font $font
+  ttk::entry $f.elomin -textvariable ::tourney::minElo -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   ttk::label $f.eto -text "-" -font $font
-  ttk::entry $f.elomax -textvariable ::tourney::maxElo \
-    -width 5 -justify right -font $font
+  ttk::entry $f.elomax -textvariable ::tourney::maxElo -width 4 -justify right \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
   pack $f.elomax $f.eto $f.elomin $f.elolab -side right
 
   set f $w.o3

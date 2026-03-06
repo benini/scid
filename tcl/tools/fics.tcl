@@ -254,7 +254,7 @@ namespace eval fics {
   proc arrangeClocks { } {
       set w .fics.f.bottom.left
       pack forget $w.clock1 $w.clock2
-      if { [::board::isFlipped .main.board] } {
+      if { [main_isFlipped] } {
           pack $w.clock1 $w.clock2
       } else {
           pack $w.clock2 $w.clock1
@@ -932,7 +932,7 @@ namespace eval fics {
       sc_game tags set -event "FICS played [lrange $line 5 6] game"
       sc_game tags set -extra [list "Timecontrol \"[lindex $line 7]+[lindex $line 8]\""]
 
-      if { [::board::isFlipped .main.board] } {
+      if { [main_isFlipped] } {
         if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
       } else {
         if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }

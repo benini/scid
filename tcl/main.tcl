@@ -279,7 +279,7 @@ proc updateMainToolbar {} {
     ::board::setButtonCmd .main.board forward "::move::Forward"
     ::board::setButtonCmd .main.board endvar "::move::EndVar"
     set ::gameInfoBar(tb_BD_End) "::move::End"
-    set ::gameInfoBar(tb_BD_Autoplay) "startAutoplay"
+    set ::gameInfoBar(tb_BD_Autoplay) "::legacy_engine startAutoplay"
   }
 
   if {[sc_var level] == 0} {
@@ -453,7 +453,9 @@ proc ::createMainEvalBarMenu {w} {
 proc toggleRotateBoard {} {
     ::board::flip .main.board
 }
-
+proc main_isFlipped {} {
+    tailcall ::board::isFlipped .main.board
+}
 
 
 
@@ -462,15 +464,6 @@ proc toggleRotateBoard {} {
 
 proc toggleShowMaterial {} {
     board::toggleMaterial .main.board
-}
-
-# MouseWheel in main window:
-proc main_mousewheelHandler {direction} {
-    if {$direction < 0} {
-        ::move::Back
-    } else {
-        ::move::Forward
-    }
 }
 
 # updateBoard:
@@ -542,7 +535,7 @@ proc readPhotoFile {fname} {
     # If SPI file was found then just source it and exit
     if { [file readable $spi]} {
         set count [array size ::unsafe::spffile]
-        safeSource $spi fname $fname
+        safeSource $spi [list fname $fname]
         set newcount [array size ::unsafe::spffile]
         if {[expr $newcount - $count] > 0} {
             ::splash::add "Found [expr $newcount - $count] player photos in [file tail $fname]"
@@ -741,8 +734,8 @@ proc getPromoPiece {} {
     pack $w.bq $w.br $w.bb $w.bn -side left
     bind $w <Escape> "set ::result 2 ; destroy $w"
     bind $w <Return> "set ::result 2 ; destroy $w"
-    update
-    catch { grab $w }
+    grab $w
+    tk::PlaceWindow $w pointer
     tkwait window $w
     return $::result
 }
@@ -758,7 +751,7 @@ proc getPromoPiece {} {
 #
 
 proc confirmReplaceMove {} {
-    if {[winfo exists $::reviewgame::window]} {
+    if {[winfo exists .reviewgame]} {
         return "var"
     }
 
@@ -778,8 +771,8 @@ proc confirmReplaceMove {} {
 # If the current position is not the end of the game, the default action is to add the move as a new variant.
 # The move notation can be SAN or UCI.
 # Return true if the move is both legal and has been successfully added.
-proc addMoveEx {{move} {action "var"}} {
-    undoFeature save
+proc addMoveEx {{move} {action "var"} {notify "-pgn -animate"}} {
+    sc_game undoPoint
     if {[catch {
         if {![sc_pos isAt vend]} {
             switch -- $action {
@@ -798,11 +791,11 @@ proc addMoveEx {{move} {action "var"}} {
         }
     }]} {
         # On error:
-        undoFeature undo
+        sc_game undo
         return 0
     }
 
-    ::notify::PosChanged -pgn -animate
+    ::notify::PosChanged {*}$notify
     return 1
 }
 
@@ -850,7 +843,7 @@ proc addMoveUCI {{moveUCI} {animate "-animate"}} {
 
     if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove]} { return 0 } ;# not player's turn
 
-    if {! [::move::Follow $moveUCI] && ! [addMoveEx $moveUCI]} {
+    if {! [::move::Follow $moveUCI] && ! [addMoveEx $moveUCI var "-pgn $animate"]} {
         return 0
     }
 
@@ -1207,11 +1200,11 @@ proc CreateMainBoard { {w} } {
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
       -command {undoFeature undo}
   .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
-      -command {sc_game undo; addMoveEx $::gameLastMove replace}
+      -command {sc_game undo; addMoveEx $::gameLastMove replace pgnonly}
   .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
-      -command {sc_game undo; addMoveEx $::gameLastMove mainline}
+      -command {sc_game undo; addMoveEx $::gameLastMove mainline pgnonly}
   .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
-      -command {sc_game undo; addMoveEx $::gameLastMove var}
+      -command {sc_game undo; addMoveEx $::gameLastMove var pgnonly}
 
   InitToolbar .main.tb
 
@@ -1239,7 +1232,13 @@ proc CreateMainBoard { {w} } {
   bind $w <ButtonRelease> "focus $w"
   bind $w <Configure> {+::resizeMainBoard }
 
-  bindMouseWheel $w "main_mousewheelHandler"
+  ttk::bindMouseWheel $w [list apply {{amount {factor 1.0}} {
+    if {$amount / $factor < 0} {
+      ::move::Back
+    } else {
+      ::move::Forward
+    }
+  }}]
   foreach e "$w.board $w.board.bd $w.board.bar" {
     bindtags $e [linsert [bindtags $e] 2 $w]
   }

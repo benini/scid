@@ -212,15 +212,15 @@ $m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefi
 set m .menu.play
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Play -menu $m
-$m add command -label ToolsSeriousGame -command ::sergame::config
-$m add command -label ToolsTacticalGame -command ::tacgame::config
+$m add command -label ToolsSeriousGame -command "::legacy_engine ::sergame::config"
+$m add command -label ToolsTacticalGame -command "::legacy_engine ::tacgame::config"
 $m add command -label ToolsTrainFics -command ::fics::config
 $m add separator
 menu $m.training
   $m.training add command -label ToolsTrainOpenings -command ::opening::config
-  $m.training add command -label ToolsTrainTactics -command ::tactics::config
-  $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
-  $m.training add command -label ToolsTrainCalvar -command ::calvar::config
+  $m.training add command -label ToolsTrainTactics -command "::legacy_engine ::tactics::config"
+  $m.training add command -label ToolsTrainReviewGame -command "::legacy_engine ::reviewgame::start"
+  $m.training add command -label ToolsTrainCalvar -command "::legacy_engine ::calvar::config"
 $m add cascade -label ToolsTraining -menu $m.training
 
 ### Windows menu:
@@ -245,12 +245,12 @@ $m add command -label WindowsGraph -command ::tools::graphs::score::Refresh
 set m .menu.tools
 menu $m
 .menu add cascade -label Tools -menu $m
-$m  add command -label ToolsConfigureEngines -command ::enginelist::choose
+$m  add command -label ToolsConfigureEngines -command "::legacy_engine ::enginelist::choose"
 $m  add command -label ToolsStartEngine1 \
     -command "::enginewin::start 1" -accelerator "F2"
 $m  add command -label ToolsStartEngine2 \
     -command "::enginewin::start 2" -accelerator "F3"
-$m  add command -label ToolsAnalysis -command "makeAnalysisWin 1"
+$m  add command -label ToolsAnalysis -command "::legacy_engine makeAnalysisWin 1"
 $m add separator
 $m add checkbutton -label ToolsFilterGraph \
     -accelerator "Ctrl+Shift+G" -variable filterGraph -command tools::graphs::filter::Open

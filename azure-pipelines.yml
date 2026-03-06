@@ -4,7 +4,7 @@ trigger:
 pr: none
 
 variables:
-  TCLBRANCH: core-8-6-branch
+  TCLBRANCH: core-9-0-branch
 
 jobs:
 - job: windows_tests
@@ -50,8 +50,12 @@ jobs:
       platform: 'x64'
       configuration: 'Debug'
     displayName: Generate SCID
-  - script: build\gtest\Debug\scid_tests.exe
-    displayName: run scid_tests.exe
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      command: 'test'
+      configuration: 'Debug'
+    displayName: run scid_tests
   - script: |
       move bin engines
       move scid bin

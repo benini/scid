@@ -25,7 +25,7 @@ proc ::enginecfg::get {name} {
         # The old url element is now used to store the values for:
         # scoreside notation pvwrap debugframe priority netport
         if {[llength [lindex $res 6]] != 6} {
-            lset res 6 [list white 1 word false normal ""]
+            lset res 6 [list white 1 none false normal ""]
         }
     }
     return $res
@@ -230,11 +230,24 @@ proc ::enginecfg::createConfigOptions {id configFrame} {
     $configFrame.text configure -state disabled
 }
 
-proc ::enginecfg::resetConfigOptions {id configFrame msg} {
+proc ::enginecfg::resetConfigOptions {id configFrame config} {
+    set msg "No engine open: select or add one."
+    lassign $config name cmd args wdir elo time url uci options
+    lassign $url scoreside notation pvwrap debugframe priority netport
+    set time [clock seconds]; # Update engine's last used time.
+    set ::enginecfg::engConfig_$id [list $name $cmd $args $wdir $elo $time $url $uci {}]
+    if {$config ne ""} {
+        set msg "$cmd $args\nConnecting..."
+        event generate $configFrame <<EngineCfgLayout>> -data [list $id debug $debugframe]
+        event generate $configFrame <<EngineCfgLayout>> -data [list $id notation $notation]
+        event generate $configFrame <<EngineCfgLayout>> -data [list $id scoreside $scoreside]
+        event generate $configFrame <<EngineCfgLayout>> -data [list $id wrap $pvwrap]
+    }
     $configFrame.text configure -state normal
     $configFrame.text delete 1.0 end
     $configFrame.text insert end $msg
     $configFrame.text configure -state disabled
+    return $netport
 }
 
 # Update or recreate the config and option widgets
@@ -308,6 +321,28 @@ proc ::enginecfg::findOption {id name} {
         }
     }
     error "wrong option"
+}
+
+# Move keyboard focus to the widget associated with an option.
+# The option can be specified by name (case insensitive) or by index.
+# Returns true if focus was successfully set, false otherwise.
+proc ::enginecfg::focusOption {id configFrame option} {
+    if {[string is integer -strict $option]} {
+        set idx $option
+    } else {
+        set idx [::enginecfg::findOption $id $option]
+    }
+    set w $configFrame.text
+    set widget $w.value$idx
+    if {![winfo exists $widget]} {
+        set widget $w.button$idx
+    }
+    if {[winfo exists $widget]} {
+        $w see $widget
+        focus $widget
+        return true
+    }
+    return false
 }
 
 # Sends a SetOptions message to the engine if an option's value is different.
@@ -491,7 +526,7 @@ proc ::enginecfg::createConfigWidgets {id configFrame engCfg} {
     ttk::combobox $w.netd -state readonly -width 12 -values {off on auto_port}
     $w window create end -window $w.netd -pady 2
     $w insert end "  port: "
-    ttk::entry $w.netport -width 6 -validate key -validatecommand { string is integer %P }
+    ttk::entry $w.netport -width 6 -validate key -validatecommand [list ::validate::integer %P 0]
     $w window create end -window $w.netport -pady 2
     bind $w.netd <<ComboboxSelected>> "::enginecfg::onSubmitNetd $id $w"
     bind $w.netport <FocusOut> "if {\"readonly\" ni \[$w.netport state\]} {
@@ -551,7 +586,7 @@ proc ::enginecfg::createOptionWidgets {id configFrame options} {
             } else {
                 if {$type eq "spin" || $type eq "slider"} {
                     ttk::spinbox $w.value$i -width 12 -from $min -to $max -increment 1 \
-                        -validate key -validatecommand { string is integer %P } \
+                        -validate key -validatecommand [list ::validate::integer %P $min $max] \
                         -command "after idle \[bind $w.value$i <FocusOut>\] "
                 } else {
                     ttk::entry $w.value$i

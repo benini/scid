@@ -9,11 +9,6 @@ set castling KQkq      ;# will be empty or some combination of KQkq letters.
 set toMove White       ;# side to move, "White" or "Black".
 set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
 
-# Traces to keep entry values sensible:
-trace variable moveNum  w {::utils::validate::Integer 999 0}
-trace variable epFile   w {::utils::validate::Regexp {^(-|[a-h])?$}}
-trace variable castling w {::utils::validate::Regexp {^(-|[a-hA-hKQkq]*)$}}
-
 set setupBd {}
 set setupFen {}
 
@@ -74,7 +69,7 @@ proc setupBoard {} {
       grid $w.pieces.$color.$i -column 0 -pady 2 -padx 2
     }
   }
-  set ::setupBoardFlipped [::board::isFlipped .main.board]
+  set ::setupBoardFlipped [main_isFlipped]
   ::board::flip .setup.l.bd $::setupBoardFlipped
   ttk::checkbutton $w.pieces.rotate -text $::tr(Rotate) -image tb_BD_Flip -compound left \
       -variable ::setupBoardFlipped -command {
@@ -108,7 +103,8 @@ proc setupBoard {} {
   set moveNum [lindex $origFen 5]
   ttk::frame $w.r.mid.movenum
   ttk::label $w.r.mid.movenum.label -textvar ::tr(MoveNumber:)
-  ttk::entry $w.r.mid.movenum.e -width 3 -textvariable moveNum
+  ttk::entry $w.r.mid.movenum.e -width 4 -textvariable moveNum \
+    -validate key -validatecommand [list ::validate::integer %P 0 9999]
 
   pack $w.r.mid.movenum -pady 10 -expand yes -fill x
   pack $w.r.mid.movenum.label $w.r.mid.movenum.e -side left -anchor w -expand yes -fill x
@@ -116,7 +112,8 @@ proc setupBoard {} {
   set castling [lindex $origFen 2]
   ttk::frame $w.r.mid.castle
   ttk::label $w.r.mid.castle.label -textvar ::tr(Castling:)
-  ttk::combobox $w.r.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq}
+  ttk::combobox $w.r.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq} \
+    -validate key -validatecommand [list regexp {^(-|[a-hA-hKQkq]{0,4})$} %P]
 
   pack $w.r.mid.castle -pady 10 -expand yes -fill x
   pack $w.r.mid.castle.label $w.r.mid.castle.e -side left -anchor w -expand yes -fill x
@@ -124,7 +121,8 @@ proc setupBoard {} {
   set epFile [string index [lindex $origFen 3] 0]
   ttk::frame $w.r.mid.ep
   ttk::label $w.r.mid.ep.label -textvar ::tr(EnPassantFile:)
-  ttk::combobox $w.r.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
+  ttk::combobox $w.r.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h} \
+    -validate key -validatecommand [list regexp {^(-|[a-h])?$} %P]
 
   pack $w.r.mid.ep -pady 10 -expand yes -fill x
   pack $w.r.mid.ep.label $w.r.mid.ep.e -side left -anchor w -expand yes -fill x

@@ -63,9 +63,9 @@ inline int Main (int argc, char* argv[], void (*exit) (void*)) {
 		}
 		char* newArgv[10] = { argv[0], sourceFileName };
 		std::copy(argv + 1, argv + argc, newArgv + 2);
-		Tcl_Main(argc + 1, newArgv, UI_impl::initTclTk);
+		Tcl_MainEx(argc + 1, newArgv, UI_impl::initTclTk, Tcl_CreateInterp());
 	} else {
-		Tcl_Main (argc, argv, UI_impl::initTclTk);
+		Tcl_MainEx(argc, argv, UI_impl::initTclTk, Tcl_CreateInterp());
 	}
 
 	return 0;

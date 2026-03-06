@@ -60,7 +60,7 @@ proc InitWinsDefaultGeometry {} {
   set ::docking::layout_list(1) {}
   set ::docking::layout_list(2) {{MainWindowGeometry 540x650+0+0} {{.pw vertical {}} {TNotebook .nb .fdockmain}}}
   set ::docking::layout_list(3) {{MainWindowGeometry 1280x670+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 487} {TPanedwindow {{.pw.pw0.pw0 vertical 82} {TNotebook .pw.pw0.pw0.tb0 .baseWin} {TNotebook .nb .main}}} {TPanedwindow {{.pw.pw0.pw1 vertical 337} {TNotebook .pw.pw0.tb0 .glistWin1} {TPanedwindow {{.pw.pw0.pw1.pw0 horizontal 346} {TNotebook .pw.pw0.pw1.tb0 {.commentWin .pgnWin}} {TNotebook .pw.pw0.pw1.pw0.tb0 .engineWin1}}}}}}}}}
-  set ::docking::layout_list(auto) {{MainWindowGeometry 1280x670+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 487} {TPanedwindow {{.pw.pw0.pw0 vertical 82} {TNotebook .pw.pw0.pw0.tb0 .baseWin} {TNotebook .nb .main}}} {TPanedwindow {{.pw.pw0.pw1 vertical 337} {TNotebook .pw.pw0.tb0 .glistWin1} {TPanedwindow {{.pw.pw0.pw1.pw0 horizontal 346} {TNotebook .pw.pw0.pw1.tb0 {.commentWin .pgnWin}} {TNotebook .pw.pw0.pw1.pw0.tb0 .engineWin1}}}}}}}}}
+  set ::docking::layout_list(auto) {{MainWindowGeometry 1280x760+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal 510} {TPanedwindow {{.pw.pw0.pw0 vertical 120} {TNotebook .pw.pw0.pw0.tb0 .pgnWin} {TNotebook .nb .main}}} {TPanedwindow {{.pw.pw0.pw1 vertical {80 420}} {TNotebook .pw.pw0.pw1.tb1 .baseWin} {TNotebook .pw.pw0.tb0 .glistWin1} {TPanedwindow {{.pw.pw0.pw1.pw0 horizontal 506} {TNotebook .pw.pw0.pw1.tb0 .engineWin1} {TNotebook .pw.pw0.pw1.pw0.tb0 .commentWin}}}}}}}}}
 }
 
 proc InitDefaultStats {} {
@@ -273,7 +273,7 @@ set ::pgn::indentVars 1
 set ::pgn::indentComments 0
 set ::pgn::symbolicNags 1
 set ::pgn::moveNumberSpaces 0
-set ::pgn::shortHeader 0
+set ::pgn::shortHeader 1
 set ::pgn::boldMainLine 1
 set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
@@ -541,13 +541,7 @@ set spellCheckFile [file join $scidShareDir "spelling.ssp"]
 # book configuration
 set ::book::lastBook "" ; # book name without extension (.bin)
 
-# Engines list file: -- OLD NAMES, NO LONGER USED
-#set engines(file) [file join $scidUserDir "engines.lis"]
-#set engines(backup) [file join $scidUserDir "engines.bak"]
-
 # Engines data:
-set engines(list) {}
-set engines(sort) Time
 set engineCoach1 {}
 set engineCoach2 {}
 

@@ -116,10 +116,9 @@ public: // ICodecDatabase interface
 
 	errorT dyn_open(fileModeT fMode, const char*, const Progress&, Index* idx,
 	                NameBase* nb) override {
-		if (idx == 0 || nb == 0)
-			return ERROR;
-		if (fMode != FMODE_Create)
-			return ERROR;
+		if (fMode != FMODE_Create || !idx || !nb)
+			return ERROR_FileMode;
+
 		idx_ = idx;
 		nb_ = nb;
 		return OK;

@@ -581,13 +581,19 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
   if {! [string match "$w.c.f*" $dropPoint]} {return}
   regexp -all {[0-9]} $dropPoint toBase
   if {$toBase == $fromBase} {
-    ::file::SwitchToBase $toBase
+    if {$::curr_db != $toBase} {
+      ::file::SwitchToBase $toBase
+    } else {
+      ::windows::gamelist::makeVisible $toBase
+    }
   } else {
     ::windows::gamelist::CopyGames "" $fromBase $toBase
   }
 }
 
-proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
+proc ::windows::switcher::popupmenu {baseIdx w {abs_x ""} {abs_y ""} } {
+  if {$abs_x eq ""} { lassign [winfo pointerxy $w] abs_x abs_y }
+
   $w.menu delete 0 end
   $w.menu add command -label "[tr NewGameListWindow]" -command "::windows::gamelist::Open $baseIdx"
   $w.menu add separator
@@ -672,7 +678,7 @@ proc ::windows::switcher::Create {{w}} {
 
     menu $f.menu -tearoff 0
     foreach win {"" .img .name .ngames} {
-      bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $w $f %X %Y $i"
+      bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $i $f %X %Y"
     }
   }
   bind $w <<NotifyFilter>> [list apply {{w} {

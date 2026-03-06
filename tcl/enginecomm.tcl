@@ -723,40 +723,44 @@ proc ::uci::parseline {id line} {
         if {$beginPV < 0} {
             return 0
         }
-        set endPV end
         set pv [string range $line [expr {$beginPV + 4}] end]
-        set tokens [list multipv depth seldepth nodes nps hashfull tbhits time score \
-                         currmove currmovenumber currline cpuload string refutation]
-        foreach token $tokens {
-            set nextToken [string first $token $pv]
-            if {$nextToken >= 0} {
-                set endPV [expr {$beginPV + 3 + $nextToken}]
-                set pv [string trim [string range $line [expr {$beginPV + 4}] $endPV]]
-                break
-            }
+        set nextToken [string first "\x00" [string map {
+            currmovenumber \x00 refutation \x00 seldepth \x00 hashfull \x00
+            currmove \x00 currline \x00 multipv \x00 cpuload \x00 tbhits \x00
+            string \x00 depth \x00 nodes \x00 score \x00 time \x00 nps \x00
+        } $pv]]
+        if {$nextToken >= 0} {
+            incr nextToken -1
+            set pv [string trim [string range $pv 0 $nextToken]]
+            set line [string replace $line $beginPV [expr {$beginPV + 4 + $nextToken}] " "]
+        } else {
+            set line [string replace $line $beginPV end]
         }
-        set tokens [list multipv depth seldepth nodes nps hashfull tbhits time score]
-        set ::engconn(InfoPV_$id) [list 1 {} {} {} {} {} {} {} {} {} {} $pv]
+
+        # multipv depth seldepth nodes nps hashfull tbhits time score score_type score_wdl pv
+        set msgData [list 1 {} {} {} {} {} {} {} {} {} {} $pv]
         set idx -1
-        foreach elem [split [string replace $line $beginPV $endPV]] {
+        set tokens [list multipv depth seldepth nodes nps hashfull tbhits time score]
+        foreach elem [split $line] {
             if {[string is integer -strict $elem]} {
                 if {$idx >= 0 && $idx <= 8} {
-                    lset ::engconn(InfoPV_$id) $idx $elem
+                    lset msgData $idx $elem
                 } elseif {$idx == 10} {
-                    lset ::engconn(InfoPV_$id) $idx end+1 $elem
+                    lset msgData $idx end+1 $elem
                 }
             } else {
                 if {$idx >= 8 && $elem in {cp mate lowerbound upperbound wdl}} {
                     if {$elem eq "wdl"} {
                         set idx 10
                     } else {
-                        lset ::engconn(InfoPV_$id) 9 $elem
+                        lset msgData 9 $elem
                     }
                 } else {
                     set idx [lsearch -exact $tokens $elem]
                 }
             }
         }
+        set ::engconn(InfoPV_$id) $msgData
         return 0
     }
 
