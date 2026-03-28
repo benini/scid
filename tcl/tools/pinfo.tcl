@@ -500,10 +500,10 @@ proc ::pinfo::playerInfo {{player ""}} {
 }
 
 # Call in the idlink config file.
-   if {[catch {safeSource [scidConfigFile resolvers]} ]} {
+   if {[catch {safeSource [scidConfigFile resolvers] ""} ]} {
      ::splash::add "No configuration for link resolvers found. Creating default..."
      ::pinfo::setupDefaultResolvers
-      if {[catch {safeSource [scidConfigFile resolvers]} ]} {
+      if {[catch {safeSource [scidConfigFile resolvers] ""} ]} {
          ::splash::add "Oops there is something wrong with the resolvers file..."
       } else {
          ::splash::add "Default resolvers created and loaded."
