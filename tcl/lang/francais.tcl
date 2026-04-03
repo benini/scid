@@ -8050,7 +8050,7 @@ set helpText(F,GameInfoBar) {
   flèche <b>Droite</b>). Un Clic-Droit avec la souris ouvre le
   <green>menu contextuel</green> suivant :</p>
   <ul>
-  <li><button tb_BD_Autoplay> Jeu automatique.</li>
+  <li><button ::icons::tb_BD_Autoplay> Jeu automatique.</li>
   <li><button tb_BD_End> Fin de partie (raccourci :
     touche <b>Fin</b>).</li>
   </ul>

@@ -264,40 +264,40 @@ proc updateMainToolbar {} {
   if {[sc_pos isAt start]} {
     ::board::setButtonCmd .main.board leavevar ""
     ::board::setButtonCmd .main.board back ""
-    unset -nocomplain ::gameInfoBar(tb_BD_Start)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_Start)
   } else {
     ::board::setButtonCmd .main.board leavevar "::move::ExitVarOrStart"
     ::board::setButtonCmd .main.board back "::move::Back"
-    set ::gameInfoBar(tb_BD_Start) "::move::Start"
+    set ::gameInfoBar(::icon::tb_BD_Start) "::move::Start"
   }
   if {[sc_pos isAt end] || [sc_pos isAt vend]} {
     ::board::setButtonCmd .main.board forward ""
     ::board::setButtonCmd .main.board endvar ""
-    unset -nocomplain ::gameInfoBar(tb_BD_End)
-    unset -nocomplain ::gameInfoBar(tb_BD_Autoplay)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_End)
+    unset -nocomplain ::gameInfoBar(::icons::tb_BD_Autoplay)
   } else {
     ::board::setButtonCmd .main.board forward "::move::Forward"
     ::board::setButtonCmd .main.board endvar "::move::EndVar"
-    set ::gameInfoBar(tb_BD_End) "::move::End"
-    set ::gameInfoBar(tb_BD_Autoplay) "::legacy_engine startAutoplay"
+    set ::gameInfoBar(::icon::tb_BD_End) "::move::End"
+    set ::gameInfoBar(::icons::tb_BD_Autoplay) "::legacy_engine startAutoplay"
   }
 
   if {[sc_var level] == 0} {
-    unset -nocomplain ::gameInfoBar(tb_BD_VarDelete)
-    unset -nocomplain ::gameInfoBar(tb_BD_VarPromote)
-    unset -nocomplain ::gameInfoBar(tb_BD_VarLeave)
-    unset -nocomplain ::gameInfoBar(tb_BD_BackToMainline)
-    ::board::setButtonImg .main.board leavevar tb_BD_BackStart
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarDelete)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarPromote)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarLeave)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_BackToMainline)
+    ::board::setButtonImg .main.board leavevar ::icon::tb_BD_BackStart
   } else {
-    set ::gameInfoBar(tb_BD_VarDelete) { ::pgn::deleteVar }
-    set ::gameInfoBar(tb_BD_VarPromote) { ::pgn::mainVar }
-    set ::gameInfoBar(tb_BD_VarLeave) { ::move::ExitVar }
-    set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
-    ::board::setButtonImg .main.board leavevar tb_BD_exitvar
+    set ::gameInfoBar(::icon::tb_BD_VarDelete) { ::pgn::deleteVar }
+    set ::gameInfoBar(::icon::tb_BD_VarPromote) { ::pgn::mainVar }
+    set ::gameInfoBar(::icon::tb_BD_VarLeave) { ::move::ExitVar }
+    set ::gameInfoBar(::icon::tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
+    ::board::setButtonImg .main.board leavevar ::icon::tb_BD_exitvar
   }
 
-  set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
-  set ::gameInfoBar(tb_BD_SelectMarker) "::selectMarker"
+  set ::gameInfoBar(::icon::tb_BD_SetupBoard) "setupBoard"
+  set ::gameInfoBar(::icon::tb_BD_SelectMarker) "::selectMarker"
 }
 
 # Update the "tree" filter of databases that have a view (gamelist or tree windows)
@@ -445,7 +445,7 @@ proc ::createMainEvalBarMenu {w} {
     }
     $w.evalbar_menu add separator
     $w.evalbar_menu add command -label [tr Hide] \
-        -command { {*}$::gameInfoBar(tb_BD_Scorebar) }
+        -command { {*}$::gameInfoBar(::icon::tb_BD_Scorebar) }
 
     return $w.evalbar_menu
 }
@@ -1188,8 +1188,8 @@ proc CreateMainBoard { {w} } {
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
 
-  set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
-  set ::gameInfoBar(tb_BD_Scorebar) [list apply {{w} {
+  set ::gameInfoBar(::icon::tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
+  set ::gameInfoBar(::icon::tb_BD_Scorebar) [list apply {{w} {
     set ::showEvalBar($w) [::board::toggleEvalBar $w.board]
     unset -nocomplain ::mainEvalBarEngineID_
     ::board::updateEvalBar .main.board ""
@@ -1197,13 +1197,13 @@ proc CreateMainBoard { {w} } {
   }} $w]
 
   menu .main.menuaddchoice
-  .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
+  .main.menuaddchoice add command -label " Undo" -image ::icon::tb_BD_Undo -compound left \
       -command {undoFeature undo}
-  .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
+  .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image ::icon::tb_BD_Replace -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove replace pgnonly}
-  .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
+  .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image ::icon::tb_BD_NewMainline -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove mainline pgnonly}
-  .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
+  .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image ::icon::tb_BD_NewVar -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove var pgnonly}
 
   InitToolbar .main.tb
