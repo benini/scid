@@ -8012,12 +8012,12 @@ set helpText(F,GameInfoBar) {
   l'utilisateur avec le message <b>New Variation</b>. Cliquer sur le texte en bleu
   <blue>[click to change]</blue> offre les options suivantes :</p>
   <ul>
-    <li><button tb_BD_Undo> Annuler l'action.</li>
-    <li><button tb_BD_Replace> Remplacer le coup de la ligne principale et
+    <li><button ::icon::tb_BD_Undo> Annuler l'action.</li>
+    <li><button ::icon::tb_BD_Replace> Remplacer le coup de la ligne principale et
     <b>efface les coups suivants</b>.</li>
-    <li><button tb_BD_NewMainline> Promouvoir la variante comme ligne
+    <li><button ::icon::tb_BD_NewMainline> Promouvoir la variante comme ligne
     principale.</li>
-    <li><button tb_BD_NewVar> Ajouter une variante.</li>
+    <li><button ::icon::tb_BD_NewVar> Ajouter une variante.</li>
   </ul>
 
   <h3><name BD_Back>Menu contextuel du bouton Reculer</name></h3>
@@ -8025,10 +8025,10 @@ set helpText(F,GameInfoBar) {
   flèche <b>Gauche</b>). Un Clic-Droit avec la souris ouvre le
   <green>menu contextuel</green> suivant :</p>
   <ul>
-  <li><button tb_BD_BackToMainline> Revenir à la ligne principale.</li>
-  <li><button tb_BD_VarDelete> Effacer cette variante du fichier PGN.</li>
-  <li><button tb_BD_VarLeave> Quitter la variante.</li>
-  <li><button tb_BD_Start> Début de partie (raccourci :
+  <li><button ::icon::tb_BD_BackToMainline> Revenir à la ligne principale.</li>
+  <li><button ::icon::tb_BD_VarDelete> Effacer cette variante du fichier PGN.</li>
+  <li><button ::icon::tb_BD_VarLeave> Quitter la variante.</li>
+  <li><button ::icon::tb_BD_Start> Début de partie (raccourci :
     touche <b>Début</b>).</li>
   </ul>
 
@@ -8036,11 +8036,11 @@ set helpText(F,GameInfoBar) {
   <p><button tb_BD_ShowToolbar> Ce bouton affiche le <green>menu</green> suivant
   par un Clic-Gauche avec la souris :</p>
   <ul>
-  <li><button tb_BD_SetupBoard> Définir la position de départ.</li>
-  <li><button tb_BD_Flip> Retourner l'échiquier.</li>
+  <li><button ::icon::tb_BD_SetupBoard> Définir la position de départ.</li>
+  <li><button ::icon::tb_BD_Flip> Retourner l'échiquier.</li>
   <li><button tb_BD_Coords> Afficher/Masquer les coordonnées de
     l'échiquier.</li>
-  <li><button tb_BD_Material> Afficher/Masquer le bilan matériel à droite
+  <li><button ::icon::tb_BD_Material> Afficher/Masquer le bilan matériel à droite
     de l'échiquier.</li>
   <li><button tb_BD_Fullscreen> Activer l'affichage Plein Écran.</li>
   </ul>
