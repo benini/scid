@@ -2842,8 +2842,8 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   To temporarily interrupt the calculation process one can use the
-  stop engine button (<button tb_eng_off>). Once pressed, this button
-  changes to the start engine button (<button tb_eng_on>) which will
+  stop engine button (<button ::icon::tb_eng_off>). Once pressed, this button
+  changes to the start engine button (<button ::icon::tb_eng_on>) which will
   restart the engines analysis. Note, however, that most engines will
   restart the whole analysis again, forgetting all results that where
   achieved in an earlier run. Only few engines are able to reuse the
@@ -4911,7 +4911,7 @@ set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
    <p>
    Once the proper port is set, choose Tools / Connect Hardware /
    Connect Novag Citrine to hook up the board, or just click the
-   hardware connection button <button tb_eng_disconnected>. This
+   hardware connection button <button ::icon::tb_eng_disconnected>. This
    button also shows the <a HardwareStatus> status of the
    connection.</a>
 
@@ -5035,17 +5035,17 @@ set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
    the status of the external hardware it shows different icons:
    </p>
    <ul>
-   <li><button tb_eng_disconnected>
+   <li><button ::icon::tb_eng_disconnected>
    This is the normal state after program startup and shows that no
    external hardware is active at the moment. Pressing the button will
    hook up the configured hardware.
    </li>
-   <li><button tb_eng_connecting>
+   <li><button ::icon::tb_eng_connecting>
    Scid started the communication with the external hardware,
    initialisation is in progress. Depending on the driver and hardware
    connected, it may take some seconds for things to settle.
    </li>
-   <li><button tb_eng_error>
+   <li><button ::icon::tb_eng_error>
    While communicating withe the external hardware some error
    occurred. Usual sources of problems are e.g. another program
    accessing the external hardware, the hardware is not connected to
@@ -5056,7 +5056,7 @@ set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
    this case. Pressing the button will try again to hook up the
    configured hardware.
    </li>
-   <li><button tb_eng_ok>
+   <li><button ::icon::tb_eng_ok>
    The communication is established, the device is ready and can be
    used for move input. Pressing the button will disconnect the
    external hardware.

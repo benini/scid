@@ -5259,8 +5259,8 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Pour interrompre temporairement le processus de calcul, on peut utiliser la
-  bouton d'arrêt du moteur (<button tb_eng_off>). Une fois pressé, ce bouton
-  change le bouton de démarrage du moteur (<button tb_eng_on>) qui
+  bouton d'arrêt du moteur (<button ::icon::tb_eng_off>). Une fois pressé, ce bouton
+  change le bouton de démarrage du moteur (<button ::icon::tb_eng_on>) qui
   redémarrez l'analyse des moteurs. Notez, cependant, que la plupart des moteurs
   recommencer toute l'analyse, en oubliant tous les résultats que
   réalisé lors d'un cycle précédent. Seuls quelques moteurs sont capables de réutiliser les
@@ -7526,7 +7526,7 @@ set helpText(F,Novag) {
      Une fois que le bon port est défini, choisissez le menu
  <menu>Outils</menu><menu>Connecter un matériel</menu><menu>Connecter Novag Citrine</menu>
      pour connecter l'échiquier, ou cliquez simplement sur le bouton de connexion
-     matérielle <button tb_eng_disconnected>. Ce bouton
+     matérielle <button ::icon::tb_eng_disconnected>. Ce bouton
    indique également <a HardwareStatus>l'état de la connexion.</a>
 
    ###--- Description détaillée nécessaire ---###
@@ -7654,18 +7654,18 @@ set helpText(F,HardwareStatus) {
    l'état du matériel externe, il affiche différentes icônes :
    </p>
    <ul>
-   <li><button tb_eng_disconnected>
+   <li><button ::icon::tb_eng_disconnected>
    C'est l'état normal après le démarrage du programme et montre qu'aucun
    matériel externe n'est actif pour le moment. Appuyer sur ce bouton
    connectera le matériel configuré.
    </li>
-   <li><button tb_eng_connecting>
+   <li><button ::icon::tb_eng_connecting>
    Scid a démarré la communication avec le matériel externe,
    L'initialisation est en cours. En fonction du pilote et du matériel
    connectés, ça peut prendre quelques secondes pour que les choses
    se mettent en ordre.
    </li>
-   <li><button tb_eng_error>
+   <li><button ::icon::tb_eng_error>
    Lors de la communication avec le matériel externe, une erreur s'est produite.
    Les <term>sources habituelles de problèmes matériel</term> sont, par exemple,
    qu'un autre programme à l'accès au matériel externe, que le matériel n'est
@@ -7677,7 +7677,7 @@ set helpText(F,HardwareStatus) {
    ce cas. En appuyant sur ce bouton, Scid essaie de nouveau de se brancher
    sur le matériel configuré.
    </li>
-   <li><button tb_eng_ok>
+   <li><button ::icon::tb_eng_ok>
    La communication est établie, l'appareil est prêt et peut être
    utilisé pour la saisie de coup. Une pression sur ce bouton déconnectera le
    matériel externe.
