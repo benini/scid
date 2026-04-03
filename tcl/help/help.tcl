@@ -2799,7 +2799,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   Additional information can be accessed using the <button
-  tb_engineinfo> button. A new line will be added to the status area
+  ::icon::tb_engineinfo> button. A new line will be added to the status area
   showing the current move analysed, the number of tablebase hits, a
   more exact number of nodes analysed per second, the watermark of the
   engines hash and the current cpu load. Usually, this information is
@@ -2831,11 +2831,11 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   this mode only the current evaluation is shown in the status line.
   <p>
   To add the best move chosen by the engine as a new move in the current
-  game, press the <b>Add move</b> button <button tb_addmove>. If the
+  game, press the <b>Add move</b> button <button ::icon::tb_addmove>. If the
   whole main line of the engine should be added just use the <b>Add
-  Variation</b> button <button tb_addvar>. In case an engine offers
+  Variation</b> button <button ::icon::tb_addvar>. In case an engine offers
   the <term>Multi-PV</term> mode, using the <b>Add all Variations</b>
-  button (<button tb_addallvars>) can be used to add all principal
+  button (<button ::icon::tb_addallvars>) can be used to add all principal
   variations to the game. The insertion of variations from the
   analysis window will also add the name of the engine as a comment to
   the game.
@@ -2855,7 +2855,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   To set an engine to analyse a position in the background while
   other functions of Scid are used one can <term>lock the
-  position</term> using the <button tb_lockengine> button. Scid now
+  position</term> using the <button ::icon::tb_lockengine> button. Scid now
   stops to send any changes of the main board to the engine, and the
   engine stays calculating the position.
   </p>
@@ -2940,13 +2940,13 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   
   <h3><a Annotate>Annotating a game</h3>
   <p>
-  The <b>Add variation</b> button (<button tb_addvar> or <button
-  tb_addallvars>)in the analysis window adds the current score and
+  The <b>Add variation</b> button (<button ::icon::tb_addvar> or <button
+  ::icon::tb_addallvars>)in the analysis window adds the current score and
   best line of play as a new variation in the game.
   </p>
   <p>
   You can do this automatically for a number of moves (annotating the
-  game) by pressing the <b>Annotate</b> button, <button tb_annotate>.
+  game) by pressing the <b>Annotate</b> button, <button ::icon::tb_annotate>.
   Besides, the engines best lines also <a Moves Informant>Informant</a>
   style evaluation symbols are added in this process.  First, the
   parameters for automatic annotations have to be set:
@@ -3033,7 +3033,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   If an engine is using too much CPU time and affecting the use of Scid
   or other applications, turning on the <b>Low CPU priority</b> button
-  <button tb_cpu> may help; it gives the engine a low priority for CPU
+  <button ::icon::tb_cpu> may help; it gives the engine a low priority for CPU
   scheduling. On Windows, engines are run on low priority by default.
   </p>
   <p>

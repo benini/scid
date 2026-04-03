@@ -5215,7 +5215,7 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Des informations supplémentaires sont accessibles en utilisant le bouton
-  <button tb_engineinfo>. Une nouvelle ligne sera ajoutée à la zone d'état
+  <button ::icon::tb_engineinfo>. Une nouvelle ligne sera ajoutée à la zone d'état
   montrant le coup courant analysé, le nombre de coups de la table de finales, un
   nombre plus exact de nœuds analysés par seconde, le filigrane de la
   le hash des moteurs et la charge actuelle du processeur. Habituellement, cette information est
@@ -5248,11 +5248,11 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Pour ajouter le meilleur coup choisi par le moteur en tant que nouveau coup dans la
-  jeu, appuyez sur la touche <b>Add move</b> bouton <button tb_addmove>. Si le
+  jeu, appuyez sur la touche <b>Add move</b> bouton <button ::icon::tb_addmove>. Si le
   toute la ligne principale du moteur doit être ajoutée, il suffit d'utiliser la commande <b>Add
-  Variante</b> bouton <button tb_addvar>. Dans le cas où un moteur offre
+  Variante</b> bouton <button ::icon::tb_addvar>. Dans le cas où un moteur offre
   le mode <term>Multi-PV</term>, en utilisant le <b>Ajouter toutes les variantes</b>
-  (<button tb_addallvars>) peut être utilisé pour ajouter tous les principaux
+  (<button ::icon::tb_addallvars>) peut être utilisé pour ajouter tous les principaux
   variantes du jeu. L'insertion de variantes du
   ajoutera également le nom du moteur comme commentaire à la fenêtre d'analyse
   le jeu.
@@ -5272,7 +5272,7 @@ set helpText(F,Analysis) {
   <p>
   Pour paramétrer un moteur pour analyser une position en arrière-plan tout en
   d'autres fonctions de Scid sont utilisées on peut <term>bloquer le
-  position</term> en utilisant le bouton <button tb_lockengine>. Scid maintenant
+  position</term> en utilisant le bouton <button ::icon::tb_lockengine>. Scid maintenant
   s'arrête pour envoyer au moteur toute modification de la carte mère, et le
   le moteur reste en calculant la position.
   </p>
@@ -5357,13 +5357,13 @@ set helpText(F,Analysis) {
   
   <h3><name Annotate>Annoter une partie</name></h3>
   <p>
-  Le bouton <b>Ajouter une variante</b> (<button tb_addvar> ou
-  <button tb_addallvars>) dans la fenêtre d'analyse ajoute le
+  Le bouton <b>Ajouter une variante</b> (<button ::icon::tb_addvar> ou
+  <button ::icon::tb_addallvars>) dans la fenêtre d'analyse ajoute le
   le score et la meilleure ligne de jeu comme une nouvelle variante dans le jeu.
   </p>
   <p>
   Vous pouvez le faire automatiquement pour un certain nombre de coups (en annotant le
-  jeu) en appuyant sur le bouton <b>Annoter</b>, <button tb_annotate>.
+  jeu) en appuyant sur le bouton <b>Annoter</b>, <button ::icon::tb_annotate>.
   En outre, les meilleures lignes des moteurs aussi <a Moves Informant>Informant</a>
   Les symboles d'évaluation de style sont ajoutés dans ce processus.  Tout d'abord, le
   les paramètres pour les annotations automatiques doivent être définis :
@@ -5450,7 +5450,7 @@ set helpText(F,Analysis) {
   <p>
   Si un moteur utilise trop de temps CPU et affecte l'utilisation de Scid
   ou d'autres applications, en activant le bouton <b>Faible priorité du CPU</b>
-  <button tb_cpu> peut aider ; il donne au moteur une faible priorité pour le CPU
+  <button ::icon::tb_cpu> peut aider ; il donne au moteur une faible priorité pour le CPU
   la planification. Sous Windows, les moteurs sont exécutés par défaut en basse priorité.
   </p>
   <p>
@@ -7202,7 +7202,7 @@ set helpText(F,FindBestMove) {
   actuelle. Si nécessaire, un nouveau jeu approprié sera chargé et Scid affichera
   la position critique. L'utilisateur est alors tenu de trouver la meilleure
   continuation. Pour sauter à la position tactique suivante, il suffit de faire un
-  clic droit sur le bouton <button tb_BD_Forward> pour aller à la fin de partie.
+  clic droit sur le bouton <button ::icon::tb_BD_Forward> pour aller à la fin de partie.
   </p>
   <p>
   Pour cet exercice, il est conseillé de fermer la <a PGN>fenêtre PGN</a> et de
@@ -8046,7 +8046,7 @@ set helpText(F,GameInfoBar) {
   </ul>
 
   <h3><name BD_Forward>Menu contextuel du bouton Avancer</name></h3>
-  <p><button tb_BD_Forward> Ce bouton avance d'un demi-coup (raccourci :
+  <p><button ::icon::tb_BD_Forward> Ce bouton avance d'un demi-coup (raccourci :
   flèche <b>Droite</b>). Un Clic-Droit avec la souris ouvre le
   <green>menu contextuel</green> suivant :</p>
   <ul>
