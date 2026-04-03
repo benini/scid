@@ -741,8 +741,8 @@ namespace eval tacgame {
     }
     
     # if the resign value has been reached more than 3 times in a raw, resign
-    if { ( [getPhalanxColor] == "black" && [lindex $lscore end] >  $::informant("+--") ) || \
-          ( [getPhalanxColor] == "white" && [lindex $lscore end] < [expr 0.0 - $::informant("+--")] ) } {
+    if { ( [getPhalanxColor] == "black" && [lindex $lscore end] >  $::informant(+--) ) || \
+          ( [getPhalanxColor] == "white" && [lindex $lscore end] < [expr 0.0 - $::informant(+--)] ) } {
       incr resignCount
     } else  {
       set resignCount 0
@@ -870,14 +870,14 @@ namespace eval tacgame {
           set lastblundervalue [expr $sc1-$sc2]
           # append a ?!, ? or ?? to the move if there is none yet and if the game was not dead yet
           # (that is if the score was -6, if it goes down to -10, this is a normal evolution
-          if { [expr abs($sc2)] < $::informant("+--") } {
+          if { [expr abs($sc2)] < $::informant(+--) } {
             sc_pos clearNags
             set b [expr abs($lastblundervalue)]
-            if { $b >= $::informant("?!") && $b < $::informant("?") } {
+            if { $b >= $::informant(?!) && $b < $::informant(?) } {
               sc_pos addNag "?!"
-            } elseif { $b >= $::informant("?") && $b < $::informant("??") }  {
+            } elseif { $b >= $::informant(?) && $b < $::informant(??) }  {
               sc_pos addNag "?"
-            } elseif  { $b >= $::informant("??") } {
+            } elseif  { $b >= $::informant(??) } {
               sc_pos addNag "??"
             }
           }
