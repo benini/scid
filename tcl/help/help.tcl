@@ -2345,7 +2345,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
      <li> <img tb_new> New line</li>
      <li> <img tb_rfilter> To be verified by further analysis</li>
      <li> <img tb_msearch> To train</li>
-     <li> <img tb_help_small> Dubious line</li>
+     <li> <img ::icon::tb_help_small> Dubious line</li>
      <li> <img tb_cut> To remove</li>
      </ul>
 	  To remove a marker just select the item <menu>No marker</menu>.
@@ -2861,8 +2861,8 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   To finish the current game by the engine ("shoot out" or "demo" mode)
-  one can use the finish game button <button tb_finish_off>. To indicate
-  the shootout mode this button turns to <button tb_finish_on>. This
+  one can use the finish game button <button ::icon::tb_finish_off>. To indicate
+  the shootout mode this button turns to <button ::icon::tb_finish_on>. This
   function is only available for the first analysis engine.
   </p>
 

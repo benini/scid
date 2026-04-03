@@ -5278,8 +5278,8 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Pour terminer le jeu en cours par le moteur (mode "shoot out" ou "démo")
-  on peut utiliser le bouton de fin de partie <button tb_finish_off>. Pour indiquer
-  le mode d'utilisation de l'appareil, cette touche devient <button tb_finish_on>. Ce
+  on peut utiliser le bouton de fin de partie <button ::icon::tb_finish_off>. Pour indiquer
+  le mode d'utilisation de l'appareil, cette touche devient <button ::icon::tb_finish_on>. Ce
   n'est disponible que pour le premier moteur d'analyse.
   </p>
 

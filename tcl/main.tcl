@@ -1370,7 +1370,7 @@ proc InitToolbar {{tb}} {
 	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
 	ttk::button .main.tb.crosstab -image tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
 	ttk::button .main.tb.engine -image tb_engine -command ::enginewin::Open -padding {2 0}
-	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
+	ttk::button .main.tb.help -image ::icon::tb_help -command {helpWindow Index} -padding {2 0}
 
 	foreach i {newdb open save closedb finder bkm newgame copy paste gprev gnext \
 		  boardsearch headersearch materialsearch \
