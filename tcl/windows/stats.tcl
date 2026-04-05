@@ -27,7 +27,7 @@ proc ::windows::stats::Open {} {
   $w.stats configure -width 64 -height 40 -state normal -font font_Fixed -wrap none
 
   ttk::frame $w.fbuttons
-  ttk::button $w.fbuttons.print -image tb_save -command {
+  ttk::button $w.fbuttons.print -image ::icon::tb_save -command {
     set ftype {
       { "Text files" {".txt"} }
       { "All files"  {"*"}    }
@@ -56,7 +56,7 @@ proc ::windows::stats::Open {} {
   ttk::checkbutton $w.fbuttons.oldyear -text "OldYear" \
       -variable ::windows::stats::old_year -command ::windows::stats::refresh_wnd
 
-  ttk::button $w.fbuttons.setup -image tb_config -command configureFilterGraph
+  ttk::button $w.fbuttons.setup -image ::icon::tb_config -command configureFilterGraph
   pack $w.fbuttons.graphyear $w.fbuttons.graphelo $w.fbuttons.statyear $w.fbuttons.statelo $w.fbuttons.oldyear $w.fbuttons.old_elo -side left
   pack $w.fbuttons.setup $w.fbuttons.print -side right -padx "5 0" -pady 2
   pack $w.fbuttons -side top -fill x

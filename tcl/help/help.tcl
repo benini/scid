@@ -2336,8 +2336,8 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   are mainly meant to handle opening repertoires. The available options
   are:
      <ul>
-     <li> <img tb_tick> Include line in repertoire</li>
-     <li> <img tb_cross> Exclude line from repertoire</li>
+     <li> <img ::icon::tb_tick> Include line in repertoire</li>
+     <li> <img ::icon::tb_cross> Exclude line from repertoire</li>
      <li> <img tb_mainline> Main Line</li>
      <li> <img tb_bkm> Bookmark</li>
      <li> <img tb_white> White</li>
@@ -2346,7 +2346,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
      <li> <img tb_rfilter> To be verified by further analysis</li>
      <li> <img tb_msearch> To train</li>
      <li> <img ::icon::tb_help_small> Dubious line</li>
-     <li> <img tb_cut> To remove</li>
+     <li> <img ::icon::tb_cut> To remove</li>
      </ul>
 	  To remove a marker just select the item <menu>No marker</menu>.
   </li>

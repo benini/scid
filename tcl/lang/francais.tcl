@@ -4742,8 +4742,8 @@ set helpText(F,TreeMasks) {
   sont principalement destinés à traiter les répertoires d'ouverture. Les options disponibles
   sont :
      <ul>
-     <li> <img tb_tick> Inclure la ligne dans le répertoire</li>
-     <li> <img tb_cross> Exclure la ligne du répertoire</li>
+     <li> <img ::icon::tb_tick> Inclure la ligne dans le répertoire</li>
+     <li> <img ::icon::tb_cross> Exclure la ligne du répertoire</li>
      <li> <img tb_mainline> Main Line</li>
      <li> <img ::icon::tb_bkm> Signet</li>
      <li> <img tb_white> Blanc</li>
@@ -4752,7 +4752,7 @@ set helpText(F,TreeMasks) {
      <li> <img tb_rfilter> A vérifier par une analyse plus approfondie</li>
      <li> <img tb_msearch> Pour former</li>
      <li> <img tb_help_small> Ligne douteuse</li>
-     <li> <img tb_cut> Pour supprimer</li>
+     <li> <img ::icon::tb_cut> Pour supprimer</li>
      </ul>
 	  Pour supprimer un marqueur, il suffit de sélectionner l'élément <menu>No marker</menu>.
   </li>

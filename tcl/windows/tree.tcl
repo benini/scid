@@ -267,8 +267,8 @@ proc ::tree::doTraining { { n 0 } } {
         }
 
         # if move was on an exclude line, set a warning (img = tb_cross)
-        if { [::tree::mask::getImage $move_done 0] ==  "tb_cross" || \
-              [::tree::mask::getImage $move_done 1] == "tb_cross"} {
+        if { [::tree::mask::getImage $move_done 0] ==  "::icon::tb_cross" || \
+              [::tree::mask::getImage $move_done 1] == "::icon::tb_cross"} {
           sc_pos setComment "[sc_pos getComment] Mask : excluded line"
         }
       }
@@ -991,9 +991,9 @@ namespace eval ::tree::mask {
   set displayMask_showNag 1
   set displayMask_showComment 1
 
-  array set marker2image { Include tb_tick Exclude tb_cross MainLine tb_mainline Bookmark ::icon::tb_bkm \
+  array set marker2image { Include ::icon::tb_tick Exclude ::icon::tb_cross MainLine tb_mainline Bookmark ::icon::tb_bkm \
         White tb_white Black tb_black \
-        NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help_small ToRemove tb_cut }
+        NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help_small ToRemove ::icon::tb_cut }
   set maxRecent 10
 }
 ################################################################################

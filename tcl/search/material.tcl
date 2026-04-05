@@ -86,10 +86,10 @@ proc makeBoolMenu {w varName} {
   ttk::menubutton $w -menu $w.menu -style Pad0.Small.TButton
 
   menu $w.menu -tearoff 0
-  $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
-      -command "$w configure -image tb_tick"  ;# -hidemargin 1
-  $w.menu add radiobutton -label No -image tb_cross -variable $varName -value No \
-      -command "$w configure -image tb_cross" ;# -hidemargin 1
+  $w.menu add radiobutton -label Yes -image ::icon::tb_tick -variable $varName -value Yes \
+      -command "$w configure -image ::icon::tb_tick"  ;# -hidemargin 1
+  $w.menu add radiobutton -label No -image ::icon::tb_cross -variable $varName -value No \
+      -command "$w configure -image ::icon::tb_cross" ;# -hidemargin 1
   return $w.menu
 }
 
@@ -117,9 +117,9 @@ proc updatePatternImages {} {
   if {! [winfo exists .sm]} { return }
   for {set i 1} {$i <= $nPatterns} {incr i} {
     if {$pattBool($i) == "Yes"} {
-      .sm.mp.patt.grid.b$i configure -image tb_tick
+      .sm.mp.patt.grid.b$i configure -image ::icon::tb_tick
     } else {
-      .sm.mp.patt.grid.b$i configure -image tb_cross
+      .sm.mp.patt.grid.b$i configure -image ::icon::tb_cross
     }
     if {$pattPiece($i) == "?"} {
       .sm.mp.patt.grid.p$i configure -image e20
