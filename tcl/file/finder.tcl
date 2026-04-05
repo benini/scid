@@ -43,7 +43,7 @@ proc ::file::finder::Open {} {
   # use ttk instead of tk_optionbutton, but use the menu
   ttk::menubutton $w.d.mbn -text $::file::finder::data(dir) -menu $::file::finder::data(menu)
 
-  ttk::button $w.d.up -image tb_updir -command {::file::finder::Refresh ..}
+  ttk::button $w.d.up -image ::icon::tb_updir -command {::file::finder::Refresh ..}
   ttk::button $w.d.help -image tb_help_small -command {helpWindow Finder}
   pack $w.d.label -side left
   pack $w.d.help $w.d.up -side right -padx "5 0"

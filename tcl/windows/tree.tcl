@@ -991,7 +991,7 @@ namespace eval ::tree::mask {
   set displayMask_showNag 1
   set displayMask_showComment 1
 
-  array set marker2image { Include tb_tick Exclude tb_cross MainLine tb_mainline Bookmark tb_bkm \
+  array set marker2image { Include tb_tick Exclude tb_cross MainLine tb_mainline Bookmark ::icon::tb_bkm \
         White tb_white Black tb_black \
         NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help_small ToRemove tb_cut }
   set maxRecent 10

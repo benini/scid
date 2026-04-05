@@ -4745,7 +4745,7 @@ set helpText(F,TreeMasks) {
      <li> <img tb_tick> Inclure la ligne dans le répertoire</li>
      <li> <img tb_cross> Exclure la ligne du répertoire</li>
      <li> <img tb_mainline> Main Line</li>
-     <li> <img tb_bkm> Signet</li>
+     <li> <img ::icon::tb_bkm> Signet</li>
      <li> <img tb_white> Blanc</li>
      <li> <img tb_black> Noir</li>
      <li> <img tb_new> Nouvelle ligne</li>

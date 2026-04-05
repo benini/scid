@@ -298,7 +298,7 @@ proc tools::graphs::filter::Open {} {
         -command ::tools::graphs::filter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_config -command configureFilterGraph
+  ttk::button $w.b.setup -image ::icon::tb_config -command configureFilterGraph
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes
@@ -969,7 +969,7 @@ proc tools::graphs::absfilter::Open {} {
         -command ::tools::graphs::absfilter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  ttk::button $w.b.setup -image tb_config -command configureFilterGraph
+  ttk::button $w.b.setup -image ::icon::tb_config -command configureFilterGraph
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.setup -side right -pady 2
   pack $w.b.status -side left -padx 2 -pady 2 -fill x -expand yes
