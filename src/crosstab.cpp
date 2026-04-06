@@ -364,6 +364,7 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 	PrintRatings = false;
 	PrintTitles = false;
 	PrintCountries = false;
+	PrintFlags = false;
 	PrintAges = false;
 	PrintTiebreaks = true;
 	PrintTallies = true;
@@ -373,8 +374,10 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			PrintRatings = true;
 		if (!pdata->title.empty())
 			PrintTitles = true;
-		if (!pdata->country.empty())
+		if (!pdata->country.empty()) {
 			PrintCountries = true;
+			PrintFlags = true;
+        }
 		if (pdata->birthdate != ZERO_DATE) {
 			PrintAges = true;
 			int age = static_cast<int>(date_GetYear(FirstDate)) -
@@ -392,6 +395,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 		PrintTitles = false;
 	if (!ShowCountries)
 		PrintCountries = false;
+	if (!ShowFlags)
+		PrintFlags = false;
 	if (!ShowTallies)
 		PrintTallies = false;
 	if (!ShowAges)
@@ -447,6 +452,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 	if (PrintTitles)
 		LineWidth += 4;
 	if (PrintCountries)
+		LineWidth += 4;
+	if (PrintFlags)
 		LineWidth += 4;
 	if (PrintAges)
 		LineWidth += 4;
@@ -570,6 +577,17 @@ void Crosstable::PrintPlayer(std::string& output, const playerDataT& pdata) {
 		output += EndCol;
 	}
 
+    if (PrintFlags) {
+		output += StartCol;
+		if (OutputFormat == CROSSTABLE_Hypertext) {
+            if ( pdata.country.empty()) {
+                output += "<img flag_unkown>";
+            } else {
+                output += "<img flag_" + pdata.country + ">";
+            }
+        }
+		output += EndCol;
+    }
 	if (OutputFormat == CROSSTABLE_Hypertext) {
 		output += "</pi>";
 	}
@@ -699,6 +717,13 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 			output += StartBoldCol;
 			output += " Nat";
 			output += EndBoldCol;
+		}
+	}
+
+   	if (PrintFlags) {
+		if (OutputFormat == CROSSTABLE_Hypertext) {
+			output += " <blue><run set ::crosstab(sort) country ; "
+                "::crosstab::Refresh>Flag</run></blue>";
 		}
 	}
 

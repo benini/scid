@@ -2141,6 +2141,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     bool showAges = true;
     bool showColors = true;
     bool showCountries = true;
+    bool showFlags = true;
     bool showTallies = true;
     bool showRatings = true;
     bool showTitles = true;
@@ -2174,8 +2175,8 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
             case EOPT_COLORS_ON:      showColors = true;       break;
             case EOPT_COUNTRIES_OFF:  showCountries = false;   break;
             case EOPT_COUNTRIES_ON:   showCountries = true;    break;
-            case EOPT_FLAGS_OFF:      break;
-            case EOPT_FLAGS_ON:       break;
+            case EOPT_FLAGS_OFF:      showFlags = false;       break;
+            case EOPT_FLAGS_ON:       showFlags = true;        break;
             case EOPT_TALLIES_OFF:    showTallies = false;     break;
             case EOPT_TALLIES_ON:     showTallies = true;      break;
             case EOPT_RATINGS_OFF:    showRatings = false;     break;
@@ -2248,6 +2249,7 @@ sc_game_crosstable (ClientData, Tcl_Interp * ti, int argc, const char ** argv)
     ctable->SetSwissColors (showColors);
     ctable->SetAges (showAges);
     ctable->SetCountries (showCountries);
+    ctable->SetFlags (showFlags);
     ctable->SetTallies (showTallies);
     ctable->SetElos (showRatings);
     ctable->SetTitles (showTitles);
