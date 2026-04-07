@@ -577,14 +577,12 @@ void Crosstable::PrintPlayer(std::string& output, const playerDataT& pdata) {
 		output += EndCol;
 	}
 
-    if (PrintFlags) {
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
 		output += StartCol;
-		if (OutputFormat == CROSSTABLE_Hypertext) {
-            if ( pdata.country.empty()) {
-                output += "<img flag_unkown>";
-            } else {
-                output += "<img flag_" + pdata.country + ">";
-            }
+        if ( pdata.country.empty()) {
+            output += "<img flag_unkown>";
+        } else {
+            output += "<img flag_" + pdata.country + ">";
         }
 		output += EndCol;
     }
@@ -720,11 +718,9 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 		}
 	}
 
-   	if (PrintFlags) {
-		if (OutputFormat == CROSSTABLE_Hypertext) {
-			output += " <blue><run set ::crosstab(sort) country ; "
-                "::crosstab::Refresh>Flag</run></blue>";
-		}
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+        output += " <blue><run set ::crosstab(sort) country ; "
+            "::crosstab::Refresh>Flag</run></blue>";
 	}
 
 	if (OutputFormat == CROSSTABLE_LaTeX) {
