@@ -20,12 +20,6 @@ namespace eval ::annotation {
             return
         }
 
-        #Workaround for error in trace var for arrays
-        set ::annotateBlunderThreshold $options(blunderThreshold)
-        set ::annotateTime $options(time)
-        trace variable ::annotateBlunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
-        trace variable ::annotateTime w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
-
         win::createDialog $w
         ::setTitle $w "Scid: $::tr(Annotate)"
         catch {grab $w}
@@ -37,14 +31,15 @@ namespace eval ::annotation {
         ttk::frame $f.annotate.typ
         ttk::radiobutton $f.annotate.typ.label -text $::tr(AnnotateTime) -variable ::annotation::options(typ) -value "movetime"
         ttk::radiobutton $f.annotate.typ.ldepth -text "Depth per move" -variable ::annotation::options(typ) -value "depth"
-        ttk::spinbox $f.annotate.typ.spDelay -width 5 -textvariable ::annotateTime -from 0.1 -to 999 -validate key -justify right
+        ttk::spinbox $f.annotate.typ.spDelay -width 5 -textvariable ::annotation::options(time) -from 0.1 -to 999 \
+            -validate key -justify right -validatecommand { regexp {^[0-9]*\.?[0-9]*$} %P }
         ttk::spinbox $f.annotate.typ.depth -width 5 -textvariable ::annotation::options(depth) -from 2 -to 999 -validate key -justify right
         ttk::radiobutton $f.annotate.allmoves -text $::tr(AnnotateAllMoves) -variable ::annotation::options(annotateBlunders) -value allmoves
         ttk::radiobutton $f.annotate.blundersonly -text $::tr(AnnotateBlundersOnly) -variable ::annotation::options(annotateBlunders) -value blundersonly
         ttk::frame $f.annotate.blunderbox
         ttk::label $f.annotate.blunderbox.label -text $::tr(BlundersThreshold:)
-        ttk::spinbox $f.annotate.blunderbox.spBlunder -width 4 -textvariable ::annotateBlunderThreshold \
-            -from 0.1 -to 3.0 -increment 0.1 -justify right
+        ttk::spinbox $f.annotate.blunderbox.spBlunder -width 4 -validate key -textvariable ::annotation::options(blunderThreshold) \
+            -from 0.1 -to 3.0 -increment 0.1 -justify right -validatecommand { regexp {^[0-9]*\.?[0-9]*$} %P }
         ttk::checkbutton $f.annotate.cbBook  -text $::tr(UseBook) -variable ::annotation::options(useAnalysisBook)
         ::engineNoWin::createEngineOptionsFrame $f annotateEngine ::annotation::options(engine) 3 ::annotation::eng_messages
 
@@ -132,10 +127,8 @@ namespace eval ::annotation {
             }
         }
         ttk::button $f.buttons.ok -text "Annotate" -command {
-            if {$::annotateTime < 0.1} { set ::annotateTime 0.1 }
-            set ::annotation::options(movetime) [expr {int($::annotateTime * 1000.0)}]
-            set ::annotation::options(blunderThreshold) $::annotateBlunderThreshold
-            set ::annotation::options(time) $::annotateTime
+            if {$::annotation::options(time) < 0.1} { set ::annotation::options(time) 0.1 }
+            set ::annotation::options(movetime) [expr {int($::annotation::options(time) * 1000.0)}]
             if { [::engineNoWin::initEngine annotateEngine $::annotation::options(engine) \
                       [list ::annotation::eng_messages annotateEngine .annotationDialog.f.engpara]] } {
                 ::annotation::runAnnotation
