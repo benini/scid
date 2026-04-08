@@ -446,14 +446,14 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 		EndBoldCol = " &";
 	}
 
-	LineWidth = LongestNameLen;
+	LineWidth = LongestNameLen + 10;
 	if (PrintRatings)
 		LineWidth += 16;
 	if (PrintTitles)
 		LineWidth += 4;
 	if (PrintCountries)
 		LineWidth += 4;
-	if (PrintFlags)
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
 		LineWidth += 4;
 	if (PrintAges)
 		LineWidth += 4;
@@ -477,6 +477,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			LineWidth += 8;
 		if (PrintCountries)
 			LineWidth += 8;
+        if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
+            LineWidth += 6;
 		if (PrintAges)
 			LineWidth += 8;
 	}
@@ -720,7 +722,7 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 
     if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
         output += " <blue><run set ::crosstab(sort) country ; "
-            "::crosstab::Refresh>Flag</run></blue>";
+            "::crosstab::Refresh>Nat</run></blue>";
 	}
 
 	if (OutputFormat == CROSSTABLE_LaTeX) {
@@ -739,7 +741,7 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += "   ";
+			output += (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;
@@ -1026,6 +1028,11 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 		}
 	}
 
+    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+        output += " <blue><run set ::crosstab(sort) country ; "
+            "::crosstab::Refresh>Nat</run></blue>";
+	}
+
 	if (OutputFormat == CROSSTABLE_LaTeX) {
 		output += " \\multicolumn{2}{c}{\\bfseries Score} & ";
 	} else {
@@ -1042,7 +1049,7 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += "   ";
+			output += (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;
