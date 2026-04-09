@@ -581,11 +581,8 @@ void Crosstable::PrintPlayer(std::string& output, const playerDataT& pdata) {
 
     if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
 		output += StartCol;
-        if ( pdata.country.empty()) {
-            output += "<img flag_unkown>";
-        } else {
-            output += "<img flag_" + pdata.country + ">";
-        }
+        output += pdata.country.empty() ? "<img flag_unkown>"
+                                        : "<img flag_" + pdata.country + ">" ;
 		output += EndCol;
     }
 	if (OutputFormat == CROSSTABLE_Hypertext) {
