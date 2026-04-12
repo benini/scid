@@ -606,6 +606,14 @@ proc ConvertOldOptionVariables {} {
       set $new [set ::$old]
     }
   }
+  # convert old informant "xx" to xx
+  foreach {mark} { !? ? ?? ?! += +/- +- +-- } {
+      set markOld "\"$mark\""
+      if {[info exists ::informant($markOld)]} {
+          set ::informant($mark) $::informant($markOld)
+          unset -nocomplain ::informant($markOld)
+      }
+  }
 }
 ConvertOldOptionVariables
 
