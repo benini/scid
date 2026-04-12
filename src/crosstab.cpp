@@ -376,7 +376,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			PrintTitles = true;
 		if (!pdata->country.empty()) {
 			PrintCountries = true;
-			PrintFlags = true;
+            if (OutputFormat == CROSSTABLE_Hypertext)
+                PrintFlags = true;
         }
 		if (pdata->birthdate != ZERO_DATE) {
 			PrintAges = true;
@@ -453,7 +454,7 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 		LineWidth += 4;
 	if (PrintCountries)
 		LineWidth += 4;
-    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
+    if (PrintFlags)
 		LineWidth += 4;
 	if (PrintAges)
 		LineWidth += 4;
@@ -477,7 +478,7 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			LineWidth += 8;
 		if (PrintCountries)
 			LineWidth += 8;
-        if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext)
+        if (PrintFlags)
             LineWidth += 6;
 		if (PrintAges)
 			LineWidth += 8;
@@ -579,7 +580,7 @@ void Crosstable::PrintPlayer(std::string& output, const playerDataT& pdata) {
 		output += EndCol;
 	}
 
-    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+    if (PrintFlags) {
 		output += StartCol;
         output += pdata.country.empty() ? "<img flag_unkown>"
                                         : "<img flag_" + pdata.country + ">" ;
@@ -717,7 +718,7 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 		}
 	}
 
-    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+    if (PrintFlags) {
         output += " <blue><run set ::crosstab(sort) country ; "
             "::crosstab::Refresh>Nat</run></blue>";
 	}
@@ -738,7 +739,7 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) ? "  ": "   ";
+			output += PrintFlags ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;
@@ -1025,7 +1026,7 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 		}
 	}
 
-    if (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) {
+    if (PrintFlags) {
         output += " <blue><run set ::crosstab(sort) country ; "
             "::crosstab::Refresh>Nat</run></blue>";
 	}
@@ -1046,7 +1047,7 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += (PrintFlags && OutputFormat == CROSSTABLE_Hypertext) ? "  ": "   ";
+			output += PrintFlags ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;
