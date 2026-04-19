@@ -364,6 +364,7 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 	PrintRatings = false;
 	PrintTitles = false;
 	PrintCountries = false;
+	PrintFlags = false;
 	PrintAges = false;
 	PrintTiebreaks = true;
 	PrintTallies = true;
@@ -373,8 +374,11 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			PrintRatings = true;
 		if (!pdata->title.empty())
 			PrintTitles = true;
-		if (!pdata->country.empty())
+		if (!pdata->country.empty()) {
 			PrintCountries = true;
+            if (OutputFormat == CROSSTABLE_Hypertext)
+                PrintFlags = true;
+        }
 		if (pdata->birthdate != ZERO_DATE) {
 			PrintAges = true;
 			int age = static_cast<int>(date_GetYear(FirstDate)) -
@@ -392,6 +396,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 		PrintTitles = false;
 	if (!ShowCountries)
 		PrintCountries = false;
+	if (!ShowFlags)
+		PrintFlags = false;
 	if (!ShowTallies)
 		PrintTallies = false;
 	if (!ShowAges)
@@ -441,12 +447,14 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 		EndBoldCol = " &";
 	}
 
-	LineWidth = LongestNameLen;
+	LineWidth = LongestNameLen + 10;
 	if (PrintRatings)
 		LineWidth += 16;
 	if (PrintTitles)
 		LineWidth += 4;
 	if (PrintCountries)
+		LineWidth += 4;
+    if (PrintFlags)
 		LineWidth += 4;
 	if (PrintAges)
 		LineWidth += 4;
@@ -470,6 +478,8 @@ std::string Crosstable::PrintTable(crosstableModeT mode, uint playerLimit,
 			LineWidth += 8;
 		if (PrintCountries)
 			LineWidth += 8;
+        if (PrintFlags)
+            LineWidth += 6;
 		if (PrintAges)
 			LineWidth += 8;
 	}
@@ -570,6 +580,12 @@ void Crosstable::PrintPlayer(std::string& output, const playerDataT& pdata) {
 		output += EndCol;
 	}
 
+    if (PrintFlags) {
+		output += StartCol;
+        output += pdata.country.empty() ? "<img flag_unkown>"
+                                        : "<img flag_" + pdata.country + ">" ;
+		output += EndCol;
+    }
 	if (OutputFormat == CROSSTABLE_Hypertext) {
 		output += "</pi>";
 	}
@@ -702,6 +718,11 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 		}
 	}
 
+    if (PrintFlags) {
+        output += " <blue><run set ::crosstab(sort) country ; "
+            "::crosstab::Refresh>Nat</run></blue>";
+	}
+
 	if (OutputFormat == CROSSTABLE_LaTeX) {
 		output += " \\multicolumn{2}{c}{\\bfseries Score} & ";
 	} else {
@@ -718,7 +739,7 @@ void Crosstable::PrintAllPlayAll(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += "   ";
+			output += PrintFlags ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;
@@ -1005,6 +1026,11 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 		}
 	}
 
+    if (PrintFlags) {
+        output += " <blue><run set ::crosstab(sort) country ; "
+            "::crosstab::Refresh>Nat</run></blue>";
+	}
+
 	if (OutputFormat == CROSSTABLE_LaTeX) {
 		output += " \\multicolumn{2}{c}{\\bfseries Score} & ";
 	} else {
@@ -1021,7 +1047,7 @@ void Crosstable::PrintSwiss(std::string& output, uint playerLimit) {
 			output += EndBoldCol;
 			output += ' ';
 		} else {
-			output += "   ";
+			output += PrintFlags ? "  ": "   ";
 			output += StartBoldCol;
 			output += ' ';
 			output += scoreHeader;

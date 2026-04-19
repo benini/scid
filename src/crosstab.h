@@ -99,6 +99,7 @@ private:
 	bool ShowTitles{true};
 	bool ShowElos{true};
 	bool ShowCountries{true};
+	bool ShowFlags{true};
 	bool ShowTallies{true};
 	bool ShowAges{true};
 	bool ShowTiebreaks{false};
@@ -114,6 +115,7 @@ private:
 	bool PrintTitles{};
 	bool PrintRatings{};
 	bool PrintCountries{};
+	bool PrintFlags{};
 	bool PrintTallies{};
 	bool PrintAges{};
 	bool PrintTiebreaks{};
@@ -177,6 +179,7 @@ public:
 	void SetTitles(bool b) { ShowTitles = b; }
 	void SetElos(bool b) { ShowElos = b; }
 	void SetCountries(bool b) { ShowCountries = b; }
+	void SetFlags(bool b) { ShowFlags = b; }
 	void SetTallies(bool b) { ShowTallies = b; }
 	void SetTiebreaks(bool b) { ShowTiebreaks = b; }
 	void SetSwissColors(bool b) { SwissColors = b; }
