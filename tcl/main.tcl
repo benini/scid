@@ -1024,6 +1024,11 @@ proc addMarker {w x y} {
 proc selectMarker {} {
     set w_ .mainSelectMarker
     toplevel $w_
+    # This small picker is a transient helper window, so tiling WMs should
+    # treat it like a floating dialog instead of a normal application window.
+    catch { wm transient $w_ . }
+    catch { wm group $w_ . }
+    catch { wm attributes $w_ -type dialog }
     if {! $::macOS } {
         wm attributes $w_ -topmost 1
     } else {

@@ -264,6 +264,12 @@ proc ::win::createDialog {w {y 10}} {
 	toplevel $w -padx 10 -pady $y
 	::applyThemeColor_background $w
 
+	# Give window managers enough metadata to handle Scid dialogs as dialogs.
+	# Some tiling WMs use these hints to decide whether a window should float.
+	catch { wm transient $w . }
+	catch { wm group $w . }
+	catch { wm attributes $w -type dialog }
+
 	# Set up geometry for middle of screen:
 	after idle [list tk::PlaceWindow $w widget .]
 }
