@@ -531,11 +531,10 @@ proc ::board::addNamesBar {w {varname}} {
 proc ::board::addInfoBar {w varname} {
   ttk::frame $w.bar
   ttk::frame $w.bar.info
-  ttk_text $w.bar.info.t -style Toolbutton
+  ttk_text $w.bar.info.t -style Toolbutton -height 2 -width 1 -wrap word
   autoscrollBars y $w.bar.info $w.bar.info.t
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
-  grid propagate $w.bar.info 0
   ttk::button $w.bar.leavevar -image tb_BD_BackStart -style Toolbutton
   ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
   ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
