@@ -40,7 +40,7 @@ menuText D FileMaint "Wartung" 0 {Das Scid-Datenbankwartungsfenster}
 menuText D FileMaintWin "Wartungfenster" 0 \
   {Datenbank-Wartungsfenster öffnen/schließen}
 menuText D FileMaintCompact "Datenbank komprimieren..." 10 \
-  {Datenbank komprimieren, gelöschte Spiele und unbenutzte Namen entfernen}
+  {Datenbank komprimieren, gelöschte Partien und unbenutzte Namen entfernen}
 menuText D FileMaintClass "Partien ECO-klassifizieren..." 8 \
 {Neuklassifizierung aller Partien nach dem ECO-Code}
 menuText D FileMaintSort "Sortieren..." 0 \
@@ -97,7 +97,7 @@ menuText D EditReset "Ablage leeren" 0 \
 menuText D EditCopy "Partie in Ablage kopieren" 17 \
   {Diese Partie in die Ablage-Datenbank kopieren}
 menuText D EditPaste "Partie aus Ablage einfügen" 19 \
-  {Die aktuele Partie aus der Ablagedatenbank hier einfügen}
+  {Die aktuelle Partie aus der Ablagedatenbank hier einfügen}
 menuText D EditPastePGN "PGN-Partie aus Ablage einfügen..." 1 \
   {Interpretiere den Inhalt der Zwischenablage als PGN-Notation und füge ihn hier ein}
 menuText D EditSetup "Stellungseingabe..." 0 \
@@ -431,7 +431,7 @@ translate D GameEnd {Partieende}
 translate D LineEnd {Ende der Zugfolge}
 
 # Player information:
-translate D PInfoAll {Ergebnisse für <b>alle</b> Spiele}
+translate D PInfoAll {Ergebnisse für <b>alle</b> Partien}
 translate D PInfoFilter {Ergebnisse für <b>Filter</b>-Spiele}
 translate D PInfoAgainst {Ergebnisse gegen}
 translate D PInfoMostWhite {Häufigste Eröffnungen als Weißer}
@@ -667,9 +667,9 @@ translate D EngineEdit {Bearbeiten}
 translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
 translate D EngineProtocol {Kommunikationsprotokoll}
 translate D EngineNotation {Notation der Züge}
-translate D EngineFlipEvaluation {Bewertungsperspektive vertauschen}
+translate D EngineFlipEvaluation {Bewertung umdrehen}
 translate D EngineShowLog {Kommunikations-Log anzeigen}
-translate D EngineNetworkd {Remote-Verbindung akzeptieren}
+translate D EngineNetworkd {Remote-Verbindung erlauben}
 translate D EngineSelect {Aktuelle Engine auswählen}
 translate D EngineAddLocal {Lokale Engine hinzufügen}
 translate D EngineAddRemote {Remote Engine hinzufügen}
@@ -679,7 +679,7 @@ translate D EngineDelete {Die aktuelle Engine löschen}
 
 # PGN window menus:
 menuText D PgnFile "Datei" 0
-menuText D PgnFileCopy "Kopiere Spiel in Zwischenablage" 0
+menuText D PgnFileCopy "Kopiere Partie in Zwischenablage" 0
 menuText D PgnFilePrint "Drucken in Datei..." 0
 menuText D PgnFileClose "PGN-Fenster schließen" 0
 menuText D PgnOpt "Ausgabe" 0
@@ -1136,7 +1136,7 @@ translate D OprepWRating {ELO Weiß}
 translate D OprepBRating {ELO Schwarz}
 translate D OprepWPerf {Performance Weiß}
 translate D OprepBPerf {Performance Schwarz}
-translate D OprepHighRating {Spiele mit höchstem ELO-Durchschnitt}
+translate D OprepHighRating {Partien mit höchstem ELO-Durchschnitt}
 translate D OprepTrends {Ergebnistrend}
 translate D OprepResults {Ergebnis nach Längen und Häufigkeiten}
 translate D OprepLength {Partielänge}
@@ -1186,7 +1186,7 @@ translate D PReportColorWhite {mit den weißen Steinen}
 translate D PReportColorBlack {mit den schwarzen Steinen}
 translate D PReportMoves {nach %s}
 translate D PReportOpenings {Eröffnungen}
-translate D PReportClipbase {Leere Zwischenablage und kopiere gefundene Spiele}
+translate D PReportClipbase {Leere Zwischenablage und kopiere gefundene Partie}
 
 # Piece Tracker window:
 translate D TrackerSelectSingle {Linke Maustaste wählt diese Figur.}
@@ -1210,7 +1210,7 @@ translate D SelectTournamentGames {Nur Partien des aktuellen Turniers}
 translate D SelectOlderGames {Nur ältere Partien}
 
 # Delete Twins window:
-translate D TwinsNote {Damit zwei Spiele Dubletten sind, müssen diese mindestens die beiden selben Spieler haben und die folgenden Kriterien, die Sie auswählen können, erfüllen. Wenn zwei Dubletten gefunden werden, so wird die kürzere der beiden Spiele gelöscht. Tip: am besten führt man erst eine Schreibkorrektur durch, da dadurch das Finden von Dubletten verbessert wird.}
+translate D TwinsNote {Damit zwei Partien Dubletten sind, müssen diese mindestens die beiden selben Spieler haben und die folgenden Kriterien, die Sie auswählen können, erfüllen. Wenn zwei Dubletten gefunden werden, so wird die kürzere der beiden Partien gelöscht. Tip: am besten führt man erst eine Schreibkorrektur durch, da dadurch das Finden von Dubletten verbessert wird.}
 translate D TwinsCriteria {Kriterium: Dubletten müssen haben ...}
 translate D TwinsWhich {Überprüfe Partien}
 translate D TwinsColors {gleiche Spielerfarbe}
@@ -1230,17 +1230,17 @@ translate D TwinsWhen {Beim Löschen der Dubletten}
 translate D TwinsSkipShort {Partien unter 5 Zügen ignorieren}
 translate D TwinsUndelete {Zuerst alle Partien entlöschen}
 translate D TwinsSetFilter {Filter auf Dubletten setzen}
-translate D TwinsComments {Spiele mit Kommentar immer behalten}
-translate D TwinsVars {Spiele mit Varianten immer behalten}
+translate D TwinsComments {Partien mit Kommentar immer behalten}
+translate D TwinsVars {Partien mit Varianten immer behalten}
 translate D TwinsDeleteWhich {Lösche Partie}
 translate D TwinsDeleteShorter {Kürzere Partie}
 translate D TwinsDeleteOlder {Kleinere Partienummer}
 translate D TwinsDeleteNewer {Größere Partienummer}
-translate D TwinsDelete {Lösche Spiele}
+translate D TwinsDelete {Lösche Partien}
 
 # Name editor window:
 translate D NameEditType {Namen ändern von}
-translate D NameEditSelect {Welche Spiele sollen geändert werden?}
+translate D NameEditSelect {Welche Partien sollen geändert werden?}
 translate D NameEditReplace {Ersetze}
 translate D NameEditWith {durch}
 translate D NameEditMatches {Vorschlag mit Strg+1 - Strg+9 auswählen}
@@ -1252,10 +1252,10 @@ translate D CheckSelectFilterGames {Partien im Filter}
 # Classify window:
 translate D Classify {Klassifiziere}
 translate D ClassifyWhich {Partien ECO-klassifizieren}
-translate D ClassifyAll {Alle Spiele (überschreibe alte ECO-Codes)}
-translate D ClassifyYear {Alle Spiele  aus dem letzten Jahr}
-translate D ClassifyMonth {Alle Spiele aus dem letzten Monat}
-translate D ClassifyNew {Nur Spiele ohne ECO-Code}
+translate D ClassifyAll {Alle Partien (überschreibe alte ECO-Codes)}
+translate D ClassifyYear {Alle Partien  aus dem letzten Jahr}
+translate D ClassifyMonth {Alle Partien aus dem letzten Monat}
+translate D ClassifyNew {Nur Partien ohne ECO-Code}
 translate D ClassifyCodes {ECO-Codes verwenden}
 translate D ClassifyBasic {Standard Codes ("B12", ...)}
 translate D ClassifyExtended {mit Scid-Erweiterung ("B12j", ...)}
@@ -1292,23 +1292,23 @@ translate D ExportStripMarks \
   {Felder-/Pfeilemarkierzeichen\naus den Kommentaren entfernen}
 
 # Goto game/move dialogs:
-translate D LoadGameNumber {Geben Sie die zu ladende Spielnr. ein:}
+translate D LoadGameNumber {Geben Sie die zu ladende Partienr. ein:}
 translate D GotoMoveNumber {Gehe zu Zugnr.:}
-translate D CopyAllGames {Kopiere alle Spiele nach}
+translate D CopyAllGames {Kopiere alle Partien nach}
 
 # Copy games dialog:
-translate D CopyGames {Kopiere Spiele}
+translate D CopyGames {Kopiere Partien}
 translate D CopyConfirm {
  Möchten sie wirklich die [::utils::thousands $nGamesToCopy]
- Spiele aus dem Filter
+ Partien aus dem Filter
  in der Datenbank "$fromName"
  in die Datenbank "$targetName"
  kopieren?
 }
-translate D CopyErr {Kann Spiele nicht kopieren}
+translate D CopyErr {Kann Partien nicht kopieren}
 translate D CopyErrSource {Die Quelldatenbank}
 translate D CopyErrTarget {Die Zieldatenbank}
-translate D CopyErrNoGames {hat keine Spiele im Filter}
+translate D CopyErrNoGames {hat keine Partien im Filter}
 translate D CopyErrReadOnly {ist schreibgeschützt}
 translate D CopyErrNotOpen {ist nicht geöffnet}
 
@@ -1366,14 +1366,14 @@ translate D RecentFilesExtra {Anzahl letzter Dateien im Untermenü}
 translate D MyPlayerNamesDescription {
 Geben Sie unten eine Liste der bevorzugten Spielernamen ein, ein Name pro Zeile. Platzhalterzeichen (z.B. "?" für ein beliebiges einzelnes Zeichen, "*" für jede beliebige Folge von Zeichen) sind erlaubt.
 
-Jedesmal, wenn ein Spiel mit einem aufgelisteten Spielernamen geladen wird, wird das Schachbrett im Hauptfenster erforderlichenfalls gedreht, um das Spiel aus der Sicht des betreffenden Spielers zu zeigen.
+Jedesmal, wenn ein Spiel mit einem aufgelisteten Spielernamen geladen wird, wird das Schachbrett im Hauptfenster erforderlichenfalls gedreht, um die Partie aus der Sicht des betreffenden Spielers zu zeigen.
 }
 translate D showblunderexists {Enginefehler anzeigen}
 translate D showblundervalue {Fehlerbewertung anzeigen}
 translate D showscore {Bewertung anzeigen}
 translate D coachgame {Coach Partie}
 translate D configurecoachgame {Trainingspartie konfigurieren}
-translate D configuregame {Spiel konfigurieren}
+translate D configuregame {Partie konfigurieren}
 translate D Phalanxengine {Phalanx engine}
 translate D Coachengine {Coach Engine}
 translate D difficulty {Schwierigkeit}
@@ -2365,7 +2365,7 @@ folgende Bedeutung (von links nach rechts):
 <h4><name Autoplay>Automatisches Vorspielen</name></h4>
 <p>
 Im diesem Modus spielt Scid automatisch die Züge in der
-aktuellen Partie vor, bis zum Spielende. Die Zeit zwischen den Zügen
+aktuellen Partie vor, bis zum Partieende. Die Zeit zwischen den Zügen
 kann im Menü <menu>Optionen: Züge</menu> eingestellt werden und wird
 mit "Optionen speichern" gesichert.
 </p>
@@ -2397,7 +2397,7 @@ falls enthalten in der gerade benutzen ECO-Datei.
 <p>
 Der Informationsbereich hat ein Menü, welches man mit der
 rechten Maustaste aktivieren kann. Hierüber kann man bestimmte
-Informationen zum Spiel zeigen oder verstecken sowie Kennzeichen
+Informationen zur Partie zeigen oder verstecken sowie Kennzeichen
 für die aktuelle Partie setzten und löschen. Man kann das
 Menü auch über die <b>[F9]</b> Funktionstaste erreichen.
 </p>
@@ -2420,7 +2420,7 @@ Danach öffnet Scid die entsprechende Datenbank immer
 schreibgeschützt.
 </p>
 <p>
-Die Statusanzeige zeigt auch, wieviel Spiele im aktuellen
+Die Statusanzeige zeigt auch, wieviel Partien im aktuellen
 <a Searches Filter>Filter</a>
 sind.
 </p>
@@ -3960,7 +3960,7 @@ Eröffnungen (nach <a ECO>ECO-Code</a>) und ihrer Elo-Entwicklung.<br>
 Die Daten für den Elo-Verlauf können wahlweise aus der aktuellen Datenbank
 oder aus der Schreibkorrekturdatei/Ratingdatei gelesen werden. Wenn Sie ein
 gepflegte Rating-Datei verwenden, können auch die Zeiträume dargestellt werden,
-für die in der Datenbank keine Spiele vorhanden sind.<br>
+für die in der Datenbank keine Partien vorhanden sind.<br>
 Eine Ratingdatei mit aktuellen ELO-Zahlen von über 300.000 registrierten
 FIDE-Spieler kann unter <url https://sourceforge.net/projects/scid/files/Player Data/>
 https://sourceforge.net/projects/scid/files/Player Data/</url> heruntergeladen werden.
@@ -5601,8 +5601,8 @@ set helpText(D,TacticalGame) {<h1>Trainingspartie-Fenster</h1>
   </li>
   <li><term>Eröffnung:</term>
   <ul>
-     <li><term>Neue Partie</term>: startet ein neues Spiel mit einer zufälligen Eröffnung.</li>
-     <li><term>Von aktueller Position starten</term>: das Spiel bei der aktuellen Position fortsetzen.</li>
+     <li><term>Neue Partie</term>: startet eine neue Partie mit einer zufälligen Eröffnung.</li>
+     <li><term>Von aktueller Position starten</term>: die Partie bei der aktuellen Position fortsetzen.</li>
      <li><term>Ausgewählte Eröffnung</term>: der Gegner spielt eine Öffnung, die aus der Liste ausgewählt werden kann. Das ist nützlich für das Eröffnungstraining.</li>
   </ul>
   <li><term>Analysezeit der Engine begrenzen</term> erlaubt es, die vom Coach verwendete Zeit, um die Züge der Spieler auf Fehler zu überprüfen, zu begrenzen. Wenn dies nicht der Fall ist, darf der Coach im Hintergrund rechnen.</li><br>
@@ -5616,7 +5616,7 @@ set helpText(D,TacticalGame) {<h1>Trainingspartie-Fenster</h1>
 set helpTitle(D,OpeningTrainer) "Eröffnungstrainer"
 set helpText(D,OpeningTrainer) {<h1>Eröffnungstrainer</h1>
   <p>
-   Eine SCID-Datenbank kann als Repertoire verwendet werden, wobei jedes Spiel eine Eröffnungslinie darstellt. Die Spiele können Varianten enthalten. Auch NAG-Werte können angegeben werden, um so bevorzugte oder zweifelhafte Zeilen zu markieren. Eine Datenbank für den Eröffnungstrainer muss auch vom richtigen Typ sein: Das heißt, wenn Öffnungen für Weiß trainiert werden sollen, muss die Datenbank vom Typ Öffnungen für Weiß sein (ähnlich für Schwarz und beide Farben). Der Typ kann über das Fenster Wartung durch Auswahl des Symbols oder über das Kontextmenü des Datenbankumschalters eingestellt werden. 
+   Eine SCID-Datenbank kann als Repertoire verwendet werden, wobei jede Partie eine Eröffnungslinie darstellt. Die Partien können Varianten enthalten. Auch NAG-Werte können angegeben werden, um so bevorzugte oder zweifelhafte Zeilen zu markieren. Eine Datenbank für den Eröffnungstrainer muss auch vom richtigen Typ sein: Das heißt, wenn Öffnungen für Weiß trainiert werden sollen, muss die Datenbank vom Typ Öffnungen für Weiß sein (ähnlich für Schwarz und beide Farben). Der Typ kann über das Fenster Wartung durch Auswahl des Symbols oder über das Kontextmenü des Datenbankumschalters eingestellt werden.
   Eine Scid Datenbank kann als Repertoire genutzt werden, wenn sie mit dem entsprechenden Typ/Icon markiert wurde. Die Datenbank muss einer der folgenen Typen sein:
   <li>Openings for White</li>
   <li>Openings for Black</li>
@@ -5953,8 +5953,8 @@ set helpText(D,Appearance) {<h1>Scid-Oberfläche anpassen</h1>
 set helpTitle(D,SeriousGame) "Ernste Partie"
 set helpText(D,SeriousGame) {<h1>Ernste Partie</h1>
   <p>
-  Ernste Spiele können gegen jede <term>UCI</term> Engine gespielt werden.
-  Eine Liste aller möglichen Gegner ist im Fenster <term>Spiel konfigurieren</term> angegeben. Die
+  Ernste Partien können gegen jede <term>UCI</term> Engine gespielt werden.
+  Eine Liste aller möglichen Gegner ist im Fenster <term>Partie konfigurieren</term> angegeben. Die
   Schaltfläche <term>UCI-Engine konfigurieren</term> bietet zusätzlich Zugriff auf
   die Motorparameter. Standardmäßig wird die Einstellungen der <a Analyseliste>Analyseliste</a> verwendet.
   </p>
@@ -5966,15 +5966,15 @@ set helpText(D,SeriousGame) {<h1>Ernste Partie</h1>
   Die Sektion <term>Zeitmodus</term> erlaubt die Einstellung der Zeit für Spieler und Engine.
   Hier sind verschiedene Einstellungen möglich:
   <ul>
-     <li><term>Zeit + Bonus</term> gibt die Zeit für das gesamte Spiel an und eine mögliche
+     <li><term>Zeit + Bonus</term> gibt die Zeit für die gesamte Partie an und eine mögliche
      Bonuszeit pro Zug (Fisher-Uhr). Die
-     Standardeinstellung ist 5 Minuten pro Spiel und 10 Sekunden Inkrement pro Spiel.
+     Standardeinstellung ist 5 Minuten pro Partie und 10 Sekunden Inkrement pro Partie.
      Beachten Sie, dass die
      Zeiten für Schwarz und Weiß unabhängig voneinander eingestellen können. Dies ermöglicht
      eine kurze Zeitspanne für den Motor einzustellen und eine längere
      Zeit des Denkens für den Spieler.
      </li>
-     <li><term>Feste Tiefe</term> setzt die Zeit pro Spiel nicht, sondern
+     <li><term>Feste Tiefe</term> setzt die Zeit pro Partie nicht, sondern
      die Tiefe, die der Motor in halben Zügen berechnet. Da dies der Engine
      die Möglichkeit nimmt, bei Bedarf tiefer zu rechnen, wird der
      Computer bestimmte Kombinationen nicht sehen, der Motor
@@ -6004,7 +6004,7 @@ set helpText(D,SeriousGame) {<h1>Ernste Partie</h1>
   </p>
   <p>
   <term>Berechnung im Hintergrund</term> (manchmal auch Ponder genannt)
-  erlaubt es der Engine, während der Spieler am Zug ist zu Rechnen. Wenn das Spiel
+  erlaubt es der Engine, während der Spieler am Zug ist zu Rechnen. Wenn die Partie
   auf eine feste Zeit pro Zug eingestellt ist, schwächt das den
   Motor.
   </p>
@@ -6024,7 +6024,7 @@ set helpText(D,SeriousGame) {<h1>Ernste Partie</h1>
   ob der Zug zurückgenommen werden soll.
   </p>
   <p>
-  Nach der Einstellung aller Parameter des Spiels und dem Drücken des Knopfes Spielen wird die Partie gestartet.
+  Nach der Einstellung aller Parameter der Partie und dem Drücken des Knopfes Spielen wird die Partie gestartet.
   Beachten Sie, dass es einige Zeit dauern kann, bis die Schachengine startet und richtig initialisiert ist.
   </p>
   <p><footer>(Erstellt: Scid 4.7, August 2018)</footer></p>
