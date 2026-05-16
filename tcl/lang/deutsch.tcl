@@ -1411,6 +1411,9 @@ translate D CoachTooltip {Eine separate (starke) Engine für das Coaching nutzen,
 translate D BadMoveWarning {Vor schlechtem Zug warnen}
 translate D BadMoveWarningTooltip {Der Coach warnt, wenn der Spieler einen schwachen Zug spielt. Der Spieler kann den Zug zurücknehmen.}
 translate D MarkEngineBlunder {Enginefehler anzeigen}
+translate E EngineBlunders {Enginefehler}
+translate E ShowMove {Zug anzeigen}
+translate E TryMove {Versuche Zug}
 translate D MarkEngineBlunderTooltip {Zeigt einen Hinweis (in der InfoBar) an, dass die Engine einen Fehler gemacht hat. Benötigt eine Coaching-Engine.}
 translate D DubiousMovePlayedTakeBack {Zweifelhafter Zug gespielt, wollen Sie ihn zurücknehmen?}
 translate D WeakMovePlayedTakeBack {Dies ist kein guter Zug, wollen Sie ihn zurücknehmen?}

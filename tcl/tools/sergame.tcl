@@ -555,8 +555,8 @@ namespace eval sergame {
               set from [expr 0.0 - $_Data(prevscore)]
               set to $_Data(score)
           }
-          ::board::setInfoAlert .main.board "Engine blunders: $_Data(tacticBlunder) $from -> $to" "Show move" red \
-              {::board::setInfoAlert .main.board "Try move $::sergame::_Data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
+          ::board::setInfoAlert .main.board "$::tr(EngineBlunders): $_Data(tacticBlunder) $from -> $to" $::tr(ShowMove) red \
+              {::board::setInfoAlert .main.board "$::tr(TryMove) $::sergame::_Data(bestCoachmove) Playing..." [tr Stop] red {{*}$::playMode stop}}
       }
   }
 

@@ -1391,6 +1391,9 @@ translate E CoachTooltip {Use a separate (strong) engine for coaching if the pla
 translate E BadMoveWarning {Bad move warning}
 translate E BadMoveWarningTooltip {Coach warns if player made a bad move. Player can take back this move.}
 translate E MarkEngineBlunder {Mark engine blunder}
+translate E EngineBlunders {Engine blunders}
+translate E ShowMove {Show move}
+translate E TryMove {Try move}
 translate E MarkEngineBlunderTooltip {Gives a hint (in InfoBar) that engines has blundered. Needs coaching engine.}
 translate E DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 translate E WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
