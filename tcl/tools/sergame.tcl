@@ -65,21 +65,21 @@ namespace eval sergame {
     ttk::radiobutton $w.fengines.player.w -text $::tr(white) -value "white" -variable ::sergame::_Data(playerColor)
     ttk::radiobutton $w.fengines.player.b -text $::tr(black) -value "black" -variable ::sergame::_Data(playerColor)
     pack $w.fengines.player.l $w.fengines.player.w $w.fengines.player.b -side left
-    pack $w.fengines.player -side top -anchor w
+    pack $w.fengines.player -side top -anchor w -pady 5
 
     # coach engine
     ttk::frame $w.coach.en
     ttk::checkbutton $w.coach.en.coach -text "$::tr(Engine)" -variable ::sergame::options(useCoachEngine)
-    ::utils::tooltip::Set $w.coach.en.coach "Use a separate (strong) engine for coaching if the playing engine is weak."
+    ::utils::tooltip::Set $w.coach.en.coach "$::tr(CoachTooltip)"
     ::engineNoWin::createEngineOptionsFrame $w coachEngine ::sergame::options(coachName) 6 ::sergame::eng_messages
     pack $w.coach.en.coach -in $w.coach.en -side left -pady 5 -anchor w -padx 4
     pack $w.coachEngine -in $w.coach.en -side left -pady 5 -anchor w -padx 4
     ttk::frame $w.coach.cb
-    ttk::checkbutton $w.coach.cb.coach -text "Bad move warning" -variable ::sergame::options(coachTypeMove)
-    ::utils::tooltip::Set $w.coach.cb.coach "Coach warns if player made a bad move. Player can take back this move."
-    ttk::checkbutton $w.coach.cb.fullCoach -text "Mark engine blunder" -variable ::sergame::options(coachTypeTactic) \
+    ttk::checkbutton $w.coach.cb.coach -text "$::tr(BadMoveWarning)" -variable ::sergame::options(coachTypeMove)
+    ::utils::tooltip::Set $w.coach.cb.coach "$::tr(BadMoveWarningTooltip)"
+    ttk::checkbutton $w.coach.cb.fullCoach -text "$::tr(MarkEngineBlunder)" -variable ::sergame::options(coachTypeTactic) \
         -command { if { $::sergame::options(coachTypeTactic) } { set ::sergame::options(useCoachEngine) 1 } }
-    ::utils::tooltip::Set $w.coach.cb.fullCoach "Gives a hint (in InfoBar) that engines has blundered. Needs coaching engine."
+    ::utils::tooltip::Set $w.coach.cb.fullCoach "$::tr(MarkEngineBlunderTooltip)"
     pack $w.coach.cb.coach $w.coach.cb.fullCoach -side left -padx 4
     ttk::frame $w.coach.th
     ttk::label $w.coach.th.l -text $::tr(moveblunderthreshold)
@@ -536,9 +536,9 @@ namespace eval sergame {
       global ::sergame::options
       set ret ""
       if { $delta >= $options(threshold) } {
-          if {$delta > $::informant("?!") } { set ret [list "?!" "DubiousMovePlayedTakeBack"] }
-          if {$delta > $::informant("?") } { set ret [list "?" "WeakMovePlayedTakeBack"] }
-          if {$delta > $::informant("??") } { set ret [list "??" "BadMovePlayedTakeBack"] }
+          if {$delta > $::informant(?!) } { set ret [list "?!" "DubiousMovePlayedTakeBack"] }
+          if {$delta > $::informant(?) } { set ret [list "?" "WeakMovePlayedTakeBack"] }
+          if {$delta > $::informant(??) } { set ret [list "??" "BadMovePlayedTakeBack"] }
       }
       return $ret
   }

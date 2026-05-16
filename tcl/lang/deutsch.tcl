@@ -1407,6 +1407,11 @@ translate D DoYouWantContinue {Möchten sie fortfahren?}
 translate D CoachIsWatching {Coach schaut zu}
 translate D Ponder {Berechnen im Hintergrund}
 translate D LimitELO {Stärke begrenzen (ELO)}
+translate D CoachTooltip {Eine separate (starke) Engine für das Coaching nutzen, wenn die Spielengine schwach ist}
+translate D BadMoveWarning {Vor schlechtem Zug warnen}
+translate D BadMoveWarningTooltip {Der Coach warnt, wenn der Spieler einen schwachen Zug spielt. Der Spieler kann den Zug zurücknehmen.}
+translate D MarkEngineBlunder {Enginefehler anzeigen}
+translate D MarkEngineBlunderTooltip {Zeigt einen Hinweis (in der InfoBar) an, dass die Engine einen Fehler gemacht hat. Benötigt eine Coaching-Engine.}
 translate D DubiousMovePlayedTakeBack {Zweifelhafter Zug gespielt, wollen Sie ihn zurücknehmen?}
 translate D WeakMovePlayedTakeBack {Dies ist kein guter Zug, wollen Sie ihn zurücknehmen?}
 translate D BadMovePlayedTakeBack {Dies ist ein schlechter Zug, wollen Sie ihn zurücknehmen?}
