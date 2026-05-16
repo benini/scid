@@ -163,8 +163,7 @@ menuText D WindowsStats "Statistik" 4 {Filterstatistik öffnen/schließen}
 menuText D WindowsTree "Zugbaum" 0 {Zugbaum öffnen/schließen}
 menuText D WindowsBook "Buchfenster" 0 {Buchfenster öffnen/schließen}
 menuText D WindowsCorrChess "Fernschachfenster" 0 {Öffnet/schließt das Fernschachfenster}
-# ====== TODO To be translated ======
-menuText D WindowsGraph "Analysis Graph" 0 {Open the Graph window with moves' times and evaluations}
+menuText D WindowsGraph "Bewertungsfenster" 0 {Open the Graph window with moves' times and evaluations}
 
 # Tools menu:
 menuText D Tools "Werkzeuge" 0
@@ -666,28 +665,17 @@ translate D EngineTime {Datum}
 translate D EngineNew {Neu}
 translate D EngineEdit {Bearbeiten}
 translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
-# ====== TODO To be translated ======
-translate D EngineProtocol {Communication protocol}
-# ====== TODO To be translated ======
-translate D EngineNotation {Notation of the moves}
-# ====== TODO To be translated ======
-translate D EngineFlipEvaluation {Flip evaluation perspective}
-# ====== TODO To be translated ======
-translate D EngineShowLog {Show communication log}
-# ====== TODO To be translated ======
-translate D EngineNetworkd {Accept remote connections}
-# ====== TODO To be translated ======
-translate D EngineSelect {Select the current engine}
-# ====== TODO To be translated ======
-translate D EngineAddLocal {Add a local engine}
-# ====== TODO To be translated ======
-translate D EngineAddRemote {Add a remote engine}
-# ====== TODO To be translated ======
-translate D EngineReload {Reload the current engine}
-# ====== TODO To be translated ======
-translate D EngineClone {Create a copy of the current engine}
-# ====== TODO To be translated ======
-translate D EngineDelete {Delete the current engine}
+translate D EngineProtocol {Kommunikationsprotokoll}
+translate D EngineNotation {Notation der Züge}
+translate D EngineFlipEvaluation {Bewertungsperspektive vertauschen}
+translate D EngineShowLog {Kommunikations-Log anzeigen}
+translate D EngineNetworkd {Remote-Verbindung akzeptieren}
+translate D EngineSelect {Aktuelle Engine auswählen}
+translate D EngineAddLocal {Lokale Engine hinzufügen}
+translate D EngineAddRemote {Remote Engine hinzufügen}
+translate D EngineReload {Aktuelle Engine neu laden}
+translate D EngineClone {Eine Kopie der aktuellen Engine erstellen}
+translate D EngineDelete {Die aktuelle Engine löschen}
 
 # PGN window menus:
 menuText D PgnFile "Datei" 0
