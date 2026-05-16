@@ -785,18 +785,13 @@ translate D BrilliancyFlag {Glänzend}
 translate D BlunderFlag {Grober Fehler}
 translate D UserFlag {Benutzer}
 translate D PgnContains {PGN enthält Text}
-# ====== TODO To be translated ======
 translate D PgnTag {Tag}
-# ====== TODO To be translated ======
-translate D TagContains {contains}
-# ====== TODO To be translated ======
-translate D Variant {Variant}
+translate D TagContains {enthält}
+translate D Variant {Variante}
 translate D Annotator {Kommentator}
 translate D Cmnts {Nur kommentierte Partien}
-# ====== TODO To be translated ======
-translate D Presets {Presets}
-# ====== TODO To be translated ======
-translate D PresetLoadSave {Load/Save current settings as a preset}
+translate D Presets {Voreinstellung}
+translate D PresetLoadSave {Akt. Einstellung als Vorgabe laden/speichern}
 
 # Game list window:
 translate D GlistNumber {Nummer}
@@ -1635,8 +1630,7 @@ translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster lösen}
-# ====== TODO To be translated ======
-translate D AboutDatabase {About This Database}
+translate D AboutDatabase {Über diese Datenbank}
 #Gamelist
 translate D ChangeIcon {Datenbank Icon ändern...}
 translate D NewGameListWindow {Neue Partieliste}
@@ -1668,11 +1662,9 @@ translate D BackToMainline {Zurück zur Hauptvariante}
 translate D LeaveVariant {Variante verlassen}
 translate D Autoplay {Vorspielen}
 translate D ShowHideCoords {Beschriftung ein/aus}
-# ====== TODO To be translated ======
-translate D ShowHideEvalBar {Show/Hide Evaluation Bar}
+translate D ShowHideEvalBar {Bewertungsbalken zeigen/verstecken}
 translate D ShowHideMaterial {Material ein/aus}
-# ====== TODO To be translated ======
-translate D SelectMarker {Select Marker}
+translate D SelectMarker {Marker auswählen}
 translate D FullScreen {Vollbild}
 translate D FilterStatistic {Filter Statistik}
 translate D MakeCorrections {Korrigieren}
