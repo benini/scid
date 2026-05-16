@@ -1662,7 +1662,7 @@ translate D BackToMainline {Zurück zur Hauptvariante}
 translate D LeaveVariant {Variante verlassen}
 translate D Autoplay {Vorspielen}
 translate D ShowHideCoords {Beschriftung ein/aus}
-translate D ShowHideEvalBar {Bewertungsbalken zeigen/verstecken}
+translate D ShowHideEvalBar {Bewertungsbalken zeigen/verbergen}
 translate D ShowHideMaterial {Material ein/aus}
 translate D SelectMarker {Marker auswählen}
 translate D FullScreen {Vollbild}
