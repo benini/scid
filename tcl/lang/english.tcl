@@ -643,6 +643,10 @@ translate E AnnotateWhite {For White moves only}
 translate E AnnotateBlack {For Black moves only}
 translate E AnnotateBlundersOnly {When game move is a blunder}
 translate E AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
+translate E Annotate2Var {Store two variations}
+translate E AnnotateBatch {Batch Annotation}
+menuText E ToolsFinishGame {Finish game} 0 ""
+menuText E AnnotateGames {Annotate Game(s)} 0 {Annotate one or multiple games}
 translate E BlundersThreshold {Threshold}
 translate E ScoreAllMoves {Score all moves}
 translate E LowPriority {Low CPU Priority}

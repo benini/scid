@@ -250,8 +250,8 @@ $m  add command -label ToolsStartEngine1 \
     -command "::enginewin::start 1" -accelerator "F2"
 $m  add command -label ToolsStartEngine2 \
     -command "::enginewin::start 2" -accelerator "F3"
-$m  add command -label "Annotate Game(s)" -command "::annotation::doAnnotate"
-$m  add command -label "Finish Game" -command "::finishgame::finishGameDialog"
+$m  add command -label AnnotateGames -command "::annotation::doAnnotate"
+$m  add command -label ToolsFinishGame -command "::finishgame::finishGameDialog"
 $m  add command -label ToolsAnalysis -command "makeAnalysisWin 1"
 $m add separator
 $m add checkbutton -label ToolsFilterGraph \

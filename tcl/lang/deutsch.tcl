@@ -636,6 +636,10 @@ translate D AnnotateAll {Für Züge beider Seiten}
 translate D AnnotateAllMoves {Alle Züge kommentieren}
 translate D AnnotateWhite {Nur für Züge von Weiß}
 translate D AnnotateBlack {Nur für Züge von Schwarz}
+translate D Annotate2Var {Zwei Varianten speichern}
+translate D AnnotateBatch {Kommentierung mehrere Partien}
+menuText D ToolsFinishGame {Partie beenden} 0 ""
+menuText D AnnotateGames {Partie(n) kommentieren} 0 {Eine oder mehrere Partien automatisch kommentieren}
 translate D AnnotateBlundersOnly {Wenn der Partiezug ein Fehler ist}
 translate D AnnotateBlundersOnlyScoreChange {Analyse berichtet Fehler, Bewertungsänderung von/nach: }
 translate D BlundersThreshold {Schwelle}

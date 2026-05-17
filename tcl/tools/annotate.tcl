@@ -30,7 +30,7 @@ namespace eval ::annotation {
         ttk::labelframe $f.annotate -text $::tr(GameReview)
         ttk::frame $f.annotate.typ
         ttk::radiobutton $f.annotate.typ.label -text $::tr(AnnotateTime) -variable ::annotation::options(typ) -value "movetime"
-        ttk::radiobutton $f.annotate.typ.ldepth -text "Depth per move" -variable ::annotation::options(typ) -value "depth"
+        ttk::radiobutton $f.annotate.typ.ldepth -text $::tr(Depth) -variable ::annotation::options(typ) -value "depth"
         ttk::spinbox $f.annotate.typ.spDelay -width 5 -textvariable ::annotation::options(time) -from 0.1 -to 999 \
             -validate key -justify right -validatecommand { regexp {^[0-9]*\.?[0-9]*$} %P }
         ttk::spinbox $f.annotate.typ.depth -width 5 -textvariable ::annotation::options(depth) -from 2 -to 999 -validate key -justify right
@@ -71,7 +71,7 @@ namespace eval ::annotation {
         ttk::radiobutton  $f.av.all     -text $::tr(AnnotateAll)   -variable ::annotation::options(annotateMoves) -value all
         ttk::radiobutton  $f.av.white   -text $::tr(AnnotateWhite) -variable ::annotation::options(annotateMoves) -value white
         ttk::radiobutton  $f.av.black   -text $::tr(AnnotateBlack) -variable ::annotation::options(annotateMoves) -value black
-        ttk::checkbutton  $f.av.vars    -text "Store two variations" -variable ::annotation::options(anzVariation) -onvalue 2 -offvalue 1
+        ttk::checkbutton  $f.av.vars    -text $::tr(Annotate2Var) -variable ::annotation::options(anzVariation) -onvalue 2 -offvalue 1
         pack $f.av.all $f.av.white $f.av.black $f.av.vars -side top -fill x -anchor w
 
         ttk::labelframe   $f.comment -text $::tr(Comments)
@@ -84,7 +84,7 @@ namespace eval ::annotation {
         pack $f.comment.scoreAll $f.comment.cbShortAnnotation $f.comment.cbAddScore \
             $f.comment.cbAddAnnotatorTag $f.comment.cbMarkTactics -fill x -anchor w
         # batch annotation of consecutive games, and optional opening errors finder
-        ttk::labelframe $f.batch -text "Batch Annotation"
+        ttk::labelframe $f.batch -text $::tr(AnnotateBatch)
         ttk::frame $f.buttons
         ttk::frame $f.running
         ttk::label $f.running.line1 -textvariable ::annotation::_Data(msg1) -width 60
@@ -126,7 +126,7 @@ namespace eval ::annotation {
                 destroy .annotationDialog
             }
         }
-        ttk::button $f.buttons.ok -text "Annotate" -command {
+        ttk::button $f.buttons.ok -text $::tr(Annotate) -command {
             if {$::annotation::options(time) < 0.1} { set ::annotation::options(time) 0.1 }
             set ::annotation::options(movetime) [expr {int($::annotation::options(time) * 1000.0)}]
             if { [::engineNoWin::initEngine annotateEngine $::annotation::options(engine) \
@@ -334,11 +334,11 @@ namespace eval ::annotation {
         # which, for white, is (previous-current)
         set deltamove [expr {$prevscore + $score}]
         # and whether the game was already lost for us
-        set gameIsLost [expr {$prevscore < (0.0 - $::informant("+--"))}]
+        set gameIsLost [expr {$prevscore < (0.0 - $::informant(+--))}]
 
         # Invert this logic for black
         if { $tomove == "white" } {
-            set gameIsLost [expr {$prevscore > $::informant("+--")}]
+            set gameIsLost [expr {$prevscore > $::informant(+--)}]
         }
 
         # Set an "isBlunder" filter.
@@ -372,14 +372,14 @@ namespace eval ::annotation {
               || ($options(annotateBlunders) == "allmoves") } {
             if { $isBlunder > 0 } {
                 # Add move score nag, and possibly an exercise
-                if {       $absdeltamove > $::informant("??") } {
+                if {       $absdeltamove > $::informant(??) } {
                     markExercise $prevscore $score "??"
-                } elseif { $absdeltamove > $::informant("?")  } {
+                } elseif { $absdeltamove > $::informant(?)  } {
                     markExercise $prevscore $score "?"
-                } elseif { $absdeltamove > $::informant("?!") } {
+                } elseif { $absdeltamove > $::informant(?!) } {
                     sc_pos addNag "?!"
                 }
-            } elseif { $absdeltamove > $::informant("!?") } {
+            } elseif { $absdeltamove > $::informant(!?) } {
                 sc_pos addNag "!?"
             }
 
@@ -433,7 +433,7 @@ namespace eval ::annotation {
             }
             sc_move forward
         } else {
-            if { $isBlunder == 0 && $absdeltamove > $::informant("!?") } {
+            if { $isBlunder == 0 && $absdeltamove > $::informant(!?) } {
                 sc_pos addNag "!?"
             }
             if { $options(scoreAllMoves) } {
@@ -475,11 +475,11 @@ namespace eval ::annotation {
 
         set deltamove [expr {$score + $prevscore}]
         # filter tactics so only those with high gains are kept
-        if { [expr abs($deltamove)] < $::informant("+/-") } { return 0 }
+        if { [expr abs($deltamove)] < $::informant(+/-) } { return 0 }
         # dismiss games where the result is already clear (high score,and we continue in the same way)
         if { [expr $prevscore * $score] >= 0} {
-            if { [expr abs($prevscore) ] > $::informant("+--") } { return 0 }
-            if { [expr abs($prevscore)] > $::informant("+-") && [expr abs($score) ] < [expr 2 * abs($prevscore)]} { return 0 }
+            if { [expr abs($prevscore) ] > $::informant(+--) } { return 0 }
+            if { [expr abs($prevscore)] > $::informant(+-) && [expr abs($score) ] < [expr 2 * abs($prevscore)]} { return 0 }
         }
 
         # The best move is much better than others.
@@ -487,8 +487,8 @@ namespace eval ::annotation {
         if { [expr abs( $score - $sc2 )] < 1.5 } { return 0 }
 
         # The best move does not lose position.
-        if {([sc_pos side] == "black") && ($score < [expr 0.0 - $::informant("+/-")]) } { return 0 }
-        if {([sc_pos side] == "white") && ($score > $::informant("+/-")) } { return 0}
+        if {([sc_pos side] == "black") && ($score < [expr 0.0 - $::informant(+/-)]) } { return 0 }
+        if {([sc_pos side] == "white") && ($score > $::informant(+/-)) } { return 0}
 
         # Move is not obvious: check that it is not the first move guessed at low depths
         set pv [ lindex [ lindex $_Data(PV1) 2 ] 0 ]
@@ -568,7 +568,7 @@ namespace eval ::annotation {
         # Find the score in the informant map
         set tmp [expr { abs( $score ) }]
         for { set i 0 } { $i < 4 } { incr i } {
-            if { $tmp < $::informant("$ana_informantList($i)") } { break }
+            if { $tmp < $::informant($ana_informantList($i)) } { break }
         }
         # Jump into negative counterpart
         if { $score < 0.0 } {
