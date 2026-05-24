@@ -734,8 +734,8 @@ proc getPromoPiece {} {
     pack $w.bq $w.br $w.bb $w.bn -side left
     bind $w <Escape> "set ::result 2 ; destroy $w"
     bind $w <Return> "set ::result 2 ; destroy $w"
-    grab $w
     tk::PlaceWindow $w pointer
+    grab $w
     tkwait window $w
     return $::result
 }
