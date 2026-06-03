@@ -73,6 +73,7 @@ proc ::utils::sound::Setup {} {
 proc ::utils::sound::ReadFolder {{newFolder ""}} {
   variable soundFiles
   variable soundFolder
+  variable hasSound
   
   if {$newFolder != ""} { set soundFolder "" }
   
@@ -80,7 +81,7 @@ proc ::utils::sound::ReadFolder {{newFolder ""}} {
   foreach soundFile $soundFiles {
     set f [file join $soundFolder $soundFile.wav]
     if {[file readable $f]} {
-      if { $::utils::sound::pipe == "" } {
+      if { $::utils::sound::pipe == "" && $hasSound } {
         sound_$soundFile configure -file $f
       }
       incr count
