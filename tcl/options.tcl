@@ -449,14 +449,14 @@ array set preportDefaults [array get preport]
 # Analysis options (Informant values)
 # The different threshold values for !? ?? += etc
 array set informant {}
-set informant("!?") 0.5
-set informant("?") 1.5
-set informant("??") 3.0
-set informant("?!") 0.5
-set informant("+=") 0.5
-set informant("+/-") 1.5
-set informant("+-") 3.0
-set informant("+--") 5.5
+set informant(!?) 0.5
+set informant(?) 1.5
+set informant(??) 3.0
+set informant(?!) 0.5
+set informant(+=) 0.5
+set informant(+/-) 1.5
+set informant(+-) 3.0
+set informant(+--) 5.5
 
 # Export file options:
 set exportFlags(comments) 1
@@ -605,6 +605,14 @@ proc ConvertOldOptionVariables {} {
     if {[info exists ::$old]} {
       set $new [set ::$old]
     }
+  }
+  # convert old informant "xx" to xx
+  foreach {mark} { !? ? ?? ?! += +/- +- +-- } {
+      set markOld "\"$mark\""
+      if {[info exists ::informant($markOld)]} {
+          set ::informant($mark) $::informant($markOld)
+          unset -nocomplain ::informant($markOld)
+      }
   }
 }
 ConvertOldOptionVariables

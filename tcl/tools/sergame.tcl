@@ -573,18 +573,18 @@ namespace eval sergame {
     if { $::sergame::coachIsWatching && $::uci::uciInfo(prevscore$n) != "" } {
       set blunder 0
       set delta [expr $::uci::uciInfo(score$n) - $::uci::uciInfo(prevscore$n)]
-      if {$delta > $::informant("?!") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("?!")] && $::sergame::engineColor == "black" } {
+      if {$delta > $::informant(?!) && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant(?!)] && $::sergame::engineColor == "black" } {
         set blunder 1
       }
       
-      if {$delta > $::informant("?") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("?")] && $::sergame::engineColor == "black" } {
+      if {$delta > $::informant(?) && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant(?)] && $::sergame::engineColor == "black" } {
         set blunder 2
       }
       
-      if {$delta > $::informant("??") && $::sergame::engineColor == "white" ||
-        $delta < [expr 0.0 - $::informant("??")] && $::sergame::engineColor == "black" } {
+      if {$delta > $::informant(??) && $::sergame::engineColor == "white" ||
+        $delta < [expr 0.0 - $::informant(??)] && $::sergame::engineColor == "black" } {
         set blunder 3
       }
       
