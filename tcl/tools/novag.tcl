@@ -48,7 +48,7 @@ namespace eval novag {
     update
     
     # Set button to "connection in progress"
-    ::ExtHardware::HWbuttonImg tb_eng_connecting
+    ::ExtHardware::HWbuttonImg ::icon::tb_eng_connecting
     
     if {[catch { set fd [open $serial r+ ] } err]} {
         tk_messageBox -type ok -icon error -parent . -title "Novag Citrine" -message "Connection error for $serial \n $err"
@@ -72,7 +72,7 @@ namespace eval novag {
     set ::novag::connected 1
     
     # Set button to "connected, ready to use"
-    ::ExtHardware::HWbuttonImg tb_eng_ok
+    ::ExtHardware::HWbuttonImg ::icon::tb_eng_ok
   }
   ##########################################################
   proc disconnect {} {

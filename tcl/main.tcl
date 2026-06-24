@@ -264,40 +264,40 @@ proc updateMainToolbar {} {
   if {[sc_pos isAt start]} {
     ::board::setButtonCmd .main.board leavevar ""
     ::board::setButtonCmd .main.board back ""
-    unset -nocomplain ::gameInfoBar(tb_BD_Start)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_Start)
   } else {
     ::board::setButtonCmd .main.board leavevar "::move::ExitVarOrStart"
     ::board::setButtonCmd .main.board back "::move::Back"
-    set ::gameInfoBar(tb_BD_Start) "::move::Start"
+    set ::gameInfoBar(::icon::tb_BD_Start) "::move::Start"
   }
   if {[sc_pos isAt end] || [sc_pos isAt vend]} {
     ::board::setButtonCmd .main.board forward ""
     ::board::setButtonCmd .main.board endvar ""
-    unset -nocomplain ::gameInfoBar(tb_BD_End)
-    unset -nocomplain ::gameInfoBar(tb_BD_Autoplay)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_End)
+    unset -nocomplain ::gameInfoBar(::icons::tb_BD_Autoplay)
   } else {
     ::board::setButtonCmd .main.board forward "::move::Forward"
     ::board::setButtonCmd .main.board endvar "::move::EndVar"
-    set ::gameInfoBar(tb_BD_End) "::move::End"
-    set ::gameInfoBar(tb_BD_Autoplay) "::legacy_engine startAutoplay"
+    set ::gameInfoBar(::icon::tb_BD_End) "::move::End"
+    set ::gameInfoBar(::icons::tb_BD_Autoplay) "::legacy_engine startAutoplay"
   }
 
   if {[sc_var level] == 0} {
-    unset -nocomplain ::gameInfoBar(tb_BD_VarDelete)
-    unset -nocomplain ::gameInfoBar(tb_BD_VarPromote)
-    unset -nocomplain ::gameInfoBar(tb_BD_VarLeave)
-    unset -nocomplain ::gameInfoBar(tb_BD_BackToMainline)
-    ::board::setButtonImg .main.board leavevar tb_BD_BackStart
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarDelete)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarPromote)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_VarLeave)
+    unset -nocomplain ::gameInfoBar(::icon::tb_BD_BackToMainline)
+    ::board::setButtonImg .main.board leavevar ::icon::tb_BD_BackStart
   } else {
-    set ::gameInfoBar(tb_BD_VarDelete) { ::pgn::deleteVar }
-    set ::gameInfoBar(tb_BD_VarPromote) { ::pgn::mainVar }
-    set ::gameInfoBar(tb_BD_VarLeave) { ::move::ExitVar }
-    set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
-    ::board::setButtonImg .main.board leavevar tb_BD_exitvar
+    set ::gameInfoBar(::icon::tb_BD_VarDelete) { ::pgn::deleteVar }
+    set ::gameInfoBar(::icon::tb_BD_VarPromote) { ::pgn::mainVar }
+    set ::gameInfoBar(::icon::tb_BD_VarLeave) { ::move::ExitVar }
+    set ::gameInfoBar(::icon::tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
+    ::board::setButtonImg .main.board leavevar ::icon::tb_BD_exitvar
   }
 
-  set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
-  set ::gameInfoBar(tb_BD_SelectMarker) "::selectMarker"
+  set ::gameInfoBar(::icon::tb_BD_SetupBoard) "setupBoard"
+  set ::gameInfoBar(::icon::tb_BD_SelectMarker) "::selectMarker"
 }
 
 # Update the "tree" filter of databases that have a view (gamelist or tree windows)
@@ -445,7 +445,7 @@ proc ::createMainEvalBarMenu {w} {
     }
     $w.evalbar_menu add separator
     $w.evalbar_menu add command -label [tr Hide] \
-        -command { {*}$::gameInfoBar(tb_BD_Scorebar) }
+        -command { {*}$::gameInfoBar(::icon::tb_BD_Scorebar) }
 
     return $w.evalbar_menu
 }
@@ -1188,8 +1188,8 @@ proc CreateMainBoard { {w} } {
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
 
-  set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
-  set ::gameInfoBar(tb_BD_Scorebar) [list apply {{w} {
+  set ::gameInfoBar(::icon::tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
+  set ::gameInfoBar(::icon::tb_BD_Scorebar) [list apply {{w} {
     set ::showEvalBar($w) [::board::toggleEvalBar $w.board]
     unset -nocomplain ::mainEvalBarEngineID_
     ::board::updateEvalBar .main.board ""
@@ -1197,13 +1197,13 @@ proc CreateMainBoard { {w} } {
   }} $w]
 
   menu .main.menuaddchoice
-  .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
+  .main.menuaddchoice add command -label " Undo" -image ::icon::tb_BD_Undo -compound left \
       -command {undoFeature undo}
-  .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
+  .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image ::icon::tb_BD_Replace -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove replace pgnonly}
-  .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
+  .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image ::icon::tb_BD_NewMainline -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove mainline pgnonly}
-  .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
+  .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image ::icon::tb_BD_NewVar -compound left \
       -command {sc_game undo; addMoveEx $::gameLastMove var pgnonly}
 
   InitToolbar .main.tb
@@ -1330,9 +1330,9 @@ proc setToolbarTooltips { tb } {
 
 proc InitToolbar {{tb}} {
 	ttk::frame $tb -relief raised -border 1
-	ttk::button $tb.newdb -image tb_newdb -command ::file::New -padding {2 0}
-	ttk::button .main.tb.open -image tb_open -command ::file::Open -padding {2 0}
-	ttk::button .main.tb.save -image tb_save  -padding {2 0} -command {
+	ttk::button $tb.newdb -image ::icon::tb_newdb -command ::file::New -padding {2 0}
+	ttk::button .main.tb.open -image ::icon::tb_open -command ::file::Open -padding {2 0}
+	ttk::button .main.tb.save -image ::icon::tb_save  -padding {2 0} -command {
 	  if {[sc_game number] != 0} {
 		#busyCursor .
 		gameReplace
@@ -1342,35 +1342,35 @@ proc InitToolbar {{tb}} {
 		gameAdd
 	  }
 	}
-	ttk::button .main.tb.closedb -image tb_closedb -command ::file::Close -padding {2 0}
-	ttk::button .main.tb.finder -image tb_finder -command ::file::finder::Open -padding {2 0}
-	ttk::menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
+	ttk::button .main.tb.closedb -image ::icon::tb_closedb -command ::file::Close -padding {2 0}
+	ttk::button .main.tb.finder -image ::icon::tb_finder -command ::file::finder::Open -padding {2 0}
+	ttk::menubutton .main.tb.bkm -image ::icon::tb_bkm -menu .main.tb.bkm.menu -padding {2 0}
 	menu .main.tb.bkm.menu
 	::bookmarks::RefreshMenu .main.tb.bkm.menu
 
 	ttk::frame .main.tb.space1 -width 4
-	ttk::button .main.tb.newgame -image tb_newgame -command ::game::Clear -padding {2 0}
-	ttk::button .main.tb.copy -image tb_copy -command ::gameAddToClipbase -padding {2 0}
-	ttk::button .main.tb.paste -image tb_paste \
+	ttk::button .main.tb.newgame -image ::icon::tb_newgame -command ::game::Clear -padding {2 0}
+	ttk::button .main.tb.copy -image ::icon::tb_copy -command ::gameAddToClipbase -padding {2 0}
+	ttk::button .main.tb.paste -image ::icon::tb_paste \
 		-command {catch {sc_clipbase paste}; updateBoard -pgn} -padding {2 0}
 	ttk::frame .main.tb.space2 -width 4
-	ttk::button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous} -padding {2 0}
-	ttk::button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next} -padding {2 0}
+	ttk::button .main.tb.gprev -image ::icon::tb_gprev -command {::game::LoadNextPrev previous} -padding {2 0}
+	ttk::button .main.tb.gnext -image ::icon::tb_gnext -command {::game::LoadNextPrev next} -padding {2 0}
 	ttk::frame .main.tb.space3 -width 4
-	ttk::button .main.tb.boardsearch -image tb_boardsearch -command ::search::board -padding {2 0}
-	ttk::button .main.tb.headersearch -image tb_headersearch -command ::search::header -padding {2 0}
-	ttk::button .main.tb.materialsearch -image tb_materialsearch -command ::search::material -padding {2 0}
+	ttk::button .main.tb.boardsearch -image ::icon::tb_boardsearch -command ::search::board -padding {2 0}
+	ttk::button .main.tb.headersearch -image ::icon::tb_headersearch -command ::search::header -padding {2 0}
+	ttk::button .main.tb.materialsearch -image ::icon::tb_materialsearch -command ::search::material -padding {2 0}
 	ttk::frame .main.tb.space4 -width 4
-	ttk::button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open -padding {2 0}
-	ttk::button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open -padding {2 0}
-	ttk::button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose -padding {2 0}
-	ttk::button .main.tb.tmt -image tb_tmt -command ::tourney::toggle -padding {2 0}
-	ttk::button .main.tb.maint -image tb_maint -command ::maint::OpenClose -padding {2 0}
-	ttk::button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose -padding {2 0}
-	ttk::button .main.tb.tree -image tb_tree -command ::tree::make -padding {2 0}
-	ttk::button .main.tb.crosstab -image tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
-	ttk::button .main.tb.engine -image tb_engine -command ::enginewin::Open -padding {2 0}
-	ttk::button .main.tb.help -image tb_help -command {helpWindow Index} -padding {2 0}
+	ttk::button .main.tb.switcher -image ::icon::tb_switcher -command ::windows::switcher::Open -padding {2 0}
+	ttk::button .main.tb.glist -image ::icon::tb_glist -command ::windows::gamelist::Open -padding {2 0}
+	ttk::button .main.tb.pgn -image ::icon::tb_pgn -command ::pgn::OpenClose -padding {2 0}
+	ttk::button .main.tb.tmt -image ::icon::tb_tmt -command ::tourney::toggle -padding {2 0}
+	ttk::button .main.tb.maint -image ::icon::tb_maint -command ::maint::OpenClose -padding {2 0}
+	ttk::button .main.tb.eco -image ::icon::tb_eco -command ::windows::eco::OpenClose -padding {2 0}
+	ttk::button .main.tb.tree -image ::icon::tb_tree -command ::tree::make -padding {2 0}
+	ttk::button .main.tb.crosstab -image ::icon::tb_crosstab -command ::crosstab::OpenClose -padding {2 0}
+	ttk::button .main.tb.engine -image ::icon::tb_engine -command ::enginewin::Open -padding {2 0}
+	ttk::button .main.tb.help -image ::icon::tb_help -command {helpWindow Index} -padding {2 0}
 
 	foreach i {newdb open save closedb finder bkm newgame copy paste gprev gnext \
 		  boardsearch headersearch materialsearch \
@@ -1411,7 +1411,7 @@ proc ConfigToolbar { w } {
   foreach i {newdb open closedb finder save bkm row gprev gnext row newgame copy paste row boardsearch headersearch \
 		 materialsearch row switcher glist pgn tmt maint eco tree crosstab engine } {
       if { $i eq "row" } { incr row; set col 0 } else {
-	  ttk::button $w.f.$i -image tb_$i -command "toggleToolbarButton $w.f $i"
+	  ttk::button $w.f.$i -image ::icon::tb_$i -command "toggleToolbarButton $w.f $i"
 	  if { $::toolbar_temp($i) } { $w.f.$i state pressed }
 	  grid $w.f.$i -row $row -column $col -sticky news -padx 4 -pady "0 8"
 	  incr col

@@ -2336,8 +2336,8 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   are mainly meant to handle opening repertoires. The available options
   are:
      <ul>
-     <li> <img tb_tick> Include line in repertoire</li>
-     <li> <img tb_cross> Exclude line from repertoire</li>
+     <li> <img ::icon::tb_tick> Include line in repertoire</li>
+     <li> <img ::icon::tb_cross> Exclude line from repertoire</li>
      <li> <img tb_mainline> Main Line</li>
      <li> <img tb_bkm> Bookmark</li>
      <li> <img tb_white> White</li>
@@ -2345,8 +2345,8 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
      <li> <img tb_new> New line</li>
      <li> <img tb_rfilter> To be verified by further analysis</li>
      <li> <img tb_msearch> To train</li>
-     <li> <img tb_help_small> Dubious line</li>
-     <li> <img tb_cut> To remove</li>
+     <li> <img ::icon::tb_help_small> Dubious line</li>
+     <li> <img ::icon::tb_cut> To remove</li>
      </ul>
 	  To remove a marker just select the item <menu>No marker</menu>.
   </li>
@@ -2799,7 +2799,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   Additional information can be accessed using the <button
-  tb_engineinfo> button. A new line will be added to the status area
+  ::icon::tb_engineinfo> button. A new line will be added to the status area
   showing the current move analysed, the number of tablebase hits, a
   more exact number of nodes analysed per second, the watermark of the
   engines hash and the current cpu load. Usually, this information is
@@ -2831,19 +2831,19 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   this mode only the current evaluation is shown in the status line.
   <p>
   To add the best move chosen by the engine as a new move in the current
-  game, press the <b>Add move</b> button <button tb_addmove>. If the
+  game, press the <b>Add move</b> button <button ::icon::tb_addmove>. If the
   whole main line of the engine should be added just use the <b>Add
-  Variation</b> button <button tb_addvar>. In case an engine offers
+  Variation</b> button <button ::icon::tb_addvar>. In case an engine offers
   the <term>Multi-PV</term> mode, using the <b>Add all Variations</b>
-  button (<button tb_addallvars>) can be used to add all principal
+  button (<button ::icon::tb_addallvars>) can be used to add all principal
   variations to the game. The insertion of variations from the
   analysis window will also add the name of the engine as a comment to
   the game.
   </p>
   <p>
   To temporarily interrupt the calculation process one can use the
-  stop engine button (<button tb_eng_off>). Once pressed, this button
-  changes to the start engine button (<button tb_eng_on>) which will
+  stop engine button (<button ::icon::tb_eng_off>). Once pressed, this button
+  changes to the start engine button (<button ::icon::tb_eng_on>) which will
   restart the engines analysis. Note, however, that most engines will
   restart the whole analysis again, forgetting all results that where
   achieved in an earlier run. Only few engines are able to reuse the
@@ -2855,14 +2855,14 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   To set an engine to analyse a position in the background while
   other functions of Scid are used one can <term>lock the
-  position</term> using the <button tb_lockengine> button. Scid now
+  position</term> using the <button ::icon::tb_lockengine> button. Scid now
   stops to send any changes of the main board to the engine, and the
   engine stays calculating the position.
   </p>
   <p>
   To finish the current game by the engine ("shoot out" or "demo" mode)
-  one can use the finish game button <button tb_finish_off>. To indicate
-  the shootout mode this button turns to <button tb_finish_on>. This
+  one can use the finish game button <button ::icon::tb_finish_off>. To indicate
+  the shootout mode this button turns to <button ::icon::tb_finish_on>. This
   function is only available for the first analysis engine.
   </p>
 
@@ -2940,13 +2940,13 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   
   <h3><a Annotate>Annotating a game</h3>
   <p>
-  The <b>Add variation</b> button (<button tb_addvar> or <button
-  tb_addallvars>)in the analysis window adds the current score and
+  The <b>Add variation</b> button (<button ::icon::tb_addvar> or <button
+  ::icon::tb_addallvars>)in the analysis window adds the current score and
   best line of play as a new variation in the game.
   </p>
   <p>
   You can do this automatically for a number of moves (annotating the
-  game) by pressing the <b>Annotate</b> button, <button tb_annotate>.
+  game) by pressing the <b>Annotate</b> button, <button ::icon::tb_annotate>.
   Besides, the engines best lines also <a Moves Informant>Informant</a>
   style evaluation symbols are added in this process.  First, the
   parameters for automatic annotations have to be set:
@@ -3033,7 +3033,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   If an engine is using too much CPU time and affecting the use of Scid
   or other applications, turning on the <b>Low CPU priority</b> button
-  <button tb_cpu> may help; it gives the engine a low priority for CPU
+  <button ::icon::tb_cpu> may help; it gives the engine a low priority for CPU
   scheduling. On Windows, engines are run on low priority by default.
   </p>
   <p>
@@ -4911,7 +4911,7 @@ set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
    <p>
    Once the proper port is set, choose Tools / Connect Hardware /
    Connect Novag Citrine to hook up the board, or just click the
-   hardware connection button <button tb_eng_disconnected>. This
+   hardware connection button <button ::icon::tb_eng_disconnected>. This
    button also shows the <a HardwareStatus> status of the
    connection.</a>
 
@@ -5035,17 +5035,17 @@ set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
    the status of the external hardware it shows different icons:
    </p>
    <ul>
-   <li><button tb_eng_disconnected>
+   <li><button ::icon::tb_eng_disconnected>
    This is the normal state after program startup and shows that no
    external hardware is active at the moment. Pressing the button will
    hook up the configured hardware.
    </li>
-   <li><button tb_eng_connecting>
+   <li><button ::icon::tb_eng_connecting>
    Scid started the communication with the external hardware,
    initialisation is in progress. Depending on the driver and hardware
    connected, it may take some seconds for things to settle.
    </li>
-   <li><button tb_eng_error>
+   <li><button ::icon::tb_eng_error>
    While communicating withe the external hardware some error
    occurred. Usual sources of problems are e.g. another program
    accessing the external hardware, the hardware is not connected to
@@ -5056,7 +5056,7 @@ set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
    this case. Pressing the button will try again to hook up the
    configured hardware.
    </li>
-   <li><button tb_eng_ok>
+   <li><button ::icon::tb_eng_ok>
    The communication is established, the device is ready and can be
    used for move input. Pressing the button will disconnect the
    external hardware.

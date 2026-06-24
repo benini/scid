@@ -4742,17 +4742,17 @@ set helpText(F,TreeMasks) {
   sont principalement destinés à traiter les répertoires d'ouverture. Les options disponibles
   sont :
      <ul>
-     <li> <img tb_tick> Inclure la ligne dans le répertoire</li>
-     <li> <img tb_cross> Exclure la ligne du répertoire</li>
+     <li> <img ::icon::tb_tick> Inclure la ligne dans le répertoire</li>
+     <li> <img ::icon::tb_cross> Exclure la ligne du répertoire</li>
      <li> <img tb_mainline> Main Line</li>
-     <li> <img tb_bkm> Signet</li>
+     <li> <img ::icon::tb_bkm> Signet</li>
      <li> <img tb_white> Blanc</li>
      <li> <img tb_black> Noir</li>
      <li> <img tb_new> Nouvelle ligne</li>
      <li> <img tb_rfilter> A vérifier par une analyse plus approfondie</li>
      <li> <img tb_msearch> Pour former</li>
      <li> <img tb_help_small> Ligne douteuse</li>
-     <li> <img tb_cut> Pour supprimer</li>
+     <li> <img ::icon::tb_cut> Pour supprimer</li>
      </ul>
 	  Pour supprimer un marqueur, il suffit de sélectionner l'élément <menu>No marker</menu>.
   </li>
@@ -5215,7 +5215,7 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Des informations supplémentaires sont accessibles en utilisant le bouton
-  <button tb_engineinfo>. Une nouvelle ligne sera ajoutée à la zone d'état
+  <button ::icon::tb_engineinfo>. Une nouvelle ligne sera ajoutée à la zone d'état
   montrant le coup courant analysé, le nombre de coups de la table de finales, un
   nombre plus exact de nœuds analysés par seconde, le filigrane de la
   le hash des moteurs et la charge actuelle du processeur. Habituellement, cette information est
@@ -5248,19 +5248,19 @@ set helpText(F,Analysis) {
   </p>
   <p>
   Pour ajouter le meilleur coup choisi par le moteur en tant que nouveau coup dans la
-  jeu, appuyez sur la touche <b>Add move</b> bouton <button tb_addmove>. Si le
+  jeu, appuyez sur la touche <b>Add move</b> bouton <button ::icon::tb_addmove>. Si le
   toute la ligne principale du moteur doit être ajoutée, il suffit d'utiliser la commande <b>Add
-  Variante</b> bouton <button tb_addvar>. Dans le cas où un moteur offre
+  Variante</b> bouton <button ::icon::tb_addvar>. Dans le cas où un moteur offre
   le mode <term>Multi-PV</term>, en utilisant le <b>Ajouter toutes les variantes</b>
-  (<button tb_addallvars>) peut être utilisé pour ajouter tous les principaux
+  (<button ::icon::tb_addallvars>) peut être utilisé pour ajouter tous les principaux
   variantes du jeu. L'insertion de variantes du
   ajoutera également le nom du moteur comme commentaire à la fenêtre d'analyse
   le jeu.
   </p>
   <p>
   Pour interrompre temporairement le processus de calcul, on peut utiliser la
-  bouton d'arrêt du moteur (<button tb_eng_off>). Une fois pressé, ce bouton
-  change le bouton de démarrage du moteur (<button tb_eng_on>) qui
+  bouton d'arrêt du moteur (<button ::icon::tb_eng_off>). Une fois pressé, ce bouton
+  change le bouton de démarrage du moteur (<button ::icon::tb_eng_on>) qui
   redémarrez l'analyse des moteurs. Notez, cependant, que la plupart des moteurs
   recommencer toute l'analyse, en oubliant tous les résultats que
   réalisé lors d'un cycle précédent. Seuls quelques moteurs sont capables de réutiliser les
@@ -5272,14 +5272,14 @@ set helpText(F,Analysis) {
   <p>
   Pour paramétrer un moteur pour analyser une position en arrière-plan tout en
   d'autres fonctions de Scid sont utilisées on peut <term>bloquer le
-  position</term> en utilisant le bouton <button tb_lockengine>. Scid maintenant
+  position</term> en utilisant le bouton <button ::icon::tb_lockengine>. Scid maintenant
   s'arrête pour envoyer au moteur toute modification de la carte mère, et le
   le moteur reste en calculant la position.
   </p>
   <p>
   Pour terminer le jeu en cours par le moteur (mode "shoot out" ou "démo")
-  on peut utiliser le bouton de fin de partie <button tb_finish_off>. Pour indiquer
-  le mode d'utilisation de l'appareil, cette touche devient <button tb_finish_on>. Ce
+  on peut utiliser le bouton de fin de partie <button ::icon::tb_finish_off>. Pour indiquer
+  le mode d'utilisation de l'appareil, cette touche devient <button ::icon::tb_finish_on>. Ce
   n'est disponible que pour le premier moteur d'analyse.
   </p>
 
@@ -5357,13 +5357,13 @@ set helpText(F,Analysis) {
   
   <h3><name Annotate>Annoter une partie</name></h3>
   <p>
-  Le bouton <b>Ajouter une variante</b> (<button tb_addvar> ou
-  <button tb_addallvars>) dans la fenêtre d'analyse ajoute le
+  Le bouton <b>Ajouter une variante</b> (<button ::icon::tb_addvar> ou
+  <button ::icon::tb_addallvars>) dans la fenêtre d'analyse ajoute le
   le score et la meilleure ligne de jeu comme une nouvelle variante dans le jeu.
   </p>
   <p>
   Vous pouvez le faire automatiquement pour un certain nombre de coups (en annotant le
-  jeu) en appuyant sur le bouton <b>Annoter</b>, <button tb_annotate>.
+  jeu) en appuyant sur le bouton <b>Annoter</b>, <button ::icon::tb_annotate>.
   En outre, les meilleures lignes des moteurs aussi <a Moves Informant>Informant</a>
   Les symboles d'évaluation de style sont ajoutés dans ce processus.  Tout d'abord, le
   les paramètres pour les annotations automatiques doivent être définis :
@@ -5450,7 +5450,7 @@ set helpText(F,Analysis) {
   <p>
   Si un moteur utilise trop de temps CPU et affecte l'utilisation de Scid
   ou d'autres applications, en activant le bouton <b>Faible priorité du CPU</b>
-  <button tb_cpu> peut aider ; il donne au moteur une faible priorité pour le CPU
+  <button ::icon::tb_cpu> peut aider ; il donne au moteur une faible priorité pour le CPU
   la planification. Sous Windows, les moteurs sont exécutés par défaut en basse priorité.
   </p>
   <p>
@@ -7202,7 +7202,7 @@ set helpText(F,FindBestMove) {
   actuelle. Si nécessaire, un nouveau jeu approprié sera chargé et Scid affichera
   la position critique. L'utilisateur est alors tenu de trouver la meilleure
   continuation. Pour sauter à la position tactique suivante, il suffit de faire un
-  clic droit sur le bouton <button tb_BD_Forward> pour aller à la fin de partie.
+  clic droit sur le bouton <button ::icon::tb_BD_Forward> pour aller à la fin de partie.
   </p>
   <p>
   Pour cet exercice, il est conseillé de fermer la <a PGN>fenêtre PGN</a> et de
@@ -7526,7 +7526,7 @@ set helpText(F,Novag) {
      Une fois que le bon port est défini, choisissez le menu
  <menu>Outils</menu><menu>Connecter un matériel</menu><menu>Connecter Novag Citrine</menu>
      pour connecter l'échiquier, ou cliquez simplement sur le bouton de connexion
-     matérielle <button tb_eng_disconnected>. Ce bouton
+     matérielle <button ::icon::tb_eng_disconnected>. Ce bouton
    indique également <a HardwareStatus>l'état de la connexion.</a>
 
    ###--- Description détaillée nécessaire ---###
@@ -7654,18 +7654,18 @@ set helpText(F,HardwareStatus) {
    l'état du matériel externe, il affiche différentes icônes :
    </p>
    <ul>
-   <li><button tb_eng_disconnected>
+   <li><button ::icon::tb_eng_disconnected>
    C'est l'état normal après le démarrage du programme et montre qu'aucun
    matériel externe n'est actif pour le moment. Appuyer sur ce bouton
    connectera le matériel configuré.
    </li>
-   <li><button tb_eng_connecting>
+   <li><button ::icon::tb_eng_connecting>
    Scid a démarré la communication avec le matériel externe,
    L'initialisation est en cours. En fonction du pilote et du matériel
    connectés, ça peut prendre quelques secondes pour que les choses
    se mettent en ordre.
    </li>
-   <li><button tb_eng_error>
+   <li><button ::icon::tb_eng_error>
    Lors de la communication avec le matériel externe, une erreur s'est produite.
    Les <term>sources habituelles de problèmes matériel</term> sont, par exemple,
    qu'un autre programme à l'accès au matériel externe, que le matériel n'est
@@ -7677,7 +7677,7 @@ set helpText(F,HardwareStatus) {
    ce cas. En appuyant sur ce bouton, Scid essaie de nouveau de se brancher
    sur le matériel configuré.
    </li>
-   <li><button tb_eng_ok>
+   <li><button ::icon::tb_eng_ok>
    La communication est établie, l'appareil est prêt et peut être
    utilisé pour la saisie de coup. Une pression sur ce bouton déconnectera le
    matériel externe.
@@ -8012,12 +8012,12 @@ set helpText(F,GameInfoBar) {
   l'utilisateur avec le message <b>New Variation</b>. Cliquer sur le texte en bleu
   <blue>[click to change]</blue> offre les options suivantes :</p>
   <ul>
-    <li><button tb_BD_Undo> Annuler l'action.</li>
-    <li><button tb_BD_Replace> Remplacer le coup de la ligne principale et
+    <li><button ::icon::tb_BD_Undo> Annuler l'action.</li>
+    <li><button ::icon::tb_BD_Replace> Remplacer le coup de la ligne principale et
     <b>efface les coups suivants</b>.</li>
-    <li><button tb_BD_NewMainline> Promouvoir la variante comme ligne
+    <li><button ::icon::tb_BD_NewMainline> Promouvoir la variante comme ligne
     principale.</li>
-    <li><button tb_BD_NewVar> Ajouter une variante.</li>
+    <li><button ::icon::tb_BD_NewVar> Ajouter une variante.</li>
   </ul>
 
   <h3><name BD_Back>Menu contextuel du bouton Reculer</name></h3>
@@ -8025,10 +8025,10 @@ set helpText(F,GameInfoBar) {
   flèche <b>Gauche</b>). Un Clic-Droit avec la souris ouvre le
   <green>menu contextuel</green> suivant :</p>
   <ul>
-  <li><button tb_BD_BackToMainline> Revenir à la ligne principale.</li>
-  <li><button tb_BD_VarDelete> Effacer cette variante du fichier PGN.</li>
-  <li><button tb_BD_VarLeave> Quitter la variante.</li>
-  <li><button tb_BD_Start> Début de partie (raccourci :
+  <li><button ::icon::tb_BD_BackToMainline> Revenir à la ligne principale.</li>
+  <li><button ::icon::tb_BD_VarDelete> Effacer cette variante du fichier PGN.</li>
+  <li><button ::icon::tb_BD_VarLeave> Quitter la variante.</li>
+  <li><button ::icon::tb_BD_Start> Début de partie (raccourci :
     touche <b>Début</b>).</li>
   </ul>
 
@@ -8036,21 +8036,21 @@ set helpText(F,GameInfoBar) {
   <p><button tb_BD_ShowToolbar> Ce bouton affiche le <green>menu</green> suivant
   par un Clic-Gauche avec la souris :</p>
   <ul>
-  <li><button tb_BD_SetupBoard> Définir la position de départ.</li>
-  <li><button tb_BD_Flip> Retourner l'échiquier.</li>
+  <li><button ::icon::tb_BD_SetupBoard> Définir la position de départ.</li>
+  <li><button ::icon::tb_BD_Flip> Retourner l'échiquier.</li>
   <li><button tb_BD_Coords> Afficher/Masquer les coordonnées de
     l'échiquier.</li>
-  <li><button tb_BD_Material> Afficher/Masquer le bilan matériel à droite
+  <li><button ::icon::tb_BD_Material> Afficher/Masquer le bilan matériel à droite
     de l'échiquier.</li>
   <li><button tb_BD_Fullscreen> Activer l'affichage Plein Écran.</li>
   </ul>
 
   <h3><name BD_Forward>Menu contextuel du bouton Avancer</name></h3>
-  <p><button tb_BD_Forward> Ce bouton avance d'un demi-coup (raccourci :
+  <p><button ::icon::tb_BD_Forward> Ce bouton avance d'un demi-coup (raccourci :
   flèche <b>Droite</b>). Un Clic-Droit avec la souris ouvre le
   <green>menu contextuel</green> suivant :</p>
   <ul>
-  <li><button tb_BD_Autoplay> Jeu automatique.</li>
+  <li><button ::icons::tb_BD_Autoplay> Jeu automatique.</li>
   <li><button tb_BD_End> Fin de partie (raccourci :
     touche <b>Fin</b>).</li>
   </ul>

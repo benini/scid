@@ -247,7 +247,7 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::button $w.saveBtn -text [tr SaveAndContinue] -image tb_BD_Save -compound left -command {
+  ttk::button $w.saveBtn -text [tr SaveAndContinue] -image ::icon::tb_BD_Save -compound left -command {
     set gnum [sc_game number]
     if {[catch {sc_game save $gnum $::curr_db}]} {
       ERROR::MessageBox
@@ -258,7 +258,7 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::button $w.clipbaseBtn -text [tr EditCopy] -image tb_BD_SaveAs -compound left -command {
+  ttk::button $w.clipbaseBtn -text [tr EditCopy] -image ::icon::tb_BD_SaveAs -compound left -command {
     if {[catch {sc_game save 0 $::clipbase_db}]} {
       ERROR::MessageBox
       set ::game::answer 0
@@ -269,7 +269,7 @@ proc ::game::ConfirmDiscard {} {
     destroy .confirmDiscard
   }
 
-  ttk::button $w.discardBtn -text [tr DiscardChangesAndContinue] -image tb_BD_VarDelete   -compound left -command {
+  ttk::button $w.discardBtn -text [tr DiscardChangesAndContinue] -image ::icon::tb_BD_VarDelete   -compound left -command {
     set ::game::answer 3
     destroy .confirmDiscard
   }

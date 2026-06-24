@@ -536,10 +536,10 @@ proc ::board::addInfoBar {w varname} {
   $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
   grid propagate $w.bar.info 0
-  ttk::button $w.bar.leavevar -image tb_BD_BackStart -style Toolbutton
-  ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
-  ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
-  ttk::button $w.bar.endvar -image tb_BD_ForwardEnd -style Toolbutton
+  ttk::button $w.bar.leavevar -image ::icon::tb_BD_BackStart -style Toolbutton
+  ttk::button $w.bar.back -image ::icon::tb_BD_Back -style Toolbutton
+  ttk::button $w.bar.forward -image ::icon::tb_BD_Forward -style Toolbutton
+  ttk::button $w.bar.endvar -image ::icon::tb_BD_ForwardEnd -style Toolbutton
   set menu [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton \
     -command "::board::updateToolBar_ $menu $varname $w.bar.cmd"
@@ -742,28 +742,28 @@ proc ::board::newToolBar_ {{w} {varname}} {
   global "$varname"
 
   set m [menu $w.menu_back]
-  $m add command -label "  [tr BackToMainline]" -image tb_BD_BackToMainline -compound left
-  $m add command -label "  [tr EditDelete]" -image tb_BD_VarDelete -compound left
-  $m add command -label "  [tr LeaveVariant]" -image tb_BD_VarLeave -compound left
-  $m add command -label "  [tr GameStart]" -image tb_BD_Start -compound left -accelerator "<home>"
+  $m add command -label "  [tr BackToMainline]" -image ::icon::tb_BD_BackToMainline -compound left
+  $m add command -label "  [tr EditDelete]" -image ::icon::tb_BD_VarDelete -compound left
+  $m add command -label "  [tr LeaveVariant]" -image ::icon::tb_BD_VarLeave -compound left
+  $m add command -label "  [tr GameStart]" -image ::icon::tb_BD_Start -compound left -accelerator "<home>"
   ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set m [menu $w.menu_forw]
-  $m add command -label "  [tr Autoplay]" -image tb_BD_Autoplay -compound left
-  $m add command -label "  [tr GameEnd]" -image tb_BD_End -compound left -accelerator "<end>"
+  $m add command -label "  [tr Autoplay]" -image ::icon::tb_BD_Autoplay -compound left
+  $m add command -label "  [tr GameEnd]" -image ::icon::tb_BD_End -compound left -accelerator "<end>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set m [menu $w.menu]
-  $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
-  $m add command -label "  [tr IERotate]" -image tb_BD_Flip -compound left
-  $m add command -label "  [tr SelectMarker]" -image tb_BD_SelectMarker -compound left
-  $m add command -label "  [tr ShowHideMaterial]" -image tb_BD_Material -compound left
-  $m add command -label "  [tr ShowHideEvalBar]" -image tb_BD_Scorebar -compound left
+  $m add command -label "  [tr EditSetup]" -image ::icon::tb_BD_SetupBoard -compound left
+  $m add command -label "  [tr IERotate]" -image ::icon::tb_BD_Flip -compound left
+  $m add command -label "  [tr SelectMarker]" -image ::icon::tb_BD_SelectMarker -compound left
+  $m add command -label "  [tr ShowHideMaterial]" -image ::icon::tb_BD_Material -compound left
+  $m add command -label "  [tr ShowHideEvalBar]" -image ::icon::tb_BD_Scorebar -compound left
   $m add command -label "  [tr ConfigureScid]" -image tb_BD_Layout -compound left
 
-  set ${varname}(tb_BD_Flip) "::board::flip $w"
-  set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
-  set ${varname}(tb_BD_Scorebar) "::board::toggleEvalBar $w"
+  set ${varname}(::icon::tb_BD_Flip) "::board::flip $w"
+  set ${varname}(::icon::tb_BD_Material) "::board::toggleMaterial $w"
+  set ${varname}(::icon::tb_BD_Scorebar) "::board::toggleEvalBar $w"
   set ${varname}(tb_BD_Layout) {::preferences::Open toggle}
 
   return $m

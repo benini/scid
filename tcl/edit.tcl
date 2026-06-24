@@ -71,7 +71,7 @@ proc setupBoard {} {
   }
   set ::setupBoardFlipped [main_isFlipped]
   ::board::flip .setup.l.bd $::setupBoardFlipped
-  ttk::checkbutton $w.pieces.rotate -text $::tr(Rotate) -image tb_BD_Flip -compound left \
+  ttk::checkbutton $w.pieces.rotate -text $::tr(Rotate) -image ::icon::tb_BD_Flip -compound left \
       -variable ::setupBoardFlipped -command {
     set ::setupBd  [string reverse $::setupBd]
     set ::setupFen [makeSetupFen]

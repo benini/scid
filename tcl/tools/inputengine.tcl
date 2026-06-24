@@ -64,7 +64,7 @@ namespace eval ExtHardware {
         if { $::ExtHardware::showbutton == 1 } {
 
            ttk::frame .main.fbutton.button.space4 -width 15
-           button .main.fbutton.button.exthardware -image tb_eng_disconnected
+           button .main.fbutton.button.exthardware -image ::icon::tb_eng_disconnected
            .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
                -anchor n -takefocus 0
            bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
@@ -152,7 +152,7 @@ namespace eval ExtHardware {
        destroy .exthardwareConfig
        $::ExtHardware::bindbutton
     }
-    ttk::button $w.bCancel -text [::tr Cancel] -command "::ExtHardware::HWbuttonImg tb_eng_disconnected ; destroy $w"
+    ttk::button $w.bCancel -text [::tr Cancel] -command "::ExtHardware::HWbuttonImg ::icon::tb_eng_disconnected ; destroy $w"
     packdlgbuttons $w.bCancel $w.bOk -in $w.buttons
 
     grid $w.options    -stick ew    -row 0 -column 0
@@ -186,7 +186,7 @@ namespace eval ExtHardware {
      if { $::ExtHardware::showbutton == 1 } {
 
         ttk::frame .main.fbutton.button.space4 -width 15
-        button .main.fbutton.button.exthardware -image tb_eng_disconnected
+        button .main.fbutton.button.exthardware -image ::icon::tb_eng_disconnected
         .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
             -anchor n -takefocus 0
         bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
@@ -215,7 +215,7 @@ namespace eval inputengine {
   set InputEngine(log)      ""
   set InputEngine(logCount) 0
   set InputEngine(init)     0
-  set connectimg            tb_eng_ok
+  set connectimg            ::icon::tb_eng_ok
   set MovingPieceImg        $::board::letterToPiece(.)80
   set MoveText              "     "
 
@@ -349,10 +349,10 @@ namespace eval inputengine {
 	 set ::inputengine::port       $::ExtHardware::port
 	 set ::inputengine::param      $::ExtHardware::param
 
-    ::ExtHardware::HWbuttonImg tb_eng_connecting
+    ::ExtHardware::HWbuttonImg ::icon::tb_eng_connecting
 
     if {[catch {set InputEngine(pipe) [open "| $engine $port $param" "r+"]} result]} {
-      ::ExtHardware::HWbuttonImg tb_eng_error
+      ::ExtHardware::HWbuttonImg ::icon::tb_eng_error
       tk_messageBox -title "Scid: Input Engine" -icon warning -type ok \
           -message "[::tr IEUnableToStart]\n$engine $port $param"
       ::inputengine::resetEngine
@@ -370,11 +370,11 @@ namespace eval inputengine {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
 
-    set ::inputengine::connectimg tb_eng_connecting
+    set ::inputengine::connectimg ::icon::tb_eng_connecting
 
     ::inputengine::sendToEngine "stop"
     ::inputengine::sendToEngine "quit"
-    set ::inputengine::connectimg tb_eng_disconnected
+    set ::inputengine::connectimg ::icon::tb_eng_disconnected
 
     if { [winfo exists ::inputengine::.inputengineconsole]} {
        destroy ::inputengine::.inputengineconsole
@@ -426,7 +426,7 @@ namespace eval inputengine {
   proc resetEngine {} {
     global ::inputengine::InputEngine
 
-    ::ExtHardware::HWbuttonImg tb_eng_disconnected
+    ::ExtHardware::HWbuttonImg ::icon::tb_eng_disconnected
     destroy .inputengineconsole
     set ::inputengine::InputEngine(pipe)     ""
     set ::inputengine::InputEngine(log)      ""
@@ -561,7 +561,7 @@ namespace eval inputengine {
             tk_messageBox -title "Scid: Input Engine" \
             -icon warning -type ok -message "Engine $err"
             catch {close $pipe}
-            ::ExtHardware::HWbuttonImg tb_eng_error
+            ::ExtHardware::HWbuttonImg ::icon::tb_eng_error
             return
           } \
           "string Chessboard found and initialised*" {
