@@ -625,7 +625,7 @@ proc getBooksDir { widget } {
   if {$dir != ""} {
       setBooksDir $dir
       $widget delete 0 end
-      $widget insert end $dir
+      $widget insert end "$dir"
   }
 }
 
@@ -640,7 +640,7 @@ proc getTacticsBasesDir { widget } {
   if {$dir != ""} {
       setTacticsBasesDir $dir
       $widget delete 0 end
-      $widget insert end $dir
+      $widget insert end "$dir"
   }
 }
 
@@ -656,7 +656,7 @@ proc getPhotoDir { widget } {
   if {$dir != ""} {
       if { [setPhotoDir $dir] } {
           $widget delete 0 end
-          $widget insert end $dir
+          $widget insert end "$dir"
       }
   }
 }
@@ -677,7 +677,7 @@ proc getThemePkgFile { widget} {
 	       -filetypes { {Theme "pkgIndex.tcl"} }]
   if { $fullname != "" && $fullname != $::ThemePackageFile && ! [readThemePkgFile $fullname] } {
       $widget delete 0 end
-      $widget insert end $fullname
+      $widget insert end "$fullname"
   }
 }
 
@@ -705,7 +705,7 @@ proc getECOFile { widget } {
   set fullname [tk_getOpenFile -parent [winfo toplevel $widget] -initialdir [file dirname $ecoFile] -filetypes $ftype -title "Load ECO file"]
   if { [readECOFile $fullname] } {
       $widget delete 0 end
-      $widget insert end $fullname
+      $widget insert end "$fullname"
   }
 }
 
