@@ -589,10 +589,10 @@ proc configure_style {} {
     image create photo ::icon::$iname -format png -file $fname
   }
 }
-bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
-
 catch { ttk::style theme use $::lookTheme }
 configure_menus
+configure_style
+bind . <<ThemeChanged>> { if {"%W" eq "."} { configure_style } }
 
 
 # Uses the circle and full circle unicode characters to simulate a switch button.
