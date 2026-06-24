@@ -1685,6 +1685,7 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
     if (IsColorFormat()) {
         startTable = "<br>";
         endColumn = "<br>";
+        printDiagrams = PgnStyle & PGN_STYLE_DIAGRAM;
     }
 
     if (IsHtmlFormat()  &&  VarDepth == 0) { tb->PrintString ("<b>"); }
@@ -1872,7 +1873,6 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 }
                 tb->PrintWord (temp);
                 colWidth -= (int) std::strlen(temp);
-
             }
             if (IsColorFormat()  &&  m->nagCount > 0) {
                 tb->PrintString ("</nag>");
@@ -1885,7 +1885,10 @@ errorT Game::WriteMoveList(TextBuffer* tb, moveT* oldCurrentMove,
                 }
             }
 
-            if (printDiagramHere) {
+            if (printDiagramHere && IsColorFormat()) {
+                // print tag here to avoid dumping board in next if-statement
+                tb->PrintString ("<board>");
+            } else if (printDiagramHere) {
                 if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
                     if (! endedColumn) {
                         if (CurrentPos->GetToMove() == WHITE) {

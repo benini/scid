@@ -30,7 +30,27 @@ proc help_PushStack {name {heading ""}} {
 }
 
 set ::htext::headingColor "\#990000"
+array set ::htext::amountVar {}
+array set ::htext::varIndex {}
+array set ::htext::hideVarValue {}
 array set ::htext:updates {}
+#assign processing proc to tags 
+array set ::htext::proc {
+    a       aTagProcess
+    url	    urlTagProcess
+    run	    runTagProcess
+    go	    goTagProcess
+    pi	    piTagProcess
+    g	    gTagProcess
+    m	    mTagProcess
+    c	    cTagProcess
+    var	    varTagProcess
+    img	    imgTagProcess
+    button	buttonTagProcess
+    window  windowTagProcess
+    board   insertBoard
+    name    nameTagProcess
+}
 
 proc help_PopStack {} {
   global helpWin helpText
@@ -166,6 +186,8 @@ proc ::htext::init {w} {
   set green "green"
   
   set ::htext::updates($w) 100
+  set ::htext::amountVar($w) 0
+  set ::htext::hideVarValue($w) {}
   $w tag configure black -foreground black
   $w tag configure white -foreground white
   $w tag configure red -foreground red
@@ -212,26 +234,13 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
   
   # PGN-window-specific tags:
-  $w tag configure var -font font_Regular
-  $w tag configure nag -font font_Regular
-  if { $::pgnColor(Var) ne "" } {
-    $w tag configure var -foreground $::pgnColor(Var)
-  }
-  $w tag configure nag -foreground $::pgnColor(Nag)
+  $w tag configure nag -font font_Regular -foreground $::pgnColor(Nag)
 
   set lmargin 0
   for {set i 1} {$i <= 19} {incr i} {
     incr lmargin 25
     $w tag configure "ip$i" -lmargin1 $lmargin -lmargin2 $lmargin
   }
-}
-
-proc ::htext::isStartTag {tagName} {
-  return [expr {![strIsPrefix "/" $tagName]} ]
-}
-
-proc ::htext::isEndTag {tagName} {
-  return [strIsPrefix "/" $tagName]
 }
 
 proc ::htext::isLinkTag {tagName} {
@@ -254,17 +263,273 @@ proc ::htext::extractSectionName {tagName} {
 
 set ::htext::interrupt 0
 
-proc ::htext::display {w helptext {section ""} {fixed 1}} {
+# Process a link tag
+proc ::htext::aTagProcess {w tagName} {
+    set linkName [::htext::extractLinkName $tagName]
+    set sectionName [::htext::extractSectionName $tagName]
+    set linkTag "link ${linkName} ${sectionName}"
+    $w tag configure "$linkTag" -foreground blue -underline 1
+    $w tag bind "$linkTag" <ButtonRelease-1> \
+            "helpWindow $linkName $sectionName"
+    $w tag bind $linkTag <Any-Enter> \
+        "$w tag configure \"$linkTag\" -background yellow
+            $w configure -cursor hand2"
+    $w tag bind $linkTag <Any-Leave> \
+        "$w tag configure \"$linkTag\" -background {}
+         $w configure -cursor {}"
+    return [list a $linkTag ]
+}
+# Process a url tag
+proc ::htext::urlTagProcess {w tagName} {
+    set urlName [string range $tagName 4 end]
+    set urlTag "url $urlName"
+    $w tag configure "$urlTag" -foreground red -underline 1
+        $w tag bind "$urlTag" <ButtonRelease-1> "openURL {$urlName}"
+    $w tag bind $urlTag <Any-Enter> \
+        "$w tag configure \"$urlTag\" -background yellow
+            $w configure -cursor hand2"
+    $w tag bind $urlTag <Any-Leave> \
+            "$w tag configure \"$urlTag\" -background {}
+            $w configure -cursor {}"
+    return [list url $urlTag ]
+}
+# Process a Tcl command tag:
+proc ::htext::runTagProcess {w tagName} {
+    set runName [string range $tagName 4 end]
+    set runTag "run $runName"
+    $w tag bind "$runTag" <ButtonRelease-1> "catch {$runName}"
+    $w tag bind $runTag <Any-Enter> \
+        "$w tag configure \"$runTag\" -foreground white
+            $w tag configure \"$runTag\" -background DodgerBlue4
+            $w configure -cursor hand2"
+    $w tag bind $runTag <Any-Leave> \
+        "$w tag configure \"$runTag\" -foreground {}
+        $w tag configure \"$runTag\" -background {}
+        $w configure -cursor {}"
+    return [list run $runTag ]
+}
+# Process a goto tag
+proc ::htext::goTagProcess {w tagName} {
+    # Check if it is a goto tag:
+    set goName [string range $tagName 3 end]
+    set goTag "go $goName"
+    $w tag bind "$goTag" <ButtonRelease-1> \
+        "catch {$w see \[lindex \[$w tag nextrange $goName 1.0\] 0\]}"
+    $w tag bind $goTag <Any-Enter> \
+        "$w tag configure \"$goTag\" -foreground yellow
+        $w tag configure \"$goTag\" -background maroon
+        $w configure -cursor hand2"
+    $w tag bind $goTag <Any-Leave> \
+        "$w tag configure \"$goTag\" -foreground {}
+        $w tag configure \"$goTag\" -background {}
+        $w configure -cursor {}"
+    return [list go $goTag ]
+}
+# Process a player info tag
+proc ::htext::piTagProcess {w playerTag} {
+    set playerName [string range $playerTag 3 end]
+    $w tag configure "$playerTag" -foreground DodgerBlue3
+    $w tag bind "$playerTag" <ButtonRelease-1> "::pinfo::playerInfo \"$playerName\""
+    $w tag bind $playerTag <Any-Enter> \
+        "$w tag configure \"$playerTag\" -foreground white
+        $w tag configure \"$playerTag\" -background DodgerBlue4
+        $w configure -cursor hand2"
+    $w tag bind $playerTag <Any-Leave> \
+        "$w tag configure \"$playerTag\" -foreground DodgerBlue3
+        $w tag configure \"$playerTag\" -background {}
+        $w configure -cursor {}"
+return [list pi $playerTag ]
+}
+# Process a game-load tag
+proc ::htext::gTagProcess {w gameTag} {
+    set gnum [string range $gameTag 2 end]
+    set glCommand "::game::LoadMenu $w [sc_base current] $gnum %X %Y"
+    $w tag bind $gameTag <ButtonPress-1> $glCommand
+    $w tag bind $gameTag <ButtonPress-$::MB3> \
+        "::gbrowser::new [sc_base current] $gnum"
+    $w tag bind $gameTag <Any-Enter> \
+        "$w tag configure $gameTag -foreground white
+         $w tag configure $gameTag -background DodgerBlue4
+         $w configure -cursor hand2"
+    $w tag bind $gameTag <Any-Leave> \
+        "$w tag configure $gameTag -foreground {}
+    $w tag configure $gameTag -background {}
+    $w configure -cursor {}"
+    return [list g $gameTag ]
+}
+# Process a move tag
+proc ::htext::mTagProcess {w moveTag} {
+    $w tag bind $moveTag <ButtonRelease-1> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
+    # Bind middle button to popup a PGN board:
+    $w tag bind $moveTag <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text $moveTag %X %Y"
+    $w tag bind $moveTag <ButtonRelease-$::MB2> "::pgn::HideBoard"
+    # invoking contextual menu in PGN window
+    $w tag bind $moveTag <ButtonPress-$::MB3> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
+    $w tag bind $moveTag <Any-Enter> "$w tag configure $moveTag -underline 1
+    $w configure -cursor hand2"
+    $w tag bind $moveTag <Any-Leave> "$w tag configure $moveTag -underline 0
+    $w configure -cursor {}"
+    return [list m $moveTag ]
+}
+# Process a comment tag
+proc ::htext::cTagProcess {w commentTag} {
+    $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
+    $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::makeCommentWin"
+    $w tag bind $commentTag <Any-Enter> "$w tag configure $commentTag -underline 1
+    $w configure -cursor hand2"
+    $w tag bind $commentTag <Any-Leave> "$w tag configure $commentTag -underline 0
+    $w configure -cursor {}"
+    return [list c $commentTag ]
+}
+proc ::htext::imgTagProcess {w tagName} {
+    set imgName [string range $tagName 4 end]
+    #flags are not loaded on start, so check if a flag needs to load
+    if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
+      set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
+    }
+    set winName $w.$imgName
+    while {[winfo exists $winName]} { append winName a }
+    ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
+    $w window create end -window $winName
+}
+proc ::htext::buttonTagProcess {w tagName} {
+    set idx [ string first "-command" $tagName]
+    set cmd ""
+    if {$idx == -1} {
+      set imgName [string range $tagName 7 end]
+    } else  {
+      set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
+      set cmd [ string range $tagName [expr $idx +9] end ]
+    }
+    set winName $w.$imgName
+    while {[winfo exists $winName]} { append winName a }
+    ttk::button $winName -image $imgName -command $cmd
+    $w window create end -window $winName
+}
+proc ::htext::windowTagProcess {w tagName} {
+    set winName [string range $tagName 7 end]
+    $w window create end -window $winName
+}
+#Process a name tag
+proc ::htext::nameTagProcess {w tagName section} {
+    if {$section == [string range $tagName 5 end] } {
+        $w yview [$w index insert]
+    }
+}
+#insert a board diagramm after movenr
+proc ::htext::insertBoard {w movenr} {
+    ::board::new $w.bd$movenr 25
+    set offSet [sc_pos pgnOffset]
+    sc_move pgn $movenr
+    set bd [sc_pos board]
+    sc_move pgn $offSet
+    if {[::board::isFlipped .main.board]} {set bd [string reverse [lindex $bd 0]]}
+    ::board::update $w.bd$movenr $bd
+    $w insert end "\n\n\t\t"
+    $w window create end -window $w.bd$movenr
+    $w insert end "\n\n"
+}
+#calc number of variations in pgn string to check if number has changed 
+proc ::htext::countVar {w str} {
+    set ::htext::varIndex($w) 0
+    set count [regsub -all "<var>" $str {} stripped]
+    set ::htext::varChanged [expr $count - $::htext::amountVar($w)]
+    set ::htext::amountVar($w) $count
+}
+#insert toggle token [+] or [-] for show/hide the variation
+proc ::htext::varTagProcess {w tagName} {
+    set varIndex $::htext::varIndex($w)
+    set hideVar $::pgn::hideVar
+    set start [$w index insert]
+    set pos [$w count -chars 0.0 $start]
+    if {[llength $::htext::hideVarValue($w)] > $varIndex } {
+        #if tag exists then use it
+        if { $::htext::varChanged != 0 } {
+            # number of variations has changed, ajust the values
+            if { $::htext::varChanged > 0 && $pos ne $::htext::pos($varIndex)} {
+                # a variation was inserted
+                set ::htext::hideVarValue($w) [linsert $::htext::hideVarValue($w) $varIndex $::pgn::hideVar]
+                set ::htext::varChanged 0
+            } elseif { $::htext::varChanged < 0 && $pos ne $::htext::pos($varIndex)} {
+                # a variation was deleted
+                set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $varIndex $varIndex]
+                set ::htext::varChanged 0
+            }
+        }
+        set hideVar [lindex $::htext::hideVarValue($w) $varIndex]
+    }
+    if { $hideVar } {
+        $w insert end " \[+\] "
+    } else {
+        $w insert end " \[-\] "
+    }
+    set end [$w index insert]
+    $w tag configure var$varIndex -elide $hideVar -font font_Regular -foreground $::pgnColor(Var)
+    $w tag lower var$varIndex
+    $w tag configure toggle$varIndex -font font_Regular -foreground $::pgnColor(Var)
+    $w tag bind toggle$varIndex <ButtonRelease-1> "::htext::toggleHideVar $w $varIndex"
+    $w tag add toggle$varIndex $start $end
+    set ::htext::pos($varIndex) $pos
+    set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $varIndex $varIndex $hideVar]
+    incr ::htext::varIndex($w)
+    return [list var var$varIndex]
+}
+
+#Helper procs for show/hide variation
+#when new game is loaded delete all tags with varN
+proc ::htext::deleteToggleVar { w } {
+    foreach i [ lsearch -all -inline [$w tag names] var* ] {
+        $w tag delete $i
+    }
+    set ::htext::amountVar($w) 0
+    set ::htext::hideVarValue($w) { }
+}
+
+#make sure a variation is shown when a move from variation is on the board
+proc ::htext::showVar { w pos } {
+    set tag [lsearch -inline [$w tag names $pos] var*]
+    if { $tag ne "" && [$w tag cget $tag -elide]} {
+        ::htext::toggleHideVar $w [string range $tag 3 end]
+    }
+}
+
+#reset status for hide/show on all variations according hideVar
+proc ::htext::resetToggleVar { w hideVar} {
+    set i [llength $::htext::hideVarValue($w)]
+    while { $i > 0 } {
+        incr i -1
+        toggleHideVar $w $i $hideVar
+    }
+}
+
+#toggle status of hide/show of a variation or set it to hv
+proc ::htext::toggleHideVar { w n {hv ""}} {
+    lassign [$w tag nextrange toggle$n 1.0] start end
+    if { $hv eq "" } {
+        set hv [expr - [$w tag cget var$n -elide] + 1 ];
+    }
+    $w tag configure var$n -elide $hv
+    $w configure -state normal
+    if { $hv } {
+        $w replace $start $end " \[+\] "
+    } else {
+        $w replace $start $end " \[-\] "
+    }
+    $w tag configure var$n -elide $hv
+    $w tag add toggle$n $start $end
+    $w configure -state disabled
+    set ::htext::hideVarValue($w) [lreplace $::htext::hideVarValue($w) $n $n $hv]
+}
+
+proc ::htext::display {w str {section ""} {fixed 1}} {
   global helpWin
   # set start [clock clicks -milli]
   set helpWin(Indent) 0
   set ::htext::interrupt 0
   $w mark set insert 0.0
   $w configure -state normal
-  set linkName ""
-  
   set count 0
-  set str $helptext
+  ::htext::countVar $w $str
   if {$fixed} {
     regsub -all "\n\n" $str "<p>" str
     regsub -all "\n" $str " " str
@@ -273,188 +538,37 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     regsub -all ">\[ \n\]+" $str "> " str
     regsub -all "\[ \n\]+<" $str " <" str
   }
-  set tagType ""
-  set seePoint ""
-  
+
   if {! [info exists ::htext::updates($w)]} {
     set ::htext::updates($w) 100
   }
-  
+
   # Loop through the text finding the next formatting tag:
-  
   while {1} {
     set startPos [string first "<" $str]
     if {$startPos < 0} { break }
     set endPos [string first ">" $str]
     if {$endPos < 1} { break }
-    
+
     set tagName [string range $str [expr {$startPos + 1}] [expr {$endPos - 1}]]
-    
-    # Check if it is a starting tag (no "/" at the start):
-    
-    if {![strIsPrefix "/" $tagName]} {
-      
-      # Check if it is a link tag:
-      if {[strIsPrefix "a " $tagName]} {
-        set linkName [::htext::extractLinkName $tagName]
-        set sectionName [::htext::extractSectionName $tagName]
-        set linkTag "link ${linkName} ${sectionName}"
-        set tagName "a"
-        $w tag configure "$linkTag" -foreground blue -underline 1
-        $w tag bind "$linkTag" <ButtonRelease-1> \
-            "helpWindow $linkName $sectionName"
-        $w tag bind $linkTag <Any-Enter> \
-            "$w tag configure \"$linkTag\" -background yellow
-        $w configure -cursor hand2"
-        $w tag bind $linkTag <Any-Leave> \
-            "$w tag configure \"$linkTag\" -background {}
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "url " $tagName]} {
-        # Check if it is a URL tag:
-        set urlName [string range $tagName 4 end]
-        set urlTag "url $urlName"
-        set tagName "url"
-        $w tag configure "$urlTag" -foreground red -underline 1
-        $w tag bind "$urlTag" <ButtonRelease-1> "openURL {$urlName}"
-        $w tag bind $urlTag <Any-Enter> \
-            "$w tag configure \"$urlTag\" -background yellow
-        $w configure -cursor hand2"
-        $w tag bind $urlTag <Any-Leave> \
-            "$w tag configure \"$urlTag\" -background {}
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "run " $tagName]} {
-        # Check if it is a Tcl command tag:
-        set runName [string range $tagName 4 end]
-        set runTag "run $runName"
-        set tagName "run"
-        $w tag bind "$runTag" <ButtonRelease-1> "catch {$runName}"
-        $w tag bind $runTag <Any-Enter> \
-            "$w tag configure \"$runTag\" -foreground white
-             $w tag configure \"$runTag\" -background DodgerBlue4
-             $w configure -cursor hand2"
-        $w tag bind $runTag <Any-Leave> \
-            "$w tag configure \"$runTag\" -foreground {}
-        $w tag configure \"$runTag\" -background {}
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "go " $tagName]} {
-        # Check if it is a goto tag:
-        set goName [string range $tagName 3 end]
-        set goTag "go $goName"
-        set tagName "go"
-        $w tag bind "$goTag" <ButtonRelease-1> \
-            "catch {$w see \[lindex \[$w tag nextrange $goName 1.0\] 0\]}"
-        $w tag bind $goTag <Any-Enter> \
-            "$w tag configure \"$goTag\" -foreground yellow
-        $w tag configure \"$goTag\" -background maroon
-        $w configure -cursor hand2"
-        $w tag bind $goTag <Any-Leave> \
-            "$w tag configure \"$goTag\" -foreground {}
-        $w tag configure \"$goTag\" -background {}
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "pi " $tagName]} {
-        # Check if it is a player info tag:
-        set playerTag $tagName
-        set playerName [string range $playerTag 3 end]
-        set tagName "pi"
-        $w tag configure "$playerTag" -foreground DodgerBlue3
-        $w tag bind "$playerTag" <ButtonRelease-1> "::pinfo::playerInfo \"$playerName\""
-        $w tag bind $playerTag <Any-Enter> \
-           "$w tag configure \"$playerTag\" -foreground white
-            $w tag configure \"$playerTag\" -background DodgerBlue4
-            $w configure -cursor hand2"
-        $w tag bind $playerTag <Any-Leave> \
-           "$w tag configure \"$playerTag\" -foreground DodgerBlue3
-            $w tag configure \"$playerTag\" -background {}
-            $w configure -cursor {}"
-      } elseif {[strIsPrefix "g_" $tagName]} {
-        # Check if it is a game-load tag:
-        set gameTag $tagName
-        set tagName "g"
-        set gnum [string range $gameTag 2 end]
-        set glCommand "::game::LoadMenu $w [sc_base current] $gnum %X %Y"
-        $w tag bind $gameTag <ButtonPress-1> $glCommand
-        $w tag bind $gameTag <ButtonPress-$::MB3> \
-            "::gbrowser::new [sc_base current] $gnum"
-        $w tag bind $gameTag <Any-Enter> \
-            "$w tag configure $gameTag -foreground white
-             $w tag configure $gameTag -background DodgerBlue4
-             $w configure -cursor hand2"
-        $w tag bind $gameTag <Any-Leave> \
-            "$w tag configure $gameTag -foreground {}
-        $w tag configure $gameTag -background {}
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "m_" $tagName]} {
-        # Check if it is a move tag:
-        set moveTag $tagName
-        set tagName "m"
-		  ### TODO
-		  ### Does not work for variations as the var-Tag appears before
-		  ### the <m_ tags, therefore this overwrites font sizes
-        ### $w tag configure $moveTag -font font_Figurine_ML
-        $w tag bind $moveTag <ButtonRelease-1> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
-        # Bind middle button to popup a PGN board:
-        $w tag bind $moveTag <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text $moveTag %X %Y"
-        $w tag bind $moveTag <ButtonRelease-$::MB2> "::pgn::HideBoard"
-        # invoking contextual menu in PGN window
-        $w tag bind $moveTag <ButtonPress-$::MB3> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
-        $w tag bind $moveTag <Any-Enter> "$w tag configure $moveTag -underline 1
-        $w configure -cursor hand2"
-        $w tag bind $moveTag <Any-Leave> "$w tag configure $moveTag -underline 0
-        $w configure -cursor {}"
-      } elseif {[strIsPrefix "c_" $tagName]} {
-        # Check if it is a comment tag:
-        set commentTag $tagName
-        set tagName "c"
-        $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
-        $w tag bind $commentTag <ButtonRelease-1> "sc_move pgn [string range $commentTag 2 end]; updateBoard; ::makeCommentWin"
-        $w tag bind $commentTag <Any-Enter> "$w tag configure $commentTag -underline 1
-        $w configure -cursor hand2"
-        $w tag bind $commentTag <Any-Leave> "$w tag configure $commentTag -underline 0
-        $w configure -cursor {}"
-      }
-      
-      if {$tagName == "h1"} {$w insert end "\n"}
-      
-    }
-    
+
     # Now insert the text up to the formatting tag:
-    $w insert end [string range $str 0 [expr {$startPos - 1}]]
-    
-    # Check if it is a name tag matching the section we want:
-    if {$section != ""  &&  [strIsPrefix "name " $tagName]} {
-      set sect [string range $tagName 5 end]
-      if {$section == $sect} { set seePoint [$w index insert] }
-    }
-    
-    if {[string index $tagName 0] == "/"} {
-      # Get rid of initial "/" character:
-      set tagName [string range $tagName 1 end]
-      switch -- $tagName {
-        h1 - h2 - h3 - h4 - h5  {$w insert end "\n"}
-      }
-      if {$tagName == "p"} {$w insert end "\n"}
-      #if {$tagName == "h1"} {$w insert end "\n"}
-      if {$tagName == "menu"} {$w insert end "\]"}
-      if {$tagName == "ul"} {
-        incr helpWin(Indent) -4
-        $w insert end "\n"
-      }
-      if {[info exists startIndex($tagName)]} {
-        switch -- $tagName {
-          a {$w tag add $linkTag $startIndex($tagName) [$w index insert]}
-          g  {$w tag add $gameTag $startIndex($tagName) [$w index insert]}
-          c  {$w tag add $commentTag $startIndex($tagName) [$w index insert]}
-          m  {$w tag add $moveTag $startIndex($tagName) [$w index insert]}
-          pi {$w tag add $playerTag $startIndex($tagName) [$w index insert]}
-          url {$w tag add $urlTag $startIndex($tagName) [$w index insert]}
-          run {$w tag add $runTag $startIndex($tagName) [$w index insert]}
-          go {$w tag add $goTag $startIndex($tagName) [$w index insert]}
-          default {$w tag add $tagName $startIndex($tagName) [$w index insert]}
-        }
-        unset startIndex($tagName)
-      }
-    } else {
-      switch -- $tagName {
+    set text [string range $str 0 [expr {$startPos - 1}]]
+    $w insert end $text
+
+    # Check if it is a starting tag (no "/" at the start) and process the tag:
+    if {![strIsPrefix "/" $tagName]} {
+      set fullTag($tagName) $tagName
+      set tag $tagName
+      #create basename of tag: m_12 -> m or "pi name" -> pi
+      if { [regexp ".*?\[_ \]" $tagName tag] } { set tag [string range $tag 0 end-1]}
+      switch -- $tag {
+        a - url - run - go - pi - g - m - c - var - img - button - window {
+            lassign [$::htext::proc($tag) $w $tagName] tagName fullTag($tagName) }
+        board { if { [info exists fullTag(m)] } {
+            # fullTag(m) has the movenumber of the last processed move
+            $::htext::proc($tag) $w [string range $fullTag(m) 2 end]} }
+        name { $::htext::proc($tag) $w $tagName $section }
         ul {incr helpWin(Indent) 4}
         li {
           $w insert end "\n"
@@ -462,49 +576,30 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
             $w insert end " "
           }
         }
-        p  {$w insert end "\n"}
-        br {$w insert end "\n"}
         q  {$w insert end "\""}
         lt {$w insert end "<"}
         gt {$w insert end ">"}
-        h2 - h3 - h4 - h5  {$w insert end "\n"}
+        menu {$w insert end "\["}
+        h1 - h2 - h3 - h4 - h5 - p - br {$w insert end "\n"}
       }
+    }
+
+    if {[strIsPrefix "/" $tagName]} {
+      # Get rid of initial "/" character:
+      set tagName [string range $tagName 1 end]
+      switch -- $tagName {
+        menu {$w insert end "\]"}
+        ul   {incr helpWin(Indent) -4; $w insert end "\n"}
+        h1 - h2 - h3 - h4 - h5 - p {$w insert end "\n"}
+      }
+      if {[info exists startIndex($tagName)]} {
+        $w tag add $fullTag($tagName) $startIndex($tagName) [$w index insert]
+        unset startIndex($tagName)
+      }
+    } else {
       #Set the start index for this type of tag:
       set startIndex($tagName) [$w index insert]
-      if {$tagName == "menu"} {$w insert end "\["}
     }
-    
-    # Check if it is an image or button tag:
-    if {[strIsPrefix "img " $tagName]} {
-      set imgName [string range $tagName 4 end]
-      #flags are not loaded on start, so check if a flag needs to load
-      if { $imgName ne [info commands $imgName] && [string range $imgName 0 3] eq "flag" } {
-        set imgName [getFlagImage [string range $imgName [expr [string length $imgName] - 3] end] yes]
-      }
-      set winName $w.$imgName
-      while {[winfo exists $winName]} { append winName a }
-      ttk::label $winName -image $imgName -relief flat -borderwidth 0 -background white
-      $w window create end -window $winName
-    }
-    if {[strIsPrefix "button " $tagName]} {
-      set idx [ string first "-command" $tagName]
-      set cmd ""
-      if {$idx == -1} {
-        set imgName [string range $tagName 7 end]
-      } else  {
-        set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
-        set cmd [ string range $tagName [expr $idx +9] end ]
-      }
-      set winName $w.$imgName
-      while {[winfo exists $winName]} { append winName a }
-      ttk::button $winName -image $imgName -command $cmd
-      $w window create end -window $winName
-    }
-    if {[strIsPrefix "window " $tagName]} {
-      set winName [string range $tagName 7 end]
-      $w window create end -window $winName
-    }
-    
     # Now eliminate the processed text from the string:
     set str [string range $str [expr {$endPos + 1}] end]
     incr count
@@ -514,11 +609,9 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       return
     }
   }
-  
+
   # Now add any remaining text:
   if {! $::htext::interrupt} { $w insert end $str }
-  
-  if {$seePoint != ""} { $w yview $seePoint }
   $w configure -state disabled
   # set elapsed [expr {[clock clicks -milli] - $start}]
 }

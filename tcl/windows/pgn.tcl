@@ -111,6 +111,9 @@ namespace eval pgn {
         -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
 
     #ToDo: translate label
+    $w.menu.opt add checkbutton -label "Fold Variations" \
+        -variable ::pgn::hideVar -command {::htext::resetToggleVar .pgnWin.text $::pgn::hideVar}
+     $w.menu.opt add checkbutton -label "Show Diagramms" -variable ::pgn::showDiagramm -command {::pgn::Refresh 1}
     $w.menu.opt add checkbutton -label "Notation Figurine" \
         -variable ::pgn::figurine -command {::pgn::Refresh 1}
     $w.menu.color add command -label PgnColorAnno \
@@ -138,6 +141,7 @@ namespace eval pgn {
     grid columnconfigure $w 0 -weight 1
 
     set pgnWin 1
+    bind $w <<NotifyNewGame>> "::htext::deleteToggleVar .pgnWin.text"
     bind $w <Destroy> { set pgnWin 0 }
 
     # Take input focus even if -state is disabled
@@ -205,6 +209,10 @@ namespace eval pgn {
     $mctxt.evals2 add command -label "N" -command {::addNag N}
     $mctxt.evals2 add command -label "D" -command {::addNag D}
 
+    #TODO: translate
+    $mctxt add command -label "Fold all Variations" -command {::htext::resetToggleVar .pgnWin.text 1}
+    $mctxt add command -label "Unfold all Variations" -command {::htext::resetToggleVar .pgnWin.text 0}
+    $mctxt add separator
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar"
     $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar"
@@ -294,9 +302,13 @@ namespace eval pgn {
       set format plain
       if {$::pgn::showColor} {set format color}
       set pgnStr [sc_game pgn -symbols $::pgn::symbolicNags \
-          -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
+          -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments -showDiagram $::pgn::showDiagramm \
           -space $::pgn::moveNumberSpaces -format $format -column $::pgn::columnFormat \
           -short $::pgn::shortHeader -markCodes $::pgn::stripMarks -unicode $::pgn::figurine]
+      if { $::pgn::showDiagramm } {
+          #Add Diagramm for Chessbase Notation [#] in comment
+          set pgnStr [string map {"\[#\]" "<board>" } $pgnStr]
+      }
 
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
@@ -331,6 +343,7 @@ namespace eval pgn {
       .pgnWin.text tag remove Current 1.0 end
       set moveRange [.pgnWin.text tag nextrange "m_$offset" 1.0]
       if {[llength $moveRange] == 2} {
+        ::htext::showVar .pgnWin.text [lindex $moveRange 0]
         .pgnWin.text tag add Current [lindex $moveRange 0] [lindex $moveRange 1]
         .pgnWin.text see [lindex $moveRange 1]
       } else {

@@ -279,6 +279,8 @@ set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
 set ::pgn::showPhoto 1
 set ::pgn::figurine 0
+set ::pgn::hideVar 0
+set ::pgn::showDiagramm 0
 set pgnColor(Var) ""
 set pgnColor(Nag) {#cf6403}
 set pgnColor(Comment) {#008b00}
@@ -624,7 +626,7 @@ proc options.write {} {
     puts $optionF ""
     foreach i {boardSize boardStyle language ::pgn::showColor \
           ::pgn::indentVars ::pgn::indentComments ::pgn::showPhoto \
-          ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks ::pgn::figurine \
+          ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks ::pgn::figurine ::pgn::hideVar ::pgn::showDiagramm \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat \
           tree(order) optionsAutoSave ::tree::mask::recentMask \
           ecoFile suggestMoves showVarPopup showVarArrows \
