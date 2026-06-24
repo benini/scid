@@ -1325,6 +1325,12 @@ translate R SoundsAnnounceNew {Уведомлять о новых ходах, к
 translate R SoundsAnnounceForward {Уведомлять о ходе, когда сделан один ход вперёд}
 translate R SoundsAnnounceBack {Уведомлять о сокращении или отмене одного хода}
 translate R SoundsSoundDisabled {Scid не смог найти аудио пакет Snack при запуске; \nSound отключен.}
+# ====== TODO To be translated ======
+translate R Off { Off }
+# ====== TODO To be translated ======
+translate R Talk { Talk }
+# ====== TODO To be translated ======
+translate R Sound { Sound }
 
 # Upgrading databases:
 translate R Upgrading {Модернизация}

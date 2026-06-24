@@ -1533,6 +1533,12 @@ translate Y SoundsAnnounceForward {Announce moves when moving forward one move} 
 translate Y SoundsAnnounceBack {Announce when retracting or moving back one move} ;# ***
 # ====== TODO To be translated ======
 translate Y SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate Y Off { Off }
+# ====== TODO To be translated ======
+translate Y Talk { Talk }
+# ====== TODO To be translated ======
+translate Y Sound { Sound }
 
 # Upgrading databases:
 translate Y Upgrading {Unapreðivanje}

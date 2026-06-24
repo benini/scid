@@ -1332,6 +1332,9 @@ translate D SoundsAnnounceNew {Kündige neue Züge an, wenn sie ausgeführt werden}
 translate D SoundsAnnounceForward {Künde Zug an beim Vorwärtspielen}
 translate D SoundsAnnounceBack {Kündige Zug an beim Zurückgehen}
 translate D SoundsSoundDisabled {Scid hat das Snack Audio Paket beim Start nicht gefunden.\nTon ist abgeschaltet.}
+translate D Off { Aus }
+translate D Talk { Sprache }
+translate D Sound { Toneffekt }
 
 # Upgrading databases:
 translate D Upgrading {Upgrading}

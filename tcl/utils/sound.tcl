@@ -17,7 +17,7 @@ set ::utils::sound::isPlayingSound 0
 set ::utils::sound::soundQueue {}
 set ::utils::sound::soundFiles [list \
     King Queen Rook Bishop Knight CastleQ CastleK Back Mate Promote Check \
-    a b c d e f g h x 1 2 3 4 5 6 7 8 move alert]
+    a b c d e f g h x 1 2 3 4 5 6 7 8 move alert take]
 
 # soundMap
 #
@@ -118,17 +118,23 @@ proc ::utils::sound::AnnounceMove {move} {
 
 
 proc ::utils::sound::AnnounceNewMove {move} {
-  if {$::utils::sound::announceNew} { AnnounceMove $move }
+  switch $::utils::sound::announceNew {
+      1 { AnnounceMove $move }
+      2 { if { [string first "x" $move] > 0 } { PlaySound sound_take } else { PlaySound sound_move }}
+  }
 }
 
 
 proc ::utils::sound::AnnounceForward {move} {
-  if {$::utils::sound::announceForward} { AnnounceMove $move }
+  switch $::utils::sound::announceForward {
+      1 { AnnounceMove $move }
+      2 { if { [string first "x" $move] > 0 } { PlaySound sound_take } else { PlaySound sound_move }}
+  }
 }
 
 
 proc ::utils::sound::AnnounceBack {} {
-  if {$::utils::sound::announceBack} { AnnounceMove U }
+  if {$::utils::sound::announceBack} { PlaySound sound_move }
 }
 
 
@@ -195,10 +201,18 @@ proc ::utils::sound::OptionsDialog { w } {
         ttk::label $w.status -text [tr SoundsSoundDisabled]
         pack $w.status -side bottom
     }
-    ttk::checkbutton $w.n -variable ::utils::sound::announceNew -text [tr SoundsAnnounceNew]
-    ttk::checkbutton $w.f -variable ::utils::sound::announceForward -text [tr SoundsAnnounceForward]
+    ttk::labelframe $w.n -text " [tr SoundsAnnounceNew] "
+    ttk::radiobutton $w.n.n0 -variable ::utils::sound::announceNew -text [tr Off] -value 0
+    ttk::radiobutton $w.n.n1 -variable ::utils::sound::announceNew -text [tr Talk] -value 1
+    ttk::radiobutton $w.n.n2 -variable ::utils::sound::announceNew -text [tr Sound] -value 2
+    ttk::labelframe $w.f -text " [tr SoundsAnnounceForward] "
+    ttk::radiobutton $w.f.n0 -variable ::utils::sound::announceForward -text [tr Off] -value 0
+    ttk::radiobutton $w.f.n1 -variable ::utils::sound::announceForward -text [tr Talk] -value 1
+    ttk::radiobutton $w.f.n2 -variable ::utils::sound::announceForward -text [tr Sound] -value 2
     ttk::checkbutton $w.b -variable ::utils::sound::announceBack -text [tr SoundsAnnounceBack]
-    pack $w.n $w.f $w.b -side top -anchor w -padx "0 5"
+    pack $w.n.n0 $w.n.n1 $w.n.n2 -side left -anchor w -padx "0 5"
+    pack $w.f.n0 $w.f.n1 $w.f.n2 -side left -anchor w -padx "0 5"
+    pack $w.n $w.f $w.b -side top -anchor w -padx "0 5" -pady 5
 }
 
 proc ::utils::sound::GetDialogChooseFolder { widget } {

@@ -1373,6 +1373,12 @@ translate H SoundsAnnounceForward {Lépés bemondása amikor egy lépést elõre lépün
 translate H SoundsAnnounceBack {Lépés bemondása amikor visszaveszünk vagy egy lépést hátra lépünk}
 # ====== TODO To be translated ======
 translate H SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+# ====== TODO To be translated ======
+translate H Off { Off }
+# ====== TODO To be translated ======
+translate H Talk { Talk }
+# ====== TODO To be translated ======
+translate H Sound { Sound }
 
 # Upgrading databases:
 translate H Upgrading {Felújítás}

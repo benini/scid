@@ -1328,6 +1328,9 @@ translate E SoundsAnnounceNew {Announce new moves as they are made}
 translate E SoundsAnnounceForward {Announce moves when moving forward one move}
 translate E SoundsAnnounceBack {Announce when retracting or moving back one move}
 translate E SoundsSoundDisabled {Scid could not find the Snack audio package at startup;\nSound is disabled.}
+translate E Off { Off }
+translate E Talk { Talk }
+translate E Sound { Sound }
 
 # Upgrading databases:
 translate E Upgrading {Upgrading}
