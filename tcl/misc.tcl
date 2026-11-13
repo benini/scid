@@ -147,6 +147,13 @@ proc autoscrollBars {bars frame w {frame_row 0}} {
       event generate $ybar <MouseWheel> -delta %D
       return -code break
     }} $frame.ybar]
+    # X11 with Tk 8.6 delivers the mouse wheel as Button-4/5, not <MouseWheel>
+    foreach {btn dir} {4 -1 5 1} {
+      bind $w <Button-$btn> [list apply {{ybar dir} {
+        {*}[$ybar cget -command] scroll [expr {3 * $dir}] units
+        return -code break
+      }} $frame.ybar $dir]
+    }
     append bindTouchpad [list event generate $frame.ybar <TouchpadScroll> -delta %D] \n
   }
   incr frame_row
